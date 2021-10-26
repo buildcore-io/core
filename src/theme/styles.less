@@ -1,0 +1,25 @@
+// I think you should just stick to ng-zorro.
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+// Custom Theming for NG-ZORRO, see https://ng.ant.design/docs/customize-theme/en
+// We want to use tailwindcss as base.
+@import "~ng-zorro-antd/style/entry.less"; /* Import base styles */
+@import "~ng-zorro-antd/button/style/entry.less";  /* Import one component's styles */
+
+// View all variables: https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/components/style/themes/default.less
+// @primary-color: #1890ff;
+
+@layer base {
+  @import '01-base/font.less';
+  @import '01-base/document.less';
+  @import '01-base/headings.less';
+}
+
+@layer components {
+  @import '02-components/link.less';
+}
+
+@layer utilities {
+}

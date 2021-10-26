@@ -1,0 +1,14 @@
+name: Smart Contract Tests
+
+on: push
+
+jobs:
+  test_smart_contracts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: protocol
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npx hardhat test

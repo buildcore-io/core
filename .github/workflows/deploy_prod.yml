@@ -1,0 +1,20 @@
+name: Deploy to Prod
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy_live_website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run build
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}"
+          projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
+          channelId: live
