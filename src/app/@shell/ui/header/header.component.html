@@ -14,8 +14,8 @@
           </path>
         </svg>
       </a>
-      <wen-sign-in *ngIf="isLoggedIn$ | async"></wen-sign-in>
-      <wen-sign-out *ngIf="(isLoggedIn$ | async) === false"></wen-sign-out>
+      <wen-sign-out *ngIf="isLoggedIn$ | async"></wen-sign-out>
+      <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"></wen-sign-in>
     </div>
   </nav>
 </header>

@@ -9,6 +9,7 @@
     "build:stats": "ng build --stats-json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:watch": "ng test --watch-all",
     "lint": "ng lint",
     "i18n": "ng extract-i18n --out-file=src/locale/messages.xlf",
     "analyze": "webpack-bundle-analyzer dist/soonaverse/stats.json"

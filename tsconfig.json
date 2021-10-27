@@ -18,11 +18,13 @@
     "module": "es2020",
     "lib": ["es2018", "dom"],
     "paths": {
+      "@api/*": ["src/app/@api/*"],
       "@core/*": ["src/app/@core/*"],
       "@shell/*": ["src/app/@shell/*"],
       "@components/*": ["src/app/components/*"],
       "@pages/*": ["src/app/pages/*"],
       "@env/*": ["src/environments/*"],
+      "lib/*": ["lib/*"],
       "crypto": ["./node_modules/crypto-browserify"],
       "stream": ["./node_modules/stream-browserify"],
       "assert": ["./node_modules/assert"],

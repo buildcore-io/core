@@ -1,5 +1,5 @@
+import { ConfigApi } from './@api/config.api';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
@@ -18,7 +18,7 @@ export class WenComponent implements OnInit {
     private seoService: SeoService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private firestore: Firestore
+    private apiConfig: ConfigApi
   ) {}
 
   ngOnInit(): void {
@@ -30,10 +30,7 @@ export class WenComponent implements OnInit {
     this.seoService.init();
     this.themeService.init();
 
-    // Test retrieval from DB.
-    const col: any = collection(this.firestore, 'config');
-    collectionData(col).subscribe((o) => {
-      console.log(o);
-    })
+    // Test config API.
+    this.apiConfig.test();
   }
 }

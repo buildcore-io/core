@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SignInComponent } from './sign-in.component';
 
@@ -22,4 +22,12 @@ describe('SignInPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should click button', fakeAsync(() => {
+    jest.spyOn(component, 'onClickSignIn');
+    let button: any = fixture.debugElement.nativeElement.querySelector('button');
+    button.click();
+    tick();
+    expect(component.onClickSignIn).toHaveBeenCalled();
+  }));
 });

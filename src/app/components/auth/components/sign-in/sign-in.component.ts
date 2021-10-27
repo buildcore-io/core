@@ -24,6 +24,5 @@ export class SignInComponent {
 
   onClickSignIn(): void {
     this.authService.signIn();
-    this.router.navigate([this.returnUrl]);
   }
 }
