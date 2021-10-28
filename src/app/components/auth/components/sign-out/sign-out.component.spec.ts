@@ -25,7 +25,7 @@ describe('SignOutPage', () => {
 
   it('should click button', fakeAsync(() => {
     jest.spyOn(component, 'onClickSignOut');
-    let button: any = fixture.debugElement.nativeElement.querySelector('button');
+    const button: any = fixture.debugElement.nativeElement.querySelector('button');
     button.click();
     tick();
     expect(component.onClickSignOut).toHaveBeenCalled();
