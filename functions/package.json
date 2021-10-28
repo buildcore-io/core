@@ -3,7 +3,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only database,functions,firestore,ui",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "test": "mocha -r ts-node/register --reporter spec test/**/*.ts",

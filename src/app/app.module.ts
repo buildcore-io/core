@@ -4,10 +4,13 @@ import en from '@angular/common/locales/en';
 import fr from '@angular/common/locales/fr';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { USE_EMULATOR as USE_DATABASE_EMULATOR } from '@angular/fire/compat/database';
+import { AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/compat/firestore';
+import { AngularFireFunctionsModule, USE_EMULATOR as USE_FUNCTIONS_EMULATOR } from '@angular/fire/compat/functions';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { environment } from '@env/environment';
 import { WebShellModule } from '@shell/ft/web-shell.module';
 import { en_US as EnUs, fr_FR as FrFr, NZ_I18N as Nzi18n } from 'ng-zorro-antd/i18n';
 import { CoreModule } from './@core/core.module';
@@ -35,7 +38,9 @@ registerLocaleData(fr);
       appId: "1:502842886229:web:fcb7da4040fd19ba742cdc",
       measurementId: "G-CCX9NVPPCR"
     }),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    AngularFireFunctionsModule
+
   ],
   bootstrap: [WenComponent],
   providers   : [{
@@ -52,6 +57,10 @@ registerLocaleData(fr);
       }
     },
     deps: [LOCALE_ID]
-  }]
+  },
+  { provide: USE_DATABASE_EMULATOR, useValue: !environment.production ? ['localhost', 9000] : undefined },
+  { provide: USE_FIRESTORE_EMULATOR, useValue: !environment.production ? ['localhost', 8080] : undefined },
+  { provide: USE_FUNCTIONS_EMULATOR, useValue: !environment.production ? ['localhost', 5001] : undefined }
+  ]
 })
 export class AppModule {}

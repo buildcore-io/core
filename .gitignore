@@ -46,3 +46,5 @@ testem.log
 Thumbs.db
 firebase-debug.log
 package-lock.json
+functions/firestore-debug.log
+functions/database-debug.log

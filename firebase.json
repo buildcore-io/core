@@ -37,6 +37,9 @@
     "database": {
       "port": 9000
     },
+    "hosting": {
+      "enabled": false
+    },
     "ui": {
       "enabled": true
     }

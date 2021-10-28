@@ -32,7 +32,9 @@ export class WenComponent implements OnInit {
 
     // Test config API.
     this.apiConfig.latest().subscribe((e) => {
-      console.log('Config version: ', e.createdOn.toDate());
+      if (e) {
+        console.log('Config version: ', e.createdOn.toDate());
+      }
     });
   }
 }

@@ -29,5 +29,17 @@ module.exports = {
   rules: {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
+    "import/extensions": 0,
+    "valid-jsdoc": 0,
+    // Disabled for now.
+    "require-jsdoc": 0 // ["error", {
+    //   "require": {
+    //       "FunctionDeclaration": true,
+    //       "MethodDefinition": true,
+    //       "ClassDeclaration": true,
+    //       "ArrowFunctionExpression": true,
+    //       "FunctionExpression": true
+    //   }
+    // }]
   },
 };
