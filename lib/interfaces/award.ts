@@ -1,5 +1,5 @@
-export interface Award {
-  uid: string;
+import { BaseRecord } from './base';
+export interface Award extends BaseRecord {
   name: string;
   description: string;
   owners: {

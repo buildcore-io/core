@@ -31,6 +31,9 @@ export class WenComponent implements OnInit {
     this.themeService.init();
 
     // Test config API.
-    this.apiConfig.test();
+    this.apiConfig.latest().subscribe((e) => {
+      console.log(e);
+      console.log(e.createdOn.toDate());
+    });
   }
 }

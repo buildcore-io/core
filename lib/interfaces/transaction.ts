@@ -1,3 +1,4 @@
+import { BaseRecord } from './base';
 export enum TransactionType {
   BADGE = "BADGE",
   VOTE = "VOTE",
@@ -9,8 +10,7 @@ export interface VoteTransaction {
   votes: string[];
 }
 
-export interface Transaction {
-  uid: string;
+export interface Transaction extends BaseRecord {
   type: TransactionType;
   dateTime: Date;
   member?: string;

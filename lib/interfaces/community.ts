@@ -1,5 +1,5 @@
-export interface Community {
-  uid: string;
+import { BaseRecord } from './base';
+export interface Community extends BaseRecord {
   name: string;
   guardians: {
     // Owner / from date

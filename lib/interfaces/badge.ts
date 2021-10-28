@@ -1,6 +1,6 @@
+import { BaseRecord } from './base';
 
-export interface Badge {
-  uid: string;
+export interface Badge extends BaseRecord {
   name: string;
   owners: {
     // Owner / from date
