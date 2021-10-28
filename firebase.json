@@ -11,7 +11,7 @@
       "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build"
     ],
-    "source": "protocol/cloud-functions"
+    "source": "functions"
   },
   "hosting": {
     "public": "dist/soonaverse",

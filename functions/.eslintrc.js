@@ -11,11 +11,13 @@ module.exports = {
     "plugin:import/typescript",
     "google",
     "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
-    sourceType: "module",
+    "project": ["tsconfig.*?.json"],
+    "createDefaultProgram": true,
+    "sourceType": "module",
   },
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.

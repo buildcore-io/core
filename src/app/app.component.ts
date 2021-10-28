@@ -1,9 +1,9 @@
-import { ConfigApi } from './@api/config.api';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
 import { Observable } from 'rxjs';
+import { ConfigApi } from './@api/config.api';
 
 @Component({
   selector: 'wen-root',
@@ -32,8 +32,7 @@ export class WenComponent implements OnInit {
 
     // Test config API.
     this.apiConfig.latest().subscribe((e) => {
-      console.log(e);
-      console.log(e.createdOn.toDate());
+      console.log('Config version: ', e.createdOn.toDate());
     });
   }
 }

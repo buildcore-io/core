@@ -8,4 +8,5 @@ typings/
 # Node.js dependency directory
 node_modules/
 ui-debug.log
+package-lock.json
 firebase-debug.log

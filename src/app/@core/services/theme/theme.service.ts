@@ -37,7 +37,7 @@ export class ThemeService implements OnDestroy {
   /**
    * Manually changes theme in LocalStorage & HTML body
    *
-   * @param theme new theme
+   * @param {ThemeList} theme Select theme you want to use.
    */
   setTheme(theme: ThemeList): void {
     this.clearThemes();
@@ -83,8 +83,10 @@ export class ThemeService implements OnDestroy {
    */
   private clearThemes(): void {
     for (const theme in ThemeList) {
-      const key: ThemeList = ThemeList[theme as keyof typeof ThemeList];
-      this.document.body.classList.remove(key);
+      if (Object.prototype.hasOwnProperty.call(ThemeList, theme)) {
+        const key: ThemeList = ThemeList[theme as keyof typeof ThemeList];
+        this.document.body.classList.remove(key);
+      }
     }
   }
 
