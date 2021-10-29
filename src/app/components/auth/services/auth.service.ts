@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import Web3 from 'web3';
 import Web3Token from 'web3-token';
-import { EthAddress } from './../../../../../lib/interfaces/base';
-import { Member } from './../../../../../lib/interfaces/member';
+import { EthAddress } from '../../../../../functions/interfaces/models/base';
+import { Member } from '../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../@api/member.api';
 
 export interface DecodedToken {
@@ -19,9 +19,19 @@ export interface DecodedToken {
 export class AuthService {
   isLoggedIn$ = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
   member$ = new BehaviorSubject<Member|undefined>(undefined);
+  private memberSubscription$?: Subscription;
 
   constructor(private memberApi: MemberApi) {
-    // na
+    if (this.isLoggedIn$.value) {
+      const address: EthAddress = <EthAddress>getItem(StorageItem.AuthAddress);
+      if (!address) {
+        // Missing address.
+        setItem(StorageItem.Auth, false);
+        this.isLoggedIn$.next(false);
+      } else {
+        this.monitorMember(<EthAddress>getItem(StorageItem.AuthAddress));
+      }
+    }
   }
 
   get isLoggedIn(): boolean {
@@ -45,17 +55,14 @@ export class AuthService {
           return web3.eth.personal.sign(msg, address, 'pass');
         }, expiresIn, params);
 
-        // Let's load or create their profile.
-        this.listenMember(address);
+        // Make sure member is created if not exists yet.
+        this.member$.next(await firstValueFrom(this.memberApi.createIfNotExists(address)));
 
-        // Let's make sure profile exists. If not. Create it.
-        this.member$.pipe(first()).subscribe((o) => {
-          if (!o) {
-            this.memberApi.create(address).subscribe((a) => {
-              console.log('createing profile', a);
-            });
-          }
-        });
+        // Let's make sure we monitor the member.
+        this.monitorMember(address);
+
+        // Store public ETH address in cookies.
+        setItem(StorageItem.AuthAddress, address);
 
         return token;
       } catch(e) {
@@ -68,8 +75,8 @@ export class AuthService {
     }
   }
 
-  public listenMember(address: EthAddress): void {
-    this.memberApi.get(address).subscribe(this.member$);
+  public monitorMember(address: EthAddress): void {
+    this.memberSubscription$ = this.memberApi.listen(address).subscribe(this.member$);
   }
 
   public async signIn(): Promise<void> {
@@ -87,5 +94,6 @@ export class AuthService {
   signOut(): void {
     removeItem(StorageItem.Auth);
     this.isLoggedIn$.next(false);
+    this.memberSubscription$?.unsubscribe();
   }
 }

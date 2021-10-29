@@ -1,4 +1,4 @@
-import { BaseRecord, Base } from './base';
+import { Base, BaseRecord } from './base';
 export enum ProposalType {
   NATIVE = "NATIVE",
   DIGITAL_ASSET = "DIGITAL_ASSET",
@@ -13,10 +13,12 @@ export interface NativeProposalSettings {
 
 export interface DigitalAssetProposalSettings {
   // none yet.
+  add: any;
 }
 
 export interface SmartContractProposalSettings {
   // none yet.
+  add: any;
 }
 
 export interface ProposalAnswer extends Base {

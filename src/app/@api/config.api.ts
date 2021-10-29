@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Config } from 'lib/interfaces/config';
+import { Config } from 'functions/interfaces/models/config';
 import { BaseApi } from './base.api';
 
 @Injectable({

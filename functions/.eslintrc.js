@@ -27,7 +27,6 @@ module.exports = {
     "import",
   ],
   rules: {
-    "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "import/extensions": 0,
     "valid-jsdoc": 0,

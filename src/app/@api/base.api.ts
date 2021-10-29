@@ -6,7 +6,7 @@ export class BaseApi<T> {
   public collection = '';
   constructor(protected afs: AngularFirestore) {}
 
-  public get(id: string): Observable<T|undefined> {
+  public listen(id: string): Observable<T|undefined> {
     return this.afs.collection<T>(this.collection).doc(id).valueChanges();
   }
 

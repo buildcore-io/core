@@ -1,3 +1,5 @@
+<nz-avatar nzIcon="user"></nz-avatar>
+<span nz-typography [nzEditable]="true" [nzContent]="(member$ | async)?.name" (nzContentChange)="editName($event)"></span>
 <button
 class="inline-flex items-center px-4 py-2 font-bold text-gray-600 bg-gray-200 rounded g-grey-light hover:bg-grey text-grey-darkest"
 (click)="onClickSignOut()">

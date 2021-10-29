@@ -1,4 +1,5 @@
-import { BaseRecord } from './base';
+import { BaseRecord } from "./base";
+
 export interface Award extends BaseRecord {
   name: string;
   description: string;

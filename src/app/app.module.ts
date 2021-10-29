@@ -27,7 +27,6 @@ registerLocaleData(fr);
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-
     // Interim-Firebase.
     AngularFireModule.initializeApp({
       apiKey: "AIzaSyB4fcG8rtNWAiAtSmxmK3q3JLfMvtNCGP4",
