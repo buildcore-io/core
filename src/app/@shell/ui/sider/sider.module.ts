@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { SiderComponent } from './sider.component';
 import { ThemeSwitchComponent } from './theme-switch/theme-switch.component';
 
@@ -10,8 +12,10 @@ import { ThemeSwitchComponent } from './theme-switch/theme-switch.component';
   imports: [
     CommonModule,
     NzLayoutModule,
-    NzIconModule
+    NzIconModule,
+    NzMenuModule,
+    RouterModule
   ],
   exports: [SiderComponent]
 })
-export class SiderModule {}
+export class SiderModule { }

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { ThemeService } from '@core/services/theme';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 
 @Component({
   selector: 'wen-sider',
@@ -6,4 +8,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./sider.component.less']
 })
 export class SiderComponent {
+  path = ROUTER_UTILS.config.base;
+
+  constructor(public themeService: ThemeService) { }
 }
