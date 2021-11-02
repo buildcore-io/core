@@ -8,5 +8,6 @@ import { ThemeService } from '@core/services/theme';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent {
-  constructor(public themeService: ThemeService) {}
+  constructor(public themeService: ThemeService) {
+  }
 }
