@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { AuthService } from '../../services/auth.service';
 
@@ -13,7 +13,6 @@ export class SignInComponent {
   returnUrl: string;
 
   constructor(
-    private router: Router,
     private activatedRoute: ActivatedRoute,
     private authService: AuthService,
   ) {

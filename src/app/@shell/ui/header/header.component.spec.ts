@@ -1,26 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AuthModule } from '@components/auth/auth.module';
+import { AuthService } from '@components/auth/services/auth.service';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { MockComponent, MockProvider } from 'ng-mocks';
+import { SignInComponent } from './../../../components/auth/components/sign-in/sign-in.component';
+import { SignOutComponent } from './../../../components/auth/components/sign-out/sign-out.component';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
-  let component: HeaderComponent;
-  let fixture: ComponentFixture<HeaderComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [HeaderComponent],
-      imports: [RouterTestingModule, AuthModule],
-    }).compileComponents();
+  let spectator: Spectator<HeaderComponent>;
+  const createComponent = createRoutingFactory({
+    component: HeaderComponent,
+    declarations: [MockComponent(SignInComponent), MockComponent(SignOutComponent)],
+    providers: [MockProvider(AuthService)],
+    params: {},
+    data: {}
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HeaderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
   });
 });

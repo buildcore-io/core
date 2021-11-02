@@ -1,25 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { AuthService } from '@components/auth/services/auth.service';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { MockProvider } from 'ng-mocks';
 import { SignInPage } from './sign-in.page';
 
 describe('SignInPage', () => {
-  let component: SignInPage;
-  let fixture: ComponentFixture<SignInPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [SignInPage],
-      imports: [RouterTestingModule],
-    }).compileComponents();
+  let spectator: Spectator<SignInPage>;
+  const createComponent = createRoutingFactory({
+    component: SignInPage,
+    providers: [MockProvider(AuthService)],
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SignInPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should have button defined', () => {
+    expect(spectator.query('button')).toBeDefined();
   });
 });

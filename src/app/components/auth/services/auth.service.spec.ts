@@ -1,16 +1,23 @@
-import { TestBed } from '@angular/core/testing';
-
+import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
+import { MockProvider } from 'ng-mocks';
+import { first } from "rxjs";
+import { MemberApi } from './../../../@api/member.api';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
-  let service: AuthService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(AuthService);
+  let spectator: SpectatorService<AuthService>;
+  const createService = createServiceFactory({
+    service: AuthService,
+    providers: [
+      MockProvider(MemberApi)
+    ]
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  beforeEach(() => spectator = createService());
+
+  it('should not be logged in', () => {
+    spectator.service.isLoggedIn$.pipe(first()).subscribe((val) => {
+      expect(val).toBeFalsy();
+    })
   });
 });

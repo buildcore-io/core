@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BehaviorSubject } from 'rxjs';
@@ -13,7 +12,7 @@ import { BehaviorSubject } from 'rxjs';
 export class HeaderComponent {
   path = ROUTER_UTILS.config.base;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.authService.isLoggedIn$;

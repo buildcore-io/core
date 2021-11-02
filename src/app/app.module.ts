@@ -10,13 +10,16 @@ import { AngularFireFunctionsModule, USE_EMULATOR as USE_FUNCTIONS_EMULATOR } fr
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { IconDefinition } from '@ant-design/icons-angular';
 import { environment } from '@env/environment';
 import { WebShellModule } from '@shell/ft/web-shell.module';
 import { en_US as EnUs, fr_FR as FrFr, NZ_I18N as Nzi18n } from 'ng-zorro-antd/i18n';
+import { NzIconModule } from "ng-zorro-antd/icon";
 import { CoreModule } from './@core/core.module';
 import { WenComponent } from './app.component';
 registerLocaleData(en);
 registerLocaleData(fr);
+const icons: IconDefinition[] = [];
 
 @NgModule({
   declarations: [WenComponent],
@@ -27,6 +30,7 @@ registerLocaleData(fr);
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    NzIconModule.forRoot(icons),
     // Interim-Firebase.
     AngularFireModule.initializeApp({
       apiKey: "AIzaSyB4fcG8rtNWAiAtSmxmK3q3JLfMvtNCGP4",

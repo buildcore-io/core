@@ -1,6 +1,12 @@
 import 'jest-preset-angular/setup-jest';
+import { ngMocks } from 'ng-mocks';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
-/* global mocks for jsdom */
+ngMocks.autoSpy('jest');
+
+// Default mocks
+ngMocks.defaultMock(NzNotificationService);
+
 const mock = () => {
   let storage: { [key: string]: string } = {};
   return {
@@ -25,6 +31,3 @@ Object.defineProperty(document.body.style, 'transform', {
     };
   },
 });
-
-/* output shorter and more meaningful Zone error stack traces */
-// Error.stackTraceLimit = 2;
