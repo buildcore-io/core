@@ -9,7 +9,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SiderComponent {
-  path = ROUTER_UTILS.config.base;
+  routes = ROUTER_UTILS.config;
 
   constructor(public themeService: ThemeService) { }
 }
