@@ -1,0 +1,14 @@
+name: Functions Unit Tests
+
+on: push
+
+jobs:
+  front_end_unit_tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run test
