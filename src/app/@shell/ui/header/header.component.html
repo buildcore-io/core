@@ -1,6 +1,12 @@
 <header class="flex items-center justify-end py-5 px-7">
   <div *ngIf="isLoggedIn$ | async" class="flex items-center gap-4">
-    <button nz-button nzType="default" nzShape="circle" nzSize="large">
+    <button
+      nz-button
+      nzType="default"
+      nzShape="circle"
+      nzSize="large"
+      class="inline-flex items-center justify-center border-0"
+    >
       <i nz-icon nzType="bell" class="text-lg"></i>
     </button>
 
@@ -10,11 +16,13 @@
       nzShape="round"
       nzTrigger="click"
       [nzDropdownMenu]="userMenu"
+      class="p-2 pr-5 font-bold border-0 h-14"
     >
       <nz-avatar
         nzIcon="user"
         nzSrc="//zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
         nzSize="large"
+        class="mr-1"
       ></nz-avatar>
       Adam Rich
       <i nz-icon nzType="down" class="font-bold"></i>
