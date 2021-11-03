@@ -7,7 +7,7 @@ export class BaseApi<T> {
   constructor(protected afs: AngularFirestore) {}
 
   public listen(id: string): Observable<T|undefined> {
-    return this.afs.collection<T>(this.collection).doc(id).valueChanges();
+    return this.afs.collection<T>(this.collection).doc(id.toLowerCase()).valueChanges();
   }
 
   public latest(): Observable<T> {

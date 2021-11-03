@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import Web3 from 'web3';
 import Web3Token from 'web3-token';
 import { EthAddress } from '../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../functions/interfaces/models/member';
+import { DecodedToken } from './../../../../../functions/interfaces/functions/index';
 import { MemberApi } from './../../../@api/member.api';
 
-export interface DecodedToken {
+export interface MetamaskSignature {
   address: string;
-  body: any;
+  token: string;
 }
 
 @Injectable({
@@ -22,6 +23,13 @@ export class AuthService {
   private memberSubscription$?: Subscription;
 
   constructor(private memberApi: MemberApi) {
+    // Make sure member exists when we are logged in.
+    this.member$.pipe(skip(1)).subscribe((m) => {
+      if (!m && this.isLoggedIn$.value) {
+        this.signOut();
+      }
+    });
+
     if (this.isLoggedIn$.value) {
       const address: EthAddress = <EthAddress>getItem(StorageItem.AuthAddress);
       if (!address) {
@@ -38,7 +46,7 @@ export class AuthService {
     return this.isLoggedIn$.getValue();
   }
 
-  async signWithMetamask(params: any = {}, expiresIn = '15s'): Promise<string|undefined> {
+  async signWithMetamask(params: any = {}, expiresIn = '1m'): Promise<MetamaskSignature|undefined> {
     const provider: any = await detectEthereumProvider();
     if (provider) {
       try {
@@ -55,16 +63,10 @@ export class AuthService {
           return web3.eth.personal.sign(msg, address, 'pass');
         }, expiresIn, params);
 
-        // Make sure member is created if not exists yet.
-        this.member$.next(await firstValueFrom(this.memberApi.createIfNotExists(address)));
-
-        // Let's make sure we monitor the member.
-        this.monitorMember(address);
-
-        // Store public ETH address in cookies.
-        setItem(StorageItem.AuthAddress, address);
-
-        return token;
+        return {
+          address: address,
+          token: token
+        };
       } catch(e) {
         // Ignore. they didn't log in.
         return undefined;
@@ -80,9 +82,27 @@ export class AuthService {
   }
 
   public async signIn(): Promise<void> {
-    const token: string|undefined = await this.signWithMetamask({}, '1d');
-    if (token) {
-      setItem(StorageItem.Auth, token);
+    const sc: MetamaskSignature|undefined = await this.signWithMetamask({}, '1d');
+    if (!sc) {
+      throw new Error('Unable to sign.');
+    }
+
+    // Make sure member is created if not exists yet.
+    const m: Member|undefined = await firstValueFrom(this.memberApi.createIfNotExists(sc.token));
+    if (!m) {
+      throw new Error('Unable to create member!');
+    }
+
+    this.member$.next(m);
+
+    // Let's make sure we monitor the member.
+    this.monitorMember(sc.address);
+
+    // Store public ETH address in cookies.
+    setItem(StorageItem.AuthAddress, sc.address);
+
+    if (sc.token) {
+      setItem(StorageItem.Auth, sc.token);
       this.isLoggedIn$.next(true);
     }
   }
