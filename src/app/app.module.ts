@@ -42,11 +42,10 @@ const icons: IconDefinition[] = [];
       measurementId: "G-CCX9NVPPCR"
     }),
     AngularFirestoreModule,
-    AngularFireFunctionsModule
-
+    AngularFireFunctionsModule,
   ],
   bootstrap: [WenComponent],
-  providers   : [{
+  providers: [{
     provide: Nzi18n,
     useFactory: (localId: string) => {
       /** keep the same with angular.json/i18n/locales configuration **/
@@ -66,4 +65,4 @@ const icons: IconDefinition[] = [];
   { provide: USE_FUNCTIONS_EMULATOR, useValue: !environment.production ? ['localhost', 5001] : undefined }
   ]
 })
-export class AppModule {}
+export class AppModule { }
