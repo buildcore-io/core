@@ -1,7 +1,16 @@
-<wen-header></wen-header>
+<nz-layout>
+  <!-- TODO: hide when user not logged in -->
+  <nz-sider nzWidth="auto" [nzTheme]="themeService.isDarkTheme() ? 'dark' : 'light' ">
+    <wen-sider></wen-sider>
+  </nz-sider>
+  
+  <nz-layout>
+    <wen-header></wen-header>
 
-<div class="container flex-1">
-  <ng-content></ng-content>
-</div>
+    <div class="container flex-1">
+      <ng-content></ng-content>
+    </div>
 
-<wen-footer></wen-footer>
+    <wen-footer></wen-footer>
+  </nz-layout>
+</nz-layout>
