@@ -26,7 +26,7 @@
         *ngFor="let item of menuItems; index as i"
         nz-menu-item
         class="p-0 text-current"
-        [routerLink]="[item.route]"
+        [routerLink]="item.route"
         nzMatchRouter
       >
         {{ item.label }}
