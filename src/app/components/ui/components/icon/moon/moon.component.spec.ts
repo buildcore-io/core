@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MoonIconComponent } from './moon.component';
 
-import { MoonComponent } from './moon.component';
 
-describe('MoonComponent', () => {
-  let component: MoonComponent;
-  let fixture: ComponentFixture<MoonComponent>;
+describe('MoonIconComponent', () => {
+  let component: MoonIconComponent;
+  let fixture: ComponentFixture<MoonIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MoonComponent ]
+      declarations: [ MoonIconComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MoonComponent);
+    fixture = TestBed.createComponent(MoonIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

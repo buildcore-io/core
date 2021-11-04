@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { UnamusedIconComponent } from './unamused.component';
 
-import { UnamusedComponent } from './unamused.component';
 
 describe('UnamusedComponent', () => {
-  let component: UnamusedComponent;
-  let fixture: ComponentFixture<UnamusedComponent>;
+  let component: UnamusedIconComponent;
+  let fixture: ComponentFixture<UnamusedIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UnamusedComponent ]
+      declarations: [UnamusedIconComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UnamusedComponent);
+    fixture = TestBed.createComponent(UnamusedIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
