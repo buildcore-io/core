@@ -7,7 +7,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontFamily: {
-      display: ['Oswald', 'sans-serif'],
+      display: ['Poppins', 'sans-serif'],
       body: ['Poppins', 'sans-serif'],
     },
     container: {
