@@ -67,6 +67,6 @@ const APP_ROUTES: Routes = [
     HeaderModule,
     LayoutModule,
     NotFoundModule,
-  ],
+  ]
 })
-export class WebShellModule {}
+export class WebShellModule { }

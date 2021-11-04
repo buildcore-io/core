@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ThemeService } from '@core/services/theme';
+import { GlobeIconComponent } from '@components/ui/components/icon/globe/globe.component';
+import { RocketIconComponent } from '@components/ui/components/icon/rocket/rocket.component';
+import { UnamusedIconComponent } from '@components/ui/components/icon/unamused/unamused.component';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 
 @Component({
@@ -13,11 +15,9 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 export class SiderComponent {
   homeRoute = ROUTER_UTILS.config.base.home
   menuItems = [
+    { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent },
+    { route: [ROUTER_UTILS.config.space.root], icon: RocketIconComponent },
     // TODO - replace with user id given from auth service
-    { route: [ROUTER_UTILS.config.member.root, 'adam-rich'], label: 'My profile' },
-    { route: [ROUTER_UTILS.config.space.root], label: 'Discover' },
-    { route: [ROUTER_UTILS.config.base.dashboard], label: 'Overview' },
+    { route: [ROUTER_UTILS.config.member.root, 'adam-rich'], icon: UnamusedIconComponent },
   ]
-
-  constructor(public themeService: ThemeService) { }
 }

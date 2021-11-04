@@ -1,0 +1,16 @@
+<nav
+  nz-menu
+  nzMode="horizontal"
+  [nzTheme]="themeService.isDarkTheme() ? 'dark' : 'light'"
+  class="w-full mt-16 border-b-0"
+>
+  <a
+    *ngFor="let item of items"
+    nz-menu-item
+    class="p-0 text-current"
+    [routerLink]="item.route"
+    nzMatchRouter
+  >
+    <ng-template [wenMenuItem]="item"></ng-template>
+  </a>
+</nav>

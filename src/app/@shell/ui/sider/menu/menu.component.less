@@ -1,0 +1,16 @@
+[nz-menu] > [nz-menu-item] {
+  @apply inline-flex items-center justify-center w-full py-5 px-0;
+}
+
+[nz-menu] > .ant-menu-item::after {
+  border-bottom: 0;
+}
+
+[nz-menu] > .ant-menu-item:hover,
+[nz-menu] > .ant-menu-item-selected {
+  &::after {
+    @apply border-b-0 border-r-2 left-auto top-2 bottom-2 right-0;
+    // TODO
+    border-color: #1890ff;
+  }
+}

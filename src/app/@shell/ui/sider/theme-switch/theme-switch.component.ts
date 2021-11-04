@@ -9,8 +9,11 @@ import { ThemeList, ThemeService } from '@core/services/theme';
 })
 export class ThemeSwitchComponent {
   theme = ThemeList;
+  currentTheme: ThemeList;
 
-  constructor(public themeService: ThemeService) { }
+  constructor(private themeService: ThemeService) {
+    this.currentTheme = themeService.getTheme()
+  }
 
   onClickChangeTheme(theme: ThemeList): void {
     this.themeService.setTheme(theme);
