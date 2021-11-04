@@ -39,6 +39,12 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.space.root,
+    loadChildren: async () =>
+      (await import('@pages/space/space.module')).SpaceModule,
+    canLoad: [],
+  },
+  {
     path: '**',
     loadChildren: async () =>
       (await import('@shell/ui/not-found/not-found.module')).NotFoundModule,

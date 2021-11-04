@@ -16,7 +16,7 @@ export class ThemeService implements OnDestroy {
     '(prefers-color-scheme: dark)',
   );
 
-  constructor(@Inject(DOCUMENT) private document: Document) {}
+  constructor(@Inject(DOCUMENT) private document: Document) { }
 
   set storedTheme(theme: ThemeList) {
     setItem(StorageItem.Theme, theme);
@@ -86,5 +86,13 @@ export class ThemeService implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.complete();
     this.destroy$.unsubscribe();
+  }
+
+  isDarkTheme(): boolean {
+    return this.storedTheme === ThemeList.Dark
+  }
+
+  isLightTheme(): boolean {
+    return this.storedTheme === ThemeList.Light
   }
 }

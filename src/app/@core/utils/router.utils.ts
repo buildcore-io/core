@@ -8,6 +8,15 @@ export const ROUTER_UTILS = {
       root: 'auth',
       signIn: 'signIn'
     },
+    member: {
+      root: 'members',
+      overview: 'overview',
+      profile: ':username',
+    },
+    space: {
+      root: 'spaces',
+      space: ':username',
+    },
     settings: {
       root: 'settings',
       account: 'account',
@@ -17,11 +26,6 @@ export const ROUTER_UTILS = {
       notifications: 'notifications',
       security: 'security',
       securityLog: 'security-log',
-    },
-    member: {
-      root: 'members',
-      overview: 'overview',
-      profile: ':username',
     },
     errorResponse: {
       notFound: '404',
