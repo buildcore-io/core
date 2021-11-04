@@ -1,7 +1,7 @@
 <i
   nz-icon
   class="text-xl cursor-pointer"
-  *ngIf="currentTheme === theme.Dark"
+  *ngIf="(currentTheme$ | async) === theme.Dark"
   (click)="onClickChangeTheme(theme.Light)"
 >
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -17,7 +17,7 @@
 <i
   nz-icon
   class="text-xl cursor-pointer"
-  *ngIf="currentTheme === theme.Light"
+  *ngIf="(currentTheme$ | async)  === theme.Light"
   (click)="onClickChangeTheme(theme.Dark)"
 >
   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">

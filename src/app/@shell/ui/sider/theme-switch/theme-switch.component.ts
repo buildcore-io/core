@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ThemeList, ThemeService } from '@core/services/theme';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'wen-theme-switch',
@@ -9,10 +10,12 @@ import { ThemeList, ThemeService } from '@core/services/theme';
 })
 export class ThemeSwitchComponent {
   theme = ThemeList;
-  currentTheme: ThemeList;
 
   constructor(private themeService: ThemeService) {
-    this.currentTheme = themeService.getTheme()
+  }
+
+  public get currentTheme$(): BehaviorSubject<ThemeList | undefined> {
+    return this.themeService.theme$;
   }
 
   onClickChangeTheme(theme: ThemeList): void {

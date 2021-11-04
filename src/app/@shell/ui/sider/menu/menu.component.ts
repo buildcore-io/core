@@ -13,13 +13,13 @@ export class MenuComponent implements OnInit, AfterViewInit {
 
   @ViewChildren(MenuItemDirective) menuItemLabels!: QueryList<MenuItemDirective>;
 
-  constructor(public themeService: ThemeService, private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private themeService: ThemeService, private componentFactoryResolver: ComponentFactoryResolver) { }
 
   ngOnInit() {
     if (!this.menuItemLabels) {
       return
     }
-    
+
     for (const itemLabel of this.menuItemLabels.toArray()) {
       itemLabel.viewContainerRef.clear()
     }
@@ -34,6 +34,10 @@ export class MenuComponent implements OnInit, AfterViewInit {
       const iconComponent = this.componentFactoryResolver.resolveComponentFactory(itemLabel.wenMenuItem?.icon);
       itemLabel.viewContainerRef.createComponent(iconComponent);
     }
+  }
+
+  public get isDarkTheme() {
+    return this.themeService.isDarkTheme()
   }
 
 }

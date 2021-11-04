@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { getItem, setItem, StorageItem } from '@core/utils';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, fromEventPattern, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DEFAULT_BASE_THEME, ThemeList } from './theme.config';
 
@@ -10,7 +10,7 @@ import { DEFAULT_BASE_THEME, ThemeList } from './theme.config';
 })
 export class ThemeService implements OnDestroy {
   destroy$ = new Subject();
-  theme$ = new BehaviorSubject<ThemeList|undefined>(<ThemeList>getItem(StorageItem.Theme));
+  theme$ = new BehaviorSubject<ThemeList | undefined>(<ThemeList>getItem(StorageItem.Theme));
 
   private readonly mediaQuery = window.matchMedia(
     '(prefers-color-scheme: dark)',
@@ -37,11 +37,7 @@ export class ThemeService implements OnDestroy {
     setItem(StorageItem.Theme, theme);
     this.theme$.next(theme);
 
-    let bodyClass = theme;
-    if (theme === ThemeList.System) {
-      bodyClass = theme;
-    }
-    this.document.body.classList.add(bodyClass);
+    this.document.body.classList.add(theme);
   }
 
   /**
@@ -62,12 +58,6 @@ export class ThemeService implements OnDestroy {
       this.mediaQuery.removeListener.bind(this.mediaQuery),
     )
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        // Only applies changes when the current theme is "system"
-        if (this.storedTheme === ThemeList.System) {
-          this.setTheme(ThemeList.System);
-        }
-      });
   }
 
   /**
@@ -88,15 +78,8 @@ export class ThemeService implements OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  getTheme() {
-    return this.storedTheme
-  }
-
   isDarkTheme(): boolean {
-    return this.storedTheme === ThemeList.Dark
-  }
+    return this.theme$.getValue() === ThemeList.Dark
 
-  isLightTheme(): boolean {
-    return this.storedTheme === ThemeList.Light
   }
 }
