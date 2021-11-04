@@ -1,14 +1,22 @@
 <h1 i18n>Discover Soonaverse</h1>
 
-<nz-button-group>
+<nav
+  nz-menu
+  nzMode="horizontal"
+  class="inline-flex items-center h-10 border-b-0 rounded-3xl"
+>
   <a
-    nz-button
-    nzType="default"
-    i18n
     *ngFor="let section of sections"
+    nz-menu-item
+    class="inline-flex items-center h-full font-semibold leading-10 text-current  rounded-3xl"
+    i18n
     [routerLink]="section.route"
-    >{{ section.label }}</a
+    nzMatchRouter
   >
-</nz-button-group>
+    {{ section.label }}
+  </a>
+</nav>
 
-<router-outlet></router-outlet>
+<div class="grid mt-24 place-items-center">
+  <router-outlet></router-outlet>
+</div>

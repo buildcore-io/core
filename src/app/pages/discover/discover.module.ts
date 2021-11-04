@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { DiscoverRoutingModule } from './discover-routing.module';
 import { AwardsPage } from './pages/awards/awards.page';
@@ -17,7 +17,7 @@ import { SpacesPage } from './pages/spaces/spaces.page';
   imports: [
     CommonModule,
     RouterModule,
-    NzButtonModule,
+    NzMenuModule,
     NzTypographyModule,
     DiscoverRoutingModule
   ]
