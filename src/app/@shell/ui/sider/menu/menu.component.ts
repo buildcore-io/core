@@ -20,7 +20,6 @@ export class MenuComponent implements OnInit, AfterViewInit {
     if (!this.menuItemLabels) {
       return
     }
-
     for (const itemLabel of this.menuItemLabels.toArray()) {
       itemLabel.viewContainerRef.clear()
     }

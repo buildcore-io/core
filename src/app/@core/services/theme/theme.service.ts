@@ -78,6 +78,10 @@ export class ThemeService implements OnDestroy {
     this.destroy$.unsubscribe();
   }
 
+  getTheme() {
+    return this.storedTheme
+  }
+
   isDarkTheme(): boolean {
     return this.theme$.getValue() === ThemeList.Dark
 
