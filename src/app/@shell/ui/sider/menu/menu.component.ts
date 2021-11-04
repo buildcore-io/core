@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ComponentFactoryResolver, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ThemeService } from '@core/services/theme';
 import { MenuItem } from './menu-item';
 import { MenuItemDirective } from './menu-item.directive';
@@ -6,7 +6,8 @@ import { MenuItemDirective } from './menu-item.directive';
 @Component({
   selector: 'wen-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.less']
+  styleUrls: ['./menu.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuComponent implements OnInit, AfterViewInit {
   @Input() items: MenuItem[] = []

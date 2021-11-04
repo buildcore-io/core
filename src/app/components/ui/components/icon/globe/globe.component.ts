@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'wen-icon-globe',
   templateUrl: './globe.component.html',
-  styleUrls: ['./globe.component.less']
+  styleUrls: ['./globe.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GlobeIconComponent {}
+export class GlobeIconComponent { }
