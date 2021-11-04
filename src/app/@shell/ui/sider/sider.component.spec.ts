@@ -1,25 +1,28 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ThemeService } from '@core/services/theme';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { MockProvider } from 'ng-mocks';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { SiderComponent } from './sider.component';
-
+import { ThemeSwitchComponent } from './theme-switch/theme-switch.component';
 
 describe('SiderComponent', () => {
-  let component: SiderComponent;
-  let fixture: ComponentFixture<SiderComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ SiderComponent ]
-    })
-    .compileComponents();
+  let spectator: Spectator<SiderComponent>;
+  const createComponent = createRoutingFactory({
+    component: SiderComponent,
+    declarations: [ThemeSwitchComponent],
+    imports: [NzLayoutModule, NzIconModule, NzDropDownModule],
+    providers: [MockProvider(ThemeService)],
+    params: {},
+    data: {}
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SiderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
   });
 });

@@ -13,7 +13,6 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      console.log({ params })
       this.memberId = params['username'];
     });
   }

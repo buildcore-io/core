@@ -24,7 +24,7 @@
         nzSize="large"
         class="mr-1"
       ></nz-avatar>
-      Adam Rich
+      {{(member$ | async)?.uid}}
       <i nz-icon nzType="down" class="font-bold"></i>
     </button>
 

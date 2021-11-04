@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { AuthService } from '../../services/auth.service';
 import { MemberApi } from './../../../../@api/member.api';
+import { MetamaskSignature } from './../../services/auth.service';
 
 @Component({
   templateUrl: './sign-out.component.html',
@@ -31,14 +32,18 @@ export class SignOutComponent {
     return this.authService.member$;
   }
 
-  public editName(name: string): void {
-    console.log(this.member$.value);
+  public async editName(name: string): Promise<void> {
     if (this.member$.value) {
-      this.memberApi.updateMember({
+      const sc: MetamaskSignature|undefined =  await this.authService.signWithMetamask({
         uid: this.member$.value.uid,
         name: name
-      }).subscribe(() => {
-        // TODO Add handling.
+      });
+      if (!sc) {
+        throw new Error('Unable to sign.');
+      }
+
+      this.memberApi.updateMember(sc.token).subscribe(() => {
+        // TODO Cleanup handling.
         this.notification.success('Updated.', '');
       });
     }
