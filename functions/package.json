@@ -33,6 +33,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.2",
+    "firebase": "^9.2.0",
     "firebase-functions-test": "^0.2.3",
     "jest": "^24.9.0",
     "ts-jest": "^24.1.0",

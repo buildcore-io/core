@@ -12,5 +12,9 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm install
       - run: npm run emulate &
+      - name: Sleep for 10s
+        uses: juliangruber/sleep-action@v1
+        with:
+          time: 10s
       - run: npm run test
 
