@@ -1,0 +1,14 @@
+<h1 i18n>Discover Soonaverse</h1>
+
+<nz-button-group>
+  <a
+    nz-button
+    nzType="default"
+    i18n
+    *ngFor="let section of sections"
+    [routerLink]="section.route"
+    >{{ section.label }}</a
+  >
+</nz-button-group>
+
+<router-outlet></router-outlet>

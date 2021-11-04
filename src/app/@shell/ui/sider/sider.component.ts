@@ -16,7 +16,7 @@ export class SiderComponent {
   homeRoute = ROUTER_UTILS.config.base.home
   menuItems = [
     { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent },
-    { route: [ROUTER_UTILS.config.space.root], icon: RocketIconComponent },
+    { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent },
     // TODO - replace with user id given from auth service
     { route: [ROUTER_UTILS.config.member.root, 'adam-rich'], icon: UnamusedIconComponent },
   ]
