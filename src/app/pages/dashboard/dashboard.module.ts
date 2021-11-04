@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { DashboardPage } from './dashboard.page';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { DashboardPage } from './dashboard.page';
         },
       },
     ]),
+    NzButtonModule
   ],
 })
-export class DashboardModule {}
+export class DashboardModule { }

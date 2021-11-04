@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { HomePage } from './home.page';
 
 @NgModule({
@@ -19,6 +20,7 @@ import { HomePage } from './home.page';
         },
       },
     ]),
+    NzButtonModule
   ],
 })
-export class HomeModule {}
+export class HomeModule { }
