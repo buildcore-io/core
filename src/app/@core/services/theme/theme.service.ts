@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { getItem, setItem, StorageItem } from '@core/utils';
-import { fromEventPattern, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DEFAULT_BASE_THEME, ThemeList } from './theme.config';
 
@@ -10,20 +10,13 @@ import { DEFAULT_BASE_THEME, ThemeList } from './theme.config';
 })
 export class ThemeService implements OnDestroy {
   destroy$ = new Subject();
+  theme$ = new BehaviorSubject<ThemeList|undefined>(<ThemeList>getItem(StorageItem.Theme));
 
   private readonly mediaQuery = window.matchMedia(
     '(prefers-color-scheme: dark)',
   );
 
   constructor(@Inject(DOCUMENT) private document: Document) {}
-
-  get systemTheme(): ThemeList.Light | ThemeList.Dark {
-    return this.mediaQuery.matches ? ThemeList.Dark : ThemeList.Light;
-  }
-
-  get storedTheme(): ThemeList {
-    return getItem(StorageItem.Theme) as ThemeList;
-  }
 
   set storedTheme(theme: ThemeList) {
     setItem(StorageItem.Theme, theme);
@@ -34,19 +27,19 @@ export class ThemeService implements OnDestroy {
     this.listenForMediaQueryChanges();
   }
 
-  /**
+  /** themeService.theme$ | async
    * Manually changes theme in LocalStorage & HTML body
    *
    * @param {ThemeList} theme Select theme you want to use.
    */
   setTheme(theme: ThemeList): void {
     this.clearThemes();
-    this.storedTheme = theme;
+    setItem(StorageItem.Theme, theme);
+    this.theme$.next(theme);
 
     let bodyClass = theme;
-
     if (theme === ThemeList.System) {
-      bodyClass = this.systemTheme;
+      bodyClass = theme;
     }
     this.document.body.classList.add(bodyClass);
   }
