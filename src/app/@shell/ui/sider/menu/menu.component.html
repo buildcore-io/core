@@ -2,12 +2,12 @@
   nz-menu
   nzMode="horizontal"
   [nzTheme]="isDarkTheme ? 'dark' : 'light'"
-  class="w-full mt-16 border-b-0"
+  class="flex flex-col items-center w-full gap-5 mt-12 border-b-0"
 >
   <a
     *ngFor="let item of items"
     nz-menu-item
-    class="p-0 text-current"
+    class="w-10 h-10 p-0 text-current rounded-3xl"
     [routerLink]="item.route"
     nzMatchRouter
   >
