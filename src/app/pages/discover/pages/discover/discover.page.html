@@ -1,21 +1,54 @@
 <h1 i18n>Discover Soonaverse</h1>
 
-<nav
-  nz-menu
-  nzMode="horizontal"
-  class="inline-flex items-center h-10 border-b-0 rounded-3xl"
->
-  <a
-    *ngFor="let section of sections"
-    nz-menu-item
-    class="inline-flex items-center h-full font-semibold leading-10 text-current  rounded-3xl"
-    i18n
-    [routerLink]="section.route"
-    nzMatchRouter
+<div class="flex items-center">
+  <nz-input-group
+    nzSize="default"
+    [nzPrefix]="prefixIconSearch"
+    [nzAddOnAfter]="suffixButton"
+    class="mr-8"
+    nzSearch
   >
-    {{ section.label }}
-  </a>
-</nav>
+    <input
+      type="text"
+      nz-input
+      placeholder="Space, awards, proposals or members"
+      class="text-base"
+    />
+  </nz-input-group>
+
+  <ng-template #prefixIconSearch>
+    <i nz-icon nzType="search" class="text-xl"></i>
+  </ng-template>
+
+  <ng-template #suffixButton>
+    <button
+      nz-button
+      nzType="primary"
+      nzSize="small"
+      class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
+      i18n
+    >
+      Search
+    </button>
+  </ng-template>
+
+  <nav
+    nz-menu
+    nzMode="horizontal"
+    class="inline-flex items-center h-10 border-b-0 rounded-3xl"
+  >
+    <a
+      *ngFor="let section of sections"
+      nz-menu-item
+      class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl"
+      i18n
+      [routerLink]="section.route"
+      nzMatchRouter
+    >
+      {{ section.label }}
+    </a>
+  </nav>
+</div>
 
 <div class="grid mt-24 place-items-center">
   <router-outlet></router-outlet>

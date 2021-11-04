@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { DiscoverRoutingModule } from './discover-routing.module';
@@ -19,7 +22,10 @@ import { SpacesPage } from './pages/spaces/spaces.page';
     RouterModule,
     NzMenuModule,
     NzTypographyModule,
-    DiscoverRoutingModule
+    DiscoverRoutingModule,
+    NzInputModule,
+    NzIconModule,
+    NzButtonModule
   ]
 })
 export class DiscoverModule { }
