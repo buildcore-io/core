@@ -1,31 +1,11 @@
-<i
-  nz-icon
-  class="text-xl cursor-pointer"
-  *ngIf="(currentTheme$ | async) === theme.Dark"
-  (click)="onClickChangeTheme(theme.Light)"
->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"
-    />
-  </svg>
-</i>
-
-<i
-  nz-icon
-  class="text-xl cursor-pointer"
-  *ngIf="(currentTheme$ | async)  === theme.Light"
-  (click)="onClickChangeTheme(theme.Dark)"
->
-  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"
-    />
-  </svg>
-</i>
+<div class="relative w-6 h-6 overflow-hidden cursor-pointer rounded-2xl">
+  <div
+    class="absolute flex flex-col justify-between w-full h-16 overflow-visible transition-transform duration-1000 ease-in-out t-0 l-0 wrapper"
+    [ngClass]="{
+      'transform rotate-180': (currentTheme$ | async) === theme.Light
+    }"
+  >
+    <wen-icon-moon (click)="onClickChangeTheme(theme.Light)"> </wen-icon-moon>
+    <wen-icon-sun (click)="onClickChangeTheme(theme.Dark)"> </wen-icon-sun>
+  </div>
+</div>
