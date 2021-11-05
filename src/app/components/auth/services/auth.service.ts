@@ -87,12 +87,19 @@ export class AuthService {
       throw new Error('Unable to sign.');
     }
 
+    // Let's autheticate right the way with just UID.
+    this.member$.next({
+      uid: sc.address
+    });
+    this.isLoggedIn$.next(true);
+
     // Make sure member is created if not exists yet.
     const m: Member|undefined = await firstValueFrom(this.memberApi.createIfNotExists(sc.token));
     if (!m) {
       throw new Error('Unable to create member!');
     }
 
+    // Sent latest version.
     this.member$.next(m);
 
     // Let's make sure we monitor the member.

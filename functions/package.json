@@ -4,10 +4,9 @@
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
     "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only database,functions,firestore,ui",
-    "ci:emulate": "firebase -c ../firebase.json emulators:start --only database,firestore",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "test": "jest test/",
+    "test": "firebase emulators:exec --only database,functions,firestore,ui \"jest test/\"",
     "test:watch": "jest test/ --watch-all --detect-open-handles",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
@@ -20,12 +19,14 @@
     "firebase-admin": "10.0.0",
     "firebase-functions": "3.15.7",
     "lodash": "4.17.21",
+    "uuid": "^8.3.2",
     "web3": "1.6.0",
     "web3-token": "0.1.32"
   },
   "devDependencies": {
     "@types/chai": "4.2.22",
     "@types/lodash": "4.14.176",
+    "@types/uuid": "^8.3.1",
     "@typescript-eslint/eslint-plugin": "5.3.0",
     "@typescript-eslint/parser": "5.3.0",
     "babel-jest": "27.3.1",

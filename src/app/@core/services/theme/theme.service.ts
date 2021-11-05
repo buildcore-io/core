@@ -18,8 +18,8 @@ export class ThemeService implements OnDestroy {
 
   constructor(@Inject(DOCUMENT) private document: Document) { }
 
-  set storedTheme(theme: ThemeList) {
-    setItem(StorageItem.Theme, theme);
+  get storedTheme(): ThemeList {
+    return <ThemeList>getItem(StorageItem.Theme);
   }
 
   init(): void {

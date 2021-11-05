@@ -1,6 +1,4 @@
-import * as admin from 'firebase-admin';
 import { WEN_FUNC } from "../../interfaces/functions";
-import { DOCUMENTS } from "../../interfaces/models/base";
 import { createMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -16,12 +14,10 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
     }));
 
     const wrapped: any = testEnv.wrap(createMember);
-    await wrapped();
-
-    const doc = await admin.firestore().collection(DOCUMENTS.MEMBER).doc(dummyAddress).get();
-    expect(doc.data()?.uid).toEqual(dummyAddress.toLowerCase());
-    expect(doc.data()?.createdOn).toBeDefined();
-    expect(doc.data()?.updatedOn).toBeDefined();
+    const returns = await wrapped();
+    expect(returns?.uid).toEqual(dummyAddress.toLowerCase());
+    expect(returns?.createdOn).toBeDefined();
+    expect(returns?.updatedOn).toBeDefined();
     walletSpy.mockRestore();
   });
 
@@ -42,10 +38,9 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     }));
 
     const wCreate: any = testEnv.wrap(createMember);
-    await wCreate();
+    const doc = await wCreate();
 
-    const doc = await admin.firestore().collection(DOCUMENTS.MEMBER).doc(dummyAddress).get();
-    expect(doc.data()?.uid).toEqual(dummyAddress.toLowerCase());
+    expect(doc?.uid).toEqual(dummyAddress.toLowerCase());
 
     // Let's go ahead and update the member.
     const wUpdate: any = testEnv.wrap(updateMember);
@@ -59,14 +54,11 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
       address: '0xETH',
       body: updateParams
     }));
-    await wUpdate();
-
-    // TODO Get this working.
-    // const doc2 = await admin.firestore().collection(DOCUMENTS.MEMBER).doc(dummyAddress).get();
-    // expect(doc2.data()?.name).toEqual(updateParams.name);
-    // expect(doc2.data()?.linkedIn).toEqual(updateParams.linkedIn);
-    // expect(doc2.data()?.twitter).toEqual(updateParams.twitter);
-    // expect(doc2.data()?.facebook).toEqual(updateParams.facebook);
+    const doc2: any = await wUpdate();
+    expect(doc2?.name).toEqual(updateParams.name);
+    expect(doc2?.linkedIn).toEqual(updateParams.linkedIn);
+    expect(doc2?.twitter).toEqual(updateParams.twitter);
+    expect(doc2?.facebook).toEqual(updateParams.facebook);
 
     walletSpy.mockRestore();
   });

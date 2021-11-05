@@ -61,7 +61,9 @@
                   "ViewChild",
                   "ViewChildren",
                   "Component",
-                  "Inject"
+                  "Inject",
+                  "MockComponent",
+                  "MockProvider"
           ],
           "newIsCap": true,
           "properties": true
