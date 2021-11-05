@@ -6,9 +6,9 @@
     "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only database,functions,firestore,ui",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "test": "firebase emulators:exec --only database,functions,firestore,ui \"jest test/\"",
+    "test": "jest test/",
     "test:watch": "jest test/ --watch-all --detect-open-handles",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "firebase deploy --only functions -f",
     "logs": "firebase functions:log"
   },
   "engines": {
