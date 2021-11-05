@@ -39,6 +39,7 @@
     "eslint-plugin-jsdoc": "^37.0.3",
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-prettier": "4.0.0",
+    "firebase": "^9.3.0",
     "firebase-functions-test": "0.3.3",
     "firebase-tools": "^9.22.0",
     "jest": "27.3.1",
