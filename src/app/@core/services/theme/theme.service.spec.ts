@@ -17,18 +17,6 @@ describe('ThemeService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should set system theme on LocalStorage', () => {
-    service.setTheme(ThemeList.System);
-    expect(service.storedTheme).toBe(ThemeList.System);
-  });
-
-  it('should set system theme on document body', () => {
-    service.setTheme(ThemeList.System);
-    const bodyClasses = document.body.classList;
-    console.log(bodyClasses);
-    expect(bodyClasses.contains(ThemeList.System)).toBeTruthy();
-  });
-
   it('should set light theme on LocalStorage', () => {
     service.setTheme(ThemeList.Light);
     expect(service.storedTheme).toBe(ThemeList.Light);

@@ -4,8 +4,7 @@
       nz-button
       nzType="default"
       nzShape="circle"
-      nzSize="large"
-      class="inline-flex items-center justify-center border-0"
+      class="inline-flex items-center justify-center w-10 h-10 border-0"
     >
       <i nz-icon nzType="bell" class="text-lg"></i>
     </button>
@@ -15,8 +14,9 @@
       nz-dropdown
       nzShape="round"
       nzTrigger="click"
+      nzSize="large"
       [nzDropdownMenu]="userMenu"
-      class="p-2 pr-5 font-bold border-0 h-14"
+      class="inline-flex items-center font-bold border-0"
     >
       <nz-avatar
         nzIcon="user"

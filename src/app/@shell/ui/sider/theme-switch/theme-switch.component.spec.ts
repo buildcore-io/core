@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { IconModule } from './../../../../components/ui/components/icon/icon.module';
 import { ThemeSwitchComponent } from './theme-switch.component';
+
 
 describe('ThemeSwitchComponent', () => {
   let component: ThemeSwitchComponent;
@@ -8,7 +9,8 @@ describe('ThemeSwitchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ThemeSwitchComponent ]
+      declarations: [ ThemeSwitchComponent ],
+      imports: [ IconModule ]
     })
     .compileComponents();
   });

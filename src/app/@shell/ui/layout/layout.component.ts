@@ -8,6 +8,10 @@ import { ThemeService } from '@core/services/theme';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent {
-  constructor(public themeService: ThemeService) {
+  constructor(private themeService: ThemeService) {
+  }
+
+  public get isDarkTheme() {
+    return this.themeService.isDarkTheme()
   }
 }

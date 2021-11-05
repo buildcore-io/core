@@ -1,19 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SunIconComponent } from './sun.component';
 
-import { OverviewPage } from './overview.page';
 
-describe('OverviewPage', () => {
-  let component: OverviewPage;
-  let fixture: ComponentFixture<OverviewPage>;
+describe('SunIconComponent', () => {
+  let component: SunIconComponent;
+  let fixture: ComponentFixture<SunIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [OverviewPage],
-    }).compileComponents();
+      declarations: [ SunIconComponent ]
+    })
+    .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OverviewPage);
+    fixture = TestBed.createComponent(SunIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

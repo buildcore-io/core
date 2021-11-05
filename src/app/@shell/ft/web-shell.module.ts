@@ -26,10 +26,16 @@ const APP_ROUTES: Routes = [
       (await import('@pages/dashboard/dashboard.module')).DashboardModule,
     canLoad: [],
   },
-  {
+  /* {
     path: ROUTER_UTILS.config.settings.root,
     loadChildren: async () =>
       (await import('@pages/settings/settings.module')).SettingsModule,
+    canLoad: [],
+  }, */
+  {
+    path: ROUTER_UTILS.config.discover.root,
+    loadChildren: async () =>
+      (await import('@pages/discover/discover.module')).DiscoverModule,
     canLoad: [],
   },
   {
@@ -67,6 +73,6 @@ const APP_ROUTES: Routes = [
     HeaderModule,
     LayoutModule,
     NotFoundModule,
-  ],
+  ]
 })
-export class WebShellModule {}
+export class WebShellModule { }
