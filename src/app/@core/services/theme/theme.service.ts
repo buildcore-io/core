@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { getItem, setItem, StorageItem } from '@core/utils';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, fromEventPattern, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DEFAULT_BASE_THEME, ThemeList } from './theme.config';
 
@@ -18,8 +18,8 @@ export class ThemeService implements OnDestroy {
 
   constructor(@Inject(DOCUMENT) private document: Document) { }
 
-  set storedTheme(theme: ThemeList) {
-    setItem(StorageItem.Theme, theme);
+  get storedTheme(): ThemeList {
+    return <ThemeList>getItem(StorageItem.Theme);
   }
 
   init(): void {

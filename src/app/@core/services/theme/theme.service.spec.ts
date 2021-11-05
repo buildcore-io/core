@@ -25,7 +25,8 @@ describe('ThemeService', () => {
   it('should set system theme on document body', () => {
     service.setTheme(ThemeList.System);
     const bodyClasses = document.body.classList;
-    expect(bodyClasses.contains(service.systemTheme)).toBeTruthy();
+    console.log(bodyClasses);
+    expect(bodyClasses.contains(ThemeList.System)).toBeTruthy();
   });
 
   it('should set light theme on LocalStorage', () => {
