@@ -1,25 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { DiscoverPage } from './discover.page';
 
-
 describe('DiscoverPage', () => {
-  let component: DiscoverPage;
-  let fixture: ComponentFixture<DiscoverPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ DiscoverPage ]
-    })
-    .compileComponents();
+  let spectator: Spectator<DiscoverPage>;
+  const createComponent = createRoutingFactory({
+    component: DiscoverPage,
+    imports: [ NzInputModule, NzMenuModule, NzLayoutModule ],
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DiscoverPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should have button defined', () => {
+    expect(spectator.query('button')).toBeDefined();
   });
 });

@@ -1,25 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { MenuItemDirective } from './menu-item.directive';
 import { MenuComponent } from './menu.component';
 
 describe('MenuComponent', () => {
-  let component: MenuComponent;
-  let fixture: ComponentFixture<MenuComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ MenuComponent ]
-    })
-    .compileComponents();
+  let spectator: Spectator<MenuComponent>;
+  const createComponent = createRoutingFactory({
+    component: MenuComponent,
+    declarations: [ MenuItemDirective ],
+    imports: [ NzLayoutModule, NzMenuModule ]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MenuComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should have button defined', () => {
+    expect(spectator.query('button')).toBeDefined();
   });
 });

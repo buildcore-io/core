@@ -6,8 +6,6 @@ import { RocketIconComponent } from './rocket/rocket.component';
 import { SunIconComponent } from './sun/sun.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 
-
-
 @NgModule({
   declarations: [
     GlobeIconComponent,
@@ -19,7 +17,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
   exports: [
     GlobeIconComponent,
     RocketIconComponent,
-    UnamusedIconComponent, SunIconComponent,
+    UnamusedIconComponent,
+    SunIconComponent,
     MoonIconComponent
   ],
   imports: [
