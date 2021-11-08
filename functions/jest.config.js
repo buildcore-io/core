@@ -3,7 +3,9 @@ module.exports = {
   testEnvironment: 'node',
   globals: {
     'ts-jest': {
-      diagnostics: false,
+      "diagnostics": {
+        "ignoreCodes": [2571, 6031, 18003]
+      }
     },
   }
 };

@@ -2,6 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export const enum DOCUMENTS {
   MEMBER = "member",
+  SPACE = "space",
   PROPOSAL = "proposal"
 }
 
