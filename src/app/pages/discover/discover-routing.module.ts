@@ -9,7 +9,13 @@ import { SpacesPage } from './pages/spaces/spaces.page';
 
 const routes: Routes = [
   {
-    path: '', component: DiscoverPage,
+    path: '',
+    redirectTo: ROUTER_UTILS.config.discover.spaces,
+    pathMatch: 'full',
+  },
+  {
+    path: '',
+    component: DiscoverPage,
     children: [
       { path: ROUTER_UTILS.config.discover.spaces, component: SpacesPage, },
       { path: ROUTER_UTILS.config.discover.awards, component: AwardsPage, },
