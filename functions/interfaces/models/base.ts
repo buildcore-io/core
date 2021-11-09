@@ -1,9 +1,19 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from 'firebase/firestore';
 
-export const enum DOCUMENTS {
-  MEMBER = "member",
-  SPACE = "space",
-  PROPOSAL = "proposal"
+export const enum COL {
+  MEMBER = 'member',
+  SPACE = 'space',
+  PROPOSAL = 'proposal'
+}
+
+export const enum SPACE_COL {
+  MEMBERS = 'members',
+  GUARDIANS = 'guardians',
+  BLOCKED_MEMBERS = 'blockedMembers'
+}
+
+export const enum AWARD_COL {
+  OWNERS = 'owners'
 }
 
 export type EthAddress = string;
