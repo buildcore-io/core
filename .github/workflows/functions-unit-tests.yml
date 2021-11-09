@@ -16,5 +16,5 @@ jobs:
           node-version: '14'
       - run: npm install
       - run: npm install -g firebase-tools
-      - run: firebase emulators:exec --only database,functions,firestore "npm run test"
+      - run: firebase emulators:exec --only database,functions,firestore "npm run test --ci"
 

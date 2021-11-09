@@ -14,7 +14,7 @@
   "engines": {
     "node": "14"
   },
-  "main": "lib/src/index.js",
+  "main": "lib/functions/index.js",
   "dependencies": {
     "ethers": "^5.5.1",
     "firebase-admin": "10.0.0",
