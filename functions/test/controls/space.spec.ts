@@ -1,3 +1,4 @@
+import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from "../../interfaces/functions";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -45,7 +46,7 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
 
   it('unable to decode token.', async () => {
     const wrapped: any = testEnv.wrap(createSpace);
-    (<any>expect(wrapped())).rejects.toThrow(Error);
+    (<any>expect(wrapped())).rejects.toThrowError(WenError.token_must_be_provided.key);
   });
 });
 
@@ -103,7 +104,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
       body: updateParams
     }));
 
-    (<any>expect(wUpdate())).rejects.toThrow(Error);
+    (<any>expect(wUpdate())).rejects.toThrowError(WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
@@ -118,7 +119,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
       body: updateParams
     }));
 
-    (<any>expect(wUpdate())).rejects.toThrow(Error);
+    (<any>expect(wUpdate())).rejects.toThrowError(WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 
@@ -134,7 +135,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
       body: updateParams
     }));
 
-    (<any>expect(wUpdate())).rejects.toThrow(Error);
+    (<any>expect(wUpdate())).rejects.toThrowError(WenError.space_does_not_exists.key);
     walletSpy.mockRestore();
   });
 });
@@ -185,7 +186,7 @@ describe('SpaceController: member management', () => {
     }));
     const jSpace: any = testEnv.wrap(joinSpace);
     // Unable to join because guardian is already part of it.
-    (<any>expect(jSpace())).rejects.toThrow(Error);
+    (<any>expect(jSpace())).rejects.toThrowError(WenError.you_are_already_part_of_space.key);
   });
 
   it('successfully leave space', async () => {
@@ -229,7 +230,7 @@ describe('SpaceController: member management', () => {
     }));
     // Let's leave space now.
     const lSpace: any = testEnv.wrap(leaveSpace);
-    (<any>expect(lSpace())).rejects.toThrow(Error);
+    (<any>expect(lSpace())).rejects.toThrowError(WenError.at_least_one_guardian_must_be_in_the_space.key);
   });
 
   it('fail to leave space - as only member', async () => {
@@ -241,7 +242,7 @@ describe('SpaceController: member management', () => {
     }));
     // Let's leave space now.
     const lSpace: any = testEnv.wrap(leaveSpace);
-    (<any>expect(lSpace())).rejects.toThrow(Error);
+    (<any>expect(lSpace())).rejects.toThrowError(WenError.at_least_one_member_must_be_in_the_space.key);
   });
 
   it('fail to leave space where Im not in', async () => {
@@ -253,7 +254,7 @@ describe('SpaceController: member management', () => {
     }));
     // Let's leave space now.
     const lSpace: any = testEnv.wrap(leaveSpace);
-    (<any>expect(lSpace())).rejects.toThrow(Error);
+    (<any>expect(lSpace())).rejects.toThrowError(WenError.you_are_not_part_of_the_space.key);
   });
 
   it('make guardian', async () => {
@@ -296,7 +297,7 @@ describe('SpaceController: member management', () => {
 
     // Let's leave space now.
     const aGuardian: any = testEnv.wrap(addGuardian);
-    (<any>expect(aGuardian())).rejects.toThrow(Error);
+    (<any>expect(aGuardian())).rejects.toThrowError(WenError.member_is_not_part_of_the_space.key);
   });
 
   it('fail to make guardian - already is', async () => {
@@ -309,7 +310,7 @@ describe('SpaceController: member management', () => {
     }));
     // Let's leave space now.
     const aGuardian: any = testEnv.wrap(addGuardian);
-    (<any>expect(aGuardian())).rejects.toThrow(Error);
+    (<any>expect(aGuardian())).rejects.toThrowError(WenError.member_is_already_guardian_of_space.key);
   });
 
   it('make guardian and remove', async () => {
@@ -444,7 +445,6 @@ describe('SpaceController: member management', () => {
       }
     }));
     const jSpace2: any = testEnv.wrap(joinSpace);
-    // Unable to join because guardian is already part of it.
-    (<any>expect(jSpace2())).rejects.toThrow(Error);
+    (<any>expect(jSpace2())).rejects.toThrowError(WenError.you_are_not_allowed_to_join_space.key);
   });
 });

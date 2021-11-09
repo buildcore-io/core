@@ -1,4 +1,6 @@
+import { WenError } from './../../interfaces/errors';
 import { ValidationResult } from "joi";
+import { throwArgument } from "./error.utils";
 
 export function pSchema(schema: any, o: any): any {
   // If no schema return null.
@@ -19,6 +21,6 @@ export function pSchema(schema: any, o: any): any {
 
 export function assertValidation(r: ValidationResult): void {
   if (r.error) {
-    throw new Error('Failed validation of the params. ' + JSON.stringify(r.error.details));
+    throw throwArgument('invalid-argument', WenError.invalid_params, JSON.stringify(r.error.details));
   }
 }

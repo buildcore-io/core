@@ -2,9 +2,11 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
+import { WenError } from '../../interfaces/errors';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { DOCUMENTS } from '../../interfaces/models/base';
 import { cOn, uOn } from "../utils/dateTime.utils";
+import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, pSchema } from "../utils/schema.utils";
 import { decodeToken } from "../utils/wallet.utils";
 import { Member } from './../../interfaces/models/member';
@@ -60,7 +62,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.https.onC
 
   let docMember = await admin.firestore().collection(DOCUMENTS.MEMBER).doc(address).get();
   if (!docMember.exists) {
-    throw new Error('Member does not exists');
+    throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
   if (params.body) {

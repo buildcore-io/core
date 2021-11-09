@@ -5,8 +5,10 @@ import { merge } from 'lodash';
 import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
 import { DOCUMENTS } from '../../interfaces/models/base';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
+import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, pSchema } from "../utils/schema.utils";
 import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
 
 function defaultJoiUpdateCreateSchema(): any {
@@ -85,12 +87,12 @@ export const updateSpace: functions.CloudFunction<Space> = functions.https.onCal
   const refSpace: any = admin.firestore().collection(DOCUMENTS.SPACE).doc(params.body.uid);
   let docSpace = await refSpace.get();
   if (!docSpace.exists) {
-    throw new Error('Space does not exists');
+    throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection('guardians').doc(guardian).get()).exists) {
-    throw new Error('You are not a guardian of the space.');
+    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
   if (params.body) {
@@ -117,16 +119,16 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
   const refSpace: any = admin.firestore().collection(DOCUMENTS.SPACE).doc(params.body.uid);
   let docSpace: any;
   if (!(await refSpace.get()).exists) {
-    throw new Error('Space does not exists');
+    throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
   // Validate guardian is an guardian within the space.
   if ((await refSpace.collection('members').doc(owner).get()).exists) {
-    throw new Error('You are already part of the space.');
+    throw throwInvalidArgument(WenError.you_are_already_part_of_space);
   }
 
   if ((await refSpace.collection('blockedMembers').doc(owner).get()).exists) {
-    throw new Error('You are are not allowed to join space.');
+    throw throwInvalidArgument(WenError.you_are_not_allowed_to_join_space);
   }
 
   if (params.body) {
@@ -155,25 +157,25 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall
 
   const refSpace: any = admin.firestore().collection(DOCUMENTS.SPACE).doc(params.body.uid);
   if (!(await refSpace.get()).exists) {
-    throw new Error('Space does not exists');
+    throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection('members').doc(owner).get()).exists) {
-    throw new Error('You are not part of the space.');
+    throw throwInvalidArgument(WenError.you_are_not_part_of_the_space);
   }
 
   const isGuardian: boolean = (await refSpace.collection('guardians').doc(owner).get()).exists;
   // Must be minimum one member.
   const members: any[] = await refSpace.collection('members').listDocuments();
   if (members.length === 1) {
-    throw new Error('At least one member must be in the space.');
+    throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
   // Is last guardian? isGuardian
   const guardians: any[] = await refSpace.collection('guardians').listDocuments();
   if (guardians.length === 1 && isGuardian) {
-    throw new Error('At least one guardian must be in the space.');
+    throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
   }
 
   if (params.body) {
@@ -204,20 +206,20 @@ export const addGuardian: functions.CloudFunction<Space> = functions.https.onCal
   const refSpace: any = admin.firestore().collection(DOCUMENTS.SPACE).doc(params.body.uid);
   let docSpace: any;
   if (!(await refSpace.get()).exists) {
-    throw new Error('Space does not exists');
+    throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection('guardians').doc(guardian).get()).exists) {
-    throw new Error('You are not a guardian of the space.');
+    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
   if (!(await refSpace.collection('members').doc(params.body.member).get()).exists) {
-    throw new Error('Member is not part of the space.');
+    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
   if ((await refSpace.collection('guardians').doc(params.body.member).get()).exists) {
-    throw new Error('Member is already guardian of space.');
+    throw throwInvalidArgument(WenError.member_is_already_guardian_of_space);
   }
 
   if (params.body) {
@@ -246,20 +248,20 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.https.on
 
   const refSpace: any = admin.firestore().collection(DOCUMENTS.SPACE).doc(params.body.uid);
   if (!(await refSpace.get()).exists) {
-    throw new Error('Space does not exists');
+    throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection('guardians').doc(guardian).get()).exists) {
-    throw new Error('You are not a guardian of the space.');
+    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
   if (!(await refSpace.collection('members').doc(params.body.member).get()).exists) {
-    throw new Error('Member is not part of the space.');
+    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
   if (!(await refSpace.collection('guardians').doc(params.body.member).get()).exists) {
-    throw new Error('Member is NOT guardian of space.');
+    throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
   if (params.body) {
@@ -285,21 +287,21 @@ export const blockMember: functions.CloudFunction<Space> = functions.https.onCal
   const refSpace: any = admin.firestore().collection(DOCUMENTS.SPACE).doc(params.body.uid);
   let docSpace: any;
   if (!(await refSpace.get()).exists) {
-    throw new Error('Space does not exists');
+    throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
   const isGuardian: boolean = (await refSpace.collection('guardians').doc(params.body.member).get()).exists;
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection('guardians').doc(guardian).get()).exists) {
-    throw new Error('You are not a guardian of the space.');
+    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
   if (!(await refSpace.collection('members').doc(params.body.member).get()).exists) {
-    throw new Error('Member is not part of the space.');
+    throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
   if ((await refSpace.collection('blockedMembers').doc(params.body.member).get()).exists) {
-    throw new Error('Member is already blocked.');
+    throw throwInvalidArgument(WenError.member_is_already_blocked);
   }
 
   if (params.body) {
@@ -335,16 +337,16 @@ export const unblockMember: functions.CloudFunction<Space> = functions.https.onC
 
   const refSpace: any = admin.firestore().collection(DOCUMENTS.SPACE).doc(params.body.uid);
   if (!(await refSpace.get()).exists) {
-    throw new Error('Space does not exists');
+    throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection('guardians').doc(guardian).get()).exists) {
-    throw new Error('You are not a guardian of the space.');
+    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
   if (!(await refSpace.collection('blockedMembers').doc(params.body.member).get()).exists) {
-    throw new Error('Member is NOT blocked in the space.');
+    throw throwInvalidArgument(WenError.member_is_not_blocked_in_the_space);
   }
 
   if (params.body) {
