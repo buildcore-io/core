@@ -9,6 +9,10 @@ export const enum WEN_FUNC {
   uSpace = "uSpace",
   joinSpace = "joinSpace",
   leaveSpace = "leaveSpace",
+  blockMemberSpace = "blockMemberSpace",
+  unblockMemberSpace = "unblockMemberSpace",
+  addGuardianSpace = "addGuardianSpace",
+  removeGuardianSpace = "removeGuardianSpace",
 
 
   // Award functions
@@ -27,4 +31,9 @@ export interface cMemberNotExists {
 export interface DecodedToken {
   address: string;
   body: any;
+}
+
+export interface StandardResponse {
+  status: 'error'|'success';
+  error?: string;
 }

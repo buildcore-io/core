@@ -1,0 +1,21 @@
+export const WenError = {
+  unknown: { code: 1000, key: 'Unknown error' },
+  invalid_params: { code: 1001, key: 'Params validation failed.' },
+  token_must_be_provided: { code: 2001, key: 'Token must be provided.' },
+  invalid_wallet_address: { code: 2002, key: 'Invalid wallet address.' },
+  failed_to_decode_token: { code: 2003, key: 'Failed to decode the token.' },
+  member_does_not_exists: { code: 2004, key: 'Member does not exists.' },
+  space_does_not_exists: { code: 2005, key: 'Space does not exists.' },
+  you_are_not_guardian_of_space: { code: 2006, key: 'You are not a guardian of the space.' },
+  you_are_already_part_of_space: { code: 2007, key: 'You are already part of the space.' },
+  you_are_not_allowed_to_join_space: { code: 2008, key: 'You are are not allowed to join space.' },
+  you_are_not_part_of_the_space: { code: 2009, key: 'You are not part of the space.' },
+  at_least_one_member_must_be_in_the_space: { code: 2020, key: 'At least one member must be in the space.' },
+  at_least_one_guardian_must_be_in_the_space: { code: 2011, key: 'At least one guardian must be in the space.' },
+  member_is_not_part_of_the_space: { code: 2012, key: 'Member is not part of the space.' },
+  member_is_already_guardian_of_space: { code: 2013, key: 'Member is already guardian of space.' },
+  member_is_not_guardian_of_space: { code: 2014, key: 'Member is not guardian of space.' },
+  member_is_already_blocked: { code: 2015, key: 'Member is already blocked.' },
+  member_is_not_blocked_in_the_space: { code: 2016, key: 'Member is not blocked in the space.' },
+}
+

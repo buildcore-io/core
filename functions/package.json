@@ -3,7 +3,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
-    "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only database,functions,firestore,ui",
+    "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only functions,firestore,ui",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "test": "jest test/",
@@ -16,8 +16,10 @@
   },
   "main": "lib/src/index.js",
   "dependencies": {
+    "ethers": "^5.5.1",
     "firebase-admin": "10.0.0",
     "firebase-functions": "^3.16.0",
+    "joi": "^17.4.2",
     "lodash": "4.17.21",
     "uuid": "^8.3.2",
     "web3": "1.6.0",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@types/chai": "4.2.22",
+    "@types/jest": "^27.0.2",
     "@types/lodash": "4.14.176",
     "@types/uuid": "^8.3.1",
     "@typescript-eslint/eslint-plugin": "5.3.0",
