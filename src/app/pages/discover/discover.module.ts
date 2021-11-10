@@ -11,6 +11,7 @@ import { AwardsPage } from './pages/awards/awards.page';
 import { DiscoverPage } from './pages/discover/discover.page';
 import { MembersPage } from './pages/members/members.page';
 import { SpacesPage } from './pages/spaces/spaces.page';
+import { SpacesModule } from '../../components/spaces/spaces.module';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { SpacesPage } from './pages/spaces/spaces.page';
     DiscoverRoutingModule,
     NzInputModule,
     NzIconModule,
-    NzButtonModule
+    NzButtonModule,
+    SpacesModule
   ]
 })
 export class DiscoverModule { }
