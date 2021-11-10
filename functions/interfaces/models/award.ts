@@ -13,5 +13,6 @@ export interface Award extends BaseRecord {
     ipfsCid: string;
     count: number;
     xp: number;
-  }
+  },
+  issued: number;
 }

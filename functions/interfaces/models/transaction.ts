@@ -10,9 +10,12 @@ export interface VoteTransaction {
   votes: string[];
 }
 
+export interface BadgeTransaction {
+  awardId: string;
+}
+
 export interface Transaction extends BaseRecord {
   type: TransactionType;
-  dateTime: Date;
   member?: string;
-  payload: VoteTransaction[];
+  payload: VoteTransaction|BadgeTransaction;
 }

@@ -5,12 +5,14 @@ import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SPACE_COL } from '../../interfaces/models/base';
-import { Member } from '../../interfaces/models/member';
 import { cOn, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation } from "../utils/schema.utils";
 import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
+import { StandardResponse } from './../../interfaces/functions/index';
+import { Award } from './../../interfaces/models/award';
+import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 
 function defaultJoiUpdateCreateSchema(): any {
   return {
@@ -35,14 +37,14 @@ function defaultJoiUpdateCreateSchema(): any {
   };
 }
 
-export const createAward: functions.CloudFunction<Member> = functions.https.onCall(async (token: string): Promise<Member> => {
+export const createAward: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<Award> => {
   const params: DecodedToken = await decodeToken(token);
   const owner = params.address.toLowerCase();
 
   // We only get random address here that we use as ID.
   const awardAddress: string = getRandomEthAddress();
 
-  const schema: ObjectSchema<Member> = Joi.object(defaultJoiUpdateCreateSchema());
+  const schema: ObjectSchema<Award> = Joi.object(defaultJoiUpdateCreateSchema());
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
@@ -61,6 +63,7 @@ export const createAward: functions.CloudFunction<Member> = functions.https.onCa
     // Document does not exists. We must create the member.
     await refAward.set(cOn(merge(params.body, {
       uid: awardAddress,
+      issued: 0,
       createdBy: owner
     })));
 
@@ -76,5 +79,141 @@ export const createAward: functions.CloudFunction<Member> = functions.https.onCa
 
 
   // Return member.
-  return <Member>docAward.data();
+  return <Award>docAward.data();
 });
+
+export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+  // We must part
+  const params: DecodedToken = await decodeToken(token);
+  const owner = params.address.toLowerCase();
+
+  const schema: ObjectSchema<Award> = Joi.object(({
+      uid: Joi.string().length(ethAddressLength).lowercase().required(),
+      member: Joi.string().length(ethAddressLength).lowercase().required()
+  }));
+  assertValidation(schema.validate(params.body));
+
+  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  let docAward: any;
+  if (!(await refAward.get()).exists) {
+    throw throwInvalidArgument(WenError.award_does_not_exists);
+  }
+
+  if (!(await refAward.collection(SPACE_COL.OWNERS).doc(owner).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_owner_of_the_award);
+  }
+
+  if ((await refAward.collection(SPACE_COL.OWNERS).doc(params.body.member).get()).exists) {
+    throw throwInvalidArgument(WenError.member_is_already_owner_of_space);
+  }
+
+  if (params.body) {
+    await refAward.collection(SPACE_COL.OWNERS).doc(params.body.member).set({
+      uid: params.body.member,
+      createdOn: serverTime()
+    });
+
+    // Load latest
+    docAward = await refAward.collection(SPACE_COL.OWNERS).doc(params.body.member).get();
+  }
+
+  return docAward.data();
+});
+
+export const participate: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+  // We must part
+  const params: DecodedToken = await decodeToken(token);
+  const participant = params.address.toLowerCase();
+
+  const schema: ObjectSchema<Award> = Joi.object(({
+      uid: Joi.string().length(ethAddressLength).lowercase().required()
+  }));
+  assertValidation(schema.validate(params.body));
+
+  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  let docAward: any;
+  if (!(await refAward.get()).exists) {
+    throw throwInvalidArgument(WenError.award_does_not_exists);
+  }
+
+  if ((await refAward.collection(SPACE_COL.PARTICIPANTS).doc(participant).get()).exists) {
+    throw throwInvalidArgument(WenError.member_is_already_participant_of_space);
+  }
+
+  if (params.body) {
+    await refAward.collection(SPACE_COL.PARTICIPANTS).doc(participant).set({
+      uid: participant,
+      createdOn: serverTime()
+    });
+
+    // Load latest
+    docAward = await refAward.collection(SPACE_COL.PARTICIPANTS).doc(participant).get();
+  }
+
+  return docAward.data();
+});
+
+export const approveParticipant: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+  // We must part
+  const params: DecodedToken = await decodeToken(token);
+  const owner = params.address.toLowerCase();
+  const tranId = getRandomEthAddress();
+  const schema: ObjectSchema<Award> = Joi.object(({
+      uid: Joi.string().length(ethAddressLength).lowercase().required(),
+      member: Joi.string().length(ethAddressLength).lowercase().required()
+  }));
+  assertValidation(schema.validate(params.body));
+
+  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  const docAward: Award = refAward.data();
+  let docTran: any;
+  if (!(await refAward.get()).exists) {
+    throw throwInvalidArgument(WenError.award_does_not_exists);
+  }
+
+  if (!(await refAward.collection(SPACE_COL.OWNERS).doc(owner).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_owner_of_the_award);
+  }
+
+  // We reached limit of issued awards.
+  if (docAward.issued === docAward.badge.count) {
+    throw throwInvalidArgument(WenError.no_more_available_badges);
+  }
+
+  if (params.body) {
+    // Member might not be participant of the space, that's fine. we just need to add him.
+    if (!(await refAward.collection(SPACE_COL.PARTICIPANTS).doc(params.body.member).get()).exists) {
+      await refAward.collection(SPACE_COL.PARTICIPANTS).doc(params.body.member).set({
+        uid: params.body.member,
+        createdOn: serverTime()
+      });
+    }
+
+    // Increase count and issue transaction.
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refAward);
+      const newCount = sfDoc.data().issued + 1;
+      transaction.update(refAward, {
+        count: newCount
+      });
+    });
+
+    // Issue badge transaction.
+    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+    await refTran.set(<Transaction>{
+      type: TransactionType.BADGE,
+      uid: params.body.member,
+      member: params.body.member,
+      createdOn: serverTime(),
+      payload: {
+        awardId: params.body.uid
+      }
+    });
+
+    // Load latest
+    docTran = await refTran.get();
+  }
+
+  return docTran.data();
+});
+

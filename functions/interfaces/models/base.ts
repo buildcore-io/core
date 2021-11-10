@@ -4,11 +4,13 @@ export const enum COL {
   MEMBER = 'member',
   AWARD = 'award',
   SPACE = 'space',
-  PROPOSAL = 'proposal'
+  PROPOSAL = 'proposal',
+  TRANSACTION = 'proposal'
 }
 
 export const enum SPACE_COL {
   OWNERS = 'owners',
+  PARTICIPANTS = 'participants',
   MEMBERS = 'members',
   GUARDIANS = 'guardians',
   BLOCKED_MEMBERS = 'blockedMembers'

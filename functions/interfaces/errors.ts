@@ -17,5 +17,10 @@ export const WenError = {
   member_is_not_guardian_of_space: { code: 2014, key: 'Member is not guardian of space.' },
   member_is_already_blocked: { code: 2015, key: 'Member is already blocked.' },
   member_is_not_blocked_in_the_space: { code: 2016, key: 'Member is not blocked in the space.' },
+  you_are_not_owner_of_the_award: { code: 2017, key: 'You are not an owner of the space.' },
+  award_does_not_exists: { code: 2018, key: 'Award does not exists.' },
+  member_is_already_owner_of_space: { code: 2019, key: 'Member is already owner of space.' },
+  member_is_already_participant_of_space: { code: 2020, key: 'Member is already participant of space.' },
+  no_more_available_badges: { code: 2021, key: 'There is no more available badges.' }
 }
 
