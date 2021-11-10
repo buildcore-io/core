@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { SpacesModule } from '@components/spaces/spaces.module';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { AwardsPage } from './pages/awards/awards.page';
 import { DiscoverPage } from './pages/discover/discover.page';
@@ -7,9 +8,16 @@ import { MembersPage } from './pages/members/members.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacesPage } from './pages/spaces/spaces.page';
 
+
 const routes: Routes = [
   {
-    path: '', component: DiscoverPage,
+    path: '',
+    redirectTo: ROUTER_UTILS.config.discover.spaces,
+    pathMatch: 'full',
+  },
+  {
+    path: '',
+    component: DiscoverPage,
     children: [
       { path: ROUTER_UTILS.config.discover.spaces, component: SpacesPage, },
       { path: ROUTER_UTILS.config.discover.awards, component: AwardsPage, },
@@ -20,7 +28,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(routes), SpacesModule],
   exports: [RouterModule]
 })
 export class DiscoverRoutingModule { }

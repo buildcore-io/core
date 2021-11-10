@@ -14,9 +14,12 @@ module.exports = {
       center: true,
       padding: '1.5rem',
     },
-    extends: {
+    extend: {
       color: {
         inherit: 'inherit',
+      },
+      spacing: {
+        75: '18.75rem',
       },
     },
   },
