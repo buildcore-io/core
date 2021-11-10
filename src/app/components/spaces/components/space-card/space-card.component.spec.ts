@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { IconModule } from './../../../../components/ui/components/icon/icon.module';
 import { SpaceCardComponent } from './space-card.component';
+
 
 describe('SpaceCardComponent', () => {
   let component: SpaceCardComponent;
@@ -8,9 +10,10 @@ describe('SpaceCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SpaceCardComponent ]
+      declarations: [SpaceCardComponent],
+      imports: [IconModule, NzAvatarModule]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
