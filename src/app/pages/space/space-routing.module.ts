@@ -4,11 +4,16 @@ import { ROUTER_UTILS } from './../../@core/utils/router.utils';
 import { AwardsPage } from "./pages/awards/awards.page";
 import { FundingPage } from './pages/funding/funding.page';
 import { MembersPage } from "./pages/members/members.page";
+import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from "./pages/proposals/proposals.page";
 import { SpacePage } from "./pages/space/space.page";
 
 const routes: Routes = [
+  {
+    path: ROUTER_UTILS.config.space.newSpace,
+    component: NewPage,
+  },
   {
     path: ROUTER_UTILS.config.space.space,
     component: SpacePage,

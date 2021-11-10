@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { AwardsPage } from './pages/awards/awards.page';
 import { FundingPage } from './pages/funding/funding.page';
 import { MembersPage } from './pages/members/members.page';
+import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
@@ -15,7 +16,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     ProposalsPage,
     AwardsPage,
     FundingPage,
-    MembersPage
+    MembersPage,
+    NewPage
   ],
   imports: [
     CommonModule,

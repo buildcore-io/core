@@ -24,6 +24,7 @@ export const ROUTER_UTILS = {
       // Redirect back to discovery
       root: 'space',
       space: ':spaceId',
+      newSpace: 'new',
       overview: 'overview',
       proposals: 'proposals',
       awards: 'awards',
