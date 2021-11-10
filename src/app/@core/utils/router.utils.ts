@@ -34,6 +34,7 @@ export const ROUTER_UTILS = {
     proposal: {
       // Redirect back to space?!
       root: 'proposal',
+      newProposal: 'new',
       proposal: ':spaceId',
       overview: 'overview',
     },

@@ -1,10 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '../../@core/utils/router.utils';
+import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalPage } from './pages/proposal/proposal.page';
 
 const routes: Routes = [
+  {
+    path: ROUTER_UTILS.config.proposal.newProposal,
+    component: NewPage,
+  },
   {
     path: ROUTER_UTILS.config.proposal.proposal,
     component: ProposalPage,
