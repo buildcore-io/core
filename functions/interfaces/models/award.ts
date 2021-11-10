@@ -7,8 +7,11 @@ export interface Award extends BaseRecord {
     // Owner / from date
     [propName: string]: Date;
   };
-  badges: {
-    // Badge Id / total iXP
-    [propName: string]: number;
+  badge: {
+    name: string;
+    description: string;
+    ipfsCid: string;
+    count: number;
+    xp: number;
   }
 }
