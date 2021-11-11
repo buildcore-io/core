@@ -1,1 +1,73 @@
-<p>new space</p>
+<button nz-button nzSize="small"
+    class="h-10 px-6 mt-14 font-semibold text-blue-600 bg-white border-white hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
+    [routerLink]="urlToSpaces"><i nz-icon nzType="left"></i>Back to Discover</button>
+
+<h1 class="mt-7" i18 n>Add new space</h1>
+
+<div class="py-4" nz-row [nzGutter]="16">
+    <div class="space-y-4" nz-col nzFlex="auto">
+        <nz-card [nzBordered]="false" nzTitle="Space Info">
+            <div class="space-y-4">
+                <input nz-input placeholder="Title" />
+                <textarea nz-input placeholder="Space description" rows="4"></textarea>
+            </div>
+        </nz-card>
+
+        <nz-card [nzBordered]="false" nzTitle="Networking">
+            <div class="space-y-4">
+                <nz-input-group [nzPrefix]="prefixGithub">
+                    <input type="text" nz-input placeholder="Link to your Github account" />
+                    <ng-template #prefixGithub>
+                        <i nz-icon nzType="github"></i>
+                    </ng-template>
+                </nz-input-group>
+
+                <nz-input-group [nzPrefix]="prefixTwitter">
+                    <input type="text" nz-input placeholder="Link to your Twitter account" />
+                    <ng-template #prefixTwitter>
+                        <i nz-icon nzType="twitter"></i>
+                    </ng-template>
+                </nz-input-group>
+
+                <nz-input-group [nzPrefix]="prefixLinkedin">
+                    <input type="text" nz-input placeholder="Link to your LinkedIn account" />
+                    <ng-template #prefixLinkedin>
+                        <i nz-icon nzType="linkedin"></i>
+                    </ng-template>
+                </nz-input-group>
+            </div>
+        </nz-card>
+    </div>
+
+    <div class="space-y-4" nz-col nzFlex="300px">
+        <nz-card [nzBordered]="false">
+            <nz-card-meta nzTitle="Avatar" nzDescription="Set a display name. This does not change your username.">
+            </nz-card-meta>
+
+            <div class="mt-4">
+                <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false">
+                    <ng-container>
+                        <i class="upload-icon" nz-icon nzType="upload"></i>
+                    </ng-container>
+                </nz-upload>
+            </div>
+        </nz-card>
+
+        <nz-card [nzBordered]="false">
+            <nz-card-meta nzTitle="Banner" nzDescription="Set a display name. This does not change your username.">
+            </nz-card-meta>
+
+            <div class="mt-6">
+                <nz-upload nzName="banner" nzType="drag">
+                    <ng-container>
+                        <i class="upload-icon" nz-icon nzType="upload"></i>
+                    </ng-container>
+                </nz-upload>
+            </div>
+        </nz-card>
+    </div>
+</div>
+
+<button nz-button nzType="primary" nzSize="small"
+    class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
+    i18n>Create space</button>

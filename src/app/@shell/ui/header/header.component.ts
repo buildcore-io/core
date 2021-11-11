@@ -23,6 +23,10 @@ export class HeaderComponent {
     return this.authService.member$;
   }
 
+  public get urlToNewSpace(): string {
+    return '/' + ROUTER_UTILS.config.space.root + '/new';
+  }
+
   onClickSignOut(): void {
     this.authService.signOut();
   }
