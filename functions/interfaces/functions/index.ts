@@ -17,8 +17,9 @@ export const enum WEN_FUNC {
 
   // Award functions
   cAward = "cAward",
-  aAward = "aAward", // Approve
+  addOwnerAward = "addOwnerAward",
   participateAward = "participateAward",
+  aAward = "aAward", // Approve.
 
   cProposal = "cProposal",
   aProposal = "aProposal", // Approve
