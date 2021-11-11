@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
-import { COL, SPACE_COL } from '../../interfaces/models/base';
+import { COL, SUB_COL } from '../../interfaces/models/base';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, pSchema } from "../utils/schema.utils";
@@ -49,12 +49,12 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
     })));
 
     // Add Guardians.
-    await refSpace.collection(SPACE_COL.GUARDIANS).doc(owner).set({
+    await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).set({
       uid: owner,
       createdOn: serverTime()
     });
 
-    await refSpace.collection(SPACE_COL.MEMBERS).doc(owner).set({
+    await refSpace.collection(SUB_COL.MEMBERS).doc(owner).set({
       uid: owner,
       createdOn: serverTime()
     });
@@ -65,9 +65,9 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
 
   // Return member.
   const membersOut: any = {};
-  membersOut[owner] = (await refSpace.collection(SPACE_COL.MEMBERS).doc(owner).get()).data();
+  membersOut[owner] = (await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).data();
   const guardiansOut: any = {};
-  guardiansOut[owner] = (await refSpace.collection(SPACE_COL.GUARDIANS).doc(owner).get()).data();
+  guardiansOut[owner] = (await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).data();
   return merge(<Space>docSpace.data(), {
     guardians: guardiansOut,
     members: membersOut
@@ -91,7 +91,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.https.onCal
   }
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SPACE_COL.GUARDIANS).doc(guardian).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
@@ -123,22 +123,22 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
   }
 
   // Validate guardian is an guardian within the space.
-  if ((await refSpace.collection(SPACE_COL.MEMBERS).doc(owner).get()).exists) {
+  if ((await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_already_part_of_space);
   }
 
-  if ((await refSpace.collection(SPACE_COL.BLOCKED_MEMBERS).doc(owner).get()).exists) {
+  if ((await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_allowed_to_join_space);
   }
 
   if (params.body) {
-    await refSpace.collection(SPACE_COL.MEMBERS).doc(owner).set({
+    await refSpace.collection(SUB_COL.MEMBERS).doc(owner).set({
       uid: owner,
       createdOn: serverTime()
     });
 
     // Load latest
-    docSpace = await refSpace.collection(SPACE_COL.MEMBERS).doc(owner).get();
+    docSpace = await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get();
   }
 
   // Return member.
@@ -161,29 +161,29 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall
   }
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SPACE_COL.MEMBERS).doc(owner).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_the_space);
   }
 
-  const isGuardian: boolean = (await refSpace.collection(SPACE_COL.GUARDIANS).doc(owner).get()).exists;
+  const isGuardian: boolean = (await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists;
   // Must be minimum one member.
-  const members: any[] = await refSpace.collection(SPACE_COL.MEMBERS).listDocuments();
+  const members: any[] = await refSpace.collection(SUB_COL.MEMBERS).listDocuments();
   if (members.length === 1) {
     throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
   // Is last guardian? isGuardian
-  const guardians: any[] = await refSpace.collection(SPACE_COL.GUARDIANS).listDocuments();
+  const guardians: any[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
   if (guardians.length === 1 && isGuardian) {
     throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
   }
 
   if (params.body) {
-    await refSpace.collection(SPACE_COL.MEMBERS).doc(owner).delete();
+    await refSpace.collection(SUB_COL.MEMBERS).doc(owner).delete();
 
     // If this member is always guardian he must be removed.
     if (isGuardian) {
-      await refSpace.collection(SPACE_COL.GUARDIANS).doc(owner).delete();
+      await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).delete();
     }
   }
 
@@ -210,26 +210,26 @@ export const addGuardian: functions.CloudFunction<Space> = functions.https.onCal
   }
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SPACE_COL.GUARDIANS).doc(guardian).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
-  if (!(await refSpace.collection(SPACE_COL.MEMBERS).doc(params.body.member).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
-  if ((await refSpace.collection(SPACE_COL.GUARDIANS).doc(params.body.member).get()).exists) {
+  if ((await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_already_guardian_of_space);
   }
 
   if (params.body) {
-    await refSpace.collection(SPACE_COL.GUARDIANS).doc(params.body.member).set({
+    await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).set({
       uid: params.body.member,
       createdOn: serverTime()
     });
 
     // Load latest
-    docSpace = await refSpace.collection(SPACE_COL.GUARDIANS).doc(params.body.member).get();
+    docSpace = await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get();
   }
 
   return docSpace.data();
@@ -252,20 +252,20 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.https.on
   }
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SPACE_COL.GUARDIANS).doc(guardian).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
-  if (!(await refSpace.collection(SPACE_COL.MEMBERS).doc(params.body.member).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
-  if (!(await refSpace.collection(SPACE_COL.GUARDIANS).doc(params.body.member).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
   if (params.body) {
-    await refSpace.collection(SPACE_COL.GUARDIANS).doc(params.body.member).delete();
+    await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
   }
 
   return {
@@ -290,35 +290,35 @@ export const blockMember: functions.CloudFunction<Space> = functions.https.onCal
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
-  const isGuardian: boolean = (await refSpace.collection(SPACE_COL.GUARDIANS).doc(params.body.member).get()).exists;
+  const isGuardian: boolean = (await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get()).exists;
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SPACE_COL.GUARDIANS).doc(guardian).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
-  if (!(await refSpace.collection(SPACE_COL.MEMBERS).doc(params.body.member).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
-  if ((await refSpace.collection(SPACE_COL.BLOCKED_MEMBERS).doc(params.body.member).get()).exists) {
+  if ((await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_already_blocked);
   }
 
   if (params.body) {
-    await refSpace.collection(SPACE_COL.BLOCKED_MEMBERS).doc(params.body.member).set({
+    await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).set({
       uid: params.body.member,
       createdOn: serverTime()
     });
 
-    await refSpace.collection(SPACE_COL.MEMBERS).doc(params.body.member).delete();
+    await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).delete();
 
     // If this member is always guardian he must be removed.
     if (isGuardian) {
-      await refSpace.collection(SPACE_COL.GUARDIANS).doc(params.body.member).delete();
+      await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
     }
 
     // Load latest
-    docSpace = await refSpace.collection(SPACE_COL.BLOCKED_MEMBERS).doc(params.body.member).get();
+    docSpace = await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).get();
   }
 
   return docSpace.data();
@@ -341,16 +341,16 @@ export const unblockMember: functions.CloudFunction<Space> = functions.https.onC
   }
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SPACE_COL.GUARDIANS).doc(guardian).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
-  if (!(await refSpace.collection(SPACE_COL.BLOCKED_MEMBERS).doc(params.body.member).get()).exists) {
+  if (!(await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_blocked_in_the_space);
   }
 
   if (params.body) {
-    await refSpace.collection(SPACE_COL.BLOCKED_MEMBERS).doc(params.body.member).delete();
+    await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).delete();
   }
 
   return {

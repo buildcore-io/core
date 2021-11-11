@@ -8,7 +8,7 @@ export const enum COL {
   TRANSACTION = 'proposal'
 }
 
-export const enum SPACE_COL {
+export const enum SUB_COL {
   OWNERS = 'owners',
   PARTICIPANTS = 'participants',
   MEMBERS = 'members',

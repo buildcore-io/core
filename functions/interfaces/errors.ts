@@ -21,6 +21,9 @@ export const WenError = {
   award_does_not_exists: { code: 2018, key: 'Award does not exists.' },
   member_is_already_owner_of_space: { code: 2019, key: 'Member is already owner of space.' },
   member_is_already_participant_of_space: { code: 2020, key: 'Member is already participant of space.' },
-  no_more_available_badges: { code: 2021, key: 'There is no more available badges.' }
+  no_more_available_badges: { code: 2021, key: 'There is no more available badges.' },
+  proposal_does_not_exists: { code: 2022, key: 'Proposal does not exist.' },
+  you_are_not_owner_of_proposal: { code: 2023, key: 'You are not an owner of the proposal.' },
+  proposal_is_already_approved: { code: 2024, key: 'You are not an owner of the proposal.' },
 }
 

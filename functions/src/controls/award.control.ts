@@ -2,9 +2,9 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from "joi";
-import { merge } from 'lodash';
+import { merge, round } from 'lodash';
 import { DecodedToken } from '../../interfaces/functions/index';
-import { COL, SPACE_COL } from '../../interfaces/models/base';
+import { COL, SUB_COL } from '../../interfaces/models/base';
 import { cOn, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation } from "../utils/schema.utils";
@@ -31,8 +31,15 @@ function defaultJoiUpdateCreateSchema(): any {
       }).required(),
       // Let's keep everything within 1Mi for now.
       count: Joi.number().min(0).max(1000).required(),
-      // Let's CAP at 100 XP per badge for now.
-      xp: Joi.number().min(0).max(1000).required()
+      // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
+      xp: Joi.number().min(0).max(1000).custom((value) => {
+        // Validate value is dividable by count.
+        if (value === 0 || (value % <any>Joi.ref('count')) == 0) {
+          return true;
+        } else {
+          return true;
+        }
+      }).required()
     }).required()
   };
 }
@@ -60,7 +67,7 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
   const refAward: any = admin.firestore().collection(COL.AWARD).doc(awardAddress);
   let docAward = await refAward.get();
   if (!docAward.exists) {
-    // Document does not exists. We must create the member.
+    // Document does not exists.
     await refAward.set(cOn(merge(params.body, {
       uid: awardAddress,
       issued: 0,
@@ -68,7 +75,7 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
     })));
 
     // Add Owner.
-    await refAward.collection(SPACE_COL.OWNERS).doc(owner).set({
+    await refAward.collection(SUB_COL.OWNERS).doc(owner).set({
       uid: owner,
       createdOn: serverTime()
     });
@@ -99,22 +106,22 @@ export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(a
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
 
-  if (!(await refAward.collection(SPACE_COL.OWNERS).doc(owner).get()).exists) {
+  if (!(await refAward.collection(SUB_COL.OWNERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_owner_of_the_award);
   }
 
-  if ((await refAward.collection(SPACE_COL.OWNERS).doc(params.body.member).get()).exists) {
+  if ((await refAward.collection(SUB_COL.OWNERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_already_owner_of_space);
   }
 
   if (params.body) {
-    await refAward.collection(SPACE_COL.OWNERS).doc(params.body.member).set({
+    await refAward.collection(SUB_COL.OWNERS).doc(params.body.member).set({
       uid: params.body.member,
       createdOn: serverTime()
     });
 
     // Load latest
-    docAward = await refAward.collection(SPACE_COL.OWNERS).doc(params.body.member).get();
+    docAward = await refAward.collection(SUB_COL.OWNERS).doc(params.body.member).get();
   }
 
   return docAward.data();
@@ -136,18 +143,18 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
 
-  if ((await refAward.collection(SPACE_COL.PARTICIPANTS).doc(participant).get()).exists) {
+  if ((await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_already_participant_of_space);
   }
 
   if (params.body) {
-    await refAward.collection(SPACE_COL.PARTICIPANTS).doc(participant).set({
+    await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).set({
       uid: participant,
       createdOn: serverTime()
     });
 
     // Load latest
-    docAward = await refAward.collection(SPACE_COL.PARTICIPANTS).doc(participant).get();
+    docAward = await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).get();
   }
 
   return docAward.data();
@@ -165,36 +172,36 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
   assertValidation(schema.validate(params.body));
 
   const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
-  const docAward: Award = refAward.data();
+  const docAward: any = await refAward.get();
   let docTran: any;
-  if (!(await refAward.get()).exists) {
+  if (!docAward.exists) {
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
 
-  if (!(await refAward.collection(SPACE_COL.OWNERS).doc(owner).get()).exists) {
+  if (!(await refAward.collection(SUB_COL.OWNERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_owner_of_the_award);
   }
 
   // We reached limit of issued awards.
-  if (docAward.issued === docAward.badge.count) {
+  if (docAward.data().issued >= docAward.data().badge.count) {
     throw throwInvalidArgument(WenError.no_more_available_badges);
   }
 
   if (params.body) {
     // Member might not be participant of the space, that's fine. we just need to add him.
-    if (!(await refAward.collection(SPACE_COL.PARTICIPANTS).doc(params.body.member).get()).exists) {
-      await refAward.collection(SPACE_COL.PARTICIPANTS).doc(params.body.member).set({
+    if (!(await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).get()).exists) {
+      await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).set({
         uid: params.body.member,
         createdOn: serverTime()
       });
     }
 
-    // Increase count and issue transaction.
+    // Increase count via transaction.
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refAward);
       const newCount = sfDoc.data().issued + 1;
       transaction.update(refAward, {
-        count: newCount
+        issued: newCount
       });
     });
 
@@ -206,7 +213,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
       member: params.body.member,
       createdOn: serverTime(),
       payload: {
-        awardId: params.body.uid
+        awardId: params.body.uid,
+        xp: round(docAward.data().badge.xp / docAward.data().badge.count)
       }
     });
 

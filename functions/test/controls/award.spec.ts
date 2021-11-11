@@ -2,7 +2,7 @@ import { WEN_FUNC } from "../../interfaces/functions";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
-import { addOwner, createAward, participate } from './../../src/controls/award.control';
+import { addOwner, approveParticipant, createAward, participate } from './../../src/controls/award.control';
 import { createMember } from './../../src/controls/member.control';
 import { createSpace } from './../../src/controls/space.control';
 
@@ -313,6 +313,103 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
       const wrapped: any = testEnv.wrap(participate);
       (<any>expect(wrapped())).rejects.toThrowError(WenError.award_does_not_exists.key);
+      walletSpy.mockRestore();
+    });
+
+    it('Participate and assign badge', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: award.uid
+        }
+      }));
+
+      const wrapped: any = testEnv.wrap(participate);
+      const returns = await wrapped();
+      expect(returns?.uid).toBeDefined();
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid,
+          member: memberAddress2
+        }
+      }));
+
+      const wrapped2: any = testEnv.wrap(approveParticipant);
+      const returns2 = await wrapped2();
+      expect(returns2?.uid).toBeDefined();
+      expect(returns2?.payload).toBeDefined();
+      expect(returns2?.payload.awardId).toEqual(award.uid);
+
+      // Let's approve by admin.
+      walletSpy.mockRestore();
+    });
+
+
+    it('Assign badge without being participant', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid,
+          member: memberAddress2
+        }
+      }));
+
+      const wrapped2: any = testEnv.wrap(approveParticipant);
+      const returns2 = await wrapped2();
+      expect(returns2?.uid).toBeDefined();
+      expect(returns2?.payload).toBeDefined();
+      expect(returns2?.payload.awardId).toEqual(award.uid);
+
+      // Let's approve by admin.
+      walletSpy.mockRestore();
+    });
+
+    it('Failed to assign badge since its consumed', async () => {
+      // First badge.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid,
+          member: memberAddress2
+        }
+      }));
+
+      const wrapped2: any = testEnv.wrap(approveParticipant);
+      const returns2 = await wrapped2();
+      expect(returns2?.uid).toBeDefined();
+      expect(returns2?.payload).toBeDefined();
+      expect(returns2?.payload.awardId).toEqual(award.uid);
+
+      // Second badge.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid,
+          member: wallet.getRandomEthAddress()
+        }
+      }));
+
+      const wrapped3: any = testEnv.wrap(approveParticipant);
+      const returns3 = await wrapped3();
+      expect(returns3?.uid).toBeDefined();
+      expect(returns3?.payload).toBeDefined();
+      expect(returns3?.payload.awardId).toEqual(award.uid);
+
+
+      // Fails no enoguh.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid,
+          member: wallet.getRandomEthAddress()
+        }
+      }));
+
+      const wrapped4: any = testEnv.wrap(approveParticipant);
+      (<any>expect(wrapped4())).rejects.toThrowError(WenError.no_more_available_badges.key);
+
+      // Let's approve by admin.
       walletSpy.mockRestore();
     });
   });
