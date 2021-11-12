@@ -23,12 +23,6 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
-      }
-    ],
-    "redirects": [
-      {
-        "source": "/index.html",
         "destination": "/maintenance.html",
         "type": 307
       }
