@@ -209,7 +209,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
     await refTran.set(<Transaction>{
       type: TransactionType.BADGE,
-      uid: params.body.member,
+      uid: getRandomEthAddress(),
       member: params.body.member,
       createdOn: serverTime(),
       payload: {
