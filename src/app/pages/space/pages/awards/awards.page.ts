@@ -11,6 +11,7 @@ export class AwardsPage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
 }

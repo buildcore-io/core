@@ -11,6 +11,7 @@ export class FundingPage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
 }

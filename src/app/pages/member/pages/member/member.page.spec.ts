@@ -1,11 +1,11 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { ProfilePage } from './profile.page';
+import { MemberPage } from './member.page';
 
 
-describe('ProfilePage', () => {
-  let spectator: Spectator<ProfilePage>;
+describe('MemberPage', () => {
+  let spectator: Spectator<MemberPage>;
   const createComponent = createRoutingFactory({
-    component: ProfilePage,
+    component: MemberPage,
     params: {},
     data: {}
   });

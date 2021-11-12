@@ -8,8 +8,11 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 })
 export class NewPage implements OnInit {
 
-  constructor() { }
+  constructor() {
+    // Empty.
+  }
 
   ngOnInit(): void {
+    // Empty.
   }
 }

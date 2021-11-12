@@ -11,6 +11,7 @@ export class ProposalsPage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
 }

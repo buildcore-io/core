@@ -11,6 +11,7 @@ export class MembersPage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
 }

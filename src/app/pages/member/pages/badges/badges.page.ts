@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'wen-overview',
-  templateUrl: './overview.page.html',
-  styleUrls: ['./overview.page.less'],
+  selector: 'wen-badges',
+  templateUrl: './badges.page.html',
+  styleUrls: ['./badges.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OverviewPage implements OnInit {
+export class BadgesPage implements OnInit {
 
   constructor() { }
 
   ngOnInit(): void {
-    // none.
   }
 
 }

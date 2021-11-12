@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SpacesModule } from '@components/spaces/spaces.module';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { AwardsPage } from './pages/awards/awards.page';
 import { DiscoverPage } from './pages/discover/discover.page';
@@ -28,7 +27,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes), SpacesModule],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class DiscoverRoutingModule { }

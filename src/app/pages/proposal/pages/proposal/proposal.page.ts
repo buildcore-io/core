@@ -11,6 +11,7 @@ export class ProposalPage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
   public get urlToSpaces(): string {

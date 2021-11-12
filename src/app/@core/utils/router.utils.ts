@@ -18,7 +18,11 @@ export const ROUTER_UTILS = {
     member: {
       // Redirect back to discovery
       root: 'member',
-      profile: ':memberId',
+      member: ':memberId',
+      activity: 'activity',
+      awards: 'awards',
+      badges: 'badges',
+      yield: 'yield',
     },
     space: {
       // Redirect back to discovery

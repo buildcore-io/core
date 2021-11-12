@@ -12,6 +12,7 @@ export class NewPage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
   public get urlToSpaces(): string {

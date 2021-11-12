@@ -1,0 +1,25 @@
+<div class="w-auto -mx-8 overflow-hidden h-96 bor rounded-2xl">
+  <button nz-button nzSize="small"
+    class="absolute top-0 h-10 px-6 mx-10 font-semibold text-blue-600 bg-white border-white left-14 mt-11 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
+    [routerLink]="urlToMembers"><i nz-icon nzType="left"></i>Back to Discover</button>
+</div>
+
+<div class="relative py-12">
+
+  <div nz-col nzFlex="auto">
+    <h1 i18n>Member</h1>
+
+    <nav nz-menu nzMode="horizontal" class="inline-flex items-center h-10 border-b-0 rounded-3xl">
+      <a *ngFor="let section of sections" nz-menu-item
+        class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl" i18n
+        [routerLink]="section.route" nzMatchRouter>
+        {{ section.label }}
+      </a>
+    </nav>
+
+    <div class="w-full py-12">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+</div>

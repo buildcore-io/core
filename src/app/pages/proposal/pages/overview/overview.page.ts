@@ -10,6 +10,7 @@ export class OverviewPage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
 }

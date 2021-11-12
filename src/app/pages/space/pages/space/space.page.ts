@@ -16,6 +16,7 @@ export class SpacePage implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // none.
   }
 
   public get urlToSpaces(): string {
@@ -30,14 +31,5 @@ export class SpacePage implements OnInit {
     { route: 'members', label: 'Members' }
   ]
 
-  space = [
-    { id: 1, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken, link: 'link Github' },
-    { id: 2, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken, link: 'link Github' },
-    { id: 3, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken, link: 'link Github' },
-    { id: 4, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken, link: 'link Github' },
-    { id: 5, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken, link: 'link Github' },
-    { id: 6, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken, link: 'link Github' },
-    { id: 7, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken, link: 'link Github' },
-    { id: 8, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken, link: 'link Github' },
-  ]
+  space = { id: 1, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken, link: 'link Github' };
 }

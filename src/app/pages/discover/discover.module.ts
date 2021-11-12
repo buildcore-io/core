@@ -6,12 +6,13 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { SpacesModule } from '../../components/spaces/spaces.module';
+import { MembersModule } from './../../components/members/members.module';
 import { DiscoverRoutingModule } from './discover-routing.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { DiscoverPage } from './pages/discover/discover.page';
 import { MembersPage } from './pages/members/members.page';
 import { SpacesPage } from './pages/spaces/spaces.page';
-import { SpacesModule } from '../../components/spaces/spaces.module';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { SpacesModule } from '../../components/spaces/spaces.module';
     NzInputModule,
     NzIconModule,
     NzButtonModule,
-    SpacesModule
+    SpacesModule,
+    MembersModule
   ]
 })
 export class DiscoverModule { }
