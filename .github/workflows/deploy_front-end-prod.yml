@@ -13,7 +13,7 @@ jobs:
       - run: npm install
       - run: npm run build
       # enable maintenance mode.
-      - uses: Enable maintenance mode
+      - name: Enable maintenance mode
         run: |
           cd dist/soonaverse
           # Remove all other files.
