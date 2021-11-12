@@ -15,11 +15,11 @@ jobs:
       # enable maintenance mode.
       - uses: Enable maintenance mode
       - run: |
-        cd dist/soonaverse
-        # Remove all other files.
-        ls | grep -v maintenance.html | xargs rm
-        rm -fR assets
-        mv maintenance.html index.html
+          cd dist/soonaverse
+          # Remove all other files.
+          ls | grep -v maintenance.html | xargs rm
+          rm -fR assets
+          mv maintenance.html index.html
       # End of maintenance mode.
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
