@@ -21,121 +21,35 @@
 
   </div>
 
-  <div class="space-y-4 bg-white h-screen -mr-5 rounded-l-3xl pt-32 text-center" nz-col nzFlex="400px">
+  <div class="h-screen pt-32 -mr-5 space-y-4 text-center bg-white rounded-l-3xl" nz-col nzFlex="400px">
 
     <nz-avatar [nzSize]="124" nzIcon="user"></nz-avatar>
-    <div class="flex justify-center items-baseline">
-      <h2>@ {{ memberId }}</h2>
-      <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="open()"
-        class="ml-4 bg-blue-600 border-blue-600 text-current rounded-3xl text-center">
-        <i nz-icon class=" text-white" nzType="edit"></i>
+    <div class="flex items-baseline justify-center">
+      <h2>@ {{ memberId | truncate:[12] }}</h2>
+      <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
+        class="ml-4 text-center text-current bg-blue-600 border-blue-600 rounded-3xl">
+        <i nz-icon class="text-white " nzType="edit"></i>
       </a>
-      <nz-drawer [nzVisible]="visible" nzPlacement="right" nzTitle="Settings" (nzOnClose)="close()" [nzWidth]="500"
-        [nzClosable]="true">
-        <ng-container *nzDrawerContent>
-
-          <!-- TODO MOVE TO SETTINGS CONTAINER -->
-          <form nz-form nzLayout="vertical">
-            <nz-form-item>
-              <nz-form-label>Display Name</nz-form-label>
-              <span nz-typography>Set a display name. This does not change your username.</span>
-              <nz-form-control>
-                <nz-input-group [nzPrefix]="prefixName">
-                  <input nz-input placeholder="Display name (optional)" />
-                  <ng-template #prefixName>@</ng-template>
-                </nz-input-group>
-              </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item>
-              <nz-form-label>About</nz-form-label>
-              <span nz-typography>A brief description of yourself shown on your profile.</span>
-              <nz-form-control>
-                <textarea nz-input placeholder="Your description (optional)" rows="4"></textarea>
-              </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item>
-              <nz-form-label>Avatar</nz-form-label>
-              <span nz-typography>Customise your Soonaverse identity.</span>
-              <nz-form-control>
-                <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false">
-                  <ng-container>
-                    <i class="upload-icon" nz-icon nzType="upload"></i>
-                  </ng-container>
-                </nz-upload>
-              </nz-form-control>
-            </nz-form-item>
-
-
-            <div class="space-y-4">
-              <nz-form-label>Networking</nz-form-label>
-              <nz-form-item>
-                <nz-form-control>
-                  <nz-input-group [nzPrefix]="prefixGithub">
-                    <input type="text" nz-input placeholder="Link to your Github account" />
-                    <ng-template #prefixGithub>
-                      <i nz-icon nzType="github"></i>
-                    </ng-template>
-                  </nz-input-group>
-                </nz-form-control>
-              </nz-form-item>
-
-              <nz-form-item>
-                <nz-form-control>
-                  <nz-input-group [nzPrefix]="prefixTwitter">
-                    <input type="text" nz-input placeholder="Link to your Twitter account" />
-                    <ng-template #prefixTwitter>
-                      <i nz-icon nzType="twitter"></i>
-                    </ng-template>
-                  </nz-input-group>
-                </nz-form-control>
-              </nz-form-item>
-
-              <nz-form-item>
-                <nz-form-control>
-                  <nz-input-group [nzPrefix]="prefixLinkedin">
-                    <input type="text" nz-input placeholder="Link to your LinkedIn account" />
-                    <ng-template #prefixLinkedin>
-                      <i nz-icon nzType="linkedin"></i>
-                    </ng-template>
-                  </nz-input-group>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-          </form>
-
-        </ng-container>
-      </nz-drawer>
+      <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()"></wen-member-edit-drawer>
     </div>
-    <p nz-typography nzType="secondary">
-      Senior Sales Manager @Wealth Management
+
+    <p nz-typography nzType="secondary" *ngIf="(member$ | async)?.about">
+      {{(member$ | async)!.about}}
     </p>
 
     <div class="space-x-4">
-      <i nz-icon nzType="github" nzTheme="outline"></i>
-      <i nz-icon nzType="twitter" nzTheme="outline"></i>
-      <i nz-icon nzType="linkedin" nzTheme="outline"></i>
+      <a [href]="(member$ | async)!.github" *ngIf="(member$ | async)?.github" target="_new"><i nz-icon nzType="github" nzTheme="outline"></i></a>
+      <a [href]="(member$ | async)!.twitter" *ngIf="(member$ | async)?.twitter" target="_new"><i nz-icon nzType="twitter" nzTheme="outline"></i></a>
+      <a [href]="(member$ | async)!.linkedIn" *ngIf="(member$ | async)?.linkedIn" target="_new"><i nz-icon nzType="linkedIn" nzTheme="outline"></i></a>
     </div>
 
-    <div class="space-x-4 flex justify-center">
-      <nz-card class="statistic-card" nzSize="small">
-        <nz-statistic [nzValue]="12" [nzTitle]="'Total Reputation'" [nzSuffix]="'M'"></nz-statistic>
-      </nz-card>
-      <nz-card class=" statistic-card" nzSize="small">
-        <nz-statistic [nzValue]="12" [nzTitle]="'Total Yield'" [nzSuffix]="'M'"></nz-statistic>
-      </nz-card>
-      <nz-card class=" statistic-card" nzSize="small">
-        <nz-statistic [nzValue]="12" [nzTitle]="'Awards Completed'" [nzSuffix]="''"></nz-statistic>
-      </nz-card>
+    <div class="flex justify-center space-x-4">
+      <wen-member-tile [title]="'Total Reputation'" [value]="(member$ | async)?.totalReputation || 0" suffix="XP"></wen-member-tile>
+      <wen-member-tile [title]="'Awards Completed'" [value]="(member$ | async)?.awardsCompleted || 0"></wen-member-tile>
     </div>
 
     <h3>Earned Badges</h3>
-    <div class="space-x-4 flex justify-center">
-      <nz-card class="statistic-card flex justify-center items-center" nzSize="small">
-        <nz-avatar [nzSize]="64" nzText="B" style="color:#f56a00; background-color:#fde3cf;"></nz-avatar>
-      </nz-card>
-    </div>
+    <wen-badge-tile></wen-badge-tile>
   </div>
 
 </div>

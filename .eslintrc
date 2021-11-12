@@ -50,6 +50,7 @@
           {
             "capIsNew": true,
             "capIsNewExceptions": [
+                  "UntilDestroy",
                   "Directive",
                   "HostBinding",
                   "HostListener",
@@ -70,6 +71,7 @@
         }],
         "import/extensions": 0,
         "import/no-unresolved": 0,
+        "no-non-null-assertion": 0,
         "valid-jsdoc": 0,
         // Disabled for now.
         "require-jsdoc": 0 // ["error", {

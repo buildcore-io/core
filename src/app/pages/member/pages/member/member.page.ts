@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { BehaviorSubject } from 'rxjs';
+import { Member } from './../../../../../../functions/interfaces/models/member';
 
 @Component({
   templateUrl: './member.page.html',
@@ -15,8 +18,13 @@ export class MemberPage implements OnInit {
     { route: 'badges', label: 'Badges' },
     { route: 'yield', label: 'Yield' }
   ]
-
-  constructor(private route: ActivatedRoute) { }
+  public drawerVisible$ = new BehaviorSubject<boolean>(false);;
+  constructor(
+    private route: ActivatedRoute,
+    private auth: AuthService
+  ) {
+    // none.
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -24,17 +32,19 @@ export class MemberPage implements OnInit {
     });
   }
 
+  public get member$(): BehaviorSubject<Member|undefined> {
+    return this.auth.member$;
+  }
+
   public get urlToMembers(): string {
     return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.members;
   }
 
-  visible = false;
-
-  open(): void {
-    this.visible = true;
+  public openDrawer(): void {
+    this.drawerVisible$.next(true);
   }
 
-  close(): void {
-    this.visible = false;
+  public closeDrawer(): void {
+    this.drawerVisible$.next(false);
   }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'wen-overview',
@@ -6,12 +6,5 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./overview.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OverviewPage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-    // none.
-  }
-
+export class OverviewPage {
 }

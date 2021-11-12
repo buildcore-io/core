@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'wen-yield',
@@ -6,11 +6,5 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./yield.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class YieldPage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class YieldPage {
 }

@@ -13,14 +13,14 @@ import { Space } from './../../interfaces/models/space';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
-    name: Joi.string().optional(),
-    github: Joi.string().uri({
+    name: Joi.string().allow(null, '').optional(),
+    github: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    twitter: Joi.string().uri({
+    twitter: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    discord: Joi.string().uri({
+    discord: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional()
   });

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'wen-activity',
@@ -6,11 +6,5 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./activity.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ActivityPage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class ActivityPage {
 }

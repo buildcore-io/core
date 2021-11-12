@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'wen-proposals',
@@ -6,12 +6,5 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./proposals.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProposalsPage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-    // none.
-  }
-
+export class ProposalsPage {
 }

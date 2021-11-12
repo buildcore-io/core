@@ -13,14 +13,15 @@ import { Member } from './../../interfaces/models/member';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
-    name: Joi.string().optional(),
-    linkedIn: Joi.string().uri({
+    name: Joi.string().allow(null, '').optional(),
+    about: Joi.string().allow(null, '').optional(),
+    linkedIn: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    facebook: Joi.string().uri({
+    github: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    twitter: Joi.string().uri({
+    twitter: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional()
   });

@@ -143,6 +143,11 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
 
+  const member = await admin.firestore().collection(COL.MEMBER).doc(participant).get();
+  if (!member.exists) {
+    throw throwInvalidArgument(WenError.member_does_not_exists);
+  }
+
   if ((await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_already_participant_of_space);
   }
@@ -187,6 +192,11 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     throw throwInvalidArgument(WenError.no_more_available_badges);
   }
 
+  const member = await admin.firestore().collection(COL.MEMBER).doc(params.body.member).get();
+  if (!member.exists) {
+    throw throwInvalidArgument(WenError.member_does_not_exists);
+  }
+
   if (params.body) {
     // Member might not be participant of the space, that's fine. we just need to add him.
     if (!(await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).get()).exists) {
@@ -199,7 +209,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     // Increase count via transaction.
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refAward);
-      const newCount = sfDoc.data().issued + 1;
+      const newCount = (sfDoc.data().issued || 0) + 1;
       transaction.update(refAward, {
         issued: newCount
       });
@@ -207,6 +217,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
 
     // Issue badge transaction.
     const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+    const xp: number = round(docAward.data().badge.xp / docAward.data().badge.count);
     await refTran.set(<Transaction>{
       type: TransactionType.BADGE,
       uid: getRandomEthAddress(),
@@ -214,9 +225,22 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
       createdOn: serverTime(),
       payload: {
         awardId: params.body.uid,
-        xp: round(docAward.data().badge.xp / docAward.data().badge.count)
+        xp: xp
       }
     });
+
+    // We've to update the members stats.
+    const refMember: any = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refMember);
+      const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
+      const totalReputation = (sfDoc.data().totalReputation || 0) + xp;
+      transaction.update(refAward, {
+        awardsCompleted: awardsCompleted,
+        totalReputation: totalReputation
+      });
+    });
+
 
     // Load latest
     docTran = await refTran.get();

@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 const iotaToken = 'assets/mocks/iota-token.png';
 const iota = 'assets/mocks/iota-treasury.png';
-const soonlabsToken = 'assets/mocks/soonlabs-token.png';
-const soonlabs = 'assets/mocks/soonlabs.png';
+// const soonlabsToken = 'assets/mocks/soonlabs-token.png';
+// const soonlabs = 'assets/mocks/soonlabs.png';
 
 @Component({
   selector: 'wen-space',
@@ -11,14 +11,7 @@ const soonlabs = 'assets/mocks/soonlabs.png';
   styleUrls: ['./space.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SpacePage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-    // none.
-  }
-
+export class SpacePage {
   public get urlToSpaces(): string {
     return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
   }

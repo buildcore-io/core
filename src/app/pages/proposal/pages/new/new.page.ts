@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'wen-new',
@@ -6,13 +6,5 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./new.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NewPage implements OnInit {
-
-  constructor() {
-    // Empty.
-  }
-
-  ngOnInit(): void {
-    // Empty.
-  }
+export class NewPage {
 }

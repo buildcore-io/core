@@ -1,4 +1,4 @@
-<header class="absolute right-0 py-5 px-7 space-x-7 flex items-center z-30">
+<header class="absolute right-0 z-30 flex items-center py-5 px-7 space-x-7">
   <div *ngIf="isLoggedIn$ | async" class="flex items-center gap-4">
     <button nz-button nzType="default" nzShape="circle"
       class="inline-flex items-center justify-center w-10 h-10 border-0">
@@ -9,7 +9,7 @@
       class="inline-flex items-center font-bold border-0">
       <nz-avatar nzIcon="user" nzSrc="//zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" nzSize="large"
         class="mr-1"></nz-avatar>
-      {{(member$ | async)?.uid}}
+      {{(member$ | async)?.uid | truncate:[12]}}
       <i nz-icon nzType="down" class="font-bold"></i>
     </button>
 
@@ -23,7 +23,7 @@
   </div>
 
   <button nz-button
-    class="border-white text-gray-700 hover:border-gray-200 hover:bg-gray-200 hover:text-gray-700  focus:border-gray-200 focus:bg-gray-200 focus:text-gray-700"
+    class="text-gray-700 border-white hover:border-gray-200 hover:bg-gray-200 hover:text-gray-700 focus:border-gray-200 focus:bg-gray-200 focus:text-gray-700"
     nzType="default" nzSize="small" nzShape="circle" [routerLink]="urlToNewSpace"><i nz-icon nzType="plus"></i></button>
 
   <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"></wen-sign-in>

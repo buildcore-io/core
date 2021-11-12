@@ -16,7 +16,7 @@ function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     space: Joi.string().length(ethAddressLength).lowercase().required(),
-    additionalInfo: Joi.string().optional(),
+    additionalInfo: Joi.string().allow(null, '').optional(),
     milestoneIndexCommence: Joi.number().required(),
     milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
     milestoneIndexEnd: Joi.number().greater(Joi.ref('milestoneIndexStart')).required(),
@@ -24,11 +24,11 @@ function defaultJoiUpdateCreateSchema(): any {
     questions: Joi.array().items(Joi.object().keys({
       index: Joi.number().required(),
       text: Joi.string().required(),
-      additionalInfo: Joi.string().optional(),
+      additionalInfo: Joi.string().allow(null, '').optional(),
       answers: Joi.array().items(Joi.object().keys({
         index: Joi.number().required(),
         text: Joi.string().required(),
-        additionalInfo: Joi.string().optional(),
+        additionalInfo: Joi.string().allow(null, '').optional(),
       })).min(2).required()
     })).min(1).required()
   });

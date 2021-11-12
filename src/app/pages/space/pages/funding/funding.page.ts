@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'wen-funding',
@@ -6,12 +6,5 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./funding.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FundingPage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-    // none.
-  }
-
+export class FundingPage {
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 
 @Component({
@@ -7,14 +7,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
   styleUrls: ['./new.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NewPage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-    // none.
-  }
-
+export class NewPage {
   public get urlToSpaces(): string {
     return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
   }
