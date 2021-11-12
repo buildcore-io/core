@@ -14,7 +14,7 @@ jobs:
       - run: npm run build
       # enable maintenance mode.
       - uses: Enable maintenance mode
-      - run: |
+        run: |
           cd dist/soonaverse
           # Remove all other files.
           ls | grep -v maintenance.html | xargs rm
