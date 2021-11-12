@@ -9,11 +9,11 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Proposal } from '../../interfaces/models/proposal';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
-import { assertValidation } from "../utils/schema.utils";
+import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 
 function defaultJoiUpdateCreateSchema(): any {
-  return {
+  return merge(getDefaultParams(), {
     name: Joi.string().required(),
     space: Joi.string().length(ethAddressLength).lowercase().required(),
     additionalInfo: Joi.string().optional(),
@@ -31,7 +31,7 @@ function defaultJoiUpdateCreateSchema(): any {
         additionalInfo: Joi.string().optional(),
       })).min(2).required()
     })).min(1).required()
-  };
+  });
 }
 
 export const createProposal: functions.CloudFunction<Proposal> = functions.https.onCall(async (token: string): Promise<Proposal> => {
@@ -85,7 +85,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.http
   // We must part
   const params: DecodedToken = await decodeToken(token);
   const owner = params.address.toLowerCase();
-  const schema: ObjectSchema<Proposal> = Joi.object(({
+  const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required()
   }));
   assertValidation(schema.validate(params.body));

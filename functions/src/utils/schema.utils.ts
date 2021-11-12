@@ -1,5 +1,5 @@
+import Joi, { ValidationResult } from "joi";
 import { WenError } from './../../interfaces/errors';
-import { ValidationResult } from "joi";
 import { throwArgument } from "./error.utils";
 
 export function pSchema(schema: any, o: any): any {
@@ -23,4 +23,12 @@ export function assertValidation(r: ValidationResult): void {
   if (r.error) {
     throw throwArgument('invalid-argument', WenError.invalid_params, JSON.stringify(r.error.details));
   }
+}
+
+export function getDefaultParams(): any {
+  // TODO We need to figure if we want to validate this further.
+  return {
+    'web3-token-version': Joi.number().optional(),
+    'expire-date': Joi.date().greater('now').optional()
+  };
 }

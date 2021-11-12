@@ -6,13 +6,13 @@ import { DecodedToken, StandardResponse } from '../../interfaces/functions/index
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
-import { assertValidation, pSchema } from "../utils/schema.utils";
+import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
 
 function defaultJoiUpdateCreateSchema(): any {
-  return {
+  return merge(getDefaultParams(), {
     name: Joi.string().optional(),
     github: Joi.string().uri({
       scheme: ['https']
@@ -23,7 +23,7 @@ function defaultJoiUpdateCreateSchema(): any {
     discord: Joi.string().uri({
       scheme: ['https']
     }).optional()
-  };
+  });
 };
 
 export const createSpace: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<Space> => {
@@ -111,7 +111,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
   const params: DecodedToken = await decodeToken(token);
   const owner = params.address.toLowerCase();
 
-  const schema: ObjectSchema<Space> = Joi.object(({
+  const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required()
   }));
   assertValidation(schema.validate(params.body));
@@ -150,7 +150,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall
   const params: DecodedToken = await decodeToken(token);
   const owner = params.address.toLowerCase();
 
-  const schema: ObjectSchema<Space> = Joi.object(({
+  const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required()
   }));
   assertValidation(schema.validate(params.body));
@@ -197,7 +197,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.https.onCal
   const params: DecodedToken = await decodeToken(token);
   const guardian = params.address.toLowerCase();
 
-  const schema: ObjectSchema<Space> = Joi.object(({
+  const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required(),
       member: Joi.string().length(ethAddressLength).lowercase().required()
   }));
@@ -240,7 +240,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.https.on
   const params: DecodedToken = await decodeToken(token);
   const guardian = params.address.toLowerCase();
 
-  const schema: ObjectSchema<Space> = Joi.object(({
+  const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required(),
       member: Joi.string().length(ethAddressLength).lowercase().required()
   }));
@@ -278,7 +278,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.https.onCal
   const params: DecodedToken = await decodeToken(token);
   const guardian = params.address.toLowerCase();
 
-  const schema: ObjectSchema<Space> = Joi.object(({
+  const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required(),
       member: Joi.string().length(ethAddressLength).lowercase().required()
   }));
@@ -329,7 +329,7 @@ export const unblockMember: functions.CloudFunction<Space> = functions.https.onC
   const params: DecodedToken = await decodeToken(token);
   const guardian = params.address.toLowerCase();
 
-  const schema: ObjectSchema<Space> = Joi.object(({
+  const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required(),
       member: Joi.string().length(ethAddressLength).lowercase().required()
   }));

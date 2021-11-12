@@ -7,12 +7,12 @@ import { DecodedToken } from '../../interfaces/functions/index';
 import { COL } from '../../interfaces/models/base';
 import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
-import { assertValidation, pSchema } from "../utils/schema.utils";
+import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { decodeToken } from "../utils/wallet.utils";
 import { Member } from './../../interfaces/models/member';
 
 function defaultJoiUpdateCreateSchema(): any {
-  return {
+  return merge(getDefaultParams(), {
     name: Joi.string().optional(),
     linkedIn: Joi.string().uri({
       scheme: ['https']
@@ -23,7 +23,7 @@ function defaultJoiUpdateCreateSchema(): any {
     twitter: Joi.string().uri({
       scheme: ['https']
     }).optional()
-  };
+  });
 }
 
 export const createMember: functions.CloudFunction<Member> = functions.https.onCall(async (token: string): Promise<Member> => {
