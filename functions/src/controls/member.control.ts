@@ -8,7 +8,7 @@ import { COL } from '../../interfaces/models/base';
 import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { decodeToken } from "../utils/wallet.utils";
+import { cleanParams, decodeToken } from "../utils/wallet.utils";
 import { Member } from './../../interfaces/models/member';
 
 function defaultJoiUpdateCreateSchema(): any {
@@ -39,7 +39,7 @@ export const createMember: functions.CloudFunction<Member> = functions.https.onC
   let docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
   if (!docMember.exists) {
     // Document does not exists. We must create the member.
-    await admin.firestore().collection(COL.MEMBER).doc(address).set(cOn(merge(params.body, {
+    await admin.firestore().collection(COL.MEMBER).doc(address).set(cOn(merge(cleanParams(params.body), {
       uid: address
     })));
 
@@ -66,7 +66,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.https.onC
   }
 
   if (params.body) {
-    await admin.firestore().collection(COL.MEMBER).doc(address).update(uOn(pSchema(schema, params.body)));
+    await admin.firestore().collection(COL.MEMBER).doc(address).update(uOn(pSchema(schema, cleanParams(params.body))));
 
     // Load latest
     docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();

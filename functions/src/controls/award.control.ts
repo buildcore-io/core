@@ -8,7 +8,7 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { cOn, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { StandardResponse } from './../../interfaces/functions/index';
 import { Award } from './../../interfaces/models/award';
@@ -68,7 +68,7 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
   let docAward = await refAward.get();
   if (!docAward.exists) {
     // Document does not exists.
-    await refAward.set(cOn(merge(params.body, {
+    await refAward.set(cOn(merge(cleanParams(params.body), {
       uid: awardAddress,
       issued: 0,
       createdBy: owner

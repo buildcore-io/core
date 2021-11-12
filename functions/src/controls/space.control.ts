@@ -7,7 +7,7 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
 
@@ -43,7 +43,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
   let docSpace = await refSpace.get();
   if (!docSpace.exists) {
     // Document does not exists. We must create the member.
-    await refSpace.set(cOn(merge(params.body, {
+    await refSpace.set(cOn(merge(cleanParams(params.body), {
       uid: spaceAddress,
       createdBy: owner
     })));

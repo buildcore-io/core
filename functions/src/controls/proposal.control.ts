@@ -10,7 +10,7 @@ import { Proposal } from '../../interfaces/models/proposal';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -57,7 +57,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
   let docProposal = await refProposal.get();
   if (!docProposal.exists) {
     // Document does not exists.
-    await refProposal.set(cOn(merge(params.body, {
+    await refProposal.set(cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
       createdBy: guardian
     })));
