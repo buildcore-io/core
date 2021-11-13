@@ -33,7 +33,8 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {
-        name: 'Space ABC'
+        name: 'Space ABC',
+        about: 'very cool'
       }
     }));
 
@@ -41,6 +42,7 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     const returns = await wrapped();
     expect(returns?.uid).toBeDefined();
     expect(returns?.name).toEqual('Space ABC');
+    expect(returns?.about).toEqual('very cool');
     walletSpy.mockRestore();
   });
 

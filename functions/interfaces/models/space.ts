@@ -1,6 +1,7 @@
 import { BaseRecord } from './base';
 export interface Space extends BaseRecord {
   name?: string;
+  about?: string;
   github?: string;
   twitter?: string;
   discord?: string;

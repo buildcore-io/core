@@ -15,7 +15,7 @@ function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
-    linkedIn: Joi.string().allow(null, '').uri({
+    linkedin: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
     github: Joi.string().allow(null, '').uri({

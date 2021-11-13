@@ -20,7 +20,7 @@ export class MemberEditDrawerComponent implements OnInit {
   @Output() public wenOnClose = new EventEmitter<void>();
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('');
-  public linkedInControl: FormControl = new FormControl('', getUrlValidator());
+  public linkedinControl: FormControl = new FormControl('', getUrlValidator());
   public twitterControl: FormControl = new FormControl('', getUrlValidator());
   public githubControl: FormControl = new FormControl('', getUrlValidator());
   public memberForm: FormGroup;
@@ -29,7 +29,7 @@ export class MemberEditDrawerComponent implements OnInit {
     this.memberForm = new FormGroup({
       name: this.nameControl,
       about: this.aboutControl,
-      linkedIn: this.linkedInControl,
+      linkedin: this.linkedinControl,
       twitter: this.twitterControl,
       github: this.githubControl
     });
@@ -50,7 +50,7 @@ export class MemberEditDrawerComponent implements OnInit {
   private setFormValues(obj: Member): void {
     this.nameControl.setValue(obj.name);
     this.aboutControl.setValue(obj.about);
-    this.linkedInControl.setValue(obj.linkedIn);
+    this.linkedinControl.setValue(obj.linkedin);
     this.twitterControl.setValue(obj.twitter);
     this.githubControl.setValue(obj.github);
   }

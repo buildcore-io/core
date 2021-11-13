@@ -3,7 +3,7 @@ export interface Member extends BaseRecord {
   uid: EthAddress;
   name?: string;
   about?: string;
-  linkedIn?: string;
+  linkedin?: string;
   twitter?: string;
   github?: string;
   awardsCompleted?: number;

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Space } from "functions/interfaces/models";
 const iotaToken = 'assets/mocks/iota-token.png';
 const iota = 'assets/mocks/iota-treasury.png';
 // const soonlabsToken = 'assets/mocks/soonlabs-token.png';
@@ -12,17 +13,18 @@ const iota = 'assets/mocks/iota-treasury.png';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpacePage {
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
-  }
-
-  sections = [
+  public sections = [
     { route: 'overview', label: 'Overview' },
     { route: 'proposals', label: 'Proposals' },
     { route: 'awards', label: 'Awards' },
     { route: 'funding', label: 'Funding' },
     { route: 'members', label: 'Members' }
-  ]
+  ];
+  public spaced?: Space;
+
+  public get urlToSpaces(): string {
+    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
+  }
 
   space = { id: 1, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken, link: 'link Github' };
 }

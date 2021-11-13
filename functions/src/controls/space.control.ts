@@ -14,6 +14,7 @@ import { Space } from './../../interfaces/models/space';
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').optional(),
+    about: Joi.string().allow(null, '').optional(),
     github: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
