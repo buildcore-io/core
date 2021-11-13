@@ -24,6 +24,8 @@
       "@components/*": ["src/app/components/*"],
       "@pages/*": ["src/app/pages/*"],
       "@env/*": ["src/environments/*"],
+      "stream": ["./node_modules/stream-browserify"],
+      "assert": ["./node_modules/assert"],
       "crypto": ["./node_modules/crypto-browserify"],
       "http": ["./node_modules/stream-http"],
       "https": ["./node_modules/https-browserify"],
