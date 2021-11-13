@@ -1,12 +1,29 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { ProfilePage } from './pages/profile/profile.page';
+import { ActivityPage } from './pages/activity/activity.page';
+import { AwardsPage } from './pages/awards/awards.page';
+import { BadgesPage } from './pages/badges/badges.page';
+import { MemberPage } from './pages/member/member.page';
+import { YieldPage } from './pages/yield/yield.page';
 
 const routes: Routes = [
-  { path: ROUTER_UTILS.config.member.profile, component: ProfilePage },
+  {
+    path: ROUTER_UTILS.config.member.member,
+    component: MemberPage,
+    children: [
+      { path: '', component: ActivityPage },
+      { path: ROUTER_UTILS.config.member.activity, component: ActivityPage },
+      { path: ROUTER_UTILS.config.member.awards, component: AwardsPage },
+      { path: ROUTER_UTILS.config.member.badges, component: BadgesPage },
+      { path: ROUTER_UTILS.config.member.yield, component: YieldPage }
+    ]
+  },
+  {
+    path: '',
+    redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces
+  },
 ];
-
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],

@@ -4,7 +4,7 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { EthAddress } from '../../../functions/interfaces/models/base';
-import { Member } from '../../../functions/interfaces/models/member';
+import { Member } from './../../../functions/interfaces/models/member';
 import { BaseApi } from './base.api';
 
 @Injectable({

@@ -1,1 +1,4 @@
-<h1>👩‍🚀 Members</h1>
+<div class="flex flex-wrap gap-6">
+  <wen-member-card class="cursor-pointer" *ngFor="let member of members" [title]="member.title" [routerLink]="['/member', member.id]">
+  </wen-member-card>
+</div>

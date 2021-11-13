@@ -1,25 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { RocketIconComponent } from './rocket.component';
 
 
-describe('RocketComponent', () => {
-  let component: RocketIconComponent;
-  let fixture: ComponentFixture<RocketIconComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [RocketIconComponent]
-    })
-      .compileComponents();
+describe('RocketIconComponent', () => {
+  let spectator: Spectator<RocketIconComponent>;
+  const createComponent = createComponentFactory({
+    component: RocketIconComponent
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RocketIconComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

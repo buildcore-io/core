@@ -26,12 +26,6 @@ const APP_ROUTES: Routes = [
       (await import('@pages/dashboard/dashboard.module')).DashboardModule,
     canLoad: [],
   },
-  /* {
-    path: ROUTER_UTILS.config.settings.root,
-    loadChildren: async () =>
-      (await import('@pages/settings/settings.module')).SettingsModule,
-    canLoad: [],
-  }, */
   {
     path: ROUTER_UTILS.config.discover.root,
     loadChildren: async () =>
@@ -48,6 +42,12 @@ const APP_ROUTES: Routes = [
     path: ROUTER_UTILS.config.space.root,
     loadChildren: async () =>
       (await import('@pages/space/space.module')).SpaceModule,
+    canLoad: [],
+  },
+  {
+    path: ROUTER_UTILS.config.proposal.root,
+    loadChildren: async () =>
+      (await import('@pages/proposal/proposal.module')).ProposalModule,
     canLoad: [],
   },
   {

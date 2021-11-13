@@ -1,18 +1,34 @@
-<div class="grid mt-24 place-items-center">
-  <h1 class="text-3xl md:text-6xl lg:text-7xl">
-    <span
-      class="hidden text-xl text-center md:text-3xl lg:text-6xl md:inline-block"
-    >
-      🎉🎉🎉
-    </span>
-    dashboard works!
-    <span class="text-xl text-center md:text-3xl lg:text-6xl"> 🎉🎉🎉 </span>
-  </h1>
-  <a
-    [routerLink]="[path.home]"
-    nz-button
-    nzType="primary"
-  >
-    Back to home
-  </a>
+<h1 i18n class="mt-12">Overview</h1>
+<div class="space-y-14">
+
+  <div class="-mx-6 overflow-hidden">
+    <h3 class="px-7">Your spaces
+      <a *ngIf="spaces.length > 0" nz-button nzType="link" [routerLink]="['/discover', 'spaces']">Show All
+        <i nz-icon nzType="right" nzTheme="outline"></i>
+      </a>
+    </h3>
+    <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
+      <wen-space-card class="cursor-pointer" *ngFor="let space of spaces" [space]="space"
+        [routerLink]="['/space', space.id]"></wen-space-card>
+    </div>
+  </div>
+
+  <div class="-mx-6 overflow-hidden">
+    <h3 class="px-7">Active proposals
+      <a *ngIf="proposals.length > 0" nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
+        <i nz-icon nzType="right" nzTheme="outline"></i>
+      </a>
+    </h3>
+    <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
+      <div *ngIf="proposals.length === 0"
+        class="flex flex-col items-center justify-center transition-colors bg-transparent border-2 border-gray-300 cursor-pointer empty-card hover:border-gray-700 w-75 h-75 rounded-2xl"
+        [routerLink]="['/discover', 'proposals']">
+        <div class="w-10 h-10 p-0 text-xl text-center text-current bg-blue-600 rounded-3xl">
+          <i nz-icon class="text-white " nzType="search"></i>
+        </div>
+        <p class="mt-2 font-bold">Discover proposals</p>
+      </div>
+    </div>
+  </div>
+
 </div>

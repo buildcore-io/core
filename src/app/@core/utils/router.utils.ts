@@ -16,23 +16,32 @@ export const ROUTER_UTILS = {
       members: 'members'
     },
     member: {
-      root: 'members',
-      profile: ':username',
+      // Redirect back to discovery
+      root: 'member',
+      member: ':memberId',
+      activity: 'activity',
+      awards: 'awards',
+      badges: 'badges',
+      yield: 'yield',
     },
     space: {
-      root: 'spaces',
-      space: ':username',
+      // Redirect back to discovery
+      root: 'space',
+      space: ':spaceId',
+      newSpace: 'new',
+      overview: 'overview',
+      proposals: 'proposals',
+      awards: 'awards',
+      funding: 'funding',
+      members: 'members',
     },
-    /* settings: {
-      root: 'settings',
-      account: 'account',
-      appearance: 'appearance',
-      billing: 'billing',
-      blockedUsers: 'blocked-users',
-      notifications: 'notifications',
-      security: 'security',
-      securityLog: 'security-log',
-    }, */
+    proposal: {
+      // Redirect back to space?!
+      root: 'proposal',
+      newProposal: 'new',
+      proposal: ':spaceId',
+      overview: 'overview',
+    },
     errorResponse: {
       notFound: '404',
     },

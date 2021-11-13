@@ -1,0 +1,65 @@
+<div class="w-auto -mx-8 overflow-hidden h-96 bor rounded-2xl">
+  <button nz-button nzSize="small"
+    class="absolute top-0 h-10 px-6 mx-10 font-semibold text-blue-600 bg-white border-white left-14 mt-11 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
+    [routerLink]="urlToSpaces"><i nz-icon nzType="left"></i>Back to Discover</button>
+
+  <img alt="" [src]="space.cover" class="object-cover w-full h-full" />
+</div>
+
+<div class="relative py-12" nz-row [nzGutter]="16">
+
+  <nz-avatar [nzSrc]="space.token" [nzSize]="120"
+    class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
+    nzShape="circle"></nz-avatar>
+
+  <div nz-col nzFlex="auto">
+    <h1 i18n>{{ space.title }}</h1>
+
+    <nav nz-menu nzMode="horizontal" class="inline-flex items-center h-10 border-b-0 rounded-3xl">
+      <a *ngFor="let section of sections" nz-menu-item
+        class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl" i18n
+        [routerLink]="section.route" nzMatchRouter>
+        {{ section.label }}
+      </a>
+    </nav>
+
+    <div class="w-full py-12">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+  <div class="space-y-4" nz-col nzFlex="430px">
+    <button nz-button nzType="primary" nzBlock nzSize="small"
+      class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl">Join
+      Space</button>
+
+    <nz-card nzTitle="About">
+      <p>
+        {{ space.description }}
+      </p>
+    </nz-card>
+
+    <nz-card>
+      <div>
+        <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
+        <span>{{ space.members }}</span>
+        <span> members</span>
+      </div>
+    </nz-card>
+
+    <nz-card nzTitle="Related Links">
+      <div>
+        <i nz-icon nzType="github" nzTheme="outline"></i>
+        <a nz-button nzType="link">{{ space.link }}</a>
+      </div>
+    </nz-card>
+
+    <nz-card nzTitle="Guardians">
+      <div>
+        <nz-avatar nzIcon="user" nzSrc="//zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" class="mr-2">
+        </nz-avatar>
+        <span>@name</span>
+      </div>
+    </nz-card>
+  </div>
+</div>

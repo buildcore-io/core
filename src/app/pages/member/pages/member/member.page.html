@@ -1,0 +1,55 @@
+<!-- <button nz-button nzSize="small"
+    class="absolute top-0 h-10 px-6 mx-10 font-semibold text-blue-600 bg-white border-white left-14 mt-11 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
+    [routerLink]="urlToMembers"><i nz-icon nzType="left"></i>Back to Discover</button> -->
+
+<div nz-row>
+
+  <div class="py-12 pr-6" nz-col nzFlex="auto">
+    <h1 i18n>Profile</h1>
+
+    <nav nz-menu nzMode="horizontal" class="inline-flex items-center h-10 border-b-0 rounded-3xl">
+      <a *ngFor="let section of sections" nz-menu-item
+        class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl" i18n
+        [routerLink]="section.route" nzMatchRouter>
+        {{ section.label }}
+      </a>
+    </nav>
+
+    <div class="w-full py-12">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+  <div class="h-screen pt-32 -mr-5 space-y-4 text-center bg-white rounded-l-3xl" nz-col nzFlex="400px">
+
+    <nz-avatar [nzSize]="124" nzIcon="user"></nz-avatar>
+    <div class="flex items-baseline justify-center">
+      <h2>@ {{ memberId | truncate:[12] }}</h2>
+      <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
+        class="ml-4 text-center text-current bg-blue-600 border-blue-600 rounded-3xl">
+        <i nz-icon class="text-white " nzType="edit"></i>
+      </a>
+      <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()"></wen-member-edit-drawer>
+    </div>
+
+    <p nz-typography nzType="secondary" *ngIf="(member$ | async)?.about">
+      {{(member$ | async)!.about}}
+    </p>
+
+    <div class="space-x-4">
+      <a [href]="(member$ | async)!.github" *ngIf="(member$ | async)?.github" target="_new"><i nz-icon nzType="github" nzTheme="outline"></i></a>
+      <a [href]="(member$ | async)!.twitter" *ngIf="(member$ | async)?.twitter" target="_new"><i nz-icon nzType="twitter" nzTheme="outline"></i></a>
+      <a [href]="(member$ | async)!.linkedIn" *ngIf="(member$ | async)?.linkedIn" target="_new"><i nz-icon nzType="linkedIn" nzTheme="outline"></i></a>
+    </div>
+
+    <div class="flex justify-center space-x-4">
+      <wen-member-tile [title]="'Total Reputation'" [value]="(member$ | async)?.totalReputation || 0" suffix="XP"></wen-member-tile>
+      <wen-member-tile [title]="'Awards Completed'" [value]="(member$ | async)?.awardsCompleted || 0"></wen-member-tile>
+    </div>
+
+    <h3>Earned Badges</h3>
+    <wen-badge-tile></wen-badge-tile>
+  </div>
+
+</div>

@@ -2,11 +2,9 @@ import { GlobeIconComponent } from '@components/ui/components/icon/globe/globe.c
 import { ThemeService } from '@core/services/theme';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent, MockProvider } from 'ng-mocks';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { MoonIconComponent } from './../../../components/ui/components/icon/moon/moon.component';
 import { SunIconComponent } from './../../../components/ui/components/icon/sun/sun.component';
+import { MemberTileComponent } from './../../../components/ui/components/member/tile/member-tile.component';
 import { MenuItemDirective } from './menu/menu-item.directive';
 import { MenuComponent } from './menu/menu.component';
 import { SiderComponent } from './sider.component';
@@ -20,12 +18,12 @@ describe('SiderComponent', () => {
     declarations: [
       MockComponent(ThemeSwitchComponent),
       MockComponent(MenuComponent),
+      MemberTileComponent,
       MenuItemDirective,
       GlobeIconComponent,
       SunIconComponent,
       MoonIconComponent
     ],
-    imports: [NzLayoutModule, NzIconModule, NzDropDownModule],
     providers: [MockProvider(ThemeService)],
     params: {},
     data: {}

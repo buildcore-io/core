@@ -10,13 +10,13 @@ import { Proposal } from '../../interfaces/models/proposal';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     space: Joi.string().length(ethAddressLength).lowercase().required(),
-    additionalInfo: Joi.string().optional(),
+    additionalInfo: Joi.string().allow(null, '').optional(),
     milestoneIndexCommence: Joi.number().required(),
     milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
     milestoneIndexEnd: Joi.number().greater(Joi.ref('milestoneIndexStart')).required(),
@@ -24,11 +24,11 @@ function defaultJoiUpdateCreateSchema(): any {
     questions: Joi.array().items(Joi.object().keys({
       index: Joi.number().required(),
       text: Joi.string().required(),
-      additionalInfo: Joi.string().optional(),
+      additionalInfo: Joi.string().allow(null, '').optional(),
       answers: Joi.array().items(Joi.object().keys({
         index: Joi.number().required(),
         text: Joi.string().required(),
-        additionalInfo: Joi.string().optional(),
+        additionalInfo: Joi.string().allow(null, '').optional(),
       })).min(2).required()
     })).min(1).required()
   });
@@ -57,7 +57,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
   let docProposal = await refProposal.get();
   if (!docProposal.exists) {
     // Document does not exists.
-    await refProposal.set(cOn(merge(params.body, {
+    await refProposal.set(cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
       createdBy: guardian
     })));

@@ -69,6 +69,7 @@ export class AuthService {
         };
       } catch(e) {
         // Ignore. they didn't log in.
+        console.error(e);
         return undefined;
       }
     } else {

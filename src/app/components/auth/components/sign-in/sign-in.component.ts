@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { AuthService } from '../../services/auth.service';
 
@@ -14,6 +14,7 @@ export class SignInComponent {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private authService: AuthService,
   ) {
     this.returnUrl =
@@ -22,6 +23,8 @@ export class SignInComponent {
   }
 
   onClickSignIn(): void {
-    this.authService.signIn();
+    this.authService.signIn().then(() => {
+      this.router.navigate([ROUTER_UTILS.config.base.dashboard]);
+    });
   }
 }

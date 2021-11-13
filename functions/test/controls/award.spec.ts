@@ -241,6 +241,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     let award: any;
     const memberAddress2 = wallet.getRandomEthAddress();
     const memberAddress3 = wallet.getRandomEthAddress();
+    const memberAddress4 = wallet.getRandomEthAddress();
     beforeEach(async () => {
       walletSpy = jest.spyOn(wallet, 'decodeToken');
       body = {
@@ -263,6 +264,24 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       const wrapped: any = testEnv.wrap(createAward);
       award = await wrapped();
       expect(award?.uid).toBeDefined();
+
+      // Create members
+      [
+        memberAddress2,
+        memberAddress3,
+        memberAddress4
+      ].forEach(async (r) => {
+        walletSpy.mockReturnValue(Promise.resolve({
+          address: r,
+          body: {
+            name: 'John'
+          }
+        }));
+
+        const wrapped: any = testEnv.wrap(createMember);
+        const returns = await wrapped();
+        expect(returns?.uid).toEqual(r.toLowerCase());
+      });
     });
 
     it('Participate.', async () => {
@@ -386,7 +405,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
         address: memberAddress,
         body: {
           uid: award.uid,
-          member: wallet.getRandomEthAddress()
+          member: memberAddress3
         }
       }));
 
@@ -402,7 +421,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
         address: memberAddress,
         body: {
           uid: award.uid,
-          member: wallet.getRandomEthAddress()
+          member: memberAddress4
         }
       }));
 

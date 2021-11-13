@@ -1,3 +1,3 @@
 <div class="flex flex-wrap gap-6">
-  <wen-space-card *ngFor="let space of spaces" [space]="space"></wen-space-card>
+  <wen-space-card class="cursor-pointer" *ngFor="let space of spaces" [space]="space" [routerLink]="['/space', space.id]"></wen-space-card>
 </div>

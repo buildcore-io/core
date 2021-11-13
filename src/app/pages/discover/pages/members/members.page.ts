@@ -5,4 +5,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./members.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MembersPage {}
+export class MembersPage {
+  members = [
+    { id: 1, title: 'Adam'} ]
+}

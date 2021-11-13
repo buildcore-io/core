@@ -7,11 +7,9 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { USE_EMULATOR as USE_DATABASE_EMULATOR } from '@angular/fire/compat/database';
 import { AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/compat/firestore';
 import { AngularFireFunctionsModule, USE_EMULATOR as USE_FUNCTIONS_EMULATOR } from '@angular/fire/compat/functions';
-import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
-import { environment } from '@env/environment';
 import { WebShellModule } from '@shell/ft/web-shell.module';
 import { en_US as EnUs, fr_FR as FrFr, NZ_I18N as Nzi18n } from 'ng-zorro-antd/i18n';
 import { NzIconModule } from "ng-zorro-antd/icon";
@@ -27,7 +25,6 @@ const icons: IconDefinition[] = [];
     BrowserModule,
     CoreModule,
     WebShellModule,
-    FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
     NzIconModule.forRoot(icons),
@@ -60,9 +57,9 @@ const icons: IconDefinition[] = [];
     },
     deps: [LOCALE_ID]
   },
-  { provide: USE_DATABASE_EMULATOR, useValue: !environment.production ? ['localhost', 9000] : undefined },
-  { provide: USE_FIRESTORE_EMULATOR, useValue: !environment.production ? ['localhost', 8080] : undefined },
-  { provide: USE_FUNCTIONS_EMULATOR, useValue: !environment.production ? ['localhost', 5001] : undefined }
+  { provide: USE_DATABASE_EMULATOR, useValue: process.env.FB_EMULATOR ? ['localhost', 9000] : undefined },
+  { provide: USE_FIRESTORE_EMULATOR, useValue: process.env.FB_EMULATOR ? ['localhost', 8080] : undefined },
+  { provide: USE_FUNCTIONS_EMULATOR, useValue: process.env.FB_EMULATOR ? ['localhost', 5001] : undefined }
   ]
 })
 export class AppModule { }

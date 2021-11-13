@@ -7,6 +7,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { TruncateModule } from './../../../@core/pipes/truncate/truncate.module';
 import { HeaderComponent } from './header.component';
 
 
@@ -14,6 +15,7 @@ import { HeaderComponent } from './header.component';
   declarations: [HeaderComponent],
   imports: [
     CommonModule,
+    TruncateModule,
     AuthModule,
     RouterModule,
     NzLayoutModule,

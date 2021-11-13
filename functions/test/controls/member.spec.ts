@@ -27,7 +27,8 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {
-        name: 'John'
+        name: 'John',
+        about: 'He rocks'
       }
     }));
 
@@ -35,6 +36,7 @@ describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
     const returns = await wrapped();
     expect(returns?.uid).toEqual(dummyAddress.toLowerCase());
     expect(returns?.name).toEqual('John');
+    expect(returns?.about).toEqual('He rocks');
     expect(returns?.createdOn).toBeDefined();
     expect(returns?.updatedOn).toBeDefined();
     walletSpy.mockRestore();
@@ -71,9 +73,10 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     const updateParams = {
       uid: dummyAddress,
       name: 'abc',
+      about: 'He rocks',
       linkedIn: 'https://abc1.com',
       twitter: 'https://abc1.com',
-      facebook: 'https://abc1.com'
+      github: 'https://abc1.com'
     };
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
@@ -81,9 +84,10 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     }));
     const doc2: any = await wUpdate();
     expect(doc2?.name).toEqual(updateParams.name);
+    expect(doc2?.about).toEqual('He rocks');
     expect(doc2?.linkedIn).toEqual(updateParams.linkedIn);
     expect(doc2?.twitter).toEqual(updateParams.twitter);
-    expect(doc2?.facebook).toEqual(updateParams.facebook);
+    expect(doc2?.github).toEqual(updateParams.github);
 
     walletSpy.mockRestore();
   });

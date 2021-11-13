@@ -1,24 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { MockComponent } from 'ng-mocks';
+import { MemberCardComponent } from './../../../../components/members/components/space-card/member-card.component';
 import { MembersPage } from './members.page';
 
-
 describe('MembersPage', () => {
-  let component: MembersPage;
-  let fixture: ComponentFixture<MembersPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MembersPage],
-    }).compileComponents();
+  let spectator: Spectator<MembersPage>;
+  const createComponent = createRoutingFactory({
+    component: MembersPage,
+    declarations: [MockComponent(MemberCardComponent)]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MembersPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
   });
 });

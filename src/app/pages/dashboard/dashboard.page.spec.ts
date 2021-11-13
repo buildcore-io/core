@@ -1,25 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { SpaceCardModule } from './../../components/spaces/components/space-card/space-card.module';
 import { DashboardPage } from './dashboard.page';
 
 describe('DashboardPage', () => {
-  let component: DashboardPage;
-  let fixture: ComponentFixture<DashboardPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [DashboardPage],
-      imports: [RouterTestingModule],
-    }).compileComponents();
+  let spectator: Spectator<DashboardPage>;
+  const createComponent = createRoutingFactory({
+    component: DashboardPage,
+    imports: [SpaceCardModule]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DashboardPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });
