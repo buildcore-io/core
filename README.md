@@ -13,7 +13,7 @@ DAO-on-Demand (DoD) enables the “one-click” setup of DAOs and provides compo
 - Token Launchpad
 - Reputation Station
   
-Litepaper: https://docs.google.com/document/d/107AWznbIIz1CwsqRO2Jwj5vmqVdj_2g-eavnmCeTvd8/edit?usp=sharing
+_See [Litepaper](https://docs.google.com/document/d/107AWznbIIz1CwsqRO2Jwj5vmqVdj_2g-eavnmCeTvd8) for more._
 
 ----
 
