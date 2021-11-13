@@ -1,25 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { MoonIconComponent } from './moon.component';
 
 
 describe('MoonIconComponent', () => {
-  let component: MoonIconComponent;
-  let fixture: ComponentFixture<MoonIconComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ MoonIconComponent ]
-    })
-    .compileComponents();
+  let spectator: Spectator<MoonIconComponent>;
+  const createComponent = createComponentFactory({
+    component: MoonIconComponent
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MoonIconComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

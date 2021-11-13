@@ -64,7 +64,8 @@
                   "Component",
                   "Inject",
                   "MockComponent",
-                  "MockProvider"
+                  "MockProvider",
+                  "MockModule"
           ],
           "newIsCap": true,
           "properties": true

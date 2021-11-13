@@ -1,25 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { GlobeIconComponent } from './globe.component';
 
-
 describe('GlobeIconComponent', () => {
-  let component: GlobeIconComponent;
-  let fixture: ComponentFixture<GlobeIconComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ GlobeIconComponent ]
-    })
-    .compileComponents();
+  let spectator: Spectator<GlobeIconComponent>;
+  const createComponent = createComponentFactory({
+    component: GlobeIconComponent
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GlobeIconComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

@@ -1,25 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NewPage } from './new.page';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { NewPage } from './../../../space/pages/new/new.page';
 
 
 describe('NewPage', () => {
-  let component: NewPage;
-  let fixture: ComponentFixture<NewPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ NewPage ]
-    })
-    .compileComponents();
+  let spectator: Spectator<NewPage>;
+  const createComponent = createRoutingFactory({
+    component: NewPage
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NewPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
   });
 });

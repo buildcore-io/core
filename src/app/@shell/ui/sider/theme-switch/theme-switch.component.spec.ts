@@ -1,27 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { IconModule } from './../../../../components/ui/components/icon/icon.module';
 import { ThemeSwitchComponent } from './theme-switch.component';
 
 
 describe('ThemeSwitchComponent', () => {
-  let component: ThemeSwitchComponent;
-  let fixture: ComponentFixture<ThemeSwitchComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ThemeSwitchComponent ],
-      imports: [ IconModule ]
-    })
-    .compileComponents();
+  let spectator: Spectator<ThemeSwitchComponent>;
+  const createComponent = createComponentFactory({
+    component: ThemeSwitchComponent,
+    imports: [IconModule]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ThemeSwitchComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

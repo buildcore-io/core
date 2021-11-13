@@ -1,24 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TileComponent } from './member-tile.component';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { MemberTileComponent } from './member-tile.component';
 
-describe('TileComponent', () => {
-  let component: TileComponent;
-  let fixture: ComponentFixture<TileComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ TileComponent ]
-    })
-    .compileComponents();
+describe('MemberTileComponent', () => {
+  let spectator: Spectator<MemberTileComponent>;
+  const createComponent = createComponentFactory({
+    component: MemberTileComponent
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TileComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

@@ -1,25 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OverviewPage } from './overview.page';
-
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { OverviewPage } from './../../../proposal/pages/overview/overview.page';
 
 describe('OverviewPage', () => {
-  let component: OverviewPage;
-  let fixture: ComponentFixture<OverviewPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ OverviewPage ]
-    })
-    .compileComponents();
+  let spectator: Spectator<OverviewPage>;
+  const createComponent = createRoutingFactory({
+    component: OverviewPage
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OverviewPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

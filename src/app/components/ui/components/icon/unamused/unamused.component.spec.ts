@@ -1,25 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { UnamusedIconComponent } from './unamused.component';
 
 
 describe('UnamusedComponent', () => {
-  let component: UnamusedIconComponent;
-  let fixture: ComponentFixture<UnamusedIconComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [UnamusedIconComponent]
-    })
-      .compileComponents();
+  let spectator: Spectator<UnamusedIconComponent>;
+  const createComponent = createComponentFactory({
+    component: UnamusedIconComponent
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UnamusedIconComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

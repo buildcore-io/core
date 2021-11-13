@@ -1,26 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SpacesModule } from '@components/spaces/spaces.module';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { SpaceCardModule } from './../../../../components/spaces/components/space-card/space-card.module';
 import { SpacesPage } from './spaces.page';
 
-
 describe('SpacesPage', () => {
-  let component: SpacesPage;
-  let fixture: ComponentFixture<SpacesPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [SpacesPage],
-      imports: [SpacesModule]
-    }).compileComponents();
+  let spectator: Spectator<SpacesPage>;
+  const createComponent = createRoutingFactory({
+    component: SpacesPage,
+    imports: [SpaceCardModule]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SpacesPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

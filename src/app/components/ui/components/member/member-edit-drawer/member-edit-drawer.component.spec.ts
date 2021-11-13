@@ -1,25 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { MemberEditDrawerComponent } from './member-edit-drawer.component';
 
+
 describe('MemberEditDrawerComponent', () => {
-  let component: MemberEditDrawerComponent;
-  let fixture: ComponentFixture<MemberEditDrawerComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ MemberEditDrawerComponent ]
-    })
-    .compileComponents();
+  let spectator: Spectator<MemberEditDrawerComponent>;
+  const createComponent = createComponentFactory({
+    component: MemberEditDrawerComponent
   });
-
   beforeEach(() => {
-    fixture = TestBed.createComponent(MemberEditDrawerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });

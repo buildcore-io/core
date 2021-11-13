@@ -4,7 +4,6 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { getUrlValidator } from "@core/utils/form-validation.utils";
 import { undefinedToEmpty } from "@core/utils/manipulations.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { merge } from 'lodash-es';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { Member } from './../../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../../@api/member.api';
@@ -62,9 +61,12 @@ export class MemberEditDrawerComponent implements OnInit {
       return;
     }
 
-    const sc: MetamaskSignature|undefined =  await this.auth.signWithMetamask(undefinedToEmpty(merge(this.memberForm.value, {
-      uid: this.auth.member$.value!.uid
-    })));
+    const sc: MetamaskSignature|undefined =  await this.auth.signWithMetamask(undefinedToEmpty({
+      ...this.memberForm.value,
+      ...{
+        uid: this.auth.member$.value!.uid
+      }
+    }));
     if (!sc) {
       throw new Error('Unable to sign.');
     }

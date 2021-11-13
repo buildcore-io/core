@@ -1,25 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { BadgeTileComponent } from './badge-tile.component';
 
-describe('BadgeTileComponent', () => {
-  let component: BadgeTileComponent;
-  let fixture: ComponentFixture<BadgeTileComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ BadgeTileComponent ]
-    })
-    .compileComponents();
+describe('BadgeTileComponent', () => {
+  let spectator: Spectator<BadgeTileComponent>;
+  const createComponent = createComponentFactory({
+    component: BadgeTileComponent
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BadgeTileComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+it('write tests', () => {
+  expect(spectator).toBeDefined();
+});
 });
