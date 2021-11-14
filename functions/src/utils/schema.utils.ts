@@ -1,4 +1,4 @@
-import Joi, { ValidationResult } from "joi";
+import { ValidationResult } from "joi";
 import { WenError } from './../../interfaces/errors';
 import { throwArgument } from "./error.utils";
 
@@ -26,9 +26,5 @@ export function assertValidation(r: ValidationResult): void {
 }
 
 export function getDefaultParams(): any {
-  // TODO We need to figure if we want to validate this further.
-  return {
-    'web3-token-version': Joi.number().optional(),
-    'expire-date': Joi.date().greater('now').optional()
-  };
+  return {};
 }

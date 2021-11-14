@@ -5,6 +5,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 
 @UntilDestroy()
@@ -52,10 +53,6 @@ export class SpacePage implements OnInit, OnDestroy {
         this.notFound();
       }
     });
-
-    this.isMemberWithinSpace$.subscribe((o) => {
-      console.log(o);
-    });
   }
 
   private notFound(): void {
@@ -65,15 +62,11 @@ export class SpacePage implements OnInit, OnDestroy {
   private listenToSpace(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.spaceApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.space$));
-    if (this.auth.member$.value) {
-      this.listenToIsMemberAndGuardian(id, this.auth.member$.value.uid);
-    } else {
-      this.auth.member$.pipe(untilDestroyed(this)).subscribe((m) => {
-        if (m?.uid) {
-          this.listenToIsMemberAndGuardian(id, m.uid);
-        }
-      });
-    }
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe((m?: Member) => {
+      if (m?.uid) {
+        this.listenToIsMemberAndGuardian(id, m.uid);
+      }
+    });
   }
 
   private listenToIsMemberAndGuardian(spaceId: string, memberId: string): void {

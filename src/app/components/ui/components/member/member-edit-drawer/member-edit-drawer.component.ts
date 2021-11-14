@@ -5,9 +5,9 @@ import { getUrlValidator } from "@core/utils/form-validation.utils";
 import { undefinedToEmpty } from "@core/utils/manipulations.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { WenRequest } from './../../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../../@api/member.api';
-import { MetamaskSignature } from './../../../../auth/services/auth.service';
 
 @UntilDestroy()
 @Component({
@@ -61,7 +61,7 @@ export class MemberEditDrawerComponent implements OnInit {
       return;
     }
 
-    const sc: MetamaskSignature|undefined =  await this.auth.signWithMetamask(undefinedToEmpty({
+    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(undefinedToEmpty({
       ...this.memberForm.value,
       ...{
         uid: this.auth.member$.value!.uid
@@ -72,7 +72,7 @@ export class MemberEditDrawerComponent implements OnInit {
     }
 
     // TODO Handle this via queue and clean-up.
-    this.memberApi.updateMember(sc.token).subscribe(() => {
+    this.memberApi.updateMember(sc).subscribe(() => {
       this.notification.success('Updated.', '');
     });
 

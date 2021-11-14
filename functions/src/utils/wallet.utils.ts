@@ -49,7 +49,7 @@ export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
   }
 
   // Set new nonce.
-  await admin.firestore().collection(COL.MEMBER).doc(req.address).set({
+  await admin.firestore().collection(COL.MEMBER).doc(req.address).update({
     nonce: (Math.floor(Math.random() * 1000000).toString()),
   });
 

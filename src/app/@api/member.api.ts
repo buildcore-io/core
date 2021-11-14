@@ -3,7 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { EthAddress } from '../../../functions/interfaces/models/base';
+import { EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
 import { BaseApi } from './base.api';
 
@@ -23,9 +23,9 @@ export class MemberApi extends BaseApi<Member> {
   /**
    * Function to create profile if it does not exists yet.
    */
-  public createIfNotExists(req: WenRequest): Observable<Member|undefined> {
+  public createIfNotExists(address: string): Observable<Member> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cMemberNotExists);
-    const data$ = callable(token);
+    const data$ = callable(address);
     return data$;
   }
 
@@ -34,7 +34,7 @@ export class MemberApi extends BaseApi<Member> {
    */
   public updateMember(req: WenRequest): Observable<Member|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.uMember);
-    const data$ = callable(token);
+    const data$ = callable(req);
     return data$;
   }
 }

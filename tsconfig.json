@@ -16,6 +16,7 @@
     "importHelpers": true,
     "target": "es2017",
     "module": "es2020",
+    "types": [],
     "lib": ["es2018", "dom"],
     "paths": {
       "@api/*": ["src/app/@api/*"],
@@ -23,13 +24,7 @@
       "@shell/*": ["src/app/@shell/*"],
       "@components/*": ["src/app/components/*"],
       "@pages/*": ["src/app/pages/*"],
-      "@env/*": ["src/environments/*"],
-      "stream": ["./node_modules/stream-browserify"],
-      "assert": ["./node_modules/assert"],
-      "crypto": ["./node_modules/crypto-browserify"],
-      "http": ["./node_modules/stream-http"],
-      "https": ["./node_modules/https-browserify"],
-      "os": ["./node_modules/os-browserify"]
+      "@env/*": ["src/environments/*"]
     }
   },
   "angularCompilerOptions": {

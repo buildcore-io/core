@@ -23,9 +23,7 @@
     "is-ipfs": "^6.0.2",
     "joi": "^17.4.2",
     "lodash": "4.17.21",
-    "uuid": "^8.3.2",
-    "web3": "1.6.0",
-    "web3-token": "0.1.32"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/chai": "4.2.22",

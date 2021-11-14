@@ -6,9 +6,8 @@ import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import Web3Token from 'web3-token';
+import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { SpaceApi } from './../../../../@api/space.api';
-import { MetamaskSignature } from './../../../../components/auth/services/auth.service';
 
 @Component({
   selector: 'wen-new',
@@ -45,7 +44,7 @@ export class NewPage {
       return;
     }
 
-    const sc: MetamaskSignature|undefined =  await this.auth.signWithMetamask(
+    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
       undefinedToEmpty(this.spaceForm.value)
     );
 
@@ -53,10 +52,8 @@ export class NewPage {
       throw new Error('Unable to sign.');
     }
 
-    console.log(sc);
-    console.log(await Web3Token.verify(sc.token));
     // TODO Handle this via queue and clean-up.
-    this.spaceApi.createSpace(sc.token).subscribe((val) => {
+    this.spaceApi.createSpace(sc).subscribe((val) => {
       this.notification.success('Created.', '');
       this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid])
     });
