@@ -54,11 +54,15 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
     // Add Guardians.
     await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).set({
       uid: owner,
+      parentId: spaceAddress,
+      parentCol: COL.SPACE,
       createdOn: serverTime()
     });
 
     await refSpace.collection(SUB_COL.MEMBERS).doc(owner).set({
       uid: owner,
+      parentId: spaceAddress,
+      parentCol: COL.SPACE,
       createdOn: serverTime()
     });
 
@@ -137,6 +141,8 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
   if (params.body) {
     await refSpace.collection(SUB_COL.MEMBERS).doc(owner).set({
       uid: owner,
+      parentId: params.body.uid,
+      parentCol: COL.SPACE,
       createdOn: serverTime()
     });
 
@@ -245,6 +251,8 @@ export const addGuardian: functions.CloudFunction<Space> = functions.https.onCal
   if (params.body) {
     await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).set({
       uid: params.body.member,
+      parentId: params.body.uid,
+      parentCol: COL.SPACE,
       createdOn: serverTime()
     });
 
@@ -342,6 +350,8 @@ export const blockMember: functions.CloudFunction<Space> = functions.https.onCal
   if (params.body) {
     await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).set({
       uid: params.body.member,
+      parentId: params.body.uid,
+      parentCol: COL.SPACE,
       createdOn: serverTime()
     });
 

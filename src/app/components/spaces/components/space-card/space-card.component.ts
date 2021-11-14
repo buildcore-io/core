@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Space } from "functions/interfaces/models";
 
 @Component({
   selector: 'wen-space-card',
@@ -7,6 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpaceCardComponent {
-  @Input()
-  space = { id: 0, title: '', description: '', members: 0, cover: '', token: '' };
+  @Input() public space?: Space;
 }

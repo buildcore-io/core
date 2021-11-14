@@ -68,6 +68,8 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
     query.forEach(async (g) => {
       await refProposal.collection(SUB_COL.OWNERS).doc(g.data().uid).set({
         uid: g.data().uid,
+        parentId: proposalAddress,
+        parentCol: COL.PROPOSAL,
         createdOn: serverTime()
       });
     });

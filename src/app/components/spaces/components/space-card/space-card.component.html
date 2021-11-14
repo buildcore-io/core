@@ -1,26 +1,24 @@
-<article class="bg-white w-75 h-75 rounded-2xl">
+<article class="bg-white w-75 h-75 rounded-2xl" *ngIf="space">
   <div class="w-full h-32 overflow-hidden rounded-2xl">
     <img
       alt=""
-      [src]="space.cover"
       class="object-cover w-full h-full"
     />
   </div>
 
   <div class="relative flex flex-col w-full p-4 h-44">
     <nz-avatar
-      [nzSrc]="space.token"
       class="absolute top-0 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
       nzSize="large"
       nzShape="circle"
     ></nz-avatar>
 
-    <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ space.title }}</h3>
+    <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ space.name }}</h3>
 
-    <p class="flex-grow flex-shrink min-h-0 mb-5 overflow-hidden text-sm font-medium">{{ space.description }}</p>
+    <p class="flex-grow flex-shrink min-h-0 mb-5 overflow-hidden text-sm font-medium">{{ space.about }}</p>
 
     <div i18n class="inline-flex gap-2 text-sm font-medium text-gray-400">
       <wen-icon-members></wen-icon-members>
-      {{ space.members }} members</div>
+      {{ space.totalMembers }} members</div>
   </div>
 </article>

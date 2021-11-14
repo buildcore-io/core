@@ -32,6 +32,11 @@ export interface Base {
   uid: string;
 }
 
+export interface BaseSubCollection {
+  parentId: string;
+  parentCol: string;
+}
+
 export interface BaseRecord extends Base {
   createdOn?: Timestamp;
   updatedOn?: Timestamp;

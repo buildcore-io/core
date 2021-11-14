@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
+import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
+import { Space, SpaceMember } from './../../../functions/interfaces/models/space';
 import { BaseApi } from './base.api';
 
 @Injectable({
@@ -18,6 +19,26 @@ export class MemberApi extends BaseApi<Member> {
 
   public listen(id: EthAddress): Observable<Member|undefined> {
     return super.listen(id);
+  }
+
+  public lastSpaces(memberId: EthAddress, def = 50): Observable<Space[]> {
+    const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
+      SUB_COL.MEMBERS,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref: any) => {
+        return ref.where('uid', '==', memberId).orderBy('createdOn', 'asc').limitToLast(def);
+      }
+    );
+    return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
+      const out: Space[] = [];
+      for (const o of obj) {
+        if (o.parentCol === COL.SPACE) {
+          out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
+        }
+      }
+
+      return out;
+    }));
   }
 
   /**

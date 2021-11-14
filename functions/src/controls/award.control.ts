@@ -78,6 +78,8 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
     // Add Owner.
     await refAward.collection(SUB_COL.OWNERS).doc(owner).set({
       uid: owner,
+      parentId: awardAddress,
+      parentCol: COL.AWARD,
       createdOn: serverTime()
     });
 
@@ -118,6 +120,8 @@ export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(a
   if (params.body) {
     await refAward.collection(SUB_COL.OWNERS).doc(params.body.member).set({
       uid: params.body.member,
+      parentId: params.body.uid,
+      parentCol: COL.AWARD,
       createdOn: serverTime()
     });
 
@@ -203,6 +207,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     if (!(await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).get()).exists) {
       await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).set({
         uid: params.body.member,
+        parentId: params.body.uid,
+        parentCol: COL.AWARD,
         createdOn: serverTime()
       });
     }
