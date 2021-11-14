@@ -7,44 +7,23 @@ import { testEnv } from '../../test/set-up';
 describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   it('successfully create member', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    const walletSpy = jest.spyOn(wallet, 'decodeToken');
+    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {}
     }));
 
     const wrapped: any = testEnv.wrap(createMember);
-    const returns = await wrapped();
+    const returns = await wrapped(dummyAddress);
     expect(returns?.uid).toEqual(dummyAddress.toLowerCase());
     expect(returns?.createdOn).toBeDefined();
     expect(returns?.updatedOn).toBeDefined();
     walletSpy.mockRestore();
   });
 
-  it('successfully create member with name', async () => {
-    const dummyAddress = wallet.getRandomEthAddress();
-    const walletSpy = jest.spyOn(wallet, 'decodeToken');
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: {
-        name: 'John',
-        about: 'He rocks'
-      }
-    }));
-
+  it('address not provided', async () => {
     const wrapped: any = testEnv.wrap(createMember);
-    const returns = await wrapped();
-    expect(returns?.uid).toEqual(dummyAddress.toLowerCase());
-    expect(returns?.name).toEqual('John');
-    expect(returns?.about).toEqual('He rocks');
-    expect(returns?.createdOn).toBeDefined();
-    expect(returns?.updatedOn).toBeDefined();
-    walletSpy.mockRestore();
-  });
-
-  it('unable to decode token.', async () => {
-    const wrapped: any = testEnv.wrap(createMember);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.token_must_be_provided.key);
+    (<any>expect(wrapped())).rejects.toThrowError(WenError.address_must_be_provided.key);
   });
 });
 
@@ -56,14 +35,14 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
 
   beforeEach(async () => {
     dummyAddress = wallet.getRandomEthAddress();
-    walletSpy = jest.spyOn(wallet, 'decodeToken');
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {}
     }));
 
     const wCreate: any = testEnv.wrap(createMember);
-    doc = await wCreate();
+    doc = await wCreate(dummyAddress);
     expect(doc?.uid).toEqual(dummyAddress.toLowerCase());
   });
 

@@ -13,19 +13,16 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
   const exampleCid = 'bagaaierasords4njcts6vs7qvdjfcvgnume4hqohf65zsfguprqphs3icwea';
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeToken');
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = wallet.getRandomEthAddress();
     walletSpy.mockReturnValue(Promise.resolve({
       address: memberAddress,
-      body: {
-        name: 'John'
-      }
+      body: {}
     }));
 
     const wrapped: any = testEnv.wrap(createMember);
-    const returns = await wrapped();
+    const returns = await wrapped(memberAddress);
     expect(returns?.uid).toEqual(memberAddress.toLowerCase());
-    expect(returns?.name).toEqual('John');
     walletSpy.mockReturnValue(Promise.resolve({
       address: memberAddress,
       body: {
@@ -39,7 +36,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
   });
 
   it('successfully create award with name', async () => {
-    const walletSpy = jest.spyOn(wallet, 'decodeToken');
+    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const body: any = {
       name: 'Award A',
       description: 'Finish this and that',
@@ -73,7 +70,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     let body: any;
     let walletSpy: any;
     beforeEach(async () => {
-      walletSpy = jest.spyOn(wallet, 'decodeToken');
+      walletSpy = jest.spyOn(wallet, 'decodeAuth');
       body = {
         name: 'Award A',
         description: 'Finish this and that',
@@ -168,7 +165,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     const memberAddress2 = wallet.getRandomEthAddress();
     const memberAddress3 = wallet.getRandomEthAddress();
     beforeEach(async () => {
-      walletSpy = jest.spyOn(wallet, 'decodeToken');
+      walletSpy = jest.spyOn(wallet, 'decodeAuth');
       body = {
         name: 'Award A',
         description: 'Finish this and that',
@@ -243,7 +240,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     const memberAddress3 = wallet.getRandomEthAddress();
     const memberAddress4 = wallet.getRandomEthAddress();
     beforeEach(async () => {
-      walletSpy = jest.spyOn(wallet, 'decodeToken');
+      walletSpy = jest.spyOn(wallet, 'decodeAuth');
       body = {
         name: 'Award A',
         description: 'Finish this and that',
@@ -273,13 +270,11 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       ].forEach(async (r) => {
         walletSpy.mockReturnValue(Promise.resolve({
           address: r,
-          body: {
-            name: 'John'
-          }
+          body: {}
         }));
 
         const wrapped: any = testEnv.wrap(createMember);
-        const returns = await wrapped();
+        const returns = await wrapped(r);
         expect(returns?.uid).toEqual(r.toLowerCase());
       });
     });

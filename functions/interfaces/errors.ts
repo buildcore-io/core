@@ -1,7 +1,10 @@
 export const WenError = {
   unknown: { code: 1000, key: 'Unknown error' },
   invalid_params: { code: 1001, key: 'Params validation failed.' },
-  token_must_be_provided: { code: 2001, key: 'Token must be provided.' },
+  address_must_be_provided: { code: 1002, key: 'Address must be provided.' },
+  signature_must_be_provided: { code: 1003, key: 'Signature must be provided.' },
+  invalid_signature: { code: 1003, key: 'Invalid signature.' },
+  missing_nonce: { code: 1004, key: 'Missing nonce.' },
   invalid_wallet_address: { code: 2002, key: 'Invalid wallet address.' },
   failed_to_decode_token: { code: 2003, key: 'Failed to decode the token.' },
   member_does_not_exists: { code: 2004, key: 'Member does not exists.' },

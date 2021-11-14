@@ -3,11 +3,11 @@ import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
-import { COL, SUB_COL } from '../../interfaces/models/base';
+import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { cleanParams, decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
 
@@ -27,8 +27,8 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 };
 
-export const createSpace: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<Space> => {
-  const params: DecodedToken = await decodeToken(token);
+export const createSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<Space> => {
+  const params: DecodedToken = await decodeAuth(req);
   const owner: string = params.address.toLowerCase();
 
   // We only get random address here that we use as ID.
@@ -77,9 +77,9 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
   });
 });
 
-export const updateSpace: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<Space> => {
+export const updateSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<Space> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {
@@ -109,9 +109,9 @@ export const updateSpace: functions.CloudFunction<Space> = functions.https.onCal
   return <Space>docSpace.data();
 });
 
-export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<Space> => {
+export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<Space> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
@@ -157,9 +157,9 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
   return <Space>docSpace.data();
 });
 
-export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
@@ -212,9 +212,9 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall
   };
 });
 
-export const addGuardian: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const addGuardian: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
@@ -263,9 +263,9 @@ export const addGuardian: functions.CloudFunction<Space> = functions.https.onCal
   return docSpace.data();
 });
 
-export const removeGuardian: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const removeGuardian: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
@@ -308,9 +308,9 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.https.on
   };
 });
 
-export const blockMember: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const blockMember: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
@@ -369,9 +369,9 @@ export const blockMember: functions.CloudFunction<Space> = functions.https.onCal
   return docSpace.data();
 });
 
-export const unblockMember: functions.CloudFunction<Space> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const unblockMember: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {

@@ -5,12 +5,12 @@ import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
-import { COL, SUB_COL } from '../../interfaces/models/base';
+import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Proposal } from '../../interfaces/models/proposal';
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { cleanParams, decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -34,8 +34,8 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 }
 
-export const createProposal: functions.CloudFunction<Proposal> = functions.https.onCall(async (token: string): Promise<Proposal> => {
-  const params: DecodedToken = await decodeToken(token);
+export const createProposal: functions.CloudFunction<Proposal> = functions.https.onCall(async (req: WenRequest): Promise<Proposal> => {
+  const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
   // We only get random address here that we use as ID.
@@ -81,9 +81,9 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
   return <Proposal>docProposal.data();
 });
 
-export const approveProposal: functions.CloudFunction<Proposal> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const approveProposal: functions.CloudFunction<Proposal> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required()

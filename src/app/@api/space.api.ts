@@ -40,7 +40,7 @@ export class SpaceApi extends BaseApi<Space> {
   /**
    * Function to create profile if it does not exists yet.
    */
-  public createSpace(token: string): Observable<Space|undefined> {
+  public createSpace(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cSpace);
     const data$ = callable(token);
     return data$;
@@ -49,7 +49,7 @@ export class SpaceApi extends BaseApi<Space> {
   /**
    * Function to update the space.
    */
-  public updateSpace(token: string): Observable<Space|undefined> {
+  public updateSpace(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.uSpace);
     const data$ = callable(token);
     return data$;

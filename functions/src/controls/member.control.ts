@@ -4,12 +4,13 @@ import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken } from '../../interfaces/functions/index';
-import { COL } from '../../interfaces/models/base';
+import { COL, WenRequest } from '../../interfaces/models/base';
 import { cOn, uOn } from "../utils/dateTime.utils";
-import { throwInvalidArgument } from "../utils/error.utils";
+import { throwInvalidArgument, throwUnAuthenticated } from "../utils/error.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { cleanParams, decodeToken } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth } from "../utils/wallet.utils";
 import { Member } from './../../interfaces/models/member';
+import { ethAddressLength } from './../utils/wallet.utils';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -27,22 +28,19 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 }
 
-export const createMember: functions.CloudFunction<Member> = functions.https.onCall(async (token: string): Promise<Member> => {
-  const params: DecodedToken = await decodeToken(token);
-  const address = params.address.toLowerCase();
-
-  // Body might be provided.
-  if (params.body && Object.keys(params.body).length > 0) {
-    const schema: ObjectSchema<Member> = Joi.object(defaultJoiUpdateCreateSchema());
-    assertValidation(schema.validate(params.body));
+export const createMember: functions.CloudFunction<Member> = functions.https.onCall(async (address: string): Promise<Member> => {
+  if (!address || address.length !== ethAddressLength) {
+    throw throwUnAuthenticated(WenError.address_must_be_provided);
   }
 
   let docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
+  const generatedNonce: string = Math.floor(Math.random() * 1000000).toString();
   if (!docMember.exists) {
     // Document does not exists. We must create the member.
-    await admin.firestore().collection(COL.MEMBER).doc(address).set(cOn(merge(cleanParams(params.body), {
-      uid: address
-    })));
+    await admin.firestore().collection(COL.MEMBER).doc(address).set(cOn({
+      uid: address,
+      nonce: generatedNonce
+    }));
 
     // Load latest
     docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
@@ -52,9 +50,9 @@ export const createMember: functions.CloudFunction<Member> = functions.https.onC
   return <Member>docMember.data();
 });
 
-export const updateMember: functions.CloudFunction<Member> = functions.https.onCall(async (token: string): Promise<Member> => {
+export const updateMember: functions.CloudFunction<Member> = functions.https.onCall(async (req: WenRequest): Promise<Member> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const address = params.address.toLowerCase();
   const schema: ObjectSchema<Member> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {
     uid: Joi.string().equal(address).lowercase().required()

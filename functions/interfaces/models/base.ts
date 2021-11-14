@@ -1,5 +1,11 @@
 import { Timestamp } from 'firebase/firestore';
 
+export interface WenRequest {
+  address: string;
+  signature: string;
+  body: any;
+}
+
 export const enum COL {
   MEMBER = 'member',
   AWARD = 'award',

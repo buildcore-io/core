@@ -11,7 +11,7 @@ import { MemberApi } from './../../../@api/member.api';
 
 export interface MetamaskSignature {
   address: string;
-  token: string;
+  req: WenRequest;
 }
 
 @Injectable({
@@ -115,7 +115,7 @@ export class AuthService {
     }
   }
 
-  public async decodeToken(token: string): Promise<DecodedToken> {
+  public async decodeAuth(req: WenRequest): Promise<DecodedToken> {
     return await Web3Token.verify(token);
   }
 

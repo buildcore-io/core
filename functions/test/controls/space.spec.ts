@@ -7,7 +7,7 @@ import { addGuardian, blockMember, createSpace, joinSpace, leaveSpace, removeGua
 describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
   it('successfully create space', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    const walletSpy = jest.spyOn(wallet, 'decodeToken');
+    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {}
@@ -31,7 +31,7 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
 
   it('successfully create space with name', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    const walletSpy = jest.spyOn(wallet, 'decodeToken');
+    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {
@@ -52,7 +52,7 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
 
   it('unable to decode token.', async () => {
     const wrapped: any = testEnv.wrap(createSpace);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.token_must_be_provided.key);
+    (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
   });
 });
 
@@ -63,7 +63,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
   let doc: any;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeToken');
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     dummyAddress = wallet.getRandomEthAddress();;
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
@@ -153,7 +153,7 @@ describe('SpaceController: member management', () => {
   let doc: any;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeToken');
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardian = wallet.getRandomEthAddress();
     member = wallet.getRandomEthAddress();
     walletSpy.mockReturnValue(Promise.resolve({

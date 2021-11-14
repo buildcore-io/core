@@ -23,7 +23,7 @@ export class MemberApi extends BaseApi<Member> {
   /**
    * Function to create profile if it does not exists yet.
    */
-  public createIfNotExists(token: string): Observable<Member|undefined> {
+  public createIfNotExists(req: WenRequest): Observable<Member|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cMemberNotExists);
     const data$ = callable(token);
     return data$;
@@ -32,7 +32,7 @@ export class MemberApi extends BaseApi<Member> {
   /**
    * Function to update the member.
    */
-  public updateMember(token: string): Observable<Member|undefined> {
+  public updateMember(req: WenRequest): Observable<Member|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.uMember);
     const data$ = callable(token);
     return data$;

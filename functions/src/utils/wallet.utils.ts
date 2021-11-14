@@ -1,36 +1,66 @@
+import { DocumentData } from "@firebase/firestore";
+import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
-import Web3 from 'web3';
-import Web3Token from 'web3-token';
+import * as admin from 'firebase-admin';
 import { WenError } from "../../interfaces/errors";
 import { DecodedToken } from './../../interfaces/functions/index';
+import { COL, WenRequest } from './../../interfaces/models/base';
 import { throwUnAuthenticated } from "./error.utils";
-
 export const ethAddressLength = 42;
 
-export async function decodeToken(token: string): Promise<DecodedToken> {
-  if (!token) {
-    throw throwUnAuthenticated(WenError.token_must_be_provided);
+const toHex = (stringToConvert: string) => {
+  return stringToConvert.split('').map((c) => {
+    return c.charCodeAt(0).toString(16).padStart(2, '0');
+  }).join('');
+}
+
+export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
+  if (!req) {
+    throw throwUnAuthenticated(WenError.invalid_params);
   }
 
-  try {
-    const params: DecodedToken = await Web3Token.verify(token);
-    // Validate address.
-    if (!Web3.utils.isAddress(params?.address)) {
-      throw throwUnAuthenticated(WenError.invalid_wallet_address);
-    }
+  if (!req.address) {
+    throw throwUnAuthenticated(WenError.address_must_be_provided);
+  }
 
-    params.address = params.address.toLowerCase();
-    return params;
-  } catch(e) {
-    console.error(e);
+  if (!req.signature) {
+    throw throwUnAuthenticated(WenError.signature_must_be_provided);
+  }
+
+  const userDocRef: any = admin.firestore().collection(COL.MEMBER).doc(req.address);
+  const userDoc: DocumentData = await userDocRef.get();
+  if (!userDoc.exists) {
     throw throwUnAuthenticated(WenError.failed_to_decode_token);
   }
+
+  const existingNonce: string = userDoc.data()?.nonce;
+  if (!userDoc.data()?.nonce) {
+    throw throwUnAuthenticated(WenError.missing_nonce);
+  }
+
+  const recoveredAddress = recoverPersonalSignature({
+    data: `0x${toHex(existingNonce)}`,
+    signature: req.signature,
+  });
+
+  if (recoveredAddress !== req.address) {
+    throw throwUnAuthenticated(WenError.invalid_signature);
+  }
+
+  // Set new nonce.
+  await admin.firestore().collection(COL.MEMBER).doc(req.address).set({
+    nonce: (Math.floor(Math.random() * 1000000).toString()),
+  });
+
+  return {
+    address: req.address.toLowerCase(),
+    body: req.body
+  };
 };
 
 export function cleanParams(params: any): any {
-  delete params['web3-token-version'];
-  delete params['expire-date'];
+  // None required.
   return params;
 }
 
