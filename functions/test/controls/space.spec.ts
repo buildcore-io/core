@@ -24,6 +24,8 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     expect(returns.members[dummyAddress]).toBeDefined();
     expect(returns.guardians).toBeDefined();
     expect(returns.guardians[dummyAddress]).toBeDefined();
+    expect(returns?.totalGuardians).toEqual(1);
+    expect(returns?.totalMembers).toEqual(1);
     walletSpy.mockRestore();
   });
 
@@ -43,6 +45,8 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     expect(returns?.uid).toBeDefined();
     expect(returns?.name).toEqual('Space ABC');
     expect(returns?.about).toEqual('very cool');
+    expect(returns?.totalGuardians).toEqual(1);
+    expect(returns?.totalMembers).toEqual(1);
     walletSpy.mockRestore();
   });
 

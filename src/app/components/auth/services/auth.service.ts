@@ -18,8 +18,8 @@ export interface MetamaskSignature {
   providedIn: 'root',
 })
 export class AuthService {
-  isLoggedIn$ = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
-  member$ = new BehaviorSubject<Member|undefined>(undefined);
+  public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
+  public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   private memberSubscription$?: Subscription;
 
   constructor(private memberApi: MemberApi) {

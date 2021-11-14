@@ -46,7 +46,9 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
     // Document does not exists. We must create the member.
     await refSpace.set(cOn(merge(cleanParams(params.body), {
       uid: spaceAddress,
-      createdBy: owner
+      createdBy: owner,
+      totalMembers: 1,
+      totalGuardians: 1
     })));
 
     // Add Guardians.
@@ -138,6 +140,15 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
       createdOn: serverTime()
     });
 
+    // Set members.
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSpace);
+      const totalMembers = (sfDoc.data().totalMembers || 0) + 1;
+      transaction.update(refSpace, {
+        totalMembers: totalMembers
+      });
+    });
+
     // Load latest
     docSpace = await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get();
   }
@@ -181,6 +192,14 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall
 
   if (params.body) {
     await refSpace.collection(SUB_COL.MEMBERS).doc(owner).delete();
+
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSpace);
+      const totalMembers = (sfDoc.data().totalMembers || 0) - 1;
+      transaction.update(refSpace, {
+        totalMembers: totalMembers
+      });
+    });
 
     // If this member is always guardian he must be removed.
     if (isGuardian) {
@@ -229,6 +248,14 @@ export const addGuardian: functions.CloudFunction<Space> = functions.https.onCal
       createdOn: serverTime()
     });
 
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSpace);
+      const totalGuardians = (sfDoc.data().totalGuardians || 0) + 1;
+      transaction.update(refSpace, {
+        totalGuardians: totalGuardians
+      });
+    });
+
     // Load latest
     docSpace = await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get();
   }
@@ -267,6 +294,13 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.https.on
 
   if (params.body) {
     await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSpace);
+      const totalGuardians = (sfDoc.data().totalGuardians || 0) - 1;
+      transaction.update(refSpace, {
+        totalGuardians: totalGuardians
+      });
+    });
   }
 
   return {
@@ -317,6 +351,16 @@ export const blockMember: functions.CloudFunction<Space> = functions.https.onCal
     if (isGuardian) {
       await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
     }
+
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSpace);
+      const totalMembers = (sfDoc.data().totalMembers || 0) - 1;
+      const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? 1 : 0);
+      transaction.update(refSpace, {
+        totalGuardians: totalGuardians,
+        totalMembers: totalMembers
+      });
+    });
 
     // Load latest
     docSpace = await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).get();
