@@ -18,6 +18,7 @@ import { WenComponent } from './app.component';
 registerLocaleData(en);
 registerLocaleData(fr);
 const icons: IconDefinition[] = [];
+const emulator = false;
 
 @NgModule({
   declarations: [WenComponent],
@@ -57,9 +58,9 @@ const icons: IconDefinition[] = [];
     },
     deps: [LOCALE_ID]
   },
-  { provide: USE_DATABASE_EMULATOR, useValue: process.env.FB_EMULATOR ? ['localhost', 9000] : undefined },
-  { provide: USE_FIRESTORE_EMULATOR, useValue: process.env.FB_EMULATOR ? ['localhost', 8080] : undefined },
-  { provide: USE_FUNCTIONS_EMULATOR, useValue: process.env.FB_EMULATOR ? ['localhost', 5001] : undefined }
+  { provide: USE_DATABASE_EMULATOR, useValue: emulator ? ['localhost', 9000] : undefined },
+  { provide: USE_FIRESTORE_EMULATOR, useValue: emulator ? ['localhost', 8080] : undefined },
+  { provide: USE_FUNCTIONS_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined }
   ]
 })
 export class AppModule { }

@@ -24,4 +24,19 @@ export class BaseApi<T> {
       })
     );
   }
+
+  public last(def = 50): Observable<T[]> {
+    return this._last(this.collection, def);
+  }
+
+  protected _last(collection: string, def = 50): Observable<T[]> {
+    const ref: AngularFirestoreCollection<T> = this.afs.collection<T>(
+      collection,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref) => {
+        return ref.orderBy('createdOn', 'asc').limitToLast(def);
+      }
+    );
+    return ref.valueChanges();
+  }
 }

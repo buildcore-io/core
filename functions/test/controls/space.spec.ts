@@ -7,7 +7,7 @@ import { addGuardian, blockMember, createSpace, joinSpace, leaveSpace, removeGua
 describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
   it('successfully create space', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    const walletSpy = jest.spyOn(wallet, 'decodeToken');
+    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {}
@@ -24,16 +24,19 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     expect(returns.members[dummyAddress]).toBeDefined();
     expect(returns.guardians).toBeDefined();
     expect(returns.guardians[dummyAddress]).toBeDefined();
+    expect(returns?.totalGuardians).toEqual(1);
+    expect(returns?.totalMembers).toEqual(1);
     walletSpy.mockRestore();
   });
 
   it('successfully create space with name', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    const walletSpy = jest.spyOn(wallet, 'decodeToken');
+    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: {
-        name: 'Space ABC'
+        name: 'Space ABC',
+        about: 'very cool'
       }
     }));
 
@@ -41,12 +44,15 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     const returns = await wrapped();
     expect(returns?.uid).toBeDefined();
     expect(returns?.name).toEqual('Space ABC');
+    expect(returns?.about).toEqual('very cool');
+    expect(returns?.totalGuardians).toEqual(1);
+    expect(returns?.totalMembers).toEqual(1);
     walletSpy.mockRestore();
   });
 
   it('unable to decode token.', async () => {
     const wrapped: any = testEnv.wrap(createSpace);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.token_must_be_provided.key);
+    (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
   });
 });
 
@@ -57,7 +63,7 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
   let doc: any;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeToken');
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     dummyAddress = wallet.getRandomEthAddress();;
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
@@ -147,7 +153,7 @@ describe('SpaceController: member management', () => {
   let doc: any;
 
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeToken');
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardian = wallet.getRandomEthAddress();
     member = wallet.getRandomEthAddress();
     walletSpy.mockReturnValue(Promise.resolve({

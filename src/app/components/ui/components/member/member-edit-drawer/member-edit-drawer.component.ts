@@ -5,9 +5,9 @@ import { getUrlValidator } from "@core/utils/form-validation.utils";
 import { undefinedToEmpty } from "@core/utils/manipulations.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { WenRequest } from './../../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../../@api/member.api';
-import { MetamaskSignature } from './../../../../auth/services/auth.service';
 
 @UntilDestroy()
 @Component({
@@ -20,7 +20,7 @@ export class MemberEditDrawerComponent implements OnInit {
   @Output() public wenOnClose = new EventEmitter<void>();
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('');
-  public linkedInControl: FormControl = new FormControl('', getUrlValidator());
+  public linkedinControl: FormControl = new FormControl('', getUrlValidator());
   public twitterControl: FormControl = new FormControl('', getUrlValidator());
   public githubControl: FormControl = new FormControl('', getUrlValidator());
   public memberForm: FormGroup;
@@ -29,7 +29,7 @@ export class MemberEditDrawerComponent implements OnInit {
     this.memberForm = new FormGroup({
       name: this.nameControl,
       about: this.aboutControl,
-      linkedIn: this.linkedInControl,
+      linkedin: this.linkedinControl,
       twitter: this.twitterControl,
       github: this.githubControl
     });
@@ -50,7 +50,7 @@ export class MemberEditDrawerComponent implements OnInit {
   private setFormValues(obj: Member): void {
     this.nameControl.setValue(obj.name);
     this.aboutControl.setValue(obj.about);
-    this.linkedInControl.setValue(obj.linkedIn);
+    this.linkedinControl.setValue(obj.linkedin);
     this.twitterControl.setValue(obj.twitter);
     this.githubControl.setValue(obj.github);
   }
@@ -61,7 +61,7 @@ export class MemberEditDrawerComponent implements OnInit {
       return;
     }
 
-    const sc: MetamaskSignature|undefined =  await this.auth.signWithMetamask(undefinedToEmpty({
+    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(undefinedToEmpty({
       ...this.memberForm.value,
       ...{
         uid: this.auth.member$.value!.uid
@@ -72,7 +72,7 @@ export class MemberEditDrawerComponent implements OnInit {
     }
 
     // TODO Handle this via queue and clean-up.
-    this.memberApi.updateMember(sc.token).subscribe(() => {
+    this.memberApi.updateMember(sc).subscribe(() => {
       this.notification.success('Updated.', '');
     });
 

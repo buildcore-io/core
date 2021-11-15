@@ -1,25 +1,23 @@
 import { Injectable } from '@angular/core';
-import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
+import { getItem, setItem, StorageItem } from '@core/utils';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
-import Web3 from 'web3';
-import Web3Token from 'web3-token';
-import { EthAddress } from '../../../../../functions/interfaces/models/base';
+import { EthAddress, WenRequest } from '../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../functions/interfaces/models/member';
-import { DecodedToken } from './../../../../../functions/interfaces/functions/index';
 import { MemberApi } from './../../../@api/member.api';
+import { removeItem } from './../../../@core/utils/local-storage.utils';
 
 export interface MetamaskSignature {
   address: string;
-  token: string;
+  req: WenRequest;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  isLoggedIn$ = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
-  member$ = new BehaviorSubject<Member|undefined>(undefined);
+  public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
+  public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   private memberSubscription$?: Subscription;
 
   constructor(private memberApi: MemberApi) {
@@ -46,31 +44,23 @@ export class AuthService {
     return this.isLoggedIn$.getValue();
   }
 
-  async signWithMetamask(params: any = {}, expiresIn = '1m'): Promise<MetamaskSignature|undefined> {
+  async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
     const provider: any = await detectEthereumProvider();
     if (provider) {
-      try {
-        // Connection to MetaMask wallet
-        const web3: Web3 = new Web3(provider);
-        await provider.enable();
+      await provider.request({ method: 'eth_requestAccounts' });
+      const member: Member = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
+      const signature: string = await provider.request({
+        method: 'personal_sign',
+        params: [
+          `0x${this.toHex(member.nonce!)}`,
+          provider.selectedAddress,
+        ],
+      });
 
-        // Getting address from which we will sign message
-        // TODO: allow user to select account.
-        const address = (await web3.eth.getAccounts())[0];
-
-        // generating a token with 1 day of expiration time
-        const token = await Web3Token.sign((msg: any) => {
-          return web3.eth.personal.sign(msg, address, 'pass');
-        }, expiresIn, params);
-
-        return {
-          address: address,
-          token: token
-        };
-      } catch(e) {
-        // Ignore. they didn't log in.
-        console.error(e);
-        return undefined;
+      return {
+        address: provider.selectedAddress,
+        signature: signature,
+        body: params
       }
     } else {
       console.log('Please install MetaMask!');
@@ -82,8 +72,14 @@ export class AuthService {
     this.memberSubscription$ = this.memberApi.listen(address).subscribe(this.member$);
   }
 
+  public toHex(stringToConvert: string) {
+    return stringToConvert.split('').map((c) => {
+      return c.charCodeAt(0).toString(16).padStart(2, '0');
+    }).join('');
+  }
+
   public async signIn(): Promise<void> {
-    const sc: MetamaskSignature|undefined = await this.signWithMetamask({}, '1d');
+    const sc: WenRequest|undefined = await this.signWithMetamask({});
     if (!sc) {
       throw new Error('Unable to sign.');
     }
@@ -94,29 +90,16 @@ export class AuthService {
     });
     this.isLoggedIn$.next(true);
 
-    // Make sure member is created if not exists yet.
-    const m: Member|undefined = await firstValueFrom(this.memberApi.createIfNotExists(sc.token));
-    if (!m) {
-      throw new Error('Unable to create member!');
-    }
-
-    // Sent latest version.
-    this.member$.next(m);
-
     // Let's make sure we monitor the member.
     this.monitorMember(sc.address);
 
     // Store public ETH address in cookies.
     setItem(StorageItem.AuthAddress, sc.address);
 
-    if (sc.token) {
-      setItem(StorageItem.Auth, sc.token);
+    if (sc.address) {
+      setItem(StorageItem.Auth, sc.address);
       this.isLoggedIn$.next(true);
     }
-  }
-
-  public async decodeToken(token: string): Promise<DecodedToken> {
-    return await Web3Token.verify(token);
   }
 
   signOut(): void {

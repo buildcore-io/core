@@ -3,24 +3,24 @@
 
   <div class="-mx-6 overflow-hidden">
     <h3 class="px-7">Your spaces
-      <a *ngIf="spaces.length > 0" nz-button nzType="link" [routerLink]="['/discover', 'spaces']">Show All
+      <a *ngIf="(spaces$ | async)!.length > 0" nz-button nzType="link" [routerLink]="['/discover', 'spaces']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a>
     </h3>
     <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
-      <wen-space-card class="cursor-pointer" *ngFor="let space of spaces" [space]="space"
-        [routerLink]="['/space', space.id]"></wen-space-card>
+      <wen-space-card class="cursor-pointer" *ngFor="let space of spaces$ | async" [space]="space"
+        [routerLink]="['/space', space.uid]"></wen-space-card>
     </div>
   </div>
 
   <div class="-mx-6 overflow-hidden">
     <h3 class="px-7">Active proposals
-      <a *ngIf="proposals.length > 0" nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
+      <a *ngIf="(proposals$ | async)!.length > 0" nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a>
     </h3>
     <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
-      <div *ngIf="proposals.length === 0"
+      <div *ngIf="(proposals$ | async)!.length === 0"
         class="flex flex-col items-center justify-center transition-colors bg-transparent border-2 border-gray-300 cursor-pointer empty-card hover:border-gray-700 w-75 h-75 rounded-2xl"
         [routerLink]="['/discover', 'proposals']">
         <div class="w-10 h-10 p-0 text-xl text-center text-current bg-blue-600 rounded-3xl">

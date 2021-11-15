@@ -42,6 +42,14 @@ export const ROUTER_UTILS = {
       proposal: ':spaceId',
       overview: 'overview',
     },
+    award: {
+      // Redirect back to space?!
+      root: 'award',
+      newAward: 'new',
+      award: ':spaceId',
+      overview: 'overview',
+      participants: 'participants',
+    },
     errorResponse: {
       notFound: '404',
     },

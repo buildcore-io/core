@@ -51,6 +51,12 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.award.root,
+    loadChildren: async () =>
+      (await import('@pages/award/award.module')).AwardModule,
+    canLoad: [],
+  },
+  {
     path: '**',
     loadChildren: async () =>
       (await import('@shell/ui/not-found/not-found.module')).NotFoundModule,

@@ -8,10 +8,11 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { cOn, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { cleanParams, decodeToken, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { StandardResponse } from './../../interfaces/functions/index';
 import { Award } from './../../interfaces/models/award';
+import { WenRequest } from './../../interfaces/models/base';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 
 function defaultJoiUpdateCreateSchema(): any {
@@ -44,8 +45,8 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 }
 
-export const createAward: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<Award> => {
-  const params: DecodedToken = await decodeToken(token);
+export const createAward: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<Award> => {
+  const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
   // We only get random address here that we use as ID.
@@ -77,6 +78,8 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
     // Add Owner.
     await refAward.collection(SUB_COL.OWNERS).doc(owner).set({
       uid: owner,
+      parentId: awardAddress,
+      parentCol: COL.AWARD,
       createdOn: serverTime()
     });
 
@@ -89,9 +92,9 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
   return <Award>docAward.data();
 });
 
-export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
@@ -117,6 +120,8 @@ export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(a
   if (params.body) {
     await refAward.collection(SUB_COL.OWNERS).doc(params.body.member).set({
       uid: params.body.member,
+      parentId: params.body.uid,
+      parentCol: COL.AWARD,
       createdOn: serverTime()
     });
 
@@ -127,9 +132,9 @@ export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(a
   return docAward.data();
 });
 
-export const participate: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const participate: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const participant = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
@@ -165,9 +170,9 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
   return docAward.data();
 });
 
-export const approveParticipant: functions.CloudFunction<Award> = functions.https.onCall(async (token: string): Promise<StandardResponse> => {
+export const approveParticipant: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
-  const params: DecodedToken = await decodeToken(token);
+  const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const tranId = getRandomEthAddress();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
@@ -202,6 +207,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     if (!(await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).get()).exists) {
       await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).set({
         uid: params.body.member,
+        parentId: params.body.uid,
+        parentCol: COL.AWARD,
         createdOn: serverTime()
       });
     }

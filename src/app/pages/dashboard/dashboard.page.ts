@@ -1,30 +1,43 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-const iotaToken = 'assets/mocks/iota-token.png';
-const iota = 'assets/mocks/iota-treasury.png';
-const soonlabsToken = 'assets/mocks/soonlabs-token.png';
-const soonlabs = 'assets/mocks/soonlabs.png';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Space } from "functions/interfaces/models";
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { Proposal } from './../../../../functions/interfaces/models/proposal';
+import { MemberApi } from './../../@api/member.api';
 
+@UntilDestroy()
 @Component({
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardPage {
+export class DashboardPage implements OnInit, OnDestroy {
+  public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
+  public proposals$: BehaviorSubject<Proposal[]> = new BehaviorSubject<Proposal[]>([]);
+  private subscriptions$: Subscription[] = [];
   path = ROUTER_UTILS.config.base;
+  constructor(private auth: AuthService, private memberApi: MemberApi) {
+    // none.
+  }
 
-  spaces = [
-    { id: 1, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken },
-    { id: 2, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken },
-    { id: 3, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken },
-    { id: 4, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken },
-    { id: 5, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken },
-    { id: 6, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken },
-    { id: 7, title: 'IOTA Treasury', description: 'The IOTA Community will be able to vote to allocate all unclaimed tokens from previous network updates into anothe', members: 20, cover: iota, token: iotaToken },
-    { id: 8, title: 'SoonLabs', description: 'Media initiative tied to the John Wick movie franchise.', members: 20, cover: soonlabs, token: soonlabsToken },
-  ]
+  public ngOnInit(): void {
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+      this.cancelSubscriptions();
+      if (o?.uid) {
+        this.memberApi.lastSpaces(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
+      }
+    });
+  }
 
-  proposals = [
-    
-  ]
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSubscriptions();
+  }
 }

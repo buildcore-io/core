@@ -1,5 +1,11 @@
 import { Timestamp } from 'firebase/firestore';
 
+export interface WenRequest {
+  address: string;
+  signature: string;
+  body: any;
+}
+
 export const enum COL {
   MEMBER = 'member',
   AWARD = 'award',
@@ -24,6 +30,11 @@ export type EthAddress = string;
 
 export interface Base {
   uid: string;
+}
+
+export interface BaseSubCollection {
+  parentId: string;
+  parentCol: string;
 }
 
 export interface BaseRecord extends Base {

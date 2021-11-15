@@ -13,19 +13,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
   let space: any;
   let body: any;
   beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeToken');
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = wallet.getRandomEthAddress();
     walletSpy.mockReturnValue(Promise.resolve({
       address: memberAddress,
-      body: {
-        name: 'John'
-      }
+      body: {}
     }));
 
     const wrapped: any = testEnv.wrap(createMember);
-    const returns = await wrapped();
+    const returns = await wrapped(memberAddress);
     expect(returns?.uid).toEqual(memberAddress.toLowerCase());
-    expect(returns?.name).toEqual('John');
     walletSpy.mockReturnValue(Promise.resolve({
       address: memberAddress,
       body: {
