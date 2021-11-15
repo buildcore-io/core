@@ -8,9 +8,8 @@ import { COL, WenRequest } from '../../interfaces/models/base';
 import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument, throwUnAuthenticated } from "../utils/error.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { cleanParams, decodeAuth } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, ethAddressLength } from "../utils/wallet.utils";
 import { Member } from './../../interfaces/models/member';
-import { ethAddressLength } from './../utils/wallet.utils';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -28,7 +27,10 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 }
 
-export const createMember: functions.CloudFunction<Member> = functions.https.onCall(async (address: string): Promise<Member> => {
+export const createMember: functions.CloudFunction<Member> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (address: string): Promise<Member> => {
   if (!address || address.length !== ethAddressLength) {
     throw throwUnAuthenticated(WenError.address_must_be_provided);
   }
