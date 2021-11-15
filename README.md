@@ -44,7 +44,9 @@ Test SC: ``` npx hardhat test```
 Interim centralized TypeScript functions that runs on Firebase Cloud Functions. Typically we would run smart contracts in parallel.
 
 Serve functions locally: ```npm run serve```
+
 Test functions: ```npm run test```
+
 Deploy functions: ```npm run deploy```
 
 ### /src
@@ -56,7 +58,9 @@ Deploy functions: ```npm run deploy```
 Front-end application in Angular/Typescript. @api wraps any calls to backend and decides where to contact smart contracts or interim centralized functions.
 
 Build project: ```npm run build```
+
 Serve project locally: ```npm start```
+
 Run unit tests: ```npm run test```
 
 # 🤝 Contributing
