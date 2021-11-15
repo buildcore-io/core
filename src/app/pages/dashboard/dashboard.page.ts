@@ -29,10 +29,6 @@ export class DashboardPage implements OnInit, OnDestroy {
         this.memberApi.lastSpaces(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
       }
     });
-
-    this.spaces$.subscribe((a) => {
-      console.log(a);
-    });
   }
 
   private cancelSubscriptions(): void {
