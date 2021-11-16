@@ -9,6 +9,7 @@ import { MockProvider, ngMocks } from 'ng-mocks';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -17,8 +18,12 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule, NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzStatisticModule } from 'ng-zorro-antd/statistic';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { TruncateModule } from './src/app/@core/pipes/truncate/truncate.module';
@@ -37,6 +42,11 @@ defineGlobalsInjections({
     NzNotificationModule,
     NzInputModule,
     NzIconModule,
+    NzProgressModule,
+    NzDatePickerModule,
+    NzModalModule,
+    NzTableModule,
+    NzTagModule,
     NzUploadModule,
     NzAvatarModule,
     NzStatisticModule,

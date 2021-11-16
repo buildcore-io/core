@@ -27,6 +27,14 @@ export class HeaderComponent {
     return '/' + ROUTER_UTILS.config.space.root + '/new';
   }
 
+  public get urlToNewProposal(): string {
+    return '/' + ROUTER_UTILS.config.proposal.root + '/new';
+  }
+
+  public get urlToNewAward(): string {
+    return '/' + ROUTER_UTILS.config.award.root + '/new';
+  }
+
   onClickSignOut(): void {
     this.authService.signOut();
   }
