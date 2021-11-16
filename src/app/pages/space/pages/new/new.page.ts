@@ -6,7 +6,10 @@ import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzUploadXHRArgs } from "ng-zorro-antd/upload";
+import { Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
+import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
 @Component({
@@ -27,6 +30,7 @@ export class NewPage {
     private auth: AuthService,
     private router: Router,
     private spaceApi: SpaceApi,
+    private fileApi: FileApi,
     private notification: NzNotificationService
   ) {
     this.spaceForm = new FormGroup({
@@ -57,6 +61,14 @@ export class NewPage {
       this.notification.success('Created.', '');
       this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid])
     });
+  }
+
+  public uploadFile(item: NzUploadXHRArgs): Subscription {
+    if (!this.auth.member$.value) {
+      throw new Error('Member seems to log out during the file upload request.');
+    }
+    
+    return this.fileApi.upload(this.auth.member$.value.uid, item);
   }
 
   public get urlToSpaces(): string {

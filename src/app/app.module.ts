@@ -4,9 +4,9 @@ import en from '@angular/common/locales/en';
 import fr from '@angular/common/locales/fr';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire/compat';
-import { USE_EMULATOR as USE_DATABASE_EMULATOR } from '@angular/fire/compat/database';
 import { AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/compat/firestore';
 import { AngularFireFunctionsModule, USE_EMULATOR as USE_FUNCTIONS_EMULATOR } from '@angular/fire/compat/functions';
+import { AngularFireStorageModule, USE_EMULATOR as USE_STORAGE_EMULATOR } from '@angular/fire/compat/storage';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
@@ -34,13 +34,14 @@ const emulator = false;
       apiKey: "AIzaSyB4fcG8rtNWAiAtSmxmK3q3JLfMvtNCGP4",
       authDomain: "soonaverse.firebaseapp.com",
       projectId: "soonaverse",
-      // storageBucket: "soonaverse.appspot.com",
+      storageBucket: "soonaverse.appspot.com",
       messagingSenderId: "502842886229",
       appId: "1:502842886229:web:fcb7da4040fd19ba742cdc",
       measurementId: "G-CCX9NVPPCR"
     }),
     AngularFirestoreModule,
     AngularFireFunctionsModule,
+    AngularFireStorageModule
   ],
   bootstrap: [WenComponent],
   providers: [{
@@ -58,9 +59,9 @@ const emulator = false;
     },
     deps: [LOCALE_ID]
   },
-  { provide: USE_DATABASE_EMULATOR, useValue: emulator ? ['localhost', 9000] : undefined },
   { provide: USE_FIRESTORE_EMULATOR, useValue: emulator ? ['localhost', 8080] : undefined },
-  { provide: USE_FUNCTIONS_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined }
+  { provide: USE_FUNCTIONS_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined },
+  { provide: USE_STORAGE_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined }
   ]
 })
 export class AppModule { }
