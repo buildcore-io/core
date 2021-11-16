@@ -1,9 +1,8 @@
 import { Base, BaseRecord } from './base';
 import { SpaceMember } from './space';
 export enum ProposalType {
-  NATIVE = "NATIVE",
-  DIGITAL_ASSET = "DIGITAL_ASSET",
-  SMART_CONTRACT = "SMART_CONTRACT"
+  NATIVE = 0,
+  MEMBERS = 1
 }
 
 export interface NativeProposalSettings {

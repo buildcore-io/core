@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 
@@ -9,6 +10,12 @@ import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewPage {
+  public nameControl: FormControl = new FormControl('');
+  public startControl: FormControl = new FormControl('');
+  public endControl: FormControl = new FormControl('');
+  public additionalInfoControl: FormControl = new FormControl('');
+  // public proposalForm: FormGroup;
+
   public startValue: Date = new Date();
   public endValue: Date = new Date();
   @ViewChild('endDatePicker') endDatePicker!: NzDatePickerComponent;
