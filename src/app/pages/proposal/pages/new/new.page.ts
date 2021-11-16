@@ -9,14 +9,8 @@ import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewPage {
-
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
-  }
-
-  // TODO default date picker behaviour feel free to remove it
-  startValue: Date | null = null;
-  endValue: Date | null = null;
+  public startValue: Date = new Date();
+  public endValue: Date = new Date();
   @ViewChild('endDatePicker') endDatePicker!: NzDatePickerComponent;
 
   public disabledStartDate(startValue: Date): boolean {
@@ -25,6 +19,10 @@ export class NewPage {
     }
     return startValue.getTime() > this.endValue.getTime();
   };
+
+  public get urlToSpaces(): string {
+    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
+  }
 
   public disabledEndDate(endValue: Date): boolean {
     if (!endValue || !this.startValue) {
