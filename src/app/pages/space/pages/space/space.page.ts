@@ -2,10 +2,13 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi, FILE_SIZES } from "@api/file.api";
 import { AuthService } from '@components/auth/services/auth.service';
+import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
+import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 
@@ -33,6 +36,7 @@ export class SpacePage implements OnInit, OnDestroy {
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
+    private notification: NzNotificationService,
     private router: Router
   ) {
     // none.
@@ -70,6 +74,10 @@ export class SpacePage implements OnInit, OnDestroy {
     });
   }
 
+  public get member$(): BehaviorSubject<Member|undefined> {
+    return this.auth.member$;
+  }
+
   private listenToIsMemberAndGuardian(spaceId: string, memberId: string): void {
     this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.isMemberWithinSpace$));
     this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$));
@@ -101,6 +109,48 @@ export class SpacePage implements OnInit, OnDestroy {
         return space?.bannerUrl ? FileApi.getUrl(space.bannerUrl, 'space_banner', FILE_SIZES.large) : undefined;
       })
     );
+  }
+
+  public async join(): Promise<void> {
+    if (!this.space$.value?.uid) {
+      return;
+    }
+
+    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
+      undefinedToEmpty({
+        uid: this.space$.value.uid
+      })
+    );
+
+    if (!sc) {
+      throw new Error('Unable to sign.');
+    }
+
+    // TODO Handle this via queue and clean-up.
+    this.spaceApi.join(sc).subscribe(() => {
+      this.notification.success('Joined.', '');
+    });
+  }
+
+  public async leave(): Promise<void> {
+    if (!this.space$.value?.uid) {
+      return;
+    }
+
+    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
+      undefinedToEmpty({
+        uid: this.space$.value.uid
+      })
+    );
+
+    if (!sc) {
+      throw new Error('Unable to sign.');
+    }
+
+    // TODO Handle this via queue and clean-up.
+    this.spaceApi.leave(sc).subscribe(() => {
+      this.notification.success('Joined.', '');
+    });
   }
 
   private cancelSubscriptions(): void {

@@ -96,7 +96,7 @@ export class NewPage {
     }
 
     // TODO Handle this via queue and clean-up.
-    this.spaceApi.createSpace(sc).subscribe((val) => {
+    this.spaceApi.create(sc).subscribe((val) => {
       this.notification.success('Created.', '');
       this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid])
     });
