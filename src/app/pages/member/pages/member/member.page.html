@@ -18,19 +18,22 @@
     <div class="w-full py-12">
       <router-outlet></router-outlet>
     </div>
-
   </div>
 
   <div class="h-screen pt-32 -mr-5 space-y-4 text-center bg-white rounded-l-3xl" nz-col nzFlex="400px">
 
     <nz-avatar [nzSize]="124" nzIcon="user"></nz-avatar>
     <div class="flex items-baseline justify-center">
-      <h2>@ {{ memberId | truncate:[12] }}</h2>
-      <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
-        class="ml-4 text-center text-current bg-blue-600 border-blue-600 rounded-3xl">
-        <i nz-icon class="text-white " nzType="edit"></i>
-      </a>
-      <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()"></wen-member-edit-drawer>
+      <h2>@ {{ (member$ | async)?.uid | truncate:[12] }}</h2>
+
+      <ng-container *ngIf="(member$ | async)?.uid === (loggedInMember$ | async)?.uid">
+        <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
+          class="ml-4 text-center text-current bg-blue-600 border-blue-600 rounded-3xl">
+          <i nz-icon class="text-white " nzType="edit"></i>
+        </a>
+        <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">
+        </wen-member-edit-drawer>
+      </ng-container>
     </div>
 
     <p nz-typography nzType="secondary" *ngIf="(member$ | async)?.about">

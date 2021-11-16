@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { AngularFireStorage } from "@angular/fire/compat/storage";
 import { ReactiveFormsModule } from '@angular/forms';
 import { defineGlobalsInjections } from '@ngneat/spectator';
 import 'jest-preset-angular/setup-jest';
@@ -44,7 +45,11 @@ defineGlobalsInjections({
     NzFormModule,
     NzDrawerModule
   ],
-  providers: [MockProvider(AngularFirestore), MockProvider(AngularFireFunctions)]
+  providers: [
+    MockProvider(AngularFirestore),
+    MockProvider(AngularFireFunctions),
+    MockProvider(AngularFireStorage)
+  ]
 });
 
 ngMocks.autoSpy('jest');

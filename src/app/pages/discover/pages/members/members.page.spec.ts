@@ -1,13 +1,20 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent } from 'ng-mocks';
-import { MemberCardComponent } from './../../../../components/members/components/space-card/member-card.component';
+import { MockComponent, MockProvider } from 'ng-mocks';
+import { Observable } from 'rxjs';
+import { MemberCardComponent } from '../../../../components/members/components/member-card/member-card.component';
+import { MemberApi } from './../../../../@api/member.api';
 import { MembersPage } from './members.page';
 
 describe('MembersPage', () => {
   let spectator: Spectator<MembersPage>;
   const createComponent = createRoutingFactory({
     component: MembersPage,
-    declarations: [MockComponent(MemberCardComponent)]
+    declarations: [MockComponent(MemberCardComponent)],
+    providers: [MockProvider(MemberApi, {
+      last: () => {
+        return new Observable();
+      }
+    })]
   });
 
   beforeEach(() => {

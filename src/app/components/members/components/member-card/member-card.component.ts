@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Member } from '../../../../../../functions/interfaces/models/member';
 
 @Component({
   selector: 'wen-member-card',
@@ -7,5 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberCardComponent {
-  @Input() space = { id: 0, title: '' };
+  @Input() member?: Member;
 }
