@@ -19,21 +19,21 @@ export class NewPage {
   endValue: Date | null = null;
   @ViewChild('endDatePicker') endDatePicker!: NzDatePickerComponent;
 
-  disabledStartDate = (startValue: Date): boolean => {
+  public disabledStartDate(startValue: Date): boolean {
     if (!startValue || !this.endValue) {
       return false;
     }
     return startValue.getTime() > this.endValue.getTime();
   };
 
-  disabledEndDate = (endValue: Date): boolean => {
+  public disabledEndDate(endValue: Date): boolean {
     if (!endValue || !this.startValue) {
       return false;
     }
     return endValue.getTime() <= this.startValue.getTime();
   };
 
-  handleStartOpenChange(open: boolean): void {
+  public handleStartOpenChange(open: boolean): void {
     if (!open) {
       this.endDatePicker.open();
     }
