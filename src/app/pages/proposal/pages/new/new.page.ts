@@ -11,7 +11,7 @@ import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 export class NewPage {
 
   public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
+    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
   }
 
   // TODO default date picker behaviour feel free to remove it

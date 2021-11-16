@@ -17,7 +17,7 @@ interface Person {
 })
 export class ProposalPage {
   public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
+    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
   }
 
   // TODO default table content
