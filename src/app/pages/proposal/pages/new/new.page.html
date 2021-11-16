@@ -1,1 +1,37 @@
-<p>new proposal</p>
+<button nz-button nzSize="small"
+  class="h-10 px-6 font-semibold text-blue-600 bg-white border-white mt-14 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
+  [routerLink]="urlToSpaces"><i nz-icon nzType="left"></i>Back to Discover</button>
+
+<h1 class="mt-7" i18 n>New Proposal</h1>
+
+<form nz-form nzLayout="vertical">
+  <div class="space-y-4" nz-col nzFlex="auto">
+
+    <nz-card [nzBordered]="false" nzTitle="Proposal Info">
+      <div class="space-y-4">
+        <input nz-input placeholder="Title" />
+        <div class="flex flex-grow space-x-4">
+          <nz-date-picker class="flex flex-grow" [nzDisabledDate]="disabledStartDate" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+            nzPlaceHolder="Start" (nzOnOpenChange)="handleStartOpenChange($event)">
+          </nz-date-picker>
+          <nz-date-picker class="flex flex-grow" #endDatePicker [nzDisabledDate]="disabledEndDate" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+            nzPlaceHolder="End" (nzOnOpenChange)="handleEndOpenChange($event)"></nz-date-picker>
+        </div>
+        <textarea nz-input placeholder="Proposal description" rows="4"></textarea>
+      </div>
+    </nz-card>
+
+    <ng-container>
+      <nz-card [nzBordered]="false" [nzTitle]="'Question' + '1'">
+        <div class="space-y-4">
+          <input nz-input placeholder="Question Title" />
+          <textarea nz-input placeholder="Question description" rows="4"></textarea>
+        </div>
+
+        <button nz-button nzType="primary" nzSize="small" type="button"
+          class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
+          i18n>Add Choice</button>
+      </nz-card>
+    </ng-container>
+
+  </div>
