@@ -1,8 +1,104 @@
-<p>proposal works!</p>
-<a [routerLink]="urlToSpaces">Back to discovery</a>
-<br />
-<a routerLink="overview">Overview</a><br />
+<button nz-button nzSize="small"
+  class="h-10 px-6 font-semibold text-blue-600 bg-white border-white mt-14 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
+  [routerLink]="urlToSpaces"><i nz-icon nzType="left"></i>Back to Discover</button>
 
-<div class="grid mt-24 place-items-center">
-  <router-outlet></router-outlet>
+<div class="relative py-12" nz-row [nzGutter]="16">
+
+  <div nz-col nzFlex="auto">
+    <div class="space-x-4">
+      <nz-avatar
+        class="bg-white border-2 border-gray-400"
+        nzShape="circle"></nz-avatar>
+
+        <nz-tag [nzColor]="'#BBD3F6'" class="text-black">Proposal</nz-tag>
+        <nz-tag [nzColor]="'#CBF6BB'" class="text-black">Draft</nz-tag>
+    </div>
+
+    <h1 i18n>Proposal Title</h1>
+
+    <div class="flex items-center space-x-4">
+      <div>
+        <i nz-icon nzType="calendar" class="pr-2" nzTheme="outline"></i>
+        <span>Oct 11, 2021, 11:00 PM</span>
+      </div>
+      <div>
+        <nz-avatar nzIcon="user" nzSrc="https://cdn.discordapp.com/attachments/895741873744908329/909987739666096128/3.jpg" class="mr-2">
+        </nz-avatar>
+        <span>@name</span>
+      </div>
+    </div>
+
+    <div class="w-full py-12">
+      <a routerLink="overview">Overview</a><br />
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+  <div class="space-y-4" nz-col nzFlex="430px">
+    <nz-card nzTitle="Cast your vote">
+      <button nz-button nzType="primary" nzBlock nzSize="small"
+        class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl">
+        Open Firefly to Vote</button>
+      <h4 nz-typography class="pt-4">
+        Voting instructions
+      </h4>
+      <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
+    </nz-card>
+
+    <nz-card nzTitle="Approve Proposal (available only for Guardians)">
+      <button nz-button nzType="primary" nzBlock nzSize="small"
+        class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl">
+        Approve</button>
+      <button nz-button nzDanger nzType="primary" nzBlock nzSize="small"
+        class="h-10 px-6 m-2 font-semibold text-white bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700 focus:bg-red-700 focus:border-red-700 rounded-3xl">
+        Decline</button>
+    </nz-card>
+
+    <nz-card nzTitle="Current Results">
+      <ng-container>
+        <p>BUILD</p>
+        <nz-progress [nzPercent]="50" nzStatus="active"></nz-progress>
+      </ng-container>
+      <ng-container>
+        <p>BURN</p>
+        <nz-progress [nzPercent]="50" nzStatus="active"></nz-progress>
+      </ng-container>
+    </nz-card>
+
+    <nz-card [nzTitle]="'Votes' + '(x)'">
+
+      <nz-table #basicTable [nzData]="listOfData" [nzShowPagination]="false">
+        <thead>
+          <tr>
+            <th>Investor</th>
+            <th>Date</th>
+            <th>Option</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data">
+            <td>{{ data.name }}</td>
+            <td>{{ data.date }}</td>
+            <td>{{ data.option }}</td>
+            <td>
+              {{ data.amount }}
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+      <a nz-button nzType="link">See more</a>
+    </nz-card>
+
+    <nz-card nzTitle="System Info">
+      <p>
+        Stard Date: xxx
+      </p>
+      <p>
+        End Date: xxx
+      </p>
+      <a nz-button nzType="link">Export to JSON</a>
+    </nz-card>
+  </div>
 </div>

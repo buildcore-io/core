@@ -1,8 +1,4 @@
-<header class="absolute right-0 z-30 flex items-center py-5 px-7 space-x-7">
-  <button nz-button nzType="default" nzShape="circle" *ngIf="isLoggedIn$ | async"
-    class="inline-flex items-center justify-center w-10 h-10 border-0">
-    <i nz-icon nzType="bell" class="text-lg"></i>
-  </button>
+<header class="absolute right-0 z-30 flex items-center px-6 py-5 space-x-6">
 
   <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu"
     class="font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
@@ -23,6 +19,11 @@
   </nz-dropdown-menu>
 
   <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"></wen-sign-in>
+
+  <button nz-button nzType="default" nzSize="small" nzShape="circle" *ngIf="isLoggedIn$ | async"
+    class="inline-flex items-center justify-center border-0">
+    <i nz-icon nzType="bell" class="text-lg"></i>
+  </button>
 
   <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
     class="inline-flex items-center pl-2 font-bold border-0" *ngIf="isLoggedIn$ | async">
