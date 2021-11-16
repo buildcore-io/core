@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { UiModule } from '@components/ui/ui.module';
+import { NgApexchartsModule } from "ng-apexcharts";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -21,6 +22,7 @@ import { YieldPage } from './pages/yield/yield.page';
   imports: [
     CommonModule,
     UiModule,
+    NgApexchartsModule,
     TruncateModule,
     UserRoutingModule,
     NzButtonModule,
