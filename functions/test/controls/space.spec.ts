@@ -83,7 +83,9 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
       name: 'abc',
       github: 'https://abc1',
       twitter: 'https://abc1',
-      discord: 'https://abc1'
+      discord: 'https://abc1',
+      avatarUrl: 'https://abc1',
+      bannerUrl: 'https://abc1'
     };
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
@@ -94,6 +96,8 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     expect(doc2?.github).toEqual(updateParams.github);
     expect(doc2?.twitter).toEqual(updateParams.twitter);
     expect(doc2?.discord).toEqual(updateParams.discord);
+    expect(doc2?.avatarUrl).toEqual(updateParams.avatarUrl);
+    expect(doc2?.bannerUrl).toEqual(updateParams.bannerUrl);
     walletSpy.mockRestore();
   });
 

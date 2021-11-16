@@ -3,14 +3,11 @@
     class="absolute top-0 h-10 px-6 mx-10 font-semibold text-blue-600 bg-white border-white left-14 mt-11 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
     [routerLink]="urlToSpaces"><i nz-icon nzType="left"></i>Back to Discover</button>
 
-  <img alt="" class="object-cover w-full h-full" />
-  <!-- [src]="space.cover" -->
+  <img alt="" [src]="bannerUrl$ | async"  class="object-cover w-full h-full" />
 </div>
 
 <div class="relative py-12" nz-row [nzGutter]="16" *ngIf="(space$ | async)">
-
-  <!-- [nzSrc]="space.token" -->
-  <nz-avatar [nzSize]="120"
+  <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="120"
     class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
     nzShape="circle"></nz-avatar>
 

@@ -1,24 +1,37 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage, AngularFireStorageReference, AngularFireUploadTask } from "@angular/fire/compat/storage";
-import { File } from 'functions/interfaces/models/file';
 import { NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { finalize, Subscription } from 'rxjs';
-import { BaseApi } from './base.api';
+
+export enum FILE_SIZES {
+  small = 'small',
+  medium = 'medium',
+  large = 'large'
+}
 
 @Injectable({
   providedIn: 'root',
 })
-export class FileApi extends BaseApi<File> {
-  public collection = 'upload';
+export class FileApi {
+  public static FILE_SIZES: any = {
+    small: '200x200',
+    medium: '680x680',
+    large: '1600x1600',
+  };
+
   constructor(protected afs: AngularFirestore, private storage: AngularFireStorage) {
-    super(afs);
+    // none.
   }
 
-  public upload(memberId: string, item: NzUploadXHRArgs): Subscription {
+  public static getUrl(org: string, type: 'space_avatar'|'space_banner', size: FILE_SIZES): string {
+    return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
+  }
+
+  public upload(memberId: string, item: NzUploadXHRArgs, type: 'space_avatar'|'space_banner'): Subscription {
     const file: NzUploadFile = item.file;
     const uid: string = file.uid;
-    const filePath: string = memberId + '/' + uid;
+    const filePath: string = memberId + '/' + uid + '/' + type;
     const fileRef: AngularFireStorageReference = this.storage.ref(filePath);
     const task: AngularFireUploadTask = this.storage.upload(filePath, file);
 
@@ -29,30 +42,26 @@ export class FileApi extends BaseApi<File> {
     return task.snapshotChanges().pipe(
       finalize(() => {
         fileRef.getDownloadURL().subscribe((result) => {
-          // No we need to listen to Firebase storage.
-          this.listen(uid).subscribe((obj) => {
-            if (item.onSuccess) {
-              // wait for IPFS link.
-              item.onSuccess(result, item.file, result);
-            } else {
-              throw new Error('Unable to upload image due missing handler.');
-            }
-          });
+          if (item.onSuccess) {
+            item.onSuccess(result, item.file, result);
+          } else {
+            throw new Error('Unable to upload image due missing handler.');
+          }
         });
       })
-    ).subscribe(
-        (result) => {
-          if (result && item.onProgress) {
-            const event = { percent: 0};
-            event.percent = (result.bytesTransferred / result.totalBytes) * 100;
-            item.onProgress(event, item.file);
-          }
-        },
-        (err) => {
-          if (item.onError) {
-            item.onError(err, item.file);
-          }
+    ).subscribe({
+      next: (result) => {
+        if (result && item.onProgress) {
+          const event = { percent: 0};
+          event.percent = (result.bytesTransferred / result.totalBytes) * 100;
+          item.onProgress(event, item.file);
         }
-      );
+      },
+      error: (err) => {
+        if (item.onError) {
+          item.onError(err, item.file);
+        }
+      }
+    });
   }
 }

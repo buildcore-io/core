@@ -2,6 +2,7 @@
   <div class="w-full h-32 overflow-hidden rounded-2xl">
     <img
       alt=""
+      [src]="bannerUrl"
       class="object-cover w-full h-full"
     />
   </div>
@@ -9,6 +10,7 @@
   <div class="relative flex flex-col w-full p-4 h-44">
     <nz-avatar
       class="absolute top-0 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
+      [nzSrc]="avatarUrl"
       nzSize="large"
       nzShape="circle"
     ></nz-avatar>

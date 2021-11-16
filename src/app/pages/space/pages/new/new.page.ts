@@ -6,8 +6,8 @@ import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { NzUploadXHRArgs } from "ng-zorro-antd/upload";
-import { Subscription } from 'rxjs';
+import { NzUploadChangeParam, NzUploadXHRArgs } from "ng-zorro-antd/upload";
+import { of, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -24,6 +24,8 @@ export class NewPage {
   public discordControl: FormControl = new FormControl('', getUrlValidator());
   public twitterControl: FormControl = new FormControl('', getUrlValidator());
   public githubControl: FormControl = new FormControl('', getUrlValidator());
+  public avatarControl: FormControl = new FormControl('');
+  public bannerControl: FormControl = new FormControl('');
   public spaceForm: FormGroup;
 
   constructor(
@@ -38,8 +40,46 @@ export class NewPage {
       about: this.aboutControl,
       discord: this.discordControl,
       twitter: this.twitterControl,
-      github: this.githubControl
+      github: this.githubControl,
+      avatarUrl: this.avatarControl,
+      bannerUrl: this.bannerControl
     });
+  }
+
+  public uploadChangeAvatar(event: NzUploadChangeParam): void {
+    this.uploadChange('space_avatar', event);
+  }
+
+  public uploadChangeBanner(event: NzUploadChangeParam): void {
+    this.uploadChange('space_banner', event);
+  }
+
+  private uploadChange(type: 'space_avatar'|'space_banner', event: NzUploadChangeParam): void {
+    if (event.type === 'success') {
+      if (type === 'space_avatar') {
+        this.avatarControl.setValue(event.file.response);
+      } else if (type === 'space_banner') {
+        this.bannerControl.setValue(event.file.response);
+      }
+    }
+  }
+
+  public uploadFile(item: NzUploadXHRArgs): Subscription {
+    if (!this.auth.member$.value) {
+      const err = 'Member seems to log out during the file upload request.';
+      this.notification.error(err, '');
+      if (item.onError) {
+        item.onError(err, item.file);
+      }
+
+      return of().subscribe();
+    }
+
+    return this.fileApi.upload(this.auth.member$.value.uid, item, 'space_avatar');
+  }
+
+  public get urlToSpaces(): string {
+    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
   }
 
   public async create(): Promise<void> {
@@ -47,7 +87,6 @@ export class NewPage {
     if (!this.spaceForm.valid) {
       return;
     }
-
     const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
       undefinedToEmpty(this.spaceForm.value)
     );
@@ -61,17 +100,5 @@ export class NewPage {
       this.notification.success('Created.', '');
       this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid])
     });
-  }
-
-  public uploadFile(item: NzUploadXHRArgs): Subscription {
-    if (!this.auth.member$.value) {
-      throw new Error('Member seems to log out during the file upload request.');
-    }
-    
-    return this.fileApi.upload(this.auth.member$.value.uid, item);
-  }
-
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
   }
 }

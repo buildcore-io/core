@@ -23,6 +23,12 @@ function defaultJoiUpdateCreateSchema(): any {
     }).optional(),
     discord: Joi.string().allow(null, '').uri({
       scheme: ['https']
+    }).optional(),
+    avatarUrl: Joi.string().allow(null, '').uri({
+      scheme: ['https']
+    }).optional(),
+    bannerUrl: Joi.string().allow(null, '').uri({
+      scheme: ['https']
     }).optional()
   });
 };

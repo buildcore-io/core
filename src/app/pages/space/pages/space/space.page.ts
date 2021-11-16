@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FileApi, FILE_SIZES } from "@api/file.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
-import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 
@@ -76,6 +77,30 @@ export class SpacePage implements OnInit, OnDestroy {
 
   public get urlToSpaces(): string {
     return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
+  }
+
+  public getAvatarUrl(url?: string): string | undefined {
+    return url ? FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small) : undefined;
+  }
+
+  public getBannerUrl(url?: string): string | undefined {
+    return url ? FileApi.getUrl(url, 'space_banner', FILE_SIZES.large) : undefined;
+  }
+
+  public get avatarUrl$(): Observable<string|undefined> {
+    return this.space$.pipe(
+      map((space: Space | undefined) => {
+        return space?.avatarUrl ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
+      })
+    );
+  }
+
+  public get bannerUrl$(): Observable<string|undefined> {
+    return this.space$.pipe(
+      map((space: Space | undefined) => {
+        return space?.bannerUrl ? FileApi.getUrl(space.bannerUrl, 'space_banner', FILE_SIZES.large) : undefined;
+      })
+    );
   }
 
   private cancelSubscriptions(): void {

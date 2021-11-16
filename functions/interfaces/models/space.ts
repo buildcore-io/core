@@ -15,6 +15,8 @@ export interface Space extends BaseRecord {
   github?: string;
   twitter?: string;
   discord?: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
   createdBy: string;
   totalGuardians: number;
   totalMembers: number;
