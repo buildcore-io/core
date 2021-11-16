@@ -1,12 +1,21 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MockComponent, MockProvider } from 'ng-mocks';
+import { Observable } from 'rxjs';
+import { ProposalApi } from './../../../../@api/proposal.api';
+import { ProposalCardComponent } from './../../../../components/proposals/components/proposal-card/proposal-card.component';
 import { ProposalsPage } from './proposals.page';
 
 
 describe('ProposalsPage', () => {
   let spectator: Spectator<ProposalsPage>;
   const createComponent = createRoutingFactory({
-    component: ProposalsPage
+    component: ProposalsPage,
+    declarations: [MockComponent(ProposalCardComponent)],
+    providers: [MockProvider(ProposalApi, {
+      last: () => {
+        return new Observable();
+      }
+    })]
   });
 
 

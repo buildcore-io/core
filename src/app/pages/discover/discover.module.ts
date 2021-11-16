@@ -7,16 +7,25 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { SpacesModule } from '../../components/spaces/spaces.module';
+import { AwardsModule } from './../../components/awards/awards.module';
 import { MembersModule } from './../../components/members/members.module';
+import { ProposalsModule } from './../../components/proposals/proposals.module';
 import { DiscoverRoutingModule } from './discover-routing.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { DiscoverPage } from './pages/discover/discover.page';
 import { MembersPage } from './pages/members/members.page';
+import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacesPage } from './pages/spaces/spaces.page';
 
 
 @NgModule({
-  declarations: [DiscoverPage, SpacesPage, MembersPage, AwardsPage],
+  declarations: [
+    DiscoverPage,
+    SpacesPage,
+    MembersPage,
+    AwardsPage,
+    ProposalsPage
+  ],
   exports: [
   ],
   imports: [
@@ -29,7 +38,9 @@ import { SpacesPage } from './pages/spaces/spaces.page';
     NzIconModule,
     NzButtonModule,
     SpacesModule,
-    MembersModule
+    MembersModule,
+    ProposalsModule,
+    AwardsModule
   ]
 })
 export class DiscoverModule { }

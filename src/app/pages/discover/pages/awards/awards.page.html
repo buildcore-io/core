@@ -1,1 +1,4 @@
-<h1>Awards 🥇</h1>
+<div class="flex flex-wrap gap-6">
+  <wen-award-card class="cursor-pointer" *ngFor="let award of award$ | async" [award]="award" [routerLink]="['/award', award.uid]">
+  </wen-award-card>
+</div>
