@@ -10,6 +10,7 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
+import { SpaceGuardian } from './../../../../../../functions/interfaces/models/space';
 import { SpaceApi } from './../../../../@api/space.api';
 
 @UntilDestroy()
@@ -30,6 +31,7 @@ export class SpacePage implements OnInit, OnDestroy {
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -81,6 +83,7 @@ export class SpacePage implements OnInit, OnDestroy {
   private listenToIsMemberAndGuardian(spaceId: string, memberId: string): void {
     this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.isMemberWithinSpace$));
     this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$));
+    this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.guardians$));
   }
 
   public get urlToSpaces(): string {
@@ -149,7 +152,7 @@ export class SpacePage implements OnInit, OnDestroy {
 
     // TODO Handle this via queue and clean-up.
     this.spaceApi.leave(sc).subscribe(() => {
-      this.notification.success('Joined.', '');
+      this.notification.success('Leaved.', '');
     });
   }
 

@@ -1,1 +1,10 @@
-<p>members works!</p>
+<wen-member-card class="cursor-pointer" *ngFor="let member of members$ | async" [member]="member" [routerLink]="['/member', member.uid]">
+  <ng-container *ngIf="memberIsGuardian(member.uid)">
+    Guardian
+    <button type="button" (click)="removeGuardian(member.uid)" *ngIf="loggedInMemberIsGuardian()">Remove Guardian</button>
+  </ng-container>
+  <ng-container *ngIf="!memberIsGuardian(member.uid)">
+    Member
+    <button type="button" (click)="setGuardian(member.uid)" *ngIf="loggedInMemberIsGuardian()">Make Guardian</button>
+  </ng-container>
+</wen-member-card>

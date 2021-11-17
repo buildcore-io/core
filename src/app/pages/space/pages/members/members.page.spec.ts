@@ -1,10 +1,12 @@
+import { MembersCardModule } from "@components/members/components/member-card/member-card.module";
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MembersPage } from './members.page';
 
 describe('MembersPage', () => {
   let spectator: Spectator<MembersPage>;
   const createComponent = createRoutingFactory({
-    component: MembersPage
+    component: MembersPage,
+    imports: [ MembersCardModule ]
   });
 
   beforeEach(() => {
