@@ -27,13 +27,14 @@ export interface MembersProposalSettings {
 export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;
 
 export interface ProposalAnswer extends Base {
-  name: string;
-  description: string;
+  text: string;
+  value: number;
+  additionalInfo: string;
 }
 
 export interface ProposalQuestion extends Base {
-  name: string;
-  description: string;
+  text: string;
+  additionalInfo: string;
   answers: ProposalAnswer[];
 }
 

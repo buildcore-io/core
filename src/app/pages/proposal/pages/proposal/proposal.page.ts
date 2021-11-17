@@ -8,7 +8,7 @@ import { Proposal } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
-import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { DataService } from './../../services/data.service';
@@ -141,6 +141,10 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public get urlToSpaces(): string {
     return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
+  }
+
+  public getProgress(q: ProposalQuestion, a: ProposalAnswer): number {
+    return 50;
   }
 
   public async approve(): Promise<void> {

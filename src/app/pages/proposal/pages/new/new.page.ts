@@ -161,7 +161,6 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public async create(): Promise<void> {
-    console.log(this.formatSubmitObj(this.proposalForm.value));
     this.proposalForm.updateValueAndValidity();
     if (!this.proposalForm.valid) {
       return;
@@ -178,7 +177,7 @@ export class NewPage implements OnInit, OnDestroy {
     // TODO Handle this via queue and clean-up.
     this.proposalApi.create(sc).subscribe((val) => {
       this.notification.success('Created.', '');
-      this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid])
+      this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
     });
   }
 
