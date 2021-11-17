@@ -46,16 +46,15 @@ describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
       type: ProposalType.NATIVE,
       questions: [
         {
-          index: 1,
           text: "Give all the funds to the HORNET developers?",
           answers: [
             {
-              index: 1,
+              value: 1,
               text: "YES",
               additionalInfo: "Go team!"
             },
             {
-              index: 2,
+              value: 2,
               text: "Doh! Of course!",
               additionalInfo: "There is no other option"
             }

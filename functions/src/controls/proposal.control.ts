@@ -31,11 +31,10 @@ function defaultJoiUpdateCreateSchema(): any {
       ).required(),
     })),
     questions: Joi.array().items(Joi.object().keys({
-      index: Joi.number().required(),
       text: Joi.string().required(),
       additionalInfo: Joi.string().allow(null, '').optional(),
       answers: Joi.array().items(Joi.object().keys({
-        index: Joi.number().required(),
+        value: Joi.number().required(),
         text: Joi.string().required(),
         additionalInfo: Joi.string().allow(null, '').optional(),
       })).min(2).required()

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
@@ -18,7 +18,7 @@ import { SpaceApi } from './../../../../@api/space.api';
   styleUrls: ['./members.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MembersPage implements OnInit {
+export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
@@ -38,6 +38,7 @@ export class MembersPage implements OnInit {
     this.route.parent?.params.subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
+        this.cancelSubscriptions();
         this.listenToIsMemberAndGuardian(id);
         this.spaceId = id;
       } else {
@@ -117,5 +118,15 @@ export class MembersPage implements OnInit {
     this.spaceApi.removeGuardian(sc).subscribe(() => {
       this.notification.success('Member removed as guardian.', '');
     });
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSubscriptions();
   }
 }

@@ -4,34 +4,58 @@
 
 <h1 class="mt-7" i18 n>New Proposal</h1>
 
-<form nz-form nzLayout="vertical">
+<form nz-form nzLayout="vertical" [formGroup]="proposalForm">
   <div class="space-y-4" nz-col nzFlex="auto">
 
     <nz-card [nzBordered]="false" nzTitle="Proposal Info">
       <div class="space-y-4">
-        <input nz-input placeholder="Title" />
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
+          <nz-option *ngFor="let s of spaces$ | async" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
+        </nz-select>
+        <nz-radio-group nzButtonStyle="solid" [formControl]="selectedGroupControl">
+          <label nz-radio-button [nzValue]="0">All Guardians</label>
+          <label nz-radio-button [nzValue]="1">All Members</label>
+        </nz-radio-group>
+        <input nz-input placeholder="Title" [formControl]="nameControl"/>
         <div class="flex flex-grow space-x-4">
-          <nz-date-picker class="flex flex-grow" [nzDisabledDate]="disabledStartDate" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+          <nz-date-picker class="flex flex-grow" [nzDisabledDate]="disabledStartDate.bind(this)" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="startControl"
             nzPlaceHolder="Start" (nzOnOpenChange)="handleStartOpenChange($event)">
           </nz-date-picker>
-          <nz-date-picker class="flex flex-grow" #endDatePicker [nzDisabledDate]="disabledEndDate" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
-            nzPlaceHolder="End" (nzOnOpenChange)="handleEndOpenChange($event)"></nz-date-picker>
+          <nz-date-picker class="flex flex-grow" #endDatePicker [nzDisabledDate]="disabledEndDate.bind(this)" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl"
+            nzPlaceHolder="End"></nz-date-picker>
         </div>
-        <textarea nz-input placeholder="Proposal description" rows="4"></textarea>
+        <textarea nz-input placeholder="Proposal description" rows="4" [formControl]="additionalInfoControl"></textarea>
       </div>
     </nz-card>
 
-    <ng-container>
-      <nz-card [nzBordered]="false" [nzTitle]="'Question' + '1'">
+    <!-- <button nz-button nzType="primary" nzSize="small" type="button" (click)="addQuestion()"
+    class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
+    i18n>Add Question</button> -->
+
+    <ng-container *ngFor="let question of questions.controls; let i = index">
+      <nz-card [nzBordered]="false" [nzTitle]="'Question ' + (i + 1)">
+        <button nz-button nzType="primary" nzSize="small" type="button" (click)="removeQuestion(i)" *ngIf="questions.controls.length > 1">Remove Question</button>
         <div class="space-y-4">
-          <input nz-input placeholder="Question Title" />
-          <textarea nz-input placeholder="Question description" rows="4"></textarea>
+          <input nz-input placeholder="Question Title" [formControl]="gForm(question, 'text')"/>
+          <textarea nz-input placeholder="Question description" rows="4" [formControl]="gForm(question, 'additionalInfo')"></textarea>
         </div>
 
-        <button nz-button nzType="primary" nzSize="small" type="button"
+        <ng-container *ngFor="let answer of getAnswers(question); let ii = index">
+          <button nz-button nzType="primary" nzSize="small" type="button" (click)="removeAnswer(question, ii)" *ngIf="getAnswers(question).length > 2">Remove Answer</button>
+          <input nz-input placeholder="Answer Text" [formControl]="gForm(answer, 'text')"/>
+          <nz-input-number [nzMin]="0" [nzMax]="250" placeholder="Answer Value" [formControl]="gForm(answer, 'value')"></nz-input-number>
+          <textarea nz-input placeholder="Answer description" rows="4" [formControl]="gForm(answer, 'additionalInfo')"></textarea>
+        </ng-container>
+        <button nz-button nzType="primary" nzSize="small" type="button" (click)="addAnswer(question)" *ngIf="getAnswers(question).length < 4"
           class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
           i18n>Add Choice</button>
       </nz-card>
     </ng-container>
 
   </div>
+
+
+<button nz-button nzType="primary" nzSize="small" type="button" (click)="create()"
+class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
+i18n>Create Proposal</button>
+
