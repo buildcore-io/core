@@ -1,8 +1,8 @@
 import { Base, BaseRecord } from './base';
+import { SpaceMember } from './space';
 export enum ProposalType {
-  NATIVE = "NATIVE",
-  DIGITAL_ASSET = "DIGITAL_ASSET",
-  SMART_CONTRACT = "SMART_CONTRACT"
+  NATIVE = 0,
+  MEMBERS = 1
 }
 
 export interface NativeProposalSettings {
@@ -11,14 +11,12 @@ export interface NativeProposalSettings {
   endMilestone: number;
 }
 
-export interface DigitalAssetProposalSettings {
+export interface MembersProposalSettings {
   // none yet.
-  add: any;
-}
-
-export interface SmartContractProposalSettings {
-  // none yet.
-  add: any;
+  guardiansOnly: boolean;
+  members:  {
+    [propName: string]: SpaceMember;
+  };
 }
 
 export interface ProposalAnswer extends Base {
@@ -41,6 +39,6 @@ export interface Proposal extends BaseRecord {
     // Owner / from date
     [propName: string]: Date;
   };
-  settings: NativeProposalSettings|DigitalAssetProposalSettings|SmartContractProposalSettings;
+  settings: NativeProposalSettings|MembersProposalSettings;
   questions: ProposalQuestion[];
 }

@@ -1,5 +1,5 @@
-<section class="container flex items-center justify-center">
-  <main class="mx-auto my-16 md:max-w-xl">
+<section class="container flex items-center content-center justify-center">
+  <main class="mx-auto my-96 md:max-w-xl">
     <div class="text-center">
       <h1 class="mb-4 text-2xl md:text-4xl" i18n>
         👋 Welcome to the Soonaverse
@@ -7,42 +7,6 @@
       <p class="mb-12 text-base md:text-xl" i18n>
         ⚒️ Experience that stays with you forever ⚒️
       </p>
-
-      <a
-        [routerLink]="['/', path.base.dashboard]"
-        i18n
-        nz-button
-        nzType="primary"
-      >
-        Go to dashboard
-      </a>
-    </div>
-
-    <h3>👉 Visit the app pages</h3>
-
-    <div class="grid grid-cols-1 gap-12 md:grid-cols-2">
-      <div>
-        <h4 class="h5">Settings</h4>
-      </div>
-
-      <div>
-        <h4 class="h5">Member</h4>
-        <ul>
-          <li>
-            <a class="link" [routerLink]="['/', path.member.root, 'soonlabs']">
-              My Profile
-            </a>
-          </li>
-          <li>
-            <a
-              class="link"
-              [routerLink]="['/', path.discover.root, path.discover.members]"
-            >
-              All Members
-            </a>
-          </li>
-        </ul>
-      </div>
     </div>
   </main>
 </section>

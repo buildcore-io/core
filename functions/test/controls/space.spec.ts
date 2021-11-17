@@ -4,6 +4,10 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { addGuardian, blockMember, createSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './../../src/controls/space.control';
 
+/**
+ * TODO
+ * at_least_one_guardian_must_be_in_the_space
+ */
 describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
   it('successfully create space', async () => {
     const dummyAddress = wallet.getRandomEthAddress();

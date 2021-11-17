@@ -16,11 +16,14 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule, NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzRadioModule } from "ng-zorro-antd/radio";
+import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzStatisticModule } from 'ng-zorro-antd/statistic';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -53,6 +56,9 @@ defineGlobalsInjections({
     NzLayoutModule,
     NzDropDownModule,
     NzFormModule,
+    NzInputNumberModule,
+    NzSelectModule,
+    NzRadioModule,
     NzDrawerModule
   ],
   providers: [

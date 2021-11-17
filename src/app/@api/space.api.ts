@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Space, SpaceGuardian } from "functions/interfaces/models";
-import { map, Observable } from 'rxjs';
+import { SpaceMember } from 'functions/interfaces/models/space';
+import { firstValueFrom, map, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { Member } from './../../../functions/interfaces/models/member';
 import { BaseApi } from './base.api';
 
 @Injectable({
@@ -36,29 +38,49 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
-  /**
-   * Function to create profile if it does not exists yet.
-   */
+  public listenGuardians(spaceId: string): Observable<SpaceGuardian[]> {
+    return <Observable<SpaceGuardian[]>>this.afs.collection(this.collection)
+          .doc(spaceId.toLowerCase()).collection(SUB_COL.GUARDIANS).valueChanges();
+  }
+
+  public listenMembers(spaceId: string): Observable<Member[]> {
+    return (<Observable<SpaceMember[]>>this.afs.collection(this.collection)
+    .doc(spaceId.toLowerCase()).collection(SUB_COL.MEMBERS).valueChanges()).pipe(switchMap(async (obj: SpaceMember[]) => {
+      const out: Member[] = [];
+      for (const o of obj) {
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
+      }
+
+      return out;
+    }));
+  }
+
   public create(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cSpace);
     const data$ = callable(req);
     return data$;
   }
 
-  /**
-   * Function to create profile if it does not exists yet.
-   */
    public join(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.joinSpace);
     const data$ = callable(req);
     return data$;
   }
 
-  /**
-   * Function to create profile if it does not exists yet.
-   */
   public leave(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.leaveSpace);
+    const data$ = callable(req);
+    return data$;
+  }
+
+   public setGuardian(req: WenRequest): Observable<Space|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.addGuardianSpace);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public removeGuardian(req: WenRequest): Observable<Space|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.removeGuardianSpace);
     const data$ = callable(req);
     return data$;
   }

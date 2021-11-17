@@ -41,6 +41,26 @@ export class MemberApi extends BaseApi<Member> {
     }));
   }
 
+  public allSpacesWhereGuardian(memberId: EthAddress): Observable<Space[]> {
+    const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
+      SUB_COL.GUARDIANS,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref: any) => {
+        return ref.where('uid', '==', memberId)
+      }
+    );
+    return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
+      const out: Space[] = [];
+      for (const o of obj) {
+        if (o.parentCol === COL.SPACE) {
+          out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
+        }
+      }
+
+      return out;
+    }));
+  }
+
   /**
    * Function to create profile if it does not exists yet.
    */

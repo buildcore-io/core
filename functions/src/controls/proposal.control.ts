@@ -11,22 +11,30 @@ import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { ProposalType } from './../../interfaces/models/proposal';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     space: Joi.string().length(ethAddressLength).lowercase().required(),
     additionalInfo: Joi.string().allow(null, '').optional(),
-    milestoneIndexCommence: Joi.number().required(),
-    milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
-    milestoneIndexEnd: Joi.number().greater(Joi.ref('milestoneIndexStart')).required(),
-    type: Joi.number().equal(0).required(),
+    type: Joi.number().equal(ProposalType.MEMBERS, ProposalType.NATIVE).required(),
+    settings: Joi.alternatives().try(Joi.object({
+      milestoneIndexCommence: Joi.number().required(),
+      milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
+      milestoneIndexEnd: Joi.number().greater(Joi.ref('milestoneIndexStart')).required(),
+    }), Joi.object({
+      startDate: Joi.date().required(),
+      endDate: Joi.date().required(),
+      members: Joi.array().items(
+        Joi.string().length(ethAddressLength).lowercase().required()
+      ).required(),
+    })),
     questions: Joi.array().items(Joi.object().keys({
-      index: Joi.number().required(),
       text: Joi.string().required(),
       additionalInfo: Joi.string().allow(null, '').optional(),
       answers: Joi.array().items(Joi.object().keys({
-        index: Joi.number().required(),
+        value: Joi.number().required(),
         text: Joi.string().required(),
         additionalInfo: Joi.string().allow(null, '').optional(),
       })).min(2).required()
