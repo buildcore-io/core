@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveParticipant, createAward, participate } from './controls/award.control';
 import { createMember, updateMember } from './controls/member.control';
-import { approveProposal, createProposal } from './controls/proposal.control';
+import { approveProposal, createProposal, rejectProposal } from './controls/proposal.control';
 import { addGuardian, blockMember, createSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
 admin.initializeApp();
 
@@ -30,3 +30,4 @@ exports[WEN_FUNC.aAward] = approveParticipant;
 // Award Functions
 exports[WEN_FUNC.cProposal] = createProposal;
 exports[WEN_FUNC.aProposal] = approveProposal;
+exports[WEN_FUNC.rProposal] = rejectProposal;

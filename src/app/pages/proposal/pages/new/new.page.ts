@@ -8,12 +8,11 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, first, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
-import { SpaceApi } from './../../../../@api/space.api';
 
 @UntilDestroy()
 @Component({
@@ -25,8 +24,7 @@ import { SpaceApi } from './../../../../@api/space.api';
 export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public nameControl: FormControl = new FormControl('', Validators.required);
-  public selectedGroupControl: FormControl = new FormControl(0, Validators.required);
-  public groupControl: FormControl = new FormControl([], Validators.required);
+  public selectedGroupControl: FormControl = new FormControl(true, Validators.required);
   public startControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
   public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
@@ -43,7 +41,6 @@ export class NewPage implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private proposalApi: ProposalApi,
-    private spaceApi: SpaceApi,
     private notification: NzNotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
@@ -56,8 +53,8 @@ export class NewPage implements OnInit, OnDestroy {
     this.proposalForm = new FormGroup({
       space: this.spaceControl,
       type: this.typeControl,
-      group: this.groupControl,
       name: this.nameControl,
+      group: this.selectedGroupControl,
       start: this.startControl,
       end: this.endControl,
       additionalInfo: this.additionalInfoControl,
@@ -77,37 +74,6 @@ export class NewPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.memberApi.allSpacesWhereGuardian(o.uid).subscribe(this.spaces$));
       }
     });
-
-    // Listen to changes whenever members are based on "guardians" / "members"
-    this.selectedGroupControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.getMembersFromSpace();
-    });
-
-    this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.getMembersFromSpace();
-    });
-
-    // We trigger this so we populate above.
-    this.selectedGroupControl.setValue(0);
-  }
-
-  private getMembersFromSpace(): void {
-    if (this.spaceControl.value) {
-      if (this.selectedGroupControl.value === 0) {
-        // We get guardians
-        this.spaceApi.listenGuardians(this.spaceControl.value).pipe(first()).subscribe((obj) => {
-          this.groupControl.setValue(obj.map((o) => {
-            return o.uid;
-          }));
-        });
-      } else {
-        this.spaceApi.listenMembers(this.spaceControl.value).pipe(first()).subscribe((obj) => {
-          this.groupControl.setValue(obj.map((o) => {
-            return o.uid;
-          }));
-        });
-      }
-    }
   }
 
   private getAnswerForm(): FormGroup {
@@ -185,7 +151,7 @@ export class NewPage implements OnInit, OnDestroy {
     obj.settings = {
       startDate: obj.start,
       endDate: obj.end,
-      members: obj.group
+      onlyGuardians: obj.group
     };
 
     delete obj.start;

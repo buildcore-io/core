@@ -26,9 +26,7 @@ function defaultJoiUpdateCreateSchema(): any {
     }), Joi.object({
       startDate: Joi.date().required(),
       endDate: Joi.date().required(),
-      members: Joi.array().items(
-        Joi.string().length(ethAddressLength).lowercase().required()
-      ).required(),
+      onlyGuardians: Joi.boolean().required(),
     })),
     questions: Joi.array().items(Joi.object().keys({
       text: Joi.string().required(),
@@ -71,8 +69,13 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
     })));
 
     // This can't be empty.
-    // Add Owners based on space's guardians.
-    const query: QuerySnapshot = await refSpace.collection(SUB_COL.GUARDIANS).get();
+    // Add Owners based on space's guardians or members.
+    let query: QuerySnapshot;
+    if (params.body.onlyGuardians) {
+      query = await refSpace.collection(SUB_COL.GUARDIANS).get();
+    } else {
+      query = await refSpace.collection(SUB_COL.MEMBERS).get();
+    }
     query.forEach(async (g) => {
       await refProposal.collection(SUB_COL.OWNERS).doc(g.data().uid).set({
         uid: g.data().uid,
@@ -119,6 +122,47 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.http
     await refProposal.update(uOn({
       approved: true,
       approvedBy: owner
+    }));
+
+    // Load latest
+    docTran = await refProposal.get();
+  }
+
+  return docTran.data();
+});
+
+export const rejectProposal: functions.CloudFunction<Proposal> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  // We must part
+  const params: DecodedToken = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
+      uid: Joi.string().length(ethAddressLength).lowercase().required()
+  }));
+  assertValidation(schema.validate(params.body));
+
+  const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(params.body.uid);
+  const docProposal: any = await refProposal.get();
+  let docTran: any;
+  if (!docProposal.exists) {
+    throw throwInvalidArgument(WenError.proposal_does_not_exists);
+  }
+
+  if (!(await refProposal.collection(SUB_COL.OWNERS).doc(owner).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_owner_of_proposal);
+  }
+
+  if (docProposal.data().approved) {
+    throw throwInvalidArgument(WenError.proposal_is_already_approved);
+  }
+
+  if (docProposal.data().rejected) {
+    throw throwInvalidArgument(WenError.proposal_is_already_approved);
+  }
+
+  if (params.body) {
+    await refProposal.update(uOn({
+      rejected: true,
+      rejectedBy: owner
     }));
 
     // Load latest

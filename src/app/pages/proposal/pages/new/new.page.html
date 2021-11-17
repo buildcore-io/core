@@ -13,8 +13,8 @@
           <nz-option *ngFor="let s of spaces$ | async" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
         </nz-select>
         <nz-radio-group nzButtonStyle="solid" [formControl]="selectedGroupControl">
-          <label nz-radio-button [nzValue]="0">All Guardians</label>
-          <label nz-radio-button [nzValue]="1">All Members</label>
+          <label nz-radio-button [nzValue]="true">All Guardians</label>
+          <label nz-radio-button [nzValue]="false">All Members</label>
         </nz-radio-group>
         <input nz-input placeholder="Title" [formControl]="nameControl"/>
         <div class="flex flex-grow space-x-4">

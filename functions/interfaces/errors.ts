@@ -27,6 +27,7 @@ export const WenError = {
   no_more_available_badges: { code: 2021, key: 'There is no more available badges.' },
   proposal_does_not_exists: { code: 2022, key: 'Proposal does not exist.' },
   you_are_not_owner_of_proposal: { code: 2023, key: 'You are not an owner of the proposal.' },
-  proposal_is_already_approved: { code: 2024, key: 'You are not an owner of the proposal.' },
+  proposal_is_already_approved: { code: 2024, key: 'Proposal is already approved.' },
+  proposal_is_already_rejected: { code: 2024, key: 'Proposal is already rejected.' },
 }
 

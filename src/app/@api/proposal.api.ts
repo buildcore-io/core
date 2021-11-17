@@ -4,7 +4,8 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Proposal } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { COL, EthAddress, WenRequest } from '../../../functions/interfaces/models/base';
+import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { ProposalMember } from './../../../functions/interfaces/models/proposal';
 import { BaseApi } from './base.api';
 
 @Injectable({
@@ -30,12 +31,25 @@ export class ProposalApi extends BaseApi<Proposal> {
     ).valueChanges();
   }
 
+  public listenMembers(proposalId: string): Observable<ProposalMember[]> {
+    return <Observable<ProposalMember[]>>this.afs.collection(this.collection)
+          .doc(proposalId.toLowerCase()).collection(SUB_COL.MEMBERS).valueChanges();
+  }
 
-  /**
-   * Function to create profile if it does not exists yet.
-   */
   public create(req: WenRequest): Observable<Proposal|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cProposal);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public approve(req: WenRequest): Observable<Proposal|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.aProposal);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public reject(req: WenRequest): Observable<Proposal|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.rProposal);
     const data$ = callable(req);
     return data$;
   }
