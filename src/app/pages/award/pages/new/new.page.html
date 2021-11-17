@@ -20,33 +20,14 @@
       </div>
     </nz-card>
 
-    <nz-card nzTitle="Award price">
-      <textarea nz-input placeholder="Award price description" rows="4"></textarea>
+    <nz-card nzTitle="Badge definition">
+      <input nz-input placeholder="Total Experience Points" />
+      <input nz-input placeholder="Available Badges" />
     </nz-card>
 
     <nz-card [nzBordered]="false">
-      <nz-card-meta nzTitle="Badge" nzDescription="Upload a badge.">
+      <nz-card-meta nzTitle="Badge" nzDescription="Badge is minted once the task is completed.">
       </nz-card-meta>
-
-      <div class="mt-4">
-        <nz-upload nzName="badge" nzListType="picture-card" [nzDirectory]="false" nzType="drag" [nzLimit]="1"
-          nzFileType="image/png,image/jpeg,image/gif" [nzShowUploadList]="true">
-          <ng-container>
-            <i class="upload-icon" nz-icon nzType="upload"></i>
-          </ng-container>
-        </nz-upload>
-      </div>
-    </nz-card>
-
-    <nz-card [nzBordered]="false" nzTitle="Links">
-      <div class="space-y-4">
-        <nz-input-group [nzPrefix]="prefixLink">
-          <input type="text" nz-input placeholder="Link " />
-          <ng-template #prefixLink>
-            <i nz-icon nzType="link"></i>
-          </ng-template>
-        </nz-input-group>
-      </div>
     </nz-card>
 
   </div>

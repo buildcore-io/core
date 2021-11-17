@@ -2,9 +2,8 @@
     class="absolute top-0 h-10 px-6 mx-10 font-semibold text-blue-600 bg-white border-white left-14 mt-11 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
     [routerLink]="urlToMembers"><i nz-icon nzType="left"></i>Back to Discover</button> -->
 
-<div nz-row>
-
-  <div class="py-12 pr-6" nz-col nzFlex="auto">
+<div nz-row [nzGutter]="16">
+  <div class="py-12" nz-col nzFlex="auto">
     <h1 i18n>Profile</h1>
 
     <nav nz-menu nzMode="horizontal" class="inline-flex items-center h-10 border-b-0 rounded-3xl">
@@ -15,16 +14,16 @@
       </a>
     </nav>
 
-    <div class="w-full py-12">
+    <div class="flex w-full py-12">
       <router-outlet></router-outlet>
     </div>
   </div>
 
-  <div class="h-screen pt-32 -mr-5 space-y-4 text-center bg-white rounded-l-3xl" nz-col nzFlex="400px">
+  <div class="h-screen pt-32 mr-auto space-y-4 text-center bg-white rounded-l-3xl" nz-col nzFlex="400px">
 
-    <nz-avatar [nzSize]="124" nzIcon="user"></nz-avatar>
+    <nz-avatar [nzSize]="124" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
     <div class="flex items-baseline justify-center">
-      <h2>@ {{ (member$ | async)?.uid | truncate:[12] }}</h2>
+      <h2>@ {{ (member$ | async)?.name || ((member$ | async)?.uid | truncate:[12]) }}</h2>
 
       <ng-container *ngIf="(member$ | async)?.uid === (loggedInMember$ | async)?.uid">
         <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"

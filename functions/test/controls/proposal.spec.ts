@@ -4,7 +4,8 @@ import { createSpace } from '../../src/controls/space.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
-import { approveProposal, createProposal } from './../../src/controls/proposal.control';
+import { ProposalType } from './../../interfaces/models/proposal';
+import { approveProposal, createProposal, rejectProposal } from './../../src/controls/proposal.control';
 import { addGuardian, joinSpace } from './../../src/controls/space.control';
 
 describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
@@ -37,22 +38,23 @@ describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
       name: "All 4 HORNET",
       space: space.uid,
       additionalInfo: "The biggest governance decision in the history of IOTA",
-      milestoneIndexCommence: 5,
-      milestoneIndexStart: 6,
-      milestoneIndexEnd: 8,
-      type: 0,
+      settings: {
+        milestoneIndexCommence: 5,
+        milestoneIndexStart: 6,
+        milestoneIndexEnd: 8
+      },
+      type: ProposalType.NATIVE,
       questions: [
         {
-          index: 1,
           text: "Give all the funds to the HORNET developers?",
           answers: [
             {
-              index: 1,
+              value: 1,
               text: "YES",
               additionalInfo: "Go team!"
             },
             {
-              index: 2,
+              value: 2,
               text: "Doh! Of course!",
               additionalInfo: "There is no other option"
             }
@@ -124,8 +126,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
     });
 
     it('milestoneIndexStart < milestoneIndexCommence', async () => {
-      body.milestoneIndexStart = 100;
-      body.milestoneIndexCommence = 40;
+      body.settings = {};
+      body.settings.milestoneIndexStart = 100;
+      body.settings.milestoneIndexCommence = 40;
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress,
         body: body
@@ -136,8 +139,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
     });
 
     it('milestoneIndexEnd < milestoneIndexStart', async () => {
-      body.milestoneIndexStart = 100;
-      body.milestoneIndexEnd = 40;
+      body.settings = {};
+      body.settings.milestoneIndexStart = 100;
+      body.settings.milestoneIndexEnd = 40;
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress,
         body: body
@@ -181,98 +185,105 @@ describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
     });
   });
 
-  it('approve proposal', async () => {
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: body
-    }));
+  [
+    'approve',
+    'reject'
+  ].forEach((s) => {
+    const command = (s === 'approve' ? approveProposal : rejectProposal);
+    const field = (s === 'approve' ? 'approved' : 'rejected');
+    it(s + ' proposal', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: body
+      }));
 
-    const wrapped: any = testEnv.wrap(createProposal);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {
-        uid: returns.uid
-      }
-    }));
-    const wrapped2: any = testEnv.wrap(approveProposal);
-    const returns2 = await wrapped2();
-    expect(returns2?.uid).toBeDefined();
-    expect(returns2?.approved).toEqual(true);
-    walletSpy.mockRestore();
-  });
+      const wrapped: any = testEnv.wrap(createProposal);
+      const returns = await wrapped();
+      expect(returns?.uid).toBeDefined();
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: returns.uid
+        }
+      }));
+      const wrapped2: any = testEnv.wrap(command);
+      const returns2 = await wrapped2();
+      expect(returns2?.uid).toBeDefined();
+      expect(returns2?.[field]).toEqual(true);
+      walletSpy.mockRestore();
+    });
 
-  it('fail to approve proposal (not guardian)', async () => {
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: body
-    }));
+    it('fail to ' + s + ' proposal (not guardian)', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: body
+      }));
 
-    const wrapped: any = testEnv.wrap(createProposal);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: wallet.getRandomEthAddress(),
-      body: {
-        uid: returns.uid
-      }
-    }));
-    const wrapped2: any = testEnv.wrap(approveProposal);
-    (<any>expect(wrapped2())).rejects.toThrowError(WenError.you_are_not_owner_of_proposal.key);
-    walletSpy.mockRestore();
-  });
+      const wrapped: any = testEnv.wrap(createProposal);
+      const returns = await wrapped();
+      expect(returns?.uid).toBeDefined();
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: wallet.getRandomEthAddress(),
+        body: {
+          uid: returns.uid
+        }
+      }));
+      const wrapped2: any = testEnv.wrap(command);
+      (<any>expect(wrapped2())).rejects.toThrowError(WenError.you_are_not_owner_of_proposal.key);
+      walletSpy.mockRestore();
+    });
 
-  it('approve proposal by other guardian (not creator)', async () => {
-    const guardian2 = wallet.getRandomEthAddress();
+    it(s + ' proposal by other guardian (not creator)', async () => {
+      const guardian2 = wallet.getRandomEthAddress();
 
-    // Join guardian2 as member of the space
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: guardian2,
-      body: {
-        uid: space.uid
-      }
-    }));
-    const jSpace: any = testEnv.wrap(joinSpace);
-    const doc2 = await jSpace();
-    expect(doc2).toBeDefined();
-    expect(doc2.createdOn).toBeDefined();
-    expect(doc2.uid).toEqual(guardian2);
+      // Join guardian2 as member of the space
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian2,
+        body: {
+          uid: space.uid
+        }
+      }));
+      const jSpace: any = testEnv.wrap(joinSpace);
+      const doc2 = await jSpace();
+      expect(doc2).toBeDefined();
+      expect(doc2.createdOn).toBeDefined();
+      expect(doc2.uid).toEqual(guardian2);
 
-    // Make guardian2 guardian of the space.
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {
-        uid: space.uid,
-        member: guardian2
-      }
-    }));
+      // Make guardian2 guardian of the space.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: space.uid,
+          member: guardian2
+        }
+      }));
 
-    // Let's add guardian tp space.
-    const aGuardian: any = testEnv.wrap(addGuardian);
-    const doc3 = await aGuardian();
-    expect(doc3).toBeDefined();
+      // Let's add guardian tp space.
+      const aGuardian: any = testEnv.wrap(addGuardian);
+      const doc3 = await aGuardian();
+      expect(doc3).toBeDefined();
 
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: body
-    }));
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: body
+      }));
 
-    // ----
+      // ----
 
-    const wrapped: any = testEnv.wrap(createProposal);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: guardian2,
-      body: {
-        uid: returns.uid
-      }
-    }));
-    const wrapped2: any = testEnv.wrap(approveProposal);
-    const returns2 = await wrapped2();
-    expect(returns2?.uid).toBeDefined();
-    expect(returns2?.approved).toEqual(true);
-    walletSpy.mockRestore();
+      const wrapped: any = testEnv.wrap(createProposal);
+      const returns = await wrapped();
+      expect(returns?.uid).toBeDefined();
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian2,
+        body: {
+          uid: returns.uid
+        }
+      }));
+      const wrapped2: any = testEnv.wrap(command);
+      const returns2 = await wrapped2();
+      expect(returns2?.uid).toBeDefined();
+      expect(returns2?.[field]).toEqual(true);
+      walletSpy.mockRestore();
+    });
   });
 });

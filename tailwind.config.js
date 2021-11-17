@@ -21,6 +21,9 @@ module.exports = {
       spacing: {
         75: '18.75rem',
       },
+      maxWidth: {
+        fit: 'fit-content',
+      },
     },
   },
   variants: {},

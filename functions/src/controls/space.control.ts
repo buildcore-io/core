@@ -306,6 +306,11 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.https.on
     throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
+  const guardians: any[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
+  if (guardians.length === 1) {
+    throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
+  }
+
   if (params.body) {
     await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
     await admin.firestore().runTransaction(async (transaction) => {

@@ -1,5 +1,17 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '@components/auth/services/auth.service';
+import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Proposal } from 'functions/interfaces/models';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { skip, Subscription } from 'rxjs';
+import { WenRequest } from './../../../../../../functions/interfaces/models/base';
+import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalApi } from './../../../../@api/proposal.api';
+import { SpaceApi } from './../../../../@api/space.api';
+import { DataService } from './../../services/data.service';
 
 // TODO default table content
 interface Person {
@@ -10,18 +22,18 @@ interface Person {
   amount: number;
 }
 
+@UntilDestroy()
 @Component({
   selector: 'wen-proposal',
   templateUrl: './proposal.page.html',
   styleUrls: ['./proposal.page.less']
 })
-export class ProposalPage {
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
-  }
+export class ProposalPage implements OnInit, OnDestroy {
+  private subscriptions$: Subscription[] = [];
+  private guardiansSubscription$?: Subscription;
 
   // TODO default table content
-  listOfData: Person[] = [
+  public transactions: Person[] = [
     {
       key: '1',
       name: '@ann',
@@ -44,4 +56,149 @@ export class ProposalPage {
       amount: 32,
     }
   ];
+
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private notification: NzNotificationService,
+    private spaceApi: SpaceApi,
+    private route: ActivatedRoute,
+    private proposalApi: ProposalApi,
+    private cd: ChangeDetectorRef,
+    public data: DataService
+  ) {
+    // none.
+  }
+
+  public ngOnInit(): void {
+    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+      const id: string|undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
+      if (id) {
+        this.listenToProposal(id);
+      } else {
+        this.notFound();
+      }
+    });
+
+    // If we're unable to find the space we take the user out as well.
+    this.data.proposal$.pipe(skip(1)).subscribe((obj: Proposal|undefined) => {
+      if (!obj) {
+        this.notFound();
+        return;
+      }
+
+      // Once we load proposal let's load guardians for the space.
+      if (this.guardiansSubscription$) {
+        this.guardiansSubscription$.unsubscribe();
+      }
+      this.guardiansSubscription$ = this.spaceApi.listenGuardians(obj.space).pipe(untilDestroyed(this)).subscribe(this.data.guardians$);
+    });
+
+    // Guardians might be refreshed alter and we need to apply that on view.
+    this.data.guardians$.subscribe(() => {
+      this.cd.markForCheck();
+    });
+  }
+
+  private notFound(): void {
+    this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
+  }
+
+  private listenToProposal(id: string): void {
+    this.cancelSubscriptions();
+    this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.proposal$));
+    this.subscriptions$.push(this.proposalApi.listenMembers(id).pipe(untilDestroyed(this)).subscribe(this.data.members$));
+  }
+
+  public loggedInMemberIsGuardian(): boolean {
+    if (!this.data.guardians$.value) {
+      return false;
+    }
+
+    if (!this.auth.member$.value?.uid) {
+      return false;
+    }
+
+    return this.data.guardians$.value.filter(e => e.uid === this.auth.member$.value?.uid).length > 0;
+  }
+
+  public memberIsPartOfVote(memberId: string): boolean {
+    if (!this.data.guardians$.value) {
+      return false;
+    }
+
+    return this.data.guardians$.value.filter(e => e.uid === memberId).length > 0;
+  }
+
+  public isMemberVote(type: ProposalType|undefined): boolean {
+    return (type === ProposalType.MEMBERS);
+  }
+
+  public isNativeVote(type: ProposalType|undefined): boolean {
+    return (type === ProposalType.NATIVE);
+  }
+
+
+  public get urlToSpaces(): string {
+    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
+  }
+
+  public getProgress(q: ProposalQuestion, a: ProposalAnswer): number {
+    return 50;
+  }
+
+  public async approve(): Promise<void> {
+    if (!this.data.proposal$.value?.uid) {
+      return;
+    }
+
+    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
+      undefinedToEmpty({
+        uid: this.data.proposal$.value.uid
+      })
+    );
+
+    if (!sc) {
+      throw new Error('Unable to sign.');
+    }
+
+    // TODO Handle this via queue and clean-up.
+    this.proposalApi.approve(sc).subscribe(() => {
+      this.notification.success('Approved.', '');
+    });
+  }
+
+  public async reject(): Promise<void> {
+    if (!this.data.proposal$.value?.uid) {
+      return;
+    }
+
+    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
+      undefinedToEmpty({
+        uid: this.data.proposal$.value.uid
+      })
+    );
+
+    if (!sc) {
+      throw new Error('Unable to sign.');
+    }
+
+    // TODO Handle this via queue and clean-up.
+    this.proposalApi.reject(sc).subscribe(() => {
+      this.notification.success('Rejected.', '');
+    });
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSubscriptions();
+    if (this.guardiansSubscription$) {
+      this.guardiansSubscription$.unsubscribe();
+    }
+  }
 }

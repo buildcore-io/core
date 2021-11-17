@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class SignInComponent {
   returnUrl: string;
+  isVisible = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -26,5 +27,13 @@ export class SignInComponent {
     this.authService.signIn().then(() => {
       this.router.navigate([ROUTER_UTILS.config.base.dashboard]);
     });
+  }
+
+  showModal(): void {
+    this.isVisible = true;
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
   }
 }

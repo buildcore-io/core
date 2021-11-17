@@ -1,6 +1,6 @@
-<header class="absolute right-0 z-30 flex items-center px-6 py-5 space-x-6">
+<header class="absolute right-0 z-30 flex items-center px-8 py-5 space-x-4">
 
-  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu"
+  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" *ngIf="isLoggedIn$ | async"
     class="font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
     nzType="primary" nzSize="small" type="button">Add new</button>
 
@@ -27,7 +27,7 @@
 
   <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
     class="inline-flex items-center pl-2 font-bold border-0" *ngIf="isLoggedIn$ | async">
-    <nz-avatar nzIcon="user" nzSrc="https://cdn.discordapp.com/attachments/895741873744908329/909987739666096128/3.jpg" nzSize="large"
+    <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" nzSize="large"
       class="mr-1"></nz-avatar>
     {{(member$ | async)?.uid | truncate:[12]}}
     <i nz-icon nzType="down" class="font-bold"></i>

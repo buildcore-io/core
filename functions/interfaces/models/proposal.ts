@@ -1,46 +1,57 @@
-import { Base, BaseRecord } from './base';
+import { Base, BaseRecord, BaseSubCollection } from './base';
 export enum ProposalType {
-  NATIVE = "NATIVE",
-  DIGITAL_ASSET = "DIGITAL_ASSET",
-  SMART_CONTRACT = "SMART_CONTRACT"
+  NATIVE = 0,
+  MEMBERS = 1
+}
+
+export interface ProposalMember extends BaseSubCollection {
+  uid: string;
+  createdOn: Date;
 }
 
 export interface NativeProposalSettings {
-  beginMilestone: number;
-  startMilestone: number;
-  endMilestone: number;
+  milestoneIndexCommence: number;
+  milestoneIndexStart: number;
+  milestoneIndexEnd: number;
 }
 
-export interface DigitalAssetProposalSettings {
-  // none yet.
-  add: any;
+export interface MembersProposalSettings {
+  startDate: string;
+  endDate: string;
+  guardiansOnly: boolean;
+  members:  {
+    [propName: string]: ProposalMember;
+  };
 }
 
-export interface SmartContractProposalSettings {
-  // none yet.
-  add: any;
-}
+export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;
 
 export interface ProposalAnswer extends Base {
-  name: string;
-  description: string;
+  text: string;
+  value: number;
+  additionalInfo: string;
 }
 
 export interface ProposalQuestion extends Base {
-  name: string;
-  description: string;
+  text: string;
+  additionalInfo: string;
   answers: ProposalAnswer[];
 }
 
 export interface Proposal extends BaseRecord {
   uid: string;
   name: string;
+  additionalInfo?: string;
+  space: string;
   description: string;
   type: ProposalType;
+  approved?: boolean;
+  rejected?: boolean;
   owners: {
     // Owner / from date
     [propName: string]: Date;
   };
-  settings: NativeProposalSettings|DigitalAssetProposalSettings|SmartContractProposalSettings;
+  // TODO Fix typing here.
+  settings: any;
   questions: ProposalQuestion[];
 }

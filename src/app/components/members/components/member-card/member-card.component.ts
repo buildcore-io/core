@@ -9,4 +9,5 @@ import { Member } from '../../../../../../functions/interfaces/models/member';
 })
 export class MemberCardComponent {
   @Input() member?: Member;
+  @Input() fullWidth?: boolean;
 }

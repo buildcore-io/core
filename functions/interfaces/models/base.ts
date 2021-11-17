@@ -40,4 +40,5 @@ export interface BaseSubCollection {
 export interface BaseRecord extends Base {
   createdOn?: Timestamp;
   updatedOn?: Timestamp;
+  createdBy?: string;
 }

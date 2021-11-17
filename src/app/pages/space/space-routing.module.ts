@@ -18,7 +18,10 @@ const routes: Routes = [
     path: ROUTER_UTILS.config.space.space,
     component: SpacePage,
     children: [
-      { path: '', component: OverviewPage },
+      {
+        path: '',
+        redirectTo: ROUTER_UTILS.config.space.overview
+      },
       { path: ROUTER_UTILS.config.space.overview, component: OverviewPage },
       { path: ROUTER_UTILS.config.space.funding, component: FundingPage },
       { path: ROUTER_UTILS.config.space.awards, component: AwardsPage },

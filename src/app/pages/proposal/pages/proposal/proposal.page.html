@@ -7,24 +7,26 @@
   <div nz-col nzFlex="auto">
     <div class="space-x-4">
       <nz-avatar
+        nzSrc="/assets/mocks/default_avatar.jpg"
         class="bg-white border-2 border-gray-400"
         nzShape="circle"></nz-avatar>
 
-        <nz-tag [nzColor]="'#BBD3F6'" class="text-black">Proposal</nz-tag>
-        <nz-tag [nzColor]="'#CBF6BB'" class="text-black">Draft</nz-tag>
+        <nz-tag [nzColor]="'#BBD3F6'" class="text-black" *ngIf="(data.proposal$ | async)?.approved">Proposal</nz-tag>
+        <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="!(data.proposal$ | async)?.approved">Draft</nz-tag>
+        <nz-tag [nzColor]="'#f6c5bb'" class="text-black" *ngIf="(data.proposal$ | async)?.rejected">Rejected</nz-tag>
     </div>
 
-    <h1 i18n>Proposal Title</h1>
+    <h1 i18n>{{(data.proposal$ | async)?.name}}</h1>
 
     <div class="flex items-center space-x-4">
       <div>
         <i nz-icon nzType="calendar" class="pr-2" nzTheme="outline"></i>
-        <span>Oct 11, 2021, 11:00 PM</span>
+        <span>{{(data.proposal$ | async)?.createdOn}}</span>
       </div>
       <div>
-        <nz-avatar nzIcon="user" nzSrc="https://cdn.discordapp.com/attachments/895741873744908329/909987739666096128/3.jpg" class="mr-2">
+        <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
-        <span>@name</span>
+        <span>@{{(data.proposal$ | async)?.createdBy | truncate:[12]}}</span>
       </div>
     </div>
 
@@ -36,7 +38,7 @@
   </div>
 
   <div class="space-y-4" nz-col nzFlex="430px">
-    <nz-card nzTitle="Cast your vote">
+    <nz-card nzTitle="Cast your vote" *ngIf="(data.proposal$ | async)?.approved">
       <button nz-button nzType="primary" nzBlock nzSize="small"
         class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl">
         Open Firefly to Vote</button>
@@ -46,32 +48,29 @@
       <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
     </nz-card>
 
-    <nz-card nzTitle="Approve Proposal (available only for Guardians)">
-      <button nz-button nzType="primary" nzBlock nzSize="small"
+    <nz-card nzTitle="Approve Proposal (available only for Guardians)" *ngIf="!(data.proposal$ | async)?.approved && loggedInMemberIsGuardian()">
+      <button nz-button nzType="primary" nzBlock nzSize="small" (click)="approve()"
         class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl">
         Approve</button>
-      <button nz-button nzDanger nzType="primary" nzBlock nzSize="small"
+      <button nz-button nzDanger nzType="primary" nzBlock nzSize="small" (click)="reject()"
         class="h-10 px-6 m-2 font-semibold text-white bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700 focus:bg-red-700 focus:border-red-700 rounded-3xl">
         Decline</button>
     </nz-card>
 
-    <nz-card nzTitle="Current Results">
-      <ng-container>
-        <p>BUILD</p>
-        <nz-progress [nzPercent]="50" nzStatus="active"></nz-progress>
-      </ng-container>
-      <ng-container>
-        <p>BURN</p>
-        <nz-progress [nzPercent]="50" nzStatus="active"></nz-progress>
+    <nz-card nzTitle="Current Results" *ngIf="(data.proposal$ | async)?.approved">
+      <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
+        <ng-container *ngFor="let a of q.answers">
+          <p>{{a.text}}</p>
+          <nz-progress [nzPercent]="getProgress(q, a)" nzStatus="active"></nz-progress>
+        </ng-container>
       </ng-container>
     </nz-card>
 
-    <nz-card [nzTitle]="'Votes' + '(x)'">
-
-      <nz-table #basicTable [nzData]="listOfData" [nzShowPagination]="false">
+    <nz-card nzTitle="Votes" *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type)">
+      <nz-table #basicTable [nzData]="transactions" [nzShowPagination]="false">
         <thead>
           <tr>
-            <th>Investor</th>
+            <th>Voter</th>
             <th>Date</th>
             <th>Option</th>
             <th>Amount</th>
@@ -91,12 +90,26 @@
       <a nz-button nzType="link">See more</a>
     </nz-card>
 
-    <nz-card nzTitle="System Info">
+    <!-- MEMBER VOTE -->
+    <nz-card nzTitle="System Info" *ngIf="isMemberVote((data.proposal$ | async)?.type)">
       <p>
-        Stard Date: xxx
+        Star Date: {{(data.proposal$ | async)?.settings?.startDate}}
       </p>
       <p>
-        End Date: xxx
+        End Date: {{(data.proposal$ | async)?.settings?.endDate}}
+      </p>
+    </nz-card>
+
+    <!-- NATIVE VOTE -->
+    <nz-card nzTitle="System Info" *ngIf="isNativeVote((data.proposal$ | async)?.type)">
+      <p>
+        milestoneIndexCommence: {{(data.proposal$ | async)?.settings?.milestoneIndexCommence}}
+      </p>
+      <p>
+        milestoneIndexStart: {{(data.proposal$ | async)?.settings?.milestoneIndexCommence}}
+      </p>
+      <p>
+        milestoneIndexEnd: {{(data.proposal$ | async)?.settings?.milestoneIndexEnd}}
       </p>
       <a nz-button nzType="link">Export to JSON</a>
     </nz-card>

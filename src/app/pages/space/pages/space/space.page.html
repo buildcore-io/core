@@ -31,7 +31,7 @@
     <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="small" *ngIf="(isMemberWithinSpace$ | async) === false && (member$ | async)"
       class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl">
       Join Space</button>
-    <button nz-button nzType="primary" nzBlock nzSize="small" *ngIf="isMemberWithinSpace$ | async"
+    <button nz-button nzType="primary" (click)="leave()" nzBlock nzSize="small" *ngIf="isMemberWithinSpace$ | async"
     class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl">
       Leave Space</button>
 
@@ -44,8 +44,10 @@
     <nz-card>
       <div>
         <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
-        <span>{{ (space$ | async)!.totalMembers }}</span>
-        <span> members</span>
+        <a [routerLink]="['members']">
+          <span>{{ (space$ | async)!.totalMembers }}</span>
+          <span> members</span>
+        </a>
       </div>
     </nz-card>
 
@@ -57,10 +59,10 @@
     </nz-card>
 
     <nz-card [nzTitle]="(space$ | async)!.totalGuardians + ' Guardians'">
-      <div>
-        <nz-avatar nzIcon="user" nzSrc="https://cdn.discordapp.com/attachments/895741873744908329/909987739666096128/3.jpg" class="mr-2">
+      <div *ngFor="let g of guardians$ | async">
+        <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
-        <span>@name</span>
+        <span>@ {{ g.uid | truncate:[12] }}</span>
       </div>
     </nz-card>
   </div>
