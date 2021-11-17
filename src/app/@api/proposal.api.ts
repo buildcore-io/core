@@ -20,6 +20,17 @@ export class ProposalApi extends BaseApi<Proposal> {
     return super.listen(id);
   }
 
+  public listenForSpace(space: string): Observable<Proposal[]> {
+    return this.afs.collection<Proposal>(
+      this.collection,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref) => {
+        return ref.where('space', '==', space)
+      }
+    ).valueChanges();
+  }
+
+
   /**
    * Function to create profile if it does not exists yet.
    */

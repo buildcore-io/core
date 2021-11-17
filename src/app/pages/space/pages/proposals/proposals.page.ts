@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { SpaceGuardian } from 'functions/interfaces/models';
+import { Proposal, SpaceGuardian } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
 @UntilDestroy()
@@ -16,6 +17,7 @@ import { SpaceApi } from './../../../../@api/space.api';
 })
 export class ProposalsPage implements OnInit, OnDestroy {
   public spaceId?: string;
+  public proposals$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
 
@@ -23,6 +25,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
     private router: Router,
     private auth: AuthService,
     private spaceApi: SpaceApi,
+    private proposalApi: ProposalApi,
     private cd: ChangeDetectorRef,
     private route: ActivatedRoute
   ) {}
@@ -45,6 +48,8 @@ export class ProposalsPage implements OnInit, OnDestroy {
   }
 
   private listenToIsMemberAndGuardian(spaceId: string): void {
+
+    this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.proposals$));
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.guardians$));
   }
 

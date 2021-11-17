@@ -12,6 +12,7 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { MembersModule } from './../../components/members/members.module';
+import { ProposalsCardModule } from './../../components/proposals/components/proposal-card/proposal-card.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { FundingPage } from './pages/funding/funding.page';
 import { MembersPage } from './pages/members/members.page';
@@ -37,6 +38,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     SpaceRoutingModule,
     TruncateModule,
     MembersModule,
+    ProposalsCardModule,
     NzGridModule,
     NzMenuModule,
     NzButtonModule,

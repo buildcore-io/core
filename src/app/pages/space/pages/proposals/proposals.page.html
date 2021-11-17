@@ -4,3 +4,6 @@
     class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
     i18n>Create proposal
 </button>
+
+<wen-proposal-card class="cursor-pointer" *ngFor="let proposal of proposals$ | async" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+</wen-proposal-card>
