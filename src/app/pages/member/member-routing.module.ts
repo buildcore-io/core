@@ -12,7 +12,10 @@ const routes: Routes = [
     path: ROUTER_UTILS.config.member.member,
     component: MemberPage,
     children: [
-      { path: '', component: ActivityPage },
+      {
+        path: '',
+        redirectTo: ROUTER_UTILS.config.member.activity
+      },
       { path: ROUTER_UTILS.config.member.activity, component: ActivityPage },
       { path: ROUTER_UTILS.config.member.awards, component: AwardsPage },
       { path: ROUTER_UTILS.config.member.badges, component: BadgesPage },

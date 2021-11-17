@@ -33,7 +33,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   private guardiansSubscription$?: Subscription;
 
   // TODO default table content
-  listOfData: Person[] = [
+  public transactions: Person[] = [
     {
       key: '1',
       name: '@ann',

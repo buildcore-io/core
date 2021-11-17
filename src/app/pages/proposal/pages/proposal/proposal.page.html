@@ -69,7 +69,7 @@
     </nz-card>
 
     <nz-card nzTitle="Votes" *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type)">
-      <nz-table #basicTable [nzData]="listOfData" [nzShowPagination]="false">
+      <nz-table #basicTable [nzData]="transactions" [nzShowPagination]="false">
         <thead>
           <tr>
             <th>Voter</th>
