@@ -1,4 +1,4 @@
-<article class="bg-white w-75 h-75 rounded-2xl" *ngIf="member">
+<article class="bg-white rounded-2xl" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'" *ngIf="member">
   <div class="relative flex flex-col w-full p-4 space-y-4 h-44">
     <div class="flex space-x-4">
       <nz-avatar class="min-w-max"
