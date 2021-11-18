@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { UiModule } from '@components/ui/ui.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
@@ -40,7 +40,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     MembersModule,
     ProposalsCardModule,
     NzGridModule,
-    NzMenuModule,
+    UiModule,
     NzButtonModule,
     NzTypographyModule,
     NzCardModule,

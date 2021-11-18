@@ -6,30 +6,42 @@
 
   <nz-dropdown-menu #createMenu="nzDropdownMenu">
     <ul nz-menu>
-      <li nz-menu-item [routerLink]="urlToNewSpace">
-        Space
-      </li>
-      <li nz-menu-item [routerLink]="urlToNewProposal">
-        Proposal
-      </li>
-      <li nz-menu-item [routerLink]="urlToNewAward">
-        Award
-      </li>
+      <li nz-menu-item [routerLink]="urlToNewSpace">Space</li>
+      <li nz-menu-item [routerLink]="urlToNewProposal">Proposal</li>
+      <li nz-menu-item [routerLink]="urlToNewAward">Award</li>
     </ul>
   </nz-dropdown-menu>
 
   <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"></wen-sign-in>
 
-  <button nz-button nzType="default" nzSize="small" nzShape="circle" *ngIf="isLoggedIn$ | async"
-    class="inline-flex items-center justify-center border-0">
+  <button
+    nz-button
+    nzType="default"
+    nzSize="small"
+    nzShape="circle"
+    *ngIf="isLoggedIn$ | async"
+    class="inline-flex items-center justify-center border-0"
+  >
     <i nz-icon nzType="bell" class="text-lg"></i>
   </button>
 
-  <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
-    class="inline-flex items-center pl-2 font-bold border-0" *ngIf="isLoggedIn$ | async">
-    <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" nzSize="large"
-      class="mr-1"></nz-avatar>
-    {{(member$ | async)?.uid | truncate:[12]}}
+  <button
+    nz-button
+    nz-dropdown
+    nzShape="round"
+    nzTrigger="click"
+    nzSize="default"
+    [nzDropdownMenu]="userMenu"
+    class="inline-flex items-center h-16 gap-3 pl-2 font-bold border-0"
+    *ngIf="isLoggedIn$ | async"
+  >
+    <nz-avatar
+      nzIcon="user"
+      nzSrc="/assets/mocks/default_avatar.jpg"
+      [nzSize]="48"
+      class="mr-1"
+    ></nz-avatar>
+    {{ (member$ | async)?.uid | truncate: [12] }}
     <i nz-icon nzType="down" class="font-bold"></i>
   </button>
 
@@ -40,5 +52,4 @@
       </li>
     </ul>
   </nz-dropdown-menu>
-
 </header>
