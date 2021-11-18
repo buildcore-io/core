@@ -1,5 +1,5 @@
 import { BaseRecord, BaseSubCollection } from './base';
-export interface SpaceGuardian {
+export interface SpaceGuardian extends BaseSubCollection {
   uid: string;
   createdOn: Date;
 }

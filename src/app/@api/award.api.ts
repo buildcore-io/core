@@ -20,10 +20,7 @@ export class AwardApi extends BaseApi<Award> {
     return super.listen(id);
   }
 
-  /**
-   * Function to create profile if it does not exists yet.
-   */
-  public createAward(req: WenRequest): Observable<Award|undefined> {
+  public create(req: WenRequest): Observable<Award|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cAward);
     const data$ = callable(req);
     return data$;

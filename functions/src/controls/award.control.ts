@@ -1,6 +1,6 @@
+import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from "joi";
 import { merge, round } from 'lodash';
 import { DecodedToken } from '../../interfaces/functions/index';
@@ -11,7 +11,7 @@ import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { StandardResponse } from './../../interfaces/functions/index';
-import { Award } from './../../interfaces/models/award';
+import { Award, AwardType } from './../../interfaces/models/award';
 import { WenRequest } from './../../interfaces/models/base';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 
@@ -19,17 +19,12 @@ function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     description: Joi.string().optional(),
+    type: Joi.number().equal(AwardType.PARTICIPATE_AND_APPROVE).required(),
     space: Joi.string().length(ethAddressLength).lowercase().required(),
+    endDate: Joi.date().required(),
     badge: Joi.object({
       name: Joi.string().required(),
       description: Joi.string().optional(),
-      ipfsCid: Joi.string().custom((value, helpers) => {
-        if(cid(value)) {
-          return true;
-        } else {
-          return helpers.error("Invalid IPFS CID");
-        }
-      }).required(),
       // Let's keep everything within 1Mi for now.
       count: Joi.number().min(0).max(1000).required(),
       // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
@@ -143,9 +138,13 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
   assertValidation(schema.validate(params.body));
 
   const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
-  let docAward: any;
-  if (!(await refAward.get()).exists) {
+  const docAward: any = (await refAward.get());
+  if (!docAward.exists) {
     throw throwInvalidArgument(WenError.award_does_not_exists);
+  }
+
+  if (dayjs(docAward.data().endDate).isBefore(dayjs())) {
+    throw throwInvalidArgument(WenError.award_is_no_longer_available);
   }
 
   const member = await admin.firestore().collection(COL.MEMBER).doc(participant).get();
@@ -157,6 +156,7 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
     throw throwInvalidArgument(WenError.member_is_already_participant_of_space);
   }
 
+  let output: any;
   if (params.body) {
     await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).set({
       uid: participant,
@@ -164,10 +164,10 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
     });
 
     // Load latest
-    docAward = await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).get();
+    output = await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).get();
   }
 
-  return docAward.data();
+  return output.data();
 });
 
 export const approveParticipant: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {

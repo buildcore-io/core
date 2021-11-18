@@ -8,8 +8,11 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
@@ -18,6 +21,7 @@ import { AwardPage } from './pages/award/award.page';
 import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ParticipantsPage } from './pages/participants/participants.page';
+import { DataService } from './services/data.service';
 
 
 @NgModule({
@@ -27,11 +31,14 @@ import { ParticipantsPage } from './pages/participants/participants.page';
     OverviewPage,
     ParticipantsPage
   ],
+  providers: [ DataService ],
   imports: [
     CommonModule,
     AwardRoutingModule,
     ReactiveFormsModule,
     NzButtonModule,
+    NzSelectModule,
+    NzRadioModule,
     NzCardModule,
     NzIconModule,
     NzInputModule,
@@ -42,6 +49,7 @@ import { ParticipantsPage } from './pages/participants/participants.page';
     NzTagModule,
     NzModalModule,
     NzUploadModule,
+    NzInputNumberModule,
     NzDatePickerModule
   ]
 })
