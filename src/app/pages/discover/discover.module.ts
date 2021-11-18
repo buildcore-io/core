@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { UiModule } from '@components/ui/ui.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { SpacesModule } from '../../components/spaces/spaces.module';
 import { AwardsModule } from './../../components/awards/awards.module';
@@ -31,7 +31,6 @@ import { SpacesPage } from './pages/spaces/spaces.page';
   imports: [
     CommonModule,
     RouterModule,
-    NzMenuModule,
     NzTypographyModule,
     DiscoverRoutingModule,
     NzInputModule,
@@ -40,7 +39,8 @@ import { SpacesPage } from './pages/spaces/spaces.page';
     SpacesModule,
     MembersModule,
     ProposalsModule,
-    AwardsModule
+    AwardsModule,
+    UiModule
   ]
 })
 export class DiscoverModule { }

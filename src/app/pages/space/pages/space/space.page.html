@@ -14,14 +14,8 @@
   <div nz-col nzFlex="auto">
     <h1 i18n>{{ (space$ | async)!.name }}</h1>
 
-    <nav nz-menu nzMode="horizontal" class="inline-flex items-center h-10 border-b-0 rounded-3xl">
-      <a *ngFor="let section of sections" nz-menu-item
-        class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl" i18n
-        [routerLink]="section.route" nzMatchRouter>
-        {{ section.label }}
-      </a>
-    </nav>
-
+    <wen-tabs [tabs]="sections"></wen-tabs>
+    
     <div class="w-full py-12">
       <router-outlet></router-outlet>
     </div>
