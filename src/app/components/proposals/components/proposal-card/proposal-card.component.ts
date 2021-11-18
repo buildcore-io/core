@@ -9,4 +9,5 @@ import { Proposal } from '../../../../../../functions/interfaces/models/proposal
 })
 export class ProposalCardComponent {
   @Input() proposal?: Proposal;
+  @Input() fullWidth?: boolean;
 }

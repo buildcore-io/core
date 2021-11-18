@@ -48,7 +48,6 @@ export class ProposalsPage implements OnInit, OnDestroy {
   }
 
   private listenToIsMemberAndGuardian(spaceId: string): void {
-
     this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.proposals$));
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.guardians$));
   }

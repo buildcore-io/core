@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AwardsCardModule } from "@components/awards/components/award-card/award-card.module";
 import { UiModule } from '@components/ui/ui.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -39,6 +40,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     TruncateModule,
     MembersModule,
     ProposalsCardModule,
+    AwardsCardModule,
     NzGridModule,
     UiModule,
     NzButtonModule,

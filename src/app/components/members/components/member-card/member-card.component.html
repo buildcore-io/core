@@ -1,6 +1,6 @@
 <article class="bg-white rounded-2xl" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'" *ngIf="member">
   <div class="relative flex flex-col w-full p-4 space-y-4 h-44">
-    <div class="flex space-x-4">
+    <div class="flex space-x-4" [routerLink]="['/member', member.uid]">
       <nz-avatar class="min-w-max"
         nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
       <h3 class="mt-2 mb-3 text-lg font-bold truncate">@{{ member.uid }}</h3>

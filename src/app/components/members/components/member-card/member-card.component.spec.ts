@@ -1,10 +1,10 @@
-import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MemberCardComponent } from './member-card.component';
 
 
 describe('MemberCardComponent', () => {
   let spectator: Spectator<MemberCardComponent>;
-  const createComponent = createComponentFactory({
+  const createComponent = createRoutingFactory({
     component: MemberCardComponent
   });
 

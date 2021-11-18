@@ -7,11 +7,11 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
   styleUrls: ['./discover.page.less']
 })
 export class DiscoverPage {
-  sections = [
+  public sections = [
 
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
     { route: [ROUTER_UTILS.config.discover.awards], label: 'Awards' },
     { route: [ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
-  ]
+  ];
 }

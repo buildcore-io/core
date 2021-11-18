@@ -6,7 +6,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { skip, Subscription } from 'rxjs';
+import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
@@ -29,6 +29,7 @@ interface Person {
   styleUrls: ['./proposal.page.less']
 })
 export class ProposalPage implements OnInit, OnDestroy {
+  public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
   private guardiansSubscription$?: Subscription;
 
@@ -91,7 +92,10 @@ export class ProposalPage implements OnInit, OnDestroy {
       if (this.guardiansSubscription$) {
         this.guardiansSubscription$.unsubscribe();
       }
-      this.guardiansSubscription$ = this.spaceApi.listenGuardians(obj.space).pipe(untilDestroyed(this)).subscribe(this.data.guardians$);
+      if (this.auth.member$.value?.uid) {
+        this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
+                                      .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
+      }
     });
 
     // Guardians might be refreshed alter and we need to apply that on view.
@@ -108,18 +112,6 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.proposal$));
     this.subscriptions$.push(this.proposalApi.listenMembers(id).pipe(untilDestroyed(this)).subscribe(this.data.members$));
-  }
-
-  public loggedInMemberIsGuardian(): boolean {
-    if (!this.data.guardians$.value) {
-      return false;
-    }
-
-    if (!this.auth.member$.value?.uid) {
-      return false;
-    }
-
-    return this.data.guardians$.value.filter(e => e.uid === this.auth.member$.value?.uid).length > 0;
   }
 
   public memberIsPartOfVote(memberId: string): boolean {

@@ -9,4 +9,5 @@ import { Award } from '../../../../../../functions/interfaces/models/award';
 })
 export class AwardCardComponent {
   @Input() award?: Award;
+  @Input() fullWidth?: boolean;
 }

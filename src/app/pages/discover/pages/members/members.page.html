@@ -1,4 +1,4 @@
 <div class="flex flex-wrap gap-6">
-  <wen-member-card class="cursor-pointer" *ngFor="let member of members$ | async" [member]="member" [routerLink]="['/member', member.uid]">
+  <wen-member-card class="cursor-pointer" *ngFor="let member of members$ | async" [member]="member">
   </wen-member-card>
 </div>

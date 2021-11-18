@@ -15,7 +15,10 @@ const routes: Routes = [
     path: ROUTER_UTILS.config.award.award,
     component: AwardPage,
     children: [
-      { path: '', component: OverviewPage },
+      {
+        path: '',
+        redirectTo: ROUTER_UTILS.config.award.overview
+      },
       { path: ROUTER_UTILS.config.award.overview, component: OverviewPage },
       { path: ROUTER_UTILS.config.award.participants, component: ParticipantsPage }
     ]

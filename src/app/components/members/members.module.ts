@@ -7,7 +7,7 @@ import { MembersCardModule } from './components/member-card/member-card.module';
     MembersCardModule,
   ],
   imports: [
-    CommonModule,
+    CommonModule
   ]
 })
 

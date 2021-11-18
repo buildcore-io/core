@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MembersCardModule } from '@components/members/components/member-card/member-card.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -16,6 +17,8 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
+import { TabsModule } from './../../components/ui/components/tabs/tabs.module';
 import { AwardRoutingModule } from './award-routing.module';
 import { AwardPage } from './pages/award/award.page';
 import { NewPage } from './pages/new/new.page';
@@ -34,8 +37,11 @@ import { DataService } from './services/data.service';
   providers: [ DataService ],
   imports: [
     CommonModule,
+    TabsModule,
+    TruncateModule,
     AwardRoutingModule,
     ReactiveFormsModule,
+    MembersCardModule,
     NzButtonModule,
     NzSelectModule,
     NzRadioModule,

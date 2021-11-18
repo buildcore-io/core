@@ -1,9 +1,7 @@
-<p>proposals works!</p>
-
 <button nz-button nzType="primary" nzSize="small" type="button" (click)="create()" *ngIf="loggedInMemberIsGuardian()"
     class="h-10 px-6 m-2 font-semibold rounded-3xl"
     i18n>Create proposal
 </button>
 
-<wen-proposal-card class="cursor-pointer" *ngFor="let proposal of proposals$ | async" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+<wen-proposal-card class="cursor-pointer" [fullWidth]="true" *ngFor="let proposal of proposals$ | async" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
 </wen-proposal-card>

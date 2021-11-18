@@ -3,7 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Award } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
 @UntilDestroy()
@@ -15,6 +17,7 @@ import { SpaceApi } from './../../../../@api/space.api';
 })
 export class AwardsPage implements OnInit, OnDestroy {
   public spaceId?: string;
+  public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
 
@@ -22,6 +25,7 @@ export class AwardsPage implements OnInit, OnDestroy {
     private router: Router,
     private auth: AuthService,
     private spaceApi: SpaceApi,
+    private awardApi: AwardApi,
     private cd: ChangeDetectorRef,
     private route: ActivatedRoute
   ) {}
@@ -41,6 +45,9 @@ export class AwardsPage implements OnInit, OnDestroy {
 
   private listenToIsMemberAndGuardian(spaceId: string): void {
     if (this.auth.member$.value) {
+      this.subscriptions$.push(
+        this.awardApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.awards$)
+      );
       this.subscriptions$.push(
         this.spaceApi.isMemberWithinSpace(spaceId, this.auth.member$.value.uid).pipe(untilDestroyed(this)).subscribe(this.isMemberWithinSpace$)
       );

@@ -1,1 +1,10 @@
-<p>participants works!</p>
+<div class="flex flex-col gap-6 max-w-fit">
+  <wen-member-card class="cursor-pointer" [fullWidth]="true" *ngFor="let member of data.participants$ | async"
+                   [member]="member">
+    <ng-container *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async)">
+      <button type="button" (click)="approve(member.uid)">
+        Approve
+      </button>
+    </ng-container>
+  </wen-member-card>
+</div>
