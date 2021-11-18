@@ -47,7 +47,6 @@
           <textarea nz-input placeholder="Answer description" rows="4" [formControl]="gForm(answer, 'additionalInfo')"></textarea>
         </ng-container>
         <button nz-button nzType="primary" nzSize="small" type="button" (click)="addAnswer(question)" *ngIf="getAnswers(question).length < 4"
-          class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
           i18n>Add Choice</button>
       </nz-card>
     </ng-container>
@@ -56,6 +55,5 @@
 
 
 <button nz-button nzType="primary" nzSize="small" type="button" (click)="create()"
-class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
 i18n>Create Proposal</button>
 
