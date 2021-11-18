@@ -15,7 +15,7 @@ module.exports = {
       padding: '1.5rem',
     },
     extend: {
-      color: {
+      colors: {
         inherit: 'inherit',
         orange: {
           lightest: '#F2C50C',
@@ -36,6 +36,10 @@ module.exports = {
         green: {
           dark: '#11A696',
           neon: '#58F218',
+        },
+        'app-gray': {
+          100: '#E4E1D2',
+          400: '#9F9D93',
         },
         brown: '#A66300',
         pink: '#F20CDF',
