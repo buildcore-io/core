@@ -5,39 +5,53 @@
 <h1 class="mt-7" i18 n>New Award</h1>
 
 <form nz-form nzLayout="vertical">
-  <div class="space-y-4" nz-col nzFlex="auto">
+  <div class="py-4" nz-row [nzGutter]="16">
 
-    <nz-card [nzBordered]="false" nzTitle="Award Info">
-      <div class="space-y-4">
-        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
+    <div class="space-y-4" nz-col nzFlex="auto">
+
+      <nz-card [nzBordered]="false" nzTitle="Award Info">
+        <div class="space-y-4">
+          <nz-radio-group nzButtonStyle="solid" [formControl]="typeControl">
+            <label nz-radio-button [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
+            <label nz-radio-button [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
+            <label nz-radio-button [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
+            <label nz-radio-button [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
+          </nz-radio-group>
+
+          <input nz-input placeholder="Title" [formControl]="nameControl" />
+          <div class="flex flex-grow space-x-4">
+            <nz-date-picker class="flex flex-grow" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl"
+              nzPlaceHolder="End"></nz-date-picker>
+          </div>
+          <textarea nz-input placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
+        </div>
+      </nz-card>
+
+      <nz-card nzTitle="Badge definition">
+        <div class="space-y-4">
+          <input nz-input placeholder="Badge Title" [formControl]="badgeNameControl" />
+          <textarea nz-input placeholder="Badge description" rows="4"
+            [formControl]="badgeDescriptionControl"></textarea>
+          <div class="space-x-4">
+            <nz-input-number placeholder="Total Experience Points" [formControl]="badgeXpControl"></nz-input-number>
+            <nz-input-number placeholder="Available Badges" [formControl]="badgeCountControl"></nz-input-number>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+
+    <div class="space-y-4" nz-col nzFlex="300px">
+      <nz-card [nzBordered]="false" nzTitle="Space Info">
+        <nz-select class="w-full" nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
           <nz-option *ngFor="let s of spaces$ | async" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
         </nz-select>
-        <nz-radio-group nzButtonStyle="solid" [formControl]="typeControl">
-          <label nz-radio-button [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
-          <label nz-radio-button [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
-          <label nz-radio-button [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
-          <label nz-radio-button [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
-        </nz-radio-group>
-        <input nz-input placeholder="Title" [formControl]="nameControl"/>
-        <div class="flex flex-grow space-x-4">
-          <nz-date-picker class="flex flex-grow" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl"
-            nzPlaceHolder="End"></nz-date-picker>
-        </div>
-        <textarea nz-input placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
-      </div>
-    </nz-card>
+      </nz-card>
 
-    <nz-card nzTitle="Badge definition">
-      <input nz-input placeholder="Badge Title" [formControl]="badgeNameControl"/>
-      <textarea nz-input placeholder="Badge description" rows="4" [formControl]="badgeDescriptionControl"></textarea>
-      <nz-input-number placeholder="Total Experience Points" [formControl]="badgeXpControl"></nz-input-number>
-      <nz-input-number placeholder="Available Badges" [formControl]="badgeCountControl"></nz-input-number>
-    </nz-card>
-
-    <nz-card [nzBordered]="false">
-      <nz-card-meta nzTitle="Badge" nzDescription="Badge coming soon!">
-      </nz-card-meta>
-    </nz-card>
+      <nz-card [nzBordered]="false">
+        <nz-card-meta nzTitle="Badge" nzDescription="Badge coming soon!">
+        </nz-card-meta>
+      </nz-card>
+    </div>
 
   </div>
 

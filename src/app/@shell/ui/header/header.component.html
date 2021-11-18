@@ -1,17 +1,8 @@
-<header class="absolute right-0 z-30 flex items-center px-8 py-5 space-x-4">
-  <button
-    nz-button
-    nz-dropdown
-    nzTrigger="click"
-    [nzDropdownMenu]="createMenu"
-    *ngIf="isLoggedIn$ | async"
-    class="font-semibold text-white rounded-3xl"
-    nzType="primary"
-    nzSize="small"
-    type="button"
-  >
-    Add new
-  </button>
+<header class="absolute z-30 flex items-center py-5 space-x-4 right-8">
+
+  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" *ngIf="isLoggedIn$ | async"
+    class="font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
+    nzType="primary" nzSize="small" type="button">Add new</button>
 
   <nz-dropdown-menu #createMenu="nzDropdownMenu">
     <ul nz-menu>
