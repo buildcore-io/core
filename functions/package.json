@@ -17,6 +17,7 @@
   "main": "lib/src/index.js",
   "dependencies": {
     "@metamask/eth-sig-util": "^4.0.0",
+    "dayjs": "^1.10.7",
     "ethers": "^5.5.1",
     "firebase-admin": "10.0.0",
     "firebase-functions": "^3.16.0",

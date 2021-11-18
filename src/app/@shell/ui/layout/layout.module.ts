@@ -8,9 +8,15 @@ import { LayoutComponent } from './layout.component';
 
 @NgModule({
   declarations: [LayoutComponent],
-  imports: [CommonModule, HeaderModule, FooterModule, NzLayoutModule, SiderModule],
+  imports: [
+    CommonModule,
+    HeaderModule,
+    FooterModule,
+    NzLayoutModule,
+    SiderModule
+  ],
   exports: [LayoutComponent],
 })
 export class LayoutModule {
-  
+
 }

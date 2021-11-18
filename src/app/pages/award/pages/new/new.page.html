@@ -9,29 +9,38 @@
 
     <nz-card [nzBordered]="false" nzTitle="Award Info">
       <div class="space-y-4">
-        <input nz-input placeholder="Title" />
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
+          <nz-option *ngFor="let s of spaces$ | async" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
+        </nz-select>
+        <nz-radio-group nzButtonStyle="solid" [formControl]="typeControl">
+          <label nz-radio-button [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
+          <label nz-radio-button [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
+          <label nz-radio-button [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
+          <label nz-radio-button [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
+        </nz-radio-group>
+        <input nz-input placeholder="Title" [formControl]="nameControl"/>
         <div class="flex flex-grow space-x-4">
-          <nz-date-picker class="flex flex-grow" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="Start">
-          </nz-date-picker>
-          <nz-date-picker class="flex flex-grow" #endDatePicker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+          <nz-date-picker class="flex flex-grow" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl"
             nzPlaceHolder="End"></nz-date-picker>
         </div>
-        <textarea nz-input placeholder="Award description" rows="4"></textarea>
+        <textarea nz-input placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
       </div>
     </nz-card>
 
     <nz-card nzTitle="Badge definition">
-      <input nz-input placeholder="Total Experience Points" />
-      <input nz-input placeholder="Available Badges" />
+      <input nz-input placeholder="Badge Title" [formControl]="badgeNameControl"/>
+      <textarea nz-input placeholder="Badge description" rows="4" [formControl]="badgeDescriptionControl"></textarea>
+      <nz-input-number placeholder="Total Experience Points" [formControl]="badgeXpControl"></nz-input-number>
+      <nz-input-number placeholder="Available Badges" [formControl]="badgeCountControl"></nz-input-number>
     </nz-card>
 
     <nz-card [nzBordered]="false">
-      <nz-card-meta nzTitle="Badge" nzDescription="Badge is minted once the task is completed.">
+      <nz-card-meta nzTitle="Badge" nzDescription="Badge coming soon!">
       </nz-card-meta>
     </nz-card>
 
   </div>
 
-  <button nz-button nzType="primary" nzSize="small" type="button"
+  <button nz-button nzType="primary" nzSize="small" type="button" (click)="create()"
     class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
     i18n>Create award</button>

@@ -1,7 +1,9 @@
+import dayjs from 'dayjs';
 import { WEN_FUNC } from "../../interfaces/functions";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
+import { AwardType } from './../../interfaces/models/award';
 import { addOwner, approveParticipant, createAward, participate } from './../../src/controls/award.control';
 import { createMember } from './../../src/controls/member.control';
 import { createSpace } from './../../src/controls/space.control';
@@ -10,8 +12,6 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
   let walletSpy: any;
   let memberAddress: any;
   let space: any;
-  const exampleCid = 'bagaaierasords4njcts6vs7qvdjfcvgnume4hqohf65zsfguprqphs3icwea';
-
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = wallet.getRandomEthAddress();
@@ -41,9 +41,10 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       name: 'Award A',
       description: 'Finish this and that',
       space: space?.uid,
+      type: AwardType.PARTICIPATE_AND_APPROVE,
+      endDate: dayjs().add(5, 'days').toDate(),
       badge: {
         name: 'Winner',
-        ipfsCid: exampleCid,
         description: 'Such a special',
         count: 2,
         xp: 0
@@ -75,26 +76,15 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
         name: 'Award A',
         description: 'Finish this and that',
         space: space?.uid,
+        type: AwardType.PARTICIPATE_AND_APPROVE,
+        endDate: dayjs().add(5, 'days').toDate(),
         badge: {
           name: 'Winner',
-          ipfsCid: exampleCid,
           description: 'Such a special',
           count: 2,
           xp: 0
         }
       };
-    });
-
-    it('failed to create award - wrong IPFS for badge', async () => {
-      delete body.badge.ipfsCid;
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-      walletSpy.mockRestore();
     });
 
     it('failed to create award - missing space', async () => {
@@ -170,9 +160,10 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
         name: 'Award A',
         description: 'Finish this and that',
         space: space?.uid,
+        type: AwardType.PARTICIPATE_AND_APPROVE,
+        endDate: dayjs().add(5, 'days').toDate(),
         badge: {
           name: 'Winner',
-          ipfsCid: exampleCid,
           description: 'Such a special',
           count: 2,
           xp: 0
@@ -245,9 +236,10 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
         name: 'Award A',
         description: 'Finish this and that',
         space: space?.uid,
+        type: AwardType.PARTICIPATE_AND_APPROVE,
+        endDate: dayjs().add(5, 'days').toDate(),
         badge: {
           name: 'Winner',
-          ipfsCid: exampleCid,
           description: 'Such a special',
           count: 2,
           xp: 0

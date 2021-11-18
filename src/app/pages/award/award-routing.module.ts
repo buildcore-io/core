@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '../../@core/utils/router.utils';
-import { OverviewPage } from './../proposal/pages/overview/overview.page';
 import { AwardPage } from './pages/award/award.page';
 import { NewPage } from './pages/new/new.page';
+import { OverviewPage } from './pages/overview/overview.page';
 import { ParticipantsPage } from './pages/participants/participants.page';
 
 const routes: Routes = [

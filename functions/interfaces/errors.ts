@@ -29,5 +29,6 @@ export const WenError = {
   you_are_not_owner_of_proposal: { code: 2023, key: 'You are not an owner of the proposal.' },
   proposal_is_already_approved: { code: 2024, key: 'Proposal is already approved.' },
   proposal_is_already_rejected: { code: 2024, key: 'Proposal is already rejected.' },
+  award_is_no_longer_available: { code: 2005, key: 'Award is not available for participation.' },
 }
 

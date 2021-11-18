@@ -1,9 +1,8 @@
 <nz-layout>
-  <!-- TODO: hide when user not logged in -->
-  <nz-sider nzWidth="auto" [nzTheme]="isDarkTheme ? 'dark' : 'light' ">
+  <nz-sider nzWidth="auto" [nzTheme]="isDarkTheme ? 'dark' : 'light' " *ngIf="showSideBar$ | async">
     <wen-sider></wen-sider>
   </nz-sider>
-  
+
   <nz-layout>
     <wen-header></wen-header>
 
