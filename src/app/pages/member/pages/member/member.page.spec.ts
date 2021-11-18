@@ -1,3 +1,4 @@
+import { TabsComponent } from '@components/ui/components/tabs/tabs.component';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
 import { BadgeTileComponent } from './../../../../components/ui/components/badge/badge-tile/badge-tile.component';
@@ -12,7 +13,8 @@ describe('MemberPage', () => {
     declarations: [
       MockComponent(MemberEditDrawerComponent),
       MockComponent(MemberTileComponent),
-      MockComponent(BadgeTileComponent)
+      MockComponent(BadgeTileComponent),
+      MockComponent(TabsComponent)
     ]
   });
 

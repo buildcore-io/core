@@ -1,25 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { TabsComponent } from './tabs.component';
 
-describe('TabsComponent', () => {
-  let component: TabsComponent;
-  let fixture: ComponentFixture<TabsComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ TabsComponent ]
-    })
-    .compileComponents();
+describe('TabsComponent', () => {
+  let spectator: Spectator<TabsComponent>;
+
+  const createComponent = createRoutingFactory({
+    component: TabsComponent,
+    imports: [NzMenuModule]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TabsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });
