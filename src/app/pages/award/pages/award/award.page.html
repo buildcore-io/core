@@ -29,8 +29,8 @@
 
   </div>
 
-  <div class="space-y-4" nz-col nzFlex="430px" *ngIf="(isLoggedIn$ | async) && !data.isCompleted(data.award$ | async)">
-    <nz-card nzTitle="Action">
+  <div class="space-y-4" nz-col nzFlex="430px" *ngIf="(isLoggedIn$ | async)">
+    <nz-card nzTitle="Action"  *ngIf="!data.isCompleted(data.award$ | async)">
       <button nz-button nzType="primary" nzBlock nzSize="small" (click)="showParticipateModal()" *ngIf="!loggedInMemberIsParticipant()"
         class="h-10 px-6 m-2 font-semibold rounded-3xl">
         Participate</button>

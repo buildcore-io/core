@@ -231,7 +231,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     const xp: number = round(docAward.data().badge.xp / docAward.data().badge.count);
 
     // Mark participant that he completed.
-    await participant.set({
+    await participant.update({
       completed: true,
       count: participantRec.exists ? (participantRec.data().count || 0) + 1 : 1,
       xp: xp
@@ -256,7 +256,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
       const sfDoc: any = await transaction.get(refMember);
       const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
       const totalReputation = (sfDoc.data().totalReputation || 0) + xp;
-      transaction.update(refAward, {
+      transaction.update(refMember, {
         awardsCompleted: awardsCompleted,
         totalReputation: totalReputation
       });
