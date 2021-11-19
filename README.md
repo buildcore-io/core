@@ -53,7 +53,7 @@ Deploy functions: ```npm run deploy```
 - Angular
 - Typescript
 - Tailwindcss
-- Ant Design
+- NG Ant Design
 
 Front-end application in Angular/Typescript. @api wraps any calls to backend and decides where to contact smart contracts or interim centralized functions.
 
