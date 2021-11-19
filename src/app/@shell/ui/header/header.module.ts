@@ -10,7 +10,6 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { TruncateModule } from './../../../@core/pipes/truncate/truncate.module';
 import { HeaderComponent } from './header.component';
 
-
 @NgModule({
   declarations: [HeaderComponent],
   imports: [

@@ -1,5 +1,4 @@
-<button nz-button nzSize="small"
-  class="h-10 px-6 font-semibold text-blue-600 bg-white border-white mt-14 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
+<button nz-button class="mt-14"
   (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
 
 <h1 class="mt-7" i18 n>New Award</h1>
@@ -32,9 +31,9 @@
           <input nz-input placeholder="Badge Title" [formControl]="badgeNameControl" />
           <textarea nz-input placeholder="Badge description" rows="4"
             [formControl]="badgeDescriptionControl"></textarea>
-          <div class="space-x-4">
-            <nz-input-number placeholder="Total Experience Points" [formControl]="badgeXpControl"></nz-input-number>
-            <nz-input-number placeholder="Available Badges" [formControl]="badgeCountControl"></nz-input-number>
+          <div class="flex space-x-4">
+            <nz-input-number class="flex-grow" nzPlaceHolder="Total Experience Points (number)" [formControl]="badgeXpControl"></nz-input-number>
+            <nz-input-number class="flex-grow" nzPlaceHolder="Available Badges (number)" [formControl]="badgeCountControl"></nz-input-number>
           </div>
         </div>
       </nz-card>
@@ -55,6 +54,6 @@
 
   </div>
 
-  <button nz-button nzType="primary" nzSize="small" type="button" (click)="create()"
-    class="h-10 px-6 m-2 font-semibold rounded-3xl"
+  <button nz-button nzType="primary" nzSize="large" type="button" (click)="create()"
+    class="m-2"
     i18n>Create award</button>

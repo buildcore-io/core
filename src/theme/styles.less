@@ -33,15 +33,36 @@
 // Overrides
 @font-family: 'Poppins sans-serif';
 @border-radius-base: 16px;
+@border-radius-lg: 32px;
+
+@body-background: #F6F5F0;
 
 @height-base: 40px;
 @height-lg: 56px;
 @height-sm: 32px;
 
+@font-size-base: 16px;
+@font-size-lg: @font-size-base + 2px;
+@font-size-sm: 14px;
+
+@padding-md: 20px; // small containers and buttons
+@padding-lg: 38px; // containers
+
 @btn-primary-bg: #008AF2;
+@btn-pressed-bg: #0C16DE;
 // TODO - correct hover variable
 // @btn-hover-bg: #445FF0;
 @btn-disable-bg: #445FF0;
+@btn-padding-horizontal-base: @padding-md;
+@btn-font-weight: 600;
+@btn-font-size: @font-size-lg;
+
+@btn-default-color: @btn-primary-bg;
+@btn-default-border: @component-background;
+
+@btn-padding-horizontal-lg: @padding-lg;
+
+@control-padding-horizontal: @padding-md + 4;
 
 @input-height: @height-lg;
 
@@ -51,6 +72,10 @@
 @avatar-size-lg: 120px;
 @avatar-size-sm: 32px;
 
+//Dropdown
+@dropdown-font-size: @font-size-lg;
+@dropdown-line-height: 32px;
+@dropdown-edge-child-vertical-padding: 8px;
 
 @card-head-font-size: @font-size-lg + 2;
 
@@ -62,6 +87,7 @@
 
 @layer components {
   @import '02-components/link.less';
+  @import '02-components/button.less';
 }
 
 @layer utilities {
