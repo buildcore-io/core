@@ -16,3 +16,7 @@ export function uOn<T>(o: T): T {
     updatedOn: admin.firestore.Timestamp.now()
   })
 };
+
+export function dateToTimestamp(d: Date): any {
+  return admin.firestore.Timestamp.fromDate(new Date());
+}

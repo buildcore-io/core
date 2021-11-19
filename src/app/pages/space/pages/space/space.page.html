@@ -6,13 +6,13 @@
   <img alt="" [src]="bannerUrl$ | async"  class="object-cover w-full h-full" />
 </div>
 
-<div class="relative py-12" nz-row [nzGutter]="40" *ngIf="(space$ | async)">
+<div class="relative py-12" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
   <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="120"
     class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
     nzShape="circle"></nz-avatar>
 
   <div nz-col nzFlex="auto">
-    <h1 i18n>{{ (space$ | async)!.name }}</h1>
+    <h1 i18n>{{ (data.space$ | async)!.name }}</h1>
 
     <wen-tabs [tabs]="sections"></wen-tabs>
 
@@ -22,14 +22,14 @@
 
   </div>
   <div class="space-y-4" nz-col nzFlex="430px">
-    <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" *ngIf="(isMemberWithinSpace$ | async) === false && (member$ | async)">
+    <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)">
       Join Space</button>
-    <button nz-button nzType="primary" (click)="leave()" nzBlock nzSize="large" *ngIf="isMemberWithinSpace$ | async">
+    <button nz-button nzType="primary" (click)="leave()" nzBlock nzSize="large" *ngIf="data.isMemberWithinSpace$ | async">
       Leave Space</button>
 
     <nz-card nzTitle="About">
       <p>
-        {{ (space$ | async)!.about }}
+        {{ (data.space$ | async)!.about }}
       </p>
     </nz-card>
 
@@ -37,7 +37,7 @@
       <div>
         <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
         <a [routerLink]="['members']">
-          <span>{{ (space$ | async)!.totalMembers }}</span>
+          <span>{{ (data.space$ | async)!.totalMembers }}</span>
           <span> members</span>
         </a>
       </div>
@@ -46,12 +46,12 @@
     <nz-card nzTitle="Related Links">
       <div>
         <i nz-icon nzType="github" nzTheme="outline"></i>
-        <a nz-button nzType="link">{{ (space$ | async)!.github }}</a>
+        <a nz-button nzType="link">{{ (data.space$ | async)!.github }}</a>
       </div>
     </nz-card>
 
-    <nz-card [nzTitle]="(space$ | async)!.totalGuardians + ' Guardians'">
-      <div *ngFor="let g of guardians$ | async">
+    <nz-card [nzTitle]="(data.space$ | async)!.totalGuardians + ' Guardians'">
+      <div *ngFor="let g of data.guardians$ | async">
         <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
         <span>@ {{ g.uid | truncate:[12] }}</span>

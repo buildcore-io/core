@@ -1,18 +1,13 @@
 <div class="space-y-12">
-    <div class="space-y-4">
+    <div class="space-y-4" *ngIf="(data.proposals$ | async)?.length">
         <h3>Active Proposals</h3>
-        <nz-card nzBlock>
-            Proposal Example
-        </nz-card>
+        <wen-proposal-card class="cursor-pointer" [fullWidth]="true" *ngFor="let proposal of data.proposals$ | async" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+        </wen-proposal-card>
     </div>
 
-    <div class="space-y-4">
+    <div class="space-y-4" *ngIf="(data.awards$ | async)?.length">
         <h3>Active Awards</h3>
-        <nz-card nzBlock>
-            Award Example
-        </nz-card>
-        <nz-card nzBlock>
-            Award Example
-        </nz-card>
+        <wen-award-card class="cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awards$ | async" [award]="award" [routerLink]="['/award', award.uid]">
+        </wen-award-card>
     </div>
 </div>

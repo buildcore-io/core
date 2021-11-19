@@ -7,16 +7,17 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { AwardsCardModule } from './../../components/awards/components/award-card/award-card.module';
-import { DataService } from './services/data.service';
 import { UserRoutingModule } from './member-routing.module';
 import { ActivityPage } from './pages/activity/activity.page';
 import { AwardsPage } from './pages/awards/awards.page';
 import { BadgesPage } from './pages/badges/badges.page';
 import { MemberPage } from './pages/member/member.page';
 import { YieldPage } from './pages/yield/yield.page';
+import { DataService } from './services/data.service';
 
 @NgModule({
   declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, YieldPage],
@@ -29,6 +30,7 @@ import { YieldPage } from './pages/yield/yield.page';
     TruncateModule,
     UserRoutingModule,
     NzButtonModule,
+    NzTimelineModule,
     NzAvatarModule,
     NzCardModule,
     NzGridModule,

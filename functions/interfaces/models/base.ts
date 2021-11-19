@@ -1,4 +1,15 @@
-import { Timestamp } from 'firebase/firestore';
+export interface Timestamp {
+  now(): Timestamp;
+  fromDate(date: Date): Timestamp;
+  fromMillis(milliseconds: number): Timestamp;
+  readonly seconds: number;
+  readonly nanoseconds: number;
+  toDate(): Date;
+  toMillis(): number;
+  isEqual(other: Timestamp): boolean;
+  valueOf(): string;
+}
+
 
 export interface WenRequest {
   address: string;

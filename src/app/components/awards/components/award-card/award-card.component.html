@@ -12,8 +12,8 @@
 
     <div class="inline-flex items-center space-x-3">
       <!-- TODO show badge-tile -->
-      <div>badge-tile</div>
-      <div>xp-tag</div>
+      <div>{{ award.badge.name}}</div>
+      <div>{{ award.badge.xp}}XP</div>
     </div>
 
     <div i18n class="inline-flex gap-2">
@@ -26,7 +26,7 @@
       <!-- TODO create element date-tag  -->
       <nz-tag nzColor="default">
         <i nz-icon nzType="clock-circle"></i>
-        <span>{{ award.endDate }}</span>
+      <span>{{ award.endDate.toDate() | date:'short'}}</span>
       </nz-tag>
     </div>
   </div>

@@ -5,7 +5,7 @@ import Joi, { ObjectSchema } from "joi";
 import { merge, round } from 'lodash';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { cOn, serverTime } from "../utils/dateTime.utils";
+import { cOn, dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
@@ -67,6 +67,7 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
     await refAward.set(cOn(merge(cleanParams(params.body), {
       uid: awardAddress,
       issued: 0,
+      endDate: dateToTimestamp(params.body.endDate),
       createdBy: owner
     })));
 

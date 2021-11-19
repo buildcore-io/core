@@ -5,7 +5,7 @@
         nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
       <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ member.name ? '@' + member.name : member.uid }}</h3>
     </div>
-    <p nz-typography class="flex-grow flex-shrink min-h-0 mb-5 overflow-hidden text-sm font-medium">{{ member.about }}
+    <p nz-typography class="flex-grow flex-shrink min-h-0 mb-5 overflow-hidden text-sm font-medium">{{ member.about | truncate:[110] }}
     </p>
     <div i18n class="inline-flex gap-2 text-sm font-medium text-gray-400">
 

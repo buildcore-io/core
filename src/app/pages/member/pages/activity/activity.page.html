@@ -5,7 +5,10 @@
   </nz-card>
 
   <nz-card nzTitle="Timeline">
-    <p>
-    </p>
+    <nz-timeline>
+      <nz-timeline-item *ngFor="let t of data.badges$ | async">
+        Earned Badge {{t.payload.name}} with {{t.payload.xp}}XP on {{t.createdOn}}
+      </nz-timeline-item>
+    </nz-timeline>
   </nz-card>
 </div>

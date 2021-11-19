@@ -19,7 +19,7 @@
     <div class="flex items-center space-x-4">
       <div>
         <i nz-icon nzType="calendar" class="pr-2" nzTheme="outline"></i>
-        <span>{{(data.award$ | async)?.createdOn}}</span>
+        <span>{{(data.award$ | async)?.createdOn?.toDate() | date:'short'}}</span>
       </div>
     </div>
 
@@ -58,7 +58,7 @@
         Available badges: {{(data.award$ | async)?.badge?.count}}
       </p>
       <p>
-        End Date: {{(data.award$ | async)?.endDate}}
+        End Date: {{(data.award$ | async)?.endDate?.toDate() | date:'short'}}
       </p>
     </nz-card>
 

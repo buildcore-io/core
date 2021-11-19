@@ -27,7 +27,7 @@
   <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
     class="inline-flex items-center h-16 gap-3 pl-2 font-bold text-black border-0" *ngIf="isLoggedIn$ | async">
     <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" [nzSize]="48" class="mr-1"></nz-avatar>
-    {{'@ ' + (member$ | async)?.name| truncate: [12] }}
+    {{'@ ' + ((member$ | async)?.name || (member$ | async)?.uid || '') | truncate: [12] }}
     <i nz-icon nzType="down" class="font-bold"></i>
   </button>
 

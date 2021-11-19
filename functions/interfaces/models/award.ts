@@ -1,4 +1,4 @@
-import { BaseRecord, BaseSubCollection } from "./base";
+import { BaseRecord, BaseSubCollection, Timestamp } from "./base";
 
 export enum AwardType {
   PARTICIPATE_AND_APPROVE = 0,
@@ -9,12 +9,12 @@ export enum AwardType {
 
 export interface AwardParticipant extends BaseSubCollection {
   uid: string;
-  createdOn: Date;
+  createdOn: Timestamp;
 }
 
 export interface AwardOwner extends BaseSubCollection {
   uid: string;
-  createdOn: Date;
+  createdOn: Timestamp;
 }
 
 export interface Award extends BaseRecord {
@@ -22,7 +22,7 @@ export interface Award extends BaseRecord {
   description: string;
   space: string;
   type: AwardType;
-  endDate: string;
+  endDate: Timestamp;
   owners: {
     [propName: string]: AwardOwner;
   };

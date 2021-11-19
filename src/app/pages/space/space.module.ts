@@ -21,6 +21,7 @@ import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
+import { DataService } from "./services/data.service";
 import { SpaceRoutingModule } from './space-routing.module';
 
 @NgModule({
@@ -33,6 +34,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     MembersPage,
     NewPage
   ],
+  providers: [ DataService ],
   imports: [
     CommonModule,
     ReactiveFormsModule,

@@ -6,12 +6,14 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from "@pages/space/services/data.service";
 import { Space } from "functions/interfaces/models";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
-import { SpaceGuardian } from './../../../../../../functions/interfaces/models/space';
+import { AwardApi } from './../../../../@api/award.api';
+import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
 @UntilDestroy()
@@ -29,19 +31,18 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'funding', label: 'Funding' },
     { route: 'members', label: 'Members' }
   ];
-  public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
-  public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private auth: AuthService,
     private location: Location,
     private spaceApi: SpaceApi,
+    private awardApi: AwardApi,
+    private proposalApi: ProposalApi,
     private route: ActivatedRoute,
     private notification: NzNotificationService,
-    private router: Router
+    private router: Router,
+    public data: DataService
   ) {
     // none.
   }
@@ -57,7 +58,7 @@ export class SpacePage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.space$.pipe(skip(1)).subscribe((obj) => {
+    this.data.space$.pipe(skip(1)).subscribe((obj) => {
       if (!obj) {
         this.notFound();
       }
@@ -70,7 +71,7 @@ export class SpacePage implements OnInit, OnDestroy {
 
   private listenToSpace(id: string): void {
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.spaceApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.space$));
+    this.subscriptions$.push(this.spaceApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m?: Member) => {
       if (m?.uid) {
         this.listenToIsMemberAndGuardian(id, m.uid);
@@ -83,9 +84,12 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   private listenToIsMemberAndGuardian(spaceId: string, memberId: string): void {
-    this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.isMemberWithinSpace$));
-    this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$));
-    this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.guardians$));
+    this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.guardians$));
+    this.subscriptions$.push(this.spaceApi.listenMembers(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.members$));
+    this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isMemberWithinSpace$));
+    this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
+    this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.proposals$));
+    this.awardApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.awards$)
   }
 
   public getAvatarUrl(url?: string): string | undefined {
@@ -101,7 +105,7 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public get avatarUrl$(): Observable<string|undefined> {
-    return this.space$.pipe(
+    return this.data.space$.pipe(
       map((space: Space | undefined) => {
         return space?.avatarUrl ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
       })
@@ -109,7 +113,7 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public get bannerUrl$(): Observable<string|undefined> {
-    return this.space$.pipe(
+    return this.data.space$.pipe(
       map((space: Space | undefined) => {
         return space?.bannerUrl ? FileApi.getUrl(space.bannerUrl, 'space_banner', FILE_SIZES.large) : undefined;
       })
@@ -117,13 +121,13 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public async join(): Promise<void> {
-    if (!this.space$.value?.uid) {
+    if (!this.data.space$.value?.uid) {
       return;
     }
 
     const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
       undefinedToEmpty({
-        uid: this.space$.value.uid
+        uid: this.data.space$.value.uid
       })
     );
 
@@ -138,13 +142,13 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public async leave(): Promise<void> {
-    if (!this.space$.value?.uid) {
+    if (!this.data.space$.value?.uid) {
       return;
     }
 
     const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
       undefinedToEmpty({
-        uid: this.space$.value.uid
+        uid: this.data.space$.value.uid
       })
     );
 

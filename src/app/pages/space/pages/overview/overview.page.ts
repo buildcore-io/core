@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DataService } from "@pages/space/services/data.service";
 
 @Component({
   selector: 'wen-overview',
@@ -7,4 +8,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OverviewPage {
+  constructor(public data: DataService) {
+    // added.
+  }
 }
