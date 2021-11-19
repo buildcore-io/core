@@ -9,6 +9,8 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
+import { AwardsCardModule } from './../../components/awards/components/award-card/award-card.module';
+import { DataService } from './services/data.service';
 import { UserRoutingModule } from './member-routing.module';
 import { ActivityPage } from './pages/activity/activity.page';
 import { AwardsPage } from './pages/awards/awards.page';
@@ -18,9 +20,11 @@ import { YieldPage } from './pages/yield/yield.page';
 
 @NgModule({
   declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, YieldPage],
+  providers: [ DataService ],
   imports: [
     CommonModule,
     UiModule,
+    AwardsCardModule,
     NgApexchartsModule,
     TruncateModule,
     UserRoutingModule,

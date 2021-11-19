@@ -160,6 +160,8 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
   if (params.body) {
     await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).set({
       uid: participant,
+      parentId: params.body.uid,
+      parentCol: COL.AWARD,
       createdOn: serverTime()
     });
 
@@ -202,10 +204,12 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
+  const participant: any = await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member);
+  const participantRec: any = participant.get();
   if (params.body) {
     // Member might not be participant of the space, that's fine. we just need to add him.
-    if (!(await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).get()).exists) {
-      await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member).set({
+    if (!participantRec.exists) {
+      await participant.set({
         uid: params.body.member,
         parentId: params.body.uid,
         parentCol: COL.AWARD,
@@ -225,6 +229,14 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     // Issue badge transaction.
     const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
     const xp: number = round(docAward.data().badge.xp / docAward.data().badge.count);
+
+    // Mark participant that he completed.
+    await participant.set({
+      completed: true,
+      count: participantRec.exists ? (participantRec.data().count || 0) + 1 : 1,
+      xp: xp
+    });
+
     await refTran.set(<Transaction>{
       type: TransactionType.BADGE,
       uid: getRandomEthAddress(),
@@ -232,6 +244,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
       createdOn: serverTime(),
       payload: {
         awardId: params.body.uid,
+        name: docAward.data().name,
+        description: docAward.data().description,
         xp: xp
       }
     });

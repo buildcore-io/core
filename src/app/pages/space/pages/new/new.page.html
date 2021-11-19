@@ -1,6 +1,6 @@
 <button nz-button nzSize="small"
   class="h-10 px-6 font-semibold rounded-3xl"
-  [routerLink]="urlToSpaces"><i nz-icon nzType="left"></i>Back to Discover</button>
+  (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
 
 <h1 class="mt-7" i18 n>Add new space</h1>
 <form nz-form nzLayout="vertical" [formGroup]="spaceForm">

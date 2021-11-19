@@ -6,6 +6,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../@api/member.api';
+import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
@@ -21,14 +22,14 @@ export class MemberPage implements OnInit, OnDestroy {
     { route: 'badges', label: 'Badges' },
     { route: 'yield', label: 'Yield' }
   ]
-  public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
   constructor(
     private route: ActivatedRoute,
     private memberApi: MemberApi,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    public data: DataService
   ) {
     // none.
   }
@@ -44,7 +45,7 @@ export class MemberPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.member$.pipe(skip(1)).subscribe((obj) => {
+    this.data.member$.pipe(skip(1)).subscribe((obj) => {
       if (!obj) {
         this.notFound();
       }
@@ -56,7 +57,9 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public listenMember(memberId: string): void {
-    this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.member$));
+    this.subscriptions$.push(this.memberApi.lastAwards(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awards$));
+    this.subscriptions$.push(this.memberApi.lastBadges(memberId).pipe(untilDestroyed(this)).subscribe(this.data.badges$));
+    this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
   }
 
   public get loggedInMember$(): BehaviorSubject<Member|undefined> {

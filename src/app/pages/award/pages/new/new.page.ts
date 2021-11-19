@@ -1,3 +1,4 @@
+import { Location } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -47,6 +48,7 @@ export class NewPage implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private awardApi: AwardApi,
+    private location: Location,
     private notification: NzNotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
@@ -79,8 +81,8 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.awards;
+  public goBack(): void {
+    this.location.back();
   }
 
   private formatSubmitObj(obj: any): any {

@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { Award } from 'functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { AwardParticipant } from './../../../functions/interfaces/models/award';
 import { Member } from './../../../functions/interfaces/models/member';
 import { Space, SpaceGuardian, SpaceMember } from './../../../functions/interfaces/models/space';
+import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi } from './base.api';
 
 @Injectable({
@@ -39,6 +42,36 @@ export class MemberApi extends BaseApi<Member> {
 
       return out;
     }));
+  }
+
+  public lastAwards(memberId: EthAddress, def = 50): Observable<Award[]> {
+    const ref: AngularFirestoreCollectionGroup<AwardParticipant> = this.afs.collectionGroup<AwardParticipant>(
+      SUB_COL.PARTICIPANTS,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref: any) => {
+        return ref.where('uid', '==', memberId).orderBy('createdOn', 'asc').limitToLast(def);
+      }
+    );
+    return ref.valueChanges().pipe(switchMap(async (obj: AwardParticipant[]) => {
+      const out: Award[] = [];
+      for (const o of obj) {
+        if (o.parentCol === COL.AWARD) {
+          out.push(<any>await firstValueFrom(this.afs.collection(COL.AWARD).doc(o.parentId).valueChanges()));
+        }
+      }
+
+      return out;
+    }));
+  }
+
+  public lastBadges(memberId: string): Observable<Transaction[]> {
+    return this.afs.collection<Transaction>(
+      COL.TRANSACTION,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref) => {
+        return ref.where('member', '==', memberId).where('type', '==', TransactionType.BADGE)
+      }
+    ).valueChanges();
   }
 
   public allSpacesWhereMember(memberId: EthAddress): Observable<Space[]> {

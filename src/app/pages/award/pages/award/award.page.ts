@@ -1,3 +1,4 @@
+import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
@@ -31,6 +32,7 @@ export class AwardPage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
+    private location: Location,
     private router: Router,
     private notification: NzNotificationService,
     private spaceApi: SpaceApi,
@@ -74,6 +76,10 @@ export class AwardPage implements OnInit, OnDestroy {
     });
   }
 
+  public goBack(): void {
+    this.location.back();
+  }
+
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.auth.isLoggedIn$;
   }
@@ -87,10 +93,6 @@ export class AwardPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.award$));
     this.subscriptions$.push(this.awardApi.listenOwners(id).pipe(untilDestroyed(this)).subscribe(this.data.owners$));
     this.subscriptions$.push(this.awardApi.listenParticipants(id).pipe(untilDestroyed(this)).subscribe(this.data.participants$));
-  }
-
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.awards;
   }
 
   public showParticipateModal(): void {

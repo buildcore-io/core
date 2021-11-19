@@ -1,3 +1,4 @@
+import { Location } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -40,6 +41,7 @@ export class NewPage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
+    private location: Location,
     private proposalApi: ProposalApi,
     private notification: NzNotificationService,
     private memberApi: MemberApi,
@@ -143,8 +145,8 @@ export class NewPage implements OnInit, OnDestroy {
     }
   }
 
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
+  public goBack(): void {
+    this.location.back();
   }
 
   private formatSubmitObj(obj: any) {

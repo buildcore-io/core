@@ -1,3 +1,4 @@
+import { Location } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi, FILE_SIZES } from "@api/file.api";
@@ -36,6 +37,7 @@ export class SpacePage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
+    private location: Location,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private notification: NzNotificationService,
@@ -86,12 +88,12 @@ export class SpacePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.guardians$));
   }
 
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
-  }
-
   public getAvatarUrl(url?: string): string | undefined {
     return url ? FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small) : undefined;
+  }
+
+  public goBack(): void {
+    this.location.back();
   }
 
   public getBannerUrl(url?: string): string | undefined {

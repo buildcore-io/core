@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DataService } from './../../services/data.service';
 
 @Component({
   selector: 'wen-awards',
@@ -7,4 +8,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AwardsPage {
+  constructor(public data: DataService) {
+    // none.
+  }
 }

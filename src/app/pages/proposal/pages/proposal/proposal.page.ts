@@ -1,3 +1,4 @@
+import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -60,6 +61,7 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
+    private location: Location,
     private router: Router,
     private notification: NzNotificationService,
     private spaceApi: SpaceApi,
@@ -130,13 +132,12 @@ export class ProposalPage implements OnInit, OnDestroy {
     return (type === ProposalType.NATIVE);
   }
 
-
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.proposals;
-  }
-
   public getProgress(q: ProposalQuestion, a: ProposalAnswer): number {
     return 50;
+  }
+
+  public goBack(): void {
+    this.location.back();
   }
 
   public async approve(): Promise<void> {

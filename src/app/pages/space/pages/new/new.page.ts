@@ -1,3 +1,4 @@
+import { Location } from "@angular/common";
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -30,6 +31,7 @@ export class NewPage {
 
   constructor(
     private auth: AuthService,
+    private location: Location,
     private router: Router,
     private spaceApi: SpaceApi,
     private fileApi: FileApi,
@@ -78,8 +80,8 @@ export class NewPage {
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'space_avatar');
   }
 
-  public get urlToSpaces(): string {
-    return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces;
+  public goBack(): void {
+    this.location.back();
   }
 
   public async create(): Promise<void> {

@@ -27,7 +27,6 @@ export class ParticipantsPage {
       return;
     }
 
-    // TODO Add support for comments.
     const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
       undefinedToEmpty({
         uid: id,
@@ -40,7 +39,7 @@ export class ParticipantsPage {
     }
 
     // TODO Handle this via queue and clean-up.
-    this.awardApi.approve(sc).subscribe(() => {
+    this.awardApi.approve(sc).subscribe((o) => {
       this.notification.success('Approve.', '');
     });
   }
