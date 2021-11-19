@@ -3,7 +3,7 @@
     <wen-sider></wen-sider>
   </nz-sider>
 
-  <nz-layout class="rounded-l-large">
+  <nz-layout [ngClass]="(showSideBar$ | async) ? 'rounded-l-large' : ''">
     <wen-header></wen-header>
 
     <div class="container flex-1">

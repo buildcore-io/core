@@ -6,7 +6,7 @@
   <img alt="" [src]="bannerUrl$ | async"  class="object-cover w-full h-full" />
 </div>
 
-<div class="relative py-12" nz-row [nzGutter]="16" *ngIf="(space$ | async)">
+<div class="relative py-12" nz-row [nzGutter]="40" *ngIf="(space$ | async)">
   <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="120"
     class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
     nzShape="circle"></nz-avatar>
