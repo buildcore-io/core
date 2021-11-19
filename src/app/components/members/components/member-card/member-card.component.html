@@ -3,7 +3,7 @@
     <div class="flex space-x-4" [routerLink]="['/member', member.uid]">
       <nz-avatar class="min-w-max"
         nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
-      <h3 class="mt-2 mb-3 text-lg font-bold truncate">@{{ member.uid }}</h3>
+      <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ member.name ? '@' + member.name : member.uid }}</h3>
     </div>
     <p nz-typography class="flex-grow flex-shrink min-h-0 mb-5 overflow-hidden text-sm font-medium">{{ member.about }}
     </p>
