@@ -45,8 +45,8 @@ export class SiderComponent implements OnInit {
 
   private setAuthMenu(memberId: string): void {
     this.menuItems$.next([
-      this.dashboardMenuItem,
       this.defaultMenuItem,
+      this.dashboardMenuItem,
       this.getMemberMenuItem(memberId)
     ]);
   }
