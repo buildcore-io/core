@@ -5,11 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award } from 'functions/interfaces/models';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 import { DataService } from './../../services/data.service';
 // TODO is completed validation on endDate.
@@ -35,7 +35,7 @@ export class AwardPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private location: Location,
     private router: Router,
-    private notification: NzNotificationService,
+    private notification: NotificationService,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
@@ -141,9 +141,8 @@ export class AwardPage implements OnInit, OnDestroy {
       comment: this.commentControl.value || undefined
     });
 
-    // TODO Handle this via queue and clean-up.
-    this.awardApi.participate(sc).subscribe(() => {
-      this.notification.success('Participated.', '');
+    this.notification.processRequest(this.awardApi.participate(sc), 'Participated.').subscribe(() => {
+      // Do we need action.
     });
   }
 

@@ -3,10 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from "./../../services/data.service";
 
 @UntilDestroy()
@@ -23,7 +23,7 @@ export class MembersPage implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private spaceApi: SpaceApi,
-    private notification: NzNotificationService,
+    private notification: NotificationService,
     private route: ActivatedRoute,
     private router: Router,
     public data: DataService
@@ -66,8 +66,8 @@ export class MembersPage implements OnInit, OnDestroy {
       member: memberId
     });
 
-    this.spaceApi.setGuardian(sc).subscribe(() => {
-      this.notification.success('Member made a guardian.', '');
+    this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.').subscribe((val: any) => {
+      // none.
     });
   }
 
@@ -81,8 +81,8 @@ export class MembersPage implements OnInit, OnDestroy {
       member: memberId
     });
 
-    this.spaceApi.removeGuardian(sc).subscribe(() => {
-      this.notification.success('Member removed as guardian.', '');
+    this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.').subscribe((val: any) => {
+      // none.
     });
   }
 

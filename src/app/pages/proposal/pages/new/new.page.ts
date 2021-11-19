@@ -7,12 +7,12 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 @UntilDestroy()
 @Component({
@@ -42,7 +42,7 @@ export class NewPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private location: Location,
     private proposalApi: ProposalApi,
-    private notification: NzNotificationService,
+    private notification: NotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
     private router: Router
@@ -168,9 +168,8 @@ export class NewPage implements OnInit, OnDestroy {
     }
 
     const sc: WenRequest|undefined =  await this.auth.sign(this.formatSubmitObj(this.proposalForm.value));
-    // TODO Handle this via queue and clean-up.
-    this.proposalApi.create(sc).subscribe((val) => {
-      this.notification.success('Created.', '');
+
+    this.notification.processRequest(this.proposalApi.create(sc), 'Created.').subscribe((val: any) => {
       this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
     });
   }

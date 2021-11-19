@@ -7,13 +7,13 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from "@pages/space/services/data.service";
 import { Space } from "functions/interfaces/models";
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { AwardApi } from './../../../../@api/award.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 @UntilDestroy()
 @Component({
@@ -39,7 +39,7 @@ export class SpacePage implements OnInit, OnDestroy {
     private awardApi: AwardApi,
     private proposalApi: ProposalApi,
     private route: ActivatedRoute,
-    private notification: NzNotificationService,
+  private notification: NotificationService,
     private router: Router,
     public data: DataService
   ) {
@@ -128,9 +128,8 @@ export class SpacePage implements OnInit, OnDestroy {
       uid: this.data.space$.value.uid
     });
 
-    // TODO Handle this via queue and clean-up.
-    this.spaceApi.join(sc).subscribe(() => {
-      this.notification.success('Joined.', '');
+    this.notification.processRequest(this.spaceApi.join(sc), 'Joined.').subscribe((val: any) => {
+      // none.
     });
   }
 
@@ -143,9 +142,8 @@ export class SpacePage implements OnInit, OnDestroy {
       uid: this.data.space$.value.uid
     });
 
-    // TODO Handle this via queue and clean-up.
-    this.spaceApi.leave(sc).subscribe(() => {
-      this.notification.success('Leaved.', '');
+    this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.').subscribe((val: any) => {
+      // none.
     });
   }
 

@@ -11,6 +11,7 @@ import { of, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 @Component({
   selector: 'wen-new',
@@ -34,7 +35,8 @@ export class NewPage {
     private router: Router,
     private spaceApi: SpaceApi,
     private fileApi: FileApi,
-    private notification: NzNotificationService
+    private notification: NotificationService,
+    private nzNotification: NzNotificationService
   ) {
     this.spaceForm = new FormGroup({
       name: this.nameControl,
@@ -68,7 +70,7 @@ export class NewPage {
   public uploadFile(item: NzUploadXHRArgs): Subscription {
     if (!this.auth.member$.value) {
       const err = 'Member seems to log out during the file upload request.';
-      this.notification.error(err, '');
+      this.nzNotification.error(err, '');
       if (item.onError) {
         item.onError(err, item.file);
       }
@@ -90,10 +92,8 @@ export class NewPage {
     }
     const sc: WenRequest|undefined =  await this.auth.sign(this.spaceForm.value);
 
-    // TODO Handle this via queue and clean-up.
-    this.spaceApi.create(sc).subscribe((val) => {
-      this.notification.success('Created.', '');
-      this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid])
+    this.notification.processRequest(this.spaceApi.create(sc), 'Created.').subscribe((val: any) => {
+      this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
     });
   }
 }

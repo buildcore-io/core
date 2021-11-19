@@ -3,10 +3,10 @@ import { FormControl, FormGroup } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { getUrlValidator } from "@core/utils/form-validation.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { WenRequest } from './../../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../../@api/member.api';
+import { NotificationService } from './../../../../../@core/services/notification/notification.service';
 
 @UntilDestroy()
 @Component({
@@ -24,7 +24,7 @@ export class MemberEditDrawerComponent implements OnInit {
   public githubControl: FormControl = new FormControl('', getUrlValidator());
   public memberForm: FormGroup;
 
-  constructor(private auth: AuthService, private memberApi: MemberApi, private notification: NzNotificationService) {
+  constructor(private auth: AuthService, private memberApi: MemberApi, private notification: NotificationService) {
     this.memberForm = new FormGroup({
       name: this.nameControl,
       about: this.aboutControl,
@@ -68,12 +68,9 @@ export class MemberEditDrawerComponent implements OnInit {
       }
     });
 
-    // TODO Handle this via queue and clean-up.
-    this.memberApi.updateMember(sc).subscribe(() => {
-      this.notification.success('Updated.', '');
+    this.notification.processRequest(this.memberApi.updateMember(sc), 'Updated').subscribe(() => {
+      this.close();
     });
-
-    this.close();
   }
 
   public close(): void {

@@ -5,12 +5,12 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
 
 // TODO default table content
@@ -62,7 +62,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private location: Location,
     private router: Router,
-    private notification: NzNotificationService,
+    private notification: NotificationService,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private proposalApi: ProposalApi,
@@ -147,9 +147,9 @@ export class ProposalPage implements OnInit, OnDestroy {
     const sc: WenRequest|undefined =  await this.auth.sign({
         uid: this.data.proposal$.value.uid
     });
-    // TODO Handle this via queue and clean-up.
-    this.proposalApi.approve(sc).subscribe(() => {
-      this.notification.success('Approved.', '');
+
+    this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.').subscribe((val: any) => {
+      // none.
     });
   }
 
@@ -162,9 +162,8 @@ export class ProposalPage implements OnInit, OnDestroy {
       uid: this.data.proposal$.value.uid
     });
 
-    // TODO Handle this via queue and clean-up.
-    this.proposalApi.reject(sc).subscribe(() => {
-      this.notification.success('Rejected.', '');
+    this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
+      // none.
     });
   }
 

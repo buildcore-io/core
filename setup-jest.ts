@@ -30,6 +30,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { CoreModule } from './src/app/@core/core.module';
 import { TruncateModule } from './src/app/@core/pipes/truncate/truncate.module';
 
 // Default injections available everywhere.
@@ -38,6 +39,7 @@ defineGlobalsInjections({
     ReactiveFormsModule,
     HttpClientModule,
     NzCardModule,
+    CoreModule,
     TruncateModule,
     NzTimelineModule,
     NzGridModule,
