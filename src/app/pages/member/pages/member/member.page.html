@@ -21,7 +21,7 @@
 
       <ng-container *ngIf="(data.member$ | async)?.uid === (loggedInMember$ | async)?.uid">
         <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
-          class="ml-4 text-center text-current bg-blue-600 border-blue-600 rounded-3xl">
+          class="ml-4 text-center text-current">
           <i nz-icon class="text-white " nzType="edit"></i>
         </a>
         <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">

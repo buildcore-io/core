@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -29,6 +30,7 @@ import { MemberTileComponent } from './tile/member-tile.component';
     NzStatisticModule,
     NzUploadModule,
     NzFormModule,
+    NzButtonModule,
     NzDrawerModule
   ]
 })

@@ -22,11 +22,9 @@
 
   </div>
   <div class="space-y-4" nz-col nzFlex="430px">
-    <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="small" *ngIf="(isMemberWithinSpace$ | async) === false && (member$ | async)"
-      class="h-10 px-6 m-2 font-semibold rounded-3xl">
+    <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" *ngIf="(isMemberWithinSpace$ | async) === false && (member$ | async)">
       Join Space</button>
-    <button nz-button nzType="primary" (click)="leave()" nzBlock nzSize="small" *ngIf="isMemberWithinSpace$ | async"
-    class="h-10 px-6 m-2 font-semibold rounded-3xl">
+    <button nz-button nzType="primary" (click)="leave()" nzBlock nzSize="large" *ngIf="isMemberWithinSpace$ | async">
       Leave Space</button>
 
     <nz-card nzTitle="About">

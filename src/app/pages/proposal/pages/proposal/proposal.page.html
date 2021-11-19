@@ -39,8 +39,7 @@
 
   <div class="space-y-4" nz-col nzFlex="430px">
     <nz-card nzTitle="Cast your vote" *ngIf="(data.proposal$ | async)?.approved">
-      <button nz-button nzType="primary" nzBlock nzSize="small"
-        class="h-10 px-6 m-2 font-semibold rounded-3xl">
+      <button nz-button nzType="primary" nzBlock nzSize="large">
         Open Firefly to Vote</button>
       <h4 nz-typography class="pt-4">
         Voting instructions
@@ -49,11 +48,9 @@
     </nz-card>
 
     <nz-card nzTitle="Approve Proposal (available only for Guardians)" *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async)">
-      <button nz-button nzType="primary" nzBlock nzSize="small" (click)="approve()"
-        class="h-10 px-6 m-2 font-semibold rounded-3xl">
+      <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
         Approve</button>
-      <button nz-button nzDanger nzType="primary" nzBlock nzSize="small" (click)="reject()"
-        class="h-10 px-6 m-2 font-semibold text-white bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700 focus:bg-red-700 focus:border-red-700 rounded-3xl">
+      <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
         Decline</button>
     </nz-card>
 
