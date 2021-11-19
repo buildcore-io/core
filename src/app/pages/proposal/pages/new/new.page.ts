@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
@@ -168,14 +167,7 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty(this.formatSubmitObj(this.proposalForm.value))
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
-
+    const sc: WenRequest|undefined =  await this.auth.sign(this.formatSubmitObj(this.proposalForm.value));
     // TODO Handle this via queue and clean-up.
     this.proposalApi.create(sc).subscribe((val) => {
       this.notification.success('Created.', '');

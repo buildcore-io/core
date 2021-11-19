@@ -134,7 +134,8 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
   const participant = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: Joi.string().length(ethAddressLength).lowercase().required(),
+      comment: Joi.string().optional()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -161,6 +162,7 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
   if (params.body) {
     await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).set({
       uid: participant,
+      comment: params.body.comment || null,
       parentId: params.body.uid,
       parentCol: COL.AWARD,
       createdOn: serverTime()

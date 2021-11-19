@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi, FILE_SIZES } from "@api/file.api";
 import { AuthService } from '@components/auth/services/auth.service';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from "@pages/space/services/data.service";
@@ -74,7 +73,7 @@ export class SpacePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.spaceApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m?: Member) => {
       if (m?.uid) {
-        this.listenToIsMemberAndGuardian(id, m.uid);
+        this.listenToRelatedRecord(id, m.uid);
       }
     });
   }
@@ -83,13 +82,13 @@ export class SpacePage implements OnInit, OnDestroy {
     return this.auth.member$;
   }
 
-  private listenToIsMemberAndGuardian(spaceId: string, memberId: string): void {
+  private listenToRelatedRecord(spaceId: string, memberId: string): void {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.guardians$));
     this.subscriptions$.push(this.spaceApi.listenMembers(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.members$));
     this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isMemberWithinSpace$));
     this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
     this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.proposals$));
-    this.awardApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.awards$)
+    this.subscriptions$.push(this.awardApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.awards$));
   }
 
   public getAvatarUrl(url?: string): string | undefined {
@@ -125,15 +124,9 @@ export class SpacePage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: this.data.space$.value.uid
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest|undefined =  await this.auth.sign({
+      uid: this.data.space$.value.uid
+    });
 
     // TODO Handle this via queue and clean-up.
     this.spaceApi.join(sc).subscribe(() => {
@@ -146,15 +139,9 @@ export class SpacePage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: this.data.space$.value.uid
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest|undefined =  await this.auth.sign({
+      uid: this.data.space$.value.uid
+    });
 
     // TODO Handle this via queue and clean-up.
     this.spaceApi.leave(sc).subscribe(() => {

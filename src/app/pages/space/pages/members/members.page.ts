@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -62,16 +61,10 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: this.spaceId,
-        member: memberId
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest|undefined =  await this.auth.sign({
+      uid: this.spaceId,
+      member: memberId
+    });
 
     this.spaceApi.setGuardian(sc).subscribe(() => {
       this.notification.success('Member made a guardian.', '');
@@ -83,16 +76,10 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: this.spaceId,
-        member: memberId
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest|undefined =  await this.auth.sign({
+      uid: this.spaceId,
+      member: memberId
+    });
 
     this.spaceApi.removeGuardian(sc).subscribe(() => {
       this.notification.success('Member removed as guardian.', '');

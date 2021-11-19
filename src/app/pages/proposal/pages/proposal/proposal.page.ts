@@ -2,7 +2,6 @@ import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
@@ -145,16 +144,9 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
+    const sc: WenRequest|undefined =  await this.auth.sign({
         uid: this.data.proposal$.value.uid
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
-
+    });
     // TODO Handle this via queue and clean-up.
     this.proposalApi.approve(sc).subscribe(() => {
       this.notification.success('Approved.', '');
@@ -166,15 +158,9 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: this.data.proposal$.value.uid
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest|undefined =  await this.auth.sign({
+      uid: this.data.proposal$.value.uid
+    });
 
     // TODO Handle this via queue and clean-up.
     this.proposalApi.reject(sc).subscribe(() => {

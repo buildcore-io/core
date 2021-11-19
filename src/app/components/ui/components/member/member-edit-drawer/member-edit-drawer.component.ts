@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from
 import { FormControl, FormGroup } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { getUrlValidator } from "@core/utils/form-validation.utils";
-import { undefinedToEmpty } from "@core/utils/manipulations.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { WenRequest } from './../../../../../../../functions/interfaces/models/base';
@@ -61,15 +60,13 @@ export class MemberEditDrawerComponent implements OnInit {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(undefinedToEmpty({
+
+    const sc: WenRequest =  await this.auth.sign({
       ...this.memberForm.value,
       ...{
         uid: this.auth.member$.value!.uid
       }
-    }));
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    });
 
     // TODO Handle this via queue and clean-up.
     this.memberApi.updateMember(sc).subscribe(() => {

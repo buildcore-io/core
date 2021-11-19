@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { DataService } from "../../services/data.service";
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
@@ -27,16 +26,10 @@ export class ParticipantsPage {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: id,
-        member: memberId
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest =  await this.auth.sign({
+      uid: id,
+      member: memberId
+    });
 
     // TODO Handle this via queue and clean-up.
     this.awardApi.approve(sc).subscribe((o) => {

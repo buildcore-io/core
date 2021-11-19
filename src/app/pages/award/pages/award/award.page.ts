@@ -1,7 +1,7 @@
 import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award } from 'functions/interfaces/models';
@@ -27,6 +27,7 @@ export class AwardPage implements OnInit, OnDestroy {
     { route: [ROUTER_UTILS.config.award.participants], label: 'Participants' }
   ];
   public isSubmitParticipationModalVisible = false;
+  public commentControl: FormControl = new FormControl('');
   private subscriptions$: Subscription[] = [];
   private guardiansSubscription$?: Subscription;
 
@@ -135,16 +136,10 @@ export class AwardPage implements OnInit, OnDestroy {
       return;
     }
 
-    // TODO Add support for comments.
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: this.data.award$.value.uid
-      })
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest =  await this.auth.sign({
+      uid: this.data.award$.value.uid,
+      comment: this.commentControl.value || undefined
+    });
 
     // TODO Handle this via queue and clean-up.
     this.awardApi.participate(sc).subscribe(() => {

@@ -77,6 +77,6 @@
   <ng-container *nzModalContent>
     <p class="mb-2">The whole communication is now handled outside the platform, let the award creator know how to
       contact you.</p>
-    <textarea nz-input placeholder="Provide describtion or link to your work" rows="4"></textarea>
+    <textarea nz-input placeholder="Provide description or link to your work." [formControl]="commentControl" rows="4"></textarea>
   </ng-container>
 </nz-modal>

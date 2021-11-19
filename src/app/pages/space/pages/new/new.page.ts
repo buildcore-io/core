@@ -4,7 +4,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from "ng-zorro-antd/upload";
@@ -89,13 +88,7 @@ export class NewPage {
     if (!this.spaceForm.valid) {
       return;
     }
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty(this.spaceForm.value)
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest|undefined =  await this.auth.sign(this.spaceForm.value);
 
     // TODO Handle this via queue and clean-up.
     this.spaceApi.create(sc).subscribe((val) => {

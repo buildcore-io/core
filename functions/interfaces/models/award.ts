@@ -9,6 +9,7 @@ export enum AwardType {
 
 export interface AwardParticipant extends BaseSubCollection {
   uid: string;
+  comment?: string;
   createdOn: Timestamp;
 }
 

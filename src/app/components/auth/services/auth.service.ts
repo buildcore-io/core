@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { getItem, setItem, StorageItem } from '@core/utils';
+import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { EthAddress, WenRequest } from '../../../../../functions/interfaces/models/base';
@@ -44,7 +45,16 @@ export class AuthService {
     return this.isLoggedIn$.getValue();
   }
 
-  async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
+  public async sign(params: any = {}): Promise<WenRequest> {
+    const sc: WenRequest|undefined =  await this.signWithMetamask(undefinedToEmpty(params));
+    if (!sc) {
+      throw new Error('Unable to sign.');
+    }
+
+    return sc;
+  }
+
+  private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
     const provider: any = await detectEthereumProvider();
     if (provider) {
       await provider.request({ method: 'eth_requestAccounts' });

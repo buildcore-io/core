@@ -2,7 +2,6 @@ import { Location } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -106,13 +105,7 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty(this.formatSubmitObj(this.awardForm.value))
-    );
-
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
+    const sc: WenRequest =  await this.auth.sign(this.formatSubmitObj(this.awardForm.value));
 
     // TODO Handle this via queue and clean-up.
     this.awardApi.create(sc).subscribe((val) => {
