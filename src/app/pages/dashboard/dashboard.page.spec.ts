@@ -1,5 +1,5 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { SpaceCardModule } from './../../components/spaces/components/space-card/space-card.module';
+import { SpaceCardModule } from '../../components/space/components/space-card/space-card.module';
 import { DashboardPage } from './dashboard.page';
 
 describe('DashboardPage', () => {

@@ -12,7 +12,7 @@ module.exports = {
     },
     container: {
       center: true,
-      padding: '1.5rem',
+      padding: '2.5rem',
     },
     extend: {
       colors: {
@@ -49,6 +49,9 @@ module.exports = {
       },
       maxWidth: {
         fit: 'fit-content',
+      },
+      borderRadius: {
+       'large': '3rem',
       },
     },
   },

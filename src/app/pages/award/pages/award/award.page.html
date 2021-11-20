@@ -2,11 +2,12 @@
   class="h-10 px-6 font-semibold text-blue-600 bg-white border-white mt-14 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
   (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
 
-<div class="relative py-12" nz-row [nzGutter]="16">
+<div class="relative py-12" nz-row [nzGutter]="40">
 
   <div nz-col nzFlex="auto">
     <div class="space-x-4">
-      <nz-avatar  nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle"></nz-avatar>
+      <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle">
+      </nz-avatar>
 
       <nz-tag [nzColor]="'#BBD3F6'" class="text-black">Award</nz-tag>
       <nz-tag class="text-black" *ngIf="data.isCompleted(data.award$ | async)">Completed</nz-tag>
@@ -18,7 +19,7 @@
     <div class="flex items-center space-x-4">
       <div>
         <i nz-icon nzType="calendar" class="pr-2" nzTheme="outline"></i>
-        <span>{{(data.award$ | async)?.createdOn}}</span>
+        <span>{{(data.award$ | async)?.createdOn?.toDate() | date:'short'}}</span>
       </div>
     </div>
 
@@ -30,15 +31,13 @@
   </div>
 
   <div class="space-y-4" nz-col nzFlex="430px" *ngIf="(isLoggedIn$ | async)">
-    <nz-card nzTitle="Action"  *ngIf="!data.isCompleted(data.award$ | async)">
-      <button nz-button nzType="primary" nzBlock nzSize="small" (click)="showParticipateModal()" *ngIf="!loggedInMemberIsParticipant()"
-        class="h-10 px-6 m-2 font-semibold rounded-3xl">
+    <nz-card nzTitle="Action" *ngIf="!data.isCompleted(data.award$ | async)">
+      <button nz-button nzType="primary" nzBlock nzSize="large" (click)="showParticipateModal()"
+        *ngIf="!loggedInMemberIsParticipant()">
         Participate</button>
 
-      <button nz-button nzType="primary" nzBlock nzSize="small" *ngIf="loggedInMemberIsParticipant()"
-        class="h-10 px-6 m-2 font-semibold rounded-3xl">
+      <button nz-button nzType="primary" nzBlock nzSize="large" *ngIf="loggedInMemberIsParticipant()">
         Cancel Participation</button>
-
     </nz-card>
 
     <nz-card nzTitle="Award">
@@ -47,7 +46,8 @@
     </nz-card>
 
     <nz-card nzTitle="Award Badge">
-      <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle"></nz-avatar>
+      <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle">
+      </nz-avatar>
     </nz-card>
 
     <nz-card nzTitle="System Info">
@@ -58,7 +58,7 @@
         Available badges: {{(data.award$ | async)?.badge?.count}}
       </p>
       <p>
-        End Date: {{(data.award$ | async)?.endDate}}
+        End Date: {{(data.award$ | async)?.endDate?.toDate() | date:'short'}}
       </p>
     </nz-card>
 
@@ -72,11 +72,11 @@
   </div>
 </div>
 
-<nz-modal [(nzVisible)]="isSubmitParticipationModalVisible" nzTitle="Confirm your participation" (nzOnCancel)="handleParticipateCancel()"
-  (nzOnOk)="participate()">
+<nz-modal [(nzVisible)]="isSubmitParticipationModalVisible" nzTitle="Confirm your participation"
+  (nzOnCancel)="handleParticipateCancel()" (nzOnOk)="participate()">
   <ng-container *nzModalContent>
     <p class="mb-2">The whole communication is now handled outside the platform, let the award creator know how to
       contact you.</p>
-    <textarea nz-input placeholder="Provide describtion or link to your work" rows="4"></textarea>
+    <textarea nz-input placeholder="Provide description or link to your work." [formControl]="commentControl" rows="4"></textarea>
   </ng-container>
 </nz-modal>

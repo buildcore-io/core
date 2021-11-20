@@ -2,7 +2,7 @@ import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent, MockProvider } from 'ng-mocks';
 import { Observable } from 'rxjs';
 import { ProposalApi } from './../../../../@api/proposal.api';
-import { ProposalCardComponent } from './../../../../components/proposals/components/proposal-card/proposal-card.component';
+import { ProposalCardComponent } from '../../../../components/proposal/components/proposal-card/proposal-card.component';
 import { ProposalsPage } from './proposals.page';
 
 

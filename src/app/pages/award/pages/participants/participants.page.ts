@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { DataService } from "../../services/data.service";
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 
 @Component({
@@ -15,7 +14,7 @@ export class ParticipantsPage {
   constructor(
     private auth: AuthService,
     private awardApi: AwardApi,
-    private notification: NzNotificationService,
+    private notification: NotificationService,
     public data: DataService
   ) {
     // none.
@@ -27,21 +26,13 @@ export class ParticipantsPage {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: id,
-        member: memberId
-      })
-    );
+    const sc: WenRequest =  await this.auth.sign({
+      uid: id,
+      member: memberId
+    });
 
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
-
-    // TODO Handle this via queue and clean-up.
-    this.awardApi.approve(sc).subscribe((o) => {
-      this.notification.success('Approve.', '');
+    this.notification.processRequest(this.awardApi.approve(sc), 'Approve.').subscribe((val: any) => {
+      // none.
     });
   }
-
 }

@@ -1,10 +1,10 @@
-import { GlobeIconComponent } from '@components/ui/components/icon/globe/globe.component';
+import { GlobeIconComponent } from '@components/icon/globe/globe.component';
 import { ThemeService } from '@core/services/theme';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent, MockProvider } from 'ng-mocks';
-import { MoonIconComponent } from './../../../components/ui/components/icon/moon/moon.component';
-import { SunIconComponent } from './../../../components/ui/components/icon/sun/sun.component';
-import { MemberTileComponent } from './../../../components/ui/components/member/tile/member-tile.component';
+import { MoonIconComponent } from './../../../components/icon/moon/moon.component';
+import { SunIconComponent } from './../../../components/icon/sun/sun.component';
+import { MemberTileComponent } from './../../../components/member/components/tile/member-tile.component';
 import { MenuItemDirective } from './menu/menu-item.directive';
 import { MenuComponent } from './menu/menu.component';
 import { SiderComponent } from './sider.component';

@@ -13,9 +13,9 @@
     </div>
   </div>
 
-  <div class="-mx-6 overflow-hidden">
+  <div class="-mx-6 overflow-hidden" *ngIf="(proposals$ | async)!.length > 0">
     <h3 class="px-7">Active proposals
-      <a *ngIf="(proposals$ | async)!.length > 0" nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
+      <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a>
     </h3>

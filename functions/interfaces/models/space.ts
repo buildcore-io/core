@@ -1,12 +1,12 @@
-import { BaseRecord, BaseSubCollection } from './base';
+import { BaseRecord, BaseSubCollection, Timestamp } from './base';
 export interface SpaceGuardian extends BaseSubCollection {
   uid: string;
-  createdOn: Date;
+  createdOn: Timestamp;
 }
 
 export interface SpaceMember extends BaseSubCollection {
   uid: string;
-  createdOn: Date;
+  createdOn: Timestamp;
 }
 
 export interface Space extends BaseRecord {

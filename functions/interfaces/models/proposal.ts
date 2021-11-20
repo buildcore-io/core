@@ -1,4 +1,4 @@
-import { Base, BaseRecord, BaseSubCollection } from './base';
+import { Base, BaseRecord, BaseSubCollection, Timestamp } from './base';
 export enum ProposalType {
   NATIVE = 0,
   MEMBERS = 1
@@ -6,7 +6,7 @@ export enum ProposalType {
 
 export interface ProposalMember extends BaseSubCollection {
   uid: string;
-  createdOn: Date;
+  createdOn: Timestamp;
 }
 
 export interface NativeProposalSettings {
@@ -16,8 +16,8 @@ export interface NativeProposalSettings {
 }
 
 export interface MembersProposalSettings {
-  startDate: string;
-  endDate: string;
+  startDate: Timestamp;
+  endDate: Timestamp;
   guardiansOnly: boolean;
   members:  {
     [propName: string]: ProposalMember;

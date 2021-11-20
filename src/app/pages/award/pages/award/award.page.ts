@@ -1,15 +1,15 @@
 import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award } from 'functions/interfaces/models';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 import { DataService } from './../../services/data.service';
 // TODO is completed validation on endDate.
@@ -27,6 +27,7 @@ export class AwardPage implements OnInit, OnDestroy {
     { route: [ROUTER_UTILS.config.award.participants], label: 'Participants' }
   ];
   public isSubmitParticipationModalVisible = false;
+  public commentControl: FormControl = new FormControl('');
   private subscriptions$: Subscription[] = [];
   private guardiansSubscription$?: Subscription;
 
@@ -34,7 +35,7 @@ export class AwardPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private location: Location,
     private router: Router,
-    private notification: NzNotificationService,
+    private notification: NotificationService,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
@@ -135,20 +136,13 @@ export class AwardPage implements OnInit, OnDestroy {
       return;
     }
 
-    // TODO Add support for comments.
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty({
-        uid: this.data.award$.value.uid
-      })
-    );
+    const sc: WenRequest =  await this.auth.sign({
+      uid: this.data.award$.value.uid,
+      comment: this.commentControl.value || undefined
+    });
 
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
-
-    // TODO Handle this via queue and clean-up.
-    this.awardApi.participate(sc).subscribe(() => {
-      this.notification.success('Participated.', '');
+    this.notification.processRequest(this.awardApi.participate(sc), 'Participated.').subscribe(() => {
+      // Do we need action.
     });
   }
 

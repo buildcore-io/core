@@ -1,12 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award } from 'functions/interfaces/models';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { AwardApi } from './../../../../@api/award.api';
-import { SpaceApi } from './../../../../@api/space.api';
+import { UntilDestroy } from '@ngneat/until-destroy';
+import { Subscription } from 'rxjs';
+import { DataService } from "./../../services/data.service";
 
 @UntilDestroy()
 @Component({
@@ -17,17 +14,12 @@ import { SpaceApi } from './../../../../@api/space.api';
 })
 export class AwardsPage implements OnInit, OnDestroy {
   public spaceId?: string;
-  public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private router: Router,
-    private auth: AuthService,
-    private spaceApi: SpaceApi,
-    private awardApi: AwardApi,
-    private cd: ChangeDetectorRef,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public data: DataService
   ) {}
 
   public ngOnInit(): void {
@@ -35,23 +27,11 @@ export class AwardsPage implements OnInit, OnDestroy {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
-        this.listenToIsMemberAndGuardian(id);
         this.spaceId = id;
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }
     });
-  }
-
-  private listenToIsMemberAndGuardian(spaceId: string): void {
-    if (this.auth.member$.value) {
-      this.subscriptions$.push(
-        this.awardApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.awards$)
-      );
-      this.subscriptions$.push(
-        this.spaceApi.isMemberWithinSpace(spaceId, this.auth.member$.value.uid).pipe(untilDestroyed(this)).subscribe(this.isMemberWithinSpace$)
-      );
-    }
   }
 
   public create(): void {

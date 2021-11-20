@@ -3,6 +3,7 @@ import {
   ApexAxisChartSeries,
   ApexChart, ApexTitleSubtitle, ApexXAxis, ChartComponent
 } from "ng-apexcharts";
+import { DataService } from "./../../services/data.service";
 
 
 export type ChartOptions = {
@@ -21,7 +22,9 @@ export type ChartOptions = {
 export class ActivityPage {
   @ViewChild("chart") public chart?: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
-  constructor() {
+  constructor(
+    public data: DataService
+  ) {
     this.chartOptions = {
       series: [
         {

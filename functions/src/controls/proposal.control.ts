@@ -7,7 +7,7 @@ import { WenError } from '../../interfaces/errors';
 import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Proposal } from '../../interfaces/models/proposal';
-import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
+import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
@@ -57,6 +57,14 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
 
   if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+  }
+
+  if (params.body.settings?.startDate) {
+    params.body.settings.startDate = dateToTimestamp(params.body.settings.startDate);
+  }
+
+  if (params.body.settings?.endDate) {
+    params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate);
   }
 
   const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);

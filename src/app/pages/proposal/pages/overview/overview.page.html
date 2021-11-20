@@ -1,3 +1,2 @@
-<nz-card nzTitle="Voting Description">
-{{(data.proposal$ | async)?.additionalInfo}}
+<nz-card nzTitle="Voting Description" [innerHTML]="(data.proposal$ | async)?.additionalInfo | markdown">
 </nz-card>

@@ -3,17 +3,16 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
-import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 @UntilDestroy()
 @Component({
@@ -38,12 +37,13 @@ export class NewPage implements OnInit, OnDestroy {
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   private subscriptions$: Subscription[] = [];
+  private answersIndex = 0;
 
   constructor(
     private auth: AuthService,
     private location: Location,
     private proposalApi: ProposalApi,
-    private notification: NzNotificationService,
+    private notification: NotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
     private router: Router
@@ -79,8 +79,9 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private getAnswerForm(): FormGroup {
+    this.answersIndex++;
     return new FormGroup({
-      value: new FormControl('', [Validators.min(0), Validators.max(255), Validators.required]),
+      value: new FormControl(this.answersIndex, [Validators.min(0), Validators.max(255), Validators.required]),
       text: new FormControl('', Validators.required),
       additionalInfo: new FormControl(''),
     });
@@ -111,6 +112,7 @@ export class NewPage implements OnInit, OnDestroy {
 
   public removeAnswer(f: any, answerIndex: number): void {
     if (f.controls.answers.length > 2) {
+      this.answersIndex--;
       f.controls.answers.removeAt(answerIndex);
     }
   }
@@ -168,17 +170,9 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.signWithMetamask(
-      undefinedToEmpty(this.formatSubmitObj(this.proposalForm.value))
-    );
+    const sc: WenRequest|undefined =  await this.auth.sign(this.formatSubmitObj(this.proposalForm.value));
 
-    if (!sc) {
-      throw new Error('Unable to sign.');
-    }
-
-    // TODO Handle this via queue and clean-up.
-    this.proposalApi.create(sc).subscribe((val) => {
-      this.notification.success('Created.', '');
+    this.notification.processRequest(this.proposalApi.create(sc), 'Created.').subscribe((val: any) => {
       this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
     });
   }

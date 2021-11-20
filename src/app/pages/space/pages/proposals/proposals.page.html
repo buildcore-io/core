@@ -1,7 +1,6 @@
-<button nz-button nzType="primary" nzSize="small" type="button" (click)="create()" *ngIf="loggedInMemberIsGuardian()"
-    class="h-10 px-6 m-2 font-semibold rounded-3xl"
+<button nz-button nzType="primary" nzSize="large" type="button" (click)="create()" *ngIf="data.loggedInMemberIsGuardian()"
     i18n>Create proposal
 </button>
 
-<wen-proposal-card class="cursor-pointer" [fullWidth]="true" *ngFor="let proposal of proposals$ | async" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+<wen-proposal-card class="cursor-pointer" [fullWidth]="true" *ngFor="let proposal of data.proposals$ | async" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
 </wen-proposal-card>

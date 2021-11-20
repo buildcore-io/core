@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SpacesModule } from '@components/spaces/spaces.module';
+import { SpaceModule } from '@components/space/space.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { DashboardPage } from './dashboard.page';
@@ -10,7 +10,7 @@ import { DashboardPage } from './dashboard.page';
   declarations: [DashboardPage],
   imports: [
     CommonModule,
-    SpacesModule,
+    SpaceModule,
     RouterModule.forChild([
       {
         path: '',

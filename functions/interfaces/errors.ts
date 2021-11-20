@@ -7,7 +7,7 @@ export const WenError = {
   missing_nonce: { code: 1004, key: 'Missing nonce.' },
   invalid_wallet_address: { code: 2002, key: 'Invalid wallet address.' },
   failed_to_decode_token: { code: 2003, key: 'Failed to decode the token.' },
-  member_does_not_exists: { code: 2004, key: 'Member does not exists.' },
+  member_username_exists: { code: 2004, key: 'Username already exists.' },
   space_does_not_exists: { code: 2005, key: 'Space does not exists.' },
   you_are_not_guardian_of_space: { code: 2006, key: 'You are not a guardian of the space.' },
   you_are_already_part_of_space: { code: 2007, key: 'You are already part of the space.' },
@@ -28,7 +28,8 @@ export const WenError = {
   proposal_does_not_exists: { code: 2022, key: 'Proposal does not exist.' },
   you_are_not_owner_of_proposal: { code: 2023, key: 'You are not an owner of the proposal.' },
   proposal_is_already_approved: { code: 2024, key: 'Proposal is already approved.' },
-  proposal_is_already_rejected: { code: 2024, key: 'Proposal is already rejected.' },
-  award_is_no_longer_available: { code: 2005, key: 'Award is not available for participation.' },
+  proposal_is_already_rejected: { code: 2025, key: 'Proposal is already rejected.' },
+  award_is_no_longer_available: { code: 2026, key: 'Award is not available for participation.' },
+  member_does_not_exists: { code: 2027, key: 'Member does not exists.' },
 }
 

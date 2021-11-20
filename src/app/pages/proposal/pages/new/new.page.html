@@ -1,11 +1,9 @@
-<button nz-button nzSize="small"
-  class="h-10 px-6 font-semibold text-blue-600 bg-white border-white mt-14 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
-  (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
+<button nz-button class="mt-14" (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
 
 <h1 class="mt-7" i18 n>New Proposal</h1>
 
 <form nz-form nzLayout="vertical" [formGroup]="proposalForm">
-  <div class="py-4" nz-row [nzGutter]="16">
+  <div class="py-4" nz-row [nzGutter]="40">
 
     <div class="space-y-4" nz-col nzFlex="auto">
       <nz-card [nzBordered]="false" nzTitle="Proposal Info">
@@ -34,7 +32,6 @@
       </nz-card>
 
       <!-- <button nz-button nzType="primary" nzSize="small" type="button" (click)="addQuestion()"
-    class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
     i18n>Add Question</button>
             <button nz-button nzType="primary" nzSize="small" type="button" (click)="removeQuestion(i)"
             *ngIf="questions.controls.length > 1">Remove Question</button>-->
@@ -58,10 +55,9 @@
             </div>
           </ng-template>
         </ng-container>
-        <button nz-button nzType="default" nzSize="small" type="button" (click)="addAnswer(question)"
-          *ngIf="getAnswers(question).length < 4"
-          class="h-10 px-6 m-2 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
-          i18n>Add Choice</button>
+        <button nz-button nzType="default" type="button" (click)="addAnswer(question)"
+          *ngIf="getAnswers(question).length < 4" i18n><i nz-icon nzType="plus" nzTheme="outline"></i>Add
+          Choice</button>
       </ng-container>
 
     </div>
@@ -76,8 +72,7 @@
   </div>
 </form>
 
-<nz-divider></nz-divider>
+<nz-divider class="mb-8"></nz-divider>
 
-<button nz-button nzType="primary" nzSize="small" type="button" (click)="create()"
-  class="h-10 px-6 m-2 mb-8 font-semibold text-white bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 rounded-3xl"
-  i18n>Create Proposal</button>
+<button nz-button nzType="primary" nzSize="large" type="button" (click)="create()" class="mb-8" i18n>Create
+  Proposal</button>

@@ -2,7 +2,7 @@ import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent, MockProvider } from 'ng-mocks';
 import { Observable } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
-import { AwardCardComponent } from './../../../../components/awards/components/award-card/award-card.component';
+import { AwardCardComponent } from '../../../../components/award/components/award-card/award-card.component';
 import { AwardsPage } from './awards.page';
 
 describe('AwardsPage', () => {

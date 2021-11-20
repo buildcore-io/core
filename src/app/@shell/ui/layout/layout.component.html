@@ -1,9 +1,9 @@
-<nz-layout>
+<nz-layout class="bg-white">
   <nz-sider nzWidth="auto" [nzTheme]="isDarkTheme ? 'dark' : 'light' " *ngIf="showSideBar$ | async">
     <wen-sider></wen-sider>
   </nz-sider>
 
-  <nz-layout>
+  <nz-layout [ngClass]="(showSideBar$ | async) ? 'rounded-l-large' : ''">
     <wen-header></wen-header>
 
     <div class="container flex-1">
