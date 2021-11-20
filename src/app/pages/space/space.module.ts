@@ -16,11 +16,11 @@ import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { MembersPage } from './pages/members/members.page';
-import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
 import { TreasuryPage } from './pages/treasury/treasury.page';
+import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from "./services/data.service";
 import { SpaceRoutingModule } from './space-routing.module';
 
@@ -32,7 +32,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     AwardsPage,
     TreasuryPage,
     MembersPage,
-    NewPage
+    UpsertPage
   ],
   providers: [ DataService ],
   imports: [

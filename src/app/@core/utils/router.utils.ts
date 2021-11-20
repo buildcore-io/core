@@ -28,7 +28,8 @@ export const ROUTER_UTILS = {
       // Redirect back to discovery
       root: 'space',
       space: ':spaceId',
-      newSpace: 'new',
+      new: 'new',
+      edit: 'edit',
       overview: 'overview',
       proposals: 'proposals',
       awards: 'awards',
@@ -39,14 +40,14 @@ export const ROUTER_UTILS = {
       // Redirect back to space?!
       root: 'proposal',
       newProposal: 'new',
-      proposal: ':spaceId',
+      proposal: ':proposalId',
       overview: 'overview',
     },
     award: {
       // Redirect back to space?!
       root: 'award',
       newAward: 'new',
-      award: ':spaceId',
+      award: ':awardId',
       overview: 'overview',
       participants: 'participants',
     },

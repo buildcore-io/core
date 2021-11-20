@@ -1,5 +1,5 @@
 <div class="w-auto overflow-hidden md:-mx-24 lg:-mx-10 h-96 bor rounded-l-large">
-  <button nz-button class="absolute mx-20 top-14" (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
+  <button nz-button class="absolute mx-20 top-14" (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
 
   <img alt="" [src]="bannerUrl$ | async" class="object-cover w-full h-full" />
 </div>
@@ -28,7 +28,7 @@
           nzTheme="outline"></i>
         Leave Space</button>
 
-      <button nz-button><i nz-icon nzType="edit" nzTheme="outline"></i>
+      <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()"><i nz-icon nzType="edit" nzTheme="outline"></i>
         Edit Space</button>
     </div>
 

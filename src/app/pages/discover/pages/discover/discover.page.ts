@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 
-// TODO default filters
-const tagsFromServer = ['All', 'Your Favourites', 'Featured', 'Nearly Funded'];
-
 @Component({
   selector: 'wen-discover',
   templateUrl: './discover.page.html',
@@ -19,7 +16,7 @@ export class DiscoverPage {
   ];
 
   // TODO filters default logic
-  hotTags = tagsFromServer;
+  public hotTags = ['All', 'Featured'];
   selectedTags: string[] = [];
 
   handleChange(checked: boolean, tag: string): void {

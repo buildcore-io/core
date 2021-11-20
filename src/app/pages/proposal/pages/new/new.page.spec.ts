@@ -1,5 +1,5 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { NewPage } from './../../../space/pages/new/new.page';
+import { NewPage } from './new.page';
 
 
 describe('NewPage', () => {

@@ -3,16 +3,20 @@ import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from './../../@core/utils/router.utils';
 import { AwardsPage } from "./pages/awards/awards.page";
 import { MembersPage } from "./pages/members/members.page";
-import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from "./pages/proposals/proposals.page";
 import { SpacePage } from "./pages/space/space.page";
 import { TreasuryPage } from './pages/treasury/treasury.page';
+import { UpsertPage } from './pages/upsert/upsert.page';
 
 const routes: Routes = [
   {
-    path: ROUTER_UTILS.config.space.newSpace,
-    component: NewPage,
+    path: ROUTER_UTILS.config.space.new,
+    component: UpsertPage,
+  },
+  {
+    path: ROUTER_UTILS.config.space.edit,
+    component: UpsertPage,
   },
   {
     path: ROUTER_UTILS.config.space.space,

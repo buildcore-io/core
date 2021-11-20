@@ -1,7 +1,8 @@
 <button nz-button class="mt-14"
-  (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
+  (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
 
-<h1 class="mt-7" i18 n>Add new space</h1>
+<h1 class="mt-7" *ngIf="!editMode" i18n>Add new space</h1>
+<h1 class="mt-7" *ngIf="editMode" i18n>Edit space</h1>
 <form nz-form nzLayout="vertical" [formGroup]="spaceForm">
   <div class="py-4" nz-row [nzGutter]="24">
     <!-- TODO improve responsibility -->
@@ -41,7 +42,7 @@
 
     <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false">
-        <nz-card-meta nzTitle="Avatar" nzDescription="Set a display name. This does not change your username.">
+        <nz-card-meta nzTitle="Avatar" [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Your brand is key.'">
         </nz-card-meta>
 
         <div class="mt-4">
@@ -57,7 +58,7 @@
       </nz-card>
 
       <nz-card [nzBordered]="false">
-        <nz-card-meta nzTitle="Banner" nzDescription="Set a display name. This does not change your username.">
+        <nz-card-meta nzTitle="Banner" [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Make it personal.'">
         </nz-card-meta>
 
         <div class="mt-6">
@@ -74,5 +75,8 @@
   </div>
 </form>
 
-<button nz-button nzType="primary" class="mb-6" nzSize="large" type="button" (click)="create()"
+<button nz-button nzType="primary" class="mb-6" nzSize="large" type="button" (click)="create()" *ngIf="!editMode"
   i18n>Create space</button>
+
+<button nz-button nzType="primary" class="mb-6" nzSize="large" type="button" (click)="save()" *ngIf="editMode"
+  i18n>Save space</button>

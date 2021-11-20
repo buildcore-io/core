@@ -61,7 +61,13 @@ export class SpaceApi extends BaseApi<Space> {
     return data$;
   }
 
-   public join(req: WenRequest): Observable<Space|undefined> {
+  public save(req: WenRequest): Observable<Space|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.uSpace);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public join(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.joinSpace);
     const data$ = callable(req);
     return data$;

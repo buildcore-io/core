@@ -1,4 +1,3 @@
-import { Location } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,6 +11,7 @@ import { WenRequest } from './../../../../../../functions/interfaces/models/base
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 @UntilDestroy()
@@ -41,12 +41,12 @@ export class NewPage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private location: Location,
     private proposalApi: ProposalApi,
     private notification: NotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public nav: NavigationService
   ) {
     this.questions = new FormArray([
       this.getQuestionForm()
@@ -148,10 +148,6 @@ export class NewPage implements OnInit, OnDestroy {
     if (!open) {
       this.endDatePicker.open();
     }
-  }
-
-  public goBack(): void {
-    this.location.back();
   }
 
   private formatSubmitObj(obj: any) {
