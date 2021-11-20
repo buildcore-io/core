@@ -19,9 +19,6 @@ export interface MembersProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
   guardiansOnly: boolean;
-  members:  {
-    [propName: string]: ProposalMember;
-  };
 }
 
 export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;
@@ -43,6 +40,9 @@ export interface Proposal extends BaseRecord {
   name: string;
   additionalInfo?: string;
   space: string;
+  members?: {
+    [propName: string]: ProposalMember;
+  };
   description: string;
   type: ProposalType;
   approved?: boolean;
