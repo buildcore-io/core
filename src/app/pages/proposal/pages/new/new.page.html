@@ -47,9 +47,10 @@
           </nz-card>
           <ng-template #actionsTpl>
             <div class="space-x-4">
-              <nz-input-number [nzMin]="0" [nzMax]="250" nzSize="large" placeholder="Answer Value"
+              <!-- This is not important to show. We just default it. No need to allow customization of this value for now. -->
+              <!-- <nz-input-number [nzMin]="0" [nzMax]="250" nzSize="large" placeholder="Answer Value"
                 [formControl]="gForm(answer, 'value')">
-              </nz-input-number>
+              </nz-input-number> -->
               <button nz-button nzDanger nzType="text" nzShape="circle" *ngIf="getAnswers(question).length > 2"
                 (click)="removeAnswer(question, ii)"><i nz-icon nzType="delete"></i></button>
             </div>

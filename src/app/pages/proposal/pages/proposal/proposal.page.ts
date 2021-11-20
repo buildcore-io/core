@@ -1,5 +1,6 @@
 import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -7,7 +8,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
-import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalAnswer, ProposalMember, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -30,33 +31,9 @@ interface Person {
 })
 export class ProposalPage implements OnInit, OnDestroy {
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public voteControl: FormControl = new FormControl();
   private subscriptions$: Subscription[] = [];
   private guardiansSubscription$?: Subscription;
-
-  // TODO default table content
-  public transactions: Person[] = [
-    {
-      key: '1',
-      name: '@ann',
-      date: '1.1.2021',
-      option: 'BUILD',
-      amount: 32,
-    },
-    {
-      key: '2',
-      name: '@adam',
-      date: '1.12.2021',
-      option: 'BUILD',
-      amount: 32,
-    },
-    {
-      key: '3',
-      name: '@josef',
-      date: '12.1.2021',
-      option: 'BUILD',
-      amount: 32,
-    }
-  ];
 
   constructor(
     private auth: AuthService,
@@ -113,6 +90,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.proposal$));
     this.subscriptions$.push(this.proposalApi.listenMembers(id).pipe(untilDestroyed(this)).subscribe(this.data.members$));
+    this.subscriptions$.push(this.proposalApi.lastVotes(id).pipe(untilDestroyed(this)).subscribe(this.data.transactions$));
   }
 
   public memberIsPartOfVote(memberId: string): boolean {
@@ -131,8 +109,44 @@ export class ProposalPage implements OnInit, OnDestroy {
     return (type === ProposalType.NATIVE);
   }
 
-  public getProgress(q: ProposalQuestion, a: ProposalAnswer): number {
-    return 50;
+  public getProgress(q: ProposalQuestion, a: ProposalAnswer, members?: ProposalMember[]|null): number {
+    let calc = 0;
+    members?.forEach((o) => {
+      if (o.voted && o.values?.length && o.values?.length > 0 && o.values.includes(a.value)) {
+        calc++;
+      }
+    });
+
+    return  calc / (members?.length || 1) * 100;
+  }
+
+  public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
+    let text = '';
+    qs?.forEach((q: ProposalQuestion) => {
+      q.answers.forEach((a) => {
+        if (values.includes(a.value)) {
+          text = a.text;
+        }
+      });
+    });
+
+    return text;
+  }
+
+  public canVote(members?: ProposalMember[]|null): boolean {
+    if (!this.auth.member$?.value?.uid) {
+      return false;
+    }
+
+    let canVote = undefined;
+    members?.find((m) => {
+      if (m.uid === this.auth.member$?.value?.uid) {
+        canVote = !m.voted;
+      }
+    });
+
+
+    return (canVote === true);
   }
 
   public goBack(): void {
@@ -163,6 +177,21 @@ export class ProposalPage implements OnInit, OnDestroy {
     });
 
     this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
+      // none.
+    });
+  }
+
+  public async vote(): Promise<void> {
+    if (!this.data.proposal$.value?.uid) {
+      return;
+    }
+
+    const sc: WenRequest|undefined =  await this.auth.sign({
+      uid: this.data.proposal$.value.uid,
+      values: [this.voteControl.value]
+    });
+
+    this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.').subscribe((val: any) => {
       // none.
     });
   }
