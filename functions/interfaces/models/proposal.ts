@@ -6,6 +6,8 @@ export enum ProposalType {
 
 export interface ProposalMember extends BaseSubCollection {
   uid: string;
+  voted?: boolean;
+  values?: number[];
   createdOn: Timestamp;
 }
 
@@ -19,9 +21,6 @@ export interface MembersProposalSettings {
   startDate: Timestamp;
   endDate: Timestamp;
   guardiansOnly: boolean;
-  members:  {
-    [propName: string]: ProposalMember;
-  };
 }
 
 export type ProposalSettings = NativeProposalSettings | MembersProposalSettings;
@@ -43,6 +42,9 @@ export interface Proposal extends BaseRecord {
   name: string;
   additionalInfo?: string;
   space: string;
+  members?: {
+    [propName: string]: ProposalMember;
+  };
   description: string;
   type: ProposalType;
   approved?: boolean;
@@ -54,4 +56,11 @@ export interface Proposal extends BaseRecord {
   // TODO Fix typing here.
   settings: any;
   questions: ProposalQuestion[];
+  results?: {
+    total: number;
+    voted: number;
+    answers: {
+      [propName: number]: number;
+    }
+  }
 }

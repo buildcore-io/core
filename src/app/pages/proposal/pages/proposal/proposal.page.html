@@ -38,13 +38,26 @@
   </div>
 
   <div class="space-y-4" nz-col nzFlex="430px">
-    <nz-card nzTitle="Cast your vote" *ngIf="(data.proposal$ | async)?.approved">
+    <nz-card nzTitle="Cast your vote" *ngIf="(data.proposal$ | async)?.approved && isNativeVote((data.proposal$ | async)?.type)">
       <button nz-button nzType="primary" nzBlock nzSize="large">
         Open Firefly to Vote</button>
       <h4 nz-typography class="pt-4">
         Voting instructions
       </h4>
       <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
+    </nz-card>
+    <nz-card nzTitle="Cast your vote"
+             *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type) && canVote(data.members$ | async)">
+
+      <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
+        <p>{{q.text}}</p>
+        <nz-radio-group [formControl]="voteControl">
+          <label nz-radio *ngFor="let a of q.answers" [nzValue]="a.value">{{a.text}}</label>
+        </nz-radio-group>
+      </ng-container>
+      <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()">
+        Vote Now
+      </button>
     </nz-card>
 
     <nz-card nzTitle="Approve Proposal" *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async)">
@@ -58,33 +71,28 @@
       <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
         <ng-container *ngFor="let a of q.answers">
           <p>{{a.text}}</p>
-          <nz-progress [nzPercent]="getProgress(q, a)" nzStatus="active"></nz-progress>
+          <nz-progress [nzPercent]="getProgress(q, a, data.members$ | async)" nzStatus="active"></nz-progress>
         </ng-container>
       </ng-container>
     </nz-card>
 
     <nz-card nzTitle="Votes" *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type)">
-      <nz-table #basicTable [nzData]="transactions" [nzShowPagination]="false">
+      <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
         <thead>
           <tr>
             <th>Voter</th>
             <th>Date</th>
             <th>Option</th>
-            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let data of basicTable.data">
-            <td>{{ data.name }}</td>
-            <td>{{ data.date }}</td>
-            <td>{{ data.option }}</td>
-            <td>
-              {{ data.amount }}
-            </td>
+          <tr *ngFor="let t of data.transactions$ | async">
+            <td [routerLink]="['/member', t.member]"> @{{ t.member | truncate:[12] }}</td>
+            <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
+            <td>{{ findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }}</td>
           </tr>
         </tbody>
       </nz-table>
-      <a nz-button nzType="link">See more</a>
     </nz-card>
 
     <!-- MEMBER VOTE -->
