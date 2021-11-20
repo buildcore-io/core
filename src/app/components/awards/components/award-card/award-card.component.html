@@ -1,12 +1,8 @@
 <article class="bg-white w-75 h-75 rounded-2xl" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'" *ngIf="award">
   <div class="relative flex flex-col w-full p-4">
 
-    <!-- TODO component parent title -->
-    <div class="inline-flex items-center space-x-3">
-      <nz-avatar class="min-w-max"
-      nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
-      <p>{{ award.owners }}</p>
-    </div>
+    <!-- This will not work. There can be multiple owners of the award. -->
+    <!-- <wen-parent-title image="/assets/mocks/default_avatar.jpg" [text]="award.owners"></wen-parent-title> -->
 
     <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ award.name || award.uid }}</h3>
 
@@ -17,17 +13,8 @@
     </div>
 
     <div i18n class="inline-flex gap-2">
-      <!-- TODO award status -->
-      <nz-tag nzColor="default">
-        <i nz-icon nzType="dollar"></i>
-        <span>{{ award.type }}</span>
-      </nz-tag>
-
-      <!-- TODO create element date-tag  -->
-      <nz-tag nzColor="default">
-        <i nz-icon nzType="clock-circle"></i>
-      <span>{{ award.endDate.toDate() | date:'short'}}</span>
-      </nz-tag>
+      <wen-award-status [type]="award.type"></wen-award-status>
+      <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
     </div>
   </div>
 </article>

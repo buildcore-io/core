@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { UiModule } from '@components/ui/ui.module';
-import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { TruncateModule } from './../../../../@core/pipes/truncate/truncate.module';
+import { DateTagModule } from './../../../../@shell/ui/date-tag/date-tag.module';
+import { ParentTitleModule } from './../../../../@shell/ui/parent-title/parent-title.module';
+import { AwardsStatusModule } from './../award-status/award-status.module';
 import { AwardCardComponent } from './award-card.component';
 
 @NgModule({
@@ -15,7 +17,9 @@ import { AwardCardComponent } from './award-card.component';
   ],
   imports: [
     CommonModule,
-    NzAvatarModule,
+    ParentTitleModule,
+    DateTagModule,
+    AwardsStatusModule,
     TruncateModule,
     UiModule,
     NzTagModule

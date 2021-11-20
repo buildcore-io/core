@@ -37,6 +37,7 @@ export class NewPage implements OnInit, OnDestroy {
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   private subscriptions$: Subscription[] = [];
+  private answersIndex = 0;
 
   constructor(
     private auth: AuthService,
@@ -78,8 +79,9 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private getAnswerForm(): FormGroup {
+    this.answersIndex++;
     return new FormGroup({
-      value: new FormControl('', [Validators.min(0), Validators.max(255), Validators.required]),
+      value: new FormControl(this.answersIndex, [Validators.min(0), Validators.max(255), Validators.required]),
       text: new FormControl('', Validators.required),
       additionalInfo: new FormControl(''),
     });
@@ -110,6 +112,7 @@ export class NewPage implements OnInit, OnDestroy {
 
   public removeAnswer(f: any, answerIndex: number): void {
     if (f.controls.answers.length > 2) {
+      this.answersIndex--;
       f.controls.answers.removeAt(answerIndex);
     }
   }

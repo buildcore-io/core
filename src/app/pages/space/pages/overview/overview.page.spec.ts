@@ -1,12 +1,15 @@
+import { AwardsCardModule } from '@components/awards/components/award-card/award-card.module';
+import { ProposalsCardModule } from '@components/proposals/components/proposal-card/proposal-card.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { OverviewPage } from './../../../proposal/pages/overview/overview.page';
-import { DataService } from './../../../proposal/services/data.service';
+import { OverviewPage } from './../../pages/overview/overview.page';
+import { DataService } from './../../services/data.service';
 
 describe('OverviewPage', () => {
   let spectator: Spectator<OverviewPage>;
   const createComponent = createRoutingFactory({
     component: OverviewPage,
-    providers: [ DataService ]
+    providers: [ DataService ],
+    imports: [ ProposalsCardModule, AwardsCardModule ]
   });
 
   beforeEach(() => {

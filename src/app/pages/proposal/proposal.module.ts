@@ -17,6 +17,7 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { MarkDownModule } from './../../@core/pipes/markdown/markdown.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
@@ -38,6 +39,7 @@ import { DataService } from './services/data.service';
     ProposalRoutingModule,
     ReactiveFormsModule,
     NzSelectModule,
+    MarkDownModule,
     TruncateModule,
     NzRadioModule,
     NzButtonModule,
