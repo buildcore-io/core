@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { ProposalMember } from './../../../functions/interfaces/models/proposal';
+import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi } from './base.api';
 
 @Injectable({
@@ -36,6 +37,16 @@ export class ProposalApi extends BaseApi<Proposal> {
           .doc(proposalId.toLowerCase()).collection(SUB_COL.MEMBERS).valueChanges();
   }
 
+  public lastVotes(proposalId: string): Observable<Transaction[]> {
+    return this.afs.collection<Transaction>(
+      COL.TRANSACTION,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref) => {
+        return ref.where('payload.proposalId', '==', proposalId).where('type', '==', TransactionType.VOTE)
+      }
+    ).valueChanges();
+  }
+
   public create(req: WenRequest): Observable<Proposal|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cProposal);
     const data$ = callable(req);
@@ -50,6 +61,12 @@ export class ProposalApi extends BaseApi<Proposal> {
 
   public reject(req: WenRequest): Observable<Proposal|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.rProposal);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public vote(req: WenRequest): Observable<Proposal|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.voteOnProposal);
     const data$ = callable(req);
     return data$;
   }

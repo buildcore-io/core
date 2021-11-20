@@ -31,5 +31,10 @@ export const WenError = {
   proposal_is_already_rejected: { code: 2025, key: 'Proposal is already rejected.' },
   award_is_no_longer_available: { code: 2026, key: 'Award is not available for participation.' },
   member_does_not_exists: { code: 2027, key: 'Member does not exists.' },
+  you_can_only_vote_on_members_proposal: { code: 2028, key: 'You can only vote on members proposal.' },
+  you_are_not_allowed_to_vote_on_this_proposal: { code: 2029, key: 'You are not allowed to vote on this proposal.' },
+  proposal_is_not_approved: { code: 2030, key: 'Proposal is not approved.' },
+  proposal_is_rejected: { code: 2031, key: 'Proposal is rejected.' },
+  value_does_not_exists_in_proposal: { code: 2032, key: 'Value does not exists in proposal.' },
 }
 
