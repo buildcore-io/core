@@ -10,7 +10,7 @@
 
       <nz-card [nzBordered]="false" nzTitle="Award Info">
         <div class="space-y-4">
-          <nz-radio-group nzButtonStyle="solid" [formControl]="typeControl">
+          <nz-radio-group class="block" nzButtonStyle="solid" [formControl]="typeControl">
             <label nz-radio-button [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
             <label nz-radio-button [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
             <label nz-radio-button [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>

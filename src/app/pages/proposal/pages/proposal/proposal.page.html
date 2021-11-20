@@ -47,7 +47,7 @@
       <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
     </nz-card>
 
-    <nz-card nzTitle="Approve Proposal (available only for Guardians)" *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async)">
+    <nz-card nzTitle="Approve Proposal" *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async)">
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
         Approve</button>
       <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
