@@ -50,6 +50,9 @@ module.exports = {
       maxWidth: {
         fit: 'fit-content',
       },
+      width: {
+        header: '500px',
+      },
       borderRadius: {
        'large': '3rem',
       },

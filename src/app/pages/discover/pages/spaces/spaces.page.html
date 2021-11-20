@@ -1,3 +1,4 @@
+<p nz-typography nzType="secondary" class="mb-6">{{ (spaces$ | async)?.length }} spaces</p>
 <div class="flex flex-wrap gap-6">
   <wen-space-card class="cursor-pointer" *ngFor="let s of spaces$ | async" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
 </div>
