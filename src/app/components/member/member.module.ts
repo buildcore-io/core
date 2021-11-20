@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MembersCardModule } from './components/member-card/member-card.module';
+import { MemberCardModule } from './components/member-card/member-card.module';
 
 @NgModule({
   exports: [
-    MembersCardModule,
+    MemberCardModule,
   ],
   imports: [
     CommonModule
   ]
 })
 
-export class MembersModule { }
+export class MemberModule { }

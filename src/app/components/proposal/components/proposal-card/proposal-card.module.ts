@@ -2,22 +2,22 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { UiModule } from '@components/ui/ui.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { TruncateModule } from './../../../../@core/pipes/truncate/truncate.module';
-import { SpaceCardComponent } from './space-card.component';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
+import { ProposalCardComponent } from './proposal-card.component';
 
 @NgModule({
   exports: [
-    SpaceCardComponent
+    ProposalCardComponent
   ],
   declarations: [
-    SpaceCardComponent
+    ProposalCardComponent
   ],
   imports: [
     CommonModule,
-    TruncateModule,
     NzAvatarModule,
-    UiModule
+    UiModule,
+    NzProgressModule
   ]
 })
 
-export class SpaceCardModule { }
+export class ProposalCardModule { }

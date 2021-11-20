@@ -9,8 +9,8 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { AwardCardModule } from '../../components/award/components/award-card/award-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
-import { AwardsCardModule } from './../../components/awards/components/award-card/award-card.module';
 import { UserRoutingModule } from './member-routing.module';
 import { ActivityPage } from './pages/activity/activity.page';
 import { AwardsPage } from './pages/awards/awards.page';
@@ -25,7 +25,7 @@ import { DataService } from './services/data.service';
   imports: [
     CommonModule,
     UiModule,
-    AwardsCardModule,
+    AwardCardModule,
     NgApexchartsModule,
     TruncateModule,
     UserRoutingModule,

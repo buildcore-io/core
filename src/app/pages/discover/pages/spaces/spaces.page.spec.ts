@@ -2,7 +2,7 @@ import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockProvider } from 'ng-mocks';
 import { Observable } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
-import { SpaceCardModule } from './../../../../components/spaces/components/space-card/space-card.module';
+import { SpaceCardModule } from '../../../../components/space/components/space-card/space-card.module';
 import { SpacesPage } from './spaces.page';
 
 describe('SpacesPage', () => {

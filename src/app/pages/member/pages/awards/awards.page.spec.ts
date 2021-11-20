@@ -1,5 +1,5 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { AwardsCardModule } from './../../../../components/awards/components/award-card/award-card.module';
+import { AwardCardModule } from '../../../../components/award/components/award-card/award-card.module';
 import { DataService } from './../../services/data.service';
 import { AwardsPage } from './awards.page';
 
@@ -8,7 +8,7 @@ describe('AwardsPage', () => {
   const createComponent = createRoutingFactory({
     component: AwardsPage,
     providers: [DataService],
-    imports: [ AwardsCardModule ]
+    imports: [ AwardCardModule ]
   });
 
   beforeEach(() => {

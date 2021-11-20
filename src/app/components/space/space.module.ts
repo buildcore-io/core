@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { AwardsCardModule } from './components/award-card/award-card.module';
+import { SpaceCardModule } from './components/space-card/space-card.module';
 
 @NgModule({
   exports: [
-    AwardsCardModule
+    SpaceCardModule,
   ],
   imports: [
     CommonModule,
   ]
 })
 
-export class AwardsModule { }
+export class SpaceModule { }

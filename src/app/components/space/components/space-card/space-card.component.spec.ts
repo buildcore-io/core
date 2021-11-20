@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { IconModule } from './../../../../components/ui/components/icon/icon.module';
+import { IconModule } from '../../../ui/components/icon/icon.module';
 import { SpaceCardComponent } from './space-card.component';
 
 

@@ -6,10 +6,10 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
-import { SpacesModule } from '../../components/spaces/spaces.module';
-import { AwardsModule } from './../../components/awards/awards.module';
-import { MembersModule } from './../../components/members/members.module';
-import { ProposalsModule } from './../../components/proposals/proposals.module';
+import { AwardModule } from '../../components/award/award.module';
+import { MemberModule } from '../../components/member/member.module';
+import { ProposalModule } from '../../components/proposal/proposals.module';
+import { SpaceModule } from '../../components/space/space.module';
 import { DiscoverRoutingModule } from './discover-routing.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { DiscoverPage } from './pages/discover/discover.page';
@@ -36,10 +36,10 @@ import { SpacesPage } from './pages/spaces/spaces.page';
     NzInputModule,
     NzIconModule,
     NzButtonModule,
-    SpacesModule,
-    MembersModule,
-    ProposalsModule,
-    AwardsModule,
+    SpaceModule,
+    MemberModule,
+    ProposalModule,
+    AwardModule,
     UiModule
   ]
 })

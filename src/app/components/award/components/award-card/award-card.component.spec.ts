@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { DateTagModule } from './../../../../@shell/ui/date-tag/date-tag.module';
+import { DateTagModule } from '../../../../@shell/ui/date-tag/date-tag.module';
 import { AwardCardComponent } from './award-card.component';
 
 

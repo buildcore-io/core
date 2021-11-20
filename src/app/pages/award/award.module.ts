@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MembersCardModule } from '@components/members/components/member-card/member-card.module';
+import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -41,7 +41,7 @@ import { DataService } from './services/data.service';
     TruncateModule,
     AwardRoutingModule,
     ReactiveFormsModule,
-    MembersCardModule,
+    MemberCardModule,
     NzButtonModule,
     NzSelectModule,
     NzRadioModule,

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AwardType } from './../../../../../../functions/interfaces/models/award';
+import { AwardType } from '../../../../../../functions/interfaces/models/award';
 
 @Component({
   selector: 'wen-award-status',

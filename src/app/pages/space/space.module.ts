@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { AwardsCardModule } from "@components/awards/components/award-card/award-card.module";
+import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { UiModule } from '@components/ui/ui.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -11,9 +11,9 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { MemberModule } from '../../components/member/member.module';
+import { ProposalCardModule } from '../../components/proposal/components/proposal-card/proposal-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
-import { MembersModule } from './../../components/members/members.module';
-import { ProposalsCardModule } from './../../components/proposals/components/proposal-card/proposal-card.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { MembersPage } from './pages/members/members.page';
 import { NewPage } from './pages/new/new.page';
@@ -40,9 +40,9 @@ import { SpaceRoutingModule } from './space-routing.module';
     ReactiveFormsModule,
     SpaceRoutingModule,
     TruncateModule,
-    MembersModule,
-    ProposalsCardModule,
-    AwardsCardModule,
+    MemberModule,
+    ProposalCardModule,
+    AwardCardModule,
     NzGridModule,
     UiModule,
     NzButtonModule,

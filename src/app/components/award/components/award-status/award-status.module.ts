@@ -18,4 +18,4 @@ import { statusPrintPipe } from './award-status.pipe';
   ]
 })
 
-export class AwardsStatusModule { }
+export class AwardStatusModule { }

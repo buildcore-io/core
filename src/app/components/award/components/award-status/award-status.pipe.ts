@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { AwardType } from './../../../../../../functions/interfaces/models/award';
+import { AwardType } from '../../../../../../functions/interfaces/models/award';
 
 @Pipe({
   name: 'statusPrint',
