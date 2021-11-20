@@ -6,6 +6,8 @@ export enum ProposalType {
 
 export interface ProposalMember extends BaseSubCollection {
   uid: string;
+  voted?: boolean;
+  values?: number[];
   createdOn: Timestamp;
 }
 
@@ -54,4 +56,7 @@ export interface Proposal extends BaseRecord {
   // TODO Fix typing here.
   settings: any;
   questions: ProposalQuestion[];
+  results?: {
+    [propName: number]: number;
+  }
 }

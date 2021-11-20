@@ -4,8 +4,7 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { ProposalType } from './../../interfaces/models/proposal';
-import { TransactionType } from './../../interfaces/models/transaction';
-import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './../../src/controls/proposal.control';
+import { approveProposal, createProposal, rejectProposal } from './../../src/controls/proposal.control';
 import { addGuardian, createSpace, joinSpace } from './../../src/controls/space.control';
 
 describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
@@ -287,77 +286,79 @@ describe('ProposalController: ' + WEN_FUNC.cProposal, () => {
     });
   });
 
-  it('Approve proposal & vote', async () => {
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: body
-    }));
+  // TODO Move under members proposal testing.
+  // TODO
+  // it('Approve proposal & vote', async () => {
+  //   walletSpy.mockReturnValue(Promise.resolve({
+  //     address: memberAddress,
+  //     body: body
+  //   }));
 
-    const wrapped: any = testEnv.wrap(createProposal);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {
-        uid: returns.uid
-      }
-    }));
-    const wrapped2: any = testEnv.wrap(approveProposal);
-    const returns2 = await wrapped2();
-    expect(returns2?.uid).toBeDefined();
-    expect(returns2?.approved).toEqual(true);
+  //   const wrapped: any = testEnv.wrap(createProposal);
+  //   const returns = await wrapped();
+  //   expect(returns?.uid).toBeDefined();
+  //   walletSpy.mockReturnValue(Promise.resolve({
+  //     address: memberAddress,
+  //     body: {
+  //       uid: returns.uid
+  //     }
+  //   }));
+  //   const wrapped2: any = testEnv.wrap(approveProposal);
+  //   const returns2 = await wrapped2();
+  //   expect(returns2?.uid).toBeDefined();
+  //   expect(returns2?.approved).toEqual(true);
 
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {
-        uid: returns.uid,
-        values: [2]
-      }
-    }));
-    // Let's do vote by guardian.
-    const wrapped3: any = testEnv.wrap(voteOnProposal);
-    const returns3 = await wrapped3();
-    expect(returns3?.uid).toBeDefined();
-    expect(returns3?.type).toEqual(TransactionType.VOTE);
-    expect(returns3?.payload.values).toEqual([2]);
+  //   walletSpy.mockReturnValue(Promise.resolve({
+  //     address: memberAddress,
+  //     body: {
+  //       uid: returns.uid,
+  //       values: [2]
+  //     }
+  //   }));
+  //   // Let's do vote by guardian.
+  //   const wrapped3: any = testEnv.wrap(voteOnProposal);
+  //   const returns3 = await wrapped3();
+  //   expect(returns3?.uid).toBeDefined();
+  //   expect(returns3?.type).toEqual(TransactionType.VOTE);
+  //   expect(returns3?.payload.values).toEqual([2]);
 
-    // Let's go
-    walletSpy.mockRestore();
-  });
+  //   // Let's go
+  //   walletSpy.mockRestore();
+  // });
 
-  it('Approve proposal & vote - fails - value does not exists', async () => {
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: body
-    }));
+  // it('Approve proposal & vote - fails - value does not exists', async () => {
+  //   walletSpy.mockReturnValue(Promise.resolve({
+  //     address: memberAddress,
+  //     body: body
+  //   }));
 
-    const wrapped: any = testEnv.wrap(createProposal);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {
-        uid: returns.uid
-      }
-    }));
-    const wrapped2: any = testEnv.wrap(approveProposal);
-    const returns2 = await wrapped2();
-    expect(returns2?.uid).toBeDefined();
-    expect(returns2?.approved).toEqual(true);
+  //   const wrapped: any = testEnv.wrap(createProposal);
+  //   const returns = await wrapped();
+  //   expect(returns?.uid).toBeDefined();
+  //   walletSpy.mockReturnValue(Promise.resolve({
+  //     address: memberAddress,
+  //     body: {
+  //       uid: returns.uid
+  //     }
+  //   }));
+  //   const wrapped2: any = testEnv.wrap(approveProposal);
+  //   const returns2 = await wrapped2();
+  //   expect(returns2?.uid).toBeDefined();
+  //   expect(returns2?.approved).toEqual(true);
 
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {
-        uid: returns.uid,
-        values: [3]
-      }
-    }));
-    // Let's do vote by guardian.
-    const wrapped3: any = testEnv.wrap(voteOnProposal);
-    (<any>expect(wrapped3())).rejects.toThrowError(WenError.value_does_not_exists_in_proposal.key);
+  //   walletSpy.mockReturnValue(Promise.resolve({
+  //     address: memberAddress,
+  //     body: {
+  //       uid: returns.uid,
+  //       values: [3]
+  //     }
+  //   }));
+  //   // Let's do vote by guardian.
+  //   const wrapped3: any = testEnv.wrap(voteOnProposal);
+  //   (<any>expect(wrapped3())).rejects.toThrowError(WenError.value_does_not_exists_in_proposal.key);
 
-    // Let's go
-    walletSpy.mockRestore();
-  });
+  //   // Let's go
+  //   walletSpy.mockRestore();
+  // });
 });
 

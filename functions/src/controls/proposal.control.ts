@@ -221,8 +221,8 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.https
     throw throwInvalidArgument(WenError.proposal_is_rejected);
   }
 
-  if (docProposal.data().type !== ProposalType.NATIVE) {
-    throw throwInvalidArgument(WenError.you_can_only_vote_on_native_proposal);
+  if (docProposal.data().type !== ProposalType.MEMBERS) {
+    throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
   }
 
   const answers: number[] = [];
@@ -261,6 +261,21 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.https
       voted: true,
       tranId: tranId,
       values: params.body.values
+    });
+
+    const results: any = {};
+    const allMembers: any = await refProposal.collection(SUB_COL.MEMBERS).get();
+    allMembers.forEach((doc: any) => {
+      if (doc.data().voted && doc.data().values && doc.data().voted.length > 0) {
+        doc.data().values.forEach((v: any) => {
+          results[v] = results[v] || 0;
+          results[v]++;
+        });
+      }
+    });
+
+    await refProposal.update({
+      results: results
     });
 
     // Load latest

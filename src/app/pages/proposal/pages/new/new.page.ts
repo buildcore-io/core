@@ -82,7 +82,7 @@ export class NewPage implements OnInit, OnDestroy {
     this.answersIndex++;
     return new FormGroup({
       value: new FormControl(
-        {value: this.answersIndex, disabled: true},
+        this.answersIndex,
         [Validators.min(0), Validators.max(255), Validators.required]
       ),
       text: new FormControl('', Validators.required),
