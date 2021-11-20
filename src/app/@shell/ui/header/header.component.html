@@ -35,6 +35,9 @@
   <nz-dropdown-menu #userMenu="nzDropdownMenu">
     <ul nz-menu>
       <li nz-menu-item>
+        <i nz-icon class="mr-4" nzType="user"></i>My Profile
+      </li>
+      <li nz-menu-item [nzDanger]="true">
         <wen-sign-out></wen-sign-out>
       </li>
     </ul>
