@@ -4,44 +4,42 @@
 <h1 class="mt-7" i18 n>New Award</h1>
 
 <form nz-form nzLayout="vertical">
-  <div class="py-4" nz-row [nzGutter]="40">
-
-    <div class="space-y-4" nz-col nzFlex="auto">
-
+  <div class="py-4" nz-row [nzGutter]="24">
+    <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Award Info">
         <div class="space-y-4">
-          <nz-radio-group class="block" nzButtonStyle="solid" [formControl]="typeControl">
-            <label nz-radio-button [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
-            <label nz-radio-button [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
-            <label nz-radio-button [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
-            <label nz-radio-button [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
+          <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
+            <label nz-radio [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
+            <label nz-radio [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
+            <label nz-radio [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
+            <label nz-radio [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
           </nz-radio-group>
 
-          <input nz-input placeholder="Title" [formControl]="nameControl" />
+          <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
           <div class="flex flex-grow space-x-4">
-            <nz-date-picker class="flex flex-grow" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl"
+            <nz-date-picker class="flex flex-grow" nzSize="large" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl"
               nzPlaceHolder="End"></nz-date-picker>
           </div>
-          <textarea nz-input placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
+          <textarea nz-input nzSize="large" placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
         </div>
       </nz-card>
 
       <nz-card nzTitle="Badge definition">
         <div class="space-y-4">
-          <input nz-input placeholder="Badge Title" [formControl]="badgeNameControl" />
-          <textarea nz-input placeholder="Badge description" rows="4"
+          <input nz-input placeholder="Badge Title" nzSize="large" [formControl]="badgeNameControl" />
+          <textarea nz-input placeholder="Badge description" nzSize="large" rows="4"
             [formControl]="badgeDescriptionControl"></textarea>
           <div class="flex space-x-4">
-            <nz-input-number class="flex-grow" nzPlaceHolder="Total Experience Points (number)" [formControl]="badgeXpControl"></nz-input-number>
-            <nz-input-number class="flex-grow" nzPlaceHolder="Available Badges (number)" [formControl]="badgeCountControl"></nz-input-number>
+            <nz-input-number class="flex-grow" nzSize="large" nzPlaceHolder="Total Experience Points (number)" [formControl]="badgeXpControl"></nz-input-number>
+            <nz-input-number class="flex-grow" nzSize="large" nzPlaceHolder="Available Badges (number)" [formControl]="badgeCountControl"></nz-input-number>
           </div>
         </div>
       </nz-card>
     </div>
 
-    <div class="space-y-4" nz-col nzFlex="300px">
+    <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
-        <nz-select class="w-full" nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
+        <nz-select class="w-full" nzShowSearch nzSize="large" nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
           <nz-option *ngFor="let s of spaces$ | async" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
         </nz-select>
       </nz-card>
@@ -54,5 +52,5 @@
 
   </div>
 
-  <button nz-button nzType="primary" nzSize="large" type="button" (click)="create()"
+  <button nz-button class="mb-6" nzType="primary" nzSize="large" type="button" (click)="create()"
     i18n>Create award</button>

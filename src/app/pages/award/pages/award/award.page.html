@@ -3,8 +3,7 @@
   (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
 
 <div class="relative py-12" nz-row [nzGutter]="40">
-
-  <div nz-col nzFlex="auto">
+  <div nz-col nzFlex="auto" style="max-width: calc(100% - 430px);">
     <div class="space-x-4">
       <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle">
       </nz-avatar>
@@ -23,7 +22,7 @@
       </div>
     </div>
 
-    <wen-tabs [tabs]="sections"></wen-tabs>
+    <wen-tabs class="block mt-12" [tabs]="sections"></wen-tabs>
     <div class="w-full py-12">
       <router-outlet></router-outlet>
     </div>

@@ -3,32 +3,33 @@
 
 <h1 class="mt-7" i18 n>Add new space</h1>
 <form nz-form nzLayout="vertical" [formGroup]="spaceForm">
-  <div class="py-4" nz-row [nzGutter]="40">
-    <div class="space-y-4" nz-col nzFlex="auto">
+  <div class="py-4" nz-row [nzGutter]="24">
+    <!-- TODO improve responsibility -->
+    <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
         <div class="space-y-4">
-          <input nz-input placeholder="Title" [formControl]="nameControl" />
-          <textarea nz-input placeholder="Space description" rows="4" [formControl]="aboutControl"></textarea>
+          <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
+          <textarea nz-input placeholder="Space description" nzSize="large" rows="4" [formControl]="aboutControl"></textarea>
         </div>
       </nz-card>
 
       <nz-card [nzBordered]="false" nzTitle="Networking">
         <div class="space-y-4">
-          <nz-input-group [nzPrefix]="prefixGithub">
+          <nz-input-group nzSize="large" [nzPrefix]="prefixGithub">
             <input type="text" nz-input placeholder="Link to your Github account" [formControl]="githubControl" />
             <ng-template #prefixGithub>
               <i nz-icon nzType="github"></i>
             </ng-template>
           </nz-input-group>
 
-          <nz-input-group [nzPrefix]="prefixTwitter">
+          <nz-input-group nzSize="large" [nzPrefix]="prefixTwitter">
             <input type="text" nz-input placeholder="Link to your Twitter account" [formControl]="twitterControl" />
             <ng-template #prefixTwitter>
               <i nz-icon nzType="twitter"></i>
             </ng-template>
           </nz-input-group>
 
-          <nz-input-group [nzPrefix]="prefixDiscord">
+          <nz-input-group nzSize="large" [nzPrefix]="prefixDiscord">
             <input type="text" nz-input placeholder="Link to your Discord account" [formControl]="discordControl" />
             <ng-template #prefixDiscord>
               <i nz-icon nzType="wechat"></i>
@@ -38,13 +39,13 @@
       </nz-card>
     </div>
 
-    <div class="space-y-4" nz-col nzFlex="300px">
+    <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false">
         <nz-card-meta nzTitle="Avatar" nzDescription="Set a display name. This does not change your username.">
         </nz-card-meta>
 
         <div class="mt-4">
-          <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card" [nzDirectory]="false"
+          <nz-upload class="wen-avatar-uploader" nzName="avatar" nzListType="picture-card" [nzDirectory]="false"
             nzType="drag" [nzLimit]="1" [nzCustomRequest]="uploadFile.bind(this)"
             (nzChange)="uploadChangeAvatar($event)" nzFileType="image/png,image/jpeg,image/gif"
             [nzShowUploadList]="true">
@@ -60,7 +61,7 @@
         </nz-card-meta>
 
         <div class="mt-6">
-          <nz-upload nzName="banner" nzType="drag" nzListType="picture-card" [nzDirectory]="false" [nzLimit]="1"
+          <nz-upload class="wen-space-banner" nzName="banner" nzType="drag" nzListType="picture-card" [nzDirectory]="false" [nzLimit]="1"
             [nzCustomRequest]="uploadFile.bind(this)" (nzChange)="uploadChangeBanner($event)"
             nzFileType="image/png,image/jpeg,image/gif" [nzShowUploadList]="true">
             <ng-container>
@@ -73,5 +74,5 @@
   </div>
 </form>
 
-<button nz-button nzType="primary" nzSize="large" type="button" (click)="create()"
+<button nz-button nzType="primary" class="mb-6" nzSize="large" type="button" (click)="create()"
   i18n>Create space</button>
