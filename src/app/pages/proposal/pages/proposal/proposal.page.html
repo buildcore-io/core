@@ -1,19 +1,16 @@
 <button nz-button nzSize="small"
   class="h-10 px-6 font-semibold text-blue-600 bg-white border-white mt-14 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
-  (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
+  (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
 
 <div class="relative py-12" nz-row [nzGutter]="40">
-
-  <div nz-col nzFlex="auto">
+  <div nz-col nzFlex="auto" style="max-width: calc(100% - 430px);">
     <div class="space-x-4">
-      <nz-avatar
-        nzSrc="/assets/mocks/default_avatar.jpg"
-        class="bg-white border-2 border-gray-400"
-        nzShape="circle"></nz-avatar>
+      <nz-avatar nzSrc="/assets/mocks/default_avatar.jpg" class="bg-white border-2 border-gray-400" nzShape="circle">
+      </nz-avatar>
 
-        <nz-tag [nzColor]="'#BBD3F6'" class="text-black" *ngIf="(data.proposal$ | async)?.approved">Proposal</nz-tag>
-        <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="!(data.proposal$ | async)?.approved">Draft</nz-tag>
-        <nz-tag [nzColor]="'#f6c5bb'" class="text-black" *ngIf="(data.proposal$ | async)?.rejected">Rejected</nz-tag>
+      <nz-tag [nzColor]="'#BBD3F6'" class="text-black" *ngIf="(data.proposal$ | async)?.approved">Proposal</nz-tag>
+      <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="!(data.proposal$ | async)?.approved">Draft</nz-tag>
+      <nz-tag [nzColor]="'#f6c5bb'" class="text-black" *ngIf="(data.proposal$ | async)?.rejected">Rejected</nz-tag>
     </div>
 
     <h1 i18n>{{(data.proposal$ | async)?.name}}</h1>
@@ -31,7 +28,6 @@
     </div>
 
     <div class="w-full py-12">
-      <a routerLink="overview">Details</a><br />
       <router-outlet></router-outlet>
     </div>
 
@@ -46,7 +42,6 @@
       </h4>
       <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
     </nz-card>
-
     <nz-card nzTitle="Cast your vote"
              *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type) && canVote(data.members$ | async)">
 
@@ -61,11 +56,13 @@
       </button>
     </nz-card>
 
-    <nz-card nzTitle="Approve Proposal (available only for Guardians)" *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async)">
-      <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
-        Approve</button>
-      <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
-        Decline</button>
+    <nz-card nzTitle="Approve Proposal" *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async)">
+      <div class="space-y-4">
+        <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
+          Approve</button>
+        <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
+          Decline</button>
+      </div>
     </nz-card>
 
     <nz-card nzTitle="Current Results" *ngIf="(data.proposal$ | async)?.approved">

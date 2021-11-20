@@ -1,2 +1,3 @@
-<nz-card nzTitle="Voting Description" [innerHTML]="(data.proposal$ | async)?.additionalInfo | markdown">
+<nz-card nzTitle="Voting Description">
+<div [innerHTML]="(data.proposal$ | async)?.additionalInfo | markdown"></div>
 </nz-card>

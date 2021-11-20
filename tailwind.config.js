@@ -32,6 +32,7 @@ module.exports = {
           dark1: '#0C16F2',
           dark2: '#1822F2',
           darkest: '#1117A6',
+          hover: '#445FF0',
         },
         green: {
           dark: '#11A696',
@@ -49,6 +50,9 @@ module.exports = {
       },
       maxWidth: {
         fit: 'fit-content',
+      },
+      width: {
+        header: '500px',
       },
       borderRadius: {
        'large': '3rem',

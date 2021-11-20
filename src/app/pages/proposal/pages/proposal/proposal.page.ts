@@ -1,4 +1,3 @@
-import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +10,7 @@ import { WenRequest } from './../../../../../../functions/interfaces/models/base
 import { ProposalAnswer, ProposalMember, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
 
@@ -37,14 +37,14 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private location: Location,
     private router: Router,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private proposalApi: ProposalApi,
     private cd: ChangeDetectorRef,
-    public data: DataService
+    public data: DataService,
+    public nav: NavigationService
   ) {
     // none.
   }
@@ -147,10 +147,6 @@ export class ProposalPage implements OnInit, OnDestroy {
 
 
     return (canVote === true);
-  }
-
-  public goBack(): void {
-    this.location.back();
   }
 
   public async approve(): Promise<void> {

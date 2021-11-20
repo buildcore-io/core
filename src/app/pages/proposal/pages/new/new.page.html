@@ -1,31 +1,31 @@
-<button nz-button class="mt-14" (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
+<button nz-button class="mt-14" (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
 
 <h1 class="mt-7" i18 n>New Proposal</h1>
 
 <form nz-form nzLayout="vertical" [formGroup]="proposalForm">
-  <div class="py-4" nz-row [nzGutter]="40">
+  <div class="py-4" nz-row [nzGutter]="24">
 
-    <div class="space-y-4" nz-col nzFlex="auto">
+    <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Proposal Info">
         <div class="space-y-4">
-          <nz-radio-group nzButtonStyle="solid" [formControl]="selectedGroupControl">
+          <nz-radio-group nzButtonStyle="solid" nzSize="large" [formControl]="selectedGroupControl">
             <label nz-radio-button [nzValue]="true">All Guardians</label>
             <label nz-radio-button [nzValue]="false">All Members</label>
           </nz-radio-group>
-          <input nz-input placeholder="Title" [formControl]="nameControl" />
+          <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
           <div class="flex flex-grow space-x-4">
-            <nz-date-picker class="flex flex-grow" [nzDisabledDate]="disabledStartDate.bind(this)" nzShowTime
+            <nz-date-picker class="flex flex-grow" nzSize="large" [nzDisabledDate]="disabledStartDate.bind(this)" nzShowTime
               nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="startControl" nzPlaceHolder="Start"
               (nzOnOpenChange)="handleStartOpenChange($event)">
             </nz-date-picker>
-            <nz-date-picker class="flex flex-grow" #endDatePicker [nzDisabledDate]="disabledEndDate.bind(this)"
+            <nz-date-picker class="flex flex-grow" nzSize="large" #endDatePicker [nzDisabledDate]="disabledEndDate.bind(this)"
               nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
           </div>
-          <textarea nz-input placeholder="Proposal description" rows="4"
+          <textarea nz-input nzSize="large" placeholder="Proposal description" rows="4"
             [formControl]="additionalInfoControl"></textarea>
           <ng-container *ngFor="let question of questions.controls; let i = index">
-            <input nz-input placeholder="Question Title" [formControl]="gForm(question, 'text')" />
-            <textarea nz-input placeholder="Question description" rows="4"
+            <input nz-input placeholder="Question Title" nzSize="large" [formControl]="gForm(question, 'text')" />
+            <textarea nz-input placeholder="Question description" nzSize="large" rows="4"
               [formControl]="gForm(question, 'additionalInfo')"></textarea>
           </ng-container>
         </div>
@@ -40,15 +40,15 @@
         <ng-container *ngFor="let answer of getAnswers(question); let ii = index">
           <nz-card [nzBordered]="false" [nzTitle]="'Choice ' + (ii + 1)" [nzExtra]="actionsTpl">
             <div class="space-y-4">
-              <input nz-input placeholder="Answer Text" [formControl]="gForm(answer, 'text')" />
-              <textarea nz-input placeholder="Answer description" rows="4"
+              <input nz-input placeholder="Answer Text" nzSize="large" [formControl]="gForm(answer, 'text')" />
+              <textarea nz-input placeholder="Answer description" nzSize="large" rows="4"
                 [formControl]="gForm(answer, 'additionalInfo')"></textarea>
             </div>
           </nz-card>
           <ng-template #actionsTpl>
             <div class="space-x-4">
               <!-- This is not important to show. We just default it. No need to allow customization of this value for now. -->
-              <!-- <nz-input-number [nzMin]="0" [nzMax]="250" placeholder="Answer Value"
+              <!-- <nz-input-number [nzMin]="0" [nzMax]="250" nzSize="large" placeholder="Answer Value"
                 [formControl]="gForm(answer, 'value')">
               </nz-input-number> -->
               <button nz-button nzDanger nzType="text" nzShape="circle" *ngIf="getAnswers(question).length > 2"
@@ -63,9 +63,9 @@
 
     </div>
 
-    <div class="space-y-4" nz-col nzFlex="300px">
+    <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
-        <nz-select class="w-full" nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
+        <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
           <nz-option *ngFor="let s of spaces$ | async" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
         </nz-select>
       </nz-card>
@@ -75,5 +75,5 @@
 
 <nz-divider class="mb-8"></nz-divider>
 
-<button nz-button nzType="primary" nzSize="large" type="button" (click)="create()" class="mb-8" i18n>Create
+<button nz-button nzType="primary" nzSize="large" type="button" (click)="create()" class="mb-6" i18n>Create
   Proposal</button>

@@ -1,4 +1,3 @@
-import { Location } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi, FILE_SIZES } from "@api/file.api";
@@ -13,6 +12,7 @@ import { Member } from './../../../../../../functions/interfaces/models/member';
 import { AwardApi } from './../../../../@api/award.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 @UntilDestroy()
@@ -35,14 +35,14 @@ export class SpacePage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private location: Location,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,
     private proposalApi: ProposalApi,
     private route: ActivatedRoute,
-  private notification: NotificationService,
+    private notification: NotificationService,
     private router: Router,
-    public data: DataService
+    public data: DataService,
+    public nav: NavigationService
   ) {
     // none.
   }
@@ -99,10 +99,6 @@ export class SpacePage implements OnInit, OnDestroy {
     return url ? FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small) : undefined;
   }
 
-  public goBack(): void {
-    this.location.back();
-  }
-
   public getBannerUrl(url?: string): string | undefined {
     return url ? FileApi.getUrl(url, 'space_banner', FILE_SIZES.large) : undefined;
   }
@@ -135,6 +131,16 @@ export class SpacePage implements OnInit, OnDestroy {
     this.notification.processRequest(this.spaceApi.join(sc), 'Joined.').subscribe((val: any) => {
       // none.
     });
+  }
+
+  public edit(): void {
+    if (!this.data.space$.value?.uid) {
+      return;
+    }
+
+    this.router.navigate([ROUTER_UTILS.config.space.root, ROUTER_UTILS.config.space.edit, {
+      spaceId: this.data.space$.value.uid
+    }]);
   }
 
   public async leave(): Promise<void> {

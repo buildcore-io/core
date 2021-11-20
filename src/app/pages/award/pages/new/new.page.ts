@@ -1,4 +1,3 @@
-import { Location } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +9,7 @@ import { WenRequest } from './../../../../../../functions/interfaces/models/base
 import { Space } from './../../../../../../functions/interfaces/models/space';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 
@@ -47,11 +47,11 @@ export class NewPage implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private awardApi: AwardApi,
-    private location: Location,
     private notification: NotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public nav: NavigationService
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,
@@ -78,10 +78,6 @@ export class NewPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.memberApi.allSpacesWhereMember(o.uid).subscribe(this.spaces$));
       }
     });
-  }
-
-  public goBack(): void {
-    this.location.back();
   }
 
   private formatSubmitObj(obj: any): any {

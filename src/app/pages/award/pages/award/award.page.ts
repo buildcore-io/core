@@ -1,4 +1,3 @@
-import { Location } from "@angular/common";
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,6 +8,7 @@ import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 import { DataService } from './../../services/data.service';
@@ -33,21 +33,21 @@ export class AwardPage implements OnInit, OnDestroy {
 
   constructor(
     private auth: AuthService,
-    private location: Location,
     private router: Router,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
     private cd: ChangeDetectorRef,
-    public data: DataService
+    public data: DataService,
+    public nav: NavigationService
   ) {
     // none.
   }
 
   public ngOnInit(): void {
     this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
+      const id: string|undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
       if (id) {
         this.listenToAward(id);
       } else {
@@ -75,10 +75,6 @@ export class AwardPage implements OnInit, OnDestroy {
     this.data.participants$.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
-  }
-
-  public goBack(): void {
-    this.location.back();
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {

@@ -1,20 +1,9 @@
 <h1 i18n class="mt-12">Discover Soonaverse</h1>
 
 <div class="flex items-center">
-  <nz-input-group
-    nzSize="default"
-    [nzPrefix]="prefixIconSearch"
-    [nzAddOnAfter]="suffixButton"
-    class="mr-8 border-none shadow-none"
-    nzSearch
-  >
-    <input
-      type="text"
-      nz-input
-      [disabled]="true"
-      placeholder="Space, awards, proposals or members"
-      class="text-base"
-    />
+  <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" [nzAddOnAfter]="suffixButton"
+    class="mr-8 border-none shadow-none" nzSearch>
+    <input type="text" nz-input [disabled]="true" placeholder="Space, awards, proposals or members" class="text-base" />
   </nz-input-group>
 
   <ng-template #prefixIconSearch>
@@ -22,12 +11,7 @@
   </ng-template>
 
   <ng-template #suffixButton>
-    <button
-      nz-button
-      nzType="primary"
-      class="m-2"
-      i18n
-    >
+    <button nz-button nzType="primary" class="m-2" i18n>
       Search
     </button>
   </ng-template>
@@ -35,6 +19,25 @@
   <wen-tabs [tabs]="sections"></wen-tabs>
 </div>
 
-<div class="grid mt-24 place-items-start">
+<div class="flex items-end justify-between">
+  <div class="flex items-center mt-8">
+    <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedTags.indexOf(tag) > -1"
+      (nzCheckedChange)="handleChange($event, tag)">
+      {{ tag }}
+    </nz-tag>
+  </div>
+  <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate">
+    <nz-option nzLabel="Recent" nzValue="recent"></nz-option>
+    <nz-option nzLabel="Oldest" nzValue="oldest"></nz-option>
+    <nz-option nzLabel="Highest" nzValue="highest"></nz-option>
+    <nz-option nzLabel="Lowest" nzValue="lowest"></nz-option>
+  </nz-select>
+  <ng-template #defaultTemplate let-selected>
+    <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
+    {{ selected.nzLabel }}
+  </ng-template>
+</div>
+
+<div class="grid mt-10 place-items-start">
   <router-outlet></router-outlet>
 </div>

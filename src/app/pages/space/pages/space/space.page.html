@@ -1,15 +1,13 @@
 <div class="w-auto overflow-hidden md:-mx-24 lg:-mx-10 h-96 bor rounded-l-large">
-  <button nz-button
-    class="absolute mx-20 top-14"
-    (click)="goBack()"><i nz-icon nzType="left"></i>Back</button>
+  <button nz-button class="absolute mx-20 top-14" (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
 
-  <img alt="" [src]="bannerUrl$ | async"  class="object-cover w-full h-full" />
+  <img alt="" [src]="bannerUrl$ | async" class="object-cover w-full h-full" />
 </div>
 
 <div class="relative py-12" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
   <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="120"
-    class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
-    nzShape="circle"></nz-avatar>
+    class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4" nzShape="circle">
+  </nz-avatar>
 
   <div nz-col nzFlex="auto">
     <h1 i18n>{{ (data.space$ | async)!.name }}</h1>
@@ -22,10 +20,17 @@
 
   </div>
   <div class="space-y-4" nz-col nzFlex="430px">
-    <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)">
+    <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
+      *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)">
       Join Space</button>
-    <button nz-button nzType="primary" (click)="leave()" nzBlock nzSize="large" *ngIf="data.isMemberWithinSpace$ | async">
-      Leave Space</button>
+    <div class="inline-grid space-y-4">
+      <button nz-button (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async"><i nz-icon nzType="left"
+          nzTheme="outline"></i>
+        Leave Space</button>
+
+      <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()"><i nz-icon nzType="edit" nzTheme="outline"></i>
+        Edit Space</button>
+    </div>
 
     <nz-card nzTitle="About">
       <p>

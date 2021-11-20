@@ -14,4 +14,17 @@ export class DiscoverPage {
     { route: [ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
   ];
+
+  // TODO filters default logic
+  public hotTags = ['All', 'Featured'];
+  selectedTags: string[] = [];
+
+  handleChange(checked: boolean, tag: string): void {
+    if (checked) {
+      this.selectedTags.push(tag);
+    } else {
+      this.selectedTags = this.selectedTags.filter(t => t !== tag);
+    }
+    console.log('You are interested in: ', this.selectedTags);
+  }
 }

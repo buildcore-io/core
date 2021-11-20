@@ -1,25 +1,27 @@
-import { Location } from "@angular/common";
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from "ng-zorro-antd/upload";
-import { of, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
-import { FileApi } from './../../../../@api/file.api';
-import { SpaceApi } from './../../../../@api/space.api';
-import { NotificationService } from './../../../../@core/services/notification/notification.service';
+import { first, of, Subscription } from 'rxjs';
+import { WenRequest } from '../../../../../../functions/interfaces/models/base';
+import { FileApi } from '../../../../@api/file.api';
+import { SpaceApi } from '../../../../@api/space.api';
+import { NotificationService } from '../../../../@core/services/notification/notification.service';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 
+@UntilDestroy()
 @Component({
-  selector: 'wen-new',
-  templateUrl: './new.page.html',
-  styleUrls: ['./new.page.less'],
+  selector: 'wen-upsert',
+  templateUrl: './upsert.page.html',
+  styleUrls: ['./upsert.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NewPage {
+export class UpsertPage implements OnInit {
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('');
   public discordControl: FormControl = new FormControl('', getUrlValidator());
@@ -28,15 +30,19 @@ export class NewPage {
   public avatarControl: FormControl = new FormControl('');
   public bannerControl: FormControl = new FormControl('');
   public spaceForm: FormGroup;
+  public editMode = false;
+  public spaceId?: number;
 
   constructor(
     private auth: AuthService,
-    private location: Location,
     private router: Router,
+    private route: ActivatedRoute,
     private spaceApi: SpaceApi,
     private fileApi: FileApi,
     private notification: NotificationService,
-    private nzNotification: NzNotificationService
+    private nzNotification: NzNotificationService,
+    private cd: ChangeDetectorRef,
+    public nav: NavigationService
   ) {
     this.spaceForm = new FormGroup({
       name: this.nameControl,
@@ -46,6 +52,30 @@ export class NewPage {
       github: this.githubControl,
       avatarUrl: this.avatarControl,
       bannerUrl: this.bannerControl
+    });
+  }
+
+  public ngOnInit(): void {
+    this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o?.spaceId) {
+        this.editMode = true;
+        this.spaceId = o.spaceId;
+        this.spaceApi.listen(o.spaceId).pipe(first()).subscribe((o) => {
+          if (!o) {
+            // Unable to find the space. Take them back.
+            this.nav.goBack();
+          } else {
+            this.nameControl.setValue(o.name);
+            this.aboutControl.setValue(o.about);
+            this.discordControl.setValue(o.discord);
+            this.twitterControl.setValue(o.twitter);
+            this.githubControl.setValue(o.github);
+            this.avatarControl.setValue(o.avatarUrl);
+            this.bannerControl.setValue(o.bannerUrl);
+            this.cd.markForCheck();
+          }
+        });
+      }
     });
   }
 
@@ -81,18 +111,29 @@ export class NewPage {
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'space_avatar');
   }
 
-  public goBack(): void {
-    this.location.back();
-  }
-
   public async create(): Promise<void> {
     this.spaceForm.updateValueAndValidity();
     if (!this.spaceForm.valid) {
       return;
     }
     const sc: WenRequest|undefined =  await this.auth.sign(this.spaceForm.value);
-
     this.notification.processRequest(this.spaceApi.create(sc), 'Created.').subscribe((val: any) => {
+      this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
+    });
+  }
+
+  public async save(): Promise<void> {
+    this.spaceForm.updateValueAndValidity();
+    if (!this.spaceForm.valid) {
+      return;
+    }
+    const sc: WenRequest|undefined =  await this.auth.sign({
+      ...this.spaceForm.value,
+      ...{
+        uid: this.spaceId
+      }
+    });
+    this.notification.processRequest(this.spaceApi.save(sc), 'Saved.').subscribe((val: any) => {
       this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
     });
   }
