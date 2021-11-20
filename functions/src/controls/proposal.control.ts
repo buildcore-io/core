@@ -264,9 +264,13 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.https
     });
 
     const results: any = {};
+    let voted = 0;
+    let total = 0;
     const allMembers: any = await refProposal.collection(SUB_COL.MEMBERS).get();
     allMembers.forEach((doc: any) => {
-      if (doc.data().voted && doc.data().values && doc.data().voted.length > 0) {
+      total++;
+      if (doc.data().voted && doc.data().values && doc.data().values.length > 0) {
+        voted++;
         doc.data().values.forEach((v: any) => {
           results[v] = results[v] || 0;
           results[v]++;
@@ -275,7 +279,11 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.https
     });
 
     await refProposal.update({
-      results: results
+      results: {
+        total: total,
+        voted: voted,
+        answers: results
+      }
     });
 
     // Load latest

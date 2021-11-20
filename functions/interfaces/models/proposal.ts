@@ -57,6 +57,10 @@ export interface Proposal extends BaseRecord {
   settings: any;
   questions: ProposalQuestion[];
   results?: {
-    [propName: number]: number;
+    total: number;
+    voted: number;
+    answers: {
+      [propName: number]: number;
+    }
   }
 }
