@@ -16,6 +16,7 @@ export class SignInComponent {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
   ) {
     this.returnUrl =
@@ -25,7 +26,10 @@ export class SignInComponent {
 
   onClickSignIn(): void {
     this.authService.signIn().then(() => {
-      this.router.navigate([ROUTER_UTILS.config.base.dashboard]);
+      // Only redirect to dashboard if home.
+      if (this.router.url === '/') {
+        this.router.navigate([ROUTER_UTILS.config.base.dashboard]);
+      }
     });
   }
 

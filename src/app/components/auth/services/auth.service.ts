@@ -114,7 +114,8 @@ export class AuthService {
 
   signOut(): void {
     removeItem(StorageItem.Auth);
-    this.isLoggedIn$.next(false);
     this.memberSubscription$?.unsubscribe();
+    this.isLoggedIn$.next(false);
+    this.member$.next(undefined);
   }
 }

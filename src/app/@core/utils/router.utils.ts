@@ -32,7 +32,7 @@ export const ROUTER_UTILS = {
       overview: 'overview',
       proposals: 'proposals',
       awards: 'awards',
-      funding: 'funding',
+      treasury: 'treasury',
       members: 'members',
     },
     proposal: {

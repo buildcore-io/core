@@ -1,5 +1,5 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { FundingPage } from './funding.page';
+import { FundingPage } from './treasury.page';
 
 describe('FundingPage', () => {
   let spectator: Spectator<FundingPage>;

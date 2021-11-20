@@ -15,12 +15,12 @@ import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { MembersModule } from './../../components/members/members.module';
 import { ProposalsCardModule } from './../../components/proposals/components/proposal-card/proposal-card.module';
 import { AwardsPage } from './pages/awards/awards.page';
-import { FundingPage } from './pages/funding/funding.page';
 import { MembersPage } from './pages/members/members.page';
 import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacePage } from './pages/space/space.page';
+import { TreasuryPage } from './pages/treasury/treasury.page';
 import { DataService } from "./services/data.service";
 import { SpaceRoutingModule } from './space-routing.module';
 
@@ -30,7 +30,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     OverviewPage,
     ProposalsPage,
     AwardsPage,
-    FundingPage,
+    TreasuryPage,
     MembersPage,
     NewPage
   ],

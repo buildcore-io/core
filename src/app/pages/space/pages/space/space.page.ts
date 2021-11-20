@@ -23,11 +23,12 @@ import { NotificationService } from './../../../../@core/services/notification/n
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpacePage implements OnInit, OnDestroy {
+  // Overview / Forum / Proposals / Awards / Treasury / Members
   public sections = [
     { route: 'overview', label: 'Overview' },
     { route: 'proposals', label: 'Proposals' },
     { route: 'awards', label: 'Awards' },
-    { route: 'funding', label: 'Funding' },
+    { route: 'treasury', label: 'Treasury' },
     { route: 'members', label: 'Members' }
   ];
   private subscriptions$: Subscription[] = [];
@@ -74,6 +75,9 @@ export class SpacePage implements OnInit, OnDestroy {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m?: Member) => {
       if (m?.uid) {
         this.listenToRelatedRecord(id, m.uid);
+      } else {
+        this.data.isMemberWithinSpace$.next(false);
+        this.data.isGuardianWithinSpace$.next(false);
       }
     });
   }
