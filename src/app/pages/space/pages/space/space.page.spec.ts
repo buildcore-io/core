@@ -1,4 +1,4 @@
-import { TabsComponent } from '@components/ui/components/tabs/tabs.component';
+import { TabsComponent } from '@components/tabs/tabs.component';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { DataService } from "@pages/space/services/data.service";
 import { MockComponent } from 'ng-mocks';

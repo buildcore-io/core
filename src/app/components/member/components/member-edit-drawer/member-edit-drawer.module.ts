@@ -1,37 +1,42 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from "@angular/forms";
+import { RouterModule } from '@angular/router';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzStatisticModule } from 'ng-zorro-antd/statistic';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
-import { MemberEditDrawerComponent } from './member-edit-drawer/member-edit-drawer.component';
-import { MemberTileComponent } from './tile/member-tile.component';
-
-
+import { TruncateModule } from '../../../../@core/pipes/truncate/truncate.module';
+import { MemberEditDrawerComponent } from './member-edit-drawer.component';
 
 @NgModule({
-  declarations: [
-    MemberTileComponent,
+  exports: [
     MemberEditDrawerComponent
   ],
-  exports: [
-    MemberTileComponent,
+  declarations: [
     MemberEditDrawerComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterModule,
+    TruncateModule,
+    NzAvatarModule,
+    NzAvatarModule,
+    NzIconModule,
+    NzTagModule,
     NzInputModule,
     NzCardModule,
-    NzStatisticModule,
     NzUploadModule,
     NzFormModule,
     NzButtonModule,
     NzDrawerModule
   ]
 })
-export class MemberModule { }
+
+export class MemberEditDrawerModule { }

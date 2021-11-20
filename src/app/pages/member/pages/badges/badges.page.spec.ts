@@ -1,5 +1,5 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { BadgeModule } from './../../../../components/ui/components/badge/badge.module';
+import { BadgeModule } from '../../../../components/badge/badge.module';
 import { DataService } from "./../../services/data.service";
 import { BadgesPage } from './badges.page';
 

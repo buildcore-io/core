@@ -1,9 +1,9 @@
-import { TabsComponent } from '@components/ui/components/tabs/tabs.component';
+import { TabsComponent } from '@components/tabs/tabs.component';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
-import { BadgeTileComponent } from './../../../../components/ui/components/badge/badge-tile/badge-tile.component';
-import { MemberEditDrawerComponent } from './../../../../components/ui/components/member/member-edit-drawer/member-edit-drawer.component';
-import { MemberTileComponent } from './../../../../components/ui/components/member/tile/member-tile.component';
+import { BadgeTileComponent } from '../../../../components/badge/badge-tile/badge-tile.component';
+import { MemberEditDrawerComponent } from '../../../../components/member/components/member-edit-drawer/member-edit-drawer.component';
+import { MemberTileComponent } from './../../../../components/member/components/tile/member-tile.component';
 import { DataService } from './../../services/data.service';
 import { MemberPage } from './member.page';
 

@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { IconModule } from './../../../../components/ui/components/icon/icon.module';
+import { IconModule } from './../../../../components/icon/icon.module';
 import { ThemeSwitchComponent } from './theme-switch.component';
 
 

@@ -4,7 +4,7 @@ import { AwardType } from '../../../../../../functions/interfaces/models/award';
 @Pipe({
   name: 'statusPrint',
 })
-export class statusPrintPipe implements PipeTransform {
+export class AwardStatusPrintPipe implements PipeTransform {
   transform(type?: AwardType): string {
     if (type === AwardType.PARTICIPATE_AND_APPROVE) {
       return 'Basic';

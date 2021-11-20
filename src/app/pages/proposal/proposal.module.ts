@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TabsModule } from "@components/tabs/tabs.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -39,6 +40,7 @@ import { DataService } from './services/data.service';
     ProposalRoutingModule,
     ReactiveFormsModule,
     NzSelectModule,
+    TabsModule,
     MarkDownModule,
     TruncateModule,
     NzRadioModule,

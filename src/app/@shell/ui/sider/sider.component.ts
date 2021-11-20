@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
-import { GlobeIconComponent } from '@components/ui/components/icon/globe/globe.component';
-import { RocketIconComponent } from '@components/ui/components/icon/rocket/rocket.component';
-import { UnamusedIconComponent } from '@components/ui/components/icon/unamused/unamused.component';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject } from 'rxjs';
+import { GlobeIconComponent } from './../../../components/icon/globe/globe.component';
+import { RocketIconComponent } from './../../../components/icon/rocket/rocket.component';
+import { UnamusedIconComponent } from './../../../components/icon/unamused/unamused.component';
 
 interface MenuItem {
   route: string[];

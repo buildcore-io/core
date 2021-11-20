@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Transaction } from './../../../../../../../functions/interfaces/models/transaction';
+import { Transaction } from '../../../../../functions/interfaces/models/transaction';
 
 @Component({
   selector: 'wen-badge-tile',

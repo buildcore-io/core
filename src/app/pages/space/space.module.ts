@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
-import { UiModule } from '@components/ui/ui.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -14,6 +13,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { MemberModule } from '../../components/member/member.module';
 import { ProposalCardModule } from '../../components/proposal/components/proposal-card/proposal-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
+import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { MembersPage } from './pages/members/members.page';
 import { NewPage } from './pages/new/new.page';
@@ -37,6 +37,7 @@ import { SpaceRoutingModule } from './space-routing.module';
   providers: [ DataService ],
   imports: [
     CommonModule,
+    TabsModule,
     ReactiveFormsModule,
     SpaceRoutingModule,
     TruncateModule,
@@ -44,7 +45,6 @@ import { SpaceRoutingModule } from './space-routing.module';
     ProposalCardModule,
     AwardCardModule,
     NzGridModule,
-    UiModule,
     NzButtonModule,
     NzTypographyModule,
     NzCardModule,

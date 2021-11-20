@@ -1,10 +1,10 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { FundingPage } from './treasury.page';
+import { TreasuryPage } from './treasury.page';
 
 describe('FundingPage', () => {
-  let spectator: Spectator<FundingPage>;
+  let spectator: Spectator<TreasuryPage>;
   const createComponent = createRoutingFactory({
-    component: FundingPage
+    component: TreasuryPage
   });
 
   beforeEach(() => {
