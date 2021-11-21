@@ -7,7 +7,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from "@pages/space/services/data.service";
 import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { AwardApi } from './../../../../@api/award.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
@@ -124,13 +123,14 @@ export class SpacePage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.space$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.join(sc), 'Joined.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.spaceApi.join(sc), 'Joined.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   public getMemberUrl(memberId: string): string[] {
@@ -152,13 +152,14 @@ export class SpacePage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.space$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   private cancelSubscriptions(): void {

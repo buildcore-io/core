@@ -7,7 +7,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
@@ -169,11 +168,13 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign(this.formatSubmitObj(this.proposalForm.value));
-
-    this.notification.processRequest(this.proposalApi.create(sc), 'Created.').subscribe((val: any) => {
-      this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
+    await this.auth.sign(this.formatSubmitObj(this.proposalForm.value), (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.create(sc), 'Created.').subscribe((val: any) => {
+        finish();
+        this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
+      });
     });
+
   }
 
   private cancelSubscriptions(): void {

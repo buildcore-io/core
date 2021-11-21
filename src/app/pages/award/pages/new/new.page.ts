@@ -5,7 +5,6 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { AwardType } from './../../../../../../functions/interfaces/models/award';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { Space } from './../../../../../../functions/interfaces/models/space';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
@@ -101,11 +100,13 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest =  await this.auth.sign(this.formatSubmitObj(this.awardForm.value));
-
-    this.notification.processRequest(this.awardApi.create(sc), 'Created.').subscribe((val) => {
-      this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid])
+    await this.auth.sign(this.formatSubmitObj(this.awardForm.value), (sc, finish) => {
+      this.notification.processRequest(this.awardApi.create(sc), 'Created.').subscribe((val) => {
+        finish();
+        this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid])
+      });
     });
+
   }
 
   private cancelSubscriptions(): void {

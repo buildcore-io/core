@@ -14,16 +14,16 @@ import { Member } from './../../../../../functions/interfaces/models/member';
 export class HeaderComponent {
   public path = ROUTER_UTILS.config.base;
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private router: Router,
+    public auth: AuthService
   ) {}
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
-    return this.authService.isLoggedIn$;
+    return this.auth.isLoggedIn$;
   }
 
   public get member$(): BehaviorSubject<Member|undefined> {
-    return this.authService.member$;
+    return this.auth.member$;
   }
 
   public get urlToNewSpace(): string {
@@ -44,11 +44,15 @@ export class HeaderComponent {
     }
   }
 
+  public handleCancel(): void {
+    this.auth.hideWallet();
+  }
+
   public onClickSignOut(): void {
-    this.authService.signOut();
+    this.auth.signOut();
   }
 
   public onClickSignIn(): void {
-    this.authService.signIn();
+    this.auth.signIn();
   }
 }

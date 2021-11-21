@@ -4,7 +4,6 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { skip, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from "./../../services/data.service";
@@ -61,14 +60,15 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.spaceId,
       member: memberId
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   public async removeGuardian(memberId: string): Promise<void> {
@@ -76,14 +76,15 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.spaceId,
       member: memberId
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   private cancelSubscriptions(): void {

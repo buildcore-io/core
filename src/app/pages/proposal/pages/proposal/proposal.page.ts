@@ -6,7 +6,6 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { ProposalAnswer, ProposalMember, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -154,12 +153,12 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
         uid: this.data.proposal$.value.uid
-    });
-
-    this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.').subscribe((val: any) => {
-      // none.
+    }, (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.').subscribe((val: any) => {
+        finish();
+      });
     });
   }
 
@@ -168,13 +167,14 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.proposal$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   public async vote(): Promise<void> {
@@ -182,14 +182,15 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.proposal$.value.uid,
       values: [this.voteControl.value]
+    }, (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   private cancelSubscriptions(): void {

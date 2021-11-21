@@ -5,7 +5,6 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award } from 'functions/interfaces/models';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -132,14 +131,15 @@ export class AwardPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.award$.value.uid,
       comment: this.commentControl.value || undefined
+    }, (sc, finish) => {
+      this.notification.processRequest(this.awardApi.participate(sc), 'Participated.').subscribe(() => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.awardApi.participate(sc), 'Participated.').subscribe(() => {
-      // Do we need action.
-    });
   }
 
   public ngOnDestroy(): void {

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { DataService } from "../../services/data.service";
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
@@ -26,13 +25,14 @@ export class ParticipantsPage {
       return;
     }
 
-    const sc: WenRequest =  await this.auth.sign({
+    await this.auth.sign({
       uid: id,
       member: memberId
+    }, (sc, finish) => {
+      this.notification.processRequest(this.awardApi.approve(sc), 'Approve.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.awardApi.approve(sc), 'Approve.').subscribe((val: any) => {
-      // none.
-    });
   }
 }
