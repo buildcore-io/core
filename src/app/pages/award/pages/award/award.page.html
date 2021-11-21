@@ -3,21 +3,23 @@
   (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
 
 <div class="relative py-12" nz-row [nzGutter]="40">
-  <div nz-col nzFlex="auto" style="max-width: calc(100% - 430px);">
-    <div class="space-x-4">
+  <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
+    <div class="mb-8 space-x-3">
       <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle">
       </nz-avatar>
 
-      <nz-tag [nzColor]="'#BBD3F6'" class="text-black">Award</nz-tag>
-      <nz-tag class="text-black" *ngIf="data.isCompleted(data.award$ | async)">Completed</nz-tag>
-      <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="!data.isCompleted(data.award$ | async)">Available</nz-tag>
+      <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Award</nz-tag>
+      <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="data.isCompleted(data.award$ | async)">Completed
+      </nz-tag>
+      <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!data.isCompleted(data.award$ | async)">
+        Available</nz-tag>
     </div>
 
-    <h1 i18n>{{(data.award$ | async)?.name}}</h1>
+    <h1 i18n class="mb-6">{{(data.award$ | async)?.name}}</h1>
 
     <div class="flex items-center space-x-4">
-      <div>
-        <i nz-icon nzType="calendar" class="pr-2" nzTheme="outline"></i>
+      <div class="flex items-center">
+        <i nz-icon nzType="calendar" class="pr-2 text-lg text-app-gray-400" nzTheme="outline"></i>
         <span>{{(data.award$ | async)?.createdOn?.toDate() | date:'short'}}</span>
       </div>
     </div>
@@ -29,7 +31,7 @@
 
   </div>
 
-  <div class="space-y-4" nz-col nzFlex="430px" *ngIf="(isLoggedIn$ | async)">
+  <div class="space-y-4" nz-col nzFlex="450px" *ngIf="(isLoggedIn$ | async)">
     <ng-container *ngIf="!data.isCompleted(data.award$ | async)">
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="showParticipateModal()"
         *ngIf="!loggedInMemberIsParticipant()">
@@ -40,25 +42,23 @@
     </ng-container>
 
     <nz-card nzTitle="Award">
-      <p class="text-xl">{{(data.award$ | async)?.badge?.name}}</p>
-      <p>{{(data.award$ | async)?.badge?.description}}</p>
-    </nz-card>
-
-    <nz-card nzTitle="Award Badge">
-      <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle">
-      </nz-avatar>
+      <div class="flex flex-row items-center space-x-4">
+        <nz-tag class="wen-xp-tag">{{getExperiencePointsPerBadge(data.award$ | async)}} iXP</nz-tag>
+        <p> + </p>
+        <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-2 border-gray-400" nzShape="circle">
+        </nz-avatar>
+      </div>
     </nz-card>
 
     <nz-card nzTitle="System Info">
-      <p>
-        Experience Points: {{getExperiencePointsPerBadge(data.award$ | async)}}
-      </p>
-      <p>
-        Available badges: {{(data.award$ | async)?.badge?.count}}
-      </p>
-      <p>
-        End Date: {{(data.award$ | async)?.endDate?.toDate() | date:'short'}}
-      </p>
+      <div class="wen-description-item bg-app-gray-background">
+        <span nz-typography class=" text-app-gray-400">Available badges</span>
+        <p nz-typography>{{(data.award$ | async)?.badge?.count}}</p>
+      </div>
+      <div class="wen-description-item bg-app-gray-background">
+        <span nz-typography class=" text-app-gray-400">End Date</span>
+        <p nz-typography>{{(data.award$ | async)?.endDate?.toDate() | date:'short'}}</p>
+      </div>
     </nz-card>
 
     <nz-card nzTitle="Owner">
@@ -76,6 +76,7 @@
   <ng-container *nzModalContent>
     <p class="mb-2">The whole communication is now handled outside the platform, let the award creator know how to
       contact you.</p>
-    <textarea nz-input placeholder="Provide description or link to your work." [formControl]="commentControl" rows="4"></textarea>
+    <textarea nz-input placeholder="Provide description or link to your work." [formControl]="commentControl"
+      rows="4"></textarea>
   </ng-container>
 </nz-modal>
