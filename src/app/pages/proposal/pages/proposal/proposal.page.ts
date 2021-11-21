@@ -31,6 +31,10 @@ interface Person {
   styleUrls: ['./proposal.page.less']
 })
 export class ProposalPage implements OnInit, OnDestroy {
+  public sections = [
+    { route: [ROUTER_UTILS.config.proposal.overview], label: 'Overview' },
+    { route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' }
+  ];
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public voteControl: FormControl = new FormControl();
   private subscriptions$: Subscription[] = [];
