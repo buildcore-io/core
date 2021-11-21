@@ -22,6 +22,8 @@
 
     <div i18n class="inline-flex mt-4">
       <!-- Create a component together with propposal.page -->
+      <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!proposal.approved">Draft
+      </nz-tag>
       <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="proposal.rejected">Rejected
       </nz-tag>
       <nz-tag class="wen-status-tag bg-tag-orange border-tag-orange" *ngIf="isPending()">Pending

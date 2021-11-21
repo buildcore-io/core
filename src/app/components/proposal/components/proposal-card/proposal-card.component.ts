@@ -70,11 +70,11 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
       return false;
     }
 
-    return (!this.isComplete() && !this.isPending());
+    return (!this.isComplete() && !this.isPending() && !!this.proposal.approved);
   }
 
   public isPending(): boolean {
-    if (!this.proposal || this.isNativeVote(this.proposal.type)) {
+    if (!this.proposal || this.isNativeVote(this.proposal.type) || !this.proposal.approved) {
       return false;
     }
 

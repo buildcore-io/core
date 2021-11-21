@@ -142,11 +142,11 @@ export class ProposalPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return (!this.isComplete(proposal) && !this.isPending(proposal));
+    return (!this.isComplete(proposal) && !this.isPending(proposal) && !!proposal.approved);
   }
 
   public isPending(proposal?: Proposal|null): boolean {
-    if (!proposal || this.isNativeVote(proposal.type)) {
+    if (!proposal || this.isNativeVote(proposal.type) || !proposal.approved) {
       return false;
     }
 
