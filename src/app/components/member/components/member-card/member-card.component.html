@@ -1,25 +1,28 @@
-<article class="bg-white rounded-2xl" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'" *ngIf="member">
-  <div class="relative flex flex-col w-full p-4 space-y-4 h-44">
-    <div class="flex space-x-4" [routerLink]="['/member', member.uid]">
-      <nz-avatar class="min-w-max"
-        nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
-      <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ member.name ? '@' + member.name : member.uid }}</h3>
+<article class="flex flex-row p-4 bg-white w-75 h-75 rounded-2xl" [routerLink]="['/member', member.uid]"
+  [ngClass]="fullWidth ? 'w-auto h-auto justify-between' : 'w-75 h-75'" *ngIf="member">
+  <div class="w-full">
+    <div class="relative flex flex-col w-full h-40" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
+      <div class="flex items-center w-full space-x-4">
+        <nz-avatar class="min-w-max" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
+        <p nz-typography class="truncate">{{ member.name ? '@' + member.name : member.uid }}</p>
+      </div>
+      <p class="mt-2 mb-3 text-base">{{ member.about | truncate:[110] }}</p>
     </div>
-    <p nz-typography class="flex-grow flex-shrink min-h-0 mb-5 overflow-hidden text-sm font-medium">{{ member.about | truncate:[110] }}
-    </p>
-    <div i18n class="inline-flex gap-2 text-sm font-medium text-gray-400">
 
-      <nz-tag nzColor="default">
-        <i nz-icon nzType="dollar"></i>
-        <span>{{ member.totalReputation ? member.totalReputation : 0 }}</span>
-      </nz-tag>
+    <div class="relative flex flex-col w-full h-28">
+      <div class="inline-flex items-center space-x-3">
+        <nz-avatar nzSrc="/assets/mocks/trophy.png" nz-tooltip nzTooltipTitle="member.badge.name"
+          class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
+        <nz-tag class="wen-xp-tag">{{ member.totalReputation ? member.totalReputation : 0 }} XP</nz-tag>
+      </div>
 
-      <nz-tag nzColor="default">
-        <i nz-icon nzType="trophy"></i>
-        <span>{{ member.awardsCompleted ? member.awardsCompleted : 0 }}</span>
-      </nz-tag>
-
-      <ng-content></ng-content>
+      <div i18n class="inline-flex mt-6">
+        <nz-tag class="wen-status-tag bg-tag-default border-tag-default"> <i nz-icon nzType="trophy"></i>
+          {{ member.awardsCompleted ? member.awardsCompleted : 0 }} awards</nz-tag>
+      </div>
     </div>
+  </div>
+  <div class="w-40" *ngIf="fullWidth">
+    <ng-content></ng-content>
   </div>
 </article>

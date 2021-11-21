@@ -1,3 +1,9 @@
-<nz-card nzTitle="Award Description">
-  {{(data.award$ | async)?.description}}
-</nz-card>
+<div class="space-y-6">
+  <nz-card nzTitle="Award Description">
+    {{(data.award$ | async)?.description}}
+  </nz-card>
+
+  <nz-card *ngIf="(data.award$ | async)?.badge" [nzTitle]="(data.award$ | async)?.badge?.name + ' Badge Description'">
+    {{(data.award$ | async)?.badge?.description}}
+  </nz-card>
+</div>
