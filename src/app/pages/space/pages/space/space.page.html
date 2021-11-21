@@ -56,10 +56,10 @@
     </nz-card>
 
     <nz-card [nzTitle]="(data.space$ | async)!.totalGuardians + ' Guardians'">
-      <div *ngFor="let g of data.guardians$ | async">
+      <div *ngFor="let g of data.guardians$ | async; trackBy: trackByUid">
         <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
-        <span>@ {{ g.uid | truncate:[12] }}</span>
+        <span [routerLink]="getMemberUrl(g.uid)">@ {{ g.uid | truncate:[12] }}</span>
       </div>
     </nz-card>
   </div>

@@ -1,4 +1,5 @@
 import { QuerySnapshot } from "@firebase/firestore";
+import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
@@ -11,6 +12,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { PROPOSAL_START_DATE_MIN } from './../../interfaces/config';
 import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 
@@ -25,8 +27,9 @@ function defaultJoiUpdateCreateSchema(): any {
       milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
       milestoneIndexEnd: Joi.number().greater(Joi.ref('milestoneIndexStart')).required(),
     }), Joi.object({
-      startDate: Joi.date().required(),
-      endDate: Joi.date().required(),
+      // Must be one day in the future.
+      startDate: Joi.date().greater(Date.now() + PROPOSAL_START_DATE_MIN).required(),
+      endDate: Joi.date().greater(Joi.ref('startDate')).required(),
       onlyGuardians: Joi.boolean().required(),
     })),
     questions: Joi.array().items(Joi.object().keys({
@@ -223,6 +226,17 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.https
 
   if (docProposal.data().type !== ProposalType.MEMBERS) {
     throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
+  }
+
+  // Validate if proposal can still be voted on.
+  const startDate: dayjs.Dayjs = dayjs(docProposal.data().settings.startDate);
+  const endDate: dayjs.Dayjs = dayjs(docProposal.data().settings.endDate);
+  if (dayjs().isAfter(startDate)) {
+    throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
+  }
+
+  if (endDate.isBefore(startDate)) {
+    throw throwInvalidArgument(WenError.proposal_start_date_must_be_before_end_date);
   }
 
   const answers: number[] = [];

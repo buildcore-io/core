@@ -68,7 +68,8 @@ export const updateMember: functions.CloudFunction<Member> = functions.https.onC
 
   // Validate user name is not yet used.
   if (params.body.name) {
-    const doc = await admin.firestore().collection(COL.MEMBER).where('name', '==', params.body.name).get();
+    const doc = await admin.firestore().collection(COL.MEMBER)
+                .where('name', '==', params.body.name).where('uid', '!=', address).get();
     if (doc.size > 0) {
       throw throwInvalidArgument(WenError.member_username_exists);
     }

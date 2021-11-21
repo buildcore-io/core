@@ -5,7 +5,6 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award } from 'functions/interfaces/models';
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
 import { AwardApi } from './../../../../@api/award.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -85,6 +84,10 @@ export class AwardPage implements OnInit, OnDestroy {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private listenToAward(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.award$));
@@ -132,14 +135,15 @@ export class AwardPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.award$.value.uid,
       comment: this.commentControl.value || undefined
+    }, (sc, finish) => {
+      this.notification.processRequest(this.awardApi.participate(sc), 'Participated.').subscribe(() => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.awardApi.participate(sc), 'Participated.').subscribe(() => {
-      // Do we need action.
-    });
   }
 
   public ngOnDestroy(): void {

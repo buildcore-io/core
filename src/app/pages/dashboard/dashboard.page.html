@@ -8,7 +8,7 @@
       </a>
     </h3>
     <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
-      <wen-space-card class="cursor-pointer" *ngFor="let space of spaces$ | async" [space]="space"
+      <wen-space-card class="cursor-pointer" *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space"
         [routerLink]="['/space', space.uid]"></wen-space-card>
     </div>
   </div>

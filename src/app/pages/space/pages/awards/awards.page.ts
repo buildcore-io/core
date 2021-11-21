@@ -34,6 +34,10 @@ export class AwardsPage implements OnInit, OnDestroy {
     });
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   public create(): void {
     this.router.navigate([
       ('/' + ROUTER_UTILS.config.award.root),

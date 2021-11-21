@@ -52,6 +52,10 @@ export class MemberPage implements OnInit, OnDestroy {
     });
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private notFound(): void {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }

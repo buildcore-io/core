@@ -8,6 +8,9 @@ export const ROUTER_UTILS = {
       root: 'auth',
       signIn: 'signIn'
     },
+    market: {
+      root: 'market'
+    },
     discover: {
       root: 'discover',
       spaces: 'spaces',

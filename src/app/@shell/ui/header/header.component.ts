@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BehaviorSubject } from 'rxjs';
@@ -11,16 +12,18 @@ import { Member } from './../../../../../functions/interfaces/models/member';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  path = ROUTER_UTILS.config.base;
-
-  constructor(private authService: AuthService) {}
+  public path = ROUTER_UTILS.config.base;
+  constructor(
+    private router: Router,
+    public auth: AuthService
+  ) {}
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
-    return this.authService.isLoggedIn$;
+    return this.auth.isLoggedIn$;
   }
 
   public get member$(): BehaviorSubject<Member|undefined> {
-    return this.authService.member$;
+    return this.auth.member$;
   }
 
   public get urlToNewSpace(): string {
@@ -35,11 +38,21 @@ export class HeaderComponent {
     return '/' + ROUTER_UTILS.config.award.root + '/new';
   }
 
-  onClickSignOut(): void {
-    this.authService.signOut();
+  public goToMyProfile(): void {
+    if (this.member$.value?.uid) {
+      this.router.navigate([ROUTER_UTILS.config.member.root, this.member$.value.uid]);
+    }
   }
 
-  onClickSignIn(): void {
-    this.authService.signIn();
+  public handleCancel(): void {
+    this.auth.hideWallet();
+  }
+
+  public onClickSignOut(): void {
+    this.auth.signOut();
+  }
+
+  public onClickSignIn(): void {
+    this.auth.signIn();
   }
 }

@@ -57,6 +57,12 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.market.root,
+    loadChildren: async () =>
+      (await import('@pages/market/market.module')).MarketModule,
+    canLoad: [],
+  },
+  {
     path: '**',
     loadChildren: async () =>
       (await import('@shell/ui/not-found/not-found.module')).NotFoundModule,
