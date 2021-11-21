@@ -56,6 +56,9 @@ module.exports = {
       spacing: {
         75: '18.75rem',
       },
+      minWidth: {
+        10: '2.5rem',
+      },
       maxWidth: {
         fit: 'fit-content',
       },
