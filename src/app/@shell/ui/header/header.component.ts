@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BehaviorSubject } from 'rxjs';
@@ -11,9 +12,11 @@ import { Member } from './../../../../../functions/interfaces/models/member';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  path = ROUTER_UTILS.config.base;
-
-  constructor(private authService: AuthService) {}
+  public path = ROUTER_UTILS.config.base;
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.authService.isLoggedIn$;
@@ -35,11 +38,17 @@ export class HeaderComponent {
     return '/' + ROUTER_UTILS.config.award.root + '/new';
   }
 
-  onClickSignOut(): void {
+  public goToMyProfile(): void {
+    if (this.member$.value?.uid) {
+      this.router.navigate([ROUTER_UTILS.config.member.root, this.member$.value.uid]);
+    }
+  }
+
+  public onClickSignOut(): void {
     this.authService.signOut();
   }
 
-  onClickSignIn(): void {
+  public onClickSignIn(): void {
     this.authService.signIn();
   }
 }

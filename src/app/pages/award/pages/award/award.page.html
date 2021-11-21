@@ -74,8 +74,7 @@
 <nz-modal [(nzVisible)]="isSubmitParticipationModalVisible" nzTitle="Confirm your participation"
   (nzOnCancel)="handleParticipateCancel()" (nzOnOk)="participate()">
   <ng-container *nzModalContent>
-    <p class="mb-2">The whole communication is now handled outside the platform, let the award creator know how to
-      contact you.</p>
+    <p class="mb-2">Award verification is currently handled outside of the platform. Please provide a link or other information to verify that the task is complete.</p>
     <textarea nz-input placeholder="Provide description or link to your work." [formControl]="commentControl" rows="4"></textarea>
   </ng-container>
 </nz-modal>

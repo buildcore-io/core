@@ -20,10 +20,17 @@
 
   <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"></wen-sign-in>
 
-  <button nz-button nzType="default" nzShape="circle" *ngIf="isLoggedIn$ | async"
+  <button nz-button nz-dropdown  nzType="default" nzShape="circle" *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
     class="inline-flex items-center justify-center border-0">
     <i nz-icon nzType="bell" class="text-lg text-black"></i>
   </button>
+  <nz-dropdown-menu #notificationMenu="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item>
+        SOON
+      </li>
+    </ul>
+  </nz-dropdown-menu>
 
   <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
     class="inline-flex items-center h-16 gap-3 pl-2 font-bold text-black border-0" *ngIf="isLoggedIn$ | async">
@@ -34,7 +41,7 @@
 
   <nz-dropdown-menu #userMenu="nzDropdownMenu">
     <ul nz-menu>
-      <li nz-menu-item>
+      <li nz-menu-item (click)="goToMyProfile()">
         <i nz-icon class="mr-4" nzType="user"></i>My Profile
       </li>
       <li nz-menu-item [nzDanger]="true">
