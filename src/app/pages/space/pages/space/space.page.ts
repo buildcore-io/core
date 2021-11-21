@@ -71,9 +71,10 @@ export class SpacePage implements OnInit, OnDestroy {
   private listenToSpace(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.spaceApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+    this.listenToRelatedRecord(id);
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m?: Member) => {
       if (m?.uid) {
-        this.listenToRelatedRecord(id, m.uid);
+        this.listenToRelatedRecordWithMember(id, m.uid);
       } else {
         this.data.isMemberWithinSpace$.next(false);
         this.data.isGuardianWithinSpace$.next(false);
@@ -85,13 +86,16 @@ export class SpacePage implements OnInit, OnDestroy {
     return this.auth.member$;
   }
 
-  private listenToRelatedRecord(spaceId: string, memberId: string): void {
+  private listenToRelatedRecord(spaceId: string): void {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.guardians$));
     this.subscriptions$.push(this.spaceApi.listenMembers(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.members$));
-    this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isMemberWithinSpace$));
-    this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
     this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.proposals$));
     this.subscriptions$.push(this.awardApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.awards$));
+  }
+
+  private listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
+    this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isMemberWithinSpace$));
+    this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
   }
 
   public getAvatarUrl(url?: string): string | undefined {

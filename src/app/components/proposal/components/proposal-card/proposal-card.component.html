@@ -21,11 +21,19 @@
     </div>
 
     <div i18n class="inline-flex mt-4">
-      <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">type</nz-tag>
+      <!-- Create a component together with propposal.page -->
+      <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="proposal.rejected">Rejected
+      </nz-tag>
+      <nz-tag class="wen-status-tag bg-tag-orange border-tag-orange" *ngIf="isPending()">Pending
+      </nz-tag>
+      <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" *ngIf="isInProgress()">
+        In-Progress</nz-tag>
+      <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="isComplete()">Completed
+      </nz-tag>
 
-      <nz-tag class="flex items-center wen-status-tag bg-tag-default border-tag-default">
+      <nz-tag class="flex items-center wen-status-tag bg-tag-default border-tag-default" *ngIf="proposal?.settings?.endDate">
         <i nz-icon class="pr-2" nzType="clock-circle"></i>
-        <span>date</span>
+        <span>{{proposal?.settings?.endDate.toDate() | date:"short"}}</span>
       </nz-tag>
     </div>
   </div>
