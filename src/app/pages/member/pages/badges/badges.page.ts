@@ -9,6 +9,10 @@ import { DataService } from './../../services/data.service';
 })
 export class BadgesPage {
   constructor(public data: DataService) {
+    // none.
+  }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 }

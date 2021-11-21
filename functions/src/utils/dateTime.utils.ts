@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import { merge } from 'lodash';
 
@@ -17,6 +18,6 @@ export function uOn<T>(o: T): T {
   })
 };
 
-export function dateToTimestamp(d: Date): any {
-  return admin.firestore.Timestamp.fromDate(new Date());
+export function dateToTimestamp(d: any): any {
+  return admin.firestore.Timestamp.fromDate(dayjs(d).toDate());
 }

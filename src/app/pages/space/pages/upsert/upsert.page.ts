@@ -8,7 +8,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { first, of, Subscription } from 'rxjs';
-import { WenRequest } from '../../../../../../functions/interfaces/models/base';
 import { FileApi } from '../../../../@api/file.api';
 import { SpaceApi } from '../../../../@api/space.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
@@ -116,9 +115,11 @@ export class UpsertPage implements OnInit {
     if (!this.spaceForm.valid) {
       return;
     }
-    const sc: WenRequest|undefined =  await this.auth.sign(this.spaceForm.value);
-    this.notification.processRequest(this.spaceApi.create(sc), 'Created.').subscribe((val: any) => {
-      this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
+    await this.auth.sign(this.spaceForm.value, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.create(sc), 'Created.').subscribe((val: any) => {
+        finish();
+        this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
+      });
     });
   }
 
@@ -127,14 +128,16 @@ export class UpsertPage implements OnInit {
     if (!this.spaceForm.valid) {
       return;
     }
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       ...this.spaceForm.value,
       ...{
         uid: this.spaceId
       }
-    });
-    this.notification.processRequest(this.spaceApi.save(sc), 'Saved.').subscribe((val: any) => {
-      this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.save(sc), 'Saved.').subscribe((val: any) => {
+        finish();
+        this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
+      });
     });
   }
 }

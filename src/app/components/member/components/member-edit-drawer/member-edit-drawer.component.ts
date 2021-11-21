@@ -3,7 +3,6 @@ import { FormControl, FormGroup } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { getUrlValidator } from "@core/utils/form-validation.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { WenRequest } from '../../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { MemberApi } from '../../../../@api/member.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
@@ -61,15 +60,16 @@ export class MemberEditDrawerComponent implements OnInit {
     }
 
 
-    const sc: WenRequest =  await this.auth.sign({
+    await this.auth.sign({
       ...this.memberForm.value,
       ...{
         uid: this.auth.member$.value!.uid
       }
-    });
-
-    this.notification.processRequest(this.memberApi.updateMember(sc), 'Updated').subscribe(() => {
-      this.close();
+    }, (sc, finish) => {
+      this.notification.processRequest(this.memberApi.updateMember(sc), 'Updated').subscribe(() => {
+        this.close();
+        finish();
+      });
     });
   }
 

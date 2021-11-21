@@ -19,4 +19,8 @@ export class MembersPage implements OnInit {
   public ngOnInit(): void {
     this.memberApi.last().pipe(untilDestroyed(this)).subscribe(this.members$);
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

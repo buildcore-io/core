@@ -4,10 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
 import { Proposal } from 'functions/interfaces/models';
-import { BehaviorSubject, skip, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
+import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { ProposalAnswer, ProposalMember, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -80,6 +81,21 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.data.guardians$.subscribe(() => {
       this.cd.markForCheck();
     });
+
+    // Once we get proposal get space.
+    this.data.proposal$.pipe(skip(1), first()).subscribe((p) => {
+      if (p) {
+        this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+      }
+    });
+  }
+
+  public getAvatarSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   private notFound(): void {
@@ -107,6 +123,30 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public isNativeVote(type: ProposalType|undefined): boolean {
     return (type === ProposalType.NATIVE);
+  }
+
+  public isComplete(proposal?: Proposal|null): boolean {
+    if (!proposal || this.isNativeVote(proposal.type)) {
+      return false;
+    }
+
+    return (dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs()));
+  }
+
+  public isInProgress(proposal?: Proposal|null): boolean {
+    if (!proposal || this.isNativeVote(proposal.type)) {
+      return false;
+    }
+
+    return (!this.isComplete(proposal) && !this.isPending(proposal));
+  }
+
+  public isPending(proposal?: Proposal|null): boolean {
+    if (!proposal || this.isNativeVote(proposal.type)) {
+      return false;
+    }
+
+    return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 
   public getProgress(q: ProposalQuestion, a: ProposalAnswer, members?: ProposalMember[]|null): number {
@@ -145,7 +185,6 @@ export class ProposalPage implements OnInit, OnDestroy {
       }
     });
 
-
     return (canVote === true);
   }
 
@@ -154,12 +193,12 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
         uid: this.data.proposal$.value.uid
-    });
-
-    this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.').subscribe((val: any) => {
-      // none.
+    }, (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.').subscribe((val: any) => {
+        finish();
+      });
     });
   }
 
@@ -168,13 +207,14 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.proposal$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   public async vote(): Promise<void> {
@@ -182,14 +222,15 @@ export class ProposalPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign({
+    await this.auth.sign({
       uid: this.data.proposal$.value.uid,
       values: [this.voteControl.value]
+    }, (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.').subscribe((val: any) => {
+        finish();
+      });
     });
 
-    this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.').subscribe((val: any) => {
-      // none.
-    });
   }
 
   private cancelSubscriptions(): void {

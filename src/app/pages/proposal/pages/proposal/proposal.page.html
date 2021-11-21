@@ -5,12 +5,17 @@
 <div class="relative py-12" nz-row [nzGutter]="40">
   <div nz-col nzFlex="auto" style="max-width: calc(100% - 430px);">
     <div class="space-x-4">
-      <nz-avatar nzSrc="/assets/mocks/default_avatar.jpg" class="bg-white border-2 border-gray-400" nzShape="circle">
+      <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-2 border-gray-400" nzShape="circle">
       </nz-avatar>
 
       <nz-tag [nzColor]="'#BBD3F6'" class="text-black" *ngIf="(data.proposal$ | async)?.approved">Proposal</nz-tag>
       <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="!(data.proposal$ | async)?.approved">Draft</nz-tag>
+
+      <!-- TODO Clean up -->
       <nz-tag [nzColor]="'#f6c5bb'" class="text-black" *ngIf="(data.proposal$ | async)?.rejected">Rejected</nz-tag>
+      <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="isPending(data.proposal$ | async)">Pending</nz-tag>
+      <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="isInProgress(data.proposal$ | async)">In-Progress</nz-tag>
+      <nz-tag [nzColor]="'#CBF6BB'" class="text-black" *ngIf="isComplete(data.proposal$ | async)">Completed</nz-tag>
     </div>
 
     <h1 i18n>{{(data.proposal$ | async)?.name}}</h1>
@@ -43,7 +48,7 @@
       <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
     </nz-card>
     <nz-card nzTitle="Cast your vote"
-             *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type) && canVote(data.members$ | async)">
+             *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type) && canVote(data.members$ | async) && isInProgress(data.proposal$ | async)">
 
       <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
         <p>{{q.text}}</p>
@@ -65,7 +70,7 @@
       </div>
     </nz-card>
 
-    <nz-card nzTitle="Current Results" *ngIf="(data.proposal$ | async)?.approved">
+    <nz-card nzTitle="Current Results" *ngIf="(data.proposal$ | async)?.approved && !isPending(data.proposal$ | async)">
       <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
         <ng-container *ngFor="let a of q.answers">
           <p>{{a.text}}</p>
@@ -74,7 +79,7 @@
       </ng-container>
     </nz-card>
 
-    <nz-card nzTitle="Votes" *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type)">
+    <nz-card nzTitle="Votes" *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type) && !isPending(data.proposal$ | async)">
       <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
         <thead>
           <tr>
@@ -96,7 +101,7 @@
     <!-- MEMBER VOTE -->
     <nz-card nzTitle="System Info" *ngIf="isMemberVote((data.proposal$ | async)?.type)">
       <p>
-        Star Date: {{(data.proposal$ | async)?.settings?.startDate?.toDate() | date:'short'}}
+        Start Date: {{(data.proposal$ | async)?.settings?.startDate?.toDate() | date:'short'}}
       </p>
       <p>
         End Date: {{(data.proposal$ | async)?.settings?.endDate?.toDate() | date:'short'}}

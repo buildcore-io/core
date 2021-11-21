@@ -4,6 +4,7 @@ import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
 import { Observable } from 'rxjs';
 import { ConfigApi } from './@api/config.api';
+import { NavigationService } from './@core/services/navigation/navigation.service';
 
 @Component({
   selector: 'wen-root',
@@ -18,12 +19,14 @@ export class WenComponent implements OnInit {
     private seoService: SeoService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private apiConfig: ConfigApi
+    private apiConfig: ConfigApi,
+    private navigation: NavigationService
   ) {}
 
   ngOnInit(): void {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.runGlobalServices();
+    this.navigation.watchPathHistory();
   }
 
   private runGlobalServices(): void {

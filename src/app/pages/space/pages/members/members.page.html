@@ -4,7 +4,7 @@
       <h3>{{(data.members$ | async)?.length + ((data.members$ | async)?.length === 1 ? ' member' : ' members')}}</h3>
       <div></div>
     </div>
-    <wen-member-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let member of data.members$ | async"
+    <wen-member-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let member of data.members$ | async; trackBy: trackByUid"
       [member]="member">
       <ng-container *ngIf="memberIsGuardian(member.uid)">
         Guardian

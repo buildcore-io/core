@@ -11,4 +11,8 @@ export class AwardsPage {
   constructor(public data: DataService) {
     // none.
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

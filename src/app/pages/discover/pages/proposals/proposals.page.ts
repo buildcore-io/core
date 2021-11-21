@@ -20,4 +20,8 @@ export class ProposalsPage {
   public ngOnInit(): void {
     this.proposalApi.last().pipe(untilDestroyed(this)).subscribe(this.proposal$);
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

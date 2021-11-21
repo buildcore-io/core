@@ -4,10 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Space } from 'functions/interfaces/models';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { WenRequest } from './../../../../../../functions/interfaces/models/base';
+import { PROPOSAL_START_DATE_MIN } from "./../../../../../../functions/interfaces/config";
+import { Space } from './../../../../../../functions/interfaces/models';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
@@ -32,8 +32,6 @@ export class NewPage implements OnInit, OnDestroy {
   // Questions / answers.
   public questions: FormArray;
   public proposalForm: FormGroup;
-  public startValue?: Date;
-  public endValue?: Date;
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   private subscriptions$: Subscription[] = [];
@@ -90,6 +88,10 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private getQuestionForm(): FormGroup {
     return new FormGroup({
       text: new FormControl('', Validators.required),
@@ -131,17 +133,23 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public disabledStartDate(startValue: Date): boolean {
-    if (!startValue || !this.endValue) {
+    // Disable past dates & today + 1day startValue
+    if (startValue.getTime() < (Date.now() + PROPOSAL_START_DATE_MIN)) {
+      return true;
+    }
+
+    if (!startValue || !this.endControl.value) {
       return false;
     }
-    return startValue.getTime() > this.endValue.getTime();
+
+    return startValue.getTime() > this.endControl.value.getTime();
   };
 
   public disabledEndDate(endValue: Date): boolean {
-    if (!endValue || !this.startValue) {
+    if (!endValue || !this.startControl.value) {
       return false;
     }
-    return endValue.getTime() <= this.startValue.getTime();
+    return endValue.getTime() <= this.startControl.value.getTime();
   };
 
   public handleStartOpenChange(open: boolean): void {
@@ -169,11 +177,13 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    const sc: WenRequest|undefined =  await this.auth.sign(this.formatSubmitObj(this.proposalForm.value));
-
-    this.notification.processRequest(this.proposalApi.create(sc), 'Created.').subscribe((val: any) => {
-      this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
+    await this.auth.sign(this.formatSubmitObj(this.proposalForm.value), (sc, finish) => {
+      this.notification.processRequest(this.proposalApi.create(sc), 'Created.').subscribe((val: any) => {
+        finish();
+        this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
+      });
     });
+
   }
 
   private cancelSubscriptions(): void {

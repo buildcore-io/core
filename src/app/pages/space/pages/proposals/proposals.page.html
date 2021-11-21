@@ -7,7 +7,7 @@
         <i nz-icon nzType="plus" nzTheme="outline"></i>New proposal
       </button>
     </div>
-    <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of data.proposals$ | async"
+    <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of data.proposals$ | async; trackBy: trackByUid"
       [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
     </wen-proposal-card>
   </div>

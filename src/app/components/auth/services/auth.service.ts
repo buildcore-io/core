@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { EthAddress, WenRequest } from '../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../functions/interfaces/models/member';
@@ -13,15 +14,29 @@ export interface MetamaskSignature {
   req: WenRequest;
 }
 
+export interface SignCallback {
+  (sc: any, finish: any): void;
+};
+
+export enum WalletStatus {
+  HIDDEN = 0,
+  OPEN = 1,
+  ACTIVE = 2
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
+  public showWalletPopup$: BehaviorSubject<WalletStatus> = new BehaviorSubject<WalletStatus>(WalletStatus.HIDDEN);
   public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   private memberSubscription$?: Subscription;
 
-  constructor(private memberApi: MemberApi) {
+  constructor(
+    private memberApi: MemberApi,
+    private notification: NzNotificationService
+  ) {
     // Make sure member exists when we are logged in.
     this.member$.pipe(skip(1)).subscribe((m) => {
       if (!m && this.isLoggedIn$.value) {
@@ -41,39 +56,61 @@ export class AuthService {
     }
   }
 
+  public openWallet(): void {
+    this.showWalletPopup$.next(WalletStatus.OPEN);
+  }
+
+  public hideWallet(): void {
+    this.showWalletPopup$.next(WalletStatus.HIDDEN);
+  }
+
   get isLoggedIn(): boolean {
     return this.isLoggedIn$.getValue();
   }
 
-  public async sign(params: any = {}): Promise<WenRequest> {
+  public async sign(params: any = {}, cb: SignCallback ): Promise<WenRequest|undefined> {
     const sc: WenRequest|undefined =  await this.signWithMetamask(undefinedToEmpty(params));
     if (!sc) {
-      throw new Error('Unable to sign.');
+      this.notification.error('Unable to sign transaction.', '');
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
+      return undefined;
     }
 
+    // Callback function.
+    cb(sc, () => {
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
+    });
     return sc;
   }
 
   private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
+    this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();
     if (provider) {
-      await provider.request({ method: 'eth_requestAccounts' });
-      const member: Member = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
-      const signature: string = await provider.request({
-        method: 'personal_sign',
-        params: [
-          `0x${this.toHex(member.nonce!)}`,
-          provider.selectedAddress,
-        ],
-      });
+      try {
+        await provider.request({ method: 'eth_requestAccounts' });
+        const member: Member = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
+        const signature: string = await provider.request({
+          method: 'personal_sign',
+          params: [
+            `0x${this.toHex(member.nonce!)}`,
+            provider.selectedAddress,
+          ],
+        });
 
-      return {
-        address: provider.selectedAddress,
-        signature: signature,
-        body: params
+        return {
+          address: provider.selectedAddress,
+          signature: signature,
+          body: params
+        }
+      } catch(e) {
+        console.log('Failed to log in');
+        this.showWalletPopup$.next(WalletStatus.HIDDEN);
+        return undefined;
       }
     } else {
       console.log('Please install MetaMask!');
+      this.showWalletPopup$.next(WalletStatus.HIDDEN);
       return undefined;
     }
   }
@@ -94,6 +131,7 @@ export class AuthService {
       throw new Error('Unable to sign.');
     }
 
+    this.showWalletPopup$.next(WalletStatus.HIDDEN);
     // Let's autheticate right the way with just UID.
     this.member$.next({
       uid: sc.address
