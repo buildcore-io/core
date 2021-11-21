@@ -1,5 +1,6 @@
-<div class="w-auto overflow-hidden md:-mx-24 lg:-mx-10 h-96 bor rounded-l-large">
-  <button nz-button class="absolute mx-20 top-14" (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
+<div class="w-auto overflow-hidden md:-mx-24 lg:-mx-10 h-96 rounded-l-large">
+  <button nz-button class="absolute mx-20 top-14" (click)="nav.goBack()"><i nz-icon
+      nzType="left"></i>{{nav.getTitle()}}</button>
 
   <img alt="" [src]="bannerUrl$ | async" class="object-cover w-full h-full" />
 </div>
@@ -9,7 +10,7 @@
     class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4" nzShape="circle">
   </nz-avatar>
 
-  <div nz-col nzFlex="auto">
+  <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
     <h1 i18n>{{ (data.space$ | async)!.name }}</h1>
 
     <wen-tabs [tabs]="sections"></wen-tabs>
@@ -19,7 +20,7 @@
     </div>
 
   </div>
-  <div class="space-y-4" nz-col nzFlex="430px">
+  <div class="space-y-4" nz-col nzFlex="450px">
     <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
       *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)">
       Join Space</button>
@@ -28,7 +29,8 @@
           nzTheme="outline"></i>
         Leave Space</button>
 
-      <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()"><i nz-icon nzType="edit" nzTheme="outline"></i>
+      <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()"><i nz-icon nzType="edit"
+          nzTheme="outline"></i>
         Edit Space</button>
     </div>
 

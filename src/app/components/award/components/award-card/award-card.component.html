@@ -1,21 +1,23 @@
-<article class="bg-white w-75 h-75 rounded-2xl" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'" *ngIf="award">
-  <div class="relative flex flex-col w-full p-4">
-
-    <!-- This will not work. There can be multiple owners of the award. -->
-    <!-- <wen-parent-title image="/assets/mocks/default_avatar.jpg" [text]="award.createdBy"></wen-parent-title> -->
-
+<article class="p-4 bg-white w-75 h-75 rounded-2xl" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'" *ngIf="award">
+  <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
+    <div class="flex items-center w-full space-x-4">
+      <nz-avatar [nzSrc]="award.space"
+        class="border-gray-400 bg-app-gray-background min-w-10" nzShape="circle"></nz-avatar>
+      <p nz-typography class="truncate">{{ award.space}}</p>
+    </div>
     <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ award.name || award.uid }}</h3>
+  </div>
 
+  <div class="relative flex flex-col w-full h-28">
     <div class="inline-flex items-center space-x-3">
-      <!-- TODO show badge-tile -->
-      <div>{{ award.badge.name}}</div>
-      <div>{{ award.badge.xp}}XP</div>
+      <nz-avatar nzSrc="/assets/mocks/trophy.png" nz-tooltip [nzTooltipTitle]="award.badge.name"
+        class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
+      <nz-tag class="wen-xp-tag">{{award.badge.xp}} XP</nz-tag>
     </div>
 
-    <div i18n class="inline-flex gap-2">
+    <div i18n class="inline-flex mt-6">
       <wen-award-status [type]="award.type"></wen-award-status>
       <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
     </div>
   </div>
 </article>
-

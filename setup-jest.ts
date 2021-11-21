@@ -29,6 +29,7 @@ import { NzStatisticModule } from 'ng-zorro-antd/statistic';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { CoreModule } from './src/app/@core/core.module';
@@ -45,6 +46,7 @@ defineGlobalsInjections({
     NzTimelineModule,
     NzDividerModule,
     NzGridModule,
+    NzToolTipModule,
     NzMenuModule,
     NzButtonModule,
     NzTypographyModule,
