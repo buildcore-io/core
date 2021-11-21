@@ -11,4 +11,8 @@ export class OverviewPage {
   constructor(public data: DataService) {
     // added.
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

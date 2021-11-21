@@ -133,6 +133,10 @@ export class SpacePage implements OnInit, OnDestroy {
 
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   public getMemberUrl(memberId: string): string[] {
     return ['/', ROUTER_UTILS.config.member.root, memberId];
   }

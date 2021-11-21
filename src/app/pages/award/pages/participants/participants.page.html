@@ -1,6 +1,6 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <wen-member-card class="cursor-pointer" [fullWidth]="true" *ngFor="let member of data.participants$ | async"
+    <wen-member-card class="cursor-pointer" [fullWidth]="true" *ngFor="let member of data.participants$ | async; trackBy: trackByUid"
       [member]="member">
       <ng-container *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async)">
         <button type="button" (click)="approve(member.uid)">

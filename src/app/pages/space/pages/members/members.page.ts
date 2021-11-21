@@ -87,6 +87,10 @@ export class MembersPage implements OnInit, OnDestroy {
 
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

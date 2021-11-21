@@ -19,4 +19,8 @@ export class SpacesPage implements OnInit {
   public ngOnInit(): void {
     this.spaceApi.last().pipe(untilDestroyed(this)).subscribe(this.spaces$);
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

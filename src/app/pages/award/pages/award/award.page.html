@@ -62,7 +62,7 @@
     </nz-card>
 
     <nz-card nzTitle="Owner">
-      <div *ngFor="let g of data.owners$ | async">
+      <div *ngFor="let g of data.owners$ | async; trackBy: trackByUid">
         <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
         <span>@ {{ g.uid | truncate:[12] }}</span>

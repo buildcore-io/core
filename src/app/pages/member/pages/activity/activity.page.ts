@@ -44,4 +44,8 @@ export class ActivityPage {
       }
     };
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

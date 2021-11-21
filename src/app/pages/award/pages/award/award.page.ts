@@ -84,6 +84,10 @@ export class AwardPage implements OnInit, OnDestroy {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private listenToAward(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.award$));

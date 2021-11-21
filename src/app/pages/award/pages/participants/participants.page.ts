@@ -33,6 +33,9 @@ export class ParticipantsPage {
         finish();
       });
     });
+  }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 }

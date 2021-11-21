@@ -67,7 +67,7 @@
     <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
         <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
-          <nz-option *ngFor="let s of spaces$ | async" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
+          <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
         </nz-select>
       </nz-card>
     </div>

@@ -8,7 +8,7 @@
         <i nz-icon nzType="plus" nzTheme="outline"></i>New award
       </button>
     </div>
-    <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awards$ | async" [award]="award"
+    <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awards$ | async; trackBy: trackByUid" [award]="award"
       [routerLink]="['/award', award.uid]">
     </wen-award-card>
   </div>

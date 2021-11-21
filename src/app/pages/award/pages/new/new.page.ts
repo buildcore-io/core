@@ -79,6 +79,10 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private formatSubmitObj(obj: any): any {
     obj.badge = {
       description: obj.badgeDescription,

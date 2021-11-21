@@ -20,4 +20,8 @@ export class AwardsPage implements OnInit {
   public ngOnInit(): void {
     this.awardApi.last().pipe(untilDestroyed(this)).subscribe(this.award$);
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

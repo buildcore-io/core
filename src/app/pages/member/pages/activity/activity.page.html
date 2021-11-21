@@ -6,7 +6,7 @@
 
   <nz-card nzTitle="Timeline">
     <nz-timeline>
-      <nz-timeline-item *ngFor="let t of data.badges$ | async">
+      <nz-timeline-item *ngFor="let t of data.badges$ | async; trackBy: trackByUid">
         Earned Badge {{t.payload.name}} with {{t.payload.xp}}XP on {{t.createdOn?.toDate() | date:"short"}}
       </nz-timeline-item>
     </nz-timeline>

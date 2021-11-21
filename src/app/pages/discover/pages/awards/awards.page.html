@@ -1,5 +1,5 @@
 <p nz-typography nzType="secondary" class="mb-6">{{ (award$ | async)?.length }} awards</p>
 <div class="flex flex-wrap gap-6">
-  <wen-award-card class="cursor-pointer" *ngFor="let award of award$ | async" [award]="award" [routerLink]="['/award', award.uid]">
+  <wen-award-card class="cursor-pointer" *ngFor="let award of award$ | async; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
   </wen-award-card>
 </div>

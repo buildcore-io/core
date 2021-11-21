@@ -1,2 +1,2 @@
-<wen-badge-tile *ngFor="let t of data.badges$ | async" [badge]="t">
+<wen-badge-tile *ngFor="let t of data.badges$ | async; trackBy: trackByUid" [badge]="t">
 </wen-badge-tile>
