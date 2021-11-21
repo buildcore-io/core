@@ -41,6 +41,14 @@ module.exports = {
         'app-gray': {
           100: '#E4E1D2',
           400: '#9F9D93',
+          background: '#F6F5F0',
+        },
+        'tag': {
+          blue: '#DCEFF9',
+          green: '#DEF7D4',
+          red: '#F9DED2',
+          orange: '#FFC670',
+          default: '#F6F5F0',
         },
         brown: '#A66300',
         pink: '#F20CDF',
