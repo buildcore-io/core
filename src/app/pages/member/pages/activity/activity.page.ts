@@ -1,16 +1,26 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import dayjs from 'dayjs';
+import { Transaction } from "functions/interfaces/models";
 import {
   ApexAxisChartSeries,
-  ApexChart, ApexTitleSubtitle, ApexXAxis, ChartComponent
+  ApexChart, ApexDataLabels, ApexFill, ApexMarkers, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
 } from "ng-apexcharts";
+import { map } from "rxjs";
 import { DataService } from "./../../services/data.service";
-
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
-  xaxis: ApexXAxis;
+  dataLabels: ApexDataLabels;
+  markers: ApexMarkers;
   title: ApexTitleSubtitle;
+  fill: ApexFill;
+  yaxis: ApexYAxis;
+  xaxis: ApexXAxis;
+  tooltip: ApexTooltip;
+  stroke: ApexStroke;
+  colors: any;
+  toolbar: any;
 };
 
 @Component({
@@ -19,30 +29,68 @@ export type ChartOptions = {
   styleUrls: ['./activity.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ActivityPage {
-  @ViewChild("chart") public chart?: ChartComponent;
-  public chartOptions: Partial<ChartOptions>;
+export class ActivityPage implements OnInit {
+  @ViewChild("chart", { static: false }) public chart?: ChartComponent;
+  public chartOptions: Partial<ChartOptions> = {};
+  public activeOptionButton = "all";
   constructor(
+    private cd: ChangeDetectorRef,
     public data: DataService
   ) {
+    // Init empty.
+    this.initChart([]);
+  }
+
+  public ngOnInit(): void {
+    this.data.badges$.pipe(
+      map((o) => {
+        return o?.map((t: Transaction) => {
+          return [t.createdOn?.toDate(), t.payload.xp];
+        });
+      })
+    ).subscribe((data) => {
+      this.initChart(data);
+    });
+  }
+
+  public initChart(data: any): void {
     this.chartOptions = {
       series: [
         {
-          name: "Total XP",
-          data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+          data: data
         }
       ],
       chart: {
-        height: 350,
-        type: "line",
+        type: "area",
+        height: 350
       },
-      title: {
-        text: "Reputation"
+      dataLabels: {
+        enabled: false
+      },
+      markers: {
+        size: 0
       },
       xaxis: {
-        categories: ["Jan", "Feb",  "Mar",  "Apr",  "May",  "Jun",  "Jul",  "Aug", "Sep"]
+        type: "datetime",
+        min: dayjs().subtract(1, 'month').toDate().getTime(),
+        tickAmount: 6
+      },
+      tooltip: {
+        x: {
+          format: "dd MMM yyyy"
+        }
+      },
+      fill: {
+        type: "gradient",
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.7,
+          opacityTo: 0.9,
+          stops: [0, 100]
+        }
       }
     };
+    this.cd.markForCheck();
   }
 
   public trackByUid(index: number, item: any): number {

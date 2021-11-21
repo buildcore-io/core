@@ -1,7 +1,18 @@
 <div class="space-y-4" style="width: 40rem;">
   <nz-card nzTitle="Reputation">
-    <apx-chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [xaxis]="chartOptions.xaxis!"
-      [title]="chartOptions.title!"></apx-chart>
+    <apx-chart
+      #chart
+      [series]="chartOptions.series!"
+      [chart]="chartOptions.chart!"
+      [colors]="chartOptions.colors!"
+      [yaxis]="chartOptions.yaxis!"
+      [dataLabels]="chartOptions.dataLabels!"
+      [markers]="chartOptions.markers!"
+      [stroke]="chartOptions.stroke!"
+      [xaxis]="chartOptions.xaxis!"
+      [tooltip]="chartOptions.tooltip!"
+    ></apx-chart>
+
   </nz-card>
 
   <nz-card nzTitle="Timeline">

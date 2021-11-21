@@ -178,7 +178,8 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
 export const approveParticipant: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
-  const owner = params.address.toLowerCase();
+  // TODO Fix for below validation.
+  // const owner = params.address.toLowerCase();
   const tranId = getRandomEthAddress();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required(),
@@ -193,9 +194,11 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
 
-  if (!(await refAward.collection(SUB_COL.OWNERS).doc(owner).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_owner_of_the_award);
-  }
+  // TODO Fix this restriction.
+  // const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  // if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
+  //   throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+  // }
 
   // We reached limit of issued awards.
   if (docAward.data().issued >= docAward.data().badge.count) {
