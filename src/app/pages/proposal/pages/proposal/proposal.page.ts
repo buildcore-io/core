@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { ProposalAnswer, ProposalMember, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';

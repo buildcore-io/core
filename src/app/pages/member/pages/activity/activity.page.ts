@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import { Transaction } from "functions/interfaces/models";
 import {
   ApexAxisChartSeries,
