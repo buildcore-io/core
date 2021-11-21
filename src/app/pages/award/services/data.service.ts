@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Award } from 'functions/interfaces/models';
+import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 
 @Injectable()
 export class DataService {
   public award$: BehaviorSubject<Award|undefined> = new BehaviorSubject<Award|undefined>(undefined);
+  public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public owners$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public participants$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

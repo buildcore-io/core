@@ -2,7 +2,7 @@
   *ngIf="proposal">
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-28'">
     <div class="flex items-center w-full space-x-4">
-      <nz-avatar [nzSrc]="proposal?.space" class="border-gray-400 bg-app-gray-background min-w-10" nzShape="circle">
+      <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-app-gray-background min-w-10" nzShape="circle">
       </nz-avatar>
       <p nz-typography class="truncate">{{ proposal?.space}}</p>
     </div>

@@ -4,8 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award } from 'functions/interfaces/models';
-import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
+import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -74,7 +75,22 @@ export class AwardPage implements OnInit, OnDestroy {
     this.data.participants$.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
+
+    this.data.award$.pipe(skip(1), first()).subscribe((a) => {
+      if (a) {
+        this.subscriptions$.push(this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+      }
+    });
   }
+
+  public getAvatarSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+  }
+
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.auth.isLoggedIn$;
