@@ -36,5 +36,7 @@ export const WenError = {
   proposal_is_not_approved: { code: 2030, key: 'Proposal is not approved.' },
   proposal_is_rejected: { code: 2031, key: 'Proposal is rejected.' },
   value_does_not_exists_in_proposal: { code: 2032, key: 'Value does not exists in proposal.' },
+  proposal_must_be_in_future: { code: 2033, key: 'Proposal must be in future.' },
+  proposal_start_date_must_be_before_end_date: { code: 2034, key: 'Proposal startDate must be before endDate.' },
 }
 

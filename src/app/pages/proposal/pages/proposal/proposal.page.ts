@@ -4,9 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import dayjs from 'dayjs';
 import { Proposal } from 'functions/interfaces/models';
-import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { ProposalAnswer, ProposalMember, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -79,6 +81,21 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.data.guardians$.subscribe(() => {
       this.cd.markForCheck();
     });
+
+    // Once we get proposal get space.
+    this.data.proposal$.pipe(skip(1), first()).subscribe((p) => {
+      if (p) {
+        this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+      }
+    });
+  }
+
+  public getAvatarSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   private notFound(): void {
@@ -106,6 +123,30 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public isNativeVote(type: ProposalType|undefined): boolean {
     return (type === ProposalType.NATIVE);
+  }
+
+  public isComplete(proposal?: Proposal|null): boolean {
+    if (!proposal || this.isNativeVote(proposal.type)) {
+      return false;
+    }
+
+    return (dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs()));
+  }
+
+  public isInProgress(proposal?: Proposal|null): boolean {
+    if (!proposal || this.isNativeVote(proposal.type)) {
+      return false;
+    }
+
+    return (!this.isComplete(proposal) && !this.isPending(proposal));
+  }
+
+  public isPending(proposal?: Proposal|null): boolean {
+    if (!proposal || this.isNativeVote(proposal.type)) {
+      return false;
+    }
+
+    return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 
   public getProgress(q: ProposalQuestion, a: ProposalAnswer, members?: ProposalMember[]|null): number {
@@ -143,7 +184,6 @@ export class ProposalPage implements OnInit, OnDestroy {
         canVote = !m.voted;
       }
     });
-
 
     return (canVote === true);
   }
