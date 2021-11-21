@@ -228,7 +228,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.http
       const sfDoc: any = await transaction.get(refAward);
       const newCount = (sfDoc.data().issued || 0) + 1;
       transaction.update(refAward, {
-        issued: newCount
+        issued: newCount,
+        completed: (newCount >= sfDoc.data().badge.count)
       });
     });
 

@@ -52,8 +52,9 @@
 
     <nz-card nzTitle="System Info">
       <div class="wen-description-item bg-app-gray-background">
-        <span nz-typography class=" text-app-gray-400">Available badges</span>
-        <p nz-typography>{{(data.award$ | async)?.badge?.count}}</p>
+        <!-- TODOUI This might need to be different. -->
+        <span nz-typography class=" text-app-gray-400">Badges available / used</span>
+        <p nz-typography>{{(data.award$ | async)?.badge?.count}} / {{(data.award$ | async)?.issued}}</p>
       </div>
       <div class="wen-description-item bg-app-gray-background">
         <span nz-typography class=" text-app-gray-400">End Date</span>
