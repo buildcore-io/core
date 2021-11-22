@@ -1,11 +1,11 @@
-<div class="w-auto overflow-hidden md:-mx-24 lg:-mx-10 h-96 rounded-l-large">
+<div class="absolute top-0 right-0 w-auto overflow-hidden h-96 rounded-l-large left-20">
   <button nz-button class="absolute mx-20 top-14" (click)="nav.goBack()"><i nz-icon
       nzType="left"></i>{{nav.getTitle()}}</button>
 
   <img alt="" [src]="bannerUrl$ | async" class="object-cover w-full h-full" />
 </div>
 
-<div class="relative py-12" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
+<div class="relative py-12 mt-96" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
   <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="120"
     class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4" nzShape="circle">
   </nz-avatar>

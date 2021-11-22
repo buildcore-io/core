@@ -2,7 +2,8 @@
   *ngIf="proposal">
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-28'">
     <div class="flex items-center w-full space-x-4">
-      <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-app-gray-background min-w-10" nzShape="circle">
+      <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-bg-background min-w-10"
+        nzShape="circle">
       </nz-avatar>
       <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
@@ -33,7 +34,8 @@
       <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="isComplete()">Completed
       </nz-tag>
 
-      <nz-tag class="flex items-center wen-status-tag bg-tag-default border-tag-default" *ngIf="proposal?.settings?.endDate">
+      <nz-tag class="flex items-center wen-status-tag bg-tag-default border-tag-default"
+        *ngIf="proposal?.settings?.endDate">
         <i nz-icon class="pr-2" nzType="clock-circle"></i>
         <span>{{proposal?.settings?.endDate.toDate() | date:"short"}}</span>
       </nz-tag>

@@ -2,7 +2,7 @@
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
-        class="border-gray-400 bg-app-gray-background min-w-10" nzShape="circle"></nz-avatar>
+        class="border-gray-400 bg-bg-background min-w-10" nzShape="circle"></nz-avatar>
       <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
     <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ award.name || award.uid }}</h3>

@@ -1,5 +1,5 @@
 <!-- TODO find better hack for preventing header from jumping because of the scrollbar -->
-<header class="absolute z-30 flex items-center justify-end py-5 space-x-8 w-header" style="left: calc(100vh - 436px)">
+<header class="absolute z-30 flex items-center justify-end py-5 space-x-8 w-header" style="left: calc(100vw - 550px)">
 
   <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" *ngIf="isLoggedIn$ | async"
     nzType="primary" type="button">Create new <i nz-icon nzType="down" nzTheme="outline"></i></button>
