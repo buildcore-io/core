@@ -90,6 +90,19 @@ export class AuthService {
     const provider: any = await detectEthereumProvider();
     if (provider) {
       try {
+
+        try {
+          // Make sure account is always selected.
+          await provider.request({
+            method: "eth_requestAccounts",
+            params: [ { eth_accounts: {} } ]
+          });
+        } catch(e) {
+          this.notification.error('You must enable access to read your account address.', '');
+          this.showWalletPopup$.next(WalletStatus.HIDDEN);
+          return undefined;
+        }
+
         if (provider.chainId !== METAMASK_CHAIN_ID) {
           try {
             // Let's add new chain.
@@ -104,6 +117,12 @@ export class AuthService {
             this.showWalletPopup$.next(WalletStatus.WRONG_CHAIN);
             return;
           }
+        }
+
+        if (!provider.selectedAddress) {
+          this.notification.error('Please make sure you select address in MetaMask!', '');
+          this.showWalletPopup$.next(WalletStatus.HIDDEN);
+          return undefined;
         }
 
         const member: Member = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
