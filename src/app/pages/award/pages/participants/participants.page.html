@@ -1,15 +1,15 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <wen-member-card class="cursor-pointer" [fullWidth]="true" *ngFor="let member of data.participants$ | async; trackBy: trackByUid"
+    <wen-member-card class="block cursor-pointer" [fullWidth]="true"
+      *ngFor="let member of data.participants$ | async; trackBy: trackByUid"
+      [about]="member.comment || ''"
       [member]="member">
-      <!-- TODOUI Align. -->
-      <p>{{member.comment}}</p>
       <ng-container *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async)">
         <!-- TODOUI buttons. -->
-        <button type="button" (click)="approve(member.uid)" *ngIf="!member.completed">
+        <button nz-button nzSize="small" type="button" (click)="approve(member.uid)" *ngIf="!member.completed">
           Approve
         </button>
-        <button type="button" (click)="approve(member.uid)" *ngIf="member.completed">
+        <button nz-button nzSize="small"  type="button" (click)="approve(member.uid)" *ngIf="member.completed">
           Give another
         </button>
       </ng-container>

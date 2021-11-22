@@ -1,5 +1,5 @@
 <p nz-typography nzType="secondary" class="mb-6">{{ (proposal$ | async)?.length }} proposals</p>
-<div class="flex flex-wrap gap-6">
+<div class="flex flex-wrap gap-6 mb-10">
   <wen-proposal-card class="cursor-pointer" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
   </wen-proposal-card>
 </div>

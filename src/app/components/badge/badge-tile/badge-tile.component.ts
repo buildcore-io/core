@@ -9,4 +9,5 @@ import { Transaction } from '../../../../../functions/interfaces/models/transact
 })
 export class BadgeTileComponent {
   @Input() public badge?: Transaction;
+  @Input() size?: string;
 }

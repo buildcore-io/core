@@ -29,8 +29,6 @@
   <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate">
     <nz-option nzLabel="Recent" nzValue="recent"></nz-option>
     <nz-option nzLabel="Oldest" nzValue="oldest"></nz-option>
-    <nz-option nzLabel="Highest" nzValue="highest"></nz-option>
-    <nz-option nzLabel="Lowest" nzValue="lowest"></nz-option>
   </nz-select>
   <ng-template #defaultTemplate let-selected>
     <span nz-typography nzType="secondary" class="text-xs">Sort by</span>

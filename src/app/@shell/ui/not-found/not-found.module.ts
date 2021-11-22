@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NotFoundPage } from './not-found.page';
 
 @NgModule({
@@ -18,6 +19,7 @@ import { NotFoundPage } from './not-found.page';
         },
       },
     ]),
+    NzButtonModule
   ],
 })
 export class NotFoundModule {}

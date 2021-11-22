@@ -23,6 +23,7 @@
 @import '~ng-zorro-antd/divider/style/entry.less';
 @import '~ng-zorro-antd/timeline/style/entry.less';
 @import '~ng-zorro-antd/select/style/entry.less';
+@import '~ng-zorro-antd/badge/style/entry.less';
 
 // I think you should just stick to ng-zorro.
 @import 'tailwindcss/base';
@@ -83,7 +84,7 @@
 //Dropdown
 @dropdown-font-size: @font-size-lg;
 @dropdown-line-height: 32px;
-@dropdown-edge-child-vertical-padding: 8px;
+@dropdown-edge-child-vertical-padding: 18px;
 
 @card-head-font-size: @font-size-lg + 2;
 
@@ -108,6 +109,12 @@
 @table-font-size: @font-size-sm;
 @table-header-cell-split-color: transparent;
 
+// Drawer
+// ---
+@drawer-header-padding: 48px 48px;
+@drawer-body-padding: 48px;
+@drawer-header-close-size: 78px;
+
 @layer base {
   @import '01-base/font.less';
   @import '01-base/document.less';
@@ -120,6 +127,7 @@
   @import '02-components/card.less';
   @import '02-components/tag.less';
   @import '02-components/upload.less';
+  @import '02-components/drawer.less';
 }
 
 @layer utilities {

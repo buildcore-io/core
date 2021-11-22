@@ -12,6 +12,7 @@ export interface SpaceMember extends BaseSubCollection {
 export interface Space extends BaseRecord {
   name?: string;
   about?: string;
+  open?: boolean;
   github?: string;
   twitter?: string;
   discord?: string;

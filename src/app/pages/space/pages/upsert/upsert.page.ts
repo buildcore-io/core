@@ -23,6 +23,7 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
 export class UpsertPage implements OnInit {
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('');
+  public openControl: FormControl = new FormControl(true);
   public discordControl: FormControl = new FormControl('', getUrlValidator());
   public twitterControl: FormControl = new FormControl('', getUrlValidator());
   public githubControl: FormControl = new FormControl('', getUrlValidator());
@@ -46,6 +47,7 @@ export class UpsertPage implements OnInit {
     this.spaceForm = new FormGroup({
       name: this.nameControl,
       about: this.aboutControl,
+      open: this.openControl,
       discord: this.discordControl,
       twitter: this.twitterControl,
       github: this.githubControl,
@@ -66,6 +68,7 @@ export class UpsertPage implements OnInit {
           } else {
             this.nameControl.setValue(o.name);
             this.aboutControl.setValue(o.about);
+            this.openControl.setValue(!!o.open);
             this.discordControl.setValue(o.discord);
             this.twitterControl.setValue(o.twitter);
             this.githubControl.setValue(o.github);

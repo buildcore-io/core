@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AwardType } from '../../../../../../functions/interfaces/models/award';
+import { Award } from 'functions/interfaces/models';
 
 @Component({
   selector: 'wen-award-status',
@@ -8,5 +8,11 @@ import { AwardType } from '../../../../../../functions/interfaces/models/award';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AwardStatusComponent {
-  @Input() type?: AwardType;
+  @Input() award?: Award;
+  public isCompleted(award: Award|undefined|null): boolean {
+    if (!award) {
+      return false;
+    }
+    return (award.issued >= award.badge.count);
+  }
 }
