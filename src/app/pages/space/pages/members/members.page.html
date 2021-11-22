@@ -5,7 +5,8 @@
     </div>
     <wen-member-card class="block cursor-pointer" [fullWidth]="true"
       *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
-      <ng-container *ngIf="memberIsGuardian(member.uid)">Guardian
+      <ng-container *ngIf="memberIsGuardian(member.uid)">
+        Guardian
         <button nz-button nzSize="small" type="button" (click)="removeGuardian(member.uid)"
           *ngIf="data.loggedInMemberIsGuardian()">Remove
           Guardian</button>
