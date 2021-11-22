@@ -22,8 +22,13 @@
   </div>
   <div class="space-y-4" nz-col nzFlex="450px">
     <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
-      *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)">
-      {{(data.space$ | async)!.open === false ? 'Ask to Join Space': 'Join Space'}}
+      *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== false">
+      Join Space
+    </button>
+
+    <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" [disabled]="alreadyAskedToJoin(data.pendingMembers$ | async)"
+      *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false">
+      {{alreadyAskedToJoin(data.pendingMembers$ | async) ? 'Pending Request' : 'Ask to Join Space'}}
     </button>
     <div class="inline-grid space-y-4">
       <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()"><i nz-icon nzType="edit"

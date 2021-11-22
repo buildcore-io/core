@@ -37,7 +37,7 @@ export class DataService {
   }
 
   public getPendingMembersCount(members?: Member[]|null): number {
-    if (!members) {
+    if (!members || !this.isGuardianWithinSpace$.value) {
       return 0;
     }
 
