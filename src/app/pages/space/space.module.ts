@@ -8,6 +8,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { MemberModule } from '../../components/member/member.module';
@@ -49,6 +50,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzTypographyModule,
     NzCardModule,
     NzInputModule,
+    NzSelectModule,
     NzIconModule,
     NzUploadModule,
     NzAvatarModule

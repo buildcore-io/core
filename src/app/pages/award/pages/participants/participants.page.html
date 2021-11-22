@@ -6,10 +6,10 @@
       [member]="member">
       <ng-container *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async)">
         <!-- TODOUI buttons. -->
-        <button type="button" (click)="approve(member.uid)" *ngIf="!member.completed">
+        <button nz-button nzSize="small" type="button" (click)="approve(member.uid)" *ngIf="!member.completed">
           Approve
         </button>
-        <button type="button" (click)="approve(member.uid)" *ngIf="member.completed">
+        <button nz-button nzSize="small"  type="button" (click)="approve(member.uid)" *ngIf="member.completed">
           Give another
         </button>
       </ng-container>

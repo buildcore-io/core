@@ -1,7 +1,16 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
+      <!-- TODO improve tabs -->
       <h3>{{(data.members$ | async)?.length + ((data.members$ | async)?.length === 1 ? ' member' : ' members')}}</h3>
+      <!-- <h3>Pending Members</h3>
+      <h3>Blocked Members</h3> -->
+
+      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Filter by">
+        <nz-option nzLabel="Active" nzValue="active"></nz-option>
+        <nz-option nzLabel="Pending" nzValue="pending"></nz-option>
+        <nz-option nzLabel="Blocked" nzValue="blocked"></nz-option>
+      </nz-select>
     </div>
     <wen-member-card class="block cursor-pointer" [fullWidth]="true"
       *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
@@ -17,24 +26,6 @@
           *ngIf="data.loggedInMemberIsGuardian()">Make
           Guardian</button>
       </ng-container>
-    </wen-member-card>
-  </div>
-
-  <div class="space-y-4">
-    <div class="inline-flex justify-between w-full">
-      <h3>Pending Users</h3>
-    </div>
-    <wen-member-card>
-
-    </wen-member-card>
-  </div>
-
-  <div class="space-y-4">
-    <div class="inline-flex justify-between w-full">
-      <h3>Blocked Users</h3>
-    </div>
-    <wen-member-card>
-
     </wen-member-card>
   </div>
 </div>
