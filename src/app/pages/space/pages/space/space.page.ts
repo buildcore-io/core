@@ -8,8 +8,8 @@ import { DataService } from "@pages/space/services/data.service";
 import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
-import { AwardApi } from './../../../../@api/award.api';
-import { ProposalApi } from './../../../../@api/proposal.api';
+import { AwardApi, AwardFilter } from './../../../../@api/award.api';
+import { ProposalApi, ProposalFilter } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -89,8 +89,10 @@ export class SpacePage implements OnInit, OnDestroy {
   private listenToRelatedRecord(spaceId: string): void {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.guardians$));
     this.subscriptions$.push(this.spaceApi.listenMembers(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.members$));
-    this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.proposals$));
-    this.subscriptions$.push(this.awardApi.listenForSpace(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.awards$));
+    this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId, ProposalFilter.ACTIVE).pipe(untilDestroyed(this)).subscribe(this.data.proposalsActive$));
+    this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId, ProposalFilter.COMPLETED).pipe(untilDestroyed(this)).subscribe(this.data.proposalsCompleted$));
+    this.subscriptions$.push(this.awardApi.listenForSpace(spaceId, AwardFilter.ACTIVE).pipe(untilDestroyed(this)).subscribe(this.data.awardsActive$));
+    this.subscriptions$.push(this.awardApi.listenForSpace(spaceId, AwardFilter.COMPLETED).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
   }
 
   private listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
@@ -130,8 +132,8 @@ export class SpacePage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.space$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.join(sc), 'Joined.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.spaceApi.join(sc), 'Joined.', finish).subscribe((val: any) => {
+        // none.
       });
     });
 
@@ -163,8 +165,8 @@ export class SpacePage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.space$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.', finish).subscribe((val: any) => {
+        // none
       });
     });
 

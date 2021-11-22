@@ -10,7 +10,10 @@ export enum AwardType {
 export interface AwardParticipant extends BaseSubCollection {
   uid: string;
   comment?: string;
+  completed: boolean;
   createdOn: Timestamp;
+  count: number;
+  xp: number;
 }
 
 export interface AwardOwner extends BaseSubCollection {

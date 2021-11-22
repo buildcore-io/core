@@ -1,13 +1,13 @@
 <div class="space-y-12">
-    <div class="space-y-4" *ngIf="(data.proposals$ | async)?.length">
+    <div class="space-y-4" *ngIf="(data.proposalsActive$ | async)?.length">
         <h3>Active Proposals</h3>
-        <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of data.proposals$ | async; trackBy: trackByUid" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+        <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of data.proposalsActive$ | async; trackBy: trackByUid" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
         </wen-proposal-card>
     </div>
 
-    <div class="space-y-4" *ngIf="(data.awards$ | async)?.length">
+    <div class="space-y-4" *ngIf="(data.awardsActive$ | async)?.length">
         <h3>Active Awards</h3>
-        <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awards$ | async; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
+        <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awardsActive$ | async; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
         </wen-award-card>
     </div>
 </div>

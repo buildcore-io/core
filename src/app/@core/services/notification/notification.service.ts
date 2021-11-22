@@ -12,12 +12,13 @@ export class NotificationService {
     // none.
   }
 
-  public processRequest<T>(request: Observable<T>, msg: string): Observable<T> {
+  public processRequest<T>(request: Observable<T>, msg: string, cb: any): Observable<T> {
     return new Observable<T>((observe) => {
       request.subscribe({
         next: (obj) => {
           // Success
           this.notification.success(msg, '');
+          cb();
           observe.next(obj);
         },
         error: (obj: FirebaseError) => {
@@ -29,6 +30,7 @@ export class NotificationService {
           }
 
           // Pass it.
+          cb();
           observe.error(obj);
         }
       })

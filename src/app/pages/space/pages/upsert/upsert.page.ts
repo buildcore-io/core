@@ -116,8 +116,7 @@ export class UpsertPage implements OnInit {
       return;
     }
     await this.auth.sign(this.spaceForm.value, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.create(sc), 'Created.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.spaceApi.create(sc), 'Created.', finish).subscribe((val: any) => {
         this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
       });
     });
@@ -134,8 +133,7 @@ export class UpsertPage implements OnInit {
         uid: this.spaceId
       }
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.save(sc), 'Saved.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.spaceApi.save(sc), 'Saved.', finish).subscribe((val: any) => {
         this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
       });
     });

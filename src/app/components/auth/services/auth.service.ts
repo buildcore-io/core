@@ -6,6 +6,7 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { EthAddress, WenRequest } from '../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../functions/interfaces/models/member';
+import { METAMASK_CHAIN_ID, RPC_CHAIN } from './../../../../../functions/interfaces/config';
 import { MemberApi } from './../../../@api/member.api';
 import { removeItem } from './../../../@core/utils/local-storage.utils';
 
@@ -21,7 +22,8 @@ export interface SignCallback {
 export enum WalletStatus {
   HIDDEN = 0,
   OPEN = 1,
-  ACTIVE = 2
+  ACTIVE = 2,
+  WRONG_CHAIN = 3
 }
 
 @Injectable({
@@ -88,7 +90,22 @@ export class AuthService {
     const provider: any = await detectEthereumProvider();
     if (provider) {
       try {
-        await provider.request({ method: 'eth_requestAccounts' });
+        if (provider.chainId !== METAMASK_CHAIN_ID) {
+          try {
+            // Let's add new chain.
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [RPC_CHAIN],
+            });
+
+            // TODO Unable to detect if users decides to ADD network but not switch to IT
+          } catch(e) {
+            // If we fail we force user to do it manually.
+            this.showWalletPopup$.next(WalletStatus.WRONG_CHAIN);
+            return;
+          }
+        }
+
         const member: Member = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
         const signature: string = await provider.request({
           method: 'personal_sign',
@@ -104,12 +121,11 @@ export class AuthService {
           body: params
         }
       } catch(e) {
-        console.log('Failed to log in');
         this.showWalletPopup$.next(WalletStatus.HIDDEN);
         return undefined;
       }
     } else {
-      console.log('Please install MetaMask!');
+      this.notification.error('Please install MetaMask wallet!', '');
       this.showWalletPopup$.next(WalletStatus.HIDDEN);
       return undefined;
     }
@@ -128,7 +144,8 @@ export class AuthService {
   public async signIn(): Promise<void> {
     const sc: WenRequest|undefined = await this.signWithMetamask({});
     if (!sc) {
-      throw new Error('Unable to sign.');
+      this.notification.error('Failed to log in.', '');
+      return;
     }
 
     this.showWalletPopup$.next(WalletStatus.HIDDEN);

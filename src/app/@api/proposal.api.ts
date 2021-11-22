@@ -9,6 +9,12 @@ import { ProposalMember } from './../../../functions/interfaces/models/proposal'
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi } from './base.api';
 
+export enum ProposalFilter {
+  ALL,
+  ACTIVE,
+  COMPLETED
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -22,12 +28,19 @@ export class ProposalApi extends BaseApi<Proposal> {
     return super.listen(id);
   }
 
-  public listenForSpace(space: string): Observable<Proposal[]> {
+  public listenForSpace(space: string, filter: ProposalFilter = ProposalFilter.ALL): Observable<Proposal[]> {
     return this.afs.collection<Proposal>(
       this.collection,
       // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref) => {
-        return ref.where('space', '==', space)
+        let fResult: any = ref.where('space', '==', space);
+        if (filter === ProposalFilter.ACTIVE) {
+          fResult = fResult.where('settings.endDate', '>=', new Date());
+        } else if (filter === ProposalFilter.COMPLETED) {
+          fResult = fResult.where('settings.endDate', '<=', new Date());
+        }
+
+        return fResult;
       }
     ).valueChanges();
   }

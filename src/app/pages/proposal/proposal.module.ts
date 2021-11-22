@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -22,6 +23,7 @@ import { MarkDownModule } from './../../@core/pipes/markdown/markdown.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
+import { ParticipantsPage } from './pages/participants/participants.page';
 import { ProposalPage } from './pages/proposal/proposal.page';
 import { ProposalRoutingModule } from './proposal-routing.module';
 import { DataService } from './services/data.service';
@@ -30,6 +32,7 @@ import { DataService } from './services/data.service';
   declarations: [
     ProposalPage,
     OverviewPage,
+    ParticipantsPage,
     NewPage
   ],
   providers: [
@@ -38,6 +41,7 @@ import { DataService } from './services/data.service';
   imports: [
     CommonModule,
     ProposalRoutingModule,
+    MemberCardModule,
     ReactiveFormsModule,
     NzSelectModule,
     TabsModule,

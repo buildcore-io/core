@@ -191,6 +191,14 @@
         Signing...
       </p>
 
+      <div nz-typography class="mt-4" *ngIf="(auth.showWalletPopup$ | async) === 3">
+        <p>Make sure you select public IOTA EVM Chain in MetaMask.</p>
+        <br /><br />
+        <p>Network Name: IOTA EVM</p>
+        <p>RPC URL: https://evm.wasp.sc.iota.org/</p>
+        <p>Chain ID: 1074</p>
+      </div>
+
     </div>
 
   </ng-container>

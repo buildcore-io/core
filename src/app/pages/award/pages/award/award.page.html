@@ -5,7 +5,7 @@
 <div class="relative py-12" nz-row [nzGutter]="40">
   <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
     <div class="mb-8 space-x-3">
-      <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-gray-400" nzShape="circle">
+      <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-gray-400" nzShape="circle">
       </nz-avatar>
 
       <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Award</nz-tag>
@@ -31,14 +31,14 @@
 
   </div>
 
-  <div class="space-y-4" nz-col nzFlex="450px" *ngIf="(isLoggedIn$ | async)">
-    <ng-container *ngIf="!data.isCompleted(data.award$ | async)">
+  <div class="space-y-4" nz-col nzFlex="450px">
+    <ng-container *ngIf="!data.isCompleted(data.award$ | async) && (isLoggedIn$ | async)">
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="showParticipateModal()"
         *ngIf="!loggedInMemberIsParticipant()">
         Participate</button>
-
+<!-- TODO
       <button nz-button nzType="primary" nzBlock nzSize="large" *ngIf="loggedInMemberIsParticipant()">
-        Cancel Participation</button>
+        Cancel Participation</button> -->
     </ng-container>
 
     <nz-card nzTitle="Award">
@@ -52,8 +52,9 @@
 
     <nz-card nzTitle="System Info">
       <div class="wen-description-item bg-app-gray-background">
-        <span nz-typography class=" text-app-gray-400">Available badges</span>
-        <p nz-typography>{{(data.award$ | async)?.badge?.count}}</p>
+        <!-- TODOUI This might need to be different. -->
+        <span nz-typography class=" text-app-gray-400">Badges used / available</span>
+        <p nz-typography>{{(data.award$ | async)?.issued}} / {{(data.award$ | async)?.badge?.count}}</p>
       </div>
       <div class="wen-description-item bg-app-gray-background">
         <span nz-typography class=" text-app-gray-400">End Date</span>

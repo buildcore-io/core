@@ -29,8 +29,8 @@ export class ParticipantsPage {
       uid: id,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.awardApi.approve(sc), 'Approve.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.awardApi.approve(sc), 'Approve.', finish).subscribe((val: any) => {
+        // none.
       });
     });
   }

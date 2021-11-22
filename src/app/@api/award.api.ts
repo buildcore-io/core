@@ -4,10 +4,22 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from "functions/interfaces/models";
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
 import { AwardOwner, AwardParticipant } from './../../../functions/interfaces/models/award';
 import { Member } from './../../../functions/interfaces/models/member';
 import { BaseApi } from './base.api';
+
+export interface AwardParticipantWithMember extends Member {
+  comment?: string;
+  participatedOn: Timestamp;
+  completed: boolean;
+}
+
+export enum AwardFilter {
+  ALL,
+  ACTIVE,
+  COMPLETED
+}
 
 @Injectable({
   providedIn: 'root',
@@ -22,12 +34,19 @@ export class AwardApi extends BaseApi<Award> {
     return super.listen(id);
   }
 
-  public listenForSpace(space: string): Observable<Award[]> {
+  public listenForSpace(space: string, filter: AwardFilter = AwardFilter.ALL): Observable<Award[]> {
     return this.afs.collection<Award>(
       this.collection,
       // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref) => {
-        return ref.where('space', '==', space)
+        let fResult: any = ref.where('space', '==', space);
+        if (filter === AwardFilter.ACTIVE) {
+          fResult = fResult.where('completed', '==', false);
+        } else if (filter === AwardFilter.COMPLETED) {
+          fResult = fResult.where('completed', '==', true);
+        }
+
+        return fResult;
       }
     ).valueChanges();
   }
@@ -44,12 +63,16 @@ export class AwardApi extends BaseApi<Award> {
     }));
   }
 
-  public listenParticipants(awardId: string): Observable<Member[]> {
+  public listenParticipants(awardId: string): Observable<AwardParticipantWithMember[]> {
     return (<Observable<AwardParticipant[]>>this.afs.collection(this.collection)
     .doc(awardId.toLowerCase()).collection(SUB_COL.PARTICIPANTS).valueChanges()).pipe(switchMap(async (obj: AwardParticipant[]) => {
-      const out: Member[] = [];
+      const out: AwardParticipantWithMember[] = [];
       for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
+        const finObj: AwardParticipantWithMember = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
+        finObj.comment = o.comment;
+        finObj.participatedOn = o.createdOn;
+        finObj.completed = o.completed;
+        out.push(finObj);
       }
 
       return out;

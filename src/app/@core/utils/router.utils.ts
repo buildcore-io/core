@@ -45,6 +45,7 @@ export const ROUTER_UTILS = {
       newProposal: 'new',
       proposal: ':proposalId',
       overview: 'overview',
+      participants: 'participants'
     },
     award: {
       // Redirect back to space?!
