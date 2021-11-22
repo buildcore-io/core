@@ -64,8 +64,8 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.', finish).subscribe((val: any) => {
+        // none
       });
     });
 
@@ -80,8 +80,8 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.', finish).subscribe((val: any) => {
+        // none.
       });
     });
 

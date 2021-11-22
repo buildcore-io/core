@@ -31,6 +31,10 @@ interface Person {
   styleUrls: ['./proposal.page.less']
 })
 export class ProposalPage implements OnInit, OnDestroy {
+  public sections = [
+    { route: [ROUTER_UTILS.config.proposal.overview], label: 'Overview' },
+    { route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' }
+  ];
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public voteControl: FormControl = new FormControl();
   private subscriptions$: Subscription[] = [];
@@ -138,11 +142,11 @@ export class ProposalPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return (!this.isComplete(proposal) && !this.isPending(proposal));
+    return (!this.isComplete(proposal) && !this.isPending(proposal) && !!proposal.approved);
   }
 
   public isPending(proposal?: Proposal|null): boolean {
-    if (!proposal || this.isNativeVote(proposal.type)) {
+    if (!proposal || this.isNativeVote(proposal.type) || !proposal.approved) {
       return false;
     }
 
@@ -196,8 +200,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     await this.auth.sign({
         uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+        // none.
       });
     });
   }
@@ -210,8 +214,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+        // none.
       });
     });
 
@@ -226,8 +230,8 @@ export class ProposalPage implements OnInit, OnDestroy {
       uid: this.data.proposal$.value.uid,
       values: [this.voteControl.value]
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.', finish).subscribe((val: any) => {
+        // none.
       });
     });
 

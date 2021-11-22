@@ -105,8 +105,7 @@ export class NewPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign(this.formatSubmitObj(this.awardForm.value), (sc, finish) => {
-      this.notification.processRequest(this.awardApi.create(sc), 'Created.').subscribe((val) => {
-        finish();
+      this.notification.processRequest(this.awardApi.create(sc), 'Created.', finish).subscribe((val) => {
         this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid])
       });
     });
