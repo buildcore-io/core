@@ -43,11 +43,11 @@
   </div>
 
   <div class="flex justify-center mt-10 space-x-4">
+    <wen-member-tile [title]="'Awards Completed'" [value]="(data.member$ | async)?.awardsCompleted || 0">
+    </wen-member-tile>
     <wen-member-tile [title]="'Total Reputation'" [value]="(data.member$ | async)?.totalReputation || 0" suffix="XP">
     </wen-member-tile>
     <wen-member-tile [title]="'Total Yield'" [value]="0">
-    </wen-member-tile>
-    <wen-member-tile [title]="'Awards Completed'" [value]="(data.member$ | async)?.awardsCompleted || 0">
     </wen-member-tile>
   </div>
 
