@@ -1,14 +1,49 @@
-<section class="container flex items-center content-center justify-center">
-  <main class="mx-auto my-96 md:max-w-xl">
-    <div class="text-center">
-      <h1 class="mb-4 text-2xl md:text-4xl" i18n>
-        👋 Welcome to the Soonaverse
-      </h1>
-      <p class="mb-12 text-base md:text-xl" i18n>
-        ⚒️ Experience that stays with you forever ⚒️
-      </p>
-
-      <button [routerLink]="['discover']"> Discover Soonaverse </button>
+<section class="absolute left-0 right-0">
+  <main class="mx-auto bg-bg-background">
+    <div class="w-full wen-home-vector">
+      <div class="container px-8">
+        <h1 class="w-6/12 text-6xl text-white pt-52">
+          The Soonaverse
+        </h1>
+        <p class="w-6/12 pt-8 mb-12 text-2xl text-white">
+          Connect with the community developing digital public goods, creating financial freedom, and defining the
+          future of the open web.
+        </p>
+        <button nz-button nzType="primary" nzSize="large" type="button">
+          Join Soonaverse
+        </button>
+      </div>
     </div>
+
+    <div class="-mt-12 rounded-t-large bg-bg-background">
+      <div class="container flex flex-col items-center justify-center h-96">
+        <h1 class="text-5xl">
+          Three ways to get started
+        </h1>
+        <p class="w-9/12 text-2xl text-center text-app-gray-400">Connect with the community developing digital public
+          goods, creating financial freedom, and defining the future of the open web.</p>
+      </div>
+
+      <div class="container my-14">
+        <div class="flex flex-wrap gap-6">
+          <article class="bg-white  h-80 w-80">
+
+            <div>img</div>
+
+          </article>
+        </div>
+
+
+        <h1 class="text-5xl">
+          Get started with Soonverse
+        </h1>
+
+        <button [routerLink]="['discover']"> Discover Soonaverse </button>
+      </div>
+    </div>
+
   </main>
+  <footer class="-mt-12 bg-bg-footer h-96 rounded-t-large">
+
+  </footer>
 </section>
