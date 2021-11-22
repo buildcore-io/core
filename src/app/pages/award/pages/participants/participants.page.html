@@ -1,6 +1,6 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <wen-member-card class="cursor-pointer" [fullWidth]="true" *ngFor="let member of data.participants$ | async; trackBy: trackByUid"
+    <wen-member-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let member of data.participants$ | async; trackBy: trackByUid"
       [member]="member">
       <!-- TODOUI Align. -->
       <p>{{member.comment}}</p>
