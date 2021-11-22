@@ -2,20 +2,38 @@
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
       <h3>{{(data.members$ | async)?.length + ((data.members$ | async)?.length === 1 ? ' member' : ' members')}}</h3>
-      <div></div>
     </div>
-    <wen-member-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let member of data.members$ | async; trackBy: trackByUid"
-      [member]="member">
-      <ng-container *ngIf="memberIsGuardian(member.uid)">
-        Guardian
-        <button type="button" (click)="removeGuardian(member.uid)" *ngIf="data.loggedInMemberIsGuardian()">Remove
+    <wen-member-card class="block cursor-pointer" [fullWidth]="true"
+      *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
+      <ng-container *ngIf="memberIsGuardian(member.uid)">Guardian
+        <button nz-button nzSize="small" type="button" (click)="removeGuardian(member.uid)"
+          *ngIf="data.loggedInMemberIsGuardian()">Remove
           Guardian</button>
       </ng-container>
       <ng-container *ngIf="!memberIsGuardian(member.uid)">
         Member
-        <button type="button" (click)="setGuardian(member.uid)" *ngIf="data.loggedInMemberIsGuardian()">Make
+        <button nz-button nzSize="small" type="button" (click)="setGuardian(member.uid)"
+          *ngIf="data.loggedInMemberIsGuardian()">Make
           Guardian</button>
       </ng-container>
+    </wen-member-card>
+  </div>
+
+  <div class="space-y-4">
+    <div class="inline-flex justify-between w-full">
+      <h3>Pending Users</h3>
+    </div>
+    <wen-member-card>
+
+    </wen-member-card>
+  </div>
+
+  <div class="space-y-4">
+    <div class="inline-flex justify-between w-full">
+      <h3>Blocked Users</h3>
+    </div>
+    <wen-member-card>
+
     </wen-member-card>
   </div>
 </div>

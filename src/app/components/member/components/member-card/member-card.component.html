@@ -1,6 +1,6 @@
 <article class="flex flex-row p-4 bg-white w-75 h-75 rounded-2xl"
   [ngClass]="fullWidth ? 'w-auto h-auto justify-between' : 'w-75 h-75'" *ngIf="member">
-  <div class="w-full">
+  <div class="w-3/5">
     <div class="relative flex flex-col w-full h-40" [ngClass]="fullWidth ? 'h-auto' : 'h-40'" [routerLink]="['/member', member.uid]">
       <div class="flex items-center w-full space-x-4">
         <nz-avatar class="min-w-max" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
@@ -22,7 +22,7 @@
       </div>
     </div>
   </div>
-  <div class="w-40" *ngIf="fullWidth">
+  <div class="w-64 pl-8" *ngIf="fullWidth">
     <ng-content></ng-content>
   </div>
 </article>

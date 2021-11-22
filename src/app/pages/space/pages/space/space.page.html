@@ -25,10 +25,6 @@
       *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)">
       Join Space</button>
     <div class="inline-grid space-y-4">
-      <button nz-button (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async"><i nz-icon nzType="left"
-          nzTheme="outline"></i>
-        Leave Space</button>
-
       <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()"><i nz-icon nzType="edit"
           nzTheme="outline"></i>
         Edit Space</button>
@@ -66,5 +62,11 @@
         </div>
       </div>
     </nz-card>
+
+    <div class="inline-grid space-y-4">
+      <button nz-button (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async"><i nz-icon nzType="left"
+          nzTheme="outline"></i>
+        Leave Space</button>
+    </div>
   </div>
 </div>
