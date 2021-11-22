@@ -2,50 +2,66 @@
     class="absolute top-0 h-10 px-6 mx-10 font-semibold text-blue-600 bg-white border-white left-14 mt-11 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
     [routerLink]="urlToMembers"><i nz-icon nzType="left"></i>Back</button> -->
 
-<div nz-row [nzGutter]="40">
-  <div class="py-12" nz-col nzFlex="auto">
-    <h1 i18n>Profile</h1>
+<div class="py-12" style="margin-right: 420px;">
+  <h1 i18n>Profile</h1>
 
-    <wen-tabs [tabs]="sections"></wen-tabs>
+  <wen-tabs [tabs]="sections"></wen-tabs>
 
-    <div class="flex w-full py-12">
-      <router-outlet></router-outlet>
+  <div class="w-full py-12">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<div class="absolute top-0 right-0 h-screen px-8 pt-40 mr-auto text-center bg-white rounded-l-large"
+  style="width: 420px;">
+
+  <nz-avatar [nzSize]="124" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
+  <div class="flex items-baseline justify-center">
+    <h2>@ {{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate:[12]) }}</h2>
+
+    <div class="mt-6" *ngIf="(data.member$ | async)?.uid === (loggedInMember$ | async)?.uid">
+      <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
+        class="ml-4 text-center text-current">
+        <i nz-icon class="text-white " nzType="edit"></i>
+      </a>
+      <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">
+      </wen-member-edit-drawer>
     </div>
   </div>
 
-  <div class="h-screen pt-32 mr-auto space-y-4 text-center bg-white rounded-l-large" nz-col nzFlex="400px">
+  <p class="mt-4" nz-typography nzType="secondary" *ngIf="(data.member$ | async)?.about">
+    {{(data.member$ | async)!.about}}
+  </p>
 
-    <nz-avatar [nzSize]="124" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
-    <div class="flex items-baseline justify-center">
-      <h2>@ {{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate:[12]) }}</h2>
+  <div class="mt-6 space-x-6">
+    <a [href]="(data.member$ | async)!.github" *ngIf="(data.member$ | async)?.github" target="_new"><i nz-icon
+        class="text-3xl" nzType="github" nzTheme="outline"></i></a>
+    <a [href]="(data.member$ | async)!.twitter" *ngIf="(data.member$ | async)?.twitter" target="_new"><i nz-icon
+        class="text-3xl" nzType="twitter" nzTheme="outline"></i></a>
+    <a [href]="(data.member$ | async)!.linkedin" *ngIf="(data.member$ | async)?.linkedin" target="_new"><i nz-icon
+        class="text-3xl" nzType="linkedin" nzTheme="outline"></i></a>
+  </div>
 
-      <ng-container *ngIf="(data.member$ | async)?.uid === (loggedInMember$ | async)?.uid">
-        <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
-          class="ml-4 text-center text-current">
-          <i nz-icon class="text-white " nzType="edit"></i>
-        </a>
-        <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">
-        </wen-member-edit-drawer>
-      </ng-container>
-    </div>
+  <div class="flex justify-center mt-10 space-x-4">
+    <wen-member-tile [title]="'Total Reputation'" [value]="(data.member$ | async)?.totalReputation || 0" suffix="XP">
+    </wen-member-tile>
+    <wen-member-tile [title]="'Total Yield'" [value]="0">
+    </wen-member-tile>
+    <wen-member-tile [title]="'Awards Completed'" [value]="(data.member$ | async)?.awardsCompleted || 0">
+    </wen-member-tile>
+  </div>
 
-    <p nz-typography nzType="secondary" *ngIf="(data.member$ | async)?.about">
-      {{(data.member$ | async)!.about}}
-    </p>
-
-    <div class="space-x-4">
-      <a [href]="(data.member$ | async)!.github" *ngIf="(data.member$ | async)?.github" target="_new"><i nz-icon nzType="github" nzTheme="outline"></i></a>
-      <a [href]="(data.member$ | async)!.twitter" *ngIf="(data.member$ | async)?.twitter" target="_new"><i nz-icon nzType="twitter" nzTheme="outline"></i></a>
-      <a [href]="(data.member$ | async)!.linkedin" *ngIf="(data.member$ | async)?.linkedin" target="_new"><i nz-icon nzType="linkedin" nzTheme="outline"></i></a>
-    </div>
-
-    <div class="flex justify-center space-x-4">
-      <wen-member-tile [title]="'Total Reputation'" [value]="(data.member$ | async)?.totalReputation || 0" suffix="XP"></wen-member-tile>
-      <wen-member-tile [title]="'Awards Completed'" [value]="(data.member$ | async)?.awardsCompleted || 0"></wen-member-tile>
-    </div>
-
+  <div class="mt-10 text-left">
     <h3>Earned Badges</h3>
-    <wen-badge-tile *ngFor="let t of data.badges$ | async; trackBy: trackByUid" [badge]="t"></wen-badge-tile>
+    <div class="flex flex-wrap gap-2">
+      <!-- TODO tooltip title should be badge name -->
+      <!-- TODO show only first 6 badges -->
+      <article *ngFor="let t of data.badges$ | async; trackBy: trackByUid" nz-tooltip [nzTooltipTitle]="t.type"
+        class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
+        <wen-badge-tile [badge]="t"></wen-badge-tile>
+      </article>
+    </div>
+    <!-- TODO condition when user has more than 6 badges -->
+    <a class="float-right" nz-button nzType="link">See all</a>
   </div>
-
 </div>

@@ -1,2 +1,12 @@
-<wen-badge-tile *ngFor="let t of data.badges$ | async; trackBy: trackByUid" [badge]="t">
-</wen-badge-tile>
+<div class="space-y-12">
+  <div class="space-y-4">
+    <nz-card class="w-full" *ngFor="let t of data.badges$ | async; trackBy: trackByUid">
+      <div class="flex flex-wrap gap-2">
+        <wen-badge-tile [badge]="t" [size]="'large'">
+        </wen-badge-tile>
+        <!-- TODO show badge name -->
+        {{ t.type }}
+      </div>
+    </nz-card>
+  </div>
+</div>

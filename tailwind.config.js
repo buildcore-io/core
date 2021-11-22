@@ -41,6 +41,7 @@ module.exports = {
         'app-gray': {
           100: '#E4E1D2',
           400: '#9F9D93',
+          600: '#999999'
         },
         'tag': {
           blue: '#DCEFF9',
