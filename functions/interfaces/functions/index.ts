@@ -11,6 +11,8 @@ export const enum WEN_FUNC {
   leaveSpace = "leaveSpace",
   blockMemberSpace = "blockMemberSpace",
   unblockMemberSpace = "unblockMemberSpace",
+  acceptMemberSpace = "acceptMemberSpace",
+  declineMemberSpace = "declineMemberSpace",
   addGuardianSpace = "addGuardianSpace",
   removeGuardianSpace = "removeGuardianSpace",
 

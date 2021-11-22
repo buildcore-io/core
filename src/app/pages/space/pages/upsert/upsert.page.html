@@ -9,6 +9,10 @@
     <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
         <div class="space-y-4">
+          <nz-radio-group class="wen-radio-group" [formControl]="openControl">
+            <label nz-radio [nzValue]="true">Anyone can join</label>
+            <label nz-radio [nzValue]="false">Member must be accepted</label>
+          </nz-radio-group>
           <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
           <textarea nz-input placeholder="Space description" nzSize="large" rows="4" [formControl]="aboutControl"></textarea>
         </div>

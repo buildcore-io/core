@@ -3,11 +3,14 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { MemberModule } from '../../components/member/member.module';
@@ -44,11 +47,14 @@ import { SpaceRoutingModule } from './space-routing.module';
     MemberModule,
     ProposalCardModule,
     AwardCardModule,
+    NzRadioModule,
+    NzBadgeModule,
     NzGridModule,
     NzButtonModule,
     NzTypographyModule,
     NzCardModule,
     NzInputModule,
+    NzSelectModule,
     NzIconModule,
     NzUploadModule,
     NzAvatarModule

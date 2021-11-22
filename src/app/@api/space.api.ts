@@ -62,6 +62,30 @@ export class SpaceApi extends BaseApi<Space> {
     }));
   }
 
+  public listenBlockedMembers(spaceId: string): Observable<Member[]> {
+    return (<Observable<SpaceMember[]>>this.afs.collection(this.collection)
+    .doc(spaceId.toLowerCase()).collection(SUB_COL.BLOCKED_MEMBERS).valueChanges()).pipe(switchMap(async (obj: SpaceMember[]) => {
+      const out: Member[] = [];
+      for (const o of obj) {
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
+      }
+
+      return out;
+    }));
+  }
+
+  public listenPendingMembers(spaceId: string): Observable<Member[]> {
+    return (<Observable<SpaceMember[]>>this.afs.collection(this.collection)
+    .doc(spaceId.toLowerCase()).collection(SUB_COL.KNOCKING_MEMBERS).valueChanges()).pipe(switchMap(async (obj: SpaceMember[]) => {
+      const out: Member[] = [];
+      for (const o of obj) {
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
+      }
+
+      return out;
+    }));
+  }
+
   public create(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.cSpace);
     const data$ = callable(req);
@@ -94,6 +118,30 @@ export class SpaceApi extends BaseApi<Space> {
 
   public removeGuardian(req: WenRequest): Observable<Space|undefined> {
     const callable = this.fns.httpsCallable(WEN_FUNC.removeGuardianSpace);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public blockMember(req: WenRequest): Observable<Space|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.blockMemberSpace);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public unblockMember(req: WenRequest): Observable<Space|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.unblockMemberSpace);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public acceptMember(req: WenRequest): Observable<Space|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.acceptMemberSpace);
+    const data$ = callable(req);
+    return data$;
+  }
+
+  public rejectMember(req: WenRequest): Observable<Space|undefined> {
+    const callable = this.fns.httpsCallable(WEN_FUNC.declineMemberSpace);
     const data$ = callable(req);
     return data$;
   }

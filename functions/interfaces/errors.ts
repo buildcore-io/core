@@ -38,5 +38,6 @@ export const WenError = {
   value_does_not_exists_in_proposal: { code: 2032, key: 'Value does not exists in proposal.' },
   proposal_must_be_in_future: { code: 2033, key: 'Proposal must be in future.' },
   proposal_start_date_must_be_before_end_date: { code: 2034, key: 'Proposal startDate must be before endDate.' },
+  member_did_not_request_to_join: { code: 2036, key: 'Member did not request to join.' },
 }
 

@@ -1,14 +1,168 @@
-<section class="container flex items-center content-center justify-center">
-  <main class="mx-auto my-96 md:max-w-xl">
-    <div class="text-center">
-      <h1 class="mb-4 text-2xl md:text-4xl" i18n>
-        👋 Welcome to the Soonaverse
-      </h1>
-      <p class="mb-12 text-base md:text-xl" i18n>
-        ⚒️ Experience that stays with you forever ⚒️
-      </p>
-
-      <button [routerLink]="['discover']"> Discover Soonaverse </button>
+<section class="absolute left-0 right-0">
+  <main class="mx-auto mb-40 bg-bg-background">
+    <div class="w-full wen-home-vector">
+      <div class="container px-8">
+        <h1 class="w-6/12 text-6xl text-white pt-52">
+          The Soonaverse
+        </h1>
+        <p class="w-6/12 pt-8 mb-12 text-2xl text-white">
+          Connect with the community developing digital public goods, creating financial freedom, and defining the
+          future of the open web.
+        </p>
+        <button nz-button nzType="primary" nzSize="large" type="button" (click)="join()">
+          Join Soonaverse
+        </button>
+      </div>
     </div>
+
+    <div class="-mt-16 rounded-t-large bg-bg-background">
+      <div class="container flex flex-col items-center justify-center pt-24">
+        <h1 class="text-5xl">
+          Three ways to get started
+        </h1>
+        <p class="w-9/12 text-2xl text-center text-app-gray-400">Connect with the community developing digital public
+          goods, creating financial freedom, and defining the future of the open web.</p>
+      </div>
+
+      <div class="container my-16">
+        <div class="flex flex-wrap justify-center gap-10">
+          <article class="bg-white w-80 h-80 rounded-2xl">
+            <div class="w-full h-40 overflow-hidden rounded-2xl">
+              <img alt="" src="/assets/mocks/build_dao_banner.jpg" class="object-cover w-full h-full" />
+            </div>
+
+            <div class="relative flex flex-col justify-center w-full p-6 text-center h-36">
+              <h3 class="mb-1 text-2xl">Build and Earn</h3>
+              <p class="text-lg text-app-gray-400">Earn while building open source public goods projects that matter.
+              </p>
+            </div>
+          </article>
+
+          <article class="bg-white w-80 h-80 rounded-2xl">
+            <div class="w-full h-40 overflow-hidden rounded-2xl">
+              <img alt="" src="/assets/mocks/manage_dao_banner.jpg" class="object-cover w-full h-full" />
+            </div>
+
+            <div class="relative flex flex-col justify-center w-full p-6 text-center h-36">
+              <h3 class="mb-1 text-2xl">Manage existing DAO</h3>
+              <p class="text-lg text-app-gray-400">Support open source projects building the future of the open web.</p>
+            </div>
+          </article>
+
+          <article class="bg-white w-80 h-80 rounded-2xl">
+            <div class="w-full h-40 overflow-hidden rounded-2xl">
+              <img alt="" src="/assets/mocks/own_dao_banner.jpg" class="object-cover w-full h-full" />
+            </div>
+
+            <div class="relative flex flex-col justify-center w-full p-6 text-center h-36">
+              <h3 class="mb-1 text-2xl">Create your own DAO</h3>
+              <p class="text-lg text-app-gray-400">Earn while building open source public goods projects that matter.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="mt-32">
+          <article class="flex flex-row w-full bg-white h-96 rounded-large">
+            <div class="relative w-1/2 h-full p-10 space-y-6">
+              <h3 class="mb-1 text-4xl">All transactions are backed by IOTA</h3>
+              <p class="text-lg text-app-gray-400">IOTA guides you through the complexities of crypto, protected and
+                with ease. IOTA uses cutting edge feeless technology, so you don’t have to think much about
+                cost.
+              </p>
+              <button nz-button nzType="primary" nzSize="large" type="button" (click)="goToIotaUrl()">
+                More about IOTA
+              </button>
+            </div>
+            <div class="w-1/2 h-full ml-8 overflow-hidden rounded-large">
+              <img alt="" src="/assets/mocks/treasure_banner.jpg" class="object-cover w-full h-full" />
+            </div>
+          </article>
+        </div>
+
+        <div class="mt-32 mx-44">
+          <article class="flex flex-row w-full mx-auto bg-white rounded-large h-52">
+            <div class="w-1/2 h-full mr-8 overflow-hidden rounded-large">
+              <img alt="" src="/assets/mocks/about_us.jpg" class="object-cover w-full h-full" />
+            </div>
+            <div class="relative w-1/2 h-full p-10 space-y-6">
+              <h3 class="mb-1 text-2xl">Future of Soonaverse
+              </h3>
+              <p class="text-lg text-app-gray-400">
+              </p>
+              <button nz-button class="float-right " nzType="primary" nzSize="large" type="button" (click)="goToSoonLabsUrl()">
+                Visit Soonlabs to see more
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div class="mt-32">
+          <h1 class="text-5xl">
+            Get started with Soonverse
+          </h1>
+          <p class="text-lg text-app-gray-400">
+            Not sure where to start? Find featured bounties below.
+          </p>
+
+          <div class="mt-16 space-y-14">
+            <div class="-mx-6 overflow-hidden">
+              <h3 class="px-7">Featured spaces
+                <button nz-button class="float-right " nzType="primary" nzSize="large" type="button"
+                  [routerLink]="['/discover', 'spaces']">
+                  Discover more
+                </button>
+              </h3>
+              <div class="flex gap-6">
+                <wen-space-card class="cursor-pointer" *ngFor="let s of (spaces$ | async) | slice:0:3; trackBy: trackByUid" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
+              </div>
+            </div>
+
+            <div class="-mx-6 overflow-hidden">
+              <h3 class="px-7">Active Awards
+                <button nz-button class="float-right " nzType="primary" nzSize="large" type="button"
+                  [routerLink]="['/discover', 'awards']">
+                  Discover more
+                </button>
+              </h3>
+              <div class="flex gap-6">
+                <wen-award-card class="cursor-pointer" *ngFor="let award of (award$ | async) | slice:0:3; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
+                </wen-award-card>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
   </main>
+  <footer class="p-24 -mt-16 bg-bg-footer rounded-t-large">
+    <h1 class="text-5xl">
+      Who’s using Soonaverse
+    </h1>
+
+    <div class="w-full m-6 overflow-hidden" style="height: 750px;">
+      <img alt="" src="/assets/mocks/users_mock.png" class="object-contain w-full h-full" />
+    </div>
+
+    <div class="flex justify-between px-12">
+      <div>
+        <!-- <a nz-button class="text-black" nzType="link" type="button"> <i nz-icon nzType="linkedin" nzTheme="outline"></i>
+        </a> -->
+        <a nz-button href="https://twitter.com/soon_labs" target="_new" class="text-black" nzType="link" type="button"> <i nz-icon nzType="twitter" nzTheme="outline"></i>
+        </a>
+        <a nz-button href="https://github.com/soonlabs" target="_new" class="text-black" nzType="link" type="button"> <i nz-icon nzType="github" nzTheme="outline"></i>
+        </a>
+      </div>
+      <div>
+        <a nz-button href="https://www.soonlabs.com" target="_new" class="font-normal text-black" nzType="link" type="button">Privacy</a>
+        <a nz-button href="https://www.soonlabs.com" target="_new" class="font-normal text-black" nzType="link" type="button">Terms</a>
+        <a nz-button href="https://www.soonlabs.com" target="_new" class="font-normal text-black" nzType="link" type="button">Powered by Soonlabs</a>
+      </div>
+
+    </div>
+
+  </footer>
 </section>

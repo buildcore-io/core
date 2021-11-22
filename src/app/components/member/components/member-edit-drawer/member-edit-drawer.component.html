@@ -1,56 +1,39 @@
-<nz-drawer
-  nzPlacement="right"
-  nzTitle="Settings"
-  [nzVisible]="true"
-  [nzWidth]="500"
-  (nzOnClose)="close()"
-  [nzClosable]="true"
->
+<nz-drawer nzPlacement="right" nzTitle="Settings" [nzMask]="false" [nzVisible]="true" [nzWidth]="621" (nzOnClose)="close()"
+  [nzClosable]="true">
   <ng-container *nzDrawerContent>
-    <form nz-form nzLayout="vertical" [formGroup]="memberForm">
+    <form class="-mt-16 space-y-12" nz-form nzLayout="vertical" [formGroup]="memberForm">
       <nz-form-item>
-        <nz-form-label>Display Name</nz-form-label>
-        <span nz-typography
-          >Set a display name. This does not change your username.</span
-        >
+        <h4 nz-typography class="pt-4 mb-1">
+          Display Name
+        </h4>
+        <span nz-typography class="mb-6 text-app-gray-400">Set a display name. This does not change your
+          username.</span>
         <nz-form-control>
-          <nz-input-group [nzPrefix]="prefixName">
-            <input
-              nz-input
-              placeholder="Display name (optional)"
-              [formControl]="nameControl"
-            />
+          <nz-input-group [nzPrefix]="prefixName" nzSize="large">
+            <input nz-input placeholder="Display name (optional)" [formControl]="nameControl" />
             <ng-template #prefixName>@</ng-template>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label>About</nz-form-label>
-        <span nz-typography
-          >A brief description of yourself shown on your profile.</span
-        >
-        <nz-form-control>
-          <textarea
-            nz-input
-            placeholder="Your description (optional)"
-            rows="4"
-            [formControl]="aboutControl"
-          ></textarea>
+        <h4 nz-typography class="pt-4 mb-1">
+          About
+        </h4>
+        <span nz-typography class="mb-6 text-app-gray-400">A brief description of yourself shown on your profile.</span>
+        <nz-form-control nzSize="large">
+          <textarea nz-input placeholder="Your description (optional)" rows="8" [formControl]="aboutControl"></textarea>
         </nz-form-control>
       </nz-form-item>
 
       <div class="space-y-4">
-        <nz-form-label>Networking</nz-form-label>
+        <h4 nz-typography class="pt-4 mb-1">
+          Networking
+        </h4>
         <nz-form-item>
           <nz-form-control>
-            <nz-input-group [nzPrefix]="prefixGithub">
-              <input
-                type="text"
-                nz-input
-                placeholder="Link to your Github account"
-                [formControl]="githubControl"
-              />
+            <nz-input-group [nzPrefix]="prefixGithub" nzSize="large">
+              <input type="text" nz-input placeholder="Link to your Github account" [formControl]="githubControl" />
               <ng-template #prefixGithub>
                 <i nz-icon nzType="github"></i>
               </ng-template>
@@ -60,13 +43,8 @@
 
         <nz-form-item>
           <nz-form-control>
-            <nz-input-group [nzPrefix]="prefixTwitter">
-              <input
-                type="text"
-                nz-input
-                placeholder="Link to your Twitter account"
-                [formControl]="twitterControl"
-              />
+            <nz-input-group [nzPrefix]="prefixTwitter" nzSize="large">
+              <input type="text" nz-input placeholder="Link to your Twitter account" [formControl]="twitterControl" />
               <ng-template #prefixTwitter>
                 <i nz-icon nzType="twitter"></i>
               </ng-template>
@@ -76,13 +54,8 @@
 
         <nz-form-item>
           <nz-form-control>
-            <nz-input-group [nzPrefix]="prefixLinkedin">
-              <input
-                type="text"
-                nz-input
-                placeholder="Link to your LinkedIn account"
-                [formControl]="linkedinControl"
-              />
+            <nz-input-group [nzPrefix]="prefixLinkedin" nzSize="large">
+              <input type="text" nz-input placeholder="Link to your LinkedIn account" [formControl]="linkedinControl" />
               <ng-template #prefixLinkedin>
                 <i nz-icon nzType="linkedin"></i>
               </ng-template>
@@ -91,13 +64,7 @@
         </nz-form-item>
       </div>
 
-      <button
-        nz-button
-        nzType="primary"
-        type="button"
-        nzSize="large"
-        (click)="save()"
-      >
+      <button nz-button nzType="primary" type="button" nzSize="large" (click)="save()">
         Save changes
       </button>
     </form>

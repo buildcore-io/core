@@ -7,6 +7,7 @@ import { defineGlobalsInjections } from '@ngneat/spectator';
 import 'jest-preset-angular/setup-jest';
 import { MockProvider, ngMocks } from 'ng-mocks';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
@@ -45,6 +46,7 @@ defineGlobalsInjections({
     TruncateModule,
     NzTimelineModule,
     NzDividerModule,
+    NzBadgeModule,
     NzGridModule,
     NzToolTipModule,
     NzMenuModule,

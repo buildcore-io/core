@@ -3,7 +3,7 @@ import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveParticipant, createAward, participate } from './controls/award.control';
 import { createMember, updateMember } from './controls/member.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
-import { addGuardian, blockMember, createSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
+import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
 admin.initializeApp();
 
 // List all various functions supported by Firebase functions.
@@ -20,6 +20,8 @@ exports[WEN_FUNC.addGuardianSpace] = addGuardian;
 exports[WEN_FUNC.removeGuardianSpace] = removeGuardian;
 exports[WEN_FUNC.blockMemberSpace] = blockMember;
 exports[WEN_FUNC.unblockMemberSpace] = unblockMember;
+exports[WEN_FUNC.acceptMemberSpace] = acceptMemberSpace;
+exports[WEN_FUNC.declineMemberSpace] = declineMemberSpace;
 
 // Award Functions
 exports[WEN_FUNC.cAward] = createAward;
