@@ -155,12 +155,16 @@ export class AwardPage implements OnInit, OnDestroy {
       uid: this.data.award$.value.uid,
       comment: this.commentControl.value || undefined
     }, (sc, finish) => {
-      this.notification.processRequest(this.awardApi.participate(sc), 'Participated.').subscribe(() => {
-        finish();
+      this.notification.processRequest(this.awardApi.participate(sc), 'Participated.', finish).subscribe(() => {
+        // none
       });
     });
 
   }
+
+  // public async cancel(): Promise<void> {
+  //   alert('SOON you can!');
+  // }
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();

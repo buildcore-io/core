@@ -2,12 +2,11 @@ import { Injectable } from '@angular/core';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { METAMASK_CHAIN_ID } from "functions/interfaces/config";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
 import { EthAddress, WenRequest } from '../../../../../functions/interfaces/models/base';
 import { Member } from '../../../../../functions/interfaces/models/member';
-import { RPC_CHAIN } from './../../../../../functions/interfaces/config';
+import { METAMASK_CHAIN_ID, RPC_CHAIN } from './../../../../../functions/interfaces/config';
 import { MemberApi } from './../../../@api/member.api';
 import { removeItem } from './../../../@core/utils/local-storage.utils';
 
@@ -122,7 +121,6 @@ export class AuthService {
           body: params
         }
       } catch(e) {
-        this.notification.error('Failed to log in.', '');
         this.showWalletPopup$.next(WalletStatus.HIDDEN);
         return undefined;
       }
@@ -146,6 +144,7 @@ export class AuthService {
   public async signIn(): Promise<void> {
     const sc: WenRequest|undefined = await this.signWithMetamask({});
     if (!sc) {
+      this.notification.error('Failed to log in.', '');
       return;
     }
 

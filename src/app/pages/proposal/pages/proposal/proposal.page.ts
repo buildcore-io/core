@@ -200,8 +200,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     await this.auth.sign({
         uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+        // none.
       });
     });
   }
@@ -214,8 +214,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+        // none.
       });
     });
 
@@ -230,8 +230,8 @@ export class ProposalPage implements OnInit, OnDestroy {
       uid: this.data.proposal$.value.uid,
       values: [this.voteControl.value]
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.').subscribe((val: any) => {
-        finish();
+      this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.', finish).subscribe((val: any) => {
+        // none.
       });
     });
 

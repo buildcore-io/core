@@ -12,6 +12,7 @@ import { BaseApi } from './base.api';
 export interface AwardParticipantWithMember extends Member {
   comment?: string;
   participatedOn: Timestamp;
+  completed: boolean;
 }
 
 export enum AwardFilter {
@@ -70,6 +71,7 @@ export class AwardApi extends BaseApi<Award> {
         const finObj: AwardParticipantWithMember = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
         finObj.comment = o.comment;
         finObj.participatedOn = o.createdOn;
+        finObj.completed = o.completed;
         out.push(finObj);
       }
 

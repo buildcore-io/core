@@ -66,9 +66,8 @@ export class MemberEditDrawerComponent implements OnInit {
         uid: this.auth.member$.value!.uid
       }
     }, (sc, finish) => {
-      this.notification.processRequest(this.memberApi.updateMember(sc), 'Updated').subscribe(() => {
+      this.notification.processRequest(this.memberApi.updateMember(sc), 'Updated', finish).subscribe(() => {
         this.close();
-        finish();
       });
     });
   }
