@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Proposal } from "functions/interfaces/models";
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { Member } from './../../../functions/interfaces/models/member';
 import { ProposalMember } from './../../../functions/interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi } from './base.api';
@@ -13,6 +14,11 @@ export enum ProposalFilter {
   ALL,
   ACTIVE,
   COMPLETED
+}
+
+export interface ProposalParticipantWithMember extends Member {
+  voted?: boolean;
+  values?: number[];
 }
 
 @Injectable({
@@ -45,9 +51,18 @@ export class ProposalApi extends BaseApi<Proposal> {
     ).valueChanges();
   }
 
-  public listenMembers(proposalId: string): Observable<ProposalMember[]> {
-    return <Observable<ProposalMember[]>>this.afs.collection(this.collection)
-          .doc(proposalId.toLowerCase()).collection(SUB_COL.MEMBERS).valueChanges();
+  public listenMembers(proposalId: string): Observable<ProposalParticipantWithMember[]> {
+    return (<Observable<ProposalMember[]>>this.afs.collection(this.collection)
+      .doc(proposalId.toLowerCase()).collection(SUB_COL.MEMBERS).valueChanges()).pipe(switchMap(async (obj: ProposalMember[]) => {
+        const out: ProposalParticipantWithMember[] = [];
+        for (const o of obj) {
+          const finObj: ProposalParticipantWithMember = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
+          finObj.voted = o.voted;
+          out.push(finObj);
+        }
+
+        return out;
+    }));
   }
 
   public lastVotes(proposalId: string): Observable<Transaction[]> {

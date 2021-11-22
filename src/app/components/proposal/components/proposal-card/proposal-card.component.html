@@ -4,7 +4,7 @@
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-app-gray-background min-w-10" nzShape="circle">
       </nz-avatar>
-      <p nz-typography class="truncate">{{ proposal?.space}}</p>
+      <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
     <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
   </div>

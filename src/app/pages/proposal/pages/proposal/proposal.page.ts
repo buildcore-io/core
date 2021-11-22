@@ -7,9 +7,9 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
-import { ProposalAnswer, ProposalMember, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
-import { ProposalApi } from './../../../../@api/proposal.api';
+import { ProposalApi, ProposalParticipantWithMember } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -153,7 +153,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 
-  public getProgress(q: ProposalQuestion, a: ProposalAnswer, members?: ProposalMember[]|null): number {
+  public getProgress(q: ProposalQuestion, a: ProposalAnswer, members?: ProposalParticipantWithMember[]|null): number {
     let calc = 0;
     members?.forEach((o) => {
       if (o.voted && o.values?.length && o.values?.length > 0 && o.values.includes(a.value)) {
@@ -177,7 +177,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     return text;
   }
 
-  public canVote(members?: ProposalMember[]|null): boolean {
+  public canVote(members?: ProposalParticipantWithMember[]|null): boolean {
     if (!this.auth.member$?.value?.uid) {
       return false;
     }

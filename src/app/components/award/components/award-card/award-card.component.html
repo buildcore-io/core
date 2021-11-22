@@ -3,7 +3,7 @@
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
         class="border-gray-400 bg-app-gray-background min-w-10" nzShape="circle"></nz-avatar>
-      <p nz-typography class="truncate">{{ award.space}}</p>
+      <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
     <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ award.name || award.uid }}</h3>
   </div>
@@ -12,7 +12,7 @@
     <div class="inline-flex items-center space-x-3">
       <nz-avatar nzSrc="/assets/mocks/trophy.png" nz-tooltip [nzTooltipTitle]="award.badge.name"
         class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
-      <nz-tag class="wen-xp-tag">{{award.badge.xp}} XP</nz-tag>
+      <nz-tag class="wen-xp-tag">{{award.badge.xp / award.badge.count}} XP</nz-tag>
     </div>
 
     <div i18n class="inline-flex mt-6">

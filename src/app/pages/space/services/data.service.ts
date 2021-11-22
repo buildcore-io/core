@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Award, Space, SpaceGuardian } from 'functions/interfaces/models';
+import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
@@ -10,7 +10,7 @@ export class DataService {
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
+  public guardians$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public proposalsActive$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public proposalsCompleted$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public awardsActive$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);

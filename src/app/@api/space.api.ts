@@ -38,9 +38,16 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
-  public listenGuardians(spaceId: string): Observable<SpaceGuardian[]> {
-    return <Observable<SpaceGuardian[]>>this.afs.collection(this.collection)
-          .doc(spaceId.toLowerCase()).collection(SUB_COL.GUARDIANS).valueChanges();
+  public listenGuardians(spaceId: string): Observable<Member[]> {
+    return (<Observable<SpaceGuardian[]>>this.afs.collection(this.collection)
+    .doc(spaceId.toLowerCase()).collection(SUB_COL.GUARDIANS).valueChanges()).pipe(switchMap(async (obj: SpaceGuardian[]) => {
+      const out: Member[] = [];
+      for (const o of obj) {
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
+      }
+
+      return out;
+    }));
   }
 
   public listenMembers(spaceId: string): Observable<Member[]> {
