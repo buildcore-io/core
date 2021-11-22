@@ -8,10 +8,10 @@
     <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Proposal Info">
         <div class="space-y-4">
-          <nz-radio-group nzButtonStyle="solid" nzSize="large" [formControl]="selectedGroupControl">
-            <label nz-radio-button [nzValue]="true">All Guardians</label>
-            <label nz-radio-button [nzValue]="false">All Members</label>
-            <label nz-radio-button [nzDisabled]="true">Custom and more</label>
+          <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
+            <label nz-radio [nzValue]="true">All Guardians</label>
+            <label nz-radio [nzValue]="false">All Members</label>
+            <label nz-radio [nzDisabled]="true">Custom and more</label>
           </nz-radio-group>
           <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
           <div class="flex flex-grow space-x-4">

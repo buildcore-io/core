@@ -98,6 +98,8 @@ export class SpacePage implements OnInit, OnDestroy {
   private listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
     this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isMemberWithinSpace$));
     this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
+    this.subscriptions$.push(this.spaceApi.listenBlockedMembers(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.blockedMembers$));
+    this.subscriptions$.push(this.spaceApi.listenPendingMembers(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.pendingMembers$));
   }
 
   public getAvatarUrl(url?: string): string | undefined {

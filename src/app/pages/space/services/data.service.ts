@@ -16,6 +16,8 @@ export class DataService {
   public awardsActive$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public awardsCompleted$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
+  public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
+  public pendingMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
 
   constructor(private auth: AuthService) {
     // none.
@@ -32,5 +34,13 @@ export class DataService {
     }
 
     return this.guardians$.value.filter(e => e.uid === currentMemberId).length > 0;
+  }
+
+  public getPendingMembersCount(members?: Member[]|null): number {
+    if (!members) {
+      return 0;
+    }
+
+    return members.length;
   }
 }

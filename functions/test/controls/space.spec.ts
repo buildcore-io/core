@@ -2,7 +2,7 @@ import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from "../../interfaces/functions";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { addGuardian, blockMember, createSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './../../src/controls/space.control';
+import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './../../src/controls/space.control';
 
 /**
  * TODO
@@ -461,4 +461,122 @@ describe('SpaceController: member management', () => {
     const jSpace2: any = testEnv.wrap(joinSpace);
     (<any>expect(jSpace2())).rejects.toThrowError(WenError.you_are_not_allowed_to_join_space.key);
   });
+
+  describe('SpaceController: member management - NOT OPEN', () => {
+    let walletSpy: any;
+    let guardian: any;
+    let member: any;
+    let doc: any;
+
+    beforeEach(async () => {
+      walletSpy = jest.spyOn(wallet, 'decodeAuth');
+      guardian = wallet.getRandomEthAddress();
+      member = wallet.getRandomEthAddress();
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian,
+        body: {
+          name: 'This space rocks',
+          open: false
+        }
+      }));
+
+      const wCreate: any = testEnv.wrap(createSpace);
+      doc = await wCreate();
+      expect(doc?.uid).toBeDefined();
+    });
+
+    it('successfully join space', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: member,
+        body: {
+          uid: doc.uid
+        }
+      }));
+      const jSpace: any = testEnv.wrap(joinSpace);
+      const doc2 = await jSpace();
+      expect(doc2).toBeDefined();
+      expect(doc2.createdOn).toBeDefined();
+      expect(doc2.uid).toEqual(member);
+    });
+
+    it('successfully join space and fail to accept - NOT GUARDIAN', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: member,
+        body: {
+          uid: doc.uid
+        }
+      }));
+      const jSpace: any = testEnv.wrap(joinSpace);
+      const doc2 = await jSpace();
+      expect(doc2).toBeDefined();
+      expect(doc2.createdOn).toBeDefined();
+      expect(doc2.uid).toEqual(member);
+
+      // Accepted them
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: member,
+        body: {
+          uid: doc.uid,
+          member
+        }
+      }));
+      const aSpace: any = testEnv.wrap(acceptMemberSpace);
+      (<any>expect(aSpace())).rejects.toThrowError(WenError.you_are_not_guardian_of_space.key);
+    });
+
+    it('successfully join space and be accepted', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: member,
+        body: {
+          uid: doc.uid
+        }
+      }));
+      const jSpace: any = testEnv.wrap(joinSpace);
+      const doc2 = await jSpace();
+      expect(doc2).toBeDefined();
+      expect(doc2.createdOn).toBeDefined();
+      expect(doc2.uid).toEqual(member);
+
+      // Accepted them
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian,
+        body: {
+          uid: doc.uid,
+          member
+        }
+      }));
+      const aSpace: any = testEnv.wrap(acceptMemberSpace);
+      const doc3 = await aSpace();
+      expect(doc3).toBeDefined();
+      expect(doc3.createdOn).toBeDefined();
+      expect(doc3.uid).toEqual(member);
+    });
+
+    it('successfully join space and be rejected', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: member,
+        body: {
+          uid: doc.uid
+        }
+      }));
+      const jSpace: any = testEnv.wrap(joinSpace);
+      const doc2 = await jSpace();
+      expect(doc2).toBeDefined();
+      expect(doc2.createdOn).toBeDefined();
+      expect(doc2.uid).toEqual(member);
+
+      // Accepted them
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian,
+        body: {
+          uid: doc.uid,
+          member
+        }
+      }));
+      const dSpace: any = testEnv.wrap(declineMemberSpace);
+      const doc3 = await dSpace();
+      expect(doc3).toBeDefined();
+      expect(doc3.status).toEqual('success');
+    });
+   });
 });

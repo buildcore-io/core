@@ -9,7 +9,7 @@
           Connect with the community developing digital public goods, creating financial freedom, and defining the
           future of the open web.
         </p>
-        <button nz-button nzType="primary" nzSize="large" type="button" [routerLink]="['/dashboard']">
+        <button nz-button nzType="primary" nzSize="large" type="button" (click)="join()">
           Join Soonaverse
         </button>
       </div>
@@ -65,13 +65,13 @@
         <div class="mt-32">
           <article class="flex flex-row w-full bg-white h-96 rounded-large">
             <div class="relative w-1/2 h-full p-10 space-y-6">
-              <h3 class="mb-1 text-4xl">All transactions are backed by Firefly</h3>
-              <p class="text-lg text-app-gray-400">Firefly guides you through the complexities of crypto, protected and
-                with ease. Firefly uses cutting edge Stronghold technology, so you don’t have to think much about
-                security.
+              <h3 class="mb-1 text-4xl">All transactions are backed by IOTA</h3>
+              <p class="text-lg text-app-gray-400">IOTA guides you through the complexities of crypto, protected and
+                with ease. IOTA uses cutting edge feeless technology, so you don’t have to think much about
+                cost.
               </p>
-              <button nz-button nzType="primary" nzSize="large" type="button">
-                More about Firefly
+              <button nz-button nzType="primary" nzSize="large" type="button" (click)="goToIotaUrl()">
+                More about IOTA
               </button>
             </div>
             <div class="w-1/2 h-full ml-8 overflow-hidden rounded-large">
@@ -90,7 +90,7 @@
               </h3>
               <p class="text-lg text-app-gray-400">
               </p>
-              <button nz-button class="float-right " nzType="primary" nzSize="large" type="button">
+              <button nz-button class="float-right " nzType="primary" nzSize="large" type="button" (click)="goToSoonLabsUrl()">
                 Visit Soonlabs to see more
               </button>
             </div>
@@ -114,7 +114,7 @@
                 </button>
               </h3>
               <div class="flex gap-6">
-                spaces
+                <wen-space-card class="cursor-pointer" *ngFor="let s of (spaces$ | async) | slice:0:3; trackBy: trackByUid" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
               </div>
             </div>
 
@@ -126,7 +126,8 @@
                 </button>
               </h3>
               <div class="flex gap-6">
-                awards
+                <wen-award-card class="cursor-pointer" *ngFor="let award of (award$ | async) | slice:0:3; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
+                </wen-award-card>
               </div>
             </div>
           </div>
@@ -148,17 +149,17 @@
 
     <div class="flex justify-between px-12">
       <div>
-        <a nz-button class="text-black" nzType="link" type="button"> <i nz-icon nzType="linkedin" nzTheme="outline"></i>
+        <!-- <a nz-button class="text-black" nzType="link" type="button"> <i nz-icon nzType="linkedin" nzTheme="outline"></i>
+        </a> -->
+        <a nz-button href="https://twitter.com/soon_labs" target="_new" class="text-black" nzType="link" type="button"> <i nz-icon nzType="twitter" nzTheme="outline"></i>
         </a>
-        <a nz-button class="text-black" nzType="link" type="button"> <i nz-icon nzType="twitter" nzTheme="outline"></i>
-        </a>
-        <a nz-button class="text-black" nzType="link" type="button"> <i nz-icon nzType="github" nzTheme="outline"></i>
+        <a nz-button href="https://github.com/soonlabs" target="_new" class="text-black" nzType="link" type="button"> <i nz-icon nzType="github" nzTheme="outline"></i>
         </a>
       </div>
       <div>
-        <a nz-button class="font-normal text-black" nzType="link" type="button">Privacy</a>
-        <a nz-button class="font-normal text-black" nzType="link" type="button">Terms</a>
-        <a nz-button class="font-normal text-black" nzType="link" type="button">Powered by Soonlabs</a>
+        <a nz-button href="https://www.soonlabs.com" target="_new" class="font-normal text-black" nzType="link" type="button">Privacy</a>
+        <a nz-button href="https://www.soonlabs.com" target="_new" class="font-normal text-black" nzType="link" type="button">Terms</a>
+        <a nz-button href="https://www.soonlabs.com" target="_new" class="font-normal text-black" nzType="link" type="button">Powered by Soonlabs</a>
       </div>
 
     </div>

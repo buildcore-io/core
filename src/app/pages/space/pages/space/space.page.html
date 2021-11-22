@@ -23,7 +23,8 @@
   <div class="space-y-4" nz-col nzFlex="450px">
     <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
       *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async)">
-      Join Space</button>
+      {{(data.space$ | async)!.open === false ? 'Ask to Join Space': 'Join Space'}}
+    </button>
     <div class="inline-grid space-y-4">
       <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()"><i nz-icon nzType="edit"
           nzTheme="outline"></i>
@@ -37,13 +38,15 @@
     </nz-card>
 
     <nz-card>
-      <div class="flex items-baseline">
-        <i nz-icon class="mr-3 text-xl" nzType="usergroup-add" nzTheme="outline"></i>
-        <a [routerLink]="['members']">
-          <span>{{ (data.space$ | async)!.totalMembers }}</span>
-          <span> members</span>
-        </a>
-      </div>
+      <nz-badge [nzCount]="data.getPendingMembersCount(data.pendingMembers$ | async)">
+        <div class="flex items-baseline">
+          <i nz-icon class="mr-3 text-xl" nzType="usergroup-add" nzTheme="outline"></i>
+          <a [routerLink]="['members']">
+            <span>{{ (data.space$ | async)!.totalMembers }}</span>
+            <span> members</span>
+          </a>
+        </div>
+      </nz-badge>
     </nz-card>
 
     <nz-card nzTitle="Related Links">

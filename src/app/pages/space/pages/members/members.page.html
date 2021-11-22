@@ -1,31 +1,41 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
-      <!-- TODO improve tabs -->
-      <h3>{{(data.members$ | async)?.length + ((data.members$ | async)?.length === 1 ? ' member' : ' members')}}</h3>
-      <!-- <h3>Pending Members</h3>
-      <h3>Blocked Members</h3> -->
-
-      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Filter by">
-        <nz-option nzLabel="Active" nzValue="active"></nz-option>
-        <nz-option nzLabel="Pending" nzValue="pending"></nz-option>
-        <nz-option nzLabel="Blocked" nzValue="blocked"></nz-option>
-      </nz-select>
+      <h3>{{getTitle()}} {{((getList() | async)?.length === 1 ? ' Member' : ' Members')}}</h3>
+      <nz-badge [nzCount]="data.getPendingMembersCount(data.pendingMembers$ | async)">
+        <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
+          <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
+          <nz-option [nzLabel]="'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')" [nzValue]="filterOptions.PENDING"></nz-option>
+          <nz-option nzLabel="Blocked" [nzValue]="filterOptions.BLOCKED"></nz-option>
+        </nz-select>
+      </nz-badge>
     </div>
     <wen-member-card class="block cursor-pointer" [fullWidth]="true"
-      *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
-      <ng-container *ngIf="memberIsGuardian(member.uid)">
+      *ngFor="let member of getList() | async; trackBy: trackByUid" [member]="member">
+      <ng-container *ngIf="memberIsGuardian(member.uid) && isActiveList()">
         Guardian
-        <button nz-button nzSize="small" type="button" (click)="removeGuardian(member.uid)"
+        <button nz-button nzSize="small" nzType="default" type="button" (click)="removeGuardian(member.uid)"
           *ngIf="data.loggedInMemberIsGuardian()">Remove
           Guardian</button>
       </ng-container>
-      <ng-container *ngIf="!memberIsGuardian(member.uid)">
+      <ng-container *ngIf="!memberIsGuardian(member.uid) && isActiveList()">
         Member
         <button nz-button nzSize="small" type="button" (click)="setGuardian(member.uid)"
           *ngIf="data.loggedInMemberIsGuardian()">Make
           Guardian</button>
       </ng-container>
+
+      <button nz-button nzSize="small" type="button" (click)="acceptMember(member.uid)"
+             *ngIf="data.loggedInMemberIsGuardian() && isPendingList()">Accept Member</button>
+
+      <button nz-button nzDanger nzSize="small" type="button" (click)="rejectMember(member.uid)"
+              *ngIf="data.loggedInMemberIsGuardian() && isPendingList()">Reject Member</button>
+
+      <button nz-button nzDanger nzSize="small" type="button" nzType="text" (click)="blockMember(member.uid)"
+             *ngIf="data.loggedInMemberIsGuardian() && isActiveList()">Block Member</button>
+
+      <button nz-button nzSize="small" type="button" (click)="unblockMember(member.uid)"
+             *ngIf="data.loggedInMemberIsGuardian() && isBlockedList()">Unblock Member</button>
     </wen-member-card>
   </div>
 </div>

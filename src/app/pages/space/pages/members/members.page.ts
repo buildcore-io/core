@@ -1,12 +1,20 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UntilDestroy } from '@ngneat/until-destroy';
-import { skip, Subscription } from 'rxjs';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from "./../../services/data.service";
+
+enum FilterOptions {
+  ACTIVE = 'active',
+  PENDING = 'pending',
+  BLOCKED = 'blocked'
+}
 
 @UntilDestroy()
 @Component({
@@ -17,6 +25,7 @@ import { DataService } from "./../../services/data.service";
 })
 export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
+  public selectedListControl: FormControl = new FormControl('active');
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -25,9 +34,14 @@ export class MembersPage implements OnInit, OnDestroy {
     private notification: NotificationService,
     private route: ActivatedRoute,
     private router: Router,
+    private cd: ChangeDetectorRef,
     public data: DataService
   ) {
     // none.
+  }
+
+  public get filterOptions(): typeof FilterOptions {
+    return FilterOptions;
   }
 
   public ngOnInit(): void {
@@ -45,6 +59,10 @@ export class MembersPage implements OnInit, OnDestroy {
       // Re-sync members.
       this.data.members$.next(this.data.members$.value);
     });
+
+    this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+      this.cd.markForCheck();
+    });
   }
 
   public memberIsGuardian(memberId: string): boolean {
@@ -53,6 +71,38 @@ export class MembersPage implements OnInit, OnDestroy {
     }
 
     return this.data.guardians$.value.filter(e => e.uid === memberId).length > 0;
+  }
+
+  public getList(): BehaviorSubject<Member[]|undefined> {
+    if (this.selectedListControl.value === this.filterOptions.PENDING) {
+      return this.data.pendingMembers$;
+    } else if (this.selectedListControl.value === this.filterOptions.BLOCKED) {
+      return this.data.blockedMembers$;
+    } else {
+      return this.data.members$;
+    }
+  }
+
+  public getTitle(): string {
+    if (this.selectedListControl.value === this.filterOptions.PENDING) {
+      return 'Pending';
+    } else if (this.selectedListControl.value === this.filterOptions.BLOCKED) {
+      return 'Blocked';
+    } else {
+      return 'Active';
+    }
+  }
+
+  public isActiveList(): boolean {
+    return this.selectedListControl.value === FilterOptions.ACTIVE;
+  }
+
+  public isBlockedList(): boolean {
+    return this.selectedListControl.value === FilterOptions.BLOCKED;
+  }
+
+  public isPendingList(): boolean {
+    return this.selectedListControl.value === FilterOptions.PENDING;
   }
 
   public async setGuardian(memberId: string): Promise<void> {
@@ -85,6 +135,66 @@ export class MembersPage implements OnInit, OnDestroy {
       });
     });
 
+  }
+
+  public async blockMember(memberId: string): Promise<void> {
+    if (!this.spaceId) {
+      return;
+    }
+
+    await this.auth.sign({
+      uid: this.spaceId,
+      member: memberId
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.blockMember(sc), 'Member blocked.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
+  }
+
+  public async acceptMember(memberId: string): Promise<void> {
+    if (!this.spaceId) {
+      return;
+    }
+
+    await this.auth.sign({
+      uid: this.spaceId,
+      member: memberId
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.acceptMember(sc), 'Member accepted.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
+  }
+
+  public async rejectMember(memberId: string): Promise<void> {
+    if (!this.spaceId) {
+      return;
+    }
+
+    await this.auth.sign({
+      uid: this.spaceId,
+      member: memberId
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member rejected.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
+  }
+
+  public async unblockMember(memberId: string): Promise<void> {
+    if (!this.spaceId) {
+      return;
+    }
+
+    await this.auth.sign({
+      uid: this.spaceId,
+      member: memberId
+    }, (sc, finish) => {
+      this.notification.processRequest(this.spaceApi.unblockMember(sc), 'Member unblocked.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
   }
 
   public trackByUid(index: number, item: any): number {

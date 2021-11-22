@@ -8,23 +8,21 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 })
 export class DiscoverPage {
   public sections = [
-
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
-    { route: [ROUTER_UTILS.config.discover.awards], label: 'Awards' },
-    { route: [ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
+    { route: [ ROUTER_UTILS.config.discover.awards], label: 'Awards' },
+    { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
   ];
 
-  // TODO filters default logic
-  public hotTags = ['All', 'Featured'];
-  selectedTags: string[] = [];
+  public hotTags: string[] = ['All', 'Featured'];
+  public selectedTags: string[] = ['All'];
 
-  handleChange(checked: boolean, tag: string): void {
-    if (checked) {
-      this.selectedTags.push(tag);
-    } else {
-      this.selectedTags = this.selectedTags.filter(t => t !== tag);
-    }
-    console.log('You are interested in: ', this.selectedTags);
+  public handleChange(_checked: boolean, tag: string): void {
+    this.selectedTags = [tag];
+    // if (checked) {
+    //   this.selectedTags.push(tag);
+    // } else {
+    //   this.selectedTags = this.selectedTags.filter(t => t !== tag);
+    // }
   }
 }
