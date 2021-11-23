@@ -1,4 +1,4 @@
-<nz-layout class="bg-white">
+<nz-layout class="bg-white" *ngIf="!isMobile">
   <nz-sider nzWidth="auto" [nzTheme]="isDarkTheme ? 'dark' : 'light' " *ngIf="showSideBar$ | async">
     <wen-sider></wen-sider>
   </nz-sider>
@@ -13,3 +13,7 @@
     <wen-footer></wen-footer>
   </nz-layout>
 </nz-layout>
+
+<p *ngIf="isMobile" i18n>
+  SOON we will like your mobile. For now, please use desktop or tablet.
+</p>
