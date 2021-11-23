@@ -1,5 +1,5 @@
 <!-- TODO find better hack for preventing header from jumping because of the scrollbar -->
-<header class="absolute z-30 flex items-center justify-end py-5 space-x-8 w-header" style="left: calc(100vw - 600px)">
+<header class="absolute z-30 flex items-center justify-end py-5 pr-0 space-x-8 w-header lg:pr-8 xl:pr-16" style="left: calc(100vw - 500px)">
 
   <button nz-button *ngIf="(isLoggedIn$ | async) === false" class="text-black" [routerLink]="['discover']"
     type="button"><i nz-icon nzType="rocket" nzTheme="outline"></i>Discover</button>
@@ -23,16 +23,11 @@
 
   <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"></wen-sign-in>
 
-  <button nz-button nz-dropdown  nzType="default" nzShape="circle" *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+  <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Coming SOON" *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
     class="inline-flex items-center justify-center border-0">
     <i nz-icon nzType="bell" class="text-lg text-black"></i>
   </button>
   <nz-dropdown-menu #notificationMenu="nzDropdownMenu">
-    <ul nz-menu>
-      <li nz-menu-item>
-        SOON
-      </li>
-    </ul>
   </nz-dropdown-menu>
 
   <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
