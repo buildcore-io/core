@@ -1,9 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { Proposal } from './../../../../../../functions/interfaces/models/proposal';
 import { DataService } from "./../../services/data.service";
+
+enum FilterOptions {
+  ACTIVE = 'active',
+  COMPLETED = 'completed'
+}
 
 @UntilDestroy()
 @Component({
@@ -14,6 +21,7 @@ import { DataService } from "./../../services/data.service";
 })
 export class ProposalsPage implements OnInit, OnDestroy {
   public spaceId?: string;
+  public selectedListControl: FormControl = new FormControl(FilterOptions.ACTIVE);
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -36,7 +44,31 @@ export class ProposalsPage implements OnInit, OnDestroy {
 
     this.data.guardians$.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
-    })
+    });
+
+    this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+      this.cd.markForCheck();
+    });
+  }
+
+  public getList(): BehaviorSubject<Proposal[]|undefined> {
+    if (this.selectedListControl.value === this.filterOptions.ACTIVE) {
+      return this.data.proposalsActive$;
+    } else {
+      return this.data.proposalsCompleted$;
+    }
+  }
+
+  public getTitle(): string {
+    if (this.selectedListControl.value === this.filterOptions.ACTIVE) {
+      return 'Active';
+    } else {
+      return 'Completed';
+    }
+  }
+
+  public get filterOptions(): typeof FilterOptions {
+    return FilterOptions;
   }
 
   public create(): void {

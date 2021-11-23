@@ -9,8 +9,8 @@ import { filter, pairwise, Subscription } from 'rxjs';
 })
 export class NavigationService implements OnDestroy {
   private subsRouter$?: Subscription;
-  private returnUrl: string[][] = [['/']];
-  private returnText: string[] = ['Home'];
+  private returnUrl: string[][] = [['/discover']];
+  private returnText: string[] = ['Discover'];
 
   constructor(
     private location: Location,
@@ -45,7 +45,7 @@ export class NavigationService implements OnDestroy {
   }
 
   public getTitle(): string {
-    return 'Back ' + this.returnText[this.returnText.length - 1];
+    return 'Back ' + (this.returnText[this.returnText.length - 1] || '');
   }
 
   public goBack(): void {

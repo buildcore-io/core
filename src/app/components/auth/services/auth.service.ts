@@ -160,11 +160,11 @@ export class AuthService {
     }).join('');
   }
 
-  public async signIn(): Promise<void> {
+  public async signIn(): Promise<boolean> {
     const sc: WenRequest|undefined = await this.signWithMetamask({});
     if (!sc) {
       this.notification.error('Failed to log in.', '');
-      return;
+      return false;
     }
 
     this.showWalletPopup$.next(WalletStatus.HIDDEN);
@@ -184,6 +184,8 @@ export class AuthService {
       setItem(StorageItem.Auth, sc.address);
       this.isLoggedIn$.next(true);
     }
+
+    return true;
   }
 
   signOut(): void {

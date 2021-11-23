@@ -15,15 +15,6 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
 
-// TODO default table content
-interface Person {
-  key: string;
-  name: string;
-  date: string;
-  option: string;
-  amount: number;
-}
-
 @UntilDestroy()
 @Component({
   selector: 'wen-proposal',

@@ -54,14 +54,12 @@
   <div class="mt-10 text-left">
     <h3>Earned Badges</h3>
     <div class="flex flex-wrap gap-2">
-      <!-- TODO tooltip title should be badge name -->
-      <!-- TODO show only first 6 badges -->
-      <article *ngFor="let t of data.badges$ | async; trackBy: trackByUid" nz-tooltip [nzTooltipTitle]="t.type"
+      <article *ngFor="let t of (data.badges$ | async) | slice:0:6; trackBy: trackByUid" nz-tooltip [nzTooltipTitle]="t.payload.name"
         class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
         <wen-badge-tile [badge]="t"></wen-badge-tile>
       </article>
     </div>
-    <!-- TODO condition when user has more than 6 badges -->
-    <a class="float-right" nz-button nzType="link">See all</a>
+    <a class="float-right" nz-button nzType="link" [routerLink]="['badges']"
+      *ngIf="(data.badges$ | async) && (data.badges$ | async)!.length > 6">See all</a>
   </div>
 </div>

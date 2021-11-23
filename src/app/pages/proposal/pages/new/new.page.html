@@ -11,6 +11,7 @@
           <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
             <label nz-radio [nzValue]="true">All Guardians</label>
             <label nz-radio [nzValue]="false">All Members</label>
+            <label nz-radio [nzDisabled]="true">Reputation</label>
             <label nz-radio [nzDisabled]="true">Custom and more</label>
           </nz-radio-group>
           <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />

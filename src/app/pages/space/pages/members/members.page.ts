@@ -25,7 +25,7 @@ enum FilterOptions {
 })
 export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
-  public selectedListControl: FormControl = new FormControl('active');
+  public selectedListControl: FormControl = new FormControl(FilterOptions.ACTIVE);
   private subscriptions$: Subscription[] = [];
 
   constructor(

@@ -49,6 +49,11 @@ export class ActivityPage implements OnInit {
         });
       })
     ).subscribe((data) => {
+      // Sort by day.
+      data = data?.sort((a, b) => {
+        return a[0] - b[0];
+      });
+
       this.initChart(data);
     });
   }
