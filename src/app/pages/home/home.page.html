@@ -10,7 +10,7 @@
           future of the open web.
         </p>
         <button nz-button nzType="primary" nzSize="large" type="button" (click)="join()">
-          Join Soonaverse
+          {{(isLoggedIn | async) ? 'Discover Soonaverse' : 'Join Soonaverse'}}
         </button>
       </div>
     </div>

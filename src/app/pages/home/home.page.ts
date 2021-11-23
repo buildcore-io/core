@@ -42,6 +42,10 @@ export class HomePage implements OnInit {
     return item.uid;
   }
 
+  public get isLoggedIn(): BehaviorSubject<boolean> {
+    return this.auth.isLoggedIn$;
+  }
+
   public join(): void {
     if (this.auth.member$.value?.uid) {
       this.router.navigate(['/dashboard']);
