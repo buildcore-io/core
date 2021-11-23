@@ -1,5 +1,11 @@
 import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+
+enum SortOptions {
+  RECENT = 'recent',
+  OLDEST = 'oldest'
+}
 
 @Component({
   selector: 'wen-discover',
@@ -13,16 +19,15 @@ export class DiscoverPage {
     { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
   ];
-
+  public sortControl: FormControl = new FormControl(SortOptions.RECENT);
   public hotTags: string[] = ['All', 'Featured'];
   public selectedTags: string[] = ['All'];
 
   public handleChange(_checked: boolean, tag: string): void {
     this.selectedTags = [tag];
-    // if (checked) {
-    //   this.selectedTags.push(tag);
-    // } else {
-    //   this.selectedTags = this.selectedTags.filter(t => t !== tag);
-    // }
+  }
+
+  public get sortOptions(): typeof SortOptions {
+    return SortOptions;
   }
 }

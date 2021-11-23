@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -32,6 +33,7 @@ import { SpacesPage } from './pages/spaces/spaces.page';
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     TabsModule,
     RouterModule,
     NzTypographyModule,

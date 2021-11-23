@@ -1,7 +1,6 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <wen-member-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
-      <!-- TODOUI -->
       <p *ngIf="member.voted" class="font-bold">VOTED</p>
     </wen-member-card>
   </div>

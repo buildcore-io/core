@@ -3,7 +3,7 @@
 <div class="flex items-center">
   <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" [nzAddOnAfter]="suffixButton"
     class="mr-8 border-none shadow-none" nzSearch>
-    <input type="text" nz-input [disabled]="true" placeholder="Space, awards, proposals or members" class="text-base" />
+    <input type="text" nz-input [disabled]="true" placeholder="Coming soon..." class="text-base" />
   </nz-input-group>
 
   <ng-template #prefixIconSearch>
@@ -26,9 +26,9 @@
       {{ tag }}
     </nz-tag>
   </div>
-  <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate">
-    <nz-option nzLabel="Recent" nzValue="recent"></nz-option>
-    <nz-option nzLabel="Oldest" nzValue="oldest"></nz-option>
+  <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" [formControl]="sortControl" [nzDisabled]="true">
+    <nz-option nzLabel="Recent" [nzValue]="sortOptions.RECENT"></nz-option>
+    <nz-option nzLabel="Oldest" [nzValue]="sortOptions.OLDEST"></nz-option>
   </nz-select>
   <ng-template #defaultTemplate let-selected>
     <span nz-typography nzType="secondary" class="text-xs">Sort by</span>

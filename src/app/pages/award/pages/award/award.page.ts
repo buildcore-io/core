@@ -12,8 +12,6 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 import { DataService } from './../../services/data.service';
-// TODO is completed validation on endDate.
-// import dayjs from 'dayjs'
 
 @UntilDestroy()
 @Component({
