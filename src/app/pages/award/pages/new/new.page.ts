@@ -98,9 +98,24 @@ export class NewPage implements OnInit, OnDestroy {
     return obj;
   }
 
-  public async create(): Promise<void> {
+  private validateForm(): boolean {
     this.awardForm.updateValueAndValidity();
     if (!this.awardForm.valid) {
+      Object.values(this.awardForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+
+      return false;
+    }
+
+    return true;
+  }
+
+  public async create(): Promise<void> {
+    if (!this.validateForm()) {
       return;
     }
 

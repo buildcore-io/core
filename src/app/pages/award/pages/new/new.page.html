@@ -1,5 +1,4 @@
-<button nz-button class="mt-14"
-  (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
+<button nz-button class="mt-14" (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
 
 <h1 class="mt-7" i18 n>New Award</h1>
 
@@ -7,31 +6,63 @@
   <div class="py-4" nz-row [nzGutter]="24">
     <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Award Info">
-        <div class="space-y-4">
-          <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
-            <label nz-radio [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
-            <label nz-radio [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
-            <label nz-radio [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
-            <label nz-radio [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
-          </nz-radio-group>
-
-          <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
+          <nz-form-item>
+            <nz-form-control>
+              <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
+                <label nz-radio [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
+                <label nz-radio [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
+                <label nz-radio [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
+                <label nz-radio [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
+            </nz-form-control>
+          </nz-form-item>
           <div class="flex flex-grow space-x-4">
-            <nz-date-picker class="flex flex-grow" nzSize="large" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl"
-              nzPlaceHolder="End"></nz-date-picker>
+            <nz-form-item class="w-full">
+              <nz-form-control>
+                <nz-date-picker class="flex flex-grow" nzSize="large" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+                  [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
           </div>
-          <textarea nz-input nzSize="large" placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
-        </div>
+          <nz-form-item>
+            <nz-form-control>
+              <textarea nz-input nzSize="large" placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+
       </nz-card>
 
       <nz-card nzTitle="Badge definition">
         <div class="space-y-4">
-          <input nz-input placeholder="Badge Title" nzSize="large" [formControl]="badgeNameControl" />
-          <textarea nz-input placeholder="Badge description" nzSize="large" rows="4"
-            [formControl]="badgeDescriptionControl"></textarea>
+          <nz-form-item>
+            <nz-form-control>
+              <input nz-input nzSize="large" placeholder="Badge Title" [formControl]="badgeNameControl" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <textarea nz-input nzSize="large" placeholder="Badge description" rows="4"
+                [formControl]="badgeDescriptionControl"></textarea>
+            </nz-form-control>
+          </nz-form-item>
           <div class="flex space-x-4">
-            <nz-input-number class="flex-grow" nzSize="large" nzPlaceHolder="Total Experience Points (number)" [formControl]="badgeXpControl"></nz-input-number>
-            <nz-input-number class="flex-grow" nzSize="large" nzPlaceHolder="Available Badges (number)" [formControl]="badgeCountControl"></nz-input-number>
+            <nz-form-item class="flex-grow">
+              <nz-form-control>
+                <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Total Experience Points (number)"
+                  [formControl]="badgeXpControl"></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="flex-grow" >
+              <nz-form-control>
+                <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Available Badges (number)"
+                  [formControl]="badgeCountControl"></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
           </div>
         </div>
       </nz-card>
@@ -39,9 +70,15 @@
 
     <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
-        <nz-select class="w-full" nzShowSearch nzSize="large" nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
-          <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
-        </nz-select>
+        <nz-form-item>
+          <nz-form-control>
+            <nz-select class="w-full" nzShowSearch nzSize="large" nzAllowClear nzPlaceHolder="Select a space"
+              [formControl]="spaceControl">
+              <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" [nzLabel]="s.name || s.uid"
+                [nzValue]="s.uid"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
       </nz-card>
 
       <nz-card [nzBordered]="false">
@@ -52,5 +89,5 @@
 
   </div>
 
-  <button nz-button class="mb-6" nzType="primary" nzSize="large" type="button" (click)="create()"
-    i18n>Create award</button>
+  <button nz-button class="mb-6" nzType="primary" nzSize="large" type="button" (click)="create()" i18n>Create
+    award</button>

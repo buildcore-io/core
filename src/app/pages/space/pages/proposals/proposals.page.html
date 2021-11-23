@@ -1,7 +1,7 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
-      <h3 *ngIf="(data.proposalsActive$ | async)?.length">{{getTitle()}}</h3>
+      <!-- <h3 *ngIf="(data.proposalsActive$ | async)?.length">{{getTitle()}}</h3> -->
       <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
         <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
         <nz-option [nzLabel]="'Completed'" [nzValue]="filterOptions.COMPLETED"></nz-option>

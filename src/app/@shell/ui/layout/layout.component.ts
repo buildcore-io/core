@@ -15,7 +15,7 @@ import { filter } from 'rxjs/operators';
 export class LayoutComponent implements OnInit {
   public showSideBar$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public isMobile = false;
-  public static MOBILE_MAX_WIDTH = 767;
+  public static MOBILE_MAX_WIDTH = 1023;
   constructor(
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,

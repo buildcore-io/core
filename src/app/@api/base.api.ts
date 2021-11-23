@@ -26,15 +26,24 @@ export class BaseApi<T> {
   }
 
   public last(def = 50): Observable<T[]> {
-    return this._last(this.collection, def);
+    // Will need to change to desc
+    return this._query(this.collection, 'createdOn', 'asc', def);
   }
 
-  protected _last(collection: string, def = 50): Observable<T[]> {
+  public top(def = 50): Observable<T[]> {
+    return this._query(this.collection, 'createdOn', 'desc', def);
+  }
+
+  public lastByRank(def = 50): Observable<T[]> {
+    return this._query(this.collection, 'rank', 'desc', def);
+  }
+
+  protected _query(collection: string, orderBy = 'createdOn', direction: any = 'desc', def = 50): Observable<T[]> {
     const ref: AngularFirestoreCollection<T> = this.afs.collection<T>(
       collection,
       // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref) => {
-        return ref.orderBy('createdOn', 'asc').limitToLast(def);
+        return ref.orderBy(orderBy, direction).limitToLast(def);
       }
     );
     return ref.valueChanges();
