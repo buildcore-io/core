@@ -54,7 +54,19 @@ export class ActivityPage implements OnInit {
         return a[0] - b[0];
       });
 
-      this.initChart(data);
+      if (data && data.length > 0) {
+        let prevDate = data[0][0];
+        let prevAmount = data[0][1];
+        data.forEach((d) => {
+          if (prevDate !== d[0]) {
+            d[1] = d[1] + prevAmount;
+            prevDate = d[0];
+            prevAmount = d[1];
+          }
+        });
+      }
+
+      this.initChart(data || []);
     });
   }
 
@@ -77,7 +89,7 @@ export class ActivityPage implements OnInit {
       },
       xaxis: {
         type: "datetime",
-        min: dayjs().subtract(1, 'month').toDate().getTime(),
+        min: (data?.[0]?.[0] || dayjs().subtract(1, 'month').toDate()).getTime(),
         tickAmount: 6
       },
       tooltip: {
