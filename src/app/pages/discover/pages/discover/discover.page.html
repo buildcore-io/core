@@ -3,7 +3,7 @@
 <div class="flex items-center">
   <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" [nzAddOnAfter]="suffixButton"
     class="mr-8 border-none shadow-none" nzSearch>
-    <input type="text" nz-input [disabled]="true" placeholder="Coming soon..." class="text-base" />
+    <input type="text" nz-input placeholder="Spaces, awards, proposals or members..." class="text-base" />
   </nz-input-group>
 
   <ng-template #prefixIconSearch>
@@ -11,7 +11,7 @@
   </ng-template>
 
   <ng-template #suffixButton>
-    <button nz-button nzType="primary" class="m-2" i18n>
+    <button nz-button nzType="primary" class="m-2" i18n nz-tooltip nzTooltipTitle="Coming SOON">
       Search
     </button>
   </ng-template>
@@ -22,11 +22,11 @@
 <div class="flex items-end justify-between">
   <div class="flex items-center mt-8">
     <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedTags.indexOf(tag) > -1"
-      (nzCheckedChange)="handleChange($event, tag)">
+      (nzCheckedChange)="handleChange($event, tag)" nz-tooltip nzTooltipTitle="Coming SOON">
       {{ tag }}
     </nz-tag>
   </div>
-  <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" [formControl]="sortControl" [nzDisabled]="true">
+  <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" [formControl]="sortControl" nz-tooltip nzTooltipTitle="Coming SOON">
     <nz-option nzLabel="Recent" [nzValue]="sortOptions.RECENT"></nz-option>
     <nz-option nzLabel="Oldest" [nzValue]="sortOptions.OLDEST"></nz-option>
   </nz-select>

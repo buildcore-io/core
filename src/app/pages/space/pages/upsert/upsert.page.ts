@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
@@ -21,8 +21,8 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpsertPage implements OnInit {
-  public nameControl: FormControl = new FormControl('');
-  public aboutControl: FormControl = new FormControl('');
+  public nameControl: FormControl = new FormControl('', Validators.required);
+  public aboutControl: FormControl = new FormControl('', Validators.required);
   public openControl: FormControl = new FormControl(true);
   public discordControl: FormControl = new FormControl('', getUrlValidator());
   public twitterControl: FormControl = new FormControl('', getUrlValidator());
@@ -113,9 +113,24 @@ export class UpsertPage implements OnInit {
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'space_avatar');
   }
 
-  public async create(): Promise<void> {
+  private validateForm(): boolean {
     this.spaceForm.updateValueAndValidity();
     if (!this.spaceForm.valid) {
+      Object.values(this.spaceForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+
+      return false;
+    }
+
+    return true;
+  }
+
+  public async create(): Promise<void> {
+    if (!this.validateForm()) {
       return;
     }
     await this.auth.sign(this.spaceForm.value, (sc, finish) => {
@@ -126,8 +141,7 @@ export class UpsertPage implements OnInit {
   }
 
   public async save(): Promise<void> {
-    this.spaceForm.updateValueAndValidity();
-    if (!this.spaceForm.valid) {
+    if (!this.validateForm()) {
       return;
     }
     await this.auth.sign({

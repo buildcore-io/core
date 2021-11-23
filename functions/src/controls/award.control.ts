@@ -18,13 +18,13 @@ import { Transaction, TransactionType } from './../../interfaces/models/transact
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
-    description: Joi.string().optional(),
+    description: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(AwardType.PARTICIPATE_AND_APPROVE).required(),
     space: Joi.string().length(ethAddressLength).lowercase().required(),
     endDate: Joi.date().required(),
     badge: Joi.object({
       name: Joi.string().required(),
-      description: Joi.string().optional(),
+      description: Joi.string().allow(null, '').optional(),
       // Let's keep everything within 1Mi for now.
       count: Joi.number().min(0).max(1000).required(),
       // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
@@ -135,7 +135,7 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
       uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      comment: Joi.string().optional()
+      comment: Joi.string().allow(null, '').optional()
   }));
   assertValidation(schema.validate(params.body));
 

@@ -1,7 +1,7 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
-      <h3>{{getTitle()}} {{((getList() | async)?.length === 1 ? ' Member' : ' Members')}}</h3>
+      <!-- <h3>{{getTitle()}} {{((getList() | async)?.length === 1 ? ' Member' : ' Members')}}</h3> -->
       <nz-badge [nzCount]="data.getPendingMembersCount(data.pendingMembers$ | async)">
         <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
           <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
