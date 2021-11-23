@@ -59,7 +59,7 @@
 @btn-pressed-bg: #0C16DE;
 // TODO - correct hover variable
 // @btn-hover-bg: #445FF0;
-@btn-disable-bg: #445FF0;
+@btn-disable-bg: @component-background;
 @btn-padding-horizontal-base: @padding-md;
 @btn-font-weight: 600;
 @btn-font-size: @font-size-lg;
@@ -115,20 +115,21 @@
 @drawer-body-padding: 48px;
 @drawer-header-close-size: 78px;
 
-@layer base {
-  @import '01-base/font.less';
-  @import '01-base/document.less';
-  @import '01-base/headings.less';
-}
+// Disabled use of layers as it's problematic in prod build.
+// @layer base {
+@import '01-base/font.less';
+@import '01-base/document.less';
+@import '01-base/headings.less';
+// }
 
-@layer components {
-  @import '02-components/link.less';
-  @import '02-components/button.less';
-  @import '02-components/card.less';
-  @import '02-components/tag.less';
-  @import '02-components/upload.less';
-  @import '02-components/drawer.less';
-}
+// @layer components {
+@import '02-components/link.less';
+@import '02-components/button.less';
+@import '02-components/card.less';
+@import '02-components/tag.less';
+@import '02-components/upload.less';
+@import '02-components/drawer.less';
+// }
 
-@layer utilities {
-}
+// @layer utilities {
+// }

@@ -144,15 +144,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 
-  public getProgress(q: ProposalQuestion, a: ProposalAnswer, members?: ProposalParticipantWithMember[]|null): number {
-    let calc = 0;
-    members?.forEach((o) => {
-      if (o.voted && o.values?.length && o.values?.length > 0 && o.values.includes(a.value)) {
-        calc++;
-      }
-    });
-
-    return  calc / (members?.length || 1) * 100;
+  public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
+    return  (proposal?.results?.answers?.[a.value] || 0) / (proposal?.results?.total || 1) * 100;
   }
 
   public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {

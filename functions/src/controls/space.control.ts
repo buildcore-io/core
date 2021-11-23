@@ -58,7 +58,8 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
       // Default is open.
       open: (params.body.open === false || params.body.open === true) ? params.body.open : true,
       totalMembers: 1,
-      totalGuardians: 1
+      totalGuardians: 1,
+      rank: 1
     })));
 
     // Add Guardians.

@@ -55,18 +55,21 @@
       </h4>
       <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
     </nz-card>
+
     <nz-card nzTitle="Cast your vote"
       *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type) && canVote(data.members$ | async) && isInProgress(data.proposal$ | async)">
-
-      <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
+      <div class="space-y-4">
+        <div *ngFor="let q of (data.proposal$ | async)?.questions">
         <p>{{q.text}}</p>
         <nz-radio-group [formControl]="voteControl">
           <label nz-radio *ngFor="let a of q.answers" [nzValue]="a.value">{{a.text}}</label>
         </nz-radio-group>
-      </ng-container>
+      </div>
+
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()">
         Vote Now
       </button>
+    </div>
     </nz-card>
 
     <nz-card [nzTitle]=" (isComplete(data.proposal$ | async) ? 'Final' : 'Current') + ' Results'"
@@ -74,7 +77,7 @@
       <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
         <ng-container *ngFor="let a of q.answers">
           <p class="text-xs">{{a.text}}</p>
-          <nz-progress [nzPercent]="getProgress(q, a, data.members$ | async)" nzStatus="active"></nz-progress>
+          <nz-progress [nzPercent]="getProgress(data.proposal$ | async, a)" nzStatus="active"></nz-progress>
         </ng-container>
       </div>
     </nz-card>

@@ -14,9 +14,15 @@ describe('HomePage', () => {
     providers: [MockProvider(SpaceApi, {
       last: () => {
         return new Observable();
+      },
+      top: () => {
+        return new Observable();
       }
     }),MockProvider(AwardApi, {
       last: () => {
+        return new Observable();
+      },
+      top: () => {
         return new Observable();
       }
     })],

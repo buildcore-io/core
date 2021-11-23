@@ -154,7 +154,8 @@ export class AwardPage implements OnInit, OnDestroy {
       comment: this.commentControl.value || undefined
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.participate(sc), 'Participated.', finish).subscribe(() => {
-        // none
+        // Let's reset form field back to empty.
+        this.commentControl.setValue('');
       });
     });
 
