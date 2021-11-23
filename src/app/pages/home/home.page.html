@@ -114,7 +114,7 @@
                 </button>
               </h3>
               <div class="flex gap-6">
-                <wen-space-card class="cursor-pointer" *ngFor="let s of (spaces$ | async) | slice:0:3; trackBy: trackByUid" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
+                <wen-space-card class="cursor-pointer" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
               </div>
             </div>
 
@@ -126,7 +126,7 @@
                 </button>
               </h3>
               <div class="flex gap-6">
-                <wen-award-card class="cursor-pointer" *ngFor="let award of (award$ | async) | slice:0:3; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
+                <wen-award-card class="cursor-pointer" *ngFor="let award of award$ | async; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
                 </wen-award-card>
               </div>
             </div>

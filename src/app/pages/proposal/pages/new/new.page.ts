@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -171,12 +171,29 @@ export class NewPage implements OnInit, OnDestroy {
     return obj;
   }
 
-  public async create(): Promise<void> {
+  private validateControls(controls: { [key: string]: AbstractControl }): void {
+    Object.values(controls).forEach((control) => {
+      if (control.invalid) {
+        control.markAsDirty();
+        control.updateValueAndValidity({ onlySelf: true });
+      }
+    });
+  }
+
+  private validateForm(): boolean {
     this.proposalForm.updateValueAndValidity();
     if (!this.proposalForm.valid) {
-      return;
+      this.validateControls(this.proposalForm.controls);
+      return false;
     }
 
+    return true;
+  }
+
+  public async create(): Promise<void> {
+    if (!this.validateForm()) {
+      return;
+    }
     await this.auth.sign(this.formatSubmitObj(this.proposalForm.value), (sc, finish) => {
       this.notification.processRequest(this.proposalApi.create(sc), 'Created.', finish).subscribe((val: any) => {
         this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
