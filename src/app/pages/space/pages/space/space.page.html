@@ -54,10 +54,18 @@
       </nz-badge>
     </nz-card>
 
-    <nz-card nzTitle="Related Links">
-      <div>
+    <nz-card nzTitle="Related Links" *ngIf="(data.space$ | async)!.github || (data.space$ | async)!.twitter || (data.space$ | async)!.discord">
+      <div *ngIf="(data.space$ | async)!.github">
         <i nz-icon nzType="github" nzTheme="outline"></i>
         <a nz-button nzType="link">{{ (data.space$ | async)!.github }}</a>
+      </div>
+      <div *ngIf="(data.space$ | async)!.twitter">
+        <i nz-icon nzType="twitter" nzTheme="outline"></i>
+        <a nz-button nzType="link">{{ (data.space$ | async)!.twitter }}</a>
+      </div>
+      <div *ngIf="(data.space$ | async)!.discord">
+        <i nz-icon nzType="wechat" nzTheme="outline"></i>
+        <a nz-button nzType="link">{{ (data.space$ | async)!.discord }}</a>
       </div>
     </nz-card>
 

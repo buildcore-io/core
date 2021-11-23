@@ -1,22 +1,20 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
-      <h3 *ngIf="(data.awardsActive$ | async)?.length">Active</h3>
+      <h3 *ngIf="(data.awardsActive$ | async)?.length">{{getTitle()}}</h3>
+      <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
+        <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
+        <nz-option [nzLabel]="'Completed'" [nzValue]="filterOptions.COMPLETED"></nz-option>
+      </nz-select>
+
       <button nz-button class="bg-blue-dark2 border-blue-dark2 hover:bg-blue-hover hover:border-blue-hover"
         nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async"
         i18n>
         <i nz-icon nzType="plus" nzTheme="outline"></i>New award
       </button>
     </div>
-    <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awardsActive$ | async; trackBy: trackByUid" [award]="award"
+    <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of getList() | async; trackBy: trackByUid" [award]="award"
       [routerLink]="['/award', award.uid]">
     </wen-award-card>
-  </div>
-
-  <div class="space-y-4" *ngIf="(data.awardsCompleted$ | async)?.length">
-    <h3>Completed</h3>
-    <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awardsCompleted$ | async; trackBy: trackByUid" [award]="award"
-    [routerLink]="['/award', award.uid]">
-  </wen-award-card>
   </div>
 </div>
