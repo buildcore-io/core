@@ -7,30 +7,57 @@
 
     <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Proposal Info">
-        <div class="space-y-4">
-          <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
-            <label nz-radio [nzValue]="true">All Guardians</label>
-            <label nz-radio [nzValue]="false">All Members</label>
-            <label nz-radio [nzDisabled]="true">Reputation</label>
-            <label nz-radio [nzDisabled]="true">Custom and more</label>
-          </nz-radio-group>
-          <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
-          <div class="flex flex-grow space-x-4">
-            <nz-date-picker class="flex flex-grow" nzSize="large" [nzDisabledDate]="disabledStartDate.bind(this)" nzShowTime
-              nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="startControl" nzPlaceHolder="Start"
-              (nzOnOpenChange)="handleStartOpenChange($event)">
-            </nz-date-picker>
-            <nz-date-picker class="flex flex-grow" nzSize="large" #endDatePicker [nzDisabledDate]="disabledEndDate.bind(this)"
-              nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
-          </div>
-          <textarea nz-input nzSize="large" placeholder="Proposal description" rows="4"
-            [formControl]="additionalInfoControl"></textarea>
-          <ng-container *ngFor="let question of questions.controls; let i = index">
-            <input nz-input placeholder="Question Title" nzSize="large" [formControl]="gForm(question, 'text')" />
-            <textarea nz-input placeholder="Question description" nzSize="large" rows="4"
-              [formControl]="gForm(question, 'additionalInfo')"></textarea>
-          </ng-container>
+        <nz-form-item>
+          <nz-form-control>
+            <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
+              <label nz-radio [nzValue]="true">All Guardians</label>
+              <label nz-radio [nzValue]="false">All Members</label>
+              <label nz-radio [nzDisabled]="true">Reputation</label>
+              <label nz-radio [nzDisabled]="true">Custom and more</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control>
+            <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
+          </nz-form-control>
+        </nz-form-item>
+        <div class="flex flex-grow space-x-4">
+          <nz-form-item class="w-full">
+            <nz-form-control>
+              <nz-date-picker class="flex flex-grow" nzSize="large" [nzDisabledDate]="disabledStartDate.bind(this)"
+                nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="startControl" nzPlaceHolder="Start"
+                (nzOnOpenChange)="handleStartOpenChange($event)">
+              </nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="w-full">
+            <nz-form-control>
+              <nz-date-picker class="flex flex-grow" nzSize="large" #endDatePicker
+                [nzDisabledDate]="disabledEndDate.bind(this)" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+                [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
         </div>
+        <nz-form-item>
+          <nz-form-control>
+            <textarea nz-input nzSize="large" placeholder="Proposal description" rows="4"
+              [formControl]="additionalInfoControl"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+        <ng-container *ngFor="let question of questions.controls; let i = index">
+          <nz-form-item>
+            <nz-form-control>
+              <input nz-input placeholder="Question Title" nzSize="large" [formControl]="gForm(question, 'text')" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <textarea nz-input placeholder="Question description" nzSize="large" rows="4"
+                [formControl]="gForm(question, 'additionalInfo')"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </ng-container>
       </nz-card>
 
       <!-- <button nz-button nzType="primary" nzSize="small" type="button" (click)="addQuestion()"
@@ -42,9 +69,17 @@
         <ng-container *ngFor="let answer of getAnswers(question); let ii = index">
           <nz-card [nzBordered]="false" [nzTitle]="'Choice ' + (ii + 1)" [nzExtra]="actionsTpl">
             <div class="space-y-4">
-              <input nz-input placeholder="Answer Text" nzSize="large" [formControl]="gForm(answer, 'text')" />
-              <textarea nz-input placeholder="Answer description" nzSize="large" rows="4"
-                [formControl]="gForm(answer, 'additionalInfo')"></textarea>
+              <nz-form-item>
+                <nz-form-control>
+                  <input nz-input placeholder="Answer Text" nzSize="large" [formControl]="gForm(answer, 'text')" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-control>
+                  <textarea nz-input placeholder="Answer description" nzSize="large" rows="4"
+                    [formControl]="gForm(answer, 'additionalInfo')"></textarea>
+                </nz-form-control>
+              </nz-form-item>
             </div>
           </nz-card>
           <ng-template #actionsTpl>
@@ -67,9 +102,15 @@
 
     <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
-        <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear nzPlaceHolder="Select a space" [formControl]="spaceControl">
-          <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" [nzLabel]="s.name || s.uid" [nzValue]="s.uid"></nz-option>
-        </nz-select>
+        <nz-form-item>
+          <nz-form-control>
+            <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear nzPlaceHolder="Select a space"
+              [formControl]="spaceControl">
+              <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" [nzLabel]="s.name || s.uid"
+                [nzValue]="s.uid"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
       </nz-card>
     </div>
   </div>
