@@ -77,7 +77,7 @@
       <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
         <ng-container *ngFor="let a of q.answers">
           <p class="text-xs">{{a.text}}</p>
-          <nz-progress [nzPercent]="getProgress(q, a, data.members$ | async)" nzStatus="active"></nz-progress>
+          <nz-progress [nzPercent]="getProgress(data.proposal$ | async, a)" nzStatus="active"></nz-progress>
         </ng-container>
       </div>
     </nz-card>
