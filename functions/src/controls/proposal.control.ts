@@ -78,6 +78,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
     // Document does not exists.
     await refProposal.set(cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
+      rank: 1,
       createdBy: guardian
     })));
 

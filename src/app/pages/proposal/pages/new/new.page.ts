@@ -6,7 +6,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { PROPOSAL_START_DATE_MIN } from "./../../../../../../functions/interfaces/config";
+import { PROPOSAL_START_DATE_MIN } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
@@ -71,7 +71,7 @@ export class NewPage implements OnInit, OnDestroy {
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
-        this.subscriptions$.push(this.memberApi.allSpacesWhereGuardian(o.uid).subscribe(this.spaces$));
+        this.subscriptions$.push(this.memberApi.allSpacesAsGuardian(o.uid).subscribe(this.spaces$));
       }
     });
   }
@@ -132,9 +132,30 @@ export class NewPage implements OnInit, OnDestroy {
     }
   }
 
+  // TODO integrated into the date picker
+  public disabledHours(): number[] {
+    const allowedFrom: Date = new Date(Date.now() + PROPOSAL_START_DATE_MIN);
+    const hours = allowedFrom.getHours();
+    const out: number[] = [];
+    for (let i: number = hours; i <= 24; i++) {
+      out.push(i);
+    }
+
+    return out;
+  }
+
+  // TODO integrated into the date picker
+  public disabledMinutes(hour: number): number[] {
+    if (hour === 4) {
+      return [20, 21, 22, 23, 24, 25];
+    } else {
+      return [];
+    }
+  }
+
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < (Date.now() + PROPOSAL_START_DATE_MIN)) {
+    if (startValue.getTime() < (Date.now() - (60 * 60 * 1000 * 24))) {
       return true;
     }
 

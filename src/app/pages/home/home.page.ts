@@ -30,8 +30,8 @@ export class HomePage implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    this.spaceApi.top(3).pipe(untilDestroyed(this)).subscribe(this.spaces$);
-    this.awardApi.top(3).pipe(untilDestroyed(this)).subscribe(this.award$);
+    this.spaceApi.lastByRank(undefined, 3).pipe(untilDestroyed(this)).subscribe(this.spaces$);
+    this.awardApi.lastByRank(undefined, 3).pipe(untilDestroyed(this)).subscribe(this.award$);
   }
 
   public onClickChangeTheme(theme: ThemeList): void {

@@ -9,27 +9,38 @@ import { AwardParticipant } from './../../../functions/interfaces/models/award';
 import { Member } from './../../../functions/interfaces/models/member';
 import { Space, SpaceGuardian, SpaceMember } from './../../../functions/interfaces/models/space';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
-import { BaseApi } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MemberApi extends BaseApi<Member> {
   public collection = 'member';
-  constructor(protected afs: AngularFirestore, private fns: AngularFireFunctions) {
-    super(afs);
+  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
+    super(afs, fns);
   }
 
   public listen(id: EthAddress): Observable<Member|undefined> {
     return super.listen(id);
   }
 
-  public lastSpaces(memberId: EthAddress, def = 50): Observable<Space[]> {
+  public topSpaces(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
     const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
       SUB_COL.MEMBERS,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref: any) => {
-        return ref.where('uid', '==', memberId).orderBy('createdOn', 'asc').limitToLast(def);
+        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+        let query: any = ref.where('uid', '==', memberId);
+        order.forEach((o) => {
+          query = query.orderBy(o, 'desc');
+        });
+
+        if (lastValue) {
+          query = query.startAfter(lastValue).limit(def);
+        } else {
+          query = query.limit(def);
+        }
+
+        return query;
       }
     );
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
@@ -44,12 +55,23 @@ export class MemberApi extends BaseApi<Member> {
     }));
   }
 
-  public lastAwards(memberId: EthAddress, def = 50): Observable<Award[]> {
+  public topAwards(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     const ref: AngularFirestoreCollectionGroup<AwardParticipant> = this.afs.collectionGroup<AwardParticipant>(
       SUB_COL.PARTICIPANTS,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref: any) => {
-        return ref.where('uid', '==', memberId).orderBy('createdOn', 'asc').limitToLast(def);
+        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+        let query: any = ref.where('uid', '==', memberId);
+        order.forEach((o) => {
+          query = query.orderBy(o, 'desc');
+        });
+
+        if (lastValue) {
+          query = query.startAfter(lastValue).limit(def);
+        } else {
+          query = query.limit(def);
+        }
+
+        return query;
       }
     );
     return ref.valueChanges().pipe(switchMap(async (obj: AwardParticipant[]) => {
@@ -64,20 +86,30 @@ export class MemberApi extends BaseApi<Member> {
     }));
   }
 
-  public lastBadges(memberId: string): Observable<Transaction[]> {
+  public topBadges(memberId: string, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
     return this.afs.collection<Transaction>(
       COL.TRANSACTION,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref) => {
-        return ref.where('member', '==', memberId).where('type', '==', TransactionType.BADGE)
+        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+        let query: any = ref.where('member', '==', memberId).where('type', '==', TransactionType.BADGE);
+        order.forEach((o) => {
+          query = query.orderBy(o, 'desc');
+        });
+
+        if (lastValue) {
+          query = query.startAfter(lastValue).limit(def);
+        } else {
+          query = query.limit(def);
+        }
+
+        return query;
       }
     ).valueChanges();
   }
 
-  public allSpacesWhereMember(memberId: EthAddress): Observable<Space[]> {
+  public allSpacesAsMember(memberId: EthAddress): Observable<Space[]> {
     const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
       SUB_COL.MEMBERS,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref: any) => {
         return ref.where('uid', '==', memberId)
       }
@@ -94,10 +126,9 @@ export class MemberApi extends BaseApi<Member> {
     }));
   }
 
-  public allSpacesWhereGuardian(memberId: EthAddress): Observable<Space[]> {
+  public allSpacesAsGuardian(memberId: EthAddress): Observable<Space[]> {
     const ref: AngularFirestoreCollectionGroup<SpaceGuardian> = this.afs.collectionGroup<SpaceGuardian>(
       SUB_COL.GUARDIANS,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref: any) => {
         return ref.where('uid', '==', memberId)
       }
@@ -114,21 +145,11 @@ export class MemberApi extends BaseApi<Member> {
     }));
   }
 
-  /**
-   * Function to create profile if it does not exists yet.
-   */
-  public createIfNotExists(address: string): Observable<Member> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.cMemberNotExists);
-    const data$ = callable(address);
-    return data$;
+  public createIfNotExists(address: string): Observable<Member|undefined> {
+    return this.request(WEN_FUNC.cMemberNotExists, address);
   }
 
-  /**
-   * Function to update the member.
-   */
   public updateMember(req: WenRequest): Observable<Member|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.uMember);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.uMember, req);
   }
 }

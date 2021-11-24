@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Space, SpaceGuardian } from "functions/interfaces/models";
-import { SpaceMember } from 'functions/interfaces/models/space';
-import { firstValueFrom, map, Observable, switchMap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
@@ -14,8 +13,8 @@ import { BaseApi } from './base.api';
 })
 export class SpaceApi extends BaseApi<Space> {
   public collection = COL.SPACE;
-  constructor(protected afs: AngularFirestore, private fns: AngularFireFunctions) {
-    super(afs);
+  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
+    super(afs, fns);
   }
 
   public listen(id: EthAddress): Observable<Space|undefined> {
@@ -38,120 +37,63 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
-  public listenGuardians(spaceId: string): Observable<Member[]> {
-    return (<Observable<SpaceGuardian[]>>this.afs.collection(this.collection)
-    .doc(spaceId.toLowerCase()).collection(SUB_COL.GUARDIANS).valueChanges()).pipe(switchMap(async (obj: SpaceGuardian[]) => {
-      const out: Member[] = [];
-      for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
-      }
-
-      return out;
-    }));
+  public listenGuardians(spaceId: string, lastValue?: any): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.GUARDIANS, lastValue);
   }
 
-  public listenMembers(spaceId: string): Observable<Member[]> {
-    return (<Observable<SpaceMember[]>>this.afs.collection(this.collection)
-    .doc(spaceId.toLowerCase()).collection(SUB_COL.MEMBERS).valueChanges()).pipe(switchMap(async (obj: SpaceMember[]) => {
-      const out: Member[] = [];
-      for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
-      }
-
-      return out;
-    }));
+  public listenMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.MEMBERS, lastValue);
   }
 
-  public listenBlockedMembers(spaceId: string): Observable<Member[]> {
-    return (<Observable<SpaceMember[]>>this.afs.collection(this.collection)
-    .doc(spaceId.toLowerCase()).collection(SUB_COL.BLOCKED_MEMBERS).valueChanges()).pipe(switchMap(async (obj: SpaceMember[]) => {
-      const out: Member[] = [];
-      for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
-      }
-
-      return out;
-    }));
+  public listenBlockedMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.BLOCKED_MEMBERS, lastValue);
   }
 
-  public listenPendingMembers(spaceId: string): Observable<Member[]> {
-    return (<Observable<SpaceMember[]>>this.afs.collection(this.collection)
-    .doc(spaceId.toLowerCase()).collection(SUB_COL.KNOCKING_MEMBERS).valueChanges()).pipe(switchMap(async (obj: SpaceMember[]) => {
-      const out: Member[] = [];
-      for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
-      }
-
-      return out;
-    }));
+  public listenPendingMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.KNOCKING_MEMBERS, lastValue);
   }
 
   public create(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.cSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.cSpace, req);
   }
 
   public save(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.uSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.uSpace, req);
   }
 
   public join(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.joinSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.joinSpace, req);
   }
 
   public leave(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.leaveSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.leaveSpace, req);
   }
 
    public setGuardian(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.addGuardianSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.addGuardianSpace, req);
   }
 
   public removeGuardian(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.removeGuardianSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.removeGuardianSpace, req);
   }
 
   public blockMember(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.blockMemberSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.blockMemberSpace, req);
   }
 
   public unblockMember(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.unblockMemberSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.unblockMemberSpace, req);
   }
 
   public acceptMember(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.acceptMemberSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.acceptMemberSpace, req);
   }
 
   public rejectMember(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.declineMemberSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.declineMemberSpace, req);
   }
 
-  /**
-   * Function to update the space.
-   */
   public update(req: WenRequest): Observable<Space|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.uSpace);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.uSpace, req);
   }
 }

@@ -144,11 +144,11 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   const docSpace: any = await refSpace.get();
-  const isOpenSpace = (docSpace.data().open !== false);
   let output: any;
   if (!docSpace.exists) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
+  const isOpenSpace = (docSpace.data().open !== false);
 
   // Validate guardian is an guardian within the space.
   if ((await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {

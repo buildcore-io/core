@@ -125,7 +125,13 @@ export class AuthService {
           return undefined;
         }
 
-        const member: Member = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
+        const member: Member|undefined = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
+        if (!member) {
+          this.notification.error('Unable to get nonce to authenticate!', '');
+          this.showWalletPopup$.next(WalletStatus.HIDDEN);
+          return undefined;
+        }
+
         const signature: string = await provider.request({
           method: 'personal_sign',
           params: [
