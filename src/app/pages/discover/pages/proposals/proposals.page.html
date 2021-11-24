@@ -1,4 +1,4 @@
-<p nz-typography nzType="secondary" class="mb-6">{{ (proposal$ | async)?.length }} proposals</p>
+<p nz-typography nzType="secondary" class="mb-6">{{ (proposal$ | async)?.length + ((maxRecords$ | async) === false ? '+' : '') }} proposals</p>
 <div class="flex flex-wrap gap-6 mb-10"
   infiniteScroll
   [infiniteScrollDistance]="2"

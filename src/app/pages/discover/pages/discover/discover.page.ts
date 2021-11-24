@@ -1,38 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { FilterService, SortOptions } from './../../services/filter.service';
 
-enum SortOptions {
-  RECENT = 'recent',
-  OLDEST = 'oldest'
-}
-
+@UntilDestroy()
 @Component({
   selector: 'wen-discover',
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.less']
 })
-export class DiscoverPage {
+export class DiscoverPage implements OnInit {
+  public sortControl: FormControl = new FormControl(SortOptions.RECENT);
   public sections = [
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
     { route: [ ROUTER_UTILS.config.discover.awards], label: 'Awards' },
     { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
   ];
-  public sortControl: FormControl = new FormControl(SortOptions.RECENT);
-  public hotTags: string[] = ['All', 'Featured'];
-  public selectedTags: string[] = ['All'];
-
-  public handleChange(_checked: boolean, tag: string): void {
-    this.selectedTags = [tag];
+  constructor(public filter: FilterService) {
+    // none;
   }
 
-  public get maxRecords(): number {
-    return DEFAULT_LIST_SIZE;
-  }
-
-  public get sortOptions(): typeof SortOptions {
-    return SortOptions;
+  public ngOnInit(): void {
+    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      this.filter.selectedSort$.next(val);
+    });
   }
 }

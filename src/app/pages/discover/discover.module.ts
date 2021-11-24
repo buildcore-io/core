@@ -21,6 +21,7 @@ import { DiscoverPage } from './pages/discover/discover.page';
 import { MembersPage } from './pages/members/members.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacesPage } from './pages/spaces/spaces.page';
+import { FilterService } from './services/filter.service';
 
 
 @NgModule({
@@ -33,6 +34,7 @@ import { SpacesPage } from './pages/spaces/spaces.page';
   ],
   exports: [
   ],
+  providers: [ FilterService ],
   imports: [
     CommonModule,
     InfiniteScrollModule,

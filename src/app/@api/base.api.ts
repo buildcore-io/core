@@ -4,7 +4,7 @@ import { WEN_FUNC } from "functions/interfaces/functions";
 import { COL, SUB_COL } from "functions/interfaces/models/base";
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 
-export const DEFAULT_LIST_SIZE = 25;
+export const DEFAULT_LIST_SIZE = 10;
 
 export class BaseApi<T> {
   // Collection is always defined on above.
