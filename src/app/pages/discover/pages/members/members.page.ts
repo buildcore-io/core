@@ -61,7 +61,7 @@ export class MembersPage implements OnInit, OnDestroy {
         return true;
       }
 
-      return (this.dataStore[this.dataStore.length - 1].length < DEFAULT_LIST_SIZE);
+      return (this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
     }));
   }
 

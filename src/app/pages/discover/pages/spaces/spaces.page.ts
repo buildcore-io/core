@@ -42,7 +42,7 @@ export class SpacesPage implements OnInit, OnDestroy {
   }
 
   public onScroll(): void {
-    if (this.dataStore[this.dataStore.length - 1].length < DEFAULT_LIST_SIZE) {
+    if (this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE) {
       // Finished paging.
       return;
     }
@@ -67,7 +67,7 @@ export class SpacesPage implements OnInit, OnDestroy {
         return true;
       }
 
-      return (this.dataStore[this.dataStore.length - 1].length < DEFAULT_LIST_SIZE);
+      return (this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
     }));
   }
 
