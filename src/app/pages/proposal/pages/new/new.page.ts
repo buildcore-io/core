@@ -167,6 +167,10 @@ export class NewPage implements OnInit, OnDestroy {
   };
 
   public disabledEndDate(endValue: Date): boolean {
+    if (endValue.getTime() < (Date.now() - (60 * 60 * 1000 * 24))) {
+      return true;
+    }
+
     if (!endValue || !this.startControl.value) {
       return false;
     }
