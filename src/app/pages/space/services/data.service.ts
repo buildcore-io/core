@@ -4,9 +4,16 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
 import { AwardApi, AwardFilter } from './../../../@api/award.api';
+import { DEFAULT_LIST_SIZE } from './../../../@api/base.api';
 import { ProposalApi, ProposalFilter } from './../../../@api/proposal.api';
 import { SpaceApi } from './../../../@api/space.api';
 import { AuthService } from './../../../components/auth/services/auth.service';
+
+export enum MemberFilterOptions {
+  ACTIVE = 'active',
+  PENDING = 'pending',
+  BLOCKED = 'blocked'
+}
 
 @Injectable()
 export class DataService implements OnDestroy {
@@ -24,6 +31,9 @@ export class DataService implements OnDestroy {
   private subscriptions$: Subscription[] = [];
   private completedProposalsOn = false;
   private completedAwardsOn = false;
+  private dataStoreMembers: Member[][] = [];
+  private dataStorePendingMembers: Member[][] = [];
+  private dataStoreBlockedMembers: Member[][] = [];
 
   constructor(
     private auth: AuthService,
@@ -63,9 +73,13 @@ export class DataService implements OnDestroy {
 
   public listenToRelatedRecord(spaceId: string): void {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).subscribe(this.guardians$));
-    this.subscriptions$.push(this.spaceApi.listenMembers(spaceId).subscribe(this.members$));
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.ACTIVE).subscribe(this.proposalsActive$));
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.ACTIVE).subscribe(this.awardsActive$));
+  }
+
+  public listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
+    this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
+    this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
   }
 
   public listenToCompletedProposals(spaceId: string): void {
@@ -86,11 +100,62 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.COMPLETED).subscribe(this.awardsCompleted$));
   }
 
-  public listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
-    this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
-    this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
-    this.subscriptions$.push(this.spaceApi.listenBlockedMembers(spaceId).subscribe(this.blockedMembers$));
-    this.subscriptions$.push(this.spaceApi.listenPendingMembers(spaceId).subscribe(this.pendingMembers$));
+  public listenMembers(spaceId: string, lastValue?: any): void {
+    this.subscriptions$.push(this.spaceApi.listenMembers(spaceId, lastValue).subscribe(
+      this.store.bind(this, this.members$, this.dataStoreMembers, this.dataStoreMembers.length)
+    ));
+  }
+
+  public listenBlockedMembers(spaceId: string, lastValue?: any): void {
+    this.subscriptions$.push(this.spaceApi.listenBlockedMembers(spaceId, lastValue).subscribe(
+      this.store.bind(this, this.blockedMembers$, this.dataStoreBlockedMembers, this.dataStoreBlockedMembers.length)
+    ));
+  }
+
+  public listenPendingMembers(spaceId: string, lastValue?: any): void {
+    this.subscriptions$.push(this.spaceApi.listenPendingMembers(spaceId, lastValue).subscribe(
+      this.store.bind(this, this.pendingMembers$, this.dataStorePendingMembers, this.dataStorePendingMembers.length)
+    ));
+  }
+
+  protected store(stream$: BehaviorSubject<any[]|undefined>, store: any[][], page: number, a: any): void {
+    if (store[page]) {
+      store[page] = a;
+    } else {
+      store.push(a);
+    }
+
+    // Merge arrays.
+    stream$.next(Array.prototype.concat.apply([], store));
+  }
+
+  public onMemberScroll(spaceId: string, list: MemberFilterOptions): void {
+    let store;
+    let handler;
+    let stream;
+    if (list === MemberFilterOptions.PENDING) {
+      store = this.dataStorePendingMembers;
+      stream = this.pendingMembers$.value;
+      handler = this.listenPendingMembers;
+    } else if (list === MemberFilterOptions.BLOCKED) {
+      store = this.dataStoreBlockedMembers;
+      stream = this.blockedMembers$.value;
+      handler = this.listenBlockedMembers;
+    } else {
+      store = this.dataStoreMembers;
+      stream = this.members$.value;
+      handler = this.listenMembers;
+    }
+
+    // Make sure we allow initial load store[0]
+    if (store[0] && store[store.length - 1]?.length < DEFAULT_LIST_SIZE) {
+      // Finished paging.
+      return;
+    }
+
+    // For initial load stream will not be defiend.
+    const lastValue = stream ? stream[stream.length - 1].createdOn : undefined;
+    handler.call(this, spaceId, lastValue);
   }
 
   public getPendingMembersCount(members?: Member[]|null): number {
