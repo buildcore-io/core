@@ -61,7 +61,7 @@ export class ProposalApi extends BaseApi<Proposal> {
   }
 
   public listenMembers(proposalId: string, lastValue?: any): Observable<ProposalParticipantWithMember[]> {
-    return this.subCollectionMembers(proposalId, SUB_COL.OWNERS, lastValue, (original, finObj) => {
+    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, (original, finObj) => {
       finObj.voted = original.voted;
       return finObj;
     });

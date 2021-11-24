@@ -9,6 +9,7 @@ import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
+import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi, ProposalParticipantWithMember } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -38,6 +39,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private proposalApi: ProposalApi,
+    private memberApi: MemberApi,
     private cd: ChangeDetectorRef,
     public data: DataService,
     public nav: NavigationService
@@ -81,6 +83,9 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.data.proposal$.pipe(skip(1), first()).subscribe((p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+        if (p.createdBy) {
+          this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
+        }
       }
     });
   }

@@ -34,7 +34,7 @@
       <div>
         <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
-        <span>@{{(data.proposal$ | async)?.createdBy | truncate:[12]}}</span>
+        <span [routerLink]="['/member', (data.creator$ | async)?.uid]">@{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) | truncate:[12]}}</span>
       </div>
     </div>
 
