@@ -148,7 +148,7 @@ export class DataService implements OnDestroy {
     }
 
     // Make sure we allow initial load store[0]
-    if (store[0] && store[store.length - 1]?.length < DEFAULT_LIST_SIZE) {
+    if (store[0] && (!store[store.length - 1] || store[store.length - 1]?.length < DEFAULT_LIST_SIZE)) {
       // Finished paging.
       return;
     }
