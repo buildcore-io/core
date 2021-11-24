@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngleDownIconComponent } from './angle-down/angle-down.component';
+import { AngleLeftIconComponent } from './angle-left/angle-left.component';
 import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
@@ -41,6 +42,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     GithubIconComponent,
     DiscordIconComponent,
     RedditIconComponent,
+    AngleLeftIconComponent,
   ],
   exports: [
     GlobeIconComponent,
@@ -62,6 +64,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     GithubIconComponent,
     DiscordIconComponent,
     RedditIconComponent,
+    AngleLeftIconComponent,
   ],
   imports: [
     CommonModule

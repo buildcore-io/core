@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -63,7 +64,8 @@ import { DataService } from './services/data.service';
     NzTagModule,
     NzInputNumberModule,
     NzDividerModule,
-    NzDatePickerModule
+    NzDatePickerModule,
+    IconModule
   ]
 })
 export class ProposalModule { }
