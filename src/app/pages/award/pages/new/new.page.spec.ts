@@ -1,10 +1,12 @@
+import { IconModule } from '@components/icon/icon.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { NewPage } from './new.page';
 
 describe('NewPage', () => {
   let spectator: Spectator<NewPage>;
   const createComponent = createRoutingFactory({
-    component: NewPage
+    component: NewPage,
+    imports: [IconModule]
   });
 
   beforeEach(() => {

@@ -1,4 +1,5 @@
 import { AwardCardModule } from '@components/award/components/award-card/award-card.module';
+import { IconModule } from '@components/icon/icon.module';
 import { SpaceCardModule } from "@components/space/components/space-card/space-card.module";
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockProvider } from 'ng-mocks';
@@ -18,7 +19,7 @@ describe('HomePage', () => {
       top: () => {
         return new Observable();
       }
-    }),MockProvider(AwardApi, {
+    }), MockProvider(AwardApi, {
       last: () => {
         return new Observable();
       },
@@ -28,7 +29,8 @@ describe('HomePage', () => {
     })],
     imports: [
       AwardCardModule,
-      SpaceCardModule
+      SpaceCardModule,
+      IconModule
     ]
   });
 
@@ -37,7 +39,7 @@ describe('HomePage', () => {
     spectator = createComponent();
   });
 
-it('write tests', () => {
-  expect(spectator).toBeDefined();
-});
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
+  });
 });
