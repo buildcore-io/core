@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { BellIconComponent } from './bell/bell.component';
 import { GlobeIconComponent } from './globe/globe.component';
 import { MarketIconComponent } from './market/market.component';
 import { MembersIconComponent } from './members/members.component';
@@ -17,6 +18,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     MoonIconComponent,
     MembersIconComponent,
     MarketIconComponent,
+    BellIconComponent,
   ],
   exports: [
     GlobeIconComponent,
@@ -26,6 +28,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     MoonIconComponent,
     MembersIconComponent,
     MarketIconComponent,
+    BellIconComponent,
   ],
   imports: [
     CommonModule
