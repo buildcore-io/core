@@ -17,12 +17,18 @@ describe('HomePage', () => {
       },
       top: () => {
         return new Observable();
+      },
+      lastByRank: () => {
+        return new Observable();
       }
     }),MockProvider(AwardApi, {
       last: () => {
         return new Observable();
       },
       top: () => {
+        return new Observable();
+      },
+      lastByRank: () => {
         return new Observable();
       }
     })],
