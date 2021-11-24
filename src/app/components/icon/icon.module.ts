@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { AngleDownIconComponent } from './angle-down/angle-down.component';
+import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
@@ -25,6 +27,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     SpaceIconComponent,
     AwardIconComponent,
     CheckCircleIconComponent,
+    AngleDownIconComponent,
+    AngleUpIconComponent,
   ],
   exports: [
     GlobeIconComponent,
@@ -38,6 +42,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     SpaceIconComponent,
     AwardIconComponent,
     CheckCircleIconComponent,
+    AngleDownIconComponent,
+    AngleUpIconComponent,
   ],
   imports: [
     CommonModule
