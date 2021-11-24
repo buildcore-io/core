@@ -33,6 +33,7 @@ import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import { CoreModule } from './src/app/@core/core.module';
 import { TruncateModule } from './src/app/@core/pipes/truncate/truncate.module';
 
@@ -44,6 +45,7 @@ defineGlobalsInjections({
     NzCardModule,
     CoreModule,
     TruncateModule,
+    InfiniteScrollModule,
     NzTimelineModule,
     NzDividerModule,
     NzBadgeModule,

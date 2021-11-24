@@ -26,7 +26,7 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-date-picker class="flex flex-grow" nzSize="large" [nzDisabledDate]="disabledStartDate.bind(this)"
-                nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" [formControl]="startControl" nzPlaceHolder="Start"
+                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }" nzFormat="yyyy-MM-dd HH:mm" [formControl]="startControl" nzPlaceHolder="Start"
                 (nzOnOpenChange)="handleStartOpenChange($event)">
               </nz-date-picker>
             </nz-form-control>
@@ -34,7 +34,7 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-date-picker class="flex flex-grow" nzSize="large" #endDatePicker
-                [nzDisabledDate]="disabledEndDate.bind(this)" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+                [nzDisabledDate]="disabledEndDate.bind(this)" [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }" nzFormat="yyyy-MM-dd HH:mm"
                 [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
             </nz-form-control>
           </nz-form-item>

@@ -1,5 +1,9 @@
 <p nz-typography nzType="secondary" class="mb-6">{{ (members$ | async)?.length }} members</p>
-<div class="flex flex-wrap gap-6 mb-10">
+<div class="flex flex-wrap gap-6 mb-10"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="50"
+  (scrolled)="onScroll()">
   <wen-member-card class="cursor-pointer" *ngFor="let member of members$ | async; trackBy: trackByUid" [member]="member">
   </wen-member-card>
 </div>

@@ -89,10 +89,10 @@ export class SpacePage implements OnInit, OnDestroy {
   private listenToRelatedRecord(spaceId: string): void {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.guardians$));
     this.subscriptions$.push(this.spaceApi.listenMembers(spaceId).pipe(untilDestroyed(this)).subscribe(this.data.members$));
-    this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId, ProposalFilter.ACTIVE).pipe(untilDestroyed(this)).subscribe(this.data.proposalsActive$));
-    this.subscriptions$.push(this.proposalApi.listenForSpace(spaceId, ProposalFilter.COMPLETED).pipe(untilDestroyed(this)).subscribe(this.data.proposalsCompleted$));
-    this.subscriptions$.push(this.awardApi.listenForSpace(spaceId, AwardFilter.ACTIVE).pipe(untilDestroyed(this)).subscribe(this.data.awardsActive$));
-    this.subscriptions$.push(this.awardApi.listenForSpace(spaceId, AwardFilter.COMPLETED).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
+    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.ACTIVE).pipe(untilDestroyed(this)).subscribe(this.data.proposalsActive$));
+    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).pipe(untilDestroyed(this)).subscribe(this.data.proposalsCompleted$));
+    this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.ACTIVE).pipe(untilDestroyed(this)).subscribe(this.data.awardsActive$));
+    this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.COMPLETED).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
   }
 
   private listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {

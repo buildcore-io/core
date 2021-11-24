@@ -67,6 +67,7 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
     await refAward.set(cOn(merge(cleanParams(params.body), {
       uid: awardAddress,
       issued: 0,
+      rank: 1,
       endDate: dateToTimestamp(params.body.endDate),
       createdBy: owner
     })));

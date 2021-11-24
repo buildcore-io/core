@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
+import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
 
 @UntilDestroy()
@@ -17,7 +18,20 @@ export class MembersPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.memberApi.last().pipe(untilDestroyed(this)).subscribe(this.members$);
+    this.memberApi.lastByRank().pipe(untilDestroyed(this)).subscribe(this.members$);
+  }
+
+  public onScroll(): void {
+    this.memberApi.lastByRank(this.members$.value[this.members$.value.length - 1].createdOn).pipe(
+      untilDestroyed(this),
+      map((a) => {
+        return [...(this.members$.value || []), ...a];
+      })
+    ).subscribe(this.members$);
+  }
+
+  public get maxRecords(): number {
+    return DEFAULT_LIST_SIZE;
   }
 
   public trackByUid(index: number, item: any): number {

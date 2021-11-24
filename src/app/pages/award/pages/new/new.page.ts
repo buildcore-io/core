@@ -74,7 +74,7 @@ export class NewPage implements OnInit, OnDestroy {
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
-        this.subscriptions$.push(this.memberApi.allSpacesWhereMember(o.uid).subscribe(this.spaces$));
+        this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
       }
     });
   }

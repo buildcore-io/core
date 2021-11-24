@@ -1,4 +1,8 @@
 <p nz-typography nzType="secondary" class="mb-6">{{ (spaces$ | async)?.length }} spaces</p>
-<div class="flex flex-wrap gap-6 mb-10">
+<div class="flex flex-wrap gap-6 mb-10"
+    infiniteScroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="50"
+    (scrolled)="onScroll()">
   <wen-space-card class="cursor-pointer" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
 </div>

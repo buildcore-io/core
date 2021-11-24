@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 
 enum SortOptions {
   RECENT = 'recent',
@@ -25,6 +26,10 @@ export class DiscoverPage {
 
   public handleChange(_checked: boolean, tag: string): void {
     this.selectedTags = [tag];
+  }
+
+  public get maxRecords(): number {
+    return DEFAULT_LIST_SIZE;
   }
 
   public get sortOptions(): typeof SortOptions {
