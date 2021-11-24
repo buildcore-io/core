@@ -1,4 +1,4 @@
-<button nz-button class="mt-14" (click)="nav.goBack()"><i nz-icon nzType="left"></i>{{nav.getTitle()}}</button>
+<button nz-button class="mt-14" (click)="nav.goBack()"><wen-icon-angle-left></wen-icon-angle-left>{{nav.getTitle()}}</button>
 
 <h1 class="mt-7" *ngIf="!editMode" i18n>Add new space</h1>
 <h1 class="mt-7" *ngIf="editMode" i18n>Edit space</h1>
@@ -37,7 +37,7 @@
               <nz-input-group nzSize="large" [nzPrefix]="prefixGithub">
                 <input type="text" nz-input placeholder="Link to your Github account" [formControl]="githubControl" />
                 <ng-template #prefixGithub>
-                  <i nz-icon nzType="github"></i>
+                  <wen-icon-github></wen-icon-github>
                 </ng-template>
               </nz-input-group>
             </nz-form-control>
@@ -48,7 +48,7 @@
               <nz-input-group nzSize="large" [nzPrefix]="prefixTwitter">
                 <input type="text" nz-input placeholder="Link to your Twitter account" [formControl]="twitterControl" />
                 <ng-template #prefixTwitter>
-                  <i nz-icon nzType="twitter"></i>
+                  <wen-icon-twitter></wen-icon-twitter>
                 </ng-template>
               </nz-input-group>
             </nz-form-control>
@@ -59,7 +59,7 @@
               <nz-input-group nzSize="large" [nzPrefix]="prefixDiscord">
                 <input type="text" nz-input placeholder="Link to your Discord account" [formControl]="discordControl" />
                 <ng-template #prefixDiscord>
-                  <i nz-icon nzType="wechat"></i>
+                  <wen-icon-discord></wen-icon-discord>
                 </ng-template>
               </nz-input-group>
             </nz-form-control>

@@ -1,3 +1,4 @@
+import { IconModule } from '@components/icon/icon.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { DataService } from './../../services/data.service';
@@ -7,7 +8,7 @@ describe('ProposalPage', () => {
   let spectator: Spectator<ProposalPage>;
   const createComponent = createRoutingFactory({
     component: ProposalPage,
-    imports: [ TabsModule ],
+    imports: [ TabsModule, IconModule ],
     providers: [ DataService ]
   });
 

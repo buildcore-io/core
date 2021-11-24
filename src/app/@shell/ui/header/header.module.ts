@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthModule } from '@components/auth/auth.module';
+import { IconModule } from '@components/icon/icon.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
@@ -25,6 +26,7 @@ import { HeaderComponent } from './header.component';
     NzIconModule,
     NzButtonModule,
     NzAvatarModule,
+    IconModule,
     NzDropDownModule
   ],
   exports: [HeaderComponent],

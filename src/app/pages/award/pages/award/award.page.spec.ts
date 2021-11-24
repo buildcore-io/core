@@ -1,3 +1,4 @@
+import { IconModule } from '@components/icon/icon.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { DataService } from "@pages/award/services/data.service";
 import { MockProvider } from 'ng-mocks';
@@ -12,12 +13,12 @@ describe('AwardPage', () => {
   let spectator: Spectator<AwardPage>;
   const createComponent = createRoutingFactory({
     component: AwardPage,
-    providers: [ NavigationService, DataService, MockProvider(AwardApi, {
+    providers: [NavigationService, DataService, MockProvider(AwardApi, {
       last: () => {
         return new Observable();
       }
     })],
-    imports: [ TabsModule ]
+    imports: [TabsModule, IconModule]
   });
 
   beforeEach(() => {

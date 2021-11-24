@@ -1,4 +1,5 @@
 import { AuthService } from '@components/auth/services/auth.service';
+import { IconModule } from '@components/icon/icon.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockProvider } from 'ng-mocks';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -11,7 +12,7 @@ describe('SignOutComponent', () => {
   let spectator: Spectator<SignOutComponent>;
   const createComponent = createRoutingFactory({
     component: SignOutComponent,
-    imports: [NzAvatarModule, NzTypographyModule],
+    imports: [NzAvatarModule, NzTypographyModule, IconModule],
     providers: [
       MockProvider(AuthService),
       MockProvider(MemberApi),

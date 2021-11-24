@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -35,7 +36,7 @@ import { DataService } from './services/data.service';
     OverviewPage,
     ParticipantsPage
   ],
-  providers: [ DataService ],
+  providers: [DataService],
   imports: [
     CommonModule,
     TabsModule,
@@ -58,7 +59,8 @@ import { DataService } from './services/data.service';
     NzModalModule,
     NzUploadModule,
     NzInputNumberModule,
-    NzDatePickerModule
+    NzDatePickerModule,
+    IconModule
   ]
 })
 export class AwardModule { }

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
+import { IconModule } from '@components/icon/icon.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -39,7 +40,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     MembersPage,
     UpsertPage
   ],
-  providers: [ DataService ],
+  providers: [DataService],
   imports: [
     CommonModule,
     TabsModule,
@@ -61,7 +62,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzSelectModule,
     NzIconModule,
     NzUploadModule,
-    NzAvatarModule
+    NzAvatarModule,
+    IconModule
   ]
 })
 export class SpaceModule { }
