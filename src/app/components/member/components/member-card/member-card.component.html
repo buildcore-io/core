@@ -3,7 +3,7 @@
   <div [ngClass]="fullWidth ? 'w-3/5' : 'w-full'" >
     <div class="relative flex flex-col w-full h-40" [ngClass]="fullWidth ? 'h-auto' : 'h-40'" [routerLink]="['/member', member.uid]">
       <div class="flex items-center w-full space-x-4">
-        <nz-avatar class="min-w-max" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
+        <nz-avatar class="min-w-10" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
         <p nz-typography class="truncate">{{ member.name ? '@' + member.name : member.uid }}</p>
       </div>
       <p class="mt-2 mb-3 text-base">{{ (about !== undefined ? about : member.about)| truncate:[110] }}</p>
