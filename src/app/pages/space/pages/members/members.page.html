@@ -1,5 +1,10 @@
 <div class="space-y-12">
-  <div class="space-y-4">
+  <div class="space-y-4"
+    infiniteScroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="50"
+    (scrolled)="onScroll()"
+    >
     <div class="inline-flex justify-between w-full">
       <!-- <h3>{{getTitle()}} {{((getList() | async)?.length === 1 ? ' Member' : ' Members')}}</h3> -->
       <nz-badge [nzCount]="data.getPendingMembersCount(data.pendingMembers$ | async)">

@@ -46,7 +46,10 @@ export class ProposalsPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+    this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (this.spaceId && val === FilterOptions.COMPLETED) {
+        this.data.listenToCompletedProposals(this.spaceId);
+      }
       this.cd.markForCheck();
     });
   }

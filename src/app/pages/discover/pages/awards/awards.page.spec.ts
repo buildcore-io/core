@@ -1,8 +1,9 @@
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent, MockProvider } from 'ng-mocks';
-import { Observable } from 'rxjs';
-import { AwardApi } from './../../../../@api/award.api';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AwardCardComponent } from '../../../../components/award/components/award-card/award-card.component';
+import { AwardApi } from './../../../../@api/award.api';
+import { FilterService, SortOptions } from './../../services/filter.service';
 import { AwardsPage } from './awards.page';
 
 describe('AwardsPage', () => {
@@ -10,7 +11,12 @@ describe('AwardsPage', () => {
   const createComponent = createRoutingFactory({
     component: AwardsPage,
     declarations: [MockComponent(AwardCardComponent)],
-    providers: [MockProvider(AwardApi, {
+    providers: [MockProvider(<any>FilterService, {
+      getHandler: () => {
+        return new Observable();
+      },
+      selectedSort$: new BehaviorSubject<SortOptions>(SortOptions.OLDEST)
+    }), MockProvider(AwardApi, {
       last: () => {
         return new Observable();
       }

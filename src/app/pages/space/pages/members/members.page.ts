@@ -8,13 +8,7 @@ import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
-import { DataService } from "./../../services/data.service";
-
-enum FilterOptions {
-  ACTIVE = 'active',
-  PENDING = 'pending',
-  BLOCKED = 'blocked'
-}
+import { DataService, MemberFilterOptions } from "./../../services/data.service";
 
 @UntilDestroy()
 @Component({
@@ -25,7 +19,7 @@ enum FilterOptions {
 })
 export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
-  public selectedListControl: FormControl = new FormControl(FilterOptions.ACTIVE);
+  public selectedListControl: FormControl = new FormControl(MemberFilterOptions.ACTIVE);
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -40,8 +34,8 @@ export class MembersPage implements OnInit, OnDestroy {
     // none.
   }
 
-  public get filterOptions(): typeof FilterOptions {
-    return FilterOptions;
+  public get filterOptions(): typeof MemberFilterOptions {
+    return MemberFilterOptions;
   }
 
   public ngOnInit(): void {
@@ -63,6 +57,12 @@ export class MembersPage implements OnInit, OnDestroy {
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
+
+    // Load initial list.
+    this.onScroll();
+    // if (this.spaceId) {
+    //   this.data.listenMembers(this.spaceId);
+    // }
   }
 
   public memberIsGuardian(memberId: string): boolean {
@@ -94,15 +94,23 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public isActiveList(): boolean {
-    return this.selectedListControl.value === FilterOptions.ACTIVE;
+    return this.selectedListControl.value === MemberFilterOptions.ACTIVE;
   }
 
   public isBlockedList(): boolean {
-    return this.selectedListControl.value === FilterOptions.BLOCKED;
+    return this.selectedListControl.value === MemberFilterOptions.BLOCKED;
   }
 
   public isPendingList(): boolean {
-    return this.selectedListControl.value === FilterOptions.PENDING;
+    return this.selectedListControl.value === MemberFilterOptions.PENDING;
+  }
+
+  public onScroll(): void {
+    if (!this.spaceId) {
+      return;
+    }
+
+    this.data.onMemberScroll(this.spaceId, this.selectedListControl.value);
   }
 
   public async setGuardian(memberId: string): Promise<void> {

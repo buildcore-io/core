@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from "functions/interfaces/models";
-import { firstValueFrom, Observable, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
-import { AwardOwner, AwardParticipant } from './../../../functions/interfaces/models/award';
 import { Member } from './../../../functions/interfaces/models/member';
 import { BaseApi } from './base.api';
 
@@ -26,15 +25,15 @@ export enum AwardFilter {
 })
 export class AwardApi extends BaseApi<Award> {
   public collection = COL.AWARD;
-  constructor(protected afs: AngularFirestore, private fns: AngularFireFunctions) {
-    super(afs);
+  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
+    super(afs, fns);
   }
 
   public listen(id: EthAddress): Observable<Award|undefined> {
     return super.listen(id);
   }
 
-  public listenForSpace(space: string, filter: AwardFilter = AwardFilter.ALL): Observable<Award[]> {
+  public listenSpace(space: string, filter: AwardFilter = AwardFilter.ALL): Observable<Award[]> {
     return this.afs.collection<Award>(
       this.collection,
       // We limit this to last record only. CreatedOn is always defined part of every record.
@@ -51,49 +50,29 @@ export class AwardApi extends BaseApi<Award> {
     ).valueChanges();
   }
 
-  public listenOwners(awardId: string): Observable<Member[]> {
-    return (<Observable<AwardParticipant[]>>this.afs.collection(this.collection)
-    .doc(awardId.toLowerCase()).collection(SUB_COL.OWNERS).valueChanges()).pipe(switchMap(async (obj: AwardOwner[]) => {
-      const out: Member[] = [];
-      for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges()));
-      }
-
-      return out;
-    }));
+  public listenOwners(awardId: string, lastValue?: any): Observable<Member[]> {
+    return this.subCollectionMembers(awardId, SUB_COL.OWNERS, lastValue);
   }
 
-  public listenParticipants(awardId: string): Observable<AwardParticipantWithMember[]> {
-    return (<Observable<AwardParticipant[]>>this.afs.collection(this.collection)
-    .doc(awardId.toLowerCase()).collection(SUB_COL.PARTICIPANTS).valueChanges()).pipe(switchMap(async (obj: AwardParticipant[]) => {
-      const out: AwardParticipantWithMember[] = [];
-      for (const o of obj) {
-        const finObj: AwardParticipantWithMember = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
-        finObj.comment = o.comment;
-        finObj.participatedOn = o.createdOn;
-        finObj.completed = o.completed;
-        out.push(finObj);
-      }
-
-      return out;
-    }));
+  // TODO: Fix typings.
+  public listenParticipants<AwardParticipantWithMember>(awardId: string, lastValue?: any): Observable<any> {
+    return this.subCollectionMembers<AwardParticipantWithMember>(awardId, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
+      finObj.comment = original.comment;
+      finObj.participatedOn = original.createdOn;
+      finObj.completed = original.completed;
+      return finObj;
+    });
   }
 
   public create(req: WenRequest): Observable<Award|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.cAward);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.cAward, req);
   }
 
   public participate(req: WenRequest): Observable<Award|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.participateAward);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.participateAward, req);
   }
 
   public approve(req: WenRequest): Observable<Award|undefined> {
-    const callable = this.fns.httpsCallable(WEN_FUNC.aAward);
-    const data$ = callable(req);
-    return data$;
+    return this.request(WEN_FUNC.aAward, req);
   }
 }

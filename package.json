@@ -33,6 +33,7 @@
     "marked": "^4.0.4",
     "ng-apexcharts": "1.5.12",
     "ng-zorro-antd": "12.0.1",
+    "ngx-infinite-scroll": "^10.0.1",
     "rxfire": "^6.0.0",
     "rxjs": "7.4.0",
     "zone.js": "~0.11.4"

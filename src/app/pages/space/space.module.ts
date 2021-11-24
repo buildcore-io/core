@@ -14,6 +14,7 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MemberModule } from '../../components/member/member.module';
 import { ProposalCardModule } from '../../components/proposal/components/proposal-card/proposal-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
@@ -42,6 +43,7 @@ import { SpaceRoutingModule } from './space-routing.module';
   imports: [
     CommonModule,
     TabsModule,
+    InfiniteScrollModule,
     ReactiveFormsModule,
     SpaceRoutingModule,
     TruncateModule,

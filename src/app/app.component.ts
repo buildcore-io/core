@@ -3,7 +3,6 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
 import { Observable } from 'rxjs';
-import { ConfigApi } from './@api/config.api';
 import { NavigationService } from './@core/services/navigation/navigation.service';
 
 @Component({
@@ -19,7 +18,6 @@ export class WenComponent implements OnInit {
     private seoService: SeoService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private apiConfig: ConfigApi,
     private navigation: NavigationService
   ) {}
 
@@ -32,12 +30,5 @@ export class WenComponent implements OnInit {
   private runGlobalServices(): void {
     this.seoService.init();
     this.themeService.init();
-
-    // Test config API.
-    this.apiConfig.latest().subscribe((e) => {
-      if (e) {
-        console.log('Config version: ', e.createdOn?.toDate());
-      }
-    });
   }
 }
