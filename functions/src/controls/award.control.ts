@@ -68,6 +68,7 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
       uid: awardAddress,
       issued: 0,
       rank: 1,
+      completed: false,
       endDate: dateToTimestamp(params.body.endDate),
       createdBy: owner
     })));
