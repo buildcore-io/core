@@ -42,7 +42,10 @@ export class AwardsPage implements OnInit, OnDestroy {
       }
     });
 
-    this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+    this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (this.spaceId && val === FilterOptions.COMPLETED) {
+        this.data.listenToCompletedAwards(this.spaceId);
+      }
       this.cd.markForCheck();
     });
   }
