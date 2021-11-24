@@ -6,6 +6,7 @@ import { MarketIconComponent } from './market/market.component';
 import { MembersIconComponent } from './members/members.component';
 import { MoonIconComponent } from './moon/moon.component';
 import { RocketIconComponent } from './rocket/rocket.component';
+import { SpaceIconComponent } from './space/space.component';
 import { SunIconComponent } from './sun/sun.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 
@@ -19,6 +20,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     MembersIconComponent,
     MarketIconComponent,
     BellIconComponent,
+    SpaceIconComponent,
   ],
   exports: [
     GlobeIconComponent,
@@ -29,6 +31,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     MembersIconComponent,
     MarketIconComponent,
     BellIconComponent,
+    SpaceIconComponent,
   ],
   imports: [
     CommonModule

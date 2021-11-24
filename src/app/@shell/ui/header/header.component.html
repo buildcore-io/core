@@ -1,6 +1,6 @@
 <!-- TODO find better hack for preventing header from jumping because of the scrollbar -->
 <header
-  class="absolute z-30 flex items-center justify-end py-5 pr-0 space-x-8  w-header lg:pr-8 xl:pr-16"
+  class="absolute z-30 flex items-center justify-end py-5 pr-0 space-x-8 w-header lg:pr-8 xl:pr-16"
   style="left: calc(100vw - 500px)"
 >
   <button
@@ -83,7 +83,7 @@
   <nz-dropdown-menu #userMenu="nzDropdownMenu">
     <ul nz-menu>
       <li nz-menu-item (click)="goToMyProfile()">
-        <i nz-icon class="mr-4" nzType="user"></i>My Profile
+        <wen-icon-space class="mr-4"></wen-icon-space>My Profile
       </li>
       <li nz-menu-item [nzDanger]="true">
         <wen-sign-out></wen-sign-out>
