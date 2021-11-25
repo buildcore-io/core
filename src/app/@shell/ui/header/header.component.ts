@@ -43,16 +43,4 @@ export class HeaderComponent {
       this.router.navigate([ROUTER_UTILS.config.member.root, this.member$.value.uid]);
     }
   }
-
-  public handleCancel(): void {
-    this.auth.hideWallet();
-  }
-
-  public onClickSignOut(): void {
-    this.auth.signOut();
-  }
-
-  public onClickSignIn(): void {
-    this.auth.signIn();
-  }
 }
