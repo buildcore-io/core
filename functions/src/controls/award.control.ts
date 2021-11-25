@@ -40,7 +40,10 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 }
 
-export const createAward: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<Award> => {
+export const createAward: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<Award> => {
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -58,6 +61,10 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
   const member = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!member.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
+  }
+
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
 
   const refAward: any = admin.firestore().collection(COL.AWARD).doc(awardAddress);
@@ -90,7 +97,10 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
   return <Award>docAward.data();
 });
 
-export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const addOwner: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -130,7 +140,10 @@ export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(a
   return docAward.data();
 });
 
-export const participate: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const participate: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const participant = params.address.toLowerCase();
@@ -149,6 +162,11 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
 
   if (dayjs(docAward.data().endDate).isBefore(dayjs())) {
     throw throwInvalidArgument(WenError.award_is_no_longer_available);
+  }
+
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(participant).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
 
   const member = await admin.firestore().collection(COL.MEMBER).doc(participant).get();
@@ -177,7 +195,10 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
   return output.data();
 });
 
-export const approveParticipant: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const approveParticipant: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   // TODO Fix for below validation.

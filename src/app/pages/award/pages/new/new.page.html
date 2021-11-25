@@ -24,7 +24,8 @@
           <div class="flex flex-grow space-x-4">
             <nz-form-item class="w-full">
               <nz-form-control>
-                <nz-date-picker class="flex flex-grow" nzSize="large" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+                <nz-date-picker [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                  class="flex flex-grow" nzSize="large" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
                   [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
               </nz-form-control>
             </nz-form-item>

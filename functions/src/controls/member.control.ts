@@ -52,7 +52,10 @@ export const createMember: functions.CloudFunction<Member> = functions.runWith({
   return <Member>docMember.data();
 });
 
-export const updateMember: functions.CloudFunction<Member> = functions.https.onCall(async (req: WenRequest): Promise<Member> => {
+export const updateMember: functions.CloudFunction<Member> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<Member> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const address = params.address.toLowerCase();
