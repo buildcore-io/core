@@ -44,6 +44,7 @@ export class DataService implements OnDestroy {
     // none.
   }
 
+  // TODO Change into a stream.
   public loggedInMemberIsGuardian(): boolean {
     if (!this.guardians$.value) {
       return false;
