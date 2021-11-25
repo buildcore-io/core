@@ -1,11 +1,12 @@
-<button nz-button nzSize="small"
-  class="h-10 px-6 font-semibold text-blue-600 bg-white border-white mt-14 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
-  (click)="nav.goBack()"><wen-icon-angle-left></wen-icon-angle-left>{{nav.getTitle()}}</button>
+<button nz-button class="wen-back-button mt-14" (click)="nav.goBack()">
+  <wen-icon-angle-left class="flex"></wen-icon-angle-left>{{nav.getTitle()}}
+</button>
 
 <div class="relative py-12" nz-row [nzGutter]="40">
   <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
     <div class="mb-8 space-x-3">
-      <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-gray-400" nzShape="circle">
+      <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-gray-400"
+        nzShape="circle">
       </nz-avatar>
 
       <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Award</nz-tag>
@@ -36,7 +37,7 @@
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="showParticipateModal()"
         *ngIf="!loggedInMemberIsParticipant()">
         Participate</button>
-<!-- TODO
+      <!-- TODO
       <button nz-button nzType="primary" nzBlock nzSize="large" *ngIf="loggedInMemberIsParticipant()">
         Cancel Participation</button> -->
     </ng-container>
