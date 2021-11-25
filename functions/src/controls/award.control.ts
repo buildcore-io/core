@@ -40,7 +40,10 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 }
 
-export const createAward: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<Award> => {
+export const createAward: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<Award> => {
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -94,7 +97,10 @@ export const createAward: functions.CloudFunction<Award> = functions.https.onCal
   return <Award>docAward.data();
 });
 
-export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const addOwner: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -134,7 +140,10 @@ export const addOwner: functions.CloudFunction<Award> = functions.https.onCall(a
   return docAward.data();
 });
 
-export const participate: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const participate: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const participant = params.address.toLowerCase();
@@ -186,7 +195,10 @@ export const participate: functions.CloudFunction<Award> = functions.https.onCal
   return output.data();
 });
 
-export const approveParticipant: functions.CloudFunction<Award> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const approveParticipant: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   // TODO Fix for below validation.

@@ -35,7 +35,10 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 };
 
-export const createSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<Space> => {
+export const createSpace: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<Space> => {
   const params: DecodedToken = await decodeAuth(req);
   const owner: string = params.address.toLowerCase();
 
@@ -92,7 +95,10 @@ export const createSpace: functions.CloudFunction<Space> = functions.https.onCal
   });
 });
 
-export const updateSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<Space> => {
+export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<Space> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -132,7 +138,10 @@ export const updateSpace: functions.CloudFunction<Space> = functions.https.onCal
   return <Space>docSpace.data();
 });
 
-export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<Space> => {
+export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<Space> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -190,7 +199,10 @@ export const joinSpace: functions.CloudFunction<Space> = functions.https.onCall(
   return <Space>output.data();
 });
 
-export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -245,7 +257,10 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.https.onCall
   };
 });
 
-export const addGuardian: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -298,7 +313,10 @@ export const addGuardian: functions.CloudFunction<Space> = functions.https.onCal
   return docSpace.data();
 });
 
-export const removeGuardian: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const removeGuardian: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -348,7 +366,10 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.https.on
   };
 });
 
-export const blockMember: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const blockMember: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -411,7 +432,10 @@ export const blockMember: functions.CloudFunction<Space> = functions.https.onCal
   return docSpace.data();
 });
 
-export const unblockMember: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -445,7 +469,10 @@ export const unblockMember: functions.CloudFunction<Space> = functions.https.onC
   };
 });
 
-export const acceptMemberSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -496,7 +523,10 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.https
   return docSpace.data();
 });
 
-export const declineMemberSpace: functions.CloudFunction<Space> = functions.https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+export const declineMemberSpace: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: 1,
+}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
