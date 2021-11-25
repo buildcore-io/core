@@ -78,7 +78,7 @@
 
         <div class="mt-4">
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control [nzValidateStatus]="avatarControl" [nzErrorTip]="'Avatar is mandatory'">
               <nz-upload class="wen-avatar-uploader" nzName="avatar" nzListType="picture-card" [nzDirectory]="false"
                 nzType="drag" [nzLimit]="1" [nzCustomRequest]="uploadFile.bind(this)"
                 (nzChange)="uploadChangeAvatar($event)" nzFileType="image/png,image/jpeg,image/gif"

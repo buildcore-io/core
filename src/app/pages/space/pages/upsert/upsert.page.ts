@@ -27,7 +27,7 @@ export class UpsertPage implements OnInit {
   public discordControl: FormControl = new FormControl('', getUrlValidator());
   public twitterControl: FormControl = new FormControl('', getUrlValidator());
   public githubControl: FormControl = new FormControl('', getUrlValidator());
-  public avatarControl: FormControl = new FormControl('');
+  public avatarControl: FormControl = new FormControl('', Validators.required);
   public bannerControl: FormControl = new FormControl('');
   public spaceForm: FormGroup;
   public editMode = false;
