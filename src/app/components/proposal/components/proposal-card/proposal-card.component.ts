@@ -62,7 +62,7 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
       return false;
     }
 
-    return (dayjs(this.proposal.settings.endDate.toDate()).isBefore(dayjs()));
+    return (dayjs(this.proposal.settings.endDate.toDate()).isBefore(dayjs()) && !!this.proposal?.approved);
   }
 
   public isInProgress(): boolean {

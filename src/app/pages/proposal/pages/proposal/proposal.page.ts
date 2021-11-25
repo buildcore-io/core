@@ -130,7 +130,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return (dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs()));
+    return (dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs()) && !!proposal?.approved);
   }
 
   public isInProgress(proposal?: Proposal|null): boolean {

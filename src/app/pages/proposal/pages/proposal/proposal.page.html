@@ -11,7 +11,7 @@
 
       <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" *ngIf="(data.proposal$ | async)?.approved">Proposal
       </nz-tag>
-      <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!(data.proposal$ | async)?.approved">Draft
+      <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!(data.proposal$ | async)?.approved && !(data.proposal$ | async)?.rejected">Draft
       </nz-tag>
 
       <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="(data.proposal$ | async)?.rejected">Rejected
