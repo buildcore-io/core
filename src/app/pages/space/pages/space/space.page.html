@@ -5,7 +5,7 @@
     <wen-icon-angle-left></wen-icon-angle-left>
   </button>
 
-  <img alt="" [src]="bannerUrl$ | async" class="object-cover w-full h-full" />
+  <img alt="" [src]="(bannerUrl$ | async) || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
 </div>
 
 <div
