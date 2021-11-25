@@ -10,6 +10,7 @@ export const WenError = {
   member_username_exists: { code: 2004, key: 'Username already exists.' },
   space_does_not_exists: { code: 2005, key: 'Space does not exists.' },
   you_are_not_guardian_of_space: { code: 2006, key: 'You are not a guardian of the space.' },
+  you_are_not_part_of_space: { code: 2006, key: 'You are not part of the space.' },
   you_are_already_part_of_space: { code: 2007, key: 'You are already part of the space.' },
   you_are_not_allowed_to_join_space: { code: 2008, key: 'You are are not allowed to join space.' },
   you_are_not_part_of_the_space: { code: 2009, key: 'You are not part of the space.' },

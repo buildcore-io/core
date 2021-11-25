@@ -47,7 +47,7 @@ function defaultJoiUpdateCreateSchema(): any {
 
 export const createProposal: functions.CloudFunction<Proposal> = functions.https.onCall(async (req: WenRequest): Promise<Proposal> => {
   const params: DecodedToken = await decodeAuth(req);
-  const guardian = params.address.toLowerCase();
+  const owner = params.address.toLowerCase();
 
   // We only get random address here that we use as ID.
   const proposalAddress: string = getRandomEthAddress();
@@ -60,8 +60,8 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
 
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
 
   if (params.body.settings?.startDate) {
@@ -79,7 +79,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
     await refProposal.set(cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
       rank: 1,
-      createdBy: guardian
+      createdBy: owner
     })));
 
     // This can't be empty.
@@ -100,8 +100,8 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.https
     });
 
     // Set owner.
-    await refProposal.collection(SUB_COL.OWNERS).doc(guardian).set({
-      uid: guardian,
+    await refProposal.collection(SUB_COL.OWNERS).doc(owner).set({
+      uid: owner,
       parentId: proposalAddress,
       parentCol: COL.PROPOSAL,
       createdOn: serverTime()

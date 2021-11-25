@@ -6,7 +6,7 @@ import { WenError } from './../../interfaces/errors';
 import { AwardType } from './../../interfaces/models/award';
 import { addOwner, approveParticipant, createAward, participate } from './../../src/controls/award.control';
 import { createMember } from './../../src/controls/member.control';
-import { createSpace } from './../../src/controls/space.control';
+import { createSpace, joinSpace } from './../../src/controls/space.control';
 
 describe('AwardController: ' + WEN_FUNC.cAward, () => {
   let walletSpy: any;
@@ -272,6 +272,18 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     });
 
     it('Participate.', async () => {
+      // Join space first.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: space?.uid
+        }
+      }));
+
+      const wrapped3: any = testEnv.wrap(joinSpace);
+      const returns3 = await wrapped3();
+      expect(returns3?.uid).toBeDefined();
+
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress2,
         body: {
@@ -285,7 +297,31 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       walletSpy.mockRestore();
     });
 
+    it('Fail to participate. Must be within the space.', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: wallet.getRandomEthAddress(),
+        body: {
+          uid: award.uid
+        }
+      }));
+
+      const wrapped: any = testEnv.wrap(participate);
+      (<any>expect(wrapped())).rejects.toThrowError(WenError.you_are_not_part_of_the_space.key);
+    });
+
     it('Already participant', async () => {
+      // Join space first.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: space?.uid
+        }
+      }));
+
+      const wrapped3: any = testEnv.wrap(joinSpace);
+      const returns3 = await wrapped3();
+      expect(returns3?.uid).toBeDefined();
+
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress2,
         body: {
@@ -323,6 +359,18 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     });
 
     it('Participate and assign badge', async () => {
+      // Join space first.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: space?.uid
+        }
+      }));
+
+      const wrapped3: any = testEnv.wrap(joinSpace);
+      const returns3 = await wrapped3();
+      expect(returns3?.uid).toBeDefined();
+
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress2,
         body: {
