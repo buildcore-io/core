@@ -52,7 +52,7 @@ export class SpacePage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.space$.pipe(skip(1)).subscribe((obj) => {
+    this.data.space$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
       if (!obj) {
         this.notFound();
       }

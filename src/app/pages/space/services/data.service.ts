@@ -167,12 +167,33 @@ export class DataService implements OnDestroy {
     return members.length;
   }
 
+  public resetSubjects(): void {
+    // Clean up all streams.
+    this.space$.next(undefined);
+    this.isMemberWithinSpace$.next(false);
+    this.isGuardianWithinSpace$.next(false);
+    this.guardians$.next(undefined);
+    this.proposalsActive$.next(undefined);
+    this.proposalsCompleted$.next(undefined);
+    this.awardsActive$.next(undefined);
+    this.awardsCompleted$.next(undefined);
+    this.members$.next(undefined);
+    this.blockedMembers$.next(undefined);
+    this.pendingMembers$.next(undefined);
+  }
+
   public cancelSubscriptions(): void {
-    this.completedProposalsOn = false;
-    this.completedAwardsOn = false;
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+
+    this.completedProposalsOn = false;
+    this.completedAwardsOn = false;
+    this.dataStoreMembers = [];
+    this.dataStorePendingMembers = [];
+    this.dataStoreBlockedMembers = [];
+
+    this.resetSubjects();
   }
 
   public ngOnDestroy(): void {

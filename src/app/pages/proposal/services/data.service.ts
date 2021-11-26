@@ -1,7 +1,7 @@
-import { Member } from './../../../../../functions/interfaces/models/member';
 import { Injectable } from '@angular/core';
 import { Proposal, Space, SpaceGuardian, Transaction } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
+import { Member } from './../../../../../functions/interfaces/models/member';
 import { ProposalParticipantWithMember } from './../../../@api/proposal.api';
 
 @Injectable()
@@ -12,4 +12,13 @@ export class DataService {
   public members$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
   public transactions$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
+  public resetSubjects(): void {
+    // Clean up all streams.
+    this.proposal$.next(undefined);
+    this.space$.next(undefined);
+    this.creator$.next(undefined);
+    this.members$.next(undefined);
+    this.transactions$.next(undefined);
+    this.guardians$.next(undefined);
+  }
 }

@@ -54,7 +54,7 @@ export class AwardPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.award$.pipe(skip(1)).subscribe((obj: Award|undefined) => {
+    this.data.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -161,12 +161,9 @@ export class AwardPage implements OnInit, OnDestroy {
 
   }
 
-  // public async cancel(): Promise<void> {
-  //   alert('SOON you can!');
-  // }
-
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
+    this.data.resetSubjects();
     if (this.guardiansSubscription$) {
       this.guardiansSubscription$.unsubscribe();
     }

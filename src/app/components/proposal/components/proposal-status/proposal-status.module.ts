@@ -4,19 +4,17 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { ProposalStatusModule } from './../proposal-status/proposal-status.module';
-import { ProposalCardComponent } from './proposal-card.component';
+import { ProposalStatusComponent } from './proposal-status.component';
 
 @NgModule({
   exports: [
-    ProposalCardComponent
+    ProposalStatusComponent
   ],
   declarations: [
-    ProposalCardComponent
+    ProposalStatusComponent
   ],
   imports: [
     CommonModule,
-    ProposalStatusModule,
     NzAvatarModule,
     NzTagModule,
     NzIconModule,
@@ -24,4 +22,4 @@ import { ProposalCardComponent } from './proposal-card.component';
   ]
 })
 
-export class ProposalCardModule { }
+export class ProposalStatusModule { }

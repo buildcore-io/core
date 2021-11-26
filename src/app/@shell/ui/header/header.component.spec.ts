@@ -2,9 +2,10 @@ import { SignInModalComponent } from '@components/auth/components/sign-in-modal/
 import { AuthService } from '@components/auth/services/auth.service';
 import { IconModule } from '@components/icon/icon.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockComponent, MockProvider } from 'ng-mocks';
+import { MockComponent } from 'ng-mocks';
 import { SignInComponent } from './../../../components/auth/components/sign-in/sign-in.component';
 import { SignOutComponent } from './../../../components/auth/components/sign-out/sign-out.component';
+import { AuthService } from './../../../components/auth/services/auth.service';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
@@ -13,7 +14,7 @@ describe('HeaderComponent', () => {
     component: HeaderComponent,
     imports: [IconModule],
     declarations: [MockComponent(SignInComponent), MockComponent(SignOutComponent), MockComponent(SignInModalComponent)],
-    providers: [MockProvider(AuthService)],
+    providers: [AuthService],
     params: {},
     data: {}
   });

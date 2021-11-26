@@ -1,11 +1,13 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { ProposalStatusModule } from './../proposal-status/proposal-status.module';
 import { ProposalCardComponent } from './proposal-card.component';
 
 
 describe('ProposalCardComponent', () => {
   let spectator: Spectator<ProposalCardComponent>;
   const createComponent = createComponentFactory({
-    component: ProposalCardComponent
+    component: ProposalCardComponent,
+    imports: [ProposalStatusModule]
   });
 
   beforeEach(() => {
