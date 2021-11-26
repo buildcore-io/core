@@ -14,10 +14,15 @@
     <div>
       <ng-container *ngFor="let q of proposal.questions">
         <ng-container *ngFor="let a of q.answers">
-          <p>{{a.text}}</p>
-          <nz-progress nz-tooltip [nzShowInfo]="true" nzStatus="active" [nzPercent]="getProgress(a)"
-            nzStrokeLinecap="square"></nz-progress>
+          <div *ngIf="q.answers.length === 2">
+            <p>{{a.text}}</p>
+            <nz-progress nz-tooltip [nzShowInfo]="true" nzStatus="active" [nzPercent]="getProgress(a)"
+              nzStrokeLinecap="square"></nz-progress>
+          </div>
         </ng-container>
+        <div *ngIf="q.answers.length > 2" class="max-w-full max-h-28">
+          <!-- TODO ADAM donut here  -->
+        </div>
       </ng-container>
     </div>
 
