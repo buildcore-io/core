@@ -13,7 +13,7 @@ import { FilterService, SortOptions } from './../../services/filter.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MembersPage implements OnInit, OnDestroy {
-  public members$: BehaviorSubject<Member[]> = new BehaviorSubject<Member[]>([]);
+  public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private memberApi: MemberApi, public filter: FilterService) {
@@ -41,7 +41,20 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public onScroll(): void {
+    // In this case there is no value, no need to infinite scroll.
+    if (!this.members$.value) {
+      return;
+    }
+
     this.subscriptions$.push(this.memberApi.top(this.members$.value[this.members$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+  }
+
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
   }
 
   protected store(page: number, a: any): void {

@@ -14,7 +14,7 @@ import { FilterService, SortOptions } from './../../services/filter.service';
 
 })
 export class AwardsPage implements OnInit, OnDestroy {
-  public award$: BehaviorSubject<Award[]> = new BehaviorSubject<Award[]>([]);
+  public award$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   private dataStore: Award[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private awardApi: AwardApi, public filter: FilterService) {
@@ -42,7 +42,20 @@ export class AwardsPage implements OnInit, OnDestroy {
   }
 
   public onScroll(): void {
+    // In this case there is no value, no need to infinite scroll.
+    if (!this.award$.value) {
+      return;
+    }
+
     this.subscriptions$.push(this.awardApi.top(this.award$.value[this.award$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+  }
+
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
   }
 
   protected store(page: number, a: any): void {
@@ -80,5 +93,6 @@ export class AwardsPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
+    this.award$.next(undefined);
   }
 }
