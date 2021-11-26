@@ -38,7 +38,7 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
     this.chartOptions = {
       // series: [44, 55, 41, 17, 15],
       chart: {
-        width: 380,
+        width: 260,
         type: "donut"
       },
       dataLabels: {
