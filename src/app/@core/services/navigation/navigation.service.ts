@@ -1,4 +1,3 @@
-import { Location } from "@angular/common";
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router, RoutesRecognized } from '@angular/router';
 import { ROUTER_UTILS } from "@core/utils/router.utils";
@@ -13,7 +12,6 @@ export class NavigationService implements OnDestroy {
   private returnText: string[] = ['Discover'];
 
   constructor(
-    private location: Location,
     private router: Router
   ) {
     // None.
@@ -44,12 +42,16 @@ export class NavigationService implements OnDestroy {
     ];
   }
 
+  public getLastUrl(): string[] {
+    return this.returnUrl[this.returnUrl.length - 1];
+  }
+
   public getTitle(): string {
     return 'Back ' + (this.returnText[this.returnText.length - 1] || '');
   }
 
   public goBack(): void {
-    const url = [...this.returnUrl[this.returnUrl.length - 1]];
+    const url = [...this.getLastUrl()];
     this.returnUrl.splice(this.returnUrl.length - 1);
     this.returnText.splice(this.returnText.length - 1);
     this.router.navigate(url);

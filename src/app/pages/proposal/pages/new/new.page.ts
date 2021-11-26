@@ -71,6 +71,10 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    if (this.nav.getLastUrl() && this.nav.getLastUrl()[1] === ROUTER_UTILS.config.space.root && this.nav.getLastUrl()[2]) {
+      this.spaceControl.setValue(this.nav.getLastUrl()[2]);
+    }
+
     this.route.params.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);

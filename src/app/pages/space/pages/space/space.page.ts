@@ -99,7 +99,9 @@ export class SpacePage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.space$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.join(sc), this.data.space$.value?.open ? 'Joined.' : 'Pending Approval', finish).subscribe((val: any) => {
+      this.notification.processRequest(
+        this.spaceApi.join(sc), this.data.space$.value?.open ? 'Joined.' : 'Pending Approval', finish
+      ).subscribe((val: any) => {
         // none.
       });
     });
