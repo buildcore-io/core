@@ -9,7 +9,7 @@
         <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-gray-400"
           nzShape="circle">
         </nz-avatar>
-        {{ data.space$ }}
+        {{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}
       </a>
 
       <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Award</nz-tag>

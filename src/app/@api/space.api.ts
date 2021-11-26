@@ -37,6 +37,14 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
+  public isPendingMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
+    return this.afs.collection(this.collection).doc(spaceId.toLowerCase()).collection(SUB_COL.KNOCKING_MEMBERS).doc<SpaceGuardian>(memberId.toLowerCase()).valueChanges().pipe(
+      map((o) => {
+        return !!o;
+      })
+    );
+  }
+
   public listenGuardians(spaceId: string, lastValue?: any): Observable<Member[]> {
     return this.subCollectionMembers(spaceId, SUB_COL.GUARDIANS, lastValue);
   }

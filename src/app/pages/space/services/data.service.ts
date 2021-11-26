@@ -20,6 +20,7 @@ export class DataService implements OnDestroy {
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public guardians$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public proposalsActive$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public proposalsCompleted$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
@@ -68,6 +69,7 @@ export class DataService implements OnDestroy {
       } else {
         this.isMemberWithinSpace$.next(false);
         this.isGuardianWithinSpace$.next(false);
+        this.isPendingMemberWithSpace$.next(false);
       }
     });
   }
@@ -81,6 +83,7 @@ export class DataService implements OnDestroy {
   public listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
     this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
     this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
+    this.subscriptions$.push(this.spaceApi.isPendingMemberWithinSpace(spaceId, memberId).subscribe(this.isPendingMemberWithSpace$));
   }
 
   public listenToCompletedProposals(spaceId: string): void {
@@ -143,6 +146,7 @@ export class DataService implements OnDestroy {
     let handler;
     let stream;
     if (list === MemberFilterOptions.PENDING) {
+      console.log('aa');
       store = this.dataStorePendingMembers;
       stream = this.pendingMembers$.value;
       handler = this.listenPendingMembers;
@@ -180,6 +184,7 @@ export class DataService implements OnDestroy {
     this.space$.next(undefined);
     this.isMemberWithinSpace$.next(false);
     this.isGuardianWithinSpace$.next(false);
+    this.isPendingMemberWithSpace$.next(false);
     this.guardians$.next(undefined);
     this.proposalsActive$.next(undefined);
     this.proposalsCompleted$.next(undefined);

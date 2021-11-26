@@ -1,6 +1,6 @@
 import { AfterViewChecked, ChangeDetectionStrategy, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren } from '@angular/core';
 import { ThemeService } from '@core/services/theme';
-import { MenuItem } from './menu-item';
+import { MenuItem } from "../sider.component";
 import { MenuItemDirective } from './menu-item.directive';
 
 @Component({
@@ -14,7 +14,7 @@ export class MenuComponent implements AfterViewChecked {
     this.menuItems = value;
     this.reCreateIcons = true;
   }
-  menuItems: MenuItem[] = []
+  public menuItems: MenuItem[] = []
   @ViewChildren(MenuItemDirective) menuItemLabels!: QueryList<MenuItemDirective>;
   private reCreateIcons = false;
 

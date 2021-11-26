@@ -134,7 +134,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   public isInProgress(proposal?: Proposal|null): boolean {
-    if (!proposal || this.isNativeVote(proposal.type)) {
+    if (!proposal || this.isNativeVote(proposal.type) || proposal.rejected) {
       return false;
     }
 
