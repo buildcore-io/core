@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import * as dayjs from 'dayjs';
 import { Award } from 'functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
@@ -28,15 +29,17 @@ export class MemberApi extends BaseApi<Member> {
     return this.topParent(COL.SPACE, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def);
   }
 
-  public topAwards(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
-      return ref.where('completed', '==', false);
+  // TODO We need to tweak this to make sure don't filter locally.
+  public topAwards(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Award[]> {
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (obj: any) => {
+      return obj.completed !== true;
     });
   }
 
-  public topProposals(memberId: EthAddress, _orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, 'settings.endDate', lastValue, def, (ref: any) => {
-      return ref.where('settings.endDate', '<=', new Date());
+  // TODO We need to tweak this to make sure don't filter locally.
+  public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Proposal[]> {
+    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, (obj: any) => {
+      return (obj.settings.endDate.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
     });
   }
 
