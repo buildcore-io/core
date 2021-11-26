@@ -40,6 +40,7 @@ module.exports = {
           neon: '#58F218',
         },
         'app-gray': {
+          text: '#333333',
           100: '#E4E1D2',
           200: '#CAC8BD',
           400: '#9F9D93',
@@ -53,6 +54,7 @@ module.exports = {
           default: '#F6F5F0',
         },
         bg: {
+          white: '#FFFFFF',
           background: '#F6F5F0',
           footer: '#ECE8DE',
         },
@@ -74,6 +76,9 @@ module.exports = {
       borderRadius: {
         large: '3rem',
       },
+      dropShadow: {
+        card: '0px 0px 12px rgba(0, 0, 0, 0.08)',
+      }
     },
   },
   variants: {},

@@ -43,13 +43,20 @@ a.ant-btn {
   @apply inline-flex px-6 font-semibold bg-white border-white text-blue-light1 place-items-center hover:text-blue-hover hover:border-blue-hover focus:border-blue-pressed focus:text-blue-pressed rounded-3xl;
 }
 
-.ant-input-affix-wrapper > input.ant-input,
-.ant-picker-input > input {
-  border-radius: 0;
-}
-
 .ant-select-dropdown {
   .cdk-virtual-scroll-viewport {
     min-height: 84px;
+  }
+}
+
+.wen-header-button {
+  @apply text-app-gray-text hover:border-orange border border-solid hover:text-app-gray-text;
+
+  outline: @input-hover-border-color;
+
+  &:focus {
+    @apply border-orange text-app-gray-text;
+
+    outline: 1px solid @input-hover-border-color;
   }
 }
