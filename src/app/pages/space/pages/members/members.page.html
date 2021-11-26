@@ -10,10 +10,10 @@
       <nz-badge [nzCount]="data.getPendingMembersCount(data.pendingMembers$ | async)">
         <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
           <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
-          <nz-option *ngIf="!(data.space$ | async)?.open"
+          <nz-option *ngIf="!(data.space$ | async)?.open && data.loggedInMemberIsGuardian()"
           [nzLabel]="'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')" [nzValue]="filterOptions.PENDING">
           </nz-option>
-          <nz-option nzLabel="Blocked" [nzValue]="filterOptions.BLOCKED">
+          <nz-option nzLabel="Blocked" *ngIf="data.loggedInMemberIsGuardian()" [nzValue]="filterOptions.BLOCKED">
           </nz-option>
         </nz-select>
       </nz-badge>

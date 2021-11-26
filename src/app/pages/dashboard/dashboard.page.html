@@ -1,13 +1,13 @@
 <h1 i18n class="mt-12">My Overview</h1>
 <div class="space-y-14">
 
-  <div class="-mx-6 overflow-hidden">
-    <h3 class="px-7" i18n>Your spaces
+  <div>
+    <h3 i18n>Your spaces
       <a nz-button nzType="link" [routerLink]="['/discover', 'spaces']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a>
     </h3>
-    <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
+    <div class="flex flex-wrap gap-6 mb-10">
       <!-- TODO Loading. -->
       <div *ngIf="isLoading(spaces$ | async)">Loading...</div>
 
@@ -20,43 +20,31 @@
     </div>
   </div>
 
-  <div class="-mx-6 overflow-hidden">
-    <h3 class="px-7" i18n>Active proposals
-      <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
-        <i nz-icon nzType="right" nzTheme="outline"></i>
-      </a>
-    </h3>
-    <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
-      <!-- TODO Loading. -->
-      <div *ngIf="isLoading(proposals$ | async)">Loading...</div>
-
-      <!-- TODO Nothing.  -->
-      <div *ngIf="isEmpty((proposals$ | async))">None yet</div>
-
-      <wen-proposal-card class="cursor-pointer"
-        *ngFor="let proposal of proposals$ | async; trackBy: trackByUid" [proposal]="proposal"
-        [routerLink]="['/proposal', proposal.uid]">
-      </wen-proposal-card>
-    </div>
-  </div>
-
-  <div class="-mx-6 overflow-hidden">
-    <h3 class="px-7" i18n>Active awards
+  <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
+    <h3 i18n>Active awards
       <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a>
     </h3>
-    <div class="flex gap-6 py-1 overflow-x-scroll scroll-container flex-nowrap px-7">
-      <!-- TODO Loading. -->
-      <div *ngIf="isLoading(awards$ | async)">Loading...</div>
-
-      <!-- TODO Nothing.  -->
-      <div *ngIf="isEmpty(awards$ | async)">None yet</div>
-
+    <div class="flex flex-wrap gap-6 mb-10">
       <wen-award-card class="cursor-pointer"
         *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award"
         [routerLink]="['/award', award.uid]">
       </wen-award-card>
+    </div>
+  </div>
+
+  <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
+    <h3 i18n>Active proposals
+      <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
+        <i nz-icon nzType="right" nzTheme="outline"></i>
+      </a>
+    </h3>
+    <div class="flex flex-wrap gap-6 mb-10">
+      <wen-proposal-card class="cursor-pointer"
+        *ngFor="let proposal of proposals$ | async; trackBy: trackByUid" [proposal]="proposal"
+        [routerLink]="['/proposal', proposal.uid]">
+      </wen-proposal-card>
     </div>
   </div>
 

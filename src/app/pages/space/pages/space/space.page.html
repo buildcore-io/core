@@ -49,10 +49,10 @@
       (click)="join()"
       nzBlock
       nzSize="large"
-      [disabled]="alreadyAskedToJoin(data.pendingMembers$ | async)"
+      [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
       *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
     >
-      {{alreadyAskedToJoin(data.pendingMembers$ | async) ? 'Pending Request' :
+      {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending Request' :
       'Ask to Join Space'}}
     </button>
     <div class="inline-grid space-y-4">

@@ -102,10 +102,6 @@ export class BaseApi<T> {
       (ref: any) => {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
         let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  col);
-        if (frRef) {
-          query = frRef(query);
-        }
-
         order.forEach((o) => {
           query = query.orderBy(o, 'desc');
         });
@@ -122,7 +118,11 @@ export class BaseApi<T> {
     return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
       const out: any[] = [];
       for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(col).doc(o.parentId).valueChanges()));
+        const parent: any = <any>await firstValueFrom(this.afs.collection(col).doc(o.parentId).valueChanges());
+        // Custom function to filter.
+        if ((frRef && frRef(parent)) || !frRef) {
+          out.push(parent);
+        }
       }
 
       return out;

@@ -75,15 +75,6 @@ export class SpacePage implements OnInit, OnDestroy {
     return url ? FileApi.getUrl(url, 'space_banner', FILE_SIZES.large) : undefined;
   }
 
-  public alreadyAskedToJoin(members?: Member[]|null): boolean {
-    if (!this.auth.member$.value || !members || !this.data.pendingMembers$.value) {
-      return false;
-    }
-
-    // this.auth.member$.value.uid
-    return this.data.pendingMembers$.value.filter(e => e.uid === this.auth.member$.value!.uid).length > 0;
-  }
-
   public get avatarUrl$(): Observable<string|undefined> {
     return this.data.space$.pipe(
       map((space: Space | undefined) => {
@@ -108,7 +99,7 @@ export class SpacePage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.space$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.join(sc), 'Joined.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.join(sc), this.data.space$.value?.open ? 'Joined.' : 'Pending Approval', finish).subscribe((val: any) => {
         // none.
       });
     });

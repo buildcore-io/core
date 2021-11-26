@@ -8,9 +8,10 @@ import { MarketIconComponent } from './../../../components/icon/market/market.co
 import { RocketIconComponent } from './../../../components/icon/rocket/rocket.component';
 import { UnamusedIconComponent } from './../../../components/icon/unamused/unamused.component';
 
-interface MenuItem {
+export interface MenuItem {
   route: string[];
   icon: any;
+  title: string;
 }
 
 @UntilDestroy()
@@ -22,10 +23,10 @@ interface MenuItem {
 })
 export class SiderComponent implements OnInit {
   public homeRoute = ROUTER_UTILS.config.base.home;
-  public defaultMenuItem1: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent };
-  public defaultMenuItem2: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: MarketIconComponent };
-  // public defaultMenuItem3: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: MarketIconComponent };
-  public dashboardMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent };
+  public defaultMenuItem1: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: 'Discover' };
+  public defaultMenuItem2: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: MarketIconComponent, title: 'Marketplace' };
+  // public defaultMenuItem3: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: MarketIconComponent, title: 'Discover' };
+  public dashboardMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: 'My Overview' };
   public menuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
 
   constructor(private auth: AuthService) {}
@@ -65,7 +66,8 @@ export class SiderComponent implements OnInit {
   public getMemberMenuItem(memberId: string): MenuItem {
     return {
       route: [ROUTER_UTILS.config.member.root, memberId],
-      icon: UnamusedIconComponent
+      icon: UnamusedIconComponent,
+      title: 'My Profile'
     };
   }
 }

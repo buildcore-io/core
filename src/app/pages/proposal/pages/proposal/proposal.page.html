@@ -6,9 +6,12 @@
 <div class="relative py-12" nz-row [nzGutter]="40">
   <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
     <div class="mb-8 space-x-3">
-      <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-2 border-gray-400"
-        nzShape="circle">
-      </nz-avatar>
+      <a [routerLink]="['/space', data.space$]">
+        <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-2 border-gray-400"
+          nzShape="circle">
+        </nz-avatar>
+        {{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}
+      </a>
 
       <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Proposal</nz-tag>
       <wen-proposal-status [proposal]="data.proposal$ | async"></wen-proposal-status>
@@ -63,7 +66,7 @@
       </div>
     </nz-card>
 
-    <nz-card
+    <nz-card *ngIf="!(data.proposal$ | async)?.rejected"
       [nzTitle]=" (isComplete(data.proposal$ | async) ? 'Final Results' : !isPending(data.proposal$ | async) ? '' : 'Current Results')">
       <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
         <p class="text-lg">{{q.text}}</p>
@@ -104,7 +107,7 @@
       </div>
     </nz-card>
 
-    <nz-card nzTitle="System Info">
+    <nz-card nzTitle="Detailed Info">
       <!-- MEMBER VOTE -->
       <ng-container *ngIf="isMemberVote((data.proposal$ | async)?.type)">
         <div class="wen-description-item bg-bg-background">

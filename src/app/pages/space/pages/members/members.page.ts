@@ -55,14 +55,12 @@ export class MembersPage implements OnInit, OnDestroy {
     });
 
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+      this.onScroll();
       this.cd.markForCheck();
     });
 
     // Load initial list.
     this.onScroll();
-    // if (this.spaceId) {
-    //   this.data.listenMembers(this.spaceId);
-    // }
   }
 
   public memberIsGuardian(memberId: string): boolean {

@@ -10,7 +10,8 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { PROPOSAL_START_DATE_MIN } from "./../../../../../../functions/interfaces/config";
 import { Space } from './../../../../../../functions/interfaces/models';
-import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { Award } from './../../../../../../functions/interfaces/models/award';
+import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -30,12 +31,16 @@ export class NewPage implements OnInit, OnDestroy {
   public startControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
   public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
+  public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
+  public votingBadgeControl: FormControl = new FormControl('');
   public additionalInfoControl: FormControl = new FormControl('');
+  public subTypes = ProposalSubType;
   // Questions / answers.
   public questions: FormArray;
   public proposalForm: FormGroup;
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
+  public awards$: BehaviorSubject<Award[]> = new BehaviorSubject<Award[]>([]);
   private subscriptions$: Subscription[] = [];
   private answersIndex = 0;
 
@@ -75,6 +80,7 @@ export class NewPage implements OnInit, OnDestroy {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
+        // this.subscriptions$.push(this.spaceAp.allSpacesAsMember(o.uid).subscribe(this.spaces$));
       }
     });
   }

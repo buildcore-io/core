@@ -26,7 +26,7 @@ export class ProposalStatusComponent {
   }
 
   public isInProgress(): boolean {
-    if (!this.proposal || this.isNativeVote(this.proposal.type)) {
+    if (!this.proposal || this.isNativeVote(this.proposal.type) || this.proposal.rejected) {
       return false;
     }
 
@@ -34,7 +34,7 @@ export class ProposalStatusComponent {
   }
 
   public isPending(): boolean {
-    if (!this.proposal || this.isNativeVote(this.proposal.type) || !this.proposal.approved) {
+    if (!this.proposal || this.isNativeVote(this.proposal.type) || !this.proposal.approved || this.proposal.rejected) {
       return false;
     }
 
