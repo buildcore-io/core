@@ -41,17 +41,18 @@ module.exports = {
         },
         'app-gray': {
           100: '#E4E1D2',
+          200: '#CAC8BD',
           400: '#9F9D93',
-          600: '#999999'
+          600: '#999999',
         },
-        'tag': {
+        tag: {
           blue: '#DCEFF9',
           green: '#DEF7D4',
           red: '#F9DED2',
           orange: '#FFC670',
           default: '#F6F5F0',
         },
-        'bg': {
+        bg: {
           background: '#F6F5F0',
           footer: '#ECE8DE',
         },
@@ -71,7 +72,7 @@ module.exports = {
         header: '500px',
       },
       borderRadius: {
-       'large': '3rem',
+        large: '3rem',
       },
     },
   },

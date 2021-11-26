@@ -1,3 +1,4 @@
+import { SignInModalComponent } from '@components/auth/components/sign-in-modal/sign-in-modal.component';
 import { IconModule } from '@components/icon/icon.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
@@ -11,7 +12,7 @@ describe('HeaderComponent', () => {
   const createComponent = createRoutingFactory({
     component: HeaderComponent,
     imports: [IconModule],
-    declarations: [MockComponent(SignInComponent), MockComponent(SignOutComponent)],
+    declarations: [MockComponent(SignInComponent), MockComponent(SignOutComponent), MockComponent(SignInModalComponent)],
     providers: [AuthService],
     params: {},
     data: {}
