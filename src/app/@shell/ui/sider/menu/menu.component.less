@@ -6,7 +6,14 @@
   border-bottom: 0;
 }
 
-[nz-menu] > .ant-menu-item:hover,
 [nz-menu] > .ant-menu-item-selected {
+  @apply text-white bg-orange;
+}
+
+[nz-menu] > .ant-menu-item:hover:not(.ant-menu-item-selected) {
+  @apply text-blue-hover;
+}
+
+.ant-menu-item:active, .ant-menu-submenu-title:active {
   @apply text-white bg-orange;
 }

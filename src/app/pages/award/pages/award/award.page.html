@@ -5,9 +5,12 @@
 <div class="relative py-12" nz-row [nzGutter]="40">
   <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
     <div class="mb-8 space-x-3">
-      <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-gray-400"
-        nzShape="circle">
-      </nz-avatar>
+      <a [routerLink]="['/space', data.space$]">
+        <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-gray-400"
+          nzShape="circle">
+        </nz-avatar>
+        {{ data.space$ }}
+      </a>
 
       <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Award</nz-tag>
       <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="data.isCompleted(data.award$ | async)">Completed
