@@ -1,5 +1,10 @@
 <div class="space-y-12">
   <div class="space-y-4">
+    <!-- TODO Loading. -->
+    <div *ngIf="data.isLoading(data.participants$ | async)">Loading...</div>
+
+    <!-- TODO Nothing.  -->
+    <div *ngIf="data.isEmpty(data.participants$  | async)">None yet</div>
     <wen-member-card class="block cursor-pointer" [fullWidth]="true"
       *ngFor="let member of data.participants$ | async; trackBy: trackByUid"
       [about]="member.comment || ''"

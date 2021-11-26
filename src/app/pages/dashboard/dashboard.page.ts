@@ -4,6 +4,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { Award } from './../../../../functions/interfaces/models/award';
 import { Proposal } from './../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../@api/member.api';
 
@@ -14,8 +15,9 @@ import { MemberApi } from './../../@api/member.api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardPage implements OnInit, OnDestroy {
-  public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
-  public proposals$: BehaviorSubject<Proposal[]> = new BehaviorSubject<Proposal[]>([]);
+  public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
+  public proposals$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
+  public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   path = ROUTER_UTILS.config.base;
   constructor(private auth: AuthService, private memberApi: MemberApi) {
@@ -27,6 +29,8 @@ export class DashboardPage implements OnInit, OnDestroy {
       this.cancelSubscriptions();
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.topSpaces(o.uid).subscribe(this.spaces$));
+        this.subscriptions$.push(this.memberApi.topProposals(o.uid).subscribe(this.proposals$));
+        this.subscriptions$.push(this.memberApi.topAwards(o.uid).subscribe(this.awards$));
       }
     });
   }
@@ -35,10 +39,21 @@ export class DashboardPage implements OnInit, OnDestroy {
     return item.uid;
   }
 
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+    this.spaces$.next(undefined);
+    this.proposals$.next(undefined);
+    this.awards$.next(undefined);
   }
 
   public ngOnDestroy(): void {

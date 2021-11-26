@@ -1,10 +1,15 @@
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
 import { COL, SUB_COL } from "functions/interfaces/models/base";
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
+import { EthAddress } from './../../../functions/interfaces/models/base';
 
 export const DEFAULT_LIST_SIZE = 50;
+
+export interface FbRef {
+  (ref: any): any;
+};
 
 export class BaseApi<T> {
   // Collection is always defined on above.
@@ -84,6 +89,40 @@ export class BaseApi<T> {
         } else {
           out.push(finObj);
         }
+      }
+
+      return out;
+    }));
+  }
+
+  // TODO Implement proper typings.
+  protected topParent(col: COL, subCol: SUB_COL, memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE, frRef?: FbRef): Observable<any[]> {
+    const ref: AngularFirestoreCollectionGroup = this.afs.collectionGroup(
+      subCol,
+      (ref: any) => {
+        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  col);
+        if (frRef) {
+          query = frRef(query);
+        }
+
+        order.forEach((o) => {
+          query = query.orderBy(o, 'desc');
+        });
+
+        if (lastValue) {
+          query = query.startAfter(lastValue).limit(def);
+        } else {
+          query = query.limit(def);
+        }
+
+        return query;
+      }
+    );
+    return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
+      const out: any[] = [];
+      for (const o of obj) {
+        out.push(<any>await firstValueFrom(this.afs.collection(col).doc(o.parentId).valueChanges()));
       }
 
       return out;

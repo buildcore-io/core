@@ -14,7 +14,7 @@ import { FilterService, SortOptions } from './../../services/filter.service';
 
 })
 export class ProposalsPage implements OnInit, OnDestroy {
-  public proposal$: BehaviorSubject<Proposal[]> = new BehaviorSubject<Proposal[]>([]);
+  public proposal$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   private dataStore: Proposal[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private proposalApi: ProposalApi, public filter: FilterService) {
@@ -33,6 +33,14 @@ export class ProposalsPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler().subscribe(this.store.bind(this, 0)));
   }
 
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
+  }
+
   public getHandler(last?: any): Observable<Proposal[]> {
     if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
       return this.proposalApi.last(last);
@@ -42,6 +50,11 @@ export class ProposalsPage implements OnInit, OnDestroy {
   }
 
   public onScroll(): void {
+    // In this case there is no value, no need to infinite scroll.
+    if (!this.proposal$.value) {
+      return;
+    }
+
     this.subscriptions$.push(this.proposalApi.top(this.proposal$.value[this.proposal$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 

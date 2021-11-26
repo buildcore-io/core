@@ -12,6 +12,11 @@
         <i nz-icon nzType="plus" nzTheme="outline"></i>New proposal
       </button>
     </div>
+    <!-- TODO Loading. -->
+    <div *ngIf="data.isLoading(getList() | async)">Loading...</div>
+
+    <!-- TODO Nothing.  -->
+    <div *ngIf="data.isEmpty(getList() | async)">None yet</div>
     <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of getList() | async; trackBy: trackByUid"
       [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
     </wen-proposal-card>

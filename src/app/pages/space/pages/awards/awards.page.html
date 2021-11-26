@@ -1,7 +1,6 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
-      <!-- <h3 *ngIf="(data.awardsActive$ | async)?.length">{{getTitle()}}</h3> -->
       <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
         <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
         <nz-option [nzLabel]="'Completed'" [nzValue]="filterOptions.COMPLETED"></nz-option>
@@ -13,6 +12,11 @@
         <i nz-icon nzType="plus" nzTheme="outline"></i>New award
       </button>
     </div>
+    <!-- TODO Loading. -->
+    <div *ngIf="data.isLoading(getList() | async)">Loading...</div>
+
+    <!-- TODO Nothing.  -->
+    <div *ngIf="data.isEmpty(getList() | async)">None yet</div>
     <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of getList() | async; trackBy: trackByUid" [award]="award"
       [routerLink]="['/award', award.uid]">
     </wen-award-card>

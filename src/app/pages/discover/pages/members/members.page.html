@@ -1,9 +1,18 @@
-<p nz-typography nzType="secondary" class="mb-6">{{ (members$ | async)?.length + ((maxRecords$ | async) === false ? '+' : '') }} members</p>
+<p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">
+  {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} members
+</p>
 <div class="flex flex-wrap gap-6 mb-10"
   infiniteScroll
   [infiniteScrollDistance]="2"
   [infiniteScrollThrottle]="50"
   (scrolled)="onScroll()">
+
+  <!-- TODO Loading. -->
+  <div *ngIf="isLoading(members$ | async)">Loading...</div>
+
+  <!-- TODO Nothing.  -->
+  <div *ngIf="isEmpty(members$ | async)">None yet</div>
+
   <wen-member-card class="cursor-pointer" *ngFor="let member of members$ | async; trackBy: trackByUid" [member]="member">
   </wen-member-card>
 </div>

@@ -13,7 +13,7 @@ import { FilterService, SortOptions } from './../../services/filter.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpacesPage implements OnInit, OnDestroy {
-  public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
+  public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
   private dataStore: Space[][] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -42,12 +42,20 @@ export class SpacesPage implements OnInit, OnDestroy {
   }
 
   public onScroll(): void {
-    if (!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE) {
-      // Finished paging.
+    // In this case there is no value, no need to infinite scroll.
+    if (!this.spaces$.value) {
       return;
     }
 
     this.subscriptions$.push(this.getHandler(this.spaces$.value[this.spaces$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+  }
+
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
   }
 
   protected store(page: number, a: any): void {

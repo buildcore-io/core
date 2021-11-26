@@ -101,6 +101,14 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.COMPLETED).subscribe(this.awardsCompleted$));
   }
 
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
+  }
+
   public listenMembers(spaceId: string, lastValue?: any): void {
     this.subscriptions$.push(this.spaceApi.listenMembers(spaceId, lastValue).subscribe(
       this.store.bind(this, this.members$, this.dataStoreMembers, this.dataStoreMembers.length)

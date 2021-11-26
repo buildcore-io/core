@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ProposalCardModule } from '@components/proposal/components/proposal-card/proposal-card.module';
 import { SpaceModule } from '@components/space/space.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { AwardCardModule } from './../../components/award/components/award-card/award-card.module';
 import { DashboardPage } from './dashboard.page';
 
 @NgModule({
@@ -11,6 +13,8 @@ import { DashboardPage } from './dashboard.page';
   imports: [
     CommonModule,
     SpaceModule,
+    ProposalCardModule,
+    AwardCardModule,
     RouterModule.forChild([
       {
         path: '',
