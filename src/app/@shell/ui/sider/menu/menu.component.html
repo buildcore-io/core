@@ -1,16 +1,8 @@
-<nav
-  nz-menu
-  nzMode="horizontal"
-  [nzTheme]="isDarkTheme ? 'dark' : 'light'"
-  class="flex flex-col items-center w-full gap-5 mt-12 border-b-0"
->
-  <a
-    *ngFor="let item of menuItems"
-    nz-menu-item
-    class="w-10 h-10 p-0 text-current rounded-3xl"
-    [routerLink]="item.route"
-    nzMatchRouter
-  >
+<nav nz-menu nzMode="horizontal" [nzTheme]="isDarkTheme ? 'dark' : 'light'"
+  class="flex flex-col items-center w-full gap-5 mt-12 border-b-0">
+  <a nz-popover nzPopoverContent="title" nzPopoverPlacement="right"
+    *ngFor="let item of menuItems" nz-menu-item class="w-10 h-10 p-0 text-current rounded-3xl" [routerLink]="item.route"
+    nzMatchRouter>
     <ng-template [wenMenuItem]="item"></ng-template>
   </a>
 </nav>
