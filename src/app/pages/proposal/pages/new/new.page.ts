@@ -12,6 +12,7 @@ import { PROPOSAL_START_DATE_MIN } from "./../../../../../../functions/interface
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -32,7 +33,7 @@ export class NewPage implements OnInit, OnDestroy {
   public endControl: FormControl = new FormControl('', Validators.required);
   public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
   public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
-  public votingBadgeControl: FormControl = new FormControl('');
+  public votingBadgeControl: FormControl = new FormControl([]);
   public additionalInfoControl: FormControl = new FormControl('');
   public subTypes = ProposalSubType;
   // Questions / answers.
@@ -40,8 +41,9 @@ export class NewPage implements OnInit, OnDestroy {
   public proposalForm: FormGroup;
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
-  public awards$: BehaviorSubject<Award[]> = new BehaviorSubject<Award[]>([]);
+  public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
+  private subscriptionsAwards$?: Subscription;
   private answersIndex = 0;
 
   constructor(
@@ -49,6 +51,7 @@ export class NewPage implements OnInit, OnDestroy {
     private proposalApi: ProposalApi,
     private notification: NotificationService,
     private memberApi: MemberApi,
+    private awardApi: AwardApi,
     private route: ActivatedRoute,
     private router: Router,
     private nzNotification: NzNotificationService,
@@ -84,7 +87,16 @@ export class NewPage implements OnInit, OnDestroy {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
-        // this.subscriptions$.push(this.spaceAp.allSpacesAsMember(o.uid).subscribe(this.spaces$));
+      }
+    });
+
+    this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
+      this.subscriptionsAwards$?.unsubscribe();
+      if (obj) {
+        // TODO Implement pagination.
+        this.subscriptionsAwards$ = this.awardApi.listenSpace(obj).subscribe(this.awards$);
+      } else {
+        this.awards$.next(undefined);
       }
     });
   }
@@ -226,6 +238,7 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
+    this.subscriptionsAwards$?.unsubscribe();
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });

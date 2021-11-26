@@ -33,6 +33,7 @@ export class AwardApi extends BaseApi<Award> {
     return super.listen(id);
   }
 
+  // TODO implement pagination
   public listenSpace(space: string, filter: AwardFilter = AwardFilter.ALL): Observable<Award[]> {
     return this.afs.collection<Award>(
       this.collection,

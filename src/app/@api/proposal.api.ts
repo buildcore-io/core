@@ -33,6 +33,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     return super.listen(id);
   }
 
+  // TODO implement pagination
   public listenSpace(space: string, filter: ProposalFilter = ProposalFilter.ALL): Observable<Proposal[]> {
     return this.afs.collection<Proposal>(
       this.collection,

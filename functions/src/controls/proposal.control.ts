@@ -13,7 +13,7 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { PROPOSAL_START_DATE_MIN } from './../../interfaces/config';
-import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../interfaces/models/proposal';
+import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 
 function defaultJoiUpdateCreateSchema(): any {
@@ -22,6 +22,7 @@ function defaultJoiUpdateCreateSchema(): any {
     space: Joi.string().length(ethAddressLength).lowercase().required(),
     additionalInfo: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(ProposalType.MEMBERS, ProposalType.NATIVE).required(),
+    subType: Joi.number().equal(ProposalSubType.ONE_MEMBER_ONE_VOTE, ProposalSubType.REPUTATION_BASED_ON_BADGE, ProposalSubType.REPUTATION_WITHIN_SPACE).required(),
     settings: Joi.alternatives().try(Joi.object({
       milestoneIndexCommence: Joi.number().required(),
       milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
@@ -74,6 +75,9 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   if (params.body.settings?.endDate) {
     params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate);
   }
+
+  // Based on the subtype we determine number of voting power.
+
 
   const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);
   let docProposal = await refProposal.get();
