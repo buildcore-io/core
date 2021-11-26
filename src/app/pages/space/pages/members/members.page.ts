@@ -49,7 +49,7 @@ export class MembersPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.guardians$.pipe(skip(1)).subscribe(() => {
+    this.data.guardians$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       // Re-sync members.
       this.data.members$.next(this.data.members$.value);
     });

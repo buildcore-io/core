@@ -1,3 +1,4 @@
+import { ProposalStatusModule } from './../../components/proposal/components/proposal-status/proposal-status.module';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -44,6 +45,7 @@ import { DataService } from './services/data.service';
     CommonModule,
     ProposalRoutingModule,
     MemberCardModule,
+    ProposalStatusModule,
     ReactiveFormsModule,
     NzSelectModule,
     TabsModule,

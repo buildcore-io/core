@@ -31,10 +31,10 @@
       <li nz-menu-item [routerLink]="urlToNewSpace">
         <wen-icon-space class="mr-4" ></wen-icon-space>Space
       </li>
-      <li nz-menu-item [routerLink]="urlToNewProposal">
+      <li nz-menu-item [routerLink]="urlToNewProposal" *ngIf="enableCreateAwardProposal">
         <wen-icon-check-circle class="mr-4"></wen-icon-check-circle>Proposal
       </li>
-      <li nz-menu-item [routerLink]="urlToNewAward">
+      <li nz-menu-item [routerLink]="urlToNewAward" *ngIf="enableCreateAwardProposal">
         <wen-icon-award class="mr-4"></wen-icon-award>Award
       </li>
     </ul>

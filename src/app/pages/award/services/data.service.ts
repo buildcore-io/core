@@ -18,4 +18,13 @@ export class DataService {
     }
     return (award.issued >= award.badge.count);
   }
+
+  public resetSubjects(): void {
+    // Clean up all streams.
+    this.award$.next(undefined);
+    this.space$.next(undefined);
+    this.owners$.next(undefined);
+    this.participants$.next(undefined);
+    this.isGuardianWithinSpace$.next(false);
+  }
 }

@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
 import { Space } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Proposal } from '../../../../../../functions/interfaces/models/proposal';
-import { ProposalAnswer, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalAnswer } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
@@ -51,33 +50,5 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
-  }
-
-  public isNativeVote(type: ProposalType|undefined): boolean {
-    return (type === ProposalType.NATIVE);
-  }
-
-  public isComplete(): boolean {
-    if (!this.proposal || this.isNativeVote(this.proposal.type)) {
-      return false;
-    }
-
-    return (dayjs(this.proposal.settings.endDate.toDate()).isBefore(dayjs()));
-  }
-
-  public isInProgress(): boolean {
-    if (!this.proposal || this.isNativeVote(this.proposal.type)) {
-      return false;
-    }
-
-    return (!this.isComplete() && !this.isPending() && !!this.proposal.approved);
-  }
-
-  public isPending(): boolean {
-    if (!this.proposal || this.isNativeVote(this.proposal.type) || !this.proposal.approved) {
-      return false;
-    }
-
-    return (dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 }

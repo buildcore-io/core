@@ -75,6 +75,7 @@ export class BaseApi<T> {
     });
 
     return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
+      // console.log(this.collection, subCol, lastValue, obj);
       const out: T[] = [];
       for (const o of obj) {
         const finObj: any = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());

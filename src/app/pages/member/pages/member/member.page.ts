@@ -45,7 +45,7 @@ export class MemberPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.member$.pipe(skip(1)).subscribe((obj) => {
+    this.data.member$.pipe(skip(1), untilDestroyed(this)).subscribe((obj) => {
       if (!obj) {
         this.notFound();
       }
@@ -90,5 +90,6 @@ export class MemberPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
+    this.data.resetSubjects();
   }
 }

@@ -9,4 +9,10 @@ export class DataService {
   public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
+  public resetSubjects(): void {
+    // Clean up all streams.
+    this.member$.next(undefined);
+    this.awards$.next(undefined);
+    this.badges$.next(undefined);
+  }
 }
