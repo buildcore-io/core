@@ -58,7 +58,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.proposal$.pipe(skip(1)).subscribe((obj: Proposal|undefined) => {
+    this.data.proposal$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Proposal|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -234,6 +234,7 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
+    this.data.resetSubjects();
     if (this.guardiansSubscription$) {
       this.guardiansSubscription$.unsubscribe();
     }
