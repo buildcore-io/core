@@ -4,6 +4,14 @@ export enum ProposalType {
   MEMBERS = 1
 }
 
+export enum ProposalSubType {
+  ONE_MEMBER_ONE_VOTE = 0,
+  REPUTATION_WITHIN_SPACE = 1,
+  REPUTATION_BASED_ON_BADGE = 2,
+  QUADRATIC_BASED_ON_SPACE = 3,
+  QUADRATIC_BASED_ON_BADGE = 4
+}
+
 export interface ProposalMember extends BaseSubCollection {
   uid: string;
   voted?: boolean;

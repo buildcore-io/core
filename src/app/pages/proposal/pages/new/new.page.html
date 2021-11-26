@@ -9,14 +9,30 @@
       <nz-card [nzBordered]="false" nzTitle="Proposal Info">
         <nz-form-item>
           <nz-form-control>
+            <nz-form-label>Participants</nz-form-label><br/>
             <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
               <label nz-radio [nzValue]="true">All Guardians</label>
               <label nz-radio [nzValue]="false">All Members</label>
-              <label nz-radio [nzDisabled]="true">Reputation</label>
-              <label nz-radio [nzDisabled]="true">Custom and more</label>
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
+        <nz-form-item>
+          <nz-form-control>
+            <nz-form-label>Voting Type</nz-form-label><br/>
+            <nz-radio-group class="wen-radio-group" [formControl]="subTypeControl">
+              <label nz-radio [nzValue]="subTypes.ONE_MEMBER_ONE_VOTE">One Participant One Vote</label>
+              <label nz-radio [nzDisabled]="true" [nzValue]="subTypes.REPUTATION_WITHIN_SPACE">Based on participant's reputation within space</label>
+              <label nz-radio [nzDisabled]="true" [nzValue]="subTypes.REPUTATION_BASED_ON_BADGE">Based on participant's reputation of a badge</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+        <!-- <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_BADGE">
+          <nz-form-control>
+            <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear nzPlaceHolder="Select Badge" [formControl]="votingBadgeControl">
+              <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid" [nzLabel]="a.name || a.uid" [nzValue]="a.uid"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item> -->
         <nz-form-item>
           <nz-form-control>
             <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />

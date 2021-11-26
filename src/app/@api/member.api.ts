@@ -29,13 +29,13 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public topAwards(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref) => {
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
       return ref.where('completed', '==', false);
     });
   }
 
-  public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, 'settings.endDate', lastValue, def, (ref) => {
+  public topProposals(memberId: EthAddress, _orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, 'settings.endDate', lastValue, def, (ref: any) => {
       return ref.where('settings.endDate', '<=', new Date());
     });
   }
