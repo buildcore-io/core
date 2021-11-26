@@ -20,7 +20,7 @@
     </div>
   </div>
 
-  <div>
+  <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
     <h3 i18n>Active proposals
       <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <div>
+  <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
     <h3 i18n>Active awards
       <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
