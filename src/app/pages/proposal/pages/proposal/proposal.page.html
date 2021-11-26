@@ -9,19 +9,8 @@
         nzShape="circle">
       </nz-avatar>
 
-      <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" *ngIf="(data.proposal$ | async)?.approved">Proposal
-      </nz-tag>
-      <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!(data.proposal$ | async)?.approved && !(data.proposal$ | async)?.rejected">Draft
-      </nz-tag>
-
-      <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="(data.proposal$ | async)?.rejected">Rejected
-      </nz-tag>
-      <nz-tag class="wen-status-tag bg-tag-orange border-tag-orange" *ngIf="isPending(data.proposal$ | async)">Pending
-      </nz-tag>
-      <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" *ngIf="isInProgress(data.proposal$ | async)">
-        In-Progress</nz-tag>
-      <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="isComplete(data.proposal$ | async)">Completed
-      </nz-tag>
+      <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Proposal</nz-tag>
+      <wen-proposal-status [proposal]="data.proposal$ | async"></wen-proposal-status>
     </div>
 
     <h1 i18n class="mb-6">{{(data.proposal$ | async)?.name}}</h1>

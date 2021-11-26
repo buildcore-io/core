@@ -29,7 +29,7 @@ export class MemberApi extends BaseApi<Member> {
       SUB_COL.MEMBERS,
       (ref: any) => {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = ref.where('uid', '==', memberId);
+        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  COL.SPACE);
         order.forEach((o) => {
           query = query.orderBy(o, 'desc');
         });
@@ -46,9 +46,7 @@ export class MemberApi extends BaseApi<Member> {
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
       const out: Space[] = [];
       for (const o of obj) {
-        if (o.parentCol === COL.SPACE) {
-          out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
-        }
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
       }
 
       return out;
@@ -60,7 +58,7 @@ export class MemberApi extends BaseApi<Member> {
       SUB_COL.PARTICIPANTS,
       (ref: any) => {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = ref.where('uid', '==', memberId);
+        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  COL.AWARD);
         order.forEach((o) => {
           query = query.orderBy(o, 'desc');
         });
@@ -77,9 +75,7 @@ export class MemberApi extends BaseApi<Member> {
     return ref.valueChanges().pipe(switchMap(async (obj: AwardParticipant[]) => {
       const out: Award[] = [];
       for (const o of obj) {
-        if (o.parentCol === COL.AWARD) {
-          out.push(<any>await firstValueFrom(this.afs.collection(COL.AWARD).doc(o.parentId).valueChanges()));
-        }
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.AWARD).doc(o.parentId).valueChanges()));
       }
 
       return out;
@@ -111,15 +107,13 @@ export class MemberApi extends BaseApi<Member> {
     const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
       SUB_COL.MEMBERS,
       (ref: any) => {
-        return ref.where('uid', '==', memberId)
+        return ref.where('uid', '==', memberId).where('parentCol', '==',  COL.SPACE);
       }
     );
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
       const out: Space[] = [];
       for (const o of obj) {
-        if (o.parentCol === COL.SPACE) {
-          out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
-        }
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
       }
 
       return out;
@@ -130,15 +124,13 @@ export class MemberApi extends BaseApi<Member> {
     const ref: AngularFirestoreCollectionGroup<SpaceGuardian> = this.afs.collectionGroup<SpaceGuardian>(
       SUB_COL.GUARDIANS,
       (ref: any) => {
-        return ref.where('uid', '==', memberId)
+        return ref.where('uid', '==', memberId).where('parentCol', '==',  COL.SPACE);
       }
     );
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceGuardian[]) => {
       const out: Space[] = [];
       for (const o of obj) {
-        if (o.parentCol === COL.SPACE) {
-          out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
-        }
+        out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
       }
 
       return out;
