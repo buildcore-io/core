@@ -19,6 +19,14 @@ export class DataService {
     return (award.issued >= award.badge.count);
   }
 
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
+  }
+
   public resetSubjects(): void {
     // Clean up all streams.
     this.award$.next(undefined);

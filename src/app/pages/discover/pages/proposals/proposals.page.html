@@ -1,4 +1,6 @@
-<p nz-typography nzType="secondary" class="mb-6">{{ ((proposal$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} proposals</p>
+<p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(proposal$ | async)">
+  {{ ((proposal$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} proposals
+</p>
 <div class="flex flex-wrap gap-6 mb-10"
   infiniteScroll
   [infiniteScrollDistance]="2"
@@ -6,7 +8,7 @@
   (scrolled)="onScroll()">
 
   <!-- TODO Loading. -->
-  <div *ngIf="isLoading((proposal$ | async))">Loading...</div>
+  <div *ngIf="isLoading(proposal$ | async)">Loading...</div>
 
   <!-- TODO Nothing.  -->
   <div *ngIf="isEmpty((proposal$ | async))">None yet</div>

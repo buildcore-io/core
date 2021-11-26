@@ -5,8 +5,8 @@ import { Award } from 'functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
-import { AwardParticipant } from './../../../functions/interfaces/models/award';
 import { Member } from './../../../functions/interfaces/models/member';
+import { Proposal } from './../../../functions/interfaces/models/proposal';
 import { Space, SpaceGuardian, SpaceMember } from './../../../functions/interfaces/models/space';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
@@ -25,61 +25,19 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public topSpaces(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
-    const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
-      SUB_COL.MEMBERS,
-      (ref: any) => {
-        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  COL.SPACE);
-        order.forEach((o) => {
-          query = query.orderBy(o, 'desc');
-        });
-
-        if (lastValue) {
-          query = query.startAfter(lastValue).limit(def);
-        } else {
-          query = query.limit(def);
-        }
-
-        return query;
-      }
-    );
-    return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
-      const out: Space[] = [];
-      for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
-      }
-
-      return out;
-    }));
+    return this.topParent(COL.SPACE, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def);
   }
 
   public topAwards(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    const ref: AngularFirestoreCollectionGroup<AwardParticipant> = this.afs.collectionGroup<AwardParticipant>(
-      SUB_COL.PARTICIPANTS,
-      (ref: any) => {
-        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  COL.AWARD);
-        order.forEach((o) => {
-          query = query.orderBy(o, 'desc');
-        });
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref) => {
+      return ref.where('completed', '==', false);
+    });
+  }
 
-        if (lastValue) {
-          query = query.startAfter(lastValue).limit(def);
-        } else {
-          query = query.limit(def);
-        }
-
-        return query;
-      }
-    );
-    return ref.valueChanges().pipe(switchMap(async (obj: AwardParticipant[]) => {
-      const out: Award[] = [];
-      for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.AWARD).doc(o.parentId).valueChanges()));
-      }
-
-      return out;
-    }));
+  public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, 'settings.endDate', lastValue, def, (ref) => {
+      return ref.where('settings.endDate', '<=', new Date());
+    });
   }
 
   public topBadges(memberId: string, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {

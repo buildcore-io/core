@@ -21,4 +21,12 @@ export class DataService {
     this.transactions$.next(undefined);
     this.guardians$.next(undefined);
   }
+
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
+  }
 }

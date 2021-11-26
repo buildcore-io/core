@@ -1,4 +1,6 @@
-<p nz-typography nzType="secondary" class="mb-6">{{ ((spaces$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} spaces</p>
+<p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(spaces$ | async)">
+  {{ ((spaces$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} spaces
+</p>
 <div class="flex flex-wrap gap-6 mb-10"
     infiniteScroll
     [infiniteScrollDistance]="2"
@@ -6,9 +8,9 @@
     (scrolled)="onScroll()">
 
   <!-- TODO Loading. -->
-  <div *ngIf="isLoading((spaces$ | async))">Loading...</div>
+  <div *ngIf="isLoading(spaces$ | async)">Loading...</div>
 
   <!-- TODO Nothing.  -->
-  <div *ngIf="isEmpty((spaces$ | async))">None yet</div>
+  <div *ngIf="isEmpty(spaces$ | async)">None yet</div>
   <wen-space-card class="cursor-pointer" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
 </div>
