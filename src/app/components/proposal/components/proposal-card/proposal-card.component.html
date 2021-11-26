@@ -21,7 +21,14 @@
           </div>
         </ng-container>
         <div *ngIf="q.answers.length > 2" class="max-w-full max-h-28">
-          <!-- TODO ADAM donut here  -->
+          <apx-chart
+            [series]="getChartSeries(q.answers)"
+            [chart]="chartOptions.chart!"
+            [labels]="chartOptions.labels"
+            [fill]="chartOptions.fill!"
+            [dataLabels]="chartOptions.dataLabels!"
+            [responsive]="chartOptions.responsive!"
+          ></apx-chart>
         </div>
       </ng-container>
     </div>
