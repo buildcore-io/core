@@ -23,6 +23,7 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule, NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from "ng-zorro-antd/radio";
 import { NzSelectModule } from "ng-zorro-antd/select";
@@ -52,6 +53,7 @@ defineGlobalsInjections({
     NzGridModule,
     NzToolTipModule,
     NzMenuModule,
+    NzPopoverModule,
     NzButtonModule,
     NzTypographyModule,
     NzNotificationModule,
