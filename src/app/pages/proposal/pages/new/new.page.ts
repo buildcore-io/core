@@ -4,9 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { PROPOSAL_START_DATE_MIN } from './../../../../../../functions/interfaces/config';
+import { PROPOSAL_START_DATE_MIN } from "./../../../../../../functions/interfaces/config";
 import { Space } from './../../../../../../functions/interfaces/models';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { MemberApi } from './../../../../@api/member.api';
@@ -44,6 +46,7 @@ export class NewPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private route: ActivatedRoute,
     private router: Router,
+    private nzNotification: NzNotificationService,
     public nav: NavigationService
   ) {
     this.questions = new FormArray([
@@ -132,27 +135,6 @@ export class NewPage implements OnInit, OnDestroy {
     }
   }
 
-  // TODO integrated into the date picker
-  public disabledHours(): number[] {
-    const allowedFrom: Date = new Date(Date.now() + PROPOSAL_START_DATE_MIN);
-    const hours = allowedFrom.getHours();
-    const out: number[] = [];
-    for (let i: number = hours; i <= 24; i++) {
-      out.push(i);
-    }
-
-    return out;
-  }
-
-  // TODO integrated into the date picker
-  public disabledMinutes(hour: number): number[] {
-    if (hour === 4) {
-      return [20, 21, 22, 23, 24, 25];
-    } else {
-      return [];
-    }
-  }
-
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
     if (startValue.getTime() < (Date.now() - (60 * 60 * 1000 * 24))) {
@@ -219,6 +201,12 @@ export class NewPage implements OnInit, OnDestroy {
     if (!this.validateForm()) {
       return;
     }
+
+    if (dayjs(this.startControl.value).isBefore(dayjs().add(PROPOSAL_START_DATE_MIN, 'ms'))) {
+      this.nzNotification.error('', 'Start Date must be ' + (PROPOSAL_START_DATE_MIN / 60 / 1000) + ' minutes in future.');
+      return;
+    }
+
     await this.auth.sign(this.formatSubmitObj(this.proposalForm.value), (sc, finish) => {
       this.notification.processRequest(this.proposalApi.create(sc), 'Created.', finish).subscribe((val: any) => {
         this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
