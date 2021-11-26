@@ -1,5 +1,4 @@
 import { SignInModalComponent } from '@components/auth/components/sign-in-modal/sign-in-modal.component';
-import { AuthService } from '@components/auth/services/auth.service';
 import { IconModule } from '@components/icon/icon.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
