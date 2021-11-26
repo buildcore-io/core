@@ -82,15 +82,15 @@
 
         <nz-form-item>
           <nz-form-control>
-            <nz-input-group [nzPrefix]="prefixLinkedin" nzSize="large">
+            <nz-input-group [nzPrefix]="prefixDiscord" nzSize="large">
               <input
                 type="text"
                 nz-input
-                placeholder="Link to your LinkedIn account"
-                [formControl]="linkedinControl"
+                placeholder="Link to your Discord account"
+                [formControl]="discordControl"
               />
-              <ng-template #prefixLinkedin>
-                <wen-icon-linkedin></wen-icon-linkedin>
+              <ng-template #prefixDiscord>
+                <wen-icon-discord></wen-icon-discord>
               </ng-template>
             </nz-input-group>
           </nz-form-control>

@@ -4,7 +4,7 @@ export interface Member extends BaseRecord {
   nonce?: string;
   name?: string;
   about?: string;
-  linkedin?: string;
+  discord?: string;
   twitter?: string;
   github?: string;
   awardsCompleted?: number;

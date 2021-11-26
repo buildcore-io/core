@@ -90,19 +90,21 @@
 
     <nz-card
       nzTitle="Related Links"
-      *ngIf="(data.space$ | async)!.github || (data.space$ | async)!.twitter || (data.space$ | async)!.discord"
-    >
-      <div *ngIf="(data.space$ | async)!.github">
-        <wen-icon-github></wen-icon-github>
-        <a nz-button nzType="link">{{ (data.space$ | async)!.github }}</a>
+      *ngIf="(data.space$ | async)?.github || (data.space$ | async)?.twitter || (data.space$ | async)?.discord">
+      <div *ngIf="(data.space$ | async)?.github">
+        <a nz-button nzType="link" target="new" [href]="'https://github.com/' + (data.space$ | async)!.github">
+          <wen-icon-github></wen-icon-github>{{(data.space$ | async)!.github}}
+        </a>
       </div>
-      <div *ngIf="(data.space$ | async)!.twitter">
-        <wen-icon-twitter></wen-icon-twitter>
-        <a nz-button nzType="link">{{ (data.space$ | async)!.twitter }}</a>
+      <div *ngIf="(data.space$ | async)?.twitter">
+        <a nz-button nzType="link" target="new" [href]="'https://twitter.com/' + (data.space$ | async)!.twitter">
+          <wen-icon-twitter></wen-icon-twitter>{{(data.space$ | async)!.twitter}}
+        </a>
       </div>
-      <div *ngIf="(data.space$ | async)!.discord">
-        <wen-icon-discord></wen-icon-discord>
-        <a nz-button nzType="link">{{ (data.space$ | async)!.discord }}</a>
+      <div *ngIf="(data.space$ | async)?.discord">
+        <a nz-button nzType="link" target="new" [href]="'https://discord.gg/' + (data.space$ | async)!.discord">
+          <wen-icon-discord></wen-icon-discord>{{'discord.gg/' + (data.space$ | async)!.discord}}
+        </a>
       </div>
     </nz-card>
 

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
-import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -11,6 +10,7 @@ import { first, of, Subscription } from 'rxjs';
 import { FileApi } from '../../../../@api/file.api';
 import { SpaceApi } from '../../../../@api/space.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
+import { GITHUB_REGEXP, TWITTER_REGEXP } from './../../../../../../functions/interfaces/config';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 
 @UntilDestroy()
@@ -24,9 +24,9 @@ export class UpsertPage implements OnInit {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public aboutControl: FormControl = new FormControl('', Validators.required);
   public openControl: FormControl = new FormControl(true);
-  public discordControl: FormControl = new FormControl('', getUrlValidator());
-  public twitterControl: FormControl = new FormControl('', getUrlValidator());
-  public githubControl: FormControl = new FormControl('', getUrlValidator());
+  public discordControl: FormControl = new FormControl('', Validators.pattern(/^[a-zA-Z0-9_]*$/i));
+  public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
+  public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
   public avatarControl: FormControl = new FormControl('', Validators.required);
   public bannerControl: FormControl = new FormControl('');
   public spaceForm: FormGroup;

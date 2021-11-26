@@ -9,21 +9,16 @@ import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument, throwUnAuthenticated } from "../utils/error.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength } from "../utils/wallet.utils";
+import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
 import { Member } from './../../interfaces/models/member';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
-    linkedin: Joi.string().allow(null, '').uri({
-      scheme: ['https']
-    }).optional(),
-    github: Joi.string().allow(null, '').uri({
-      scheme: ['https']
-    }).optional(),
-    twitter: Joi.string().allow(null, '').uri({
-      scheme: ['https']
-    }).optional()
+    discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
+    github: Joi.string().allow(null, '').regex(GITHUB_REGEXP).optional(),
+    twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional()
   });
 }
 

@@ -9,6 +9,7 @@ import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
 import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
 
@@ -17,15 +18,9 @@ function defaultJoiUpdateCreateSchema(): any {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
     open: Joi.boolean().allow(false, true).optional(),
-    github: Joi.string().allow(null, '').uri({
-      scheme: ['https']
-    }).optional(),
-    twitter: Joi.string().allow(null, '').uri({
-      scheme: ['https']
-    }).optional(),
-    discord: Joi.string().allow(null, '').uri({
-      scheme: ['https']
-    }).optional(),
+    discord: Joi.string().allow(null, '').alphanum().optional(),
+    github: Joi.string().allow(null, '').regex(GITHUB_REGEXP).optional(),
+    twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional(),
     avatarUrl: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),

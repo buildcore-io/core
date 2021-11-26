@@ -1,7 +1,3 @@
-<!-- <button nz-button nzSize="small"
-    class="absolute top-0 h-10 px-6 mx-10 font-semibold text-blue-600 bg-white border-white left-14 mt-11 hover:text-blue-600 hover:border-blue-600 focus:border-blue-600 rounded-3xl"
-    [routerLink]="urlToMembers"><wen-icon-angle-left></wen-icon-angle-left>Back</button> -->
-
 <div class="py-12" style="margin-right: 420px;">
   <h1 i18n>Profile</h1>
 
@@ -33,13 +29,10 @@
     {{(data.member$ | async)!.about}}
   </p>
 
-  <div class="mt-6 space-x-6">
-    <a [href]="(data.member$ | async)!.github" *ngIf="(data.member$ | async)?.github" target="_new"><i nz-icon
-        class="text-3xl" nzType="github" nzTheme="outline"></i></a>
-    <a [href]="(data.member$ | async)!.twitter" *ngIf="(data.member$ | async)?.twitter" target="_new"><i nz-icon
-        class="text-3xl" nzType="twitter" nzTheme="outline"></i></a>
-    <a [href]="(data.member$ | async)!.linkedin" *ngIf="(data.member$ | async)?.linkedin" target="_new"><i nz-icon
-        class="text-3xl" nzType="linkedin" nzTheme="outline"></i></a>
+  <div class="mt-6 space-x-6" *ngIf="(data.member$ | async)?.github || (data.member$ | async)?.twitter || (data.member$ | async)?.discord">
+    <a *ngIf="(data.member$ | async)?.github" nz-button nzType="link" target="new" [href]="'https://github.com/' + (data.member$ | async)!.github"><wen-icon-github></wen-icon-github></a>
+    <a *ngIf="(data.member$ | async)?.twitter" nz-button nzType="link" target="new" [href]="'https://twitter.com/' + (data.member$ | async)!.twitter"><wen-icon-twitter></wen-icon-twitter></a>
+    <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new" [href]="'https://discord.com/user/' + (data.member$ | async)!.discord"><wen-icon-discord></wen-icon-discord></a>
   </div>
 
   <div class="flex justify-center mt-10 space-x-4">

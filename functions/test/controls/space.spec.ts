@@ -85,9 +85,9 @@ describe('SpaceController: ' + WEN_FUNC.uSpace, () => {
     const updateParams = {
       uid: doc?.uid,
       name: 'abc',
-      github: 'https://abc1',
-      twitter: 'https://abc1',
-      discord: 'https://abc1',
+      github: 'sadas',
+      twitter: 'asdasd',
+      discord: 'adamkun1233',
       avatarUrl: 'https://abc1',
       bannerUrl: 'https://abc1'
     };

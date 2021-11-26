@@ -52,9 +52,9 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
       uid: dummyAddress,
       name: 'abc',
       about: 'He rocks',
-      linkedin: 'https://abc1.com',
-      twitter: 'https://abc1.com',
-      github: 'https://abc1.com'
+      discord: 'adamkun#1233',
+      twitter: 'asdasd',
+      github: 'asdasda'
     };
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
@@ -63,7 +63,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     const doc2: any = await wUpdate();
     expect(doc2?.name).toEqual(updateParams.name);
     expect(doc2?.about).toEqual('He rocks');
-    expect(doc2?.linkedin).toEqual(updateParams.linkedin);
+    expect(doc2?.discord).toEqual(updateParams.discord);
     expect(doc2?.twitter).toEqual(updateParams.twitter);
     expect(doc2?.github).toEqual(updateParams.github);
 
@@ -109,19 +109,19 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     walletSpy.mockRestore();
   });
 
-  it('unset linkedin', async () => {
+  it('unset discord', async () => {
     // Let's go ahead and update the member.
     const wUpdate: any = testEnv.wrap(updateMember);
     const updateParams = {
       uid: dummyAddress,
-      linkedin: undefined
+      discord: undefined
     };
     walletSpy.mockReturnValue(Promise.resolve({
       address: dummyAddress,
       body: updateParams
     }));
     const doc2: any = await wUpdate();
-    expect(doc2?.linkedin).toEqual(null);
+    expect(doc2?.discord).toEqual(null);
     walletSpy.mockRestore();
   });
 });

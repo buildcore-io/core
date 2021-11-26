@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
-import { getUrlValidator } from "@core/utils/form-validation.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { MemberApi } from '../../../../@api/member.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
+import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP } from './../../../../../../functions/interfaces/config';
 
 @UntilDestroy()
 @Component({
@@ -18,16 +18,16 @@ export class MemberEditDrawerComponent implements OnInit {
   @Output() public wenOnClose = new EventEmitter<void>();
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('');
-  public linkedinControl: FormControl = new FormControl('', getUrlValidator());
-  public twitterControl: FormControl = new FormControl('', getUrlValidator());
-  public githubControl: FormControl = new FormControl('', getUrlValidator());
+  public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
+  public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
+  public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
   public memberForm: FormGroup;
 
   constructor(private auth: AuthService, private memberApi: MemberApi, private notification: NotificationService) {
     this.memberForm = new FormGroup({
       name: this.nameControl,
       about: this.aboutControl,
-      linkedin: this.linkedinControl,
+      discord: this.discordControl,
       twitter: this.twitterControl,
       github: this.githubControl
     });
@@ -48,7 +48,7 @@ export class MemberEditDrawerComponent implements OnInit {
   private setFormValues(obj: Member): void {
     this.nameControl.setValue(obj.name);
     this.aboutControl.setValue(obj.about);
-    this.linkedinControl.setValue(obj.linkedin);
+    this.discordControl.setValue(obj.discord);
     this.twitterControl.setValue(obj.twitter);
     this.githubControl.setValue(obj.github);
   }

@@ -12,6 +12,7 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { AwardCardModule } from '../../components/award/components/award-card/award-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { BadgeModule } from './../../components/badge/badge.module';
+import { IconModule } from './../../components/icon/icon.module';
 import { MemberEditDrawerModule } from './../../components/member/components/member-edit-drawer/member-edit-drawer.module';
 import { MemberTileModule } from './../../components/member/components/tile/member-tile.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
@@ -43,7 +44,8 @@ import { DataService } from './services/data.service';
     NzGridModule,
     NzTypographyModule,
     NzToolTipModule,
-    NzIconModule
+    NzIconModule,
+    IconModule
   ],
 })
 export class MemberModule {
