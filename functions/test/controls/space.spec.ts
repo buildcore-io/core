@@ -424,6 +424,45 @@ describe('SpaceController: member management', () => {
     expect(doc4.status).toEqual('success');
   });
 
+  it('fail to block member - if its the only one', async () => {
+    walletSpy.mockReturnValue(Promise.resolve({
+      address: guardian,
+      body: {
+        uid: doc.uid,
+        member: guardian
+      }
+    }));
+    // Let's block member now
+    const bMember: any = testEnv.wrap(blockMember);
+    (<any>expect(bMember())).rejects.toThrowError(WenError.at_least_one_member_must_be_in_the_space.key);
+  });
+
+
+  it('fail to block myself if Im only guardian', async () => {
+    walletSpy.mockReturnValue(Promise.resolve({
+      address: member,
+      body: {
+        uid: doc.uid
+      }
+    }));
+    const jSpace: any = testEnv.wrap(joinSpace);
+    const doc2 = await jSpace();
+    expect(doc2).toBeDefined();
+    expect(doc2.createdOn).toBeDefined();
+    expect(doc2.uid).toEqual(member);
+
+    walletSpy.mockReturnValue(Promise.resolve({
+      address: guardian,
+      body: {
+        uid: doc.uid,
+        member: guardian
+      }
+    }));
+    // Let's block member now
+    const bMember: any = testEnv.wrap(blockMember);
+    (<any>expect(bMember())).rejects.toThrowError(WenError.at_least_one_guardian_must_be_in_the_space.key);
+  });
+
   it('successfully block member and unable to join space', async () => {
     walletSpy.mockReturnValue(Promise.resolve({
       address: member,

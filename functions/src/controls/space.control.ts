@@ -400,6 +400,18 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
     throw throwInvalidArgument(WenError.member_is_already_blocked);
   }
 
+  // Must be minimum one member.
+  const members: any[] = await refSpace.collection(SUB_COL.MEMBERS).listDocuments();
+  if (members.length === 1) {
+    throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
+  }
+
+  // Is last guardian? isGuardian
+  const guardians: any[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
+  if (guardians.length === 1 && isGuardian) {
+    throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
+  }
+
   if (params.body) {
     await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).set({
       uid: params.body.member,
