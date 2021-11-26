@@ -1,21 +1,21 @@
 <article class="p-4 bg-white w-75 h-75 rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'"
   *ngIf="proposal">
-  <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-28'">
+  <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-24'">
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-bg-background min-w-10"
         nzShape="circle">
       </nz-avatar>
       <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
-    <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
+    <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
   </div>
 
-  <div class="relative flex flex-col w-full h-40">
-    <div>
+  <div class="relative flex flex-col w-full h-52">
+    <div class="h-32">
       <ng-container *ngFor="let q of proposal.questions">
         <ng-container *ngFor="let a of q.answers">
           <div *ngIf="q.answers.length === 2">
-            <p>{{a.text}}</p>
+            <p nz-typography class="truncate wen-two-lines">{{a.text}}</p>
             <nz-progress nz-tooltip [nzShowInfo]="true" nzStatus="active" [nzPercent]="getProgress(a)"
               nzStrokeLinecap="square"></nz-progress>
           </div>
