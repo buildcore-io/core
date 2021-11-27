@@ -38,19 +38,24 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
     this.chartOptions = {
       // series: [44, 55, 41, 17, 15],
       chart: {
-        width: 260,
+        width: 180,
         type: "donut"
       },
       dataLabels: {
-        enabled: false
+        enabled: true,
+        formatter: function (val) {
+          return val + "%"
+        },
       },
+      labels: [],
       fill: {
         type: "gradient"
       },
       legend: {
-        formatter: function(val: any, opts: any) {
-          return val + " - " + opts.w.globals.series[opts.seriesIndex];
-        }
+        show: false
+        // formatter: function(val: any, opts: any) {
+        //   return val + " - " + opts.w.globals.series[opts.seriesIndex];
+        // }
       },
       responsive: [
         {
@@ -71,6 +76,14 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
   public getChartSeries(a: ProposalAnswer[]): ApexNonAxisChartSeries {
     return a.map((o) => {
       return this.proposal?.results?.answers?.[o.value] || 0;
+    }).filter((value) => {
+      return value !== 0;
+    });
+  }
+
+  public getChartSeriesLabels(a: ProposalAnswer[]): string[] {
+    return a.map((o) => {
+      return o.text;
     });
   }
 

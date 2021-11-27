@@ -24,8 +24,10 @@
           <apx-chart
             [series]="getChartSeries(q.answers)"
             [chart]="chartOptions.chart!"
-            [labels]="chartOptions.labels"
+            [labels]="getChartSeriesLabels(q.answers)"
             [fill]="chartOptions.fill!"
+            [legend]="chartOptions.legend!"
+            [noData]="{text: 'No Data', style: {fontSize: '16px' }}"
             [dataLabels]="chartOptions.dataLabels!"
             [responsive]="chartOptions.responsive!"
           ></apx-chart>
