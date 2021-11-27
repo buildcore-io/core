@@ -12,7 +12,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { PROPOSAL_START_DATE_MIN } from './../../interfaces/config';
+import { ProposalStartDateMin } from './../../interfaces/config';
 import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 
@@ -22,17 +22,33 @@ function defaultJoiUpdateCreateSchema(): any {
     space: Joi.string().length(ethAddressLength).lowercase().required(),
     additionalInfo: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(ProposalType.MEMBERS, ProposalType.NATIVE).required(),
-    subType: Joi.number().equal(ProposalSubType.ONE_MEMBER_ONE_VOTE, ProposalSubType.REPUTATION_BASED_ON_BADGE, ProposalSubType.REPUTATION_WITHIN_SPACE).required(),
-    settings: Joi.alternatives().try(Joi.object({
-      milestoneIndexCommence: Joi.number().required(),
-      milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
-      milestoneIndexEnd: Joi.number().greater(Joi.ref('milestoneIndexStart')).required(),
-    }), Joi.object({
-      // Must be one day in the future.
-      startDate: Joi.date().greater(Date.now() + PROPOSAL_START_DATE_MIN).required(),
-      endDate: Joi.date().greater(Joi.ref('startDate')).required(),
-      onlyGuardians: Joi.boolean().required(),
-    })),
+    subType: Joi.when('type', {
+      is: Joi.exist().valid(ProposalType.NATIVE),
+      then: Joi.number().equal(ProposalSubType.ONE_ADDRESS_ONE_VOTE).required(),
+      otherwise: Joi.number().equal(
+        ProposalSubType.ONE_MEMBER_ONE_VOTE,
+        ProposalSubType.REPUTATION_BASED_ON_AWARDS,
+        ProposalSubType.REPUTATION_WITHIN_SPACE
+      ).required()
+    }),
+    settings: Joi.when('type', {
+      is: Joi.exist().valid(ProposalType.NATIVE),
+      then: Joi.object({
+        milestoneIndexCommence: Joi.number().required(),
+        milestoneIndexStart: Joi.number().greater(Joi.ref('milestoneIndexCommence')).required(),
+        milestoneIndexEnd: Joi.number().greater(Joi.ref('milestoneIndexStart')).required(),
+      }).required(),
+      otherwise: Joi.object({
+        // Must be one day in the future.
+        startDate: Joi.date().greater(Date.now() + ProposalStartDateMin.value).required(),
+        endDate: Joi.date().greater(Joi.ref('startDate')).required(),
+        onlyGuardians: Joi.boolean().required(),
+        awards: Joi.when('subType', {
+          is: Joi.exist().valid(ProposalSubType.REPUTATION_BASED_ON_AWARDS),
+          then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+        })
+      }).required()
+    }),
     questions: Joi.array().items(Joi.object().keys({
       text: Joi.string().required(),
       additionalInfo: Joi.string().allow(null, '').optional(),
@@ -76,9 +92,6 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
     params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate);
   }
 
-  // Based on the subtype we determine number of voting power.
-
-
   const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);
   let docProposal = await refProposal.get();
   if (!docProposal.exists) {
@@ -98,8 +111,38 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
       query = await refSpace.collection(SUB_COL.MEMBERS).get();
     }
     query.forEach(async (g) => {
+
+      // Based on the subtype we determine number of voting power.
+      let votingWeight = 1;
+      if (params.body.subType === ProposalSubType.REPUTATION_WITHIN_SPACE ||  params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+        const qry = await admin.firestore().collection(COL.TRANSACTION)
+                    .where('type', '==', TransactionType.BADGE)
+                    .where('member', '==', g.data().uid)
+                    .where('space', '==', params.body.space).get();
+
+
+        if (qry.size > 0) {
+          let totalReputation = 0;
+          qry.forEach((t) => {
+            if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+              // We only consider certain badges coming from certain awards.
+              if (params.body.settings.awards.includes(t.data().payload.award)) {
+                totalReputation += t.data().payload?.xp || 0;
+              }
+            } else {
+              totalReputation += t.data().payload?.xp || 0;
+            }
+          });
+
+          votingWeight = totalReputation;
+        } else {
+          votingWeight = 0;
+        }
+      }
+
       await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
         uid: g.data().uid,
+        weight: votingWeight,
         parentId: proposalAddress,
         parentCol: COL.PROPOSAL,
         createdOn: serverTime()
@@ -229,7 +272,9 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     throw throwInvalidArgument(WenError.proposal_does_not_exists);
   }
 
-  if (!(await refProposal.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
+  const refMember: any = refProposal.collection(SUB_COL.MEMBERS).doc(owner);
+  const docMember: any = await refMember.get();
+  if (!docMember.exists) {
     throw throwInvalidArgument(WenError.you_are_not_allowed_to_vote_on_this_proposal);
   }
 
@@ -271,7 +316,6 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     throw throwInvalidArgument(WenError.value_does_not_exists_in_proposal);
   }
 
-  const refMember: any = refProposal.collection(SUB_COL.MEMBERS).doc(owner);
   if (params.body) {
     // This this member already voted? New transaction will be valid. Historical one will be ineffective.
     const tranId: string = getRandomEthAddress();
@@ -280,9 +324,11 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
       type: TransactionType.VOTE,
       uid: tranId,
       member: owner,
+      space: docProposal.data().space,
       createdOn: serverTime(),
       payload: {
         proposalId: params.body.uid,
+        weight: docMember.data().weight || 0,
         values: params.body.values
       }
     });
@@ -291,7 +337,11 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     await refMember.update({
       voted: true,
       tranId: tranId,
-      values: params.body.values
+      values: params.body.values.map((v: number) => {
+        const obj: any = {};
+        obj[v] = docMember.data().weight || 0;
+        return obj;
+      })
     });
 
     const results: any = {};
@@ -299,12 +349,17 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     let total = 0;
     const allMembers: any = await refProposal.collection(SUB_COL.MEMBERS).get();
     allMembers.forEach((doc: any) => {
-      total++;
+      // Total is based on number of questions.
+      total += doc.data().weight * docProposal.data().questions.length;
+
       if (doc.data().voted && doc.data().values && doc.data().values.length > 0) {
-        voted++;
+        // Voted.
+        voted += doc.data().weight * docProposal.data().questions.length;
+
+        // We add weight to each answer.
         doc.data().values.forEach((v: any) => {
           results[v] = results[v] || 0;
-          results[v]++;
+          results[v] += doc.data().weight;
         });
       }
     });

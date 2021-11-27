@@ -5,11 +5,12 @@ export enum ProposalType {
 }
 
 export enum ProposalSubType {
-  ONE_MEMBER_ONE_VOTE = 0,
-  REPUTATION_WITHIN_SPACE = 1,
-  REPUTATION_BASED_ON_BADGE = 2,
-  QUADRATIC_BASED_ON_SPACE = 3,
-  QUADRATIC_BASED_ON_BADGE = 4
+  ONE_ADDRESS_ONE_VOTE = 0,
+  ONE_MEMBER_ONE_VOTE = 1,
+  REPUTATION_WITHIN_SPACE = 2,
+  REPUTATION_BASED_ON_AWARDS = 3,
+  QUADRATIC_BASED_ON_SPACE = 4,
+  QUADRATIC_BASED_ON_BADGE = 5
 }
 
 export interface ProposalMember extends BaseSubCollection {

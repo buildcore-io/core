@@ -11,7 +11,7 @@ export interface VoteTransaction {
 }
 
 export interface BadgeTransaction {
-  awardId: string;
+  award: string;
   name: string;
   description: string;
   xp: number;

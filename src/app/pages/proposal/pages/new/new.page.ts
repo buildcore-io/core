@@ -8,7 +8,7 @@ import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { PROPOSAL_START_DATE_MIN } from "./../../../../../../functions/interfaces/config";
+import { ProposalStartDateMin } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
@@ -224,8 +224,8 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
-    if (dayjs(this.startControl.value).isBefore(dayjs().add(PROPOSAL_START_DATE_MIN, 'ms'))) {
-      this.nzNotification.error('', 'Start Date must be ' + (PROPOSAL_START_DATE_MIN / 60 / 1000) + ' minutes in future.');
+    if (dayjs(this.startControl.value).isBefore(dayjs().add(ProposalStartDateMin.value, 'ms'))) {
+      this.nzNotification.error('', 'Start Date must be ' + (ProposalStartDateMin.value / 60 / 1000) + ' minutes in future.');
       return;
     }
 

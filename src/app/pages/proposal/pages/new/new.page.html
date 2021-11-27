@@ -21,12 +21,12 @@
             <nz-form-label>Voting Type</nz-form-label><br/>
             <nz-radio-group class="wen-radio-group" [formControl]="subTypeControl">
               <label nz-radio [nzValue]="subTypes.ONE_MEMBER_ONE_VOTE">One Participant One Vote</label>
-              <label nz-radio [nzDisabled]="false" [nzValue]="subTypes.REPUTATION_WITHIN_SPACE">Based on participant's reputation within space</label>
-              <label nz-radio [nzDisabled]="false" [nzValue]="subTypes.REPUTATION_BASED_ON_BADGE">Based on participant's reputation of a badge</label>
+              <label nz-radio [nzValue]="subTypes.REPUTATION_WITHIN_SPACE">Based on participant's space reputation</label>
+              <label nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_AWARDS">Based on participant's badge reputations</label>
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_BADGE">
+        <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
           <nz-form-control>
             <nz-select
             class="w-full" nzSize="large" nzShowSearch nzAllowClear

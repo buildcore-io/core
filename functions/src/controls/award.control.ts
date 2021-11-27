@@ -270,9 +270,10 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
       type: TransactionType.BADGE,
       uid: getRandomEthAddress(),
       member: params.body.member,
+      space: docAward.data().space,
       createdOn: serverTime(),
       payload: {
-        awardId: params.body.uid,
+        award: params.body.uid,
         name: docAward.data().name,
         description: docAward.data().description,
         xp: xp

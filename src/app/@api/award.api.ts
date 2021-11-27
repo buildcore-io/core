@@ -51,13 +51,13 @@ export class AwardApi extends BaseApi<Award> {
     ).valueChanges();
   }
 
-  public listenOwners(awardId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(awardId, SUB_COL.OWNERS, lastValue);
+  public listenOwners(award: string, lastValue?: any): Observable<Member[]> {
+    return this.subCollectionMembers(award, SUB_COL.OWNERS, lastValue);
   }
 
   // TODO: Fix typings.
-  public listenParticipants<AwardParticipantWithMember>(awardId: string, lastValue?: any): Observable<any> {
-    return this.subCollectionMembers<AwardParticipantWithMember>(awardId, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
+  public listenParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
+    return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
       finObj.comment = original.comment;
       finObj.participatedOn = original.createdOn;
       finObj.completed = original.completed;
