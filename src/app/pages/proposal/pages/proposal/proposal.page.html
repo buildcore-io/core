@@ -39,7 +39,7 @@
 
   </div>
 
-  <div class="space-y-4" nz-col nzFlex="450px">
+  <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
     <nz-card nzTitle="Cast your vote"
       *ngIf="(data.proposal$ | async)?.approved && isNativeVote((data.proposal$ | async)?.type)">
       <button nz-button nzType="primary" nzBlock nzSize="large">
@@ -72,7 +72,7 @@
         <p class="text-lg">{{q.text}}</p>
 
         <ng-container *ngFor="let a of q.answers">
-          <p class="text-xs">{{a.text}}</p>
+          <p nz-typography class="text-xs">{{a.text}}</p>
           <nz-progress [nzPercent]="getProgress(data.proposal$ | async, a)" nzStatus="active"></nz-progress>
         </ng-container>
       </div>

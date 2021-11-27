@@ -35,7 +35,7 @@
 
   </div>
 
-  <div class="space-y-4" nz-col nzFlex="450px">
+  <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
     <ng-container *ngIf="!data.isCompleted(data.award$ | async) && (isLoggedIn$ | async)">
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="showParticipateModal()"
         *ngIf="!loggedInMemberIsParticipant()">
@@ -46,7 +46,7 @@
     </ng-container>
 
     <nz-card nzTitle="Award">
-      <div class="flex flex-row items-center space-x-4">
+      <div class="flex flex-row flex-wrap items-center space-x-4">
         <nz-tag class="wen-xp-tag">{{getExperiencePointsPerBadge(data.award$ | async)}} XP</nz-tag>
         <p> + </p>
         <nz-avatar nzSrc="/assets/mocks/trophy.png" class="bg-white border-gray-400" nzShape="circle">
