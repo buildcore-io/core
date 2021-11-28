@@ -421,6 +421,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     ProposalStartDateMin.value = -60 * 60;
     RelatedRecordsResponse.status = true;
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    jest.setTimeout(50 * 1000)
   });
 
   afterEach(async () => {
@@ -543,11 +544,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const v: any = await vote(memberId, proposal, [1]);
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(40);
-    // { answers: { '[object Object]': 40 }, voted: 40, total: 40 }
-    console.log(v._relatedRecs.proposal);
     expect(v._relatedRecs.proposal.results.voted).toEqual(40);
     expect(v._relatedRecs.proposal.results.total).toEqual(40);
     expect(v._relatedRecs.proposal.totalWeight).toEqual(40);
-    console.log(v._relatedRecs.proposal.results.answers);
   });
 });
