@@ -695,7 +695,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     )).rejects.toThrowError(WenError.invalid_params.key);
   });
 
-  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 4 ppl badges', async () => {
+  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 2 ppl badges - unused badge', async () => {
     const memberId = await cMember();
     const memberId1 = await cMember();
     const space = await cSpace(memberId);
@@ -721,5 +721,48 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(v._relatedRecs.proposal.results.voted).toEqual(30);
     expect(v._relatedRecs.proposal.results.total).toEqual(30);
     expect(v._relatedRecs.proposal.totalWeight).toEqual(30);
+  });
+
+  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 3 ppl badges across two spaces', async () => {
+    const memberId = await cMember();
+    const memberId1 = await cMember();
+    const memberId2 = await cMember();
+    const space = await cSpace(memberId);
+    const space2 = await cSpace(memberId1);
+    await jSpace(memberId1, space);
+    await jSpace(memberId2, space2);
+
+    // Distribute badges.
+    const badgeA = await giveBadge(memberId, memberId, space, 30);
+    const badgeB = await giveBadge(memberId, memberId, space2, 30);
+    const badgeC = await giveBadge(memberId, memberId1, space2, 30);
+    const badgeD = await giveBadge(memberId, memberId2, space2, 30);
+    /*
+    memberId = 60
+    memberId1 = 30
+    memberId2 = 30
+    */
+    await giveBadge(memberId, memberId1, space, 30);
+
+    const proposal = await cProposal(
+      memberId, space, ProposalType.MEMBERS,
+      ProposalSubType.REPUTATION_BASED_ON_AWARDS, [badgeA, badgeB, badgeC, badgeD]
+    );
+
+    // Approve proposal.
+    await apprProposal(memberId, proposal)
+
+    // Let's vote.
+    await vote(memberId, proposal, [1]);
+    await vote(memberId1, proposal, [1]);
+    const v: any = await vote(memberId, proposal, [2]);
+
+    expect(v?.payload).toBeDefined();
+    expect(v?.payload?.weight).toEqual(60);
+    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(90);
+    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(30);
+    expect(v._relatedRecs.proposal.results.voted).toEqual(120);
+    expect(v._relatedRecs.proposal.results.total).toEqual(120);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(120);
   });
 });
