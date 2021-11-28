@@ -78,6 +78,7 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).subscribe(this.guardians$));
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.ACTIVE).subscribe(this.proposalsActive$));
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.ACTIVE).subscribe(this.awardsActive$));
+    this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.ACTIVE).subscribe(this.awardsActive$));
   }
 
   public listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
@@ -146,7 +147,6 @@ export class DataService implements OnDestroy {
     let handler;
     let stream;
     if (list === MemberFilterOptions.PENDING) {
-      console.log('aa');
       store = this.dataStorePendingMembers;
       stream = this.pendingMembers$.value;
       handler = this.listenPendingMembers;

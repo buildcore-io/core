@@ -111,6 +111,10 @@
       <!-- MEMBER VOTE -->
       <ng-container *ngIf="isMemberVote((data.proposal$ | async)?.type)">
         <div class="wen-description-item bg-bg-background">
+          <span nz-typography class="text-app-gray-400">Total Weight</span>
+          <p nz-typography>{{(data.proposal$ | async)?.totalWeight || 0}}</p>
+        </div>
+        <div class="wen-description-item bg-bg-background">
           <span nz-typography class=" text-app-gray-400">Start Date</span>
           <p nz-typography>{{(data.proposal$ | async)?.settings?.startDate?.toDate() | date:'short'}}</p>
         </div>
@@ -118,6 +122,8 @@
           <span nz-typography class="text-app-gray-400">End Date</span>
           <p nz-typography>{{(data.proposal$ | async)?.settings?.endDate?.toDate() | date:'short'}}</p>
         </div>
+
+
       </ng-container>
 
       <!-- NATIVE VOTE -->

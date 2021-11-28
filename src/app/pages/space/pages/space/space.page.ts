@@ -57,6 +57,12 @@ export class SpacePage implements OnInit, OnDestroy {
         this.notFound();
       }
     });
+
+    this.data.isGuardianWithinSpace$.pipe(skip(1), untilDestroyed(this)).subscribe((value) => {
+      if (this.data.space$.value?.uid && value) {
+        this.data.listenPendingMembers(this.data.space$.value.uid);
+      }
+    });
   }
 
   private notFound(): void {

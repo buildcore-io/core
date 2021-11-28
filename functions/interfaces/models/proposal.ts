@@ -64,6 +64,7 @@ export interface Proposal extends BaseRecord {
   };
   // TODO Fix typing here.
   settings: any;
+  totalWeight: number;
   questions: ProposalQuestion[];
   results?: {
     total: number;
