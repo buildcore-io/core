@@ -3,9 +3,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
-import { Space } from './../../../../../functions/interfaces/models/space';
 import { MemberApi } from './../../../@api/member.api';
 
 @UntilDestroy()
@@ -18,7 +17,7 @@ import { MemberApi } from './../../../@api/member.api';
 export class HeaderComponent implements OnInit {
   public path = ROUTER_UTILS.config.base;
   public enableCreateAwardProposal = false;
-
+  public spaceSubscription$?: Subscription;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
@@ -31,13 +30,15 @@ export class HeaderComponent implements OnInit {
       untilDestroyed(this)
     ).subscribe(async (obj) => {
       if (obj?.uid) {
-        const space: Space[] = await firstValueFrom(this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1));
-        this.enableCreateAwardProposal = space.length > 0;
+        this.spaceSubscription$?.unsubscribe();
+        this.spaceSubscription$ = this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
+          this.enableCreateAwardProposal = space.length > 0;
+          this.cd.markForCheck();
+        });
       } else {
         this.enableCreateAwardProposal = false;
+        this.cd.markForCheck();
       }
-
-      this.cd.markForCheck();
     });
   }
 
@@ -65,5 +66,9 @@ export class HeaderComponent implements OnInit {
     if (this.member$.value?.uid) {
       this.router.navigate([ROUTER_UTILS.config.member.root, this.member$.value.uid]);
     }
+  }
+
+  public ngOnDestroy(): void {
+    this.spaceSubscription$?.unsubscribe();
   }
 }
