@@ -48,7 +48,7 @@ export class HomePage implements OnInit {
 
   public join(): void {
     if (this.auth.member$.value?.uid) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/discover']);
     } else {
       this.signIn();
     }
