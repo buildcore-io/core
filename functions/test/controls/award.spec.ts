@@ -393,7 +393,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       const returns2 = await wrapped2();
       expect(returns2?.uid).toBeDefined();
       expect(returns2?.payload).toBeDefined();
-      expect(returns2?.payload.awardId).toEqual(award.uid);
+      expect(returns2?.payload.award).toEqual(award.uid);
 
       // Let's approve by admin.
       walletSpy.mockRestore();
@@ -413,7 +413,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       const returns2 = await wrapped2();
       expect(returns2?.uid).toBeDefined();
       expect(returns2?.payload).toBeDefined();
-      expect(returns2?.payload.awardId).toEqual(award.uid);
+      expect(returns2?.payload.award).toEqual(award.uid);
 
       // Let's approve by admin.
       walletSpy.mockRestore();
@@ -433,7 +433,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       const returns2 = await wrapped2();
       expect(returns2?.uid).toBeDefined();
       expect(returns2?.payload).toBeDefined();
-      expect(returns2?.payload.awardId).toEqual(award.uid);
+      expect(returns2?.payload.award).toEqual(award.uid);
 
       // Second badge.
       walletSpy.mockReturnValue(Promise.resolve({
@@ -448,7 +448,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       const returns3 = await wrapped3();
       expect(returns3?.uid).toBeDefined();
       expect(returns3?.payload).toBeDefined();
-      expect(returns3?.payload.awardId).toEqual(award.uid);
+      expect(returns3?.payload.award).toEqual(award.uid);
 
       // Fails no enoguh.
       walletSpy.mockReturnValue(Promise.resolve({

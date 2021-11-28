@@ -6,6 +6,7 @@
     <!-- TODO Nothing.  -->
     <div *ngIf="data.isEmpty(data.members$  | async)">None yet</div>
     <wen-member-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
+      <p class="font-bold">Weight: {{member.weight}}</p>
       <p *ngIf="member.voted" class="font-bold">VOTED</p>
     </wen-member-card>
   </div>

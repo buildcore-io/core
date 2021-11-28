@@ -17,6 +17,7 @@ export enum ProposalFilter {
 
 export interface ProposalParticipantWithMember extends Member {
   voted?: boolean;
+  weight?: number;
   values?: number[];
 }
 
@@ -33,6 +34,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     return super.listen(id);
   }
 
+  // TODO implement pagination
   public listenSpace(space: string, filter: ProposalFilter = ProposalFilter.ALL): Observable<Proposal[]> {
     return this.afs.collection<Proposal>(
       this.collection,
@@ -63,6 +65,7 @@ export class ProposalApi extends BaseApi<Proposal> {
   public listenMembers(proposalId: string, lastValue?: any): Observable<ProposalParticipantWithMember[]> {
     return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, (original, finObj) => {
       finObj.voted = original.voted;
+      finObj.weight = original.weight;
       return finObj;
     });
   }
