@@ -31,7 +31,7 @@
             <nz-select
             class="w-full" nzSize="large" nzShowSearch nzAllowClear
             [nzMaxTagCount]="9" nzMode="multiple"
-            nzPlaceHolder="Select Badge" [formControl]="votingBadgeControl">
+            nzPlaceHolder="Select Badge" [formControl]="votingAwardControl">
               <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid" [nzLabel]="a.name + '(badge: ' + a.badge.name + ')'" [nzValue]="a.uid"></nz-option>
             </nz-select>
           </nz-form-control>

@@ -33,7 +33,7 @@ export class NewPage implements OnInit, OnDestroy {
   public endControl: FormControl = new FormControl('', Validators.required);
   public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
   public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
-  public votingBadgeControl: FormControl = new FormControl([]);
+  public votingAwardControl: FormControl = new FormControl([]);
   public additionalInfoControl: FormControl = new FormControl('');
   public subTypes = ProposalSubType;
   // Questions / answers.
@@ -64,12 +64,14 @@ export class NewPage implements OnInit, OnDestroy {
     this.proposalForm = new FormGroup({
       space: this.spaceControl,
       type: this.typeControl,
+      subType: this.subTypeControl,
       name: this.nameControl,
       group: this.selectedGroupControl,
       start: this.startControl,
       end: this.endControl,
       additionalInfo: this.additionalInfoControl,
-      questions: this.questions
+      questions: this.questions,
+      awards: this.votingAwardControl
     });
   }
 
@@ -191,9 +193,11 @@ export class NewPage implements OnInit, OnDestroy {
     obj.settings = {
       startDate: obj.start,
       endDate: obj.end,
-      onlyGuardians: obj.group
+      onlyGuardians: obj.group,
+      awards: obj.awards
     };
 
+    delete obj.awards;
     delete obj.start;
     delete obj.end;
     delete obj.group;
