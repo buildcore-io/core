@@ -148,14 +148,14 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
         createdOn: serverTime()
       });
 
-
-      await admin.firestore().runTransaction(async (transaction) => {
-        const sfDoc: any = await transaction.get(refProposal);
-        const totalWeight = (sfDoc.data().totalWeight || 0) + votingWeight;
-        transaction.update(refProposal, {
-          totalWeight: totalWeight
-        });
-      });
+      // const refProposal2: any = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);
+      // admin.firestore().runTransaction(async (transaction) => {
+      //   const sfDoc: any = await transaction.get(refProposal2);
+      //   const totalWeight = (sfDoc.data().totalWeight || 0) + votingWeight;
+      //   transaction.update(refProposal2, {
+      //     totalWeight: totalWeight
+      //   });
+      // });
     });
 
     // Set owner.
