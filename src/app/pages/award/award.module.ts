@@ -17,6 +17,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
@@ -59,6 +60,7 @@ import { DataService } from './services/data.service';
     NzModalModule,
     NzUploadModule,
     NzInputNumberModule,
+    NzToolTipModule,
     NzDatePickerModule,
     IconModule
   ]
