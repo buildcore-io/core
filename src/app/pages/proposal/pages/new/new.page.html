@@ -1,4 +1,6 @@
-<button nz-button class="wen-back-button mt-14" (click)="nav.goBack()"><wen-icon-angle-left class="flex"></wen-icon-angle-left>{{nav.getTitle()}}</button>
+<button nz-button class="wen-back-button mt-14" (click)="nav.goBack()">
+  <wen-icon-angle-left class="flex"></wen-icon-angle-left>{{nav.getTitle()}}
+</button>
 
 <h1 class="mt-7" i18 n>New Proposal</h1>
 
@@ -9,30 +11,47 @@
       <nz-card [nzBordered]="false" nzTitle="Proposal Info">
         <nz-form-item>
           <nz-form-control>
-            <nz-form-label>Participants</nz-form-label><br/>
+            <nz-form-label>Participants</nz-form-label><br />
             <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
-              <label nz-radio [nzValue]="true">All Guardians</label>
-              <label nz-radio [nzValue]="false">All Members</label>
+              <label nz-radio [nzValue]="true"><span class="inline-flex">All Guardians
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Only guardians can vote on this proposal"></i>
+                </span></label>
+              <label nz-radio [nzValue]="false"><span class="inline-flex">All Members
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="All members can vote on this proposal"></i>
+                </span></label>
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-control>
-            <nz-form-label>Voting Type</nz-form-label><br/>
+            <nz-form-label>Voting Type</nz-form-label><br />
             <nz-radio-group class="wen-radio-group" [formControl]="subTypeControl">
-              <label nz-radio [nzValue]="subTypes.ONE_MEMBER_ONE_VOTE">One Participant One Vote</label>
-              <label nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_SPACE">Based on participant's space reputation</label>
-              <label nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_AWARDS">Based on participant's badge reputations</label>
+              <label nz-radio [nzValue]="subTypes.ONE_MEMBER_ONE_VOTE"> <span class="inline-flex">One Participant One
+                  Vote
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Each member of the space gets one vote"></i>
+                </span></label>
+              <label nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_SPACE">
+                <span class="inline-flex">Based on participant's space reputation
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space"></i>
+                </span></label>
+              <label nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_AWARDS">
+                <span class="inline-flex">Based on participant's badges reputations
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has for selected badges"></i>
+                </span></label>
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
           <nz-form-control>
-            <nz-select
-            class="w-full" nzSize="large" nzShowSearch nzAllowClear
-            [nzMaxTagCount]="9" nzMode="multiple"
-            nzPlaceHolder="Select Badge" [formControl]="votingAwardControl">
-              <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid" [nzLabel]="a.name + '(badge: ' + a.badge.name + ')'" [nzValue]="a.uid"></nz-option>
+            <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear [nzMaxTagCount]="9" nzMode="multiple"
+              nzPlaceHolder="Select Badge" [formControl]="votingAwardControl">
+              <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid"
+                [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'" [nzValue]="a.uid"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -45,7 +64,8 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-date-picker class="flex flex-grow" nzSize="large" [nzDisabledDate]="disabledStartDate.bind(this)"
-                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }" nzFormat="yyyy-MM-dd HH:mm" [formControl]="startControl" nzPlaceHolder="Start"
+                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                nzFormat="yyyy-MM-dd HH:mm" [formControl]="startControl" nzPlaceHolder="Start"
                 (nzOnOpenChange)="handleStartOpenChange($event)">
               </nz-date-picker>
             </nz-form-control>
@@ -53,8 +73,9 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-date-picker class="flex flex-grow" nzSize="large" #endDatePicker
-                [nzDisabledDate]="disabledEndDate.bind(this)" [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }" nzFormat="yyyy-MM-dd HH:mm"
-                [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
+                [nzDisabledDate]="disabledEndDate.bind(this)"
+                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                nzFormat="yyyy-MM-dd HH:mm" [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
             </nz-form-control>
           </nz-form-item>
         </div>

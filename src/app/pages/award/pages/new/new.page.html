@@ -1,4 +1,6 @@
-<button nz-button class="wen-back-button mt-14"(click)="nav.goBack()"><wen-icon-angle-left class="flex"></wen-icon-angle-left>{{nav.getTitle()}}</button>
+<button nz-button class="wen-back-button mt-14" (click)="nav.goBack()">
+  <wen-icon-angle-left class="flex"></wen-icon-angle-left>{{nav.getTitle()}}
+</button>
 
 <h1 class="mt-7" i18 n>New Award</h1>
 
@@ -6,35 +8,54 @@
   <div class="py-4" nz-row [nzGutter]="24">
     <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Award Info">
-          <nz-form-item>
+        <nz-form-item>
+          <nz-form-control>
+            <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
+              <label nz-radio [nzValue]="types.PARTICIPATE_AND_APPROVE">
+                <span class="inline-flex">Guardian approval
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="The award must be approved by the guardians of the space before it's active or distributed"></i>
+                </span></label>
+              <label nz-radio [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">
+                <span class="inline-flex">Discord
+                  Activity
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Coming SOON"></i>
+                </span></label>
+              <label nz-radio [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">
+                <span class="inline-flex">Github
+                  Activity
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Coming SOON"></i>
+                </span></label>
+              <label nz-radio [nzValue]="types.CUSTOM" [nzDisabled]="true">
+                <span class="inline-flex">Custom and more
+                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Coming SOON"></i>
+                </span></label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control>
+            <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
+          </nz-form-control>
+        </nz-form-item>
+        <div class="flex flex-grow space-x-4">
+          <nz-form-item class="w-full">
             <nz-form-control>
-              <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
-                <label nz-radio [nzValue]="types.PARTICIPATE_AND_APPROVE">Guardian approval</label>
-                <label nz-radio [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">Discord Activity</label>
-                <label nz-radio [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">Github Activity</label>
-                <label nz-radio [nzValue]="types.CUSTOM" [nzDisabled]="true">Custom and more</label>
-              </nz-radio-group>
+              <nz-date-picker [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                class="flex flex-grow" nzSize="large" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
+                [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
             </nz-form-control>
           </nz-form-item>
-          <nz-form-item>
-            <nz-form-control>
-              <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
-            </nz-form-control>
-          </nz-form-item>
-          <div class="flex flex-grow space-x-4">
-            <nz-form-item class="w-full">
-              <nz-form-control>
-                <nz-date-picker [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
-                  class="flex flex-grow" nzSize="large" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"
-                  [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-          <nz-form-item>
-            <nz-form-control>
-              <textarea nz-input nzSize="large" placeholder="Award description" rows="4" [formControl]="descriptionControl"></textarea>
-            </nz-form-control>
-          </nz-form-item>
+        </div>
+        <nz-form-item>
+          <nz-form-control>
+            <textarea nz-input nzSize="large" placeholder="Award description" rows="4"
+              [formControl]="descriptionControl"></textarea>
+          </nz-form-control>
+        </nz-form-item>
 
       </nz-card>
 
@@ -58,7 +79,7 @@
                   [formControl]="badgeXpControl"></nz-input-number>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item class="flex-grow" >
+            <nz-form-item class="flex-grow">
               <nz-form-control>
                 <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Available Badges (number)"
                   [formControl]="badgeCountControl"></nz-input-number>

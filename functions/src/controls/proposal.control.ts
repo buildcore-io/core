@@ -117,10 +117,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
       if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||  params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
         const qry = await admin.firestore().collection(COL.TRANSACTION)
                     .where('type', '==', TransactionType.BADGE)
-                    .where('member', '==', g.data().uid)
-                    .where('space', '==', params.body.space).get();
-
-
+                    .where('member', '==', g.data().uid).get();
         if (qry.size > 0) {
           let totalReputation = 0;
           for (const t of qry.docs) {

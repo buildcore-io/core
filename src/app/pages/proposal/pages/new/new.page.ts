@@ -89,16 +89,8 @@ export class NewPage implements OnInit, OnDestroy {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
-      }
-    });
-
-    this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
-      this.subscriptionsAwards$?.unsubscribe();
-      if (obj) {
-        // TODO Implement pagination.
-        this.subscriptionsAwards$ = this.awardApi.listenSpace(obj).subscribe(this.awards$);
-      } else {
-        this.awards$.next(undefined);
+        // TODO Implement paging.
+        this.subscriptions$.push(this.awardApi.top(undefined, 1000).subscribe(this.awards$));
       }
     });
   }
