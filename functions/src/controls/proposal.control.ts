@@ -148,6 +148,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
         createdOn: serverTime()
       });
 
+      // TODO MOVE THIS AWAY from here.
       // const refProposal2: any = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);
       // admin.firestore().runTransaction(async (transaction) => {
       //   const sfDoc: any = await transaction.get(refProposal2);
