@@ -28,7 +28,7 @@ function defaultJoiUpdateCreateSchema(): any {
       otherwise: Joi.number().equal(
         ProposalSubType.ONE_MEMBER_ONE_VOTE,
         ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-        ProposalSubType.REPUTATION_WITHIN_SPACE
+        ProposalSubType.REPUTATION_BASED_ON_SPACE
       ).required()
     }),
     settings: Joi.when('type', {
@@ -110,11 +110,11 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
     } else {
       query = await refSpace.collection(SUB_COL.MEMBERS).get();
     }
-    query.forEach(async (g) => {
-
+    let totalWeight = 0;
+    for (const g of query.docs) {
       // Based on the subtype we determine number of voting power.
       let votingWeight = 1;
-      if (params.body.subType === ProposalSubType.REPUTATION_WITHIN_SPACE ||  params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+      if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||  params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
         const qry = await admin.firestore().collection(COL.TRANSACTION)
                     .where('type', '==', TransactionType.BADGE)
                     .where('member', '==', g.data().uid)
@@ -123,7 +123,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
 
         if (qry.size > 0) {
           let totalReputation = 0;
-          qry.forEach((t) => {
+          for (const t of qry.docs) {
             if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
               // We only consider certain badges coming from certain awards.
               if (params.body.settings.awards.includes(t.data().payload.award)) {
@@ -132,7 +132,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
             } else {
               totalReputation += t.data().payload?.xp || 0;
             }
-          });
+          }
 
           votingWeight = totalReputation;
         } else {
@@ -148,15 +148,11 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
         createdOn: serverTime()
       });
 
-      // TODO MOVE THIS AWAY from here.
-      // const refProposal2: any = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);
-      // admin.firestore().runTransaction(async (transaction) => {
-      //   const sfDoc: any = await transaction.get(refProposal2);
-      //   const totalWeight = (sfDoc.data().totalWeight || 0) + votingWeight;
-      //   transaction.update(refProposal2, {
-      //     totalWeight: totalWeight
-      //   });
-      // });
+      totalWeight += votingWeight;
+    }
+
+    await refProposal.update({
+      totalWeight: totalWeight
     });
 
     // Set owner.
@@ -358,7 +354,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     let voted = 0;
     let total = 0;
     const allMembers: any = await refProposal.collection(SUB_COL.MEMBERS).get();
-    allMembers.forEach((doc: any) => {
+    for (const doc of allMembers.docs) {
       // Total is based on number of questions.
       total += doc.data().weight * docProposal.data().questions.length;
 
@@ -374,7 +370,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
           });
         });
       }
-    });
+    }
 
     await refProposal.update({
       results: {

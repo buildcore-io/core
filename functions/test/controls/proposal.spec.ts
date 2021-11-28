@@ -312,6 +312,16 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     return space!;
   };
 
+  const jSpace = async (address: string, space: any) => {
+    mock(address, {
+      uid: space.uid
+    });
+    const wJoin: any = testEnv.wrap(joinSpace);
+    const s = await wJoin();
+    expect(s?.uid).toBeDefined();
+    return s!;
+  };
+
   const cProposal = (address: string, space: any, type: ProposalType, subType: ProposalSubType, addAnswers: any[] = [], awards: string[] = []) => {
     mock(address, {
       name: "Space Test",
@@ -379,7 +389,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     return returns!.uid;
   };
 
-  const giveBadge = async (address: string, space: any, xp: number) => {
+  const giveBadge = async (guardian: string, address: string, space: any, xp: number) => {
     // Create Award.
     mock(address, {
       name: 'Award A',
@@ -405,7 +415,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(returnsParti?.uid).toBeDefined();
 
     // Approve
-    mock(address, {
+    mock(guardian, {
       uid: award.uid,
       member: address
     });
@@ -451,11 +461,11 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     )).rejects.toThrowError(WenError.invalid_params.key);
   });
 
-  it('create proposal - invalid combination NATIVE - REPUTATION_WITHIN_SPACE ', async () => {
+  it('create proposal - invalid combination NATIVE - REPUTATION_BASED_ON_SPACE ', async () => {
     const memberId = await cMember();
     const space = await cSpace(memberId);
     (<any>expect(
-      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_WITHIN_SPACE)
+      cProposal(memberId, space, ProposalType.NATIVE, ProposalSubType.REPUTATION_BASED_ON_SPACE)
     )).rejects.toThrowError(WenError.invalid_params.key);
   });
 
@@ -470,7 +480,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   it('create proposal, approve & vote ', async () => {
     const memberId = await cMember();
     const space = await cSpace(memberId);
-    await giveBadge(memberId, space, 10);
+    await giveBadge(memberId, memberId, space, 10);
     const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
 
     // Approve proposal.
@@ -482,11 +492,11 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(v?.payload?.weight).toEqual(1);
   });
 
-  it('create proposal, approve & vote - REPUTATION_WITHIN_SPACE ', async () => {
+  it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE ', async () => {
     const memberId = await cMember();
     const space = await cSpace(memberId);
-    await giveBadge(memberId, space, 10);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_WITHIN_SPACE);
+    await giveBadge(memberId, memberId, space, 10);
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_SPACE);
 
     // Approve proposal.
     await apprProposal(memberId, proposal)
@@ -497,12 +507,12 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(v?.payload?.weight).toEqual(10);
   });
 
-  it('create proposal, approve & vote - REPUTATION_WITHIN_SPACE 2 awards', async () => {
+  it('create proposal, approve & vote - REPUTATION_BASED_ON_SPACE 2 awards', async () => {
     const memberId = await cMember();
     const space = await cSpace(memberId);
-    await giveBadge(memberId, space, 10);
-    await giveBadge(memberId, space, 30);
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_WITHIN_SPACE);
+    await giveBadge(memberId, memberId, space, 10);
+    await giveBadge(memberId, memberId, space, 30);
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_SPACE);
 
     // Approve proposal.
     await apprProposal(memberId, proposal)
@@ -516,8 +526,8 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS 2 awards (using only one)', async () => {
     const memberId = await cMember();
     const space = await cSpace(memberId);
-    const award = await giveBadge(memberId, space, 10);
-    await giveBadge(memberId, space, 30);
+    const award = await giveBadge(memberId, memberId, space, 10);
+    await giveBadge(memberId, memberId, space, 30);
     const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [award.uid]);
 
     // Approve proposal.
@@ -532,9 +542,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
   it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS 3 awards (using all)', async () => {
     const memberId = await cMember();
     const space = await cSpace(memberId);
-    const award = await giveBadge(memberId, space, 10);
-    const award2 = await giveBadge(memberId, space, 20);
-    const award3 = await giveBadge(memberId, space, 10);
+    const award = await giveBadge(memberId, memberId, space, 10);
+    const award2 = await giveBadge(memberId, memberId, space, 20);
+    const award3 = await giveBadge(memberId, memberId, space, 10);
     const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [award.uid, award2.uid, award3.uid]);
 
     // Approve proposal.
@@ -547,6 +557,169 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     expect(v._relatedRecs.proposal.results.voted).toEqual(40);
     expect(v._relatedRecs.proposal.results.total).toEqual(40);
     // Not supported yet.
-    // expect(v._relatedRecs.proposal.totalWeight).toEqual(40);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(40);
+  });
+
+  it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 7 ppl all same', async () => {
+    const memberId = await cMember();
+    const memberId1 = await cMember();
+    const memberId2 = await cMember();
+    const memberId3 = await cMember();
+    const memberId4 = await cMember();
+    const memberId5 = await cMember();
+    const memberId6 = await cMember();
+    const memberId7 = await cMember();
+    const space = await cSpace(memberId);
+    await jSpace(memberId1, space);
+    await jSpace(memberId2, space);
+    await jSpace(memberId3, space);
+    await jSpace(memberId4, space);
+    await jSpace(memberId5, space);
+    await jSpace(memberId6, space);
+    await jSpace(memberId7, space);
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
+
+    // Approve proposal.
+    await apprProposal(memberId, proposal)
+
+    // Let's vote.
+    await vote(memberId1, proposal, [1]);
+    await vote(memberId2, proposal, [1]);
+    await vote(memberId3, proposal, [1]);
+    await vote(memberId4, proposal, [1]);
+    await vote(memberId5, proposal, [1]);
+    // const v6: any = await vote(memberId6, proposal, [1]);
+    await vote(memberId7, proposal, [1]);
+    const v: any = await vote(memberId, proposal, [1]);
+    expect(v?.payload).toBeDefined();
+    expect(v?.payload?.weight).toEqual(1);
+    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(7);
+    expect(v._relatedRecs.proposal.results.voted).toEqual(7);
+    expect(v._relatedRecs.proposal.results.total).toEqual(8);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(8);
+  });
+
+  it('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 7 ppl 4/3', async () => {
+    const memberId = await cMember();
+    const memberId1 = await cMember();
+    const memberId2 = await cMember();
+    const memberId3 = await cMember();
+    const memberId4 = await cMember();
+    const memberId5 = await cMember();
+    const memberId6 = await cMember();
+    const memberId7 = await cMember();
+    const space = await cSpace(memberId);
+    await jSpace(memberId1, space);
+    await jSpace(memberId2, space);
+    await jSpace(memberId3, space);
+    await jSpace(memberId4, space);
+    await jSpace(memberId5, space);
+    await jSpace(memberId6, space);
+    await jSpace(memberId7, space);
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.ONE_MEMBER_ONE_VOTE);
+
+    // Approve proposal.
+    await apprProposal(memberId, proposal)
+
+    // Let's vote.
+    await vote(memberId1, proposal, [1]);
+    await vote(memberId2, proposal, [1]);
+    await vote(memberId3, proposal, [2]);
+    await vote(memberId4, proposal, [2]);
+    await vote(memberId5, proposal, [2]);
+    // const v6: any = await vote(memberId6, proposal, [1]);
+    await vote(memberId7, proposal, [1]);
+    const v: any = await vote(memberId, proposal, [1]);
+    expect(v?.payload).toBeDefined();
+    expect(v?.payload?.weight).toEqual(1);
+    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(4);
+    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(3);
+    expect(v._relatedRecs.proposal.results.voted).toEqual(7);
+    expect(v._relatedRecs.proposal.results.total).toEqual(8);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(8);
+  });
+
+  it.only('create proposal, approve & vote - ONE_MEMBER_ONE_VOTE - 4 ppl badges', async () => {
+    const memberId = await cMember();
+    const memberId1 = await cMember();
+    const memberId2 = await cMember();
+    const memberId3 = await cMember();
+    const memberId4 = await cMember();
+    const memberId5 = await cMember();
+    const space = await cSpace(memberId);
+    await jSpace(memberId1, space);
+    await jSpace(memberId2, space);
+    await jSpace(memberId3, space);
+    await jSpace(memberId4, space);
+    await jSpace(memberId5, space);
+
+    // Distribute badges.
+    await giveBadge(memberId, memberId, space, 30);
+    await giveBadge(memberId, memberId, space, 30);
+    await giveBadge(memberId, memberId, space, 30); // 90 together.
+    await giveBadge(memberId, memberId1, space, 30);
+    await giveBadge(memberId, memberId1, space, 30); // 60 together
+    await giveBadge(memberId, memberId2, space, 10); // 10
+    await giveBadge(memberId, memberId3, space, 5); // 5
+    await giveBadge(memberId, memberId4, space, 30);
+    await giveBadge(memberId, memberId4, space, 30); // 60
+    await giveBadge(memberId, memberId5, space, 200);
+
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_SPACE);
+
+    // Approve proposal.
+    await apprProposal(memberId, proposal)
+
+    // Let's vote.
+    await vote(memberId2, proposal, [2]);
+    await vote(memberId3, proposal, [2]);
+    await vote(memberId1, proposal, [1]);
+    await vote(memberId, proposal, [1]); // 150
+    const v: any = await vote(memberId4, proposal, [2]); // 75
+    expect(v?.payload).toBeDefined();
+    expect(v?.payload?.weight).toEqual(60);
+    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(150);
+    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(75);
+    expect(v._relatedRecs.proposal.results.voted).toEqual(225);
+    expect(v._relatedRecs.proposal.results.total).toEqual(425);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(425);
+  });
+
+  it('create proposal - REPUTATION_BASED_ON_AWARDS forgot badges', async () => {
+    const memberId = await cMember();
+    const memberId1 = await cMember();
+    const space = await cSpace(memberId);
+    await jSpace(memberId1, space);
+    (<any>expect(
+      cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS)
+    )).rejects.toThrowError(WenError.invalid_params.key);
+  });
+
+  it('create proposal, approve & vote - REPUTATION_BASED_ON_AWARDS - 4 ppl badges', async () => {
+    const memberId = await cMember();
+    const memberId1 = await cMember();
+    const space = await cSpace(memberId);
+    await jSpace(memberId1, space);
+
+    // Distribute badges.
+    const badgeA = await giveBadge(memberId, memberId, space, 30);
+    await giveBadge(memberId, memberId1, space, 30);
+
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, [badgeA]);
+
+    // Approve proposal.
+    await apprProposal(memberId, proposal)
+
+    // Let's vote.
+    await vote(memberId1, proposal, [2]);
+    const v: any = await vote(memberId, proposal, [1]);
+
+    expect(v?.payload).toBeDefined();
+    expect(v?.payload?.weight).toEqual(60);
+    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(30);
+    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(0);
+    expect(v._relatedRecs.proposal.results.voted).toEqual(30);
+    expect(v._relatedRecs.proposal.results.total).toEqual(30);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(30);
   });
 });

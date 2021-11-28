@@ -117,10 +117,9 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   // Decline all pending members.
   if (params.body.open === false) {
     const query: QuerySnapshot = await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).get();
-    // TODO Do want to wait here?
-    query.forEach(async (g) => {
+    for (const g of query.docs) {
       await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(g.data().uid).delete();
-    });
+    }
   }
 
   if (params.body) {
