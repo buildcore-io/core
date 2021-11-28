@@ -12,7 +12,7 @@ import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { ProposalStartDateMin } from './../../interfaces/config';
+import { ProposalStartDateMin, RelatedRecordsResponse } from './../../interfaces/config';
 import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 
@@ -146,6 +146,15 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
         parentId: proposalAddress,
         parentCol: COL.PROPOSAL,
         createdOn: serverTime()
+      });
+
+
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc: any = await transaction.get(refProposal);
+        const totalWeight = (sfDoc.data().totalWeight || 0) + votingWeight;
+        transaction.update(refProposal, {
+          totalWeight: totalWeight
+        });
       });
     });
 
@@ -357,9 +366,11 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
         voted += doc.data().weight * docProposal.data().questions.length;
 
         // We add weight to each answer.
-        doc.data().values.forEach((v: any) => {
-          results[v] = results[v] || 0;
-          results[v] += doc.data().weight;
+        doc.data().values.forEach((obj: any) => {
+          Object.keys(obj).forEach((k) => {
+            results[k]  = results[k] || 0;
+            results[k] += doc.data().weight;
+          });
         });
       }
     });
@@ -376,6 +387,17 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     docTran = await refTran.get();
   }
 
-  return docTran.data();
+  if (RelatedRecordsResponse.status) {
+    return {
+      ...docTran.data(),
+      ...{
+        _relatedRecs: {
+          proposal: (await refProposal.get()).data()
+        }
+      }
+    }
+  } else {
+    return docTran.data();
+  }
 });
 

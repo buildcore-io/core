@@ -1,5 +1,7 @@
+export class RelatedRecordsResponse {
+  public static status = false;
+}
 // 5m in advance.
-// export let PROPOSAL_START_DATE_MIN = 5 * 60 * 1000;
 export class ProposalStartDateMin {
   public static value = 5 * 60 * 1000;
 }
