@@ -219,7 +219,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       uid: this.data.proposal$.value.uid,
       values: [this.voteControl.value]
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.vote(sc), 'Rejected.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.proposalApi.vote(sc), 'Voted.', finish).subscribe((val: any) => {
         // none.
       });
     });

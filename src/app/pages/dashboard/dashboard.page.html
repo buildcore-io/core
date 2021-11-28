@@ -3,7 +3,8 @@
 
   <div>
     <h3 i18n>Your spaces
-      <a nz-button nzType="link" [routerLink]="['/discover', 'spaces']">Show All
+      <a nz-button *ngIf="isEmpty((spaces$ | async))" nzType="link" [routerLink]="['/discover', 'spaces']">Discover
+        Spaces
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a>
     </h3>
@@ -14,21 +15,19 @@
       <!-- TODO Nothing.  -->
       <div *ngIf="isEmpty((spaces$ | async))">None yet</div>
 
-      <wen-space-card class="cursor-pointer"
-        *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space"
+      <wen-space-card class="cursor-pointer" *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space"
         [routerLink]="['/space', space.uid]"></wen-space-card>
     </div>
   </div>
 
   <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
     <h3 i18n>Active awards
-      <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
+      <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
-      </a>
+      </a> -->
     </h3>
     <div class="flex flex-wrap gap-6 mb-10">
-      <wen-award-card class="cursor-pointer"
-        *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award"
+      <wen-award-card class="cursor-pointer" *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award"
         [routerLink]="['/award', award.uid]">
       </wen-award-card>
     </div>
@@ -36,14 +35,13 @@
 
   <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
     <h3 i18n>Active proposals
-      <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
+      <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
-      </a>
+      </a> -->
     </h3>
     <div class="flex flex-wrap gap-6 mb-10">
-      <wen-proposal-card class="cursor-pointer"
-        *ngFor="let proposal of proposals$ | async; trackBy: trackByUid" [proposal]="proposal"
-        [routerLink]="['/proposal', proposal.uid]">
+      <wen-proposal-card class="cursor-pointer" *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
+        [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
       </wen-proposal-card>
     </div>
   </div>
