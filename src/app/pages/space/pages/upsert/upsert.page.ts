@@ -5,8 +5,8 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { NzUploadChangeParam, NzUploadXHRArgs } from "ng-zorro-antd/upload";
-import { first, of, Subscription } from 'rxjs';
+import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
+import { first, Observable, of, Subscription } from 'rxjs';
 import { FileApi } from '../../../../@api/file.api';
 import { SpaceApi } from '../../../../@api/space.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
@@ -99,7 +99,7 @@ export class UpsertPage implements OnInit {
     }
   }
 
-  public uploadFile(item: NzUploadXHRArgs): Subscription {
+  public uploadFile(type: 'space_avatar'|'space_banner', item: NzUploadXHRArgs): Subscription {
     if (!this.auth.member$.value) {
       const err = 'Member seems to log out during the file upload request.';
       this.nzNotification.error(err, '');
@@ -110,7 +110,7 @@ export class UpsertPage implements OnInit {
       return of().subscribe();
     }
 
-    return this.fileApi.upload(this.auth.member$.value.uid, item, 'space_avatar');
+    return this.fileApi.upload(this.auth.member$.value.uid, item, type);
   }
 
   private validateForm(): boolean {
@@ -128,6 +128,11 @@ export class UpsertPage implements OnInit {
 
     return true;
   }
+
+  public previewFile(file: NzUploadFile): Observable<string> {
+    return of(file.response);
+  };
+
 
   public async create(): Promise<void> {
     if (!this.validateForm()) {

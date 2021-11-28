@@ -33,7 +33,7 @@ function defaultJoiUpdateCreateSchema(): any {
         if (value === 0 || (value % <any>Joi.ref('count')) == 0) {
           return true;
         } else {
-          return true;
+          return false;
         }
       }).required()
     }).required()
