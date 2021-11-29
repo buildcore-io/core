@@ -1,4 +1,4 @@
-[![SoonLabs](https://badgen.net/discord/members/5RVhemRU)](https://discord.gg/eYy9Ru9qRd)
+[![SoonLabs](https://badgen.net/discord/online-members/eYy9Ru9qRd)](https://discord.gg/eYy9Ru9qRd)
 [![TypeScript](https://img.shields.io/badge/--3178C6?logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org/)
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 [![Front End Unit Tests](https://github.com/soonlabs/soonaverse/actions/workflows/front-end-unit-tests.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/front-end-unit-tests.yml)
