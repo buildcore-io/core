@@ -11,4 +11,5 @@ export class MemberCardComponent {
   @Input() member?: Member;
   @Input() fullWidth?: boolean;
   @Input() about?: string;
+  @Input() role?: string;
 }

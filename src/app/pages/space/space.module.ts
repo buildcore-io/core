@@ -7,6 +7,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -55,6 +56,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     AwardCardModule,
     NzRadioModule,
     NzBadgeModule,
+    NzDropDownModule,
     NzFormModule,
     NzGridModule,
     NzButtonModule,

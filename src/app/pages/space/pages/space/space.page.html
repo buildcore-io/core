@@ -32,9 +32,9 @@
       {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending Request' :
       'Ask to Join Space'}}
     </button>
-    <div class="inline-grid space-y-4">
-      <button nz-button *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()">
-        <i nz-icon nzType="edit" nzTheme="outline"></i> Edit Space
+    <div>
+      <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()">
+        Edit Space
       </button>
     </div>
 
@@ -89,8 +89,8 @@
       </div>
     </nz-card>
 
-    <div class="inline-grid space-y-4">
-      <button nz-button nzDanger (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async">
+    <div>
+      <button nz-button nzBlock nzDanger (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async">
         Leave Space
       </button>
     </div>

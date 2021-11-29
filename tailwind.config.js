@@ -53,6 +53,7 @@ module.exports = {
           red: '#F9DED2',
           orange: '#FFC670',
           default: '#F6F5F0',
+          black: '#333333'
         },
         bg: {
           white: '#FFFFFF',

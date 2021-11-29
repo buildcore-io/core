@@ -31,6 +31,18 @@ a.ant-btn {
   border-radius: @border-radius-lg;
 }
 
+.ant-btn-dangerous {
+  border-color: transparent;
+}
+
+.secondary-button {
+  @apply  bg-orange border-orange hover:bg-orange-light hover:border-orange-light;
+
+  &:active {
+    @apply bg-orange-dark border-orange-dark;
+  }
+}
+
 // sort by button
 .wen-sort-button {
   .ant-select-selector {
