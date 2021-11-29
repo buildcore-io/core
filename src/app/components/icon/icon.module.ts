@@ -14,6 +14,8 @@ import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { MarketIconComponent } from './market/market.component';
 import { MembersIconComponent } from './members/members.component';
 import { MoonIconComponent } from './moon/moon.component';
+import { MoreIconComponent } from './more/more.component';
+import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
 import { RedditIconComponent } from './reddit/reddit.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SpaceIconComponent } from './space/space.component';
@@ -25,6 +27,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
   declarations: [
     GlobeIconComponent,
     RocketIconComponent,
+    MoreIconComponent,
     UnamusedIconComponent,
     SunIconComponent,
     MoonIconComponent,
@@ -34,6 +37,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     SpaceIconComponent,
     AwardIconComponent,
     CheckCircleIconComponent,
+    QuestionCircleIconComponent,
     AngleDownIconComponent,
     AngleUpIconComponent,
     TwitterIconComponent,
@@ -47,6 +51,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
   exports: [
     GlobeIconComponent,
     RocketIconComponent,
+    MoreIconComponent,
     UnamusedIconComponent,
     SunIconComponent,
     MoonIconComponent,
@@ -56,6 +61,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     SpaceIconComponent,
     AwardIconComponent,
     CheckCircleIconComponent,
+    QuestionCircleIconComponent,
     AngleDownIconComponent,
     AngleUpIconComponent,
     TwitterIconComponent,

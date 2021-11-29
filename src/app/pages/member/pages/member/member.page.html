@@ -13,7 +13,7 @@
 
   <nz-avatar [nzSize]="124" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
   <div class="flex items-baseline justify-center mt-6">
-    <h2>@ {{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate:[12]) }}</h2>
+    <h3 class="truncate">@ {{ (data.member$ | async)?.name || ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
 
     <div *ngIf="(data.member$ | async)?.uid === (loggedInMember$ | async)?.uid">
       <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"

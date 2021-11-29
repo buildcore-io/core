@@ -30,6 +30,7 @@ describe('SpaceController: ' + WEN_FUNC.cSpace, () => {
     expect(returns.guardians[dummyAddress]).toBeDefined();
     expect(returns?.totalGuardians).toEqual(1);
     expect(returns?.totalMembers).toEqual(1);
+    expect(returns?.totalPendingMembers).toEqual(0);
     walletSpy.mockRestore();
   });
 

@@ -63,6 +63,11 @@ export class MembersPage implements OnInit, OnDestroy {
     this.onScroll();
   }
 
+  public handleFilterChange(filter: MemberFilterOptions): void {
+    this.selectedListControl.setValue(filter);
+    this.cd.markForCheck();
+  }
+
   public memberIsGuardian(memberId: string): boolean {
     if (!this.data.guardians$.value) {
       return false;
@@ -182,7 +187,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member rejected.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member ignored.', finish).subscribe((val: any) => {
         // none.
       });
     });
