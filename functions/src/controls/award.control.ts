@@ -26,7 +26,7 @@ function defaultJoiUpdateCreateSchema(): any {
       name: Joi.string().required(),
       description: Joi.string().allow(null, '').optional(),
       // Let's keep everything within 1Mi for now.
-      count: Joi.number().min(0).max(1000).required(),
+      count: Joi.number().min(1).max(1000).required(),
       // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
       xp: Joi.number().min(0).max(1000).custom((value) => {
         // Validate value is dividable by count.

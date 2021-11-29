@@ -73,7 +73,7 @@
 
         <ng-container *ngFor="let a of q.answers">
           <p nz-typography class="text-xs">{{a.text}}</p>
-          <nz-progress [nzPercent]="getProgress(data.proposal$ | async, a)" nzStatus="active"></nz-progress>
+          <nz-progress [nzPercent]="getProgress(data.proposal$ | async, a) | number : '1.2-2'" nzStatus="active"></nz-progress>
         </ng-container>
       </div>
     </nz-card>

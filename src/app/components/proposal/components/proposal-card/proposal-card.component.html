@@ -16,7 +16,7 @@
         <ng-container *ngFor="let a of q.answers">
           <div *ngIf="q.answers.length === 2">
             <p nz-typography class="truncate wen-two-lines">{{a.text}}</p>
-            <nz-progress nz-tooltip [nzShowInfo]="true" nzStatus="active" [nzPercent]="getProgress(a)"
+            <nz-progress nz-tooltip [nzShowInfo]="true" nzStatus="active" [nzPercent]="getProgress(a) | number : '1.2-2'"
               nzStrokeLinecap="square"></nz-progress>
           </div>
         </ng-container>
