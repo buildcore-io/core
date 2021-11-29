@@ -34,6 +34,7 @@ module.exports = {
           darkest: '#1117A6',
           hover: '#24A1FF',
           pressed: '#0080E0',
+          dropbg: '#EDF8FC',
         },
         green: {
           dark: '#11A696',

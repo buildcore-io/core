@@ -6,6 +6,7 @@
     (scrolled)="onScroll()"
     >
     <div class="inline-flex justify-between w-full">
+      <!-- TODO use tags instead of select, show h3 title when there is only 1 option available-->
       <!-- <h3>{{getTitle()}} {{((getList() | async)?.length === 1 ? ' Member' : ' Members')}}</h3> -->
       <nz-badge [nzCount]="data.getPendingMembersCount(data.pendingMembers$ | async)">
         <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
@@ -16,6 +17,21 @@
           <nz-option nzLabel="Blocked" *ngIf="data.loggedInMemberIsGuardian()" [nzValue]="filterOptions.BLOCKED">
           </nz-option>
         </nz-select>
+
+         <!--  *ngFor="let tag of filter.hotTags"  [nzChecked]="(filter.selectedTags$ | async)!.indexOf(tag) > -1"
+        (nzCheckedChange)="filter.handleChange($event, tag)"
+      <div>
+        <nz-tag nzMode="checkable">
+          Active
+        </nz-tag>
+        <nz-tag nzMode="checkable" *ngIf="!(data.space$ | async)?.open && data.loggedInMemberIsGuardian()">
+          {{'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')}}
+        </nz-tag>
+        <nz-tag nzMode="checkable" *ngIf="data.loggedInMemberIsGuardian()">
+          Blocked
+        </nz-tag>
+      </div>-->
+
       </nz-badge>
     </div>
 

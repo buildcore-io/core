@@ -1,10 +1,22 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
+      <!-- TODO remove select and use tags instead -->
       <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
         <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
         <nz-option [nzLabel]="'Completed'" [nzValue]="filterOptions.COMPLETED"></nz-option>
       </nz-select>
+
+      <!--  *ngFor="let tag of filter.hotTags"  [nzChecked]="(filter.selectedTags$ | async)!.indexOf(tag) > -1"
+        (nzCheckedChange)="filter.handleChange($event, tag)"
+      <div>
+        <nz-tag nzMode="checkable">
+          Active
+        </nz-tag>
+        <nz-tag nzMode="checkable">
+          Completed
+        </nz-tag>
+      </div>-->
 
       <button nz-button class="bg-blue-dark2 border-blue-dark2 hover:bg-blue-hover hover:border-blue-hover"
         nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async"
@@ -17,8 +29,8 @@
 
     <!-- TODO Nothing.  -->
     <div *ngIf="data.isEmpty(getList() | async)">None yet</div>
-    <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of getList() | async; trackBy: trackByUid" [award]="award"
-      [routerLink]="['/award', award.uid]">
+    <wen-award-card class="block cursor-pointer" [fullWidth]="true"
+      *ngFor="let award of getList() | async; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
     </wen-award-card>
   </div>
 </div>
