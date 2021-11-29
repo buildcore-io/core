@@ -9,15 +9,6 @@
 
     <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
       <nz-card [nzBordered]="false" nzTitle="Proposal Info">
-        <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
-          <nz-form-control>
-            <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear [nzMaxTagCount]="9" nzMode="multiple"
-              nzPlaceHolder="Select Badge" [formControl]="votingAwardControl">
-              <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid"
-                [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'" [nzValue]="a.uid"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
         <nz-form-item>
           <nz-form-control>
             <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
@@ -105,7 +96,7 @@
 
     </div>
 
-    <div class="space-y-4" nz-col nzFlex="450px">
+    <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
       <nz-card [nzBordered]="false" nzTitle="Space Info">
         <nz-form-item>
           <nz-form-control>
@@ -154,6 +145,17 @@
                     nzTooltipTitle="Votes are weighted based on total amount of XP a member has for selected badges"></wen-icon-question-circle>
                 </p></label>
             </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-card>
+      <nz-card [nzBordered]="false" nzTitle="Reputation Badges" *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
+        <nz-form-item >
+          <nz-form-control>
+            <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear [nzMaxTagCount]="9" nzMode="multiple"
+              nzPlaceHolder="Select Badge" [formControl]="votingAwardControl">
+              <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid"
+                [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'" [nzValue]="a.uid"></nz-option>
+            </nz-select>
           </nz-form-control>
         </nz-form-item>
       </nz-card>
