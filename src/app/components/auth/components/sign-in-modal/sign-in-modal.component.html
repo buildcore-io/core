@@ -1,41 +1,22 @@
-<nz-modal
-  [nzVisible]="((auth.showWalletPopup$ | async) || 0) > 0"
-  nzClosable="false"
->
+<nz-modal [nzVisible]="((auth.showWalletPopup$ | async) || 0) > 0" nzClosable="false">
   <ng-container *nzModalContent>
     <div class="flex">
-      <button
-        nz-button
-        (click)="onClickSignIn()"
-        *ngIf="(auth.showWalletPopup$ | async) === 1"
-        class="flex w-full h-auto gap-6 p-6 border border-app-gray-200 hover:border-app-gray-400 focus:border-app-gray-400 rounded-large"
-      >
-        <nz-avatar
-          nzSrc="assets/metamask.png"
-          [nzSize]="48"
-          class="border-2 border-app-gray-100"
-        ></nz-avatar>
+      <button nz-button (click)="onClickSignIn()" *ngIf="(auth.showWalletPopup$ | async) === 1"
+        class="flex w-full h-auto gap-6 p-6 border border-app-gray-200 hover:border-app-gray-400 focus:border-app-gray-400 rounded-large">
+        <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="border-2 border-app-gray-100"></nz-avatar>
         <div class="flex flex-col items-start text-app-gray-text">
           Metamask
-          <small class="font-medium text-app-gray-400"
-            >Connect to your Metamask wallet</small
-          >
+          <small class="font-medium text-app-gray-400">Connect to your Metamask wallet</small>
         </div>
       </button>
 
-      <p
-        nz-typography
-        class="mx-auto mt-4 font-semibold center"
-        *ngIf="(auth.showWalletPopup$ | async) === 2"
-      >
-        Signing...
-      </p>
+      <div nz-typography class="h-40 mx-auto mt-4 font-semibold center" *ngIf="(auth.showWalletPopup$ | async) === 2">
+        <div class="ellipse">
+          <div class="circle"></div>
+        </div>
+      </div>
 
-      <div
-        nz-typography
-        class="mx-auto mt-4 font-semibold"
-        *ngIf="(auth.showWalletPopup$ | async) === 3"
-      >
+      <div nz-typography class="mx-auto mt-4 font-semibold" *ngIf="(auth.showWalletPopup$ | async) === 3">
         <p>Make sure you select public IOTA EVM Chain in MetaMask.</p>
         <br /><br />
         <p>Network Name: IOTA EVM</p>
@@ -45,14 +26,8 @@
     </div>
   </ng-container>
 
-  <div class="mb-8 text-center" *nzModalFooter>
-    <button
-      nz-button
-      nzType="text"
-      class="text-blue-light1"
-      (click)="handleCancel()"
-      i18n
-    >
+  <div class="mb-8 text-center" [ngClass]="(auth.showWalletPopup$ | async) === 2 ? 'pt-24' : ''" *nzModalFooter>
+    <button nz-button nzType="text" class="text-blue-light1" (click)="handleCancel()" i18n>
       Cancel
     </button>
   </div>
