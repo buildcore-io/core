@@ -1,9 +1,4 @@
-[![SoonLabs](https://badgen.net/discord/members/5RVhemRU)](https://discord.gg/5RVhemRU)
-[![TypeScript](https://img.shields.io/badge/--3178C6?logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org/)
-[![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
-[![Front End Unit Tests](https://github.com/soonlabs/soonaverse/actions/workflows/front-end-unit-tests.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/front-end-unit-tests.yml)
-[![Smart Contract Tests](https://github.com/soonlabs/soonaverse/actions/workflows/smart-contracts-unit-test.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/smart-contracts-unit-test.yml)
-[![Functions Unit Tests](https://github.com/soonlabs/soonaverse/actions/workflows/functions-unit-tests.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/functions-unit-tests.yml)
+[![SoonLabs](https://badgen.net/discord/members/5RVhemRU)](https://discord.gg/eYy9Ru9qRd)
 
 # About
 The Soonaverse is a decentralized platform for communities, enabling the seamless creation, management, and interoperability of DAOs.
