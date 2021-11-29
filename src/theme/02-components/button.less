@@ -35,11 +35,16 @@ a.ant-btn {
   border-color: transparent;
 }
 
-.secondary-button {
-  @apply  bg-orange border-orange hover:bg-orange-light hover:border-orange-light;
+.wen-secondary {
+  @apply text-app-gray-text hover:border-orange;
 
-  &:active {
-    @apply bg-orange-dark border-orange-dark;
+  &:active,
+  &:focus {
+    @apply bg-orange border-orange;
+
+    path {
+      stroke: white;
+    }
   }
 }
 

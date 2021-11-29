@@ -42,15 +42,17 @@
       [role]="memberIsGuardian(member.uid) && isActiveList() ? 'Guardian' : 'Member'"
       *ngFor="let member of getList() | async; trackBy: trackByUid" [member]="member">
 
-      <button nz-button nzType="primary"
-        class="float-right secondary-button" nzShape="circle"
-        nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu" nzPlacement="bottomRight"><i nz-icon
-          nzType="more"></i></button>
+      <!-- TODO show button only when there is any option available -->
+      <button nz-button
+        class="float-right wen-secondary" nzShape="circle"
+        nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu" nzPlacement="bottomRight">
+          <wen-icon-more></wen-icon-more>
+        </button>
 
       <nz-dropdown-menu #menu="nzDropdownMenu">
         <ul nz-menu>
           <ng-container *ngIf="memberIsGuardian(member.uid) && isActiveList()">
-            <li nz-menu-item nzDanger (click)="removeGuardian(member.uid)" *ngIf="data.loggedInMemberIsGuardian()">
+            <li nz-menu-item (click)="removeGuardian(member.uid)" *ngIf="data.loggedInMemberIsGuardian()">
               Remove
               Guardian</li>
           </ng-container>
@@ -62,7 +64,7 @@
           <li nz-menu-item (click)="acceptMember(member.uid)"
             *ngIf="data.loggedInMemberIsGuardian() && isPendingList()">Accept Member</li>
 
-          <li nz-menu-item nzDanger (click)="rejectMember(member.uid)"
+          <li nz-menu-item (click)="rejectMember(member.uid)"
             *ngIf="data.loggedInMemberIsGuardian() && isPendingList()">Reject Member</li>
 
           <li nz-menu-item nzDanger (click)="blockMember(member.uid)"
