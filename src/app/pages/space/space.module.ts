@@ -54,6 +54,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     MemberModule,
     ProposalCardModule,
     AwardCardModule,
+    NzTagModule,
     NzRadioModule,
     NzBadgeModule,
     NzDropDownModule,

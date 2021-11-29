@@ -66,6 +66,11 @@ export class AwardsPage implements OnInit, OnDestroy {
     }
   }
 
+  public handleFilterChange(filter: FilterOptions): void {
+    this.selectedListControl.setValue(filter);
+    this.cd.markForCheck();
+  }
+
   public get filterOptions(): typeof FilterOptions {
     return FilterOptions;
   }
