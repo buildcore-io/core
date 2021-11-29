@@ -21,6 +21,7 @@ export interface Space extends BaseRecord {
   createdBy: string;
   totalGuardians: number;
   totalMembers: number;
+  totalPendingMembers: number;
   guardians: {
     // Owner / from date
     [propName: string]: SpaceGuardian;

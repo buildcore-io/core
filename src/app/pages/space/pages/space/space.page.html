@@ -47,8 +47,8 @@
         <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
           <wen-icon-members class="text-app-gray-400"></wen-icon-members>
           <span>{{ (data.space$ | async)!.totalMembers }} members
-            <span *ngIf="data.getPendingMembersCount(data.pendingMembers$ | async)">
-              {{'(' + data.getPendingMembersCount(data.pendingMembers$ | async) + ' pending)'}}
+            <span *ngIf="(data.space$ | async)!.totalPendingMembers">
+              {{'(' + (data.space$ | async)!.totalPendingMembers + ' pending)'}}
             </span>
           </span>
         </a>

@@ -2,7 +2,7 @@
   <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
     <div class="inline-flex justify-between w-full">
-      <div *ngIf="data.loggedInMemberIsGuardian()">
+      <div *ngIf="data.isGuardianWithinSpace$ | async">
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
                 (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
           Active
@@ -31,7 +31,7 @@
       *ngFor="let member of getList() | async; trackBy: trackByUid" [member]="member">
 
       <!-- TODO show button only when there is any option available -->
-      <button nz-button *ngIf="data.loggedInMemberIsGuardian()"
+      <button nz-button *ngIf="data.isGuardianWithinSpace$ | async"
         class="float-right wen-secondary" nzShape="circle"
         nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu" nzPlacement="bottomRight">
           <wen-icon-more></wen-icon-more>
