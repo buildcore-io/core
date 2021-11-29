@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BadgeModule } from "@components/badge/badge.module";
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { TabsModule } from "@components/tabs/tabs.module";
@@ -49,11 +50,13 @@ import { DataService } from './services/data.service';
     ProposalStatusModule,
     ReactiveFormsModule,
     NzSelectModule,
+    BadgeModule,
     TabsModule,
     MarkDownModule,
     TruncateModule,
     NzRadioModule,
     NzButtonModule,
+    NzToolTipModule,
     NzCardModule,
     NzIconModule,
     NzInputModule,

@@ -30,10 +30,15 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwards(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Award[]> {
+  public topAwardsActive(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Award[]> {
     return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (obj: any) => {
       return obj.completed !== true;
     });
+  }
+
+  // TODO We need to tweak this to make sure don't filter locally.
+  public topAwardsAll(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Award[]> {
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def);
   }
 
   // TODO We need to tweak this to make sure don't filter locally.

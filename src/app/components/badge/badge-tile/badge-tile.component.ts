@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Transaction } from '../../../../../functions/interfaces/models/transaction';
 
 @Component({
   selector: 'wen-badge-tile',
@@ -8,6 +7,5 @@ import { Transaction } from '../../../../../functions/interfaces/models/transact
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BadgeTileComponent {
-  @Input() public badge?: Transaction;
   @Input() size?: string;
 }

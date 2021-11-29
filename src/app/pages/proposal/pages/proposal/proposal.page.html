@@ -122,8 +122,10 @@
           <span nz-typography class="text-app-gray-400">End Date</span>
           <p nz-typography>{{(data.proposal$ | async)?.settings?.endDate?.toDate() | date:'short'}}</p>
         </div>
-
-
+        <div class="wen-description-item bg-bg-background">
+          <span nz-typography class="text-app-gray-400">Voting Type</span>
+          <p nz-typography>{{getVotingTypeText((data.proposal$ | async)?.subType)}}</p>
+        </div>
       </ng-container>
 
       <!-- NATIVE VOTE -->
@@ -142,6 +144,15 @@
         </div>
         <a nz-button nzType="link">Export to JSON</a>
       </ng-container>
+    </nz-card>
+
+    <nz-card nzTitle="Selected Badges">
+      <div class="flex flex-wrap gap-2">
+        <article *ngFor="let a of (data.badges$ | async) | slice:0:6; trackBy: trackByUid" nz-tooltip [nzTooltipTitle]="a.badge.name"
+          class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
+          <wen-badge-tile></wen-badge-tile>
+        </article>
+      </div>
     </nz-card>
   </div>
 </div>

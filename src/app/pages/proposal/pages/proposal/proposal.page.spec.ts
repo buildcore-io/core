@@ -1,3 +1,4 @@
+import { BadgeModule } from "@components/badge/badge.module";
 import { IconModule } from '@components/icon/icon.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
@@ -9,7 +10,7 @@ describe('ProposalPage', () => {
   let spectator: Spectator<ProposalPage>;
   const createComponent = createRoutingFactory({
     component: ProposalPage,
-    imports: [ TabsModule, IconModule, ProposalStatusModule ],
+    imports: [ TabsModule, IconModule, ProposalStatusModule, BadgeModule ],
     providers: [ DataService ]
   });
 

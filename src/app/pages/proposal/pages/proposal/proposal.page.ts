@@ -1,13 +1,15 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Proposal } from 'functions/interfaces/models';
-import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
-import { ProposalAnswer, ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
+import { Award } from './../../../../../../functions/interfaces/models/award';
+import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi, ProposalParticipantWithMember } from './../../../../@api/proposal.api';
@@ -40,6 +42,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private proposalApi: ProposalApi,
     private memberApi: MemberApi,
+    private awardApi: AwardApi,
     private cd: ChangeDetectorRef,
     public data: DataService,
     public nav: NavigationService
@@ -80,12 +83,25 @@ export class ProposalPage implements OnInit, OnDestroy {
     });
 
     // Once we get proposal get space.
-    this.data.proposal$.pipe(skip(1), first()).subscribe((p) => {
+    this.data.proposal$.pipe(skip(1), first()).subscribe(async (p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         if (p.createdBy) {
           this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }
+
+        // Get badges to show.
+        const awards: Award[] = [];
+        if (p.settings.awards?.length) {
+          for (const a of p.settings.awards) {
+            const award: Award|undefined = await firstValueFrom(this.awardApi.listen(a));
+            if (award) {
+              awards.push(award);
+            }
+          }
+        }
+
+        this.data.badges$.next(awards);
       }
     });
   }
@@ -123,6 +139,24 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public isNativeVote(type: ProposalType|undefined): boolean {
     return (type === ProposalType.NATIVE);
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
+  public getVotingTypeText(subType: ProposalSubType|undefined): string {
+    if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
+      return 'One Address One Vote';
+    } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
+      return 'One Member One Vote';
+    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
+      return 'Reputation within Space';
+    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+      return 'Reputation within Badges';
+    } else {
+      return '';
+    }
   }
 
   public isComplete(proposal?: Proposal|null): boolean {
