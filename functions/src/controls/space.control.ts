@@ -387,7 +387,10 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
 
-  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
+  if (
+    !(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists &&
+    !(await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).get()).exists
+  ) {
     throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
   }
 
@@ -396,14 +399,14 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   }
 
   // Must be minimum one member.
-  const members: any[] = await refSpace.collection(SUB_COL.MEMBERS).listDocuments();
-  if (members.length === 1) {
+  const members: any = await refSpace.collection(SUB_COL.MEMBERS).where('uid', '!=', params.body.member).get();
+  if (members.size === 0) {
     throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
   // Is last guardian? isGuardian
-  const guardians: any[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
-  if (guardians.length === 1 && isGuardian) {
+  const guardians: any = await refSpace.collection(SUB_COL.GUARDIANS).where('uid', '!=', params.body.member).get();
+  if (guardians.size === 0 && isGuardian) {
     throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
   }
 
@@ -416,6 +419,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
     });
 
     await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).delete();
+    await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).delete();
 
     // If this member is always guardian he must be removed.
     if (isGuardian) {

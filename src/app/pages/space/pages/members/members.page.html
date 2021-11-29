@@ -2,34 +2,22 @@
   <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
     <div class="inline-flex justify-between w-full">
-      <!-- TODO use tags instead of select, show h3 title when there is only 1 option available-->
-      <!-- <h3>{{getTitle()}} {{((getList() | async)?.length === 1 ? ' Member' : ' Members')}}</h3> -->
-      <nz-badge [nzCount]="data.getPendingMembersCount(data.pendingMembers$ | async)">
-        <nz-select class="w-48 wen-sort-button" [formControl]="selectedListControl">
-          <nz-option nzLabel="Active" [nzValue]="filterOptions.ACTIVE"></nz-option>
-          <nz-option *ngIf="!(data.space$ | async)?.open && data.loggedInMemberIsGuardian()"
-            [nzLabel]="'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')"
-            [nzValue]="filterOptions.PENDING">
-          </nz-option>
-          <nz-option nzLabel="Blocked" *ngIf="data.loggedInMemberIsGuardian()" [nzValue]="filterOptions.BLOCKED">
-          </nz-option>
-        </nz-select>
-
-        <!--  *ngFor="let tag of filter.hotTags"  [nzChecked]="(filter.selectedTags$ | async)!.indexOf(tag) > -1"
-        (nzCheckedChange)="filter.handleChange($event, tag)"
-      <div>
-        <nz-tag nzMode="checkable">
+      <div *ngIf="data.loggedInMemberIsGuardian()">
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
+                (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
           Active
         </nz-tag>
-        <nz-tag nzMode="checkable" *ngIf="!(data.space$ | async)?.open && data.loggedInMemberIsGuardian()">
+        <nz-tag nzMode="checkable"
+                *ngIf="!(data.space$ | async)?.open"
+                [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+                (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
           {{'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')}}
         </nz-tag>
-        <nz-tag nzMode="checkable" *ngIf="data.loggedInMemberIsGuardian()">
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.BLOCKED"
+                (nzCheckedChange)="handleFilterChange(filterOptions.BLOCKED)">
           Blocked
         </nz-tag>
-      </div>-->
-
-      </nz-badge>
+      </div>
     </div>
 
     <!-- TODO Loading. -->
@@ -43,7 +31,7 @@
       *ngFor="let member of getList() | async; trackBy: trackByUid" [member]="member">
 
       <!-- TODO show button only when there is any option available -->
-      <button nz-button
+      <button nz-button *ngIf="data.loggedInMemberIsGuardian()"
         class="float-right wen-secondary" nzShape="circle"
         nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu" nzPlacement="bottomRight">
           <wen-icon-more></wen-icon-more>
@@ -52,27 +40,27 @@
       <nz-dropdown-menu #menu="nzDropdownMenu">
         <ul nz-menu>
           <ng-container *ngIf="memberIsGuardian(member.uid) && isActiveList()">
-            <li nz-menu-item (click)="removeGuardian(member.uid)" *ngIf="data.loggedInMemberIsGuardian()">
+            <li nz-menu-item (click)="removeGuardian(member.uid)" >
               Remove
               Guardian</li>
           </ng-container>
           <ng-container *ngIf="!memberIsGuardian(member.uid) && isActiveList()">
-            <li nz-menu-item (click)="setGuardian(member.uid)" *ngIf="data.loggedInMemberIsGuardian()">Make
+            <li nz-menu-item (click)="setGuardian(member.uid)">Make
               Guardian</li>
           </ng-container>
 
           <li nz-menu-item (click)="acceptMember(member.uid)"
-            *ngIf="data.loggedInMemberIsGuardian() && isPendingList()">Accept Member</li>
+            *ngIf="isPendingList()">Accept Member</li>
 
-          <li nz-menu-item (click)="rejectMember(member.uid)"
-            *ngIf="data.loggedInMemberIsGuardian() && isPendingList()">Reject Member</li>
+          <!-- <li nz-menu-item (click)="rejectMember(member.uid)"
+            *ngIf="isPendingList()">Ignore Member</li> -->
 
           <li nz-menu-item nzDanger (click)="blockMember(member.uid)"
-            *ngIf="data.loggedInMemberIsGuardian() && isActiveList()">
+            *ngIf="(isActiveList() || isPendingList())">
             Block Member</li>
 
           <li nz-menu-item (click)="unblockMember(member.uid)"
-            *ngIf="data.loggedInMemberIsGuardian() && isBlockedList()">Unblock Member</li>
+            *ngIf="isBlockedList()">Unblock Member</li>
 
         </ul>
       </nz-dropdown-menu>
