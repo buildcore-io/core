@@ -82,6 +82,11 @@ export class ProposalsPage implements OnInit, OnDestroy {
     ]);
   }
 
+  public handleFilterChange(filter: FilterOptions): void {
+    this.selectedListControl.setValue(filter);
+    this.cd.markForCheck();
+  }
+
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }

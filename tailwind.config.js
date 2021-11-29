@@ -34,6 +34,7 @@ module.exports = {
           darkest: '#1117A6',
           hover: '#24A1FF',
           pressed: '#0080E0',
+          dropbg: '#EDF8FC',
         },
         green: {
           dark: '#11A696',
@@ -52,6 +53,7 @@ module.exports = {
           red: '#F9DED2',
           orange: '#FFC670',
           default: '#F6F5F0',
+          black: '#333333'
         },
         bg: {
           white: '#FFFFFF',
