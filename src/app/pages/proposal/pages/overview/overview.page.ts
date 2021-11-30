@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
@@ -15,6 +16,7 @@ export class OverviewPage {
   constructor(
     private auth: AuthService,
     private notification: NotificationService,
+    private nzNotification: NzNotificationService,
     private proposalApi: ProposalApi,
     public data: DataService
   ) {
@@ -23,6 +25,11 @@ export class OverviewPage {
 
   public async vote(): Promise<void> {
     if (!this.data.proposal$.value?.uid) {
+      return;
+    }
+
+    if (!(this.voteControl.value > 0)) {
+      this.nzNotification.error('', 'Please select option first!');
       return;
     }
 

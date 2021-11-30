@@ -106,7 +106,7 @@
               [nzPlaceHolder]="placeholderTpl" [formControl]="spaceControl">
               <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" nzCustomContent
                 [nzLabel]="s.name || s.uid" [nzValue]="s.uid">
-                <nz-avatar [nzSrc]="(s.avatarUrl) || undefined" [nzSize]="32" class="mr-3 border-2 border-app-gray-100"
+                <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" [nzSize]="32" class="mr-3 border-2 border-app-gray-100"
                   nzShape="circle">
                 </nz-avatar>
                 {{s.name || s.uid}}

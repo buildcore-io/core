@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FileApi, FILE_SIZES } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -120,6 +121,14 @@ export class NewPage implements OnInit, OnDestroy {
         this.getAnswerForm()
       ])
     });
+  }
+
+  public getAvatarSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public gForm(f: any, value: string): any {

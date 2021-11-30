@@ -5,6 +5,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { TruncateModule } from './../../../../@core/pipes/truncate/truncate.module';
 import { IconModule } from './../../../../components/icon/icon.module';
 import { ProposalStatusModule } from './../proposal-status/proposal-status.module';
 import { ProposalCardComponent } from './proposal-card.component';
@@ -18,6 +19,7 @@ import { ProposalCardComponent } from './proposal-card.component';
   ],
   imports: [
     CommonModule,
+    TruncateModule,
     NgApexchartsModule,
     ProposalStatusModule,
     NzAvatarModule,

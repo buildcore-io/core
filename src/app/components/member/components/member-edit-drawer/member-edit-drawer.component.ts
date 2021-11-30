@@ -22,14 +22,7 @@ export class MemberEditDrawerComponent implements OnInit {
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
   public memberForm: FormGroup;
-
-  // TODO minted logic
-  minted = false;
-
-  mint(): void {
-    this.minted = true;
-  }
-
+  public minted = false;
   constructor(private auth: AuthService, private memberApi: MemberApi, private notification: NotificationService) {
     this.memberForm = new FormGroup({
       name: this.nameControl,
@@ -50,6 +43,11 @@ export class MemberEditDrawerComponent implements OnInit {
         this.setFormValues(obj);
       }
     });
+  }
+
+  public mint(): void {
+    alert('SOON');
+    // this.minted = true;
   }
 
   private setFormValues(obj: Member): void {

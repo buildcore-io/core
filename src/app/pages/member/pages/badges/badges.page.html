@@ -13,13 +13,12 @@
       </div>
     </nz-card>
 
-    <!-- TODO condition when empty + router link-->
-    <nz-card>
+    <nz-card *ngIf="(data.badges$ | async)?.length === 0">
       <div class="flex flex-col justify-center text-center h-36">
       <span class="mb-3 leading-7 text-app-gray-400">
         No Badges yet
       </span>
-      <button nz-button nzType="primary" class="self-center w-48">Discover Awards</button>
+      <button nz-button nzType="primary" class="self-center w-48" *ngIf="isLoggedIn$ | async">Discover Awards</button>
     </div>
     </nz-card>
   </div>
