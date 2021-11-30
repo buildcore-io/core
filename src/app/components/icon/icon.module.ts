@@ -11,6 +11,7 @@ import { FacebookIconComponent } from './facebook/facebook.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
+import { LogOutIconComponent } from './log-out/log-out.component';
 import { MarketIconComponent } from './market/market.component';
 import { MembersIconComponent } from './members/members.component';
 import { MoonIconComponent } from './moon/moon.component';
@@ -44,6 +45,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     FacebookIconComponent,
     LinkedinIconComponent,
     GithubIconComponent,
+    LogOutIconComponent,
     DiscordIconComponent,
     RedditIconComponent,
     AngleLeftIconComponent,
@@ -65,6 +67,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     AngleDownIconComponent,
     AngleUpIconComponent,
     TwitterIconComponent,
+    LogOutIconComponent,
     FacebookIconComponent,
     LinkedinIconComponent,
     GithubIconComponent,

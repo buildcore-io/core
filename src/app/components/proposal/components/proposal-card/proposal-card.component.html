@@ -1,5 +1,6 @@
-<article class="p-4 bg-white w-75 h-75 rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'"
+<article class="bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto p-6' : 'w-75 h-75 p-4'"
   *ngIf="proposal">
+  <wen-icon-angle-left class="fixed flex rotate-180 right-6" *ngIf="fullWidth"></wen-icon-angle-left>
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-24'">
     <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
     <div class="flex items-center w-full space-x-4">
@@ -10,18 +11,17 @@
     </div>
   </div>
 
-  <div class="relative flex flex-col w-full h-52">
-    <div class="flex flex-col justify-end h-32">
+  <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto pr-16' : 'h-52'">
+    <div class="flex flex-col justify-end" [ngClass]="fullWidth ? 'h-auto' : 'h-32'">
       <ng-container *ngFor="let q of proposal.questions">
         <!-- TODO fix 2 options percantage calc-->
         <div class="w-full" *ngIf="q.answers.length === 2">
           <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
-            [nzPercent]="getProgress(q.answers[0]) | number : '1.2-2'"
-            nzStrokeLinecap="square"></nz-progress>
-            <p nz-typography class="wen-two-lines">
-              <span class="truncate">{{getProgress(q.answers[0]) | number : '1.2-2'}}% {{q.answers[0].text}}</span>
-              <span class="truncate">{{getProgress(q.answers[1]) | number : '1.2-2'}}% {{q.answers[1].text}}</span>
-            </p>
+            [nzPercent]="getProgress(q.answers[0]) | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
+          <p nz-typography class="wen-two-lines">
+            <span class="truncate">{{getProgress(q.answers[0]) | number : '1.2-2'}}% {{q.answers[0].text}}</span>
+            <span class="truncate">{{getProgress(q.answers[1]) | number : '1.2-2'}}% {{q.answers[1].text}}</span>
+          </p>
         </div>
         <!-- TODO style and fix pie chart-->
         <div *ngIf="q.answers.length > 2" class="max-w-full max-h-28">

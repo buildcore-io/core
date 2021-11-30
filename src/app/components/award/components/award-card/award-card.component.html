@@ -1,4 +1,4 @@
-<article class="p-4 bg-white w-75 h-75 rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto flex' : 'w-75 h-75'" *ngIf="award">
+<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-44 flex' : 'w-75 h-75'" *ngIf="award">
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
