@@ -6,7 +6,12 @@
     <wen-icon-rocket></wen-icon-rocket>Discover
   </button>
 
-  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" *ngIf="(isLoggedIn$ | async) && !isMemberProfile"
+  <button nz-button nzType="default" [routerLink]="urlToDiscover" *ngIf="isLandingPage" class="flex items-center gap-2 text-app-gray-text">
+    <wen-icon-rocket></wen-icon-rocket>
+    Discover
+  </button>
+
+  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" *ngIf="(isLoggedIn$ | async) && !isMemberProfile && !isLandingPage"
     nzType="primary" type="button" class="flex items-center gap-2 pr-2">
     Create new <wen-icon-angle-down></wen-icon-angle-down>
   </button>
