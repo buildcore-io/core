@@ -12,21 +12,6 @@
         <div class="space-y-4">
           <nz-form-item>
             <nz-form-control>
-              <nz-radio-group class="wen-radio-group" [formControl]="openControl">
-                <label nz-radio [nzValue]="true">
-                  <span class="inline-flex">Anyone can join
-                    <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right" nzTooltipTitle="prompt text"></i>
-                  </span>
-                </label>
-                <label nz-radio [nzValue]="false">
-                  <span class="inline-flex">Member must be accepted
-                    <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right" nzTooltipTitle="prompt text"></i>
-                  </span></label>
-              </nz-radio-group>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-control>
               <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
             </nz-form-control>
           </nz-form-item>
@@ -81,6 +66,25 @@
     </div>
 
     <div class="space-y-4" nz-col nzFlex="450px">
+      <nz-card [nzBordered]="false" nzTitle="Space Type">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-radio-group class="wen-radio-group" [formControl]="openControl">
+              <label nz-radio [nzValue]="true">
+                <span class="inline-flex">Open for anyone to join instantly
+                  <!-- <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="prompt text"></i> -->
+                </span>
+              </label>
+              <label nz-radio [nzValue]="false">
+                <span class="inline-flex">Requires a member approval
+                  <!-- <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="prompt text"></i> -->
+                </span></label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-card>
       <nz-card [nzBordered]="false">
         <nz-card-meta nzTitle="Avatar"
           [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Your brand is key.'">
