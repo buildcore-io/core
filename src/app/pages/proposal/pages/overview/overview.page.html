@@ -1,49 +1,36 @@
-<!-- <nz-card nzTitle="Cast your vote"
-  *ngIf="(data.proposal$ | async)?.approved && isMemberVote((data.proposal$ | async)?.type) && canVote(data.members$ | async) && isInProgress(data.proposal$ | async)">
-  <div class="space-y-4">
-    <div *ngFor="let q of (data.proposal$ | async)?.questions">
-      <p>{{q.text}}</p>
-      <nz-radio-group [formControl]="voteControl">
-        <label nz-radio *ngFor="let a of q.answers" [nzValue]="a.value">{{a.text}}</label>
-      </nz-radio-group>
-    </div>
-
-    <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()">
-      Vote Now
-    </button>
-  </div>
-</nz-card>
-
-<nz-card *ngIf="!(data.proposal$ | async)?.rejected"
-  [nzTitle]=" (isComplete(data.proposal$ | async) ? 'Final Results' : !isPending(data.proposal$ | async) ? '' : 'Current Results')">
+<nz-card *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async)"
+        [nzTitle]="'Final Results'">
   <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
     <p class="text-lg">{{q.text}}</p>
 
     <ng-container *ngFor="let a of q.answers">
       <p nz-typography class="text-xs">{{a.text}}</p>
-      <nz-progress [nzPercent]="getProgress(data.proposal$ | async, a) | number : '1.2-2'" nzStatus="active">
+      <nz-progress [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'" nzStatus="active">
       </nz-progress>
     </ng-container>
   </div>
-</nz-card> -->
-
-<nz-card [nzTitle]="'question title here'">
-  <span>The Tokens will be made available to form a Community Treasury. These IOTA Community Funds will be used to
-    support and fund projects and initiatives important to the IOTA Community Ecosystem.</span>
-  <nz-radio-group class="w-full mb-4 mt-9">
-    <div>
-      <label nz-radio class="w-full px-5 py-3 border border-solid rounded-large" nzValue="1">
-        <div class="flex">
-          <span class="mr-4 text-lg font-bold">#1</span>
-          <p nz-typography class="text-lg font-medium">Answer title 1</p>
-        </div>
-      </label>
-      <p nz-typography class="pl-16 mt-6 text-base leading-6">The Tokens will be made available to form a Community
-        Treasury. These IOTA Community Funds will be used to
-        support and fund projects and initiatives important to the IOTA Community Ecosystem.</p>
-    </div>
-  </nz-radio-group>
 </nz-card>
+
+<ng-container *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && data.canVote(data.members$ | async) && data.isInProgress(data.proposal$ | async)">
+  <nz-card *ngFor="let q of (data.proposal$ | async)?.questions" [nzTitle]="q.text">
+    <span>{{q.additionalInfo}}</span>
+    <nz-radio-group class="w-full mb-4 mt-9" [formControl]="voteControl">
+      <div *ngFor="let a of q.answers">
+        <label nz-radio class="w-full px-5 py-3 border border-solid rounded-large" [nzValue]="a.value">
+          <div class="flex">
+            <span class="mr-4 text-lg font-bold">#{{a.value}}</span>
+            <p nz-typography class="text-lg font-medium">{{a.text}}</p>
+          </div>
+        </label>
+        <p nz-typography class="pl-16 mt-6 text-base leading-6">{{a.additionalInfo}}</p>
+      </div>
+    </nz-radio-group>
+
+    <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()">
+      Vote Now
+    </button>
+  </nz-card>
+</ng-container>
 
 <div class="mx-8 mt-10">
   <h4>Proposal Description</h4>
