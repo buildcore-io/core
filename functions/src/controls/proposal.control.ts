@@ -289,6 +289,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     throw throwInvalidArgument(WenError.proposal_is_rejected);
   }
 
+  console.log(docProposal.data().type);
   if (docProposal.data().type !== ProposalType.MEMBERS) {
     throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
   }
@@ -296,8 +297,8 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
   // Validate if proposal can still be voted on.
   const startDate: dayjs.Dayjs = dayjs(docProposal.data().settings.startDate.toDate());
   const endDate: dayjs.Dayjs = dayjs(docProposal.data().settings.endDate.toDate());
-  if (dayjs().isAfter(startDate)) {
-    throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
+  if (dayjs().isBefore(startDate) || dayjs().isAfter(endDate)) {
+    throw throwInvalidArgument(WenError.vote_is_no_longer_active);
   }
 
   if (endDate.isBefore(startDate)) {
