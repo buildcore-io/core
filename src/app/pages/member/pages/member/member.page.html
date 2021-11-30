@@ -62,7 +62,7 @@
 
       <article *ngIf="(data.badges$ | async)?.length === 0"
         class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
-        <span>You have no badge</span>
+        <span>No badges</span>
       </article>
     </div>
     <a class="float-right" nz-button nzType="link" [routerLink]="['badges']"
@@ -83,9 +83,9 @@
         </a>
       </article>
 
-      <article *ngIf="false"
+      <article *ngIf="(data.space$ | async)?.length === 0"
         class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
-        <span>You don't contribute to any group</span>
+        <span>No Contribution Yet.</span>
       </article>
     </div>
   </div>
