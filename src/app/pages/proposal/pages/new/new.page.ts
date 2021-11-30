@@ -90,7 +90,7 @@ export class NewPage implements OnInit, OnDestroy {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
         // TODO Implement paging.
-        this.subscriptions$.push(this.awardApi.top(undefined, 1000).subscribe(this.awards$));
+        this.subscriptions$.push(this.awardApi.top(undefined, undefined, 1000).subscribe(this.awards$));
       }
     });
   }

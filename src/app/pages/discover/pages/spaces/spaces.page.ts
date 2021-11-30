@@ -26,18 +26,26 @@ export class SpacesPage implements OnInit, OnDestroy {
     this.filter.selectedSort$.pipe(untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
+
+    this.filter.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (val && val.length > 0) {
+        this.listen(val);
+      } else {
+        this.listen();
+      }
+    });
   }
 
-  private listen(): void {
+  private listen(search?: string): void {
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.getHandler().subscribe(this.store.bind(this, 0)));
+    this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
-  public getHandler(last?: any): Observable<Space[]> {
+  public getHandler(last?: any, search?: string): Observable<Space[]> {
     if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.spaceApi.last(last);
+      return this.spaceApi.last(last, search);
     } else {
-      return this.spaceApi.top(last);
+      return this.spaceApi.top(last, search);
     }
   }
 

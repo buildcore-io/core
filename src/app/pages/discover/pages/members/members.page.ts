@@ -25,18 +25,26 @@ export class MembersPage implements OnInit, OnDestroy {
     this.filter.selectedSort$.pipe(untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
+
+    this.filter.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (val && val.length > 0) {
+        this.listen(val);
+      } else {
+        this.listen();
+      }
+    });
   }
 
-  private listen(): void {
+  private listen(search?: string): void {
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.getHandler().subscribe(this.store.bind(this, 0)));
+    this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
-  public getHandler(last?: any): Observable<Member[]> {
+  public getHandler(last?: any, search?: string): Observable<Member[]> {
     if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.memberApi.last(last);
+      return this.memberApi.last(last, search);
     } else {
-      return this.memberApi.top(last);
+      return this.memberApi.top(last, search);
     }
   }
 

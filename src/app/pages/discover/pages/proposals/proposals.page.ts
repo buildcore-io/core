@@ -26,11 +26,19 @@ export class ProposalsPage implements OnInit, OnDestroy {
     this.filter.selectedSort$.pipe(untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
+
+    this.filter.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (val && val.length > 0) {
+        this.listen(val);
+      } else {
+        this.listen();
+      }
+    });
   }
 
-  private listen(): void {
+  private listen(search?: string): void {
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.getHandler().subscribe(this.store.bind(this, 0)));
+    this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
   public isLoading(arr: any): boolean {
@@ -41,11 +49,11 @@ export class ProposalsPage implements OnInit, OnDestroy {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public getHandler(last?: any): Observable<Proposal[]> {
+  public getHandler(last?: any, search?: string): Observable<Proposal[]> {
     if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.proposalApi.last(last);
+      return this.proposalApi.last(last, search);
     } else {
-      return this.proposalApi.top(last);
+      return this.proposalApi.top(last, search);
     }
   }
 

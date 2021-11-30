@@ -15,7 +15,8 @@ describe('SpacesPage', () => {
       getHandler: () => {
         return new Observable();
       },
-      selectedSort$: new BehaviorSubject<SortOptions>(SortOptions.OLDEST)
+      selectedSort$: new BehaviorSubject<SortOptions>(SortOptions.OLDEST),
+      search$: new BehaviorSubject<any>(undefined)
     }), MockProvider(SpaceApi, {
       last: () => {
         return new Observable();

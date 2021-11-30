@@ -26,18 +26,26 @@ export class AwardsPage implements OnInit, OnDestroy {
     this.filter.selectedSort$.pipe(untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
+
+    this.filter.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (val && val.length > 0) {
+        this.listen(val);
+      } else {
+        this.listen();
+      }
+    });
   }
 
-  private listen(): void {
+  private listen(search?: string): void {
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.getHandler().subscribe(this.store.bind(this, 0)));
+    this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
-  public getHandler(last?: any): Observable<Award[]> {
+  public getHandler(last?: any, search?: string): Observable<Award[]> {
     if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.awardApi.last(last);
+      return this.awardApi.last(last, search);
     } else {
-      return this.awardApi.top(last);
+      return this.awardApi.top(last, search);
     }
   }
 
