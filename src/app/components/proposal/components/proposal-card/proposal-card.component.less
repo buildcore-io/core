@@ -18,3 +18,16 @@
 .rotate-180 {
   transform: rotate(180deg);
 }
+
+.wen-more-lines {
+  @apply flex flex-col justify-between text-app-gray-400 text-sm;
+
+  span {
+    max-width: 10rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    white-space: normal;
+    max-height: 5rem;
+  }
+}

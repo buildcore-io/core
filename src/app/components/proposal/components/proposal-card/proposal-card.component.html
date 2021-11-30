@@ -23,12 +23,21 @@
             <span class="truncate">{{getProgress(q.answers[1]) | number : '1.2-2'}}% {{q.answers[1].text}}</span>
           </p>
         </div>
-        <!-- TODO style and fix pie chart-->
-        <div *ngIf="q.answers.length > 2" class="max-w-full max-h-28">
-          <apx-chart [series]="getChartSeries(q.answers)" [chart]="chartOptions.chart!"
+        <!-- TODO remove chart for now-->
+        <div *ngIf="q.answers.length > 2" class="flex w-full max-w-full max-h-28">
+          <!-- <apx-chart [series]="getChartSeries(q.answers)" [chart]="chartOptions.chart!"
             [labels]="getChartSeriesLabels(q.answers)" [fill]="chartOptions.fill!" [legend]="chartOptions.legend!"
             [noData]="{text: 'No Data', style: {fontSize: '16px' }}" [dataLabels]="chartOptions.dataLabels!"
-            [responsive]="chartOptions.responsive!"></apx-chart>
+            [responsive]="chartOptions.responsive!"></apx-chart> -->
+
+          <nz-progress nz-tooltip [nzWidth]="92" nzType="circle" [nzPercent]="0" [nzShowInfo]="false"></nz-progress>
+
+          <div class="ml-4">
+            <p nz-typography class="wen-more-lines">
+              <span class="truncate">Donut graph coming SOON. <br>Open Proposal to see more.</span>
+            </p>
+          </div>
+
         </div>
       </ng-container>
     </div>
