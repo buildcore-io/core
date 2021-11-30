@@ -30,6 +30,8 @@ export class ProposalPage implements OnInit, OnDestroy {
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
   private guardiansSubscription$?: Subscription;
+  private currentMemberVotedTransSubscription$?: Subscription;
+  private proposalId?: string;
 
   constructor(
     private auth: AuthService,
@@ -68,6 +70,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       if (this.guardiansSubscription$) {
         this.guardiansSubscription$.unsubscribe();
       }
+
       if (this.auth.member$.value?.uid) {
         this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
                                       .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
@@ -101,6 +104,15 @@ export class ProposalPage implements OnInit, OnDestroy {
         this.data.badges$.next(awards);
       }
     });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe((member) => {
+      this.currentMemberVotedTransSubscription$?.unsubscribe();
+      if (member?.uid && this.proposalId) {
+        this.currentMemberVotedTransSubscription$ = this.proposalApi.getMembersVotes(this.proposalId, member.uid).subscribe(this.data.currentMembersVotes$);
+      } else {
+        this.data.currentMembersVotes$.next(undefined);
+      }
+    });
   }
 
   public getAvatarSize(url?: string|null): string|undefined {
@@ -116,6 +128,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   private listenToProposal(id: string): void {
+    this.proposalId = id;
     this.cancelSubscriptions();
     this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.proposal$));
     this.subscriptions$.push(this.proposalApi.listenMembers(id).pipe(untilDestroyed(this)).subscribe(this.data.members$));

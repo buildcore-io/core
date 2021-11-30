@@ -294,8 +294,8 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
   }
 
   // Validate if proposal can still be voted on.
-  const startDate: dayjs.Dayjs = dayjs(docProposal.data().settings.startDate);
-  const endDate: dayjs.Dayjs = dayjs(docProposal.data().settings.endDate);
+  const startDate: dayjs.Dayjs = dayjs(docProposal.data().settings.startDate.toDate());
+  const endDate: dayjs.Dayjs = dayjs(docProposal.data().settings.endDate.toDate());
   if (dayjs().isAfter(startDate)) {
     throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
   }
