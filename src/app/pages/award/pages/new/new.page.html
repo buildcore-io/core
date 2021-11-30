@@ -96,9 +96,11 @@
         </nz-form-item>
       </nz-card>
 
-      <nz-card [nzBordered]="false">
-        <nz-card-meta nzTitle="Badge" nzDescription="Badge coming soon! Mint your own badge.">
-        </nz-card-meta>
+      <nz-card [nzBordered]="false" nzTitle="Badge">
+        <div class="flex p-4 space-x-4 bg-blue-dropbg text-blue-light1">
+          <wen-icon-award></wen-icon-award>
+          <span>Badge coming soon! Mint your own badge.</span>
+        </div>
       </nz-card>
 
       <nz-card [nzBordered]="false" nzTitle="Award Setup">

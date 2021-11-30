@@ -23,6 +23,13 @@ export class MemberEditDrawerComponent implements OnInit {
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
   public memberForm: FormGroup;
 
+  // TODO minted logic
+  minted = false;
+
+  mint(): void {
+    this.minted = true;
+  }
+
   constructor(private auth: AuthService, private memberApi: MemberApi, private notification: NotificationService) {
     this.memberForm = new FormGroup({
       name: this.nameControl,

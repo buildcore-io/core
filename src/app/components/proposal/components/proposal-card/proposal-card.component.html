@@ -1,36 +1,34 @@
 <article class="p-4 bg-white w-75 h-75 rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'"
   *ngIf="proposal">
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-24'">
+    <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-bg-background min-w-10"
         nzShape="circle">
       </nz-avatar>
       <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
-    <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
   </div>
 
   <div class="relative flex flex-col w-full h-52">
-    <div class="h-32">
+    <div class="flex flex-col justify-end h-32">
       <ng-container *ngFor="let q of proposal.questions">
-        <ng-container *ngFor="let a of q.answers">
-          <div *ngIf="q.answers.length === 2">
-            <p nz-typography class="truncate wen-two-lines">{{a.text}}</p>
-            <nz-progress nz-tooltip [nzShowInfo]="true" nzStatus="active" [nzPercent]="getProgress(a) | number : '1.2-2'"
-              nzStrokeLinecap="square"></nz-progress>
-          </div>
-        </ng-container>
+        <!-- TODO fix 2 options percantage calc-->
+        <div class="w-full" *ngIf="q.answers.length === 2">
+          <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
+            [nzPercent]="getProgress(q.answers[0]) | number : '1.2-2'"
+            nzStrokeLinecap="square"></nz-progress>
+            <p nz-typography class="wen-two-lines">
+              <span class="truncate">{{getProgress(q.answers[0]) | number : '1.2-2'}}% {{q.answers[0].text}}</span>
+              <span class="truncate">{{getProgress(q.answers[1]) | number : '1.2-2'}}% {{q.answers[1].text}}</span>
+            </p>
+        </div>
+        <!-- TODO style and fix pie chart-->
         <div *ngIf="q.answers.length > 2" class="max-w-full max-h-28">
-          <apx-chart
-            [series]="getChartSeries(q.answers)"
-            [chart]="chartOptions.chart!"
-            [labels]="getChartSeriesLabels(q.answers)"
-            [fill]="chartOptions.fill!"
-            [legend]="chartOptions.legend!"
-            [noData]="{text: 'No Data', style: {fontSize: '16px' }}"
-            [dataLabels]="chartOptions.dataLabels!"
-            [responsive]="chartOptions.responsive!"
-          ></apx-chart>
+          <apx-chart [series]="getChartSeries(q.answers)" [chart]="chartOptions.chart!"
+            [labels]="getChartSeriesLabels(q.answers)" [fill]="chartOptions.fill!" [legend]="chartOptions.legend!"
+            [noData]="{text: 'No Data', style: {fontSize: '16px' }}" [dataLabels]="chartOptions.dataLabels!"
+            [responsive]="chartOptions.responsive!"></apx-chart>
         </div>
       </ng-container>
     </div>

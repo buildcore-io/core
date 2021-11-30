@@ -5,6 +5,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { TruncateModule } from '../../../../@core/pipes/truncate/truncate.module';
+import { IconModule } from './../../../../components/icon/icon.module';
 import { MemberCardComponent } from './member-card.component';
 
 @NgModule({
@@ -20,6 +21,7 @@ import { MemberCardComponent } from './member-card.component';
     TruncateModule,
     NzAvatarModule,
     NzIconModule,
+    IconModule,
     NzTagModule
   ]
 })
