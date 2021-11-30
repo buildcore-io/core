@@ -23,8 +23,13 @@
     <!-- TODO Loading. -->
     <div *ngIf="data.isLoading(getList() | async)">Loading...</div>
 
-    <!-- TODO Nothing.  -->
-    <div *ngIf="data.isEmpty((getList() | async))">None yet</div>
+    <nz-card class="w-full" *ngIf="data.isEmpty((getList() | async))">
+      <div class="flex flex-col justify-center text-center h-36">
+        <span class="leading-7 text-app-gray-400">
+          No Members
+        </span>
+      </div>
+    </nz-card>
 
     <wen-member-card class="block cursor-pointer" [fullWidth]="true"
       [role]="memberIsGuardian(member.uid) && isActiveList() ? 'Guardian' : 'Member'"
