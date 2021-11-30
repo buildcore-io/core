@@ -104,15 +104,14 @@
           <span nz-typography class="text-app-gray-400">End Date</span>
           <p nz-typography>{{(data.proposal$ | async)?.settings?.endDate?.toDate() | date:'short'}}</p>
         </div>
-        <!-- TODO missing tooltips -->
         <div class="wen-description-item bg-bg-background">
           <span nz-typography class="flex text-app-gray-400 flex-nowrap">Voting Type <wen-icon-question-circle
-              class="ml-1" nz-tooltip nzTooltipTitle="placeholder"></wen-icon-question-circle></span>
+              class="ml-1" nz-tooltip nzTooltipTitle="Voting Type of this proposal."></wen-icon-question-circle></span>
           <p nz-typography>{{getVotingTypeText((data.proposal$ | async)?.subType)}}</p>
         </div>
         <div class="wen-description-item bg-bg-background">
           <span nz-typography class="flex text-app-gray-400 flex-nowrap">Total Weight <wen-icon-question-circle
-              class="ml-1" nz-tooltip nzTooltipTitle="placeholder"></wen-icon-question-circle> </span>
+              class="ml-1" nz-tooltip nzTooltipTitle="Total weight within this proposal for all participants."></wen-icon-question-circle> </span>
           <p nz-typography>{{(data.proposal$ | async)?.totalWeight || 0}}</p>
         </div>
       </ng-container>

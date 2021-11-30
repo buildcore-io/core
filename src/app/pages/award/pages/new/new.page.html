@@ -49,12 +49,16 @@
 
     <div class="space-y-4" nz-col nzFlex="450px">
       <nz-card [nzBordered]="false" nzTitle="Reward">
-        <nz-form-item class="flex-grow">
-          <nz-form-control>
-            <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Total Experience Points"
-              [formControl]="badgeXpControl"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
+        <div class="flex items-baseline">
+          <nz-form-item class="flex-grow">
+            <nz-form-control>
+              <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Total Experience Points"
+                [formControl]="badgeXpControl"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <wen-icon-question-circle class="ml-3 text-app-gray-400" nz-tooltip nzTooltipPlacement="right"
+              nzTooltipTitle="The amount of the experience points (XP) you want to reward each member who completes this award."></wen-icon-question-circle>
+        </div>
         <div class="flex items-baseline">
           <nz-form-item class="flex-grow">
             <nz-form-control>
@@ -62,9 +66,8 @@
                 [formControl]="badgeCountControl"></nz-input-number>
             </nz-form-control>
           </nz-form-item>
-          <!-- TODO placeholder text missing -->
           <wen-icon-question-circle class="ml-3 text-app-gray-400" nz-tooltip nzTooltipPlacement="right"
-            nzTooltipTitle="placeholder"></wen-icon-question-circle>
+            nzTooltipTitle="The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out."></wen-icon-question-circle>
         </div>
       </nz-card>
       <nz-card [nzBordered]="false" nzTitle="Space Info">
