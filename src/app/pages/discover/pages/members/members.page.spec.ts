@@ -15,7 +15,8 @@ describe('MembersPage', () => {
       getHandler: () => {
         return new Observable();
       },
-      selectedSort$: new BehaviorSubject<SortOptions>(SortOptions.OLDEST)
+      selectedSort$: new BehaviorSubject<SortOptions>(SortOptions.OLDEST),
+      search$: new BehaviorSubject<any>(undefined)
     }), MockProvider(MemberApi, {
       last: () => {
         return new Observable();
