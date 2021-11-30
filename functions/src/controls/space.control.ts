@@ -54,7 +54,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
       uid: spaceAddress,
       createdBy: owner,
       // Default is open.
-      open: (params.body.open === false || params.body.open === true) ? !!params.body.open : true,
+      open: params.body.open === false ? false : true,
       totalMembers: 1,
       totalGuardians: 1,
       totalPendingMembers: 0,
@@ -153,7 +153,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   if (!docSpace.exists) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
-  const isOpenSpace = (docSpace.data().open !== false);
+  const isOpenSpace = (docSpace.data().open === true);
 
   // Validate guardian is an guardian within the space.
   if ((await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
