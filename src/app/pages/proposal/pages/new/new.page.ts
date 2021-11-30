@@ -34,7 +34,7 @@ export class NewPage implements OnInit, OnDestroy {
   public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
   public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
   public votingAwardControl: FormControl = new FormControl([]);
-  public additionalInfoControl: FormControl = new FormControl('');
+  public additionalInfoControl: FormControl = new FormControl('', Validators.required);
   public subTypes = ProposalSubType;
   // Questions / answers.
   public questions: FormArray;
