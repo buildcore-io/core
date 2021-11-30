@@ -1,4 +1,4 @@
-<nz-card *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async)"
+<nz-card class="mb-4" *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async)"
         [nzTitle]="'Final Results'">
   <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
     <p class="text-lg">{{q.text}}</p>
@@ -23,7 +23,7 @@
           <p nz-typography class="text-lg font-medium">{{a.text}}</p>
         </div>
       </label>
-      <p nz-typography class="pl-16 mt-6 text-base leading-6">{{a.additionalInfo}}</p>
+      <p nz-typography class="pl-16 my-6 text-base leading-6">{{a.additionalInfo}}</p>
     </div>
   </nz-radio-group>
 

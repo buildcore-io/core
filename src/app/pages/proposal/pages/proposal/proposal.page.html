@@ -10,7 +10,7 @@
         <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="bg-white border-2 border-gray-400"
           nzShape="circle">
         </nz-avatar>
-        {{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}
+        <span>{{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}</span>
       </a>
 
       <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Proposal</nz-tag>
