@@ -39,20 +39,22 @@
               [formControl]="additionalInfoControl"></textarea>
           </nz-form-control>
         </nz-form-item>
+      </nz-card>
+      <nz-card [nzBordered]="false" nzTitle="Question">
         <ng-container *ngFor="let question of questions.controls; let i = index">
           <nz-form-item>
             <nz-form-control>
               <input nz-input placeholder="Question Title" nzSize="large" [formControl]="gForm(question, 'text')" />
             </nz-form-control>
           </nz-form-item>
-          <!--
+
             <nz-form-item>
               <nz-form-control>
                 <textarea nz-input placeholder="Question description" nzSize="large" rows="4"
                   [formControl]="gForm(question, 'additionalInfo')"></textarea>
               </nz-form-control>
             </nz-form-item>
-          -->
+
         </ng-container>
       </nz-card>
 
@@ -63,7 +65,7 @@
 
       <ng-container *ngFor="let question of questions.controls; let i = index">
         <ng-container *ngFor="let answer of getAnswers(question); let ii = index">
-          <nz-card [nzBordered]="false" [nzTitle]="'Choice ' + (ii + 1)" [nzExtra]="actionsTpl">
+          <nz-card [nzBordered]="false" [nzTitle]="'Choice #' + (ii + 1)" [nzExtra]="actionsTpl">
             <div class="space-y-4">
               <nz-form-item>
                 <nz-form-control>
@@ -100,11 +102,28 @@
       <nz-card [nzBordered]="false" nzTitle="Space Info">
         <nz-form-item>
           <nz-form-control>
-            <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear nzPlaceHolder="Select a space"
-              [formControl]="spaceControl">
-              <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" [nzLabel]="s.name || s.uid"
-                [nzValue]="s.uid"></nz-option>
+            <nz-select class="w-full" nzSize="large" nzShowSearch [nzCustomTemplate]="selectTpl" nzAllowClear
+              [nzPlaceHolder]="placeholderTpl" [formControl]="spaceControl">
+              <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" nzCustomContent
+                [nzLabel]="s.name || s.uid" [nzValue]="s.uid">
+                <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" [nzSize]="32" class="mr-3 border-2 border-app-gray-100"
+                  nzShape="circle">
+                </nz-avatar>
+                {{s.name || s.uid}}
+              </nz-option>
             </nz-select>
+            <ng-template #placeholderTpl>
+              <div class="flex items-center space-x-4">
+                <wen-icon-globe class=" text-app-gray-text"></wen-icon-globe>
+                <span>Select a space</span>
+              </div>
+            </ng-template>
+            <ng-template #selectTpl let-s>
+              <div class="flex items-center space-x-4">
+                <wen-icon-globe class=" text-app-gray-400"></wen-icon-globe>
+                <span>{{ s.nzLabel }}</span>
+              </div>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
       </nz-card>
@@ -114,11 +133,11 @@
             <nz-form-label class="text-sm font-medium text-app-gray-600">Target Participants</nz-form-label><br />
             <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
               <label nz-radio [nzValue]="true"><span>All Guardians
-                    <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
+                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
                     nzTooltipTitle="Only guardians can vote on this proposal"></wen-icon-question-circle>
                 </span></label>
               <label nz-radio [nzValue]="false"><span>All Members
-                <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
+                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
                     nzTooltipTitle="All members can vote on this proposal"></wen-icon-question-circle>
                 </span></label>
             </nz-radio-group>
@@ -136,25 +155,31 @@
               <label class="flex" nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_SPACE">
                 <p class="max-w-xs pr-2">Based on participant's space reputation
                   <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space"></wen-icon-question-circle>
-                </p></label>
+                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space">
+                  </wen-icon-question-circle>
+                </p>
+              </label>
               <label class="flex" nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_AWARDS">
                 <p class="max-w-xs">
-                Based on participant's badges reputations
+                  Based on participant's badges reputations
                   <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has for selected badges"></wen-icon-question-circle>
-                </p></label>
+                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has for selected badges">
+                  </wen-icon-question-circle>
+                </p>
+              </label>
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
       </nz-card>
-      <nz-card [nzBordered]="false" nzTitle="Reputation Badges" *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
-        <nz-form-item >
+      <nz-card [nzBordered]="false" nzTitle="Reputation Badges"
+        *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
+        <nz-form-item>
           <nz-form-control>
             <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear [nzMaxTagCount]="9" nzMode="multiple"
               nzPlaceHolder="Select Badge" [formControl]="votingAwardControl">
               <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid"
-                [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'" [nzValue]="a.uid"></nz-option>
+                [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
+                [nzValue]="a.uid"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>

@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AuthService } from '@components/auth/services/auth.service';
+import { BehaviorSubject } from 'rxjs';
 import { DataService } from './../../services/data.service';
 
 @Component({
@@ -8,8 +10,12 @@ import { DataService } from './../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BadgesPage {
-  constructor(public data: DataService) {
+  constructor(private auth: AuthService, public data: DataService) {
     // none.
+  }
+
+  public get isLoggedIn$(): BehaviorSubject<boolean> {
+    return this.auth.isLoggedIn$;
   }
 
   public trackByUid(index: number, item: any): number {

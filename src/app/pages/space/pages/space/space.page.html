@@ -92,7 +92,8 @@
     </nz-card>
 
     <div>
-      <button nz-button nzBlock nzDanger (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async">
+      <button class="flex justify-center" nz-button nzBlock nzDanger (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async">
+        <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
         Leave Space
       </button>
     </div>

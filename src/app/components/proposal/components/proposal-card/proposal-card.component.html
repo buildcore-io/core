@@ -1,36 +1,43 @@
-<article class="p-4 bg-white w-75 h-75 rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'"
+<article class="bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto p-6' : 'w-75 h-75 p-4'"
   *ngIf="proposal">
+  <wen-icon-angle-left class="fixed flex rotate-180 right-6" *ngIf="fullWidth"></wen-icon-angle-left>
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-24'">
+    <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-bg-background min-w-10"
         nzShape="circle">
       </nz-avatar>
       <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
-    <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
   </div>
 
-  <div class="relative flex flex-col w-full h-52">
-    <div class="h-32">
+  <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto pr-16' : 'h-52'">
+    <div class="flex flex-col justify-end" [ngClass]="fullWidth ? 'h-auto' : 'h-32'">
       <ng-container *ngFor="let q of proposal.questions">
-        <ng-container *ngFor="let a of q.answers">
-          <div *ngIf="q.answers.length === 2">
-            <p nz-typography class="truncate wen-two-lines">{{a.text}}</p>
-            <nz-progress nz-tooltip [nzShowInfo]="true" nzStatus="active" [nzPercent]="getProgress(a) | number : '1.2-2'"
-              nzStrokeLinecap="square"></nz-progress>
+        <!-- TODO fix 2 options percantage calc-->
+        <div class="w-full" *ngIf="q.answers.length === 2">
+          <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
+            [nzPercent]="getProgressForTwo(q.answers)[0] | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
+          <p nz-typography class="wen-two-lines">
+            <span class="truncate">{{getProgressForTwo(q.answers)[0] | number : '1.2-2'}}% {{q.answers[0].text | truncate:[8]}}</span>
+            <span class="truncate">{{getProgressForTwo(q.answers)[1] | number : '1.2-2'}}% {{q.answers[1].text | truncate:[8]}}</span>
+          </p>
+        </div>
+        <!-- TODO remove chart for now-->
+        <div *ngIf="q.answers.length > 2" class="flex w-full max-w-full pt-4 max-h-28">
+          <!-- <apx-chart [series]="getChartSeries(q.answers)" [chart]="chartOptions.chart!"
+            [labels]="getChartSeriesLabels(q.answers)" [fill]="chartOptions.fill!" [legend]="chartOptions.legend!"
+            [noData]="{text: 'No Data', style: {fontSize: '16px' }}" [dataLabels]="chartOptions.dataLabels!"
+            [responsive]="chartOptions.responsive!"></apx-chart> -->
+
+          <nz-progress nz-tooltip [nzWidth]="92" nzType="circle" [nzPercent]="0" [nzShowInfo]="false"></nz-progress>
+
+          <div class="ml-4">
+            <p nz-typography class="wen-more-lines">
+              <span class="truncate" [ngClass]="fullWidth ? 'max-w-md' : 'max-w-xs'">Donut graph coming SOON.</span>
+            </p>
           </div>
-        </ng-container>
-        <div *ngIf="q.answers.length > 2" class="max-w-full max-h-28">
-          <apx-chart
-            [series]="getChartSeries(q.answers)"
-            [chart]="chartOptions.chart!"
-            [labels]="getChartSeriesLabels(q.answers)"
-            [fill]="chartOptions.fill!"
-            [legend]="chartOptions.legend!"
-            [noData]="{text: 'No Data', style: {fontSize: '16px' }}"
-            [dataLabels]="chartOptions.dataLabels!"
-            [responsive]="chartOptions.responsive!"
-          ></apx-chart>
+
         </div>
       </ng-container>
     </div>

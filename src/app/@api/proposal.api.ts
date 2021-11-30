@@ -62,6 +62,19 @@ export class ProposalApi extends BaseApi<Proposal> {
     ).valueChanges();
   }
 
+  public getMembersVotes(proposalId: string, memberId: string): Observable<Transaction[]> {
+    return this.afs.collection<Transaction>(
+      COL.TRANSACTION,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref) => {
+        return ref.where('payload.proposalId', '==', proposalId)
+                  .where('member', '==', memberId)
+                  .where('type', '==', TransactionType.VOTE).orderBy('createdOn', 'desc').limit(DEFAULT_LIST_SIZE)
+      }
+    ).valueChanges();
+  }
+
+
   public listenMembers(proposalId: string, lastValue?: any): Observable<ProposalParticipantWithMember[]> {
     return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, (original, finObj) => {
       finObj.voted = original.voted;

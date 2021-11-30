@@ -1,4 +1,4 @@
-<article class="p-4 bg-white w-75 h-75 rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto' : 'w-75 h-75'" *ngIf="award">
+<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-44 flex' : 'w-75 h-75'" *ngIf="award">
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
@@ -9,13 +9,14 @@
   </div>
 
   <div class="relative flex flex-col w-full h-28">
-    <div class="inline-flex items-center space-x-3">
+    <div class="inline-flex items-center space-x-3" [ngClass]="fullWidth ? 'justify-end' : ''">
       <nz-avatar nzSrc="/assets/mocks/trophy.png" nz-tooltip [nzTooltipTitle]="award.badge.name"
         class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
       <nz-tag class="wen-xp-tag">{{award.badge.xp / award.badge.count}} XP</nz-tag>
+      <wen-icon-angle-left class="flex rotate-180" *ngIf="fullWidth"></wen-icon-angle-left>
     </div>
 
-    <div i18n class="inline-flex mt-6">
+    <div i18n class="inline-flex mt-6" [ngClass]="fullWidth ? 'fixed bottom-4 left-4' : ''">
       <wen-award-status [award]="award"></wen-award-status>
       <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
     </div>

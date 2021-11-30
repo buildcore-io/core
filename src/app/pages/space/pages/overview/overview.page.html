@@ -1,23 +1,41 @@
 <div class="space-y-12">
-    <div class="space-y-4">
-        <h3>Active Proposals</h3>
-        <!-- TODO Loading. -->
-        <div *ngIf="data.isLoading(data.proposalsActive$ | async)">Loading...</div>
+  <div class="space-y-4">
+    <h3>Active Proposals</h3>
+    <!-- TODO Loading. -->
+    <div *ngIf="data.isLoading(data.proposalsActive$ | async)">Loading...</div>
 
-        <!-- TODO Nothing.  -->
-        <div *ngIf="data.isEmpty(data.proposalsActive$ | async)">None yet</div>
-        <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of data.proposalsActive$ | async; trackBy: trackByUid" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
-        </wen-proposal-card>
-    </div>
+    <nz-card class="w-full" *ngIf="data.isEmpty(data.proposalsActive$ | async)">
+      <div class="flex flex-col justify-center text-center h-36">
+        <span class="leading-7 text-app-gray-400">
+          No Active Proposals
+        </span>
+        <!-- <button nz-button nzType="primary" class="self-center w-48" [routerLink]="['/discover', 'spaces']">Discover
+          Spaces</button> -->
+      </div>
+    </nz-card>
 
-    <div class="space-y-4">
-        <h3>Active Awards</h3>
-        <!-- TODO Loading. -->
-        <div *ngIf="data.isLoading(data.awardsActive$ | async)">Loading...</div>
+    <wen-proposal-card class="block cursor-pointer" [fullWidth]="true"
+      *ngFor="let proposal of data.proposalsActive$ | async; trackBy: trackByUid" [proposal]="proposal"
+      [routerLink]="['/proposal', proposal.uid]">
+    </wen-proposal-card>
+  </div>
 
-        <!-- TODO Nothing.  -->
-        <div *ngIf="data.isEmpty(data.awardsActive$ | async)">None yet</div>
-        <wen-award-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let award of data.awardsActive$ | async; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
-        </wen-award-card>
-    </div>
+  <div class="space-y-4">
+    <h3>Active Awards</h3>
+    <!-- TODO Loading. -->
+    <div *ngIf="data.isLoading(data.awardsActive$ | async)">Loading...</div>
+
+    <nz-card class="w-full" *ngIf="data.isEmpty(data.awardsActive$ | async)">
+      <div class="flex flex-col justify-center text-center h-36">
+        <span class="leading-7 text-app-gray-400">
+          No Active Awards
+        </span>
+      </div>
+    </nz-card>
+
+    <wen-award-card class="block cursor-pointer" [fullWidth]="true"
+      *ngFor="let award of data.awardsActive$ | async; trackBy: trackByUid" [award]="award"
+      [routerLink]="['/award', award.uid]">
+    </wen-award-card>
+  </div>
 </div>

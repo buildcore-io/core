@@ -10,8 +10,13 @@
   <!-- TODO Loading. -->
   <div *ngIf="isLoading(members$ | async)">Loading...</div>
 
-  <!-- TODO Nothing.  -->
-  <div *ngIf="isEmpty(members$ | async)">None yet</div>
+  <nz-card class="w-full" *ngIf="isEmpty(members$ | async)">
+    <div class="flex flex-col justify-center text-center h-36">
+      <span class="leading-7 text-app-gray-400">
+        No Members
+      </span>
+    </div>
+  </nz-card>
 
   <wen-member-card class="cursor-pointer" *ngFor="let member of members$ | async; trackBy: trackByUid" [member]="member">
   </wen-member-card>

@@ -10,34 +10,6 @@
       <nz-card [nzBordered]="false" nzTitle="Award Info">
         <nz-form-item>
           <nz-form-control>
-            <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
-              <label nz-radio [nzValue]="types.PARTICIPATE_AND_APPROVE">
-                <span class="inline-flex">Guardian approval
-                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="The award must be approved by the guardians of the space before it's active or distributed"></i>
-                </span></label>
-              <label nz-radio [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">
-                <span class="inline-flex">Discord
-                  Activity
-                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Coming SOON"></i>
-                </span></label>
-              <label nz-radio [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">
-                <span class="inline-flex">Github
-                  Activity
-                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Coming SOON"></i>
-                </span></label>
-              <label nz-radio [nzValue]="types.CUSTOM" [nzDisabled]="true">
-                <span class="inline-flex">Custom and more
-                  <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Coming SOON"></i>
-                </span></label>
-            </nz-radio-group>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-control>
             <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
           </nz-form-control>
         </nz-form-item>
@@ -56,7 +28,6 @@
               [formControl]="descriptionControl"></textarea>
           </nz-form-control>
         </nz-form-item>
-
       </nz-card>
 
       <nz-card nzTitle="Badge definition">
@@ -72,40 +43,99 @@
                 [formControl]="badgeDescriptionControl"></textarea>
             </nz-form-control>
           </nz-form-item>
-          <div class="flex space-x-4">
-            <nz-form-item class="flex-grow">
-              <nz-form-control>
-                <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Total Experience Points (number)"
-                  [formControl]="badgeXpControl"></nz-input-number>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item class="flex-grow">
-              <nz-form-control>
-                <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Available Badges (number)"
-                  [formControl]="badgeCountControl"></nz-input-number>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
         </div>
       </nz-card>
     </div>
 
     <div class="space-y-4" nz-col nzFlex="450px">
+      <nz-card [nzBordered]="false" nzTitle="Reward">
+        <div class="flex items-baseline">
+          <nz-form-item class="flex-grow">
+            <nz-form-control>
+              <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Total Experience Points"
+                [formControl]="badgeXpControl"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <wen-icon-question-circle class="ml-3 text-app-gray-400" nz-tooltip nzTooltipPlacement="right"
+              nzTooltipTitle="The amount of the experience points (XP) you want to reward each member who completes this award."></wen-icon-question-circle>
+        </div>
+        <div class="flex items-baseline">
+          <nz-form-item class="flex-grow">
+            <nz-form-control>
+              <nz-input-number class="w-full" nzSize="large" nzPlaceHolder="Number of Badges"
+                [formControl]="badgeCountControl"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <wen-icon-question-circle class="ml-3 text-app-gray-400" nz-tooltip nzTooltipPlacement="right"
+            nzTooltipTitle="The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out."></wen-icon-question-circle>
+        </div>
+      </nz-card>
       <nz-card [nzBordered]="false" nzTitle="Space Info">
         <nz-form-item>
           <nz-form-control>
-            <nz-select class="w-full" nzShowSearch nzSize="large" nzAllowClear nzPlaceHolder="Select a space"
-              [formControl]="spaceControl">
-              <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" [nzLabel]="s.name || s.uid"
-                [nzValue]="s.uid"></nz-option>
+            <nz-select class="w-full" nzSize="large" nzShowSearch [nzCustomTemplate]="selectTpl" nzAllowClear
+              [nzPlaceHolder]="placeholderTpl" [formControl]="spaceControl">
+              <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" nzCustomContent
+                [nzLabel]="s.name || s.uid" [nzValue]="s.uid">
+                <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" [nzSize]="32" class="mr-3 border-2 border-app-gray-100"
+                  nzShape="circle">
+                </nz-avatar>
+                {{s.name || s.uid}}
+              </nz-option>
             </nz-select>
+            <ng-template #placeholderTpl>
+              <div class="flex items-center space-x-4">
+                <wen-icon-globe class=" text-app-gray-text"></wen-icon-globe>
+                <span>Select a space</span>
+              </div>
+            </ng-template>
+            <ng-template #selectTpl let-s>
+              <div class="flex items-center space-x-4">
+                <wen-icon-globe class=" text-app-gray-400"></wen-icon-globe>
+                <span>{{ s.nzLabel }}</span>
+              </div>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
       </nz-card>
 
-      <nz-card [nzBordered]="false">
-        <nz-card-meta nzTitle="Badge" nzDescription="Badge coming soon! Mint your own badge.">
-        </nz-card-meta>
+      <nz-card [nzBordered]="false" nzTitle="Badge">
+        <div class="flex p-4 space-x-4 bg-blue-dropbg text-blue-light1">
+          <wen-icon-award></wen-icon-award>
+          <span>Badge coming soon! Mint your own badge.</span>
+        </div>
+      </nz-card>
+
+      <nz-card [nzBordered]="false" nzTitle="Award Setup">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
+              <label nz-radio [nzValue]="types.PARTICIPATE_AND_APPROVE">
+                <span class="inline-flex">Guardian approval
+                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="The award must be approved by the guardians of the space before it's active or distributed">
+                  </wen-icon-question-circle>
+                </span></label>
+              <label nz-radio [nzValue]="types.DISCORD_ACTIVITY" [nzDisabled]="true">
+                <span class="inline-flex">Discord
+                  Activity
+                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Coming SOON"></wen-icon-question-circle>
+                </span></label>
+              <label nz-radio [nzValue]="types.GITHUB_ACTIVITY" [nzDisabled]="true">
+                <span class="inline-flex">Github
+                  Activity
+                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Coming SOON"></wen-icon-question-circle>
+                </span></label>
+              <label nz-radio [nzValue]="types.CUSTOM" [nzDisabled]="true">
+                <span class="inline-flex">Custom and more
+                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
+                    nzTooltipTitle="Coming SOON"></wen-icon-question-circle>
+                </span></label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
       </nz-card>
     </div>
 

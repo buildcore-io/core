@@ -10,8 +10,13 @@
   <!-- TODO Loading. -->
   <div *ngIf="isLoading(proposal$ | async)">Loading...</div>
 
-  <!-- TODO Nothing.  -->
-  <div *ngIf="isEmpty((proposal$ | async))">None yet</div>
+  <nz-card class="w-full" *ngIf="isEmpty((proposal$ | async))">
+    <div class="flex flex-col justify-center text-center h-36">
+      <span class="leading-7 text-app-gray-400">
+        No Proposals
+      </span>
+    </div>
+  </nz-card>
 
   <wen-proposal-card class="cursor-pointer" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
   </wen-proposal-card>

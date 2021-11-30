@@ -87,8 +87,13 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
     });
   }
 
-  public getProgress(a: ProposalAnswer): number {
-    return  (this.proposal?.results?.answers?.[a.value] || 0) / (this.proposal?.results?.total || 1) * 100;
+  public getProgressForTwo(a: ProposalAnswer[]): number[] {
+    const answerOne = (this.proposal?.results?.answers?.[a[0].value] || 0) / (this.proposal?.results?.total || 1) * 100;
+    const answerTwo = (this.proposal?.results?.answers?.[a[1].value] || 0) / (this.proposal?.results?.total || 1) * 100;
+    return [
+      answerOne > 0 ? 100 - answerTwo : 0,
+      answerTwo
+    ];
   }
 
   public getAvatarSize(url?: string|null): string|undefined {

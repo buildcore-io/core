@@ -3,9 +3,30 @@
 }
 
 .wen-two-lines {
-  max-height: 3rem;
+  @apply flex justify-between w-full text-app-gray-400 text-xs space-x-6 pb-2;
+
+  span {
+    max-width: 50%;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 5;
     white-space: normal;
+    max-height: 5rem;
+  }
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.wen-more-lines {
+  @apply flex flex-col justify-between text-app-gray-400 text-sm;
+
+  span {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    white-space: normal;
+    max-height: 5rem;
+  }
 }

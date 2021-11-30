@@ -6,7 +6,7 @@
     <wen-icon-rocket></wen-icon-rocket>Discover
   </button>
 
-  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" *ngIf="isLoggedIn$ | async"
+  <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" *ngIf="(isLoggedIn$ | async) && !isMemberProfile"
     nzType="primary" type="button" class="flex items-center gap-2 pr-2">
     Create new <wen-icon-angle-down></wen-icon-angle-down>
   </button>
@@ -26,15 +26,16 @@
   </nz-dropdown-menu>
 
   <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"></wen-sign-in>
-
   <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Coming SOON"
-    *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+    nzTooltipPlacement="bottom" *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+    [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
     class="inline-flex items-center justify-center border-0 wen-header-button">
     <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
   </button>
   <nz-dropdown-menu #notificationMenu="nzDropdownMenu"> </nz-dropdown-menu>
 
   <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
+    [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
     class="inline-flex items-center h-16 gap-3 pl-2 font-bold border-0 wen-header-button" *ngIf="isLoggedIn$ | async">
     <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" [nzSize]="48" class="mr-1"></nz-avatar>
     {{

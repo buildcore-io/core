@@ -9,6 +9,7 @@ import { TruncateModule } from '../../../../@core/pipes/truncate/truncate.module
 import { DateTagModule } from '../../../date-tag/date-tag.module';
 import { ParentTitleModule } from '../../../parent-title/parent-title.module';
 import { AwardStatusModule } from '../award-status/award-status.module';
+import { IconModule } from './../../../../components/icon/icon.module';
 import { AwardCardComponent } from './award-card.component';
 
 @NgModule({
@@ -27,7 +28,7 @@ import { AwardCardComponent } from './award-card.component';
     NzAvatarModule,
     NzIconModule,
     NzToolTipModule,
-
+    IconModule,
     TruncateModule,
     NzTagModule
   ]

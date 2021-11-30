@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -47,6 +48,7 @@ import { FilterService } from './services/filter.service';
     NzIconModule,
     NzButtonModule,
     SpaceModule,
+    NzCardModule,
     NzSelectModule,
     NzToolTipModule,
     NzTagModule,

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationStart, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -18,6 +18,7 @@ export class HeaderComponent implements OnInit {
   public path = ROUTER_UTILS.config.base;
   public enableCreateAwardProposal = false;
   public spaceSubscription$?: Subscription;
+  public isMemberProfile = false;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
@@ -40,6 +41,21 @@ export class HeaderComponent implements OnInit {
         this.cd.markForCheck();
       }
     });
+
+    this.router.events.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj instanceof NavigationStart) {
+        const previous = this.isMemberProfile;
+        if (obj.url && obj.url.startsWith(('/' + ROUTER_UTILS.config.member.root + '/'))) {
+          this.isMemberProfile = true;
+        } else {
+          this.isMemberProfile = false;
+        }
+
+        if (previous !== this.isMemberProfile) {
+          this.cd.markForCheck();
+        }
+      }
+  });
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {

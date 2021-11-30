@@ -1,31 +1,14 @@
-<nz-drawer
-  nzPlacement="right"
-  nzTitle="Settings"
-  [nzMask]="false"
-  [nzVisible]="true"
-  [nzWidth]="621"
-  (nzOnClose)="close()"
-  [nzClosable]="true"
->
+<nz-drawer nzPlacement="right" [nzTitle]="titleTpl" [nzMask]="false" [nzVisible]="true" [nzWidth]="621"
+  (nzOnClose)="close()" [nzClosable]="true">
   <ng-container *nzDrawerContent>
-    <form
-      class="-mt-16 space-y-12"
-      nz-form
-      nzLayout="vertical"
-      [formGroup]="memberForm"
-    >
+    <form class="-mt-16 space-y-12" nz-form nzLayout="vertical" [formGroup]="memberForm">
       <nz-form-item>
         <h4 nz-typography class="pt-4 mb-1">Display Name</h4>
-        <span nz-typography class="mb-6 text-app-gray-400"
-          >Set a display name. This does not change your username.</span
-        >
+        <span nz-typography class="mb-6 text-app-gray-400">Set a display name. This does not change your
+          username.</span>
         <nz-form-control>
           <nz-input-group [nzPrefix]="prefixName" nzSize="large">
-            <input
-              nz-input
-              placeholder="Display name (optional)"
-              [formControl]="nameControl"
-            />
+            <input nz-input placeholder="Display name (optional)" [formControl]="nameControl" />
             <ng-template #prefixName>@</ng-template>
           </nz-input-group>
         </nz-form-control>
@@ -33,17 +16,28 @@
 
       <nz-form-item>
         <h4 nz-typography class="pt-4 mb-1">About</h4>
-        <span nz-typography class="mb-6 text-app-gray-400"
-          >A brief description of yourself shown on your profile.</span
-        >
+        <span nz-typography class="mb-6 text-app-gray-400">A brief description of yourself shown on your profile.</span>
         <nz-form-control nzSize="large">
-          <textarea
-            nz-input
-            placeholder="Your description (optional)"
-            rows="8"
-            [formControl]="aboutControl"
-          ></textarea>
+          <textarea nz-input placeholder="Your description (optional)" rows="4" [formControl]="aboutControl"></textarea>
         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <h4 nz-typography class="pt-4 mb-1">Avatar</h4>
+        <span nz-typography class="mb-6 text-app-gray-400">Customise your Soonaverse identity.</span>
+        <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="!minted">
+          <nz-avatar class="border-2 border-app-gray-100 min-w-max" [nzSize]="48" nzSrc="/assets/mocks/no_avatar.png">
+          </nz-avatar>
+          <span>You can mint your unique avatar for free. Once minted, it will be used as your initial profile picture.
+            More Avatar collection and NFT marketplace coming SOON.</span>
+          <button nz-button nzSize="small" nzType="primary" type="button" (click)="mint()">Mint Avatar</button>
+        </div>
+        <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="minted">
+          <nz-avatar class="border-2 border-app-gray-100 min-w-max" [nzSize]="48"
+            nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
+          <span>WOW! Looks like yours is the prettiest avatar of all. Congratulations.
+          </span>
+        </div>
       </nz-form-item>
 
       <div class="space-y-4">
@@ -51,12 +45,8 @@
         <nz-form-item>
           <nz-form-control>
             <nz-input-group [nzPrefix]="prefixGithub" nzSize="large">
-              <input
-                type="text"
-                nz-input
-                placeholder="Type your Github account username"
-                [formControl]="githubControl"
-              />
+              <input type="text" nz-input placeholder="Type your Github account username"
+                [formControl]="githubControl" />
               <ng-template #prefixGithub>
                 <wen-icon-github></wen-icon-github>
               </ng-template>
@@ -67,12 +57,8 @@
         <nz-form-item>
           <nz-form-control>
             <nz-input-group [nzPrefix]="prefixTwitter" nzSize="large">
-              <input
-                type="text"
-                nz-input
-                placeholder="Type your Twitter account username"
-                [formControl]="twitterControl"
-              />
+              <input type="text" nz-input placeholder="Type your Twitter account username"
+                [formControl]="twitterControl" />
               <ng-template #prefixTwitter>
                 <wen-icon-twitter></wen-icon-twitter>
               </ng-template>
@@ -83,12 +69,8 @@
         <nz-form-item>
           <nz-form-control>
             <nz-input-group [nzPrefix]="prefixDiscord" nzSize="large">
-              <input
-                type="text"
-                nz-input
-                placeholder="Type your Discord account username"
-                [formControl]="discordControl"
-              />
+              <input type="text" nz-input placeholder="Type your Discord account username"
+                [formControl]="discordControl" />
               <ng-template #prefixDiscord>
                 <wen-icon-discord></wen-icon-discord>
               </ng-template>
@@ -96,16 +78,12 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-
-      <button
-        nz-button
-        nzType="primary"
-        type="button"
-        nzSize="large"
-        (click)="save()"
-      >
-        Save changes
-      </button>
     </form>
   </ng-container>
+  <ng-template #titleTpl>
+    Settings
+    <button class="float-right mr-8" nz-button nzType="primary" type="button" (click)="save()">
+      Save changes
+    </button>
+  </ng-template>
 </nz-drawer>
