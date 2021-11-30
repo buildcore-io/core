@@ -706,7 +706,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const badgeA = await giveBadge(memberId, memberId, space, 30);
     await giveBadge(memberId, memberId1, space, 30);
 
-    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [badgeA]);
+    const proposal = await cProposal(memberId, space, ProposalType.MEMBERS, ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [badgeA!.uid]);
 
     // Approve proposal.
     await apprProposal(memberId, proposal)
@@ -716,7 +716,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const v: any = await vote(memberId, proposal, [1]);
 
     expect(v?.payload).toBeDefined();
-    expect(v?.payload?.weight).toEqual(60);
+    expect(v?.payload?.weight).toEqual(30);
     expect(v._relatedRecs.proposal.results.answers['1']).toEqual(30);
     expect(v._relatedRecs.proposal.results.answers['2']).toEqual(0);
     expect(v._relatedRecs.proposal.results.voted).toEqual(30);
@@ -736,9 +736,9 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
 
     // Distribute badges.
     const badgeA = await giveBadge(memberId, memberId, space, 30);
-    const badgeB = await giveBadge(memberId, memberId, space2, 30);
-    const badgeC = await giveBadge(memberId, memberId1, space2, 30);
-    const badgeD = await giveBadge(memberId, memberId2, space2, 30);
+    const badgeB = await giveBadge(memberId1, memberId, space2, 30);
+    const badgeC = await giveBadge(memberId1, memberId1, space2, 30);
+    const badgeD = await giveBadge(memberId1, memberId2, space2, 30);
     /*
     memberId = 60
     memberId1 = 30
@@ -748,7 +748,7 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
 
     const proposal = await cProposal(
       memberId, space, ProposalType.MEMBERS,
-      ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [badgeA, badgeB, badgeC, badgeD]
+      ProposalSubType.REPUTATION_BASED_ON_AWARDS, undefined, [badgeA!.uid, badgeB!.uid, badgeC!.uid, badgeD!.uid]
     );
 
     // Approve proposal.
@@ -761,10 +761,10 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
 
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(60);
-    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(90);
-    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(30);
-    expect(v._relatedRecs.proposal.results.voted).toEqual(120);
-    expect(v._relatedRecs.proposal.results.total).toEqual(120);
-    expect(v._relatedRecs.proposal.totalWeight).toEqual(120);
+    expect(v._relatedRecs.proposal.results.answers['1']).toEqual(30);
+    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(60);
+    expect(v._relatedRecs.proposal.results.voted).toEqual(90);
+    expect(v._relatedRecs.proposal.results.total).toEqual(90);
+    expect(v._relatedRecs.proposal.totalWeight).toEqual(90);
   });
 });

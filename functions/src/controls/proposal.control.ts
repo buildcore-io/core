@@ -289,7 +289,6 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     throw throwInvalidArgument(WenError.proposal_is_rejected);
   }
 
-  console.log(docProposal.data().type);
   if (docProposal.data().type !== ProposalType.MEMBERS) {
     throw throwInvalidArgument(WenError.you_can_only_vote_on_members_proposal);
   }
