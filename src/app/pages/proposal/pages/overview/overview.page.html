@@ -28,7 +28,7 @@
   </nz-radio-group>
 
   <button nz-button nzType="primary"
-  *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && data.canVote(data.members$ | async)"
+  *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && data.canVote(data.members$ | async) && data.isInProgress(data.proposal$ | async)"
   nzBlock nzSize="large" (click)="vote()">
     Vote Now
   </button>
