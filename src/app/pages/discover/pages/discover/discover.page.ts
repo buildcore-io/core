@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -11,7 +11,7 @@ import { FilterService, SortOptions } from './../../services/filter.service';
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.less']
 })
-export class DiscoverPage implements OnInit {
+export class DiscoverPage implements OnInit, OnDestroy {
   public sortControl: FormControl = new FormControl(SortOptions.RECENT);
   public filterControl: FormControl = new FormControl(undefined);
   public sections = [
@@ -27,13 +27,17 @@ export class DiscoverPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.filterControl.setValue(this.filter.search$.value);
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
       this.filter.selectedSort$.next(val);
     });
 
     this.filterControl.valueChanges.pipe(
-      untilDestroyed(this),
       debounceTime(FilterService.DEBOUNCE_TIME)
     ).subscribe(this.filter.search$);
+  }
+
+  public ngOnDestroy(): void {
+    this.filter.resetSubjects();
   }
 }

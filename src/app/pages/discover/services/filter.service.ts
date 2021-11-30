@@ -21,4 +21,11 @@ export class FilterService {
   public get sortOptions(): typeof SortOptions {
     return SortOptions;
   }
+
+  public resetSubjects(): void {
+    // We actually wanna keep it when they go back.
+    // this.search$.next(undefined);
+    // this.selectedSort$.next(SortOptions.RECENT);
+    // this.selectedTags$.next(['All']);
+  }
 }
