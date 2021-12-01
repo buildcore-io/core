@@ -40,7 +40,7 @@
       <wen-icon-twitter class="text-app-gray-text hover:text-blue-hover"></wen-icon-twitter>
     </a>
     <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new"
-      [href]="'https://discord.com/user/' + (data.member$ | async)!.discord">
+      nz-tooltip [nzTooltipTitle]="(data.member$ | async)!.discord">
       <wen-icon-discord class="text-app-gray-text hover:text-blue-hover"></wen-icon-discord>
     </a>
   </div>
