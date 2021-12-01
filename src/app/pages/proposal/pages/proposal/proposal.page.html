@@ -24,11 +24,11 @@
         <i nz-icon nzType="calendar" class="pr-2 text-lg text-app-gray-400" nzTheme="outline"></i>
         <span>{{(data.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
       </div>
-      <div>
+      <div [routerLink]="['member', (data.creator$ | async)?.uid]">
         <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
-        <span [routerLink]="['/member', (data.creator$ | async)?.uid]">@{{((data.creator$ | async)?.name ||
-          (data.creator$ | async)?.uid) | truncate:[12]}}</span>
+        <span class="cursor-pointer" [routerLink]="['/', 'member', (data.creator$ | async)?.uid]">@{{((data.creator$ | async)?.name ||
+          (data.creator$ | async)?.uid) | truncate:[16]}}</span>
       </div>
     </div>
 
@@ -74,8 +74,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="cursor-pointer" *ngFor="let t of data.transactions$ | async" [routerLink]="['/member', t.member]">
-            <td> @{{ t.member | truncate:[12] }}</td>
+          <tr *ngFor="let t of data.transactions$ | async">
+            <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]"> @{{ t.member | truncate:[16] }}</td>
             <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
             <td>{{ findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }}</td>
           </tr>

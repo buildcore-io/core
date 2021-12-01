@@ -82,11 +82,11 @@
 
     <nz-card [nzTitle]="(data.space$ | async)!.totalGuardians + ' Guardians'">
       <div class="space-y-2">
-        <div class="text-base font-medium text-app-gray-text"
-          *ngFor="let g of data.guardians$ | async; trackBy: trackByUid">
+        <div *ngFor="let g of data.guardians$ | async; trackBy: trackByUid"
+          class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
           <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
           </nz-avatar>
-          <span [routerLink]="getMemberUrl(g.uid)">@ {{ (g.name || g.uid) | truncate:[12] }}</span>
+          <span [routerLink]="getMemberUrl(g.uid)">@ {{ (g.name || g.uid) | truncate:[16] }}</span>
         </div>
       </div>
     </nz-card>

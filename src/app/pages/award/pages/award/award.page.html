@@ -66,10 +66,10 @@
     </nz-card>
 
     <nz-card nzTitle="Owner">
-      <div *ngFor="let g of data.owners$ | async; trackBy: trackByUid">
+      <div *ngFor="let g of data.owners$ | async; trackBy: trackByUid" [routerLink]="['/', 'member', g.uid]" class="cursor-pointer">
         <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
         </nz-avatar>
-        <span>@ {{ (g.name || g.uid) | truncate:[12] }}</span>
+        <span>@ {{ (g.name || g.uid) | truncate:[16] }}</span>
       </div>
     </nz-card>
   </div>
