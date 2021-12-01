@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -37,6 +37,7 @@ export class AuthService {
 
   constructor(
     private memberApi: MemberApi,
+    private ngZone: NgZone,
     private notification: NzNotificationService
   ) {
     // Make sure member exists when we are logged in.
@@ -53,6 +54,7 @@ export class AuthService {
         setItem(StorageItem.Auth, false);
         this.isLoggedIn$.next(false);
       } else {
+        this.listenToAccountChange();
         this.monitorMember(<EthAddress>getItem(StorageItem.AuthAddress));
       }
     }
@@ -85,13 +87,39 @@ export class AuthService {
     return sc;
   }
 
+  public onMetaMaskAccountChange(accounts: string[]): void {
+    if (accounts[0] !== this.member$.value?.uid) {
+      this.signOut();
+    }
+  }
+
+  public async stopMetamaskListeners(): Promise<void> {
+    const provider: any = await detectEthereumProvider();
+    if (provider) {
+      provider.removeListener('accountsChanged', this.onMetaMaskAccountChange.bind(this));
+    }
+  }
+
+  public async listenToAccountChange(): Promise<void> {
+    const provider: any = await detectEthereumProvider();
+    if (provider) {
+      this.stopMetamaskListeners();
+      provider.on('accountsChanged', this.onMetaMaskAccountChange.bind(this));
+    }
+  }
+
   private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();
     if (provider) {
       try {
-
         try {
+          if (!(await provider._metamask.isUnlocked())) {
+            this.notification.error('You must unlock your MetaMask first!', '');
+            this.showWalletPopup$.next(WalletStatus.HIDDEN);
+            return undefined;
+          }
+
           // Make sure account is always selected.
           await provider.request({
             method: "eth_requestAccounts",
@@ -191,13 +219,20 @@ export class AuthService {
       this.isLoggedIn$.next(true);
     }
 
+    // Listen to Metamask changes.
+    this.listenToAccountChange();
+
     return true;
   }
 
   signOut(): void {
-    removeItem(StorageItem.Auth);
-    this.memberSubscription$?.unsubscribe();
-    this.isLoggedIn$.next(false);
-    this.member$.next(undefined);
+    // Sometimes it might be triggered outside i.e. via metamask.
+    this.ngZone.run(() => {
+      removeItem(StorageItem.Auth);
+      this.memberSubscription$?.unsubscribe();
+      this.isLoggedIn$.next(false);
+      this.member$.next(undefined);
+      this.stopMetamaskListeners();
+    });
   }
 }

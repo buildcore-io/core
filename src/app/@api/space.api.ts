@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Space, SpaceGuardian } from "functions/interfaces/models";
-import { map, Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
@@ -22,6 +22,10 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public isMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
+    if (!spaceId || !memberId) {
+      return of(false);
+    }
+
     return this.afs.collection(this.collection).doc(spaceId.toLowerCase()).collection(SUB_COL.MEMBERS).doc<SpaceGuardian>(memberId.toLowerCase()).valueChanges().pipe(
       map((o) => {
         return !!o;
@@ -30,6 +34,10 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public isGuardianWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
+    if (!spaceId || !memberId) {
+      return of(false);
+    }
+
     return this.afs.collection(this.collection).doc(spaceId.toLowerCase()).collection(SUB_COL.GUARDIANS).doc<SpaceGuardian>(memberId.toLowerCase()).valueChanges().pipe(
       map((o) => {
         return !!o;
@@ -38,6 +46,10 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public isPendingMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
+    if (!spaceId || !memberId) {
+      return of(false);
+    }
+
     return this.afs.collection(this.collection).doc(spaceId.toLowerCase()).collection(SUB_COL.KNOCKING_MEMBERS).doc<SpaceGuardian>(memberId.toLowerCase()).valueChanges().pipe(
       map((o) => {
         return !!o;

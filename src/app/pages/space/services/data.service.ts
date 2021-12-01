@@ -30,6 +30,7 @@ export class DataService implements OnDestroy {
   public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public pendingMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
+  private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
   private completedAwardsOn = false;
   private dataStoreMembers: Member[][] = [];
@@ -63,13 +64,20 @@ export class DataService implements OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.spaceApi.listen(id).subscribe(this.space$));
     this.listenToRelatedRecord(id);
+    let listeningMember: string|undefined;
     this.auth.member$.subscribe((m?: Member) => {
+      if (listeningMember === m?.uid) {
+        return;
+      }
+
       if (m?.uid) {
         this.listenToRelatedRecordWithMember(id, m.uid);
+        listeningMember = m.uid;
       } else {
         this.isMemberWithinSpace$.next(false);
         this.isGuardianWithinSpace$.next(false);
         this.isPendingMemberWithSpace$.next(false);
+        listeningMember = undefined;
       }
     });
   }
@@ -82,9 +90,13 @@ export class DataService implements OnDestroy {
   }
 
   public listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
-    this.subscriptions$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
-    this.subscriptions$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
-    this.subscriptions$.push(this.spaceApi.isPendingMemberWithinSpace(spaceId, memberId).subscribe(this.isPendingMemberWithSpace$));
+    this.resetRelatedRecordsSubjects();
+    this.subscriptionsRelatedRecords$?.forEach((s) => {
+      s.unsubscribe();
+    });
+    this.subscriptionsRelatedRecords$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
+    this.subscriptionsRelatedRecords$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
+    this.subscriptionsRelatedRecords$.push(this.spaceApi.isPendingMemberWithinSpace(spaceId, memberId).subscribe(this.isPendingMemberWithSpace$));
   }
 
   public listenToCompletedProposals(spaceId: string): void {
@@ -182,9 +194,6 @@ export class DataService implements OnDestroy {
   public resetSubjects(): void {
     // Clean up all streams.
     this.space$.next(undefined);
-    this.isMemberWithinSpace$.next(false);
-    this.isGuardianWithinSpace$.next(false);
-    this.isPendingMemberWithSpace$.next(false);
     this.guardians$.next(undefined);
     this.proposalsActive$.next(undefined);
     this.proposalsCompleted$.next(undefined);
@@ -195,8 +204,18 @@ export class DataService implements OnDestroy {
     this.pendingMembers$.next(undefined);
   }
 
+  public resetRelatedRecordsSubjects(): void {
+    this.isMemberWithinSpace$.next(false);
+    this.isGuardianWithinSpace$.next(false);
+    this.isPendingMemberWithSpace$.next(false);
+  }
+
   public cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+
+    this.subscriptionsRelatedRecords$.forEach((s) => {
       s.unsubscribe();
     });
 
@@ -207,6 +226,7 @@ export class DataService implements OnDestroy {
     this.dataStoreBlockedMembers = [];
 
     this.resetSubjects();
+    this.resetRelatedRecordsSubjects();
   }
 
   public ngOnDestroy(): void {
