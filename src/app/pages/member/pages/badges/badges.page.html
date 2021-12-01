@@ -18,7 +18,7 @@
       <span class="mb-3 leading-7 text-app-gray-400">
         No Badges yet
       </span>
-      <button nz-button nzType="primary" class="self-center w-48" *ngIf="isLoggedIn$ | async">Discover Badges</button>
+      <button nz-button nzType="primary" class="self-center w-48" *ngIf="isLoggedIn$ | async" [routerLink]="['/', 'discover', 'awards']">Discover Badges</button>
     </div>
     </nz-card>
   </div>
