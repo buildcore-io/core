@@ -5,23 +5,12 @@
 >
   <button
     nz-button
-    *ngIf="(isLoggedIn$ | async) === false"
+    *ngIf="isLandingPage"
     class="flex items-center gap-2 wen-header-button"
-    [routerLink]="['discover']"
+    [routerLink]="urlToDiscover"
     type="button"
   >
     <wen-icon-rocket></wen-icon-rocket>Discover
-  </button>
-
-  <button
-    nz-button
-    nzType="default"
-    [routerLink]="urlToDiscover"
-    *ngIf="isLandingPage"
-    class="flex items-center gap-2 text-app-gray-text"
-  >
-    <wen-icon-rocket></wen-icon-rocket>
-    Discover
   </button>
 
   <button
