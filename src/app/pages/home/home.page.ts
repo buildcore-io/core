@@ -64,10 +64,16 @@ export class HomePage implements OnInit {
   }
 
   public goToSoonLabsUrl(): void {
-    window.location.href = 'https://www.soonlabs.com';
+    window.open(
+      'https://www.soonlabs.com',
+      '_blank'
+    );
   }
 
   public goToIotaUrl(): void {
-    window.location.href = 'https://www.soonlabs.com';
+    window.open(
+      'https://www.soonlabs.com',
+      '_blank'
+    );
   }
 }
