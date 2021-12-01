@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
+import { MenuModule } from '@components/menu/menu.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -30,6 +31,7 @@ import { SignOutComponent } from './components/sign-out/sign-out.component';
     IconModule,
     NzNotificationModule,
     NzModalModule,
+    MenuModule
   ],
 })
 export class AuthModule { }

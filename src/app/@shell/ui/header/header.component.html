@@ -40,19 +40,19 @@
   <nz-dropdown-menu #createMenu="nzDropdownMenu">
     <wen-menu>
       <wen-menu-item [routerLink]="urlToNewSpace">
-        <wen-icon-space class="mr-4"></wen-icon-space>Space
+        <wen-icon-space icon></wen-icon-space>Space
       </wen-menu-item>
       <wen-menu-item
         [routerLink]="urlToNewProposal"
         *ngIf="enableCreateAwardProposal"
       >
-        <wen-icon-check-circle class="mr-4"></wen-icon-check-circle>Proposal
+        <wen-icon-check-circle icon></wen-icon-check-circle>Proposal
       </wen-menu-item>
       <wen-menu-item
         [routerLink]="urlToNewAward"
         *ngIf="enableCreateAwardProposal"
       >
-        <wen-icon-award class="mr-4"></wen-icon-award>Award
+        <wen-icon-award icon></wen-icon-award>Award
       </wen-menu-item>
     </wen-menu>
   </nz-dropdown-menu>
@@ -102,11 +102,10 @@
   <nz-dropdown-menu #userMenu="nzDropdownMenu">
     <wen-menu>
       <wen-menu-item (click)="goToMyProfile()">
-        <wen-icon-unamused class="mr-4"></wen-icon-unamused>My Profile
+        <wen-icon-unamused icon></wen-icon-unamused>
+        My Profile
       </wen-menu-item>
-      <wen-menu-item>
-        <wen-sign-out></wen-sign-out>
-      </wen-menu-item>
+      <wen-sign-out></wen-sign-out>
     </wen-menu>
   </nz-dropdown-menu>
 </header>

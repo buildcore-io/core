@@ -1,3 +1,6 @@
 <li nz-menu-item>
-    <ng-content></ng-content>
+  <span class="inline-flex justify-center flex-grow-0 flex-shrink-0 w-6 mr-4">
+    <ng-content select="[icon]"></ng-content>
+  </span>
+  <ng-content></ng-content>
 </li>
