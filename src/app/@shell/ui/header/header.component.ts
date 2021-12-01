@@ -55,7 +55,7 @@ export class HeaderComponent implements OnInit {
           this.cd.markForCheck();
         }
       }
-  });
+    });
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
