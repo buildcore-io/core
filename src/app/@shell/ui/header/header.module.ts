@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { AuthModule } from '@components/auth/auth.module';
 import { IconModule } from '@components/icon/icon.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { MenuModule } from '@components/menu/menu.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
@@ -29,7 +30,8 @@ import { HeaderComponent } from './header.component';
     NzButtonModule,
     NzAvatarModule,
     IconModule,
-    NzDropDownModule
+    NzDropDownModule,
+    MenuModule
   ],
   exports: [HeaderComponent],
 })

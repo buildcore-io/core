@@ -20,12 +20,13 @@ export class HeaderComponent implements OnInit {
   public enableCreateAwardProposal = false;
   public spaceSubscription$?: Subscription;
   public isMemberProfile = false;
+  public isLandingPage = false;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef,
     public auth: AuthService
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.member$.pipe(
@@ -43,16 +44,18 @@ export class HeaderComponent implements OnInit {
       }
     });
 
+    const memberRoute = `/${ROUTER_UTILS.config.member.root}/`
+    const landingPageRoute = `/${ROUTER_UTILS.config.base.home}`
+
     this.router.events.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj instanceof NavigationStart) {
-        const previous = this.isMemberProfile;
-        if (obj.url && obj.url.startsWith(('/' + ROUTER_UTILS.config.member.root + '/'))) {
-          this.isMemberProfile = true;
-        } else {
-          this.isMemberProfile = false;
-        }
+        const previousIsMemberProfile = this.isMemberProfile;
+        const previousIsLandingPage = this.isLandingPage;
 
-        if (previous !== this.isMemberProfile) {
+        this.isMemberProfile = Boolean(obj.url?.startsWith(memberRoute))
+        this.isLandingPage = Boolean(obj.url === landingPageRoute)
+
+        if (previousIsMemberProfile !== this.isMemberProfile || previousIsLandingPage || this.isLandingPage) {
           this.cd.markForCheck();
         }
       }
@@ -67,7 +70,7 @@ export class HeaderComponent implements OnInit {
     return this.auth.isLoggedIn$;
   }
 
-  public get member$(): BehaviorSubject<Member|undefined> {
+  public get member$(): BehaviorSubject<Member | undefined> {
     return this.auth.member$;
   }
 
@@ -81,6 +84,10 @@ export class HeaderComponent implements OnInit {
 
   public get urlToNewAward(): string {
     return '/' + ROUTER_UTILS.config.award.root + '/new';
+  }
+
+  public get urlToDiscover(): string {
+    return '/' + ROUTER_UTILS.config.discover.root;
   }
 
   public goToMyProfile(): void {
