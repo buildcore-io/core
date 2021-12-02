@@ -9,7 +9,7 @@ describe('MemberCardComponent', () => {
   let spectator: Spectator<MemberCardComponent>;
   const createComponent = createRoutingFactory({
     component: MemberCardComponent,
-    imports: [IconModule, IpfsBadgeModule, IpfsAvatarModule]
+    imports: [IconModule, IpfsBadgeModule, IpfsAvatarModule, IpfsBadgeModule]
   });
 
   beforeEach(() => {

@@ -27,12 +27,10 @@
         </nz-tag>
       </div>
 
-      <!--
-        TODO
-        <div i18n class="inline-flex" [ngClass]="fullWidth ? 'ml-4' : 'mt-4'">
-        <nz-avatar nzSrc="/assets/mocks/trophy.png" nz-tooltip nzTooltipTitle="member.badge.name"
+      <div i18n class="inline-flex" [ngClass]="fullWidth ? 'ml-4' : 'mt-4'">
+        <nz-avatar *ngFor="let badge of (badges$ | async) | slice:0:6;" [nzSrc]="badge.payload.image | ipfsBadge:filesizes.small" nz-tooltip [nzTooltipTitle]="badge.payload.name"
           class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
-      </div> -->
+      </div>
     </div>
   </div>
   <div class="w-1/5 pl-8" *ngIf="fullWidth">
