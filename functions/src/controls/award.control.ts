@@ -8,6 +8,7 @@ import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { cOn, dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
+import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
@@ -96,14 +97,14 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
   let docAward = await refAward.get();
   if (!docAward.exists) {
     // Document does not exists.
-    await refAward.set(cOn(merge(cleanParams(params.body), {
+    await refAward.set(keywords(cOn(merge(cleanParams(params.body), {
       uid: awardAddress,
       issued: 0,
       rank: 1,
       completed: false,
       endDate: dateToTimestamp(params.body.endDate),
       createdBy: owner
-    })));
+    }))));
 
     // Add Owner.
     await refAward.collection(SUB_COL.OWNERS).doc(owner).set({

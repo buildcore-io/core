@@ -8,6 +8,7 @@ import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument, throwUnAuthenticated } from "../utils/error.utils";
+import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength } from "../utils/wallet.utils";
 import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
@@ -99,14 +100,13 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   }
 
   if (params.body) {
-    await admin.firestore().collection(COL.MEMBER).doc(address).update(uOn(pSchema(schema, cleanParams(params.body), ['currentProfileImage'])));
+    await admin.firestore().collection(COL.MEMBER).doc(address).update(keywords(uOn(pSchema(schema, cleanParams(params.body), ['currentProfileImage']))));
 
     if (params.body?.currentProfileImage) {
       await admin.firestore().collection(COL.AVATARS).doc(params.body?.currentProfileImage.metadata).update({
         available: false
       });
     }
-
     // Load latest
     docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
   }
