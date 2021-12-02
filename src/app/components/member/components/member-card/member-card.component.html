@@ -4,7 +4,7 @@
     <div class="relative flex flex-col w-full h-40" [ngClass]="fullWidth ? 'h-auto' : 'h-40'"
       [routerLink]="['/member', member.uid]">
       <div class="flex items-center w-full space-x-4">
-        <nz-avatar [nzSize]="48" style="max-width: 48px; min-width: 48px;" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
+        <nz-avatar [nzSize]="48" style="max-width: 48px; min-width: 48px;" nzSrc="/assets/mocks/no_avatar.png"></nz-avatar>
         <h5 nz-typography class="m-auto truncate">{{ member.name ? '@' + member.name : member.uid }}</h5>
         <nz-tag *ngIf="role" class="wen-status-tag"
           [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'">

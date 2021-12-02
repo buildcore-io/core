@@ -84,7 +84,7 @@
       <div class="space-y-2">
         <div *ngFor="let g of data.guardians$ | async; trackBy: trackByUid"
           class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
-          <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
+          <nz-avatar nzIcon="user" nzSrc="/assets/mocks/no_avatar.png" class="mr-2">
           </nz-avatar>
           <span [routerLink]="getMemberUrl(g.uid)">@ {{ (g.name || g.uid) | truncate:[16] }}</span>
         </div>

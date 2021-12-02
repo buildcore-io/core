@@ -67,7 +67,7 @@
 
     <nz-card nzTitle="Owner">
       <div *ngFor="let g of data.owners$ | async; trackBy: trackByUid" [routerLink]="['/', 'member', g.uid]" class="cursor-pointer">
-        <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
+        <nz-avatar nzIcon="user" nzSrc="/assets/mocks/no_avatar.png" class="mr-2">
         </nz-avatar>
         <span>@ {{ (g.name || g.uid) | truncate:[16] }}</span>
       </div>

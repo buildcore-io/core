@@ -10,7 +10,7 @@ contract AvatarNft is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    constructor() ERC721("Factory Avata NFT", "FTN") {
+    constructor() ERC721("Soonaverse NFT", "SOON") {
     }
 
     function createToken(string memory tokenURI) public returns (uint) {

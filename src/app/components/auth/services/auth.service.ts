@@ -108,6 +108,12 @@ export class AuthService {
     }
   }
 
+  public async mint(ipfsCid: string): Promise<boolean> {
+    // NFT_CONTRACT_ADDRESS
+
+    return false;
+  }
+
   private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();

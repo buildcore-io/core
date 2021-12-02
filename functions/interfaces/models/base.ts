@@ -22,7 +22,9 @@ export const enum COL {
   AWARD = 'award',
   SPACE = 'space',
   PROPOSAL = 'proposal',
-  TRANSACTION = 'transaction'
+  TRANSACTION = 'transaction',
+  BADGES = 'badges',
+  AVATARS = 'avatars',
 }
 
 export const enum SUB_COL {

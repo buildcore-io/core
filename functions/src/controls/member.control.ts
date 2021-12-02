@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
@@ -16,6 +17,17 @@ function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
+    currentProfileImage: Joi.object({
+      metadata: Joi.string().custom((value) => {
+        return cid(value);
+      }),
+      original: Joi.string().custom((value) => {
+        return cid(value);
+      }),
+      avatar: Joi.string().custom((value) => {
+        return cid(value);
+      })
+    }).optional(),
     discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
     github: Joi.string().allow(null, '').regex(GITHUB_REGEXP).optional(),
     twitter: Joi.string().allow(null, '').regex(TWITTER_REGEXP).optional()
@@ -73,8 +85,26 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
     }
   }
 
+  // TODO Add validation via SC they really own the NFT.
+  if (params.body?.currentProfileImage) {
+    const doc = await admin.firestore().collection(COL.MEMBER).doc(params.body?.currentProfileImage.metadata).get();
+    if (!doc.exists) {
+      throw throwInvalidArgument(WenError.nft_does_not_exists);
+    }
+
+    if (doc.data()!.available !== true) {
+      throw throwInvalidArgument(WenError.nft_is_no_longer_available);
+    }
+  }
+
   if (params.body) {
     await admin.firestore().collection(COL.MEMBER).doc(address).update(uOn(pSchema(schema, cleanParams(params.body))));
+
+    if (params.body?.currentProfileImage) {
+      await admin.firestore().collection(COL.MEMBER).doc(params.body?.currentProfileImage.metadata).update({
+        available: false
+      });
+    }
 
     // Load latest
     docMember = await admin.firestore().collection(COL.MEMBER).doc(address).get();
