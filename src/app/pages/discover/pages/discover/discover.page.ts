@@ -12,7 +12,7 @@ import { FilterService, SortOptions } from './../../services/filter.service';
   styleUrls: ['./discover.page.less']
 })
 export class DiscoverPage implements OnInit, OnDestroy {
-  public sortControl: FormControl = new FormControl(SortOptions.RECENT);
+  public sortControl: FormControl = new FormControl(SortOptions.OLDEST);
   public filterControl: FormControl = new FormControl(undefined);
   public sections = [
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },

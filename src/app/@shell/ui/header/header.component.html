@@ -18,7 +18,10 @@
     nz-dropdown
     nzTrigger="click"
     [nzDropdownMenu]="createMenu"
-    *ngIf="(isLoggedIn$ | async) && !isMemberProfile && !isLandingPage && isAllowedCreation"
+    nz-tooltip
+    nzTooltipPlacement="bottom"
+    [nzTooltipTitle]="!isAllowedCreation ? 'You have to earn badge to create space first!' : undefined"
+    *ngIf="(isLoggedIn$ | async) && !isMemberProfile && !isLandingPage"
     nzType="primary"
     type="button"
     class="flex items-center gap-2 pr-2"
@@ -27,7 +30,7 @@
   </button>
 
   <nz-dropdown-menu #createMenu="nzDropdownMenu">
-    <wen-menu>
+    <wen-menu *ngIf="isAllowedCreation">
       <wen-menu-item [routerLink]="urlToNewSpace">
         <wen-icon-space icon></wen-icon-space>Space
       </wen-menu-item>
