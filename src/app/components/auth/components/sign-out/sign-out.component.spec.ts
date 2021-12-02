@@ -1,7 +1,8 @@
 import { AuthService } from '@components/auth/services/auth.service';
 import { IconModule } from '@components/icon/icon.module';
+import { MenuItemComponent } from '@components/menu/menu-item/menu-item.component';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
-import { MockProvider } from 'ng-mocks';
+import { MockComponent, MockProvider } from 'ng-mocks';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -12,7 +13,8 @@ describe('SignOutComponent', () => {
   let spectator: Spectator<SignOutComponent>;
   const createComponent = createRoutingFactory({
     component: SignOutComponent,
-    imports: [NzAvatarModule, NzTypographyModule, IconModule],
+    imports: [NzAvatarModule, NzTypographyModule, IconModule,],
+    declarations: [MockComponent(MenuItemComponent)],
     providers: [
       MockProvider(AuthService),
       MockProvider(MemberApi),
