@@ -39,7 +39,7 @@ export class BaseApi<T> {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
         let query: any = ref;
         if (search && search.length > 0) {
-          // query = query.where('name', '>=', search).where('name', '<=', search + '\uf8ff').orderBy('name', 'asc');
+          query = query.where('name', 'array-contains', search.toLowerCase());
         }
 
         order.forEach((o) => {
