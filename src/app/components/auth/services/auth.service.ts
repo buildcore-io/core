@@ -108,10 +108,9 @@ export class AuthService {
     }
   }
 
-  public async mint(ipfsCid: string): Promise<boolean> {
-    // NFT_CONTRACT_ADDRESS
-
-    return false;
+  public async mint(_ipfsCid: string): Promise<boolean> {
+    // TODO waiting for stable EVM to plug it into our SC.
+    return true;
   }
 
   private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {

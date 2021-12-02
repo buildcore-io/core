@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
+import { FILE_SIZES } from "functions/interfaces/models/base";
 import {
   ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
   ApexResponsive
@@ -8,7 +9,7 @@ import {
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Proposal } from '../../../../../../functions/interfaces/models/proposal';
 import { ProposalAnswer } from './../../../../../../functions/interfaces/models/proposal';
-import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
+import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
 export type ChartOptions = {

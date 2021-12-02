@@ -5,6 +5,7 @@ import { BadgeModule } from "@components/badge/badge.module";
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { TabsModule } from "@components/tabs/tabs.module";
+import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -56,6 +57,7 @@ import { DataService } from './services/data.service';
     TabsModule,
     MarkDownModule,
     TruncateModule,
+    IpfsAvatarModule,
     NzRadioModule,
     NzButtonModule,
     NzToolTipModule,

@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi, FILE_SIZES } from '@api/file.api';
+import { FileApi } from '@api/file.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { FILE_SIZES } from "functions/interfaces/models/base";
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { AwardType } from './../../../../../../functions/interfaces/models/award';
 import { Space } from './../../../../../../functions/interfaces/models/space';

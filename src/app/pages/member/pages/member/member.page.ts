@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi, FILE_SIZES } from '@api/file.api';
+import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { FILE_SIZES } from "functions/interfaces/models/base";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../@api/member.api';
@@ -63,6 +64,10 @@ export class MemberPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 
   private notFound(): void {

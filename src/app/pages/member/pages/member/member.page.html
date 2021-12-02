@@ -11,7 +11,7 @@
 <div class="absolute top-0 right-0 h-auto min-h-screen px-8 pt-40 pb-20 mr-auto text-center bg-white rounded-l-large"
   style="width: 420px;">
 
-  <nz-avatar [nzSize]="124" nzSrc="/assets/mocks/no_avatar.png"></nz-avatar>
+  <nz-avatar [nzSize]="124" [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
   <div class="flex items-baseline justify-center mt-6">
     <h3 class="max-w-full mx-4 text-left break-all whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
       ((data.member$ | async)?.uid | truncate:[12]) }}</h3>

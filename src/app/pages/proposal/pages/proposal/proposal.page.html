@@ -25,7 +25,7 @@
         <span>{{(data.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
       </div>
       <div [routerLink]="['member', (data.creator$ | async)?.uid]">
-        <nz-avatar nzIcon="user" nzSrc="/assets/mocks/no_avatar.png" class="mr-2">
+        <nz-avatar nzIcon="user" [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
         </nz-avatar>
         <span class="cursor-pointer" [routerLink]="['/', 'member', (data.creator$ | async)?.uid]">@{{((data.creator$ | async)?.name ||
           (data.creator$ | async)?.uid) | truncate:[16]}}</span>

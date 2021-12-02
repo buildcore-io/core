@@ -3,6 +3,7 @@ import { NavigationStart, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { FILE_SIZES } from "functions/interfaces/models/base";
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../@api/member.api';
@@ -56,6 +57,10 @@ export class HeaderComponent implements OnInit {
         }
       }
     });
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {

@@ -20,13 +20,14 @@ function defaultJoiUpdateCreateSchema(): any {
     currentProfileImage: Joi.object({
       metadata: Joi.string().custom((value) => {
         return cid(value);
-      }),
+      }).required(),
+      fileName: Joi.string().required(),
       original: Joi.string().custom((value) => {
         return cid(value);
-      }),
+      }).required(),
       avatar: Joi.string().custom((value) => {
         return cid(value);
-      })
+      }).required()
     }).optional(),
     discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
     github: Joi.string().allow(null, '').regex(GITHUB_REGEXP).optional(),
@@ -87,7 +88,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
 
   // TODO Add validation via SC they really own the NFT.
   if (params.body?.currentProfileImage) {
-    const doc = await admin.firestore().collection(COL.MEMBER).doc(params.body?.currentProfileImage.metadata).get();
+    const doc = await admin.firestore().collection(COL.AVATARS).doc(params.body?.currentProfileImage.metadata).get();
     if (!doc.exists) {
       throw throwInvalidArgument(WenError.nft_does_not_exists);
     }
@@ -101,7 +102,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
     await admin.firestore().collection(COL.MEMBER).doc(address).update(uOn(pSchema(schema, cleanParams(params.body))));
 
     if (params.body?.currentProfileImage) {
-      await admin.firestore().collection(COL.MEMBER).doc(params.body?.currentProfileImage.metadata).update({
+      await admin.firestore().collection(COL.AVATARS).doc(params.body?.currentProfileImage.metadata).update({
         available: false
       });
     }

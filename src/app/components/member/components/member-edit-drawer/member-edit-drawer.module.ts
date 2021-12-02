@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
+import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -27,6 +28,7 @@ import { MemberEditDrawerComponent } from './member-edit-drawer.component';
     ReactiveFormsModule,
     RouterModule,
     TruncateModule,
+    IpfsAvatarModule,
     NzAvatarModule,
     NzAvatarModule,
     NzIconModule,

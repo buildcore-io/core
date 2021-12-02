@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
+import { FILE_SIZES } from "functions/interfaces/models/base";
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Award } from '../../../../../../functions/interfaces/models/award';
-import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
+import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
 @UntilDestroy()

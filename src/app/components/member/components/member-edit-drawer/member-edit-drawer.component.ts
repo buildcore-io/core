@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, On
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { FILE_SIZES } from "functions/interfaces/models/base";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { firstValueFrom } from 'rxjs';
 import { Member } from '../../../../../../functions/interfaces/models/member';
@@ -21,12 +22,11 @@ export class MemberEditDrawerComponent implements OnInit {
   @Output() public wenOnClose = new EventEmitter<void>();
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('');
-  public currentProfileImageControl: FormControl = new FormControl('');
+  public currentProfileImageControl: FormControl = new FormControl(undefined);
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
   public memberForm: FormGroup;
-  public mintedAvatarPreview?: string;
 
   constructor(
     private auth: AuthService,
@@ -58,6 +58,10 @@ export class MemberEditDrawerComponent implements OnInit {
     });
   }
 
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+
   public async mint(): Promise<void> {
     // Find Available image.
     const result = await firstValueFrom(this.mintApi.getAvailable('avatar'));
@@ -65,13 +69,13 @@ export class MemberEditDrawerComponent implements OnInit {
       this.nzNotification.error('', 'No more avatars available');
       return;
     } else {
-      this.mintedAvatarPreview = 'https://ipfs.soonaverse.com/ipfs/' + result[0].avatar + '/' + result[0].fileName + '.png';
       const results: boolean = await this.auth.mint(result[0].uid);
       if (results === false) {
         this.nzNotification.error('', 'Unable to mint your avatar at the moment. Try again later.');
       } else {
         this.currentProfileImageControl.setValue({
           metadata: result[0].uid,
+          fileName: result[0].fileName,
           original: result[0].original,
           avatar: result[0].avatar
         });
@@ -87,6 +91,7 @@ export class MemberEditDrawerComponent implements OnInit {
     this.discordControl.setValue(obj.discord);
     this.twitterControl.setValue(obj.twitter);
     this.githubControl.setValue(obj.github);
+    this.currentProfileImageControl.setValue(obj.currentProfileImage);
   }
 
   public async save(): Promise<void> {
