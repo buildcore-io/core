@@ -108,6 +108,11 @@ export class AuthService {
     }
   }
 
+  public async mint(_ipfsCid: string): Promise<boolean> {
+    // TODO waiting for stable EVM to plug it into our SC.
+    return true;
+  }
+
   private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();

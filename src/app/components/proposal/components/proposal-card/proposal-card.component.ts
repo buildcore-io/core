@@ -6,9 +6,9 @@ import {
   ApexResponsive
 } from "ng-apexcharts";
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { Proposal } from '../../../../../../functions/interfaces/models/proposal';
-import { ProposalAnswer } from './../../../../../../functions/interfaces/models/proposal';
-import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
+import { Proposal, ProposalAnswer } from '../../../../../../functions/interfaces/models/proposal';
+import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 
 export type ChartOptions = {

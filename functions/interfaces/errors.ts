@@ -40,6 +40,10 @@ export const WenError = {
   proposal_must_be_in_future: { code: 2033, key: 'Proposal must be in future.' },
   proposal_start_date_must_be_before_end_date: { code: 2034, key: 'Proposal startDate must be before endDate.' },
   member_did_not_request_to_join: { code: 2036, key: 'Member did not request to join.' },
-  vote_is_no_longer_active: { code: 2037, key: 'Vote is_no_longer_active.' },
+  vote_is_no_longer_active: { code: 2037, key: 'Vote is no longer active.' },
+  nft_does_not_exists: { code: 2037, key: 'NFT does not exists.' },
+  nft_is_no_longer_available: { code: 2037, key: 'NFT is no longer available.' },
+  ntt_does_not_exists: { code: 2037, key: 'NTT does not exists.' },
+  ntt_is_no_longer_available: { code: 2037, key: 'NTT is no longer available.' },
 }
 

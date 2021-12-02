@@ -1,3 +1,4 @@
+
 export interface Timestamp {
   now(): Timestamp;
   fromDate(date: Date): Timestamp;
@@ -22,7 +23,9 @@ export const enum COL {
   AWARD = 'award',
   SPACE = 'space',
   PROPOSAL = 'proposal',
-  TRANSACTION = 'transaction'
+  TRANSACTION = 'transaction',
+  BADGES = 'badges',
+  AVATARS = 'avatars',
 }
 
 export const enum SUB_COL {
@@ -39,6 +42,7 @@ export const enum AWARD_COL {
 }
 
 export type EthAddress = string;
+export type IpfsCid = string;
 
 export interface Base {
   uid: string;
@@ -53,4 +57,17 @@ export interface BaseRecord extends Base {
   createdOn?: Timestamp;
   updatedOn?: Timestamp;
   createdBy?: string;
+}
+
+export interface FileMetedata {
+  metadata: IpfsCid;
+  original: IpfsCid;
+  avatar: IpfsCid;
+  fileName: string;
+}
+
+export enum FILE_SIZES {
+  small = 'small',
+  medium = 'medium',
+  large = 'large'
 }

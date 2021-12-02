@@ -1,9 +1,8 @@
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
-import { COL, SUB_COL } from "functions/interfaces/models/base";
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
-import { EthAddress } from './../../../functions/interfaces/models/base';
+import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
 
@@ -40,7 +39,7 @@ export class BaseApi<T> {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
         let query: any = ref;
         if (search && search.length > 0) {
-          query = query.where('name', '>=', search).where('name', '<=', search + '\uf8ff').orderBy('name', 'asc');
+          query = query.where('keywords', 'array-contains', search.toLowerCase());
         }
 
         order.forEach((o) => {

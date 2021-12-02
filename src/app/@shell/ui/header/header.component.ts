@@ -4,6 +4,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../@api/member.api';
 
@@ -20,6 +21,7 @@ export class HeaderComponent implements OnInit {
   public spaceSubscription$?: Subscription;
   public isMemberProfile = false;
   public isLandingPage = false;
+  public isAllowedCreation = false;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
@@ -35,6 +37,12 @@ export class HeaderComponent implements OnInit {
         this.spaceSubscription$?.unsubscribe();
         this.spaceSubscription$ = this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
           this.enableCreateAwardProposal = space.length > 0;
+          this.cd.markForCheck();
+        });
+
+        // TEMPORARY -> member must have at least one badge.
+        this.spaceSubscription$ = this.memberApi.topBadges(obj.uid, 'createdOn', undefined, 1).subscribe((badge) => {
+          this.isAllowedCreation = badge.length > 0;
           this.cd.markForCheck();
         });
       } else {
@@ -59,6 +67,10 @@ export class HeaderComponent implements OnInit {
         }
       }
     });
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {

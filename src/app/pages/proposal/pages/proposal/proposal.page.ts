@@ -7,8 +7,9 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
 import { Award } from './../../../../../../functions/interfaces/models/award';
+import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { ProposalQuestion, ProposalSubType } from './../../../../../../functions/interfaces/models/proposal';
-import { FileApi, FILE_SIZES } from './../../../../@api/file.api';
+import { FileApi } from './../../../../@api/file.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -113,6 +114,10 @@ export class ProposalPage implements OnInit, OnDestroy {
         this.data.currentMembersVotes$.next(undefined);
       }
     });
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 
   public getAvatarSize(url?: string|null): string|undefined {

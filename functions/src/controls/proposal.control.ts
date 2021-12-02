@@ -10,6 +10,7 @@ import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Proposal } from '../../interfaces/models/proposal';
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
+import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { ProposalStartDateMin, RelatedRecordsResponse } from './../../interfaces/config';
@@ -96,11 +97,11 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   let docProposal = await refProposal.get();
   if (!docProposal.exists) {
     // Document does not exists.
-    await refProposal.set(cOn(merge(cleanParams(params.body), {
+    await refProposal.set(keywords(cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
       rank: 1,
       createdBy: owner
-    })));
+    }))));
 
     // This can't be empty.
     // Add Owners based on space's guardians or members.

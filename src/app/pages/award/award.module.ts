@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
+import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -20,6 +21,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { IpfsBadgeModule } from './../../@core/pipes/ipfs-badge/ipfs-badge.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardRoutingModule } from './award-routing.module';
@@ -42,7 +44,9 @@ import { DataService } from './services/data.service';
     CommonModule,
     TabsModule,
     TruncateModule,
+    IpfsBadgeModule,
     AwardRoutingModule,
+    IpfsAvatarModule,
     ReactiveFormsModule,
     MemberCardModule,
     NzButtonModule,

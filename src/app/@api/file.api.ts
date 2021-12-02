@@ -3,12 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage, AngularFireStorageReference, AngularFireUploadTask } from "@angular/fire/compat/storage";
 import { NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { finalize, Subscription } from 'rxjs';
-
-export enum FILE_SIZES {
-  small = 'small',
-  medium = 'medium',
-  large = 'large'
-}
+import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
 
 @Injectable({
   providedIn: 'root',

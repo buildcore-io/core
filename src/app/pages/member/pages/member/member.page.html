@@ -11,7 +11,7 @@
 <div class="absolute top-0 right-0 h-auto min-h-screen px-8 pt-40 pb-20 mr-auto text-center bg-white rounded-l-large"
   style="width: 420px;">
 
-  <nz-avatar [nzSize]="124" nzSrc="/assets/mocks/default_avatar.jpg"></nz-avatar>
+  <nz-avatar [nzSize]="124" [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"></nz-avatar>
   <div class="flex items-baseline justify-center mt-6">
     <h3 class="max-w-full mx-4 text-left break-all whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
       ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
@@ -57,7 +57,7 @@
     <div class="flex flex-wrap gap-2">
       <article *ngFor="let t of (data.badges$ | async) | slice:0:6; trackBy: trackByUid"
         class="flex flex-col items-center justify-center w-16 h-16 p-3">
-        <wen-badge-tile></wen-badge-tile>
+        <wen-badge-tile [metadata]="t.payload.image"></wen-badge-tile>
       </article>
 
       <article *ngIf="(data.badges$ | async)?.length === 0"

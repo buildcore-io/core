@@ -1,4 +1,5 @@
 import { TabsComponent } from '@components/tabs/tabs.component';
+import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
 import { BadgeTileComponent } from '../../../../components/badge/badge-tile/badge-tile.component';
@@ -13,7 +14,7 @@ describe('MemberPage', () => {
   const createComponent = createRoutingFactory({
     component: MemberPage,
     providers: [DataService],
-    imports: [IconModule],
+    imports: [IconModule, IpfsAvatarModule],
     declarations: [
       MockComponent(MemberEditDrawerComponent),
       MockComponent(MemberTileComponent),

@@ -1,11 +1,15 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { firstValueFrom } from 'rxjs';
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { MemberApi } from '../../../../@api/member.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
 import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP } from './../../../../../../functions/interfaces/config';
+import { MintApi } from './../../../../@api/mint.api';
 
 @UntilDestroy()
 @Component({
@@ -18,15 +22,25 @@ export class MemberEditDrawerComponent implements OnInit {
   @Output() public wenOnClose = new EventEmitter<void>();
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('');
+  public currentProfileImageControl: FormControl = new FormControl(undefined);
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
-  public memberForm: FormGroup;
   public minted = false;
-  constructor(private auth: AuthService, private memberApi: MemberApi, private notification: NotificationService) {
+  public memberForm: FormGroup;
+
+  constructor(
+    private auth: AuthService,
+    private memberApi: MemberApi,
+    private mintApi: MintApi,
+    private nzNotification: NzNotificationService,
+    private notification: NotificationService,
+    private cd: ChangeDetectorRef
+  ) {
     this.memberForm = new FormGroup({
       name: this.nameControl,
       about: this.aboutControl,
+      currentProfileImage: this.currentProfileImageControl,
       discord: this.discordControl,
       twitter: this.twitterControl,
       github: this.githubControl
@@ -45,9 +59,32 @@ export class MemberEditDrawerComponent implements OnInit {
     });
   }
 
-  public mint(): void {
-    alert('SOON');
-    // this.minted = true;
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+
+  public async mint(): Promise<void> {
+    // Find Available image.
+    const result = await firstValueFrom(this.mintApi.getAvailable('avatar'));
+    if (!result || result?.length === 0) {
+      this.nzNotification.error('', 'No more avatars available');
+      return;
+    } else {
+      const results: boolean = await this.auth.mint(result[0].uid);
+      if (results === false) {
+        this.nzNotification.error('', 'Unable to mint your avatar at the moment. Try again later.');
+      } else {
+        this.minted = true;
+        this.currentProfileImageControl.setValue({
+          metadata: result[0].uid,
+          fileName: result[0].fileName,
+          original: result[0].original,
+          avatar: result[0].avatar
+        });
+      }
+
+      this.cd.markForCheck();
+    }
   }
 
   private setFormValues(obj: Member): void {
@@ -56,6 +93,7 @@ export class MemberEditDrawerComponent implements OnInit {
     this.discordControl.setValue(obj.discord);
     this.twitterControl.setValue(obj.twitter);
     this.githubControl.setValue(obj.github);
+    this.currentProfileImageControl.setValue(obj.currentProfileImage);
   }
 
   public async save(): Promise<void> {
@@ -64,6 +102,10 @@ export class MemberEditDrawerComponent implements OnInit {
       return;
     }
 
+    const obj: any = this.memberForm.value;
+    if (this.minted === false) {
+      delete obj.currentProfileImage;
+    }
 
     await this.auth.sign({
       ...this.memberForm.value,

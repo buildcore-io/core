@@ -1,7 +1,7 @@
 <h1 i18n class="mt-12">Discover Soonaverse</h1>
 
 <div class="flex items-center">
-  <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" [nzSuffix]="suffixTemplateInfo"
+  <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch"
     class="mr-8 border-none shadow-none outline-0" nzSearch>
     <input type="text" nz-input placeholder="Enter the first few letters to search..." class="text-base" [formControl]="filterControl"/>
   </nz-input-group>
@@ -10,9 +10,9 @@
     <i nz-icon nzType="search" class="text-xl"></i>
   </ng-template>
 
-  <ng-template #suffixTemplateInfo>
+  <!-- <ng-template #suffixTemplateInfo>
     <i nz-icon nz-tooltip nzTooltipTitle="Searching by name is case sensitive and begins at the leftmost character." nzType="font-size"></i>
-  </ng-template>
+  </ng-template> -->
 
   <!-- Feel free to add but I made this to search as you type which makes more sense. -->
   <!-- <ng-template #suffixButton>

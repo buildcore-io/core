@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi, FILE_SIZES } from '@api/file.api';
+import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -12,6 +12,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { ProposalStartDateMin } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
+import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';

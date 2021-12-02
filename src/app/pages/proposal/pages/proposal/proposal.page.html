@@ -25,7 +25,7 @@
         <span>{{(data.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
       </div>
       <div [routerLink]="['member', (data.creator$ | async)?.uid]">
-        <nz-avatar nzIcon="user" nzSrc="/assets/mocks/default_avatar.jpg" class="mr-2">
+        <nz-avatar nzIcon="user" [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
         </nz-avatar>
         <span class="cursor-pointer" [routerLink]="['/', 'member', (data.creator$ | async)?.uid]">@{{((data.creator$ | async)?.name ||
           (data.creator$ | async)?.uid) | truncate:[16]}}</span>
@@ -139,7 +139,7 @@
         <article *ngFor="let a of (data.badges$ | async); trackBy: trackByUid" nz-tooltip
           [nzTooltipTitle]="a.badge.name"
           class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
-          <wen-badge-tile></wen-badge-tile>
+          <wen-badge-tile [metadata]="a.badge.image"></wen-badge-tile>
         </article>
       </div>
     </nz-card>
