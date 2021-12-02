@@ -21,6 +21,7 @@ export class HeaderComponent implements OnInit {
   public spaceSubscription$?: Subscription;
   public isMemberProfile = false;
   public isLandingPage = false;
+  public isAllowedCreation = false;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
@@ -36,6 +37,12 @@ export class HeaderComponent implements OnInit {
         this.spaceSubscription$?.unsubscribe();
         this.spaceSubscription$ = this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
           this.enableCreateAwardProposal = space.length > 0;
+          this.cd.markForCheck();
+        });
+
+        // TEMPORARY -> member must have at least one badge.
+        this.spaceSubscription$ = this.memberApi.topBadges(obj.uid, 'createdOn', undefined, 1).subscribe((badge) => {
+          this.isAllowedCreation = badge.length > 0;
           this.cd.markForCheck();
         });
       } else {

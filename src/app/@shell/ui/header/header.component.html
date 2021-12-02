@@ -18,7 +18,7 @@
     nz-dropdown
     nzTrigger="click"
     [nzDropdownMenu]="createMenu"
-    *ngIf="(isLoggedIn$ | async) && !isMemberProfile && !isLandingPage"
+    *ngIf="(isLoggedIn$ | async) && !isMemberProfile && !isLandingPage && isAllowedCreation"
     nzType="primary"
     type="button"
     class="flex items-center gap-2 pr-2"
