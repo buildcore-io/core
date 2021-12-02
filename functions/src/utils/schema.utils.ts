@@ -2,7 +2,7 @@ import { ValidationResult } from "joi";
 import { WenError } from './../../interfaces/errors';
 import { throwArgument } from "./error.utils";
 
-export function pSchema(schema: any, o: any): any {
+export function pSchema(schema: any, o: any, ignoreUnset: string[] = []): any {
   // If no schema return null.
   if (!schema?._ids?._byKey?.entries()) {
     return {};
@@ -11,8 +11,12 @@ export function pSchema(schema: any, o: any): any {
   const output: any = {};
   for (const i of schema._ids._byKey.entries()) {
     if (i[0]) {
-      // We must set null so FB unsets it.
-      output[i[0]] = o[i[0]] || null;
+      if (ignoreUnset.indexOf(i[0]) > -1) {
+        output[i[0]] = o[i[0]];
+      } else {
+        // We must set null so FB unsets it.
+        output[i[0]] = o[i[0]] || null;
+      }
     }
   }
 

@@ -82,7 +82,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
 
   // Get available badge.
   if (params.body?.badge?.image) {
-    const doc = await admin.firestore().collection(COL.BADGES).doc(params.body?.badge.image).get();
+    const doc = await admin.firestore().collection(COL.BADGES).doc(params.body?.badge.image.metadata).get();
     if (!doc.exists) {
       throw throwInvalidArgument(WenError.ntt_does_not_exists);
     }
@@ -114,7 +114,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
     });
 
     if (params.body?.badge?.image) {
-      await admin.firestore().collection(COL.BADGES).doc(params.body?.badge.image).update({
+      await admin.firestore().collection(COL.BADGES).doc(params.body?.badge.image.metadata).update({
         available: false
       });
     }

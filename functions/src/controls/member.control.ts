@@ -99,7 +99,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   }
 
   if (params.body) {
-    await admin.firestore().collection(COL.MEMBER).doc(address).update(uOn(pSchema(schema, cleanParams(params.body))));
+    await admin.firestore().collection(COL.MEMBER).doc(address).update(uOn(pSchema(schema, cleanParams(params.body), ['currentProfileImage'])));
 
     if (params.body?.currentProfileImage) {
       await admin.firestore().collection(COL.AVATARS).doc(params.body?.currentProfileImage.metadata).update({

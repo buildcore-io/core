@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, On
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { firstValueFrom } from 'rxjs';
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { MemberApi } from '../../../../@api/member.api';
 import { NotificationService } from '../../../../@core/services/notification/notification.service';
@@ -26,6 +26,7 @@ export class MemberEditDrawerComponent implements OnInit {
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
+  public minted = false;
   public memberForm: FormGroup;
 
   constructor(
@@ -73,6 +74,7 @@ export class MemberEditDrawerComponent implements OnInit {
       if (results === false) {
         this.nzNotification.error('', 'Unable to mint your avatar at the moment. Try again later.');
       } else {
+        this.minted = true;
         this.currentProfileImageControl.setValue({
           metadata: result[0].uid,
           fileName: result[0].fileName,
@@ -100,6 +102,10 @@ export class MemberEditDrawerComponent implements OnInit {
       return;
     }
 
+    const obj: any = this.memberForm.value;
+    if (this.minted === false) {
+      delete obj.currentProfileImage;
+    }
 
     await this.auth.sign({
       ...this.memberForm.value,
