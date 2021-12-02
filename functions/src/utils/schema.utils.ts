@@ -11,7 +11,11 @@ export function pSchema(schema: any, o: any, ignoreUnset: string[] = []): any {
   const output: any = {};
   for (const i of schema._ids._byKey.entries()) {
     if (i[0]) {
-      if (ignoreUnset.indexOf(i[0]) > -1) {
+      if (ignoreUnset.includes(i[0])) {
+        if (o[i[0]] === undefined) {
+          continue;
+        }
+
         output[i[0]] = o[i[0]];
       } else {
         // We must set null so FB unsets it.
