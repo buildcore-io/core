@@ -1,4 +1,4 @@
-import { BaseRecord, BaseSubCollection, Timestamp } from "./base";
+import { BaseRecord, BaseSubCollection, FileMetedata, Timestamp } from "./base";
 
 export enum AwardType {
   PARTICIPATE_AND_APPROVE = 0,
@@ -36,6 +36,7 @@ export interface Award extends BaseRecord {
   badge: {
     name: string;
     description: string;
+    image: FileMetedata;
     count: number;
     xp: number;
   },

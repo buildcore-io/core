@@ -1,5 +1,6 @@
 import { SignInModalComponent } from '@components/auth/components/sign-in-modal/sign-in-modal.component';
 import { IconModule } from '@components/icon/icon.module';
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { MockComponent } from 'ng-mocks';
 import { SignInComponent } from './../../../components/auth/components/sign-in/sign-in.component';
@@ -11,7 +12,7 @@ describe('HeaderComponent', () => {
   let spectator: Spectator<HeaderComponent>;
   const createComponent = createRoutingFactory({
     component: HeaderComponent,
-    imports: [IconModule],
+    imports: [IconModule, IpfsAvatarModule],
     declarations: [MockComponent(SignInComponent), MockComponent(SignOutComponent), MockComponent(SignInModalComponent)],
     providers: [AuthService],
     params: {},

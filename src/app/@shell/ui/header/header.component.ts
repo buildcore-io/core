@@ -3,8 +3,8 @@ import { NavigationStart, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FILE_SIZES } from "functions/interfaces/models/base";
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../@api/member.api';
 

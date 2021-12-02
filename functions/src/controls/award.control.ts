@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import Joi, { ObjectSchema } from "joi";
+import { cid } from 'is-ipfs';
+import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SUB_COL } from '../../interfaces/models/base';
@@ -27,6 +28,18 @@ function defaultJoiUpdateCreateSchema(): any {
       description: Joi.string().allow(null, '').optional(),
       // Let's keep everything within 1Mi for now.
       count: Joi.number().min(1).max(1000).required(),
+      image: Joi.object({
+        metadata: Joi.string().custom((value) => {
+          return cid(value);
+        }).required(),
+        fileName: Joi.string().required(),
+        original: Joi.string().custom((value) => {
+          return cid(value);
+        }).required(),
+        avatar: Joi.string().custom((value) => {
+          return cid(value);
+        }).required()
+      }).optional(),
       // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
       xp: Joi.number().min(0).max(1000).custom((value) => {
         // Validate value is dividable by count.
@@ -67,6 +80,18 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
 
+  // Get available badge.
+  if (params.body?.badge?.image) {
+    const doc = await admin.firestore().collection(COL.BADGES).doc(params.body?.badge.image).get();
+    if (!doc.exists) {
+      throw throwInvalidArgument(WenError.ntt_does_not_exists);
+    }
+
+    if (doc.data()!.available !== true) {
+      throw throwInvalidArgument(WenError.ntt_is_no_longer_available);
+    }
+  }
+
   const refAward: any = admin.firestore().collection(COL.AWARD).doc(awardAddress);
   let docAward = await refAward.get();
   if (!docAward.exists) {
@@ -88,7 +113,13 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
       createdOn: serverTime()
     });
 
-    // Load latest
+    if (params.body?.badge?.image) {
+      await admin.firestore().collection(COL.BADGES).doc(params.body?.badge.image).update({
+        available: false
+      });
+    }
+
+    // Load latest.
     docAward = await refAward.get();
   }
 
@@ -275,6 +306,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
       payload: {
         award: params.body.uid,
         name: docAward.data().name,
+        image: docAward.data().badge.image || null,
         description: docAward.data().description,
         xp: xp
       }

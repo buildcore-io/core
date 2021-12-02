@@ -57,7 +57,7 @@
     <div class="flex flex-wrap gap-2">
       <article *ngFor="let t of (data.badges$ | async) | slice:0:6; trackBy: trackByUid"
         class="flex flex-col items-center justify-center w-16 h-16 p-3">
-        <wen-badge-tile></wen-badge-tile>
+        <wen-badge-tile [metadata]="t.payload.image"></wen-badge-tile>
       </article>
 
       <article *ngIf="(data.badges$ | async)?.length === 0"

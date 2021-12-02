@@ -3,9 +3,9 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award } from 'functions/interfaces/models';
-import { FILE_SIZES } from "functions/interfaces/models/base";
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
+import { Award } from '../../../../../../functions/interfaces/models';
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { AwardApi } from './../../../../@api/award.api';
 import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -82,6 +82,10 @@ export class AwardPage implements OnInit, OnDestroy {
     });
   }
 
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+
   public getAvatarSize(url?: string|null): string|undefined {
     if (!url) {
       return undefined;
@@ -101,10 +105,6 @@ export class AwardPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public get filesizes(): typeof FILE_SIZES {
-    return FILE_SIZES;
   }
 
   private listenToAward(id: string): void {

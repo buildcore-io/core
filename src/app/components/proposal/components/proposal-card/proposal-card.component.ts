@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
-import { FILE_SIZES } from "functions/interfaces/models/base";
 import {
   ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
   ApexResponsive
 } from "ng-apexcharts";
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { Proposal } from '../../../../../../functions/interfaces/models/proposal';
-import { ProposalAnswer } from './../../../../../../functions/interfaces/models/proposal';
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
+import { Proposal, ProposalAnswer } from '../../../../../../functions/interfaces/models/proposal';
 import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 

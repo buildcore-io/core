@@ -1,9 +1,8 @@
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
-import { COL, SUB_COL } from "functions/interfaces/models/base";
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
-import { EthAddress } from './../../../functions/interfaces/models/base';
+import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
 

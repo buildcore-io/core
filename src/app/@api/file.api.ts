@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage, AngularFireStorageReference, AngularFireUploadTask } from "@angular/fire/compat/storage";
-import { FILE_SIZES } from "functions/interfaces/models/base";
 import { NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { finalize, Subscription } from 'rxjs';
+import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
 
 @Injectable({
   providedIn: 'root',

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, On
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FILE_SIZES } from "functions/interfaces/models/base";
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { firstValueFrom } from 'rxjs';
 import { Member } from '../../../../../../functions/interfaces/models/member';

@@ -1,4 +1,4 @@
-import { BaseRecord } from './base';
+import { BaseRecord, FileMetedata } from './base';
 export enum TransactionType {
   BADGE = "BADGE",
   VOTE = "VOTE",
@@ -13,6 +13,7 @@ export interface VoteTransaction {
 export interface BadgeTransaction {
   award: string;
   name: string;
+  image: FileMetedata,
   description: string;
   xp: number;
 }

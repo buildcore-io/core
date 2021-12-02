@@ -139,7 +139,7 @@
         <article *ngFor="let a of (data.badges$ | async); trackBy: trackByUid" nz-tooltip
           [nzTooltipTitle]="a.badge.name"
           class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
-          <wen-badge-tile></wen-badge-tile>
+          <wen-badge-tile [metadata]="a.badge.image"></wen-badge-tile>
         </article>
       </div>
     </nz-card>

@@ -43,5 +43,7 @@ export const WenError = {
   vote_is_no_longer_active: { code: 2037, key: 'Vote is no longer active.' },
   nft_does_not_exists: { code: 2037, key: 'Nft does not exists.' },
   nft_is_no_longer_available: { code: 2037, key: 'Nft is no longer available.' },
+  ntt_does_not_exists: { code: 2037, key: 'NTT does not exists.' },
+  ntt_is_no_longer_available: { code: 2037, key: 'NTT is no longer available.' },
 }
 

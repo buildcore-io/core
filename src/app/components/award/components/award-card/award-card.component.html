@@ -10,7 +10,7 @@
 
   <div class="relative flex flex-col w-full h-28">
     <div class="inline-flex items-center space-x-3" [ngClass]="fullWidth ? 'justify-end' : ''">
-      <nz-avatar nzSrc="/assets/mocks/trophy.png" nz-tooltip [nzTooltipTitle]="award.badge.name"
+      <nz-avatar [nzSrc]="award.badge.image | ipfsBadge:filesizes.small" nz-tooltip [nzTooltipTitle]="award.badge.name"
         class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
       <nz-tag class="wen-xp-tag">{{award.badge.xp / award.badge.count}} XP</nz-tag>
       <wen-icon-angle-left class="flex rotate-180" *ngIf="fullWidth"></wen-icon-angle-left>

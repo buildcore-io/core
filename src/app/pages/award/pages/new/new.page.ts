@@ -1,15 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FILE_SIZES } from "functions/interfaces/models/base";
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { AwardType } from './../../../../../../functions/interfaces/models/award';
 import { Space } from './../../../../../../functions/interfaces/models/space';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { MintApi } from './../../../../@api/mint.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
@@ -26,6 +28,7 @@ export class NewPage implements OnInit, OnDestroy {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('');
+  public imageControl: FormControl = new FormControl(undefined);
   // Badge
   public badgeDescriptionControl: FormControl = new FormControl('');
   public badgeNameControl: FormControl = new FormControl('', Validators.required);
@@ -48,10 +51,13 @@ export class NewPage implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private awardApi: AwardApi,
+    private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private memberApi: MemberApi,
     private route: ActivatedRoute,
     private router: Router,
+    private mintApi: MintApi,
+    private cd: ChangeDetectorRef,
     public nav: NavigationService
   ) {
     this.awardForm = new FormGroup({
@@ -63,7 +69,8 @@ export class NewPage implements OnInit, OnDestroy {
       badgeDescription: this.badgeDescriptionControl,
       badgeName: this.badgeNameControl,
       badgeXp: this.badgeXpControl,
-      badgeCount: this.badgeCountControl
+      badgeCount: this.badgeCountControl,
+      image: this.imageControl
     });
   }
 
@@ -93,9 +100,11 @@ export class NewPage implements OnInit, OnDestroy {
       description: obj.badgeDescription,
       name: obj.badgeName,
       xp: obj.badgeXp,
-      count: obj.badgeCount
+      count: obj.badgeCount,
+      image: obj.image
     };
 
+    delete obj.image;
     delete obj.badgeDescription;
     delete obj.badgeName;
     delete obj.badgeXp;
@@ -119,6 +128,10 @@ export class NewPage implements OnInit, OnDestroy {
     return true;
   }
 
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+
   public getAvatarSize(url?: string|null): string|undefined {
     if (!url) {
       return undefined;
@@ -132,12 +145,41 @@ export class NewPage implements OnInit, OnDestroy {
       return;
     }
 
+    if (!this.imageControl.value && !(await this.mint())) {
+      return;
+    }
+
     await this.auth.sign(this.formatSubmitObj(this.awardForm.value), (sc, finish) => {
       this.notification.processRequest(this.awardApi.create(sc), 'Created.', finish).subscribe((val) => {
         this.router.navigate([ROUTER_UTILS.config.award.root, val?.uid])
       });
     });
 
+  }
+
+  public async mint(): Promise<boolean> {
+    // Find Available image.
+    const result = await firstValueFrom(this.mintApi.getAvailable('badge'));
+    if (!result || result?.length === 0) {
+      this.nzNotification.error('', 'No more avatars available');
+      return false;
+    } else {
+      const results: boolean = await this.auth.mint(result[0].uid);
+      if (results === false) {
+        this.nzNotification.error('', 'Unable to mint your badge at the moment. Try again later.');
+        return false;
+      } else {
+        this.imageControl.setValue({
+          metadata: result[0].uid,
+          fileName: result[0].fileName,
+          original: result[0].original,
+          avatar: result[0].avatar
+        });
+
+        this.cd.markForCheck();
+        return true;
+      }
+    }
   }
 
   private cancelSubscriptions(): void {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FileApi } from '@api/file.api';
 import { Space } from "functions/interfaces/models";
-import { FILE_SIZES } from "functions/interfaces/models/base";
+import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 
 @Component({
   selector: 'wen-space-card',
