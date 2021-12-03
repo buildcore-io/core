@@ -10,7 +10,7 @@
   <!-- TODO Loading. -->
   <div *ngIf="isLoading(members$ | async)">Loading...</div>
 
-  <nz-card class="w-full" *ngIf="isEmpty(members$ | async)">
+  <nz-card class="w-75" *ngIf="isEmpty(members$ | async)">
     <div class="flex flex-col justify-center text-center h-36">
       <span class="leading-7 text-app-gray-400">
         No Members
