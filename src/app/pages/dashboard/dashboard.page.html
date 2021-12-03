@@ -2,7 +2,7 @@
 <div class="space-y-14">
 
   <div *ngIf="!isEmpty(pendingSpaces$ | async) && !isLoading(pendingSpaces$ | async)">
-    <h3 i18n>Pending Membership requests</h3>
+    <h3 i18n>Pending Membership Requests</h3>
     <div class="flex flex-wrap gap-6 mb-10">
       <wen-space-card class="cursor-pointer" *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid" [space]="space"
         [routerLink]="['/space', space.uid]"></wen-space-card>
