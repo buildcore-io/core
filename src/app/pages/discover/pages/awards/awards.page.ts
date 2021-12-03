@@ -55,6 +55,11 @@ export class AwardsPage implements OnInit, OnDestroy {
       return;
     }
 
+    // We reached maximum.
+    if ((!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE)) {
+      return;
+    }
+
     this.subscriptions$.push(this.awardApi.top(this.award$.value[this.award$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 

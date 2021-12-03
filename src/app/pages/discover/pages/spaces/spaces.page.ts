@@ -55,6 +55,11 @@ export class SpacesPage implements OnInit, OnDestroy {
       return;
     }
 
+    // We reached maximum.
+    if ((!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE)) {
+      return;
+    }
+
     this.subscriptions$.push(this.getHandler(this.spaces$.value[this.spaces$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
