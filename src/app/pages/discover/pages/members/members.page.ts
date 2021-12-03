@@ -54,6 +54,11 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
+    // We reached maximum.
+    if ((!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE)) {
+      return;
+    }
+
     this.subscriptions$.push(this.memberApi.top(this.members$.value[this.members$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
