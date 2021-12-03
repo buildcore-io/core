@@ -4,8 +4,8 @@
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-24'">
     <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
     <div class="flex items-center w-full space-x-4">
-      <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)" class="border-gray-400 bg-bg-background min-w-10"
-        nzShape="circle">
+      <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
+        class="border-2 border-app-gray-100 bg-bg-background min-w-10" nzShape="circle">
       </nz-avatar>
       <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
     </div>
@@ -19,8 +19,10 @@
           <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
             [nzPercent]="getProgressForTwo(q.answers)[0] | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
           <p nz-typography class="wen-two-lines">
-            <span class="truncate">{{getProgressForTwo(q.answers)[0] | number : '1.2-2'}}% {{q.answers[0].text | truncate:[8]}}</span>
-            <span class="truncate">{{getProgressForTwo(q.answers)[1] | number : '1.2-2'}}% {{q.answers[1].text | truncate:[8]}}</span>
+            <span class="truncate">{{getProgressForTwo(q.answers)[0] | number : '1.2-2'}}% {{q.answers[0].text |
+              truncate:[8]}}</span>
+            <span class="truncate">{{getProgressForTwo(q.answers)[1] | number : '1.2-2'}}% {{q.answers[1].text |
+              truncate:[8]}}</span>
           </p>
         </div>
         <!-- TODO remove chart for now-->

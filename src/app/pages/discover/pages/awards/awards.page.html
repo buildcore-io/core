@@ -7,7 +7,7 @@
   <!-- TODO Loading. -->
   <div *ngIf="isLoading(award$ | async)">Loading...</div>
 
-  <nz-card class="w-full" *ngIf="isEmpty(award$ | async)">
+  <nz-card class="w-75" *ngIf="isEmpty(award$ | async)">
     <div class="flex flex-col justify-center text-center h-36">
       <span class="leading-7 text-app-gray-400">
         No Awards
