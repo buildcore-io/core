@@ -58,36 +58,40 @@ export class AwardApi extends BaseApi<Award> {
 
   // TODO: Fix typings.
   public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
-    return this.subCollectionPendingMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
+    return this.subCollectionParticipants<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
       finObj.comment = original.comment;
       finObj.participatedOn = original.createdOn;
       finObj.completed = original.completed;
       return finObj;
-    });
+    }, false);
   }
 
   // TODO: Fix typings.
   public listenIssuedParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
-    return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
+    return this.subCollectionParticipants<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
       finObj.comment = original.comment;
       finObj.participatedOn = original.createdOn;
       finObj.completed = original.completed;
       return finObj;
-    });
+    }, true);
   }
 
-  public subCollectionPendingMembers<T>(
+  public subCollectionParticipants<T>(
     docId: string,
     subCol: SUB_COL,
     lastValue?: any,
     manipulateOutput?: (original: any, finObj: any) => any,
-    orderBy: string|string[] = 'createdOn',
-    direction: any = 'desc',
-    def = DEFAULT_LIST_SIZE
+    completed = true
   ): Observable<T[]> {
+    // TODO Temporary clean up once merged into base.ts
+    const orderBy: string|string[] = 'createdOn';
+    const direction: any = 'desc';
+    const def = DEFAULT_LIST_SIZE;
+    // ---
+
     const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
       // TODO consolidate below withsubCollection Members below line is only custom one.
-      let query: any = subRef.where('completed', '!=', true).orderBy('completed');
+      let query: any = subRef.where('completed', '==', completed);
       // --
       const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
       order.forEach((o) => {
