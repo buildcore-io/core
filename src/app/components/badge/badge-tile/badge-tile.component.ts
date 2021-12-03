@@ -9,6 +9,7 @@ import { FileMetedata, FILE_SIZES } from "../../../../../functions/interfaces/mo
 })
 export class BadgeTileComponent {
   @Input() size?: string;
+  @Input() name?: string;
   @Input() metadata?: FileMetedata;
 
   public get filesizes(): typeof FILE_SIZES {

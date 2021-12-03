@@ -16,6 +16,7 @@ import { MemberApi } from './../../@api/member.api';
 })
 export class DashboardPage implements OnInit, OnDestroy {
   public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
+  public pendingSpaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
   public proposals$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
@@ -29,6 +30,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       this.cancelSubscriptions();
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.topSpaces(o.uid).subscribe(this.spaces$));
+        this.subscriptions$.push(this.memberApi.pendingSpaces(o.uid).subscribe(this.pendingSpaces$));
         this.subscriptions$.push(this.memberApi.topProposals(o.uid).subscribe(this.proposals$));
         this.subscriptions$.push(this.memberApi.topAwardsActive(o.uid).subscribe(this.awards$));
       }
@@ -52,6 +54,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       s.unsubscribe();
     });
     this.spaces$.next(undefined);
+    this.pendingSpaces$.next(undefined);
     this.proposals$.next(undefined);
     this.awards$.next(undefined);
   }

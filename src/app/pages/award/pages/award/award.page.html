@@ -67,7 +67,6 @@
 
     <nz-card nzTitle="Owner">
       <div *ngFor="let g of data.owners$ | async; trackBy: trackByUid" [routerLink]="['/', 'member', g.uid]" class="cursor-pointer">
-        <!-- TODOAVATAR - Owners -->
         <nz-avatar nzIcon="user" [nzSrc]="g?.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
         </nz-avatar>
         <span>@ {{ (g.name || g.uid) | truncate:[16] }}</span>
