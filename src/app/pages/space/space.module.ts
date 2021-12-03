@@ -21,6 +21,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MemberModule } from '../../components/member/member.module';
 import { ProposalCardModule } from '../../components/proposal/components/proposal-card/proposal-card.module';
+import { IpfsAvatarModule } from './../../@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardsPage } from './pages/awards/awards.page';
@@ -52,6 +53,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     SpaceRoutingModule,
     TruncateModule,
     MemberModule,
+    IpfsAvatarModule,
     ProposalCardModule,
     AwardCardModule,
     IconModule,

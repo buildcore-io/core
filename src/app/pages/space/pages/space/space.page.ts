@@ -92,6 +92,10 @@ export class SpacePage implements OnInit, OnDestroy {
     );
   }
 
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+
   public async join(): Promise<void> {
     if (!this.data.space$.value?.uid) {
       return;

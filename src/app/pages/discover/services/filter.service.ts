@@ -8,7 +8,7 @@ export enum SortOptions {
 
 @Injectable()
 export class FilterService {
-  public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.RECENT);
+  public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.OLDEST);
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(['All']);
   public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
   public hotTags: string[] = ['All', 'Popular'];
