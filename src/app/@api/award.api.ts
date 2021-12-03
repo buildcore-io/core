@@ -86,7 +86,9 @@ export class AwardApi extends BaseApi<Award> {
     def = DEFAULT_LIST_SIZE
   ): Observable<T[]> {
     const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
+      // TODO consolidate below withsubCollection Members below line is only custom one.
       let query: any = subRef.where('completed', '!=', true).orderBy('completed');
+      // --
       const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
       order.forEach((o) => {
         query = query.orderBy(o, direction);
