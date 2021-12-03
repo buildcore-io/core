@@ -19,7 +19,11 @@ export function pSchema(schema: any, o: any, ignoreUnset: string[] = []): any {
         output[i[0]] = o[i[0]];
       } else {
         // We must set null so FB unsets it.
-        output[i[0]] = o[i[0]] || null;
+        if (o[i[0]] === undefined) {
+          output[i[0]] = null;
+        } else {
+          output[i[0]] = o[i[0]];
+        }
       }
     }
   }
