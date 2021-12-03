@@ -20,7 +20,7 @@ export function scale(func: WEN_FUNC): number {
   // Award Functions
   scaleSettings[WEN_FUNC.cAward] = 1;
   scaleSettings[WEN_FUNC.addOwnerAward] = 1;
-  scaleSettings[WEN_FUNC.participateAward] = 3;
+  scaleSettings[WEN_FUNC.participateAward] = 1;
   scaleSettings[WEN_FUNC.aAward] = 1;
 
   // Proposal Functions
