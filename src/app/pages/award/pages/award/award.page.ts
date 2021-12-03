@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -28,7 +28,8 @@ export class AwardPage implements OnInit, OnDestroy {
   public isSubmitParticipationModalVisible = false;
   public commentControl: FormControl = new FormControl('');
   private subscriptions$: Subscription[] = [];
-  private guardiansSubscription$?: Subscription;
+  private isGuardianSubscriptions$?: Subscription;
+  private isMemberSubscription$?: Subscription;
 
   constructor(
     private auth: AuthService,
@@ -37,7 +38,6 @@ export class AwardPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
-    private cd: ChangeDetectorRef,
     public data: DataService,
     public nav: NavigationService
   ) {
@@ -62,17 +62,24 @@ export class AwardPage implements OnInit, OnDestroy {
       }
 
       // Once we load proposal let's load guardians for the space.
-      if (this.guardiansSubscription$) {
-        this.guardiansSubscription$.unsubscribe();
+      if (this.isGuardianSubscriptions$) {
+        this.isGuardianSubscriptions$.unsubscribe();
       }
       if (this.auth.member$.value?.uid) {
-        this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
+        this.isGuardianSubscriptions$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
                                       .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$);
-      }
-    });
 
-    this.data.participants$.pipe(untilDestroyed(this)).subscribe(() => {
-      this.cd.markForCheck();
+
+      }
+
+      if (this.isMemberSubscription$) {
+        this.isMemberSubscription$.unsubscribe();
+      }
+
+      if (this.auth.member$.value?.uid) {
+        this.isMemberSubscription$ = this.awardApi.isMemberParticipant(obj.uid, this.auth.member$.value.uid)
+                                     .pipe(untilDestroyed(this)).subscribe(this.data.isParticipantWithinAward$);
+      }
     });
 
     this.data.award$.pipe(skip(1), first()).subscribe((a) => {
@@ -111,7 +118,6 @@ export class AwardPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.award$));
     this.subscriptions$.push(this.awardApi.listenOwners(id).pipe(untilDestroyed(this)).subscribe(this.data.owners$));
-    this.subscriptions$.push(this.awardApi.listenParticipants(id).pipe(untilDestroyed(this)).subscribe(this.data.participants$));
   }
 
   public showParticipateModal(): void {
@@ -136,18 +142,6 @@ export class AwardPage implements OnInit, OnDestroy {
     }
   }
 
-  public loggedInMemberIsParticipant(): boolean {
-    if (!this.data.participants$.value) {
-      return false;
-    }
-
-    if (!this.auth.member$.value?.uid) {
-      return false;
-    }
-
-    return this.data.participants$.value.filter(e => e.uid === this.auth.member$.value?.uid).length > 0;
-  }
-
   public async participate(): Promise<void> {
     this.isSubmitParticipationModalVisible = false;
     if (!this.data.award$.value?.uid) {
@@ -169,8 +163,8 @@ export class AwardPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
     this.data.resetSubjects();
-    if (this.guardiansSubscription$) {
-      this.guardiansSubscription$.unsubscribe();
+    if (this.isGuardianSubscriptions$) {
+      this.isGuardianSubscriptions$.unsubscribe();
     }
   }
 }

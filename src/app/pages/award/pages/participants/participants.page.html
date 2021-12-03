@@ -1,9 +1,23 @@
 <div class="space-y-12">
-  <div class="space-y-4">
-    <!-- TODO Loading. -->
-    <div *ngIf="data.isLoading(data.participants$ | async)">Loading...</div>
+  <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+  (scrolled)="onScroll()">
+    <div class="inline-flex justify-between w-full">
+      <div>
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+                (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
+          Pending
+        </nz-tag>
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ISSUED"
+                (nzCheckedChange)="handleFilterChange(filterOptions.ISSUED)">
+          Issued
+        </nz-tag>
+      </div>
+    </div>
 
-    <nz-card class="w-full" *ngIf="data.isEmpty(data.participants$  | async)">
+    <!-- TODO Loading. -->
+    <div *ngIf="data.isLoading(getList() | async)">Loading...</div>
+
+    <nz-card class="w-full" *ngIf="data.isEmpty(getList()  | async)">
       <div class="flex flex-col justify-center text-center h-36">
         <span class="leading-7 text-app-gray-400">
           No Participants
@@ -12,15 +26,15 @@
     </nz-card>
 
     <wen-member-card class="block cursor-pointer" [fullWidth]="true"
-      *ngFor="let member of data.participants$ | async; trackBy: trackByUid"
+      *ngFor="let member of (getList() | async); trackBy: trackByUid"
       [about]="member.comment || ''"
       [member]="member">
       <ng-container *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async)">
         <button nz-button nzSize="small" type="button" (click)="approve(member.uid)" *ngIf="!member.completed">
-          Approve
+          Give Badge
         </button>
         <button nz-button nzSize="small"  type="button" (click)="approve(member.uid)" *ngIf="member.completed">
-          Give another
+          Give Another
         </button>
       </ng-container>
     </wen-member-card>
