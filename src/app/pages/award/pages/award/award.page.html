@@ -38,11 +38,9 @@
   <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
     <ng-container *ngIf="!data.isCompleted(data.award$ | async) && (isLoggedIn$ | async)">
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="showParticipateModal()"
-        *ngIf="!loggedInMemberIsParticipant()">
-        Participate</button>
-      <!-- TODO
-      <button nz-button nzType="primary" nzBlock nzSize="large" *ngIf="loggedInMemberIsParticipant()">
-        Cancel Participation</button> -->
+        [disabled]="(data.isParticipantWithinAward$ | async)">
+        {{ (data.isParticipantWithinAward$ | async) ? 'Already Participated' : 'Participate'}}
+      </button>
     </ng-container>
 
     <nz-card nzTitle="Award">

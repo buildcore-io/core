@@ -222,6 +222,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
       uid: participant,
       comment: params.body.comment || null,
       parentId: params.body.uid,
+      completed: false,
       parentCol: COL.AWARD,
       createdOn: serverTime()
     });

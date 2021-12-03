@@ -21,6 +21,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IpfsBadgeModule } from './../../@core/pipes/ipfs-badge/ipfs-badge.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
@@ -44,6 +45,7 @@ import { DataService } from './services/data.service';
     CommonModule,
     TabsModule,
     TruncateModule,
+    InfiniteScrollModule,
     IpfsBadgeModule,
     AwardRoutingModule,
     IpfsAvatarModule,

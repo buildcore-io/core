@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from "functions/interfaces/models";
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
+import { AwardParticipant } from './../../../functions/interfaces/models/award';
 import { Member } from './../../../functions/interfaces/models/member';
-import { BaseApi } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export interface AwardParticipantWithMember extends Member {
   comment?: string;
@@ -56,13 +57,75 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   // TODO: Fix typings.
-  public listenParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
+  public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
+    return this.subCollectionPendingMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
+      finObj.comment = original.comment;
+      finObj.participatedOn = original.createdOn;
+      finObj.completed = original.completed;
+      return finObj;
+    });
+  }
+
+  // TODO: Fix typings.
+  public listenIssuedParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
     return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
       finObj.comment = original.comment;
       finObj.participatedOn = original.createdOn;
       finObj.completed = original.completed;
       return finObj;
     });
+  }
+
+  public subCollectionPendingMembers<T>(
+    docId: string,
+    subCol: SUB_COL,
+    lastValue?: any,
+    manipulateOutput?: (original: any, finObj: any) => any,
+    orderBy: string|string[] = 'createdOn',
+    direction: any = 'desc',
+    def = DEFAULT_LIST_SIZE
+  ): Observable<T[]> {
+    const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
+      let query: any = subRef.where('completed', '!=', true).orderBy('completed');
+      const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+      order.forEach((o) => {
+        query = query.orderBy(o, direction);
+      });
+      if (lastValue) {
+        query = query.startAfter(lastValue).limit(def);
+      } else {
+        query = query.limit(def);
+      }
+
+      return query;
+    });
+
+    return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
+      // console.log(this.collection, subCol, lastValue, obj);
+      const out: T[] = [];
+      for (const o of obj) {
+        const finObj: any = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
+        if (manipulateOutput) {
+          out.push(manipulateOutput(o, finObj));
+        } else {
+          out.push(finObj);
+        }
+      }
+
+      return out;
+    }));
+  }
+
+  public isMemberParticipant(awardId: string, memberId: string): Observable<boolean> {
+    if (!awardId || !memberId) {
+      return of(false);
+    }
+
+    return this.afs.collection(this.collection).doc(awardId.toLowerCase()).collection(SUB_COL.PARTICIPANTS).doc<AwardParticipant>(memberId.toLowerCase()).valueChanges().pipe(
+      map((o) => {
+        return !!o;
+      })
+    );
   }
 
   public create(req: WenRequest): Observable<Award|undefined> {
