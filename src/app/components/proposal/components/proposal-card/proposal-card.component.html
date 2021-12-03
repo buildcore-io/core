@@ -2,7 +2,7 @@
   *ngIf="proposal">
   <wen-icon-angle-left class="fixed flex rotate-180 right-6" *ngIf="fullWidth"></wen-icon-angle-left>
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-24'">
-    <h3 class="mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
+    <h3 class="max-w-md mt-2 mb-2 text-lg font-bold truncate">{{ proposal.name || proposal.uid }}</h3>
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
         class="border-2 border-app-gray-100 bg-bg-background min-w-10" nzShape="circle">
