@@ -20,7 +20,7 @@
     [nzDropdownMenu]="createMenu"
     nz-tooltip
     nzTooltipPlacement="bottom"
-    [nzTooltipTitle]="!isAllowedCreation ? 'You have to earn badge to create space first!' : undefined"
+    [nzTooltipTitle]="!isAllowedCreation ? 'To create a new space you must first earn a badge!' : undefined"
     *ngIf="(isLoggedIn$ | async) && !isMemberProfile && !isLandingPage"
     nzType="primary"
     type="button"
