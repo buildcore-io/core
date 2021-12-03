@@ -5,11 +5,14 @@ import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Proposal } from '../../interfaces/models/proposal';
+import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
+import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
@@ -65,8 +68,9 @@ function defaultJoiUpdateCreateSchema(): any {
 
 export const createProposal: functions.CloudFunction<Proposal> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<Proposal> => {
+  minInstances: scale(WEN_FUNC.cProposal),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Proposal> => {
+  appCheck(WEN_FUNC.cProposal, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -172,8 +176,9 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
 
 export const approveProposal: functions.CloudFunction<Proposal> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.aProposal),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.aProposal, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -213,8 +218,9 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
 
 export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.rProposal),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.rProposal, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -258,8 +264,9 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
 
 export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.voteOnProposal),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.voteOnProposal, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {

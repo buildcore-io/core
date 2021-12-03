@@ -3,10 +3,12 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
-import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
+import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { scale } from "../scale.settings";
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
+import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
@@ -33,8 +35,9 @@ function defaultJoiUpdateCreateSchema(): any {
 
 export const createSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<Space> => {
+  minInstances: scale(WEN_FUNC.cSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
+  appCheck(WEN_FUNC.cSpace, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner: string = params.address.toLowerCase();
 
@@ -94,8 +97,9 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<Space> => {
+  minInstances: scale(WEN_FUNC.uSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
+  appCheck(WEN_FUNC.uSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -137,8 +141,9 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<Space> => {
+  minInstances: scale(WEN_FUNC.joinSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
+  appCheck(WEN_FUNC.joinSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -198,8 +203,9 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.leaveSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.leaveSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -256,8 +262,9 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.addGuardianSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.addGuardianSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -312,8 +319,9 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
 
 export const removeGuardian: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.removeGuardianSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.removeGuardianSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -365,8 +373,9 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
 
 export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.blockMemberSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.blockMemberSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -452,8 +461,9 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
 
 export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.unblockMemberSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.unblockMemberSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -489,8 +499,9 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
 
 export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.acceptMemberSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.acceptMemberSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
@@ -545,8 +556,9 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
 
 export const declineMemberSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.declineMemberSpace),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.declineMemberSpace, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();

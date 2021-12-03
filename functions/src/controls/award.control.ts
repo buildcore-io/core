@@ -4,10 +4,13 @@ import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SUB_COL } from '../../interfaces/models/base';
+import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
+import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
@@ -56,8 +59,9 @@ function defaultJoiUpdateCreateSchema(): any {
 
 export const createAward: functions.CloudFunction<Award> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<Award> => {
+  minInstances: scale(WEN_FUNC.cAward),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Award> => {
+  appCheck(WEN_FUNC.cAward, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -131,8 +135,9 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
 
 export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.addOwnerAward),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.addOwnerAward, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -174,8 +179,9 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
 
 export const participate: functions.CloudFunction<Award> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.participateAward),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.participateAward, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   const participant = params.address.toLowerCase();
@@ -229,8 +235,9 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
 
 export const approveParticipant: functions.CloudFunction<Award> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: 1,
-}).https.onCall(async (req: WenRequest): Promise<StandardResponse> => {
+  minInstances: scale(WEN_FUNC.aAward),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.aAward, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   // TODO Fix for below validation.
