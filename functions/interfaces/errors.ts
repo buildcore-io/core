@@ -5,6 +5,7 @@ export const WenError = {
   signature_must_be_provided: { code: 1003, key: 'Signature must be provided.' },
   invalid_signature: { code: 1003, key: 'Invalid signature.' },
   missing_nonce: { code: 1004, key: 'Missing nonce.' },
+  unapproved_site: { code: 1005, key: 'Site is not approved to interact.' },
   invalid_wallet_address: { code: 2002, key: 'Invalid wallet address.' },
   failed_to_decode_token: { code: 2003, key: 'Failed to decode the token.' },
   member_username_exists: { code: 2004, key: 'Username already exists.' },
