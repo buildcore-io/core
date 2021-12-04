@@ -6,6 +6,10 @@ export class ProposalStartDateMin {
   public static value = 5 * 60 * 1000;
 }
 
+export class AppCheck {
+  public static enabled = true;
+}
+
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
 export const DISCORD_REGEXP = /^.{3,32}#[0-9]{4}$/i;
 export const TWITTER_REGEXP = /^@?(\w){1,15}$/i;
