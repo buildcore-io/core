@@ -24,26 +24,32 @@ registerLocaleData(fr);
 const icons: IconDefinition[] = [];
 const emulator = false;
 
+const imports: any[] = [
+  BrowserModule,
+  CoreModule,
+  WebShellModule,
+  HttpClientModule,
+  BrowserAnimationsModule,
+  NzIconModule.forRoot(icons),
+  // Interim-Firebase.
+  AngularFireModule.initializeApp(environment.fbConfig),
+  provideFirebaseApp(() => initializeApp(environment.fbConfig)),
+  AngularFirestoreModule,
+  AngularFireFunctionsModule,
+  AngularFireStorageModule
+];
+
+// AppCheck only in production.
+if (environment.production) {
+  imports.push(provideAppCheck(() =>  {
+    const provider = new ReCaptchaV3Provider(environment.captcha);
+    return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
+  }));
+}
+
 @NgModule({
   declarations: [WenComponent],
-  imports: [
-    BrowserModule,
-    CoreModule,
-    WebShellModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    NzIconModule.forRoot(icons),
-    // Interim-Firebase.
-    AngularFireModule.initializeApp(environment.fbConfig),
-    provideFirebaseApp(() => initializeApp(environment.fbConfig)),
-    provideAppCheck(() =>  {
-      const provider = new ReCaptchaV3Provider(environment.captcha);
-      return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
-    }),
-    AngularFirestoreModule,
-    AngularFireFunctionsModule,
-    AngularFireStorageModule
-  ],
+  imports: imports,
   bootstrap: [WenComponent],
   providers: [{
     provide: Nzi18n,

@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - run: npm run build
+      - run: npm run build:prod
       # enable maintenance mode.
       - name: Enable maintenance mode
         run: |

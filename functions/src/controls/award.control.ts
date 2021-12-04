@@ -45,14 +45,14 @@ function defaultJoiUpdateCreateSchema(): any {
         }).required()
       }).optional(),
       // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
-      xp: Joi.number().min(0).max(1000).custom((value) => {
-        // Validate value is dividable by count.
-        if (value === 0 || (value % <any>Joi.ref('count')) == 0) {
-          return true;
-        } else {
-          return false;
-        }
-      }).required()
+      xp: Joi.number().min(0).max(1000).required()
+    }).custom((obj, helper) => {
+      // Validate value is dividable by count.
+      if (obj.xp === 0 || (obj.xp % obj.count) == 0) {
+        return obj;
+      } else {
+        return helper.error('Your total XP must be dividable without decimals');
+      }
     }).required()
   });
 }

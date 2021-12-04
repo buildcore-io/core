@@ -65,14 +65,14 @@ export class HomePage implements OnInit {
 
   public goToSoonLabsUrl(): void {
     window.open(
-      'https://www.soonlabs.com',
+      'https://www.soonlabs.net',
       '_blank'
     );
   }
 
   public goToIotaUrl(): void {
     window.open(
-      'https://www.soonlabs.com',
+      'https://www.soonlabs.net',
       '_blank'
     );
   }

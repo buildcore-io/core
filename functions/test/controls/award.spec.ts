@@ -135,6 +135,19 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       walletSpy.mockRestore();
     });
 
+    it('failed to create award - badge not divadable by XP', async () => {
+      body.badge.count = 2;
+      body.xp = 5;
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: body
+      }));
+
+      const wrapped: any = testEnv.wrap(createAward);
+      (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
+      walletSpy.mockRestore();
+    });
+
     it('failed to create award - badge over XP limit', async () => {
       body.badge.count = 1001;
       walletSpy.mockReturnValue(Promise.resolve({
