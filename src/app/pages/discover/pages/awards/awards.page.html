@@ -15,7 +15,7 @@
     </div>
   </nz-card>
 
-  <wen-award-card class="cursor-pointer" *ngFor="let award of award$ | async; trackBy: trackByUid" [award]="award"
+  <wen-award-card class="outline-none cursor-pointer" *ngFor="let award of award$ | async; trackBy: trackByUid" [award]="award"
     [routerLink]="['/award', award.uid]">
   </wen-award-card>
 </div>

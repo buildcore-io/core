@@ -16,7 +16,7 @@
       <wen-icon-angle-left class="flex rotate-180" *ngIf="fullWidth"></wen-icon-angle-left>
     </div>
 
-    <div i18n class="inline-flex mt-6" [ngClass]="fullWidth ? 'fixed bottom-4 left-4' : ''">
+    <div i18n class="inline-flex mt-6" [ngClass]="fullWidth ? 'absolute bottom-4 right-4' : ''">
       <wen-award-status [award]="award"></wen-award-status>
       <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
     </div>
