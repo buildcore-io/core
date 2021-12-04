@@ -273,7 +273,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
   }
 
   const participant: any = await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member);
-  const participantRec: any = participant.get();
+  const participantRec: any = await participant.get();
   if (params.body) {
     // Member might not be participant of the space, that's fine. we just need to add him.
     if (!participantRec.exists) {
