@@ -33,7 +33,7 @@ export function pSchema(schema: any, o: any, ignoreUnset: string[] = []): any {
 
 export function assertValidation(r: ValidationResult): void {
   if (r.error) {
-    throw throwArgument('invalid-argument', WenError.invalid_params, JSON.stringify(r.error.details)); //
+    throw throwArgument('invalid-argument', WenError.invalid_params, r.error.details?.[0]?.type);
   }
 }
 

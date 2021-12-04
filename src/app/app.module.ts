@@ -2,7 +2,7 @@ import { registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import en from '@angular/common/locales/en';
 import fr from '@angular/common/locales/fr';
-import { LOCALE_ID, ModuleWithProviders, NgModule, Type } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { provideAppCheck } from "@angular/fire/app-check";
 import { AngularFireModule } from '@angular/fire/compat';
@@ -24,7 +24,7 @@ registerLocaleData(fr);
 const icons: IconDefinition[] = [];
 const emulator = false;
 
-const imports: Array<Type<any> | ModuleWithProviders<{}> | any[]> = [
+const imports: any[] = [
   BrowserModule,
   CoreModule,
   WebShellModule,
