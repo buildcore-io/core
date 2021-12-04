@@ -23,8 +23,8 @@ export function scale(func: WEN_FUNC): number {
   // Award Functions
   scaleSettings[WEN_FUNC.cAward] = low;
   scaleSettings[WEN_FUNC.addOwnerAward] = low;
-  scaleSettings[WEN_FUNC.participateAward] = low;
-  scaleSettings[WEN_FUNC.aAward] = low;
+  scaleSettings[WEN_FUNC.participateAward] = medium;
+  scaleSettings[WEN_FUNC.aAward] = medium;
 
   // Proposal Functions
   scaleSettings[WEN_FUNC.cProposal] = low;
