@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Title } from "@angular/platform-browser";
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { debounceTime } from "rxjs";
+import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FilterService, SortOptions } from './../../services/filter.service';
 
 @UntilDestroy()
@@ -21,12 +23,14 @@ export class DiscoverPage implements OnInit, OnDestroy {
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
   ];
   constructor(
+    private titleService: Title,
     public filter: FilterService
   ) {
     // none;
   }
 
   public ngOnInit(): void {
+    this.titleService.setTitle(WEN_NAME + ' - ' + 'Discover');
     this.filterControl.setValue(this.filter.search$.value);
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
       this.filter.selectedSort$.next(val);
@@ -38,6 +42,7 @@ export class DiscoverPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.titleService.setTitle(WEN_NAME);
     this.filter.resetSubjects();
   }
 }

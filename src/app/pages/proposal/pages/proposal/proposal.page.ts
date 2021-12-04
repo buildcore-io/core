@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
@@ -6,6 +7,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
+import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { ProposalQuestion, ProposalSubType } from './../../../../../../functions/interfaces/models/proposal';
@@ -35,6 +37,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   private proposalId?: string;
 
   constructor(
+    private titleService: Title,
     private auth: AuthService,
     private router: Router,
     private notification: NotificationService,
@@ -51,6 +54,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.titleService.setTitle(WEN_NAME + ' - ' + 'Proposal');
     this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
       if (id) {
@@ -215,6 +219,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.data.resetSubjects();
     if (this.guardiansSubscription$) {

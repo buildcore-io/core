@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from "@api/file.api";
 import { AuthService } from '@components/auth/services/auth.service';
@@ -7,6 +8,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from "@pages/space/services/data.service";
 import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, map, Observable, skip } from 'rxjs';
+import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -31,6 +33,7 @@ export class SpacePage implements OnInit, OnDestroy {
   ];
 
   constructor(
+    private titleService: Title,
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
@@ -43,6 +46,7 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.titleService.setTitle(WEN_NAME + ' - ' + 'Space');
     this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
@@ -146,6 +150,7 @@ export class SpacePage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.titleService.setTitle(WEN_NAME);
     this.data.cancelSubscriptions();
   }
 }

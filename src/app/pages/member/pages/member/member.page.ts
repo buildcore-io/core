@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../@api/member.api';
@@ -27,6 +29,7 @@ export class MemberPage implements OnInit, OnDestroy {
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
   constructor(
+    private titleService: Title,
     private route: ActivatedRoute,
     private memberApi: MemberApi,
     private auth: AuthService,
@@ -37,6 +40,7 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.titleService.setTitle(WEN_NAME + ' - ' + 'Member');
     this.route.params.subscribe((params) => {
       this.cancelSubscriptions();
       if (params?.memberId) {
@@ -104,6 +108,7 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.data.resetSubjects();
   }
