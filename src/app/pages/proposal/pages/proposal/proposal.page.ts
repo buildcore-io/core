@@ -34,6 +34,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   private subscriptions$: Subscription[] = [];
   private guardiansSubscription$?: Subscription;
   private currentMemberVotedTransSubscription$?: Subscription;
+  private canVoteSubscription$?: Subscription;
   private proposalId?: string;
 
   constructor(
@@ -112,10 +113,13 @@ export class ProposalPage implements OnInit, OnDestroy {
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((member) => {
       this.currentMemberVotedTransSubscription$?.unsubscribe();
+      this.canVoteSubscription$?.unsubscribe();
       if (member?.uid && this.proposalId) {
         this.currentMemberVotedTransSubscription$ = this.proposalApi.getMembersVotes(this.proposalId, member.uid).subscribe(this.data.currentMembersVotes$);
+        this.currentMemberVotedTransSubscription$ = this.proposalApi.canMemberVote(this.proposalId, member.uid).subscribe(this.data.canVote$);
       } else {
         this.data.currentMembersVotes$.next(undefined);
+        this.data.canVote$.next(false);
       }
     });
   }
@@ -140,7 +144,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.proposalId = id;
     this.cancelSubscriptions();
     this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.proposal$));
-    this.subscriptions$.push(this.proposalApi.listenMembers(id).pipe(untilDestroyed(this)).subscribe(this.data.members$));
+    // TODO Fix paging.
+    this.subscriptions$.push(this.proposalApi.listenMembers(id, undefined, 'createdOn', 'desc', 2500).pipe(untilDestroyed(this)).subscribe(this.data.members$));
     this.subscriptions$.push(this.proposalApi.lastVotes(id).pipe(untilDestroyed(this)).subscribe(this.data.transactions$));
   }
 
@@ -213,6 +218,8 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions(): void {
+    this.currentMemberVotedTransSubscription$?.unsubscribe();
+    this.canVoteSubscription$?.unsubscribe();
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });

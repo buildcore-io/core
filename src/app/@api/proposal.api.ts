@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Proposal } from "functions/interfaces/models";
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
+import { ProposalMember } from './../../../functions/interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
@@ -74,13 +75,24 @@ export class ProposalApi extends BaseApi<Proposal> {
     ).valueChanges();
   }
 
+  public canMemberVote(proposalId: string, memberId: string): Observable<boolean> {
+    if (!proposalId || !memberId) {
+      return of(false);
+    }
 
-  public listenMembers(proposalId: string, lastValue?: any): Observable<ProposalParticipantWithMember[]> {
+    return this.afs.collection(this.collection).doc(proposalId.toLowerCase()).collection(SUB_COL.MEMBERS).doc<ProposalMember>(memberId.toLowerCase()).valueChanges().pipe(
+      map((o) => {
+        return !!o;
+      })
+    );
+  }
+
+  public listenMembers(proposalId: string, lastValue?: any, orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
     return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, (original, finObj) => {
       finObj.voted = original.voted;
       finObj.weight = original.weight;
       return finObj;
-    });
+    }, orderBy, direction, def);
   }
 
   public create(req: WenRequest): Observable<Proposal|undefined> {

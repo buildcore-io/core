@@ -14,7 +14,7 @@
 <nz-card *ngFor="let q of (data.proposal$ | async)?.questions" [nzTitle]="q.text">
   <span>{{q.additionalInfo}}</span>
   <nz-radio-group class="w-full mb-4 mt-9"
-  [nzDisabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && data.canVote(data.members$ | async) && data.isInProgress(data.proposal$ | async))"
+  [nzDisabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async))"
   [formControl]="voteControl">
     <div *ngFor="let a of q.answers">
       <label nz-radio class="w-full px-5 py-3 border border-solid rounded-large" [nzValue]="a.value">
@@ -28,7 +28,7 @@
   </nz-radio-group>
 
   <button nz-button nzType="primary"
-  *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && data.canVote(data.members$ | async) && data.isInProgress(data.proposal$ | async)"
+  *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)"
   nzBlock nzSize="large" (click)="vote()">
     Vote Now
   </button>

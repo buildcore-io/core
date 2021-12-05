@@ -17,6 +17,7 @@ export class DataService {
   public members$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
   public transactions$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public currentMembersVotes$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
+  public canVote$: BehaviorSubject<boolean|undefined> = new BehaviorSubject<boolean|undefined>(false);
   public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
   constructor(
     private auth: AuthService
@@ -32,21 +33,7 @@ export class DataService {
     this.members$.next(undefined);
     this.transactions$.next(undefined);
     this.guardians$.next(undefined);
-  }
-
-  public canVote(members?: ProposalParticipantWithMember[]|null): boolean {
-    if (!this.auth.member$?.value?.uid) {
-      return false;
-    }
-
-    let canVote = undefined;
-    members?.find((m) => {
-      if (m.uid === this.auth.member$?.value?.uid) {
-        canVote = !m.voted;
-      }
-    });
-
-    return (canVote === true);
+    this.canVote$.next(false);
   }
 
   public isMemberVote(type: ProposalType|undefined): boolean {
