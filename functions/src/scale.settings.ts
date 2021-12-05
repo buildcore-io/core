@@ -4,9 +4,10 @@ export function scale(func: WEN_FUNC): number {
   const low = 1;
   const medium = 3;
   const important = 6;
+  const pump = 9;
   const scaleSettings: any = {};
-  scaleSettings[WEN_FUNC.cMemberNotExists] = important;
-  scaleSettings[WEN_FUNC.uMember] = low;
+  scaleSettings[WEN_FUNC.cMemberNotExists] = pump;
+  scaleSettings[WEN_FUNC.uMember] = important;
 
   // Space functions.
   scaleSettings[WEN_FUNC.cSpace] = medium;

@@ -63,16 +63,23 @@ export class HomePage implements OnInit {
     });
   }
 
+  public goToManifesto(): void {
+    window.open(
+      'https://github.com/soonlabs/soonaverse-dao/blob/main/MANIFESTO.md',
+      '_blank'
+    );
+  }
+
   public goToSoonLabsUrl(): void {
     window.open(
-      'https://www.soonlabs.net',
+      'https://github.com/soonlabs/soonaverse-dao',
       '_blank'
     );
   }
 
   public goToIotaUrl(): void {
     window.open(
-      'https://www.soonlabs.net',
+      'https://github.com/soonlabs/soonaverse-dao',
       '_blank'
     );
   }
