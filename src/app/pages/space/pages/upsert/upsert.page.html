@@ -96,7 +96,8 @@
               <nz-upload class="wen-avatar-uploader" nzName="avatar" nzListType="picture-card" [nzDirectory]="false"
                 nzType="drag" [nzLimit]="1" [nzCustomRequest]="uploadFile.bind(this, 'space_avatar')"
                 (nzChange)="uploadChangeAvatar($event)" nzFileType="image/png,image/jpeg,image/gif"
-                [nzShowUploadList]="true">
+                [nzShowUploadList]="true"
+                [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }">
                 <ng-container>
                   <i class="upload-icon" nz-icon nzType="upload"></i>
                 </ng-container>
@@ -117,7 +118,8 @@
               <nz-upload class="wen-space-banner" nzName="banner" nzType="drag" nzListType="picture-card"
                 [nzDirectory]="false" [nzLimit]="1" [nzCustomRequest]="uploadFile.bind(this, 'space_banner')"
                 (nzChange)="uploadChangeBanner($event)" nzFileType="image/png,image/jpeg,image/gif"
-                [nzPreviewFile]="previewFile" [nzShowUploadList]="true">
+                [nzPreviewFile]="previewFile" [nzShowUploadList]="true"
+                [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }">
                 <ng-container>
                   <i class="upload-icon" nz-icon nzType="upload"></i>
                 </ng-container>
