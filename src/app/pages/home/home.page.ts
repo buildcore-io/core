@@ -77,6 +77,13 @@ export class HomePage implements OnInit {
     );
   }
 
+  public goToYoutube(): void {
+    window.open(
+      'https://www.youtube.com/channel/UCUxPJ-wMgz7DnEFWpW5b48w',
+      '_blank'
+    );
+  }
+
   public goToIotaUrl(): void {
     window.open(
       'https://github.com/soonlabs/soonaverse-dao',
