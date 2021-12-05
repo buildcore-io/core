@@ -18,4 +18,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}"
           projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
           expires: 14d
-          channelId: wen
+          channelId: wen-after
