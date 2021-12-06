@@ -15,7 +15,7 @@ export class AwardStatusComponent {
       return false;
     }
     return (
-      (award.issued >= award.badge.count) || dayjs(award?.endDate.toDate()).isAfter(dayjs()) &&
+      (award.issued >= award.badge.count) || dayjs(award?.endDate.toDate()).isBefore(dayjs()) &&
       award.approved
     )
   }
