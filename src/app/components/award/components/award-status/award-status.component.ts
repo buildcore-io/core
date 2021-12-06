@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import * as dayjs from 'dayjs';
 import { Award } from 'functions/interfaces/models';
 
 @Component({
@@ -13,6 +14,9 @@ export class AwardStatusComponent {
     if (!award) {
       return false;
     }
-    return (award.issued >= award.badge.count) && award.approved;
+    return (
+      (award.issued >= award.badge.count) || dayjs(award?.endDate.toDate()).isAfter(dayjs()) &&
+      award.approved
+    )
   }
 }

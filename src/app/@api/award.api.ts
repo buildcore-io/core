@@ -44,11 +44,12 @@ export class AwardApi extends BaseApi<Award> {
       (ref) => {
         let fResult: any = ref.where('space', '==', space);
         if (filter === AwardFilter.ACTIVE) {
-          fResult = fResult.where('completed', '==', false).where('approved', '==', true);
+          fResult = fResult.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
         } else if (filter === AwardFilter.COMPLETED) {
+          // todo .where('endDate', '>=', new Date())
           fResult = fResult.where('completed', '==', true).where('approved', '==', true);
         } else if (filter === AwardFilter.DRAFT) {
-          fResult = fResult.where('rejected', '==', false).where('approved', '==', false);
+          fResult = fResult.where('endDate', '>=', new Date()).where('rejected', '==', false).where('approved', '==', false);
         } else if (filter === AwardFilter.REJECTED) {
           fResult = fResult.where('rejected', '==', true)
         }

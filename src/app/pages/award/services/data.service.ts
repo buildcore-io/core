@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as dayjs from 'dayjs';
 import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
@@ -15,7 +16,11 @@ export class DataService {
     if (!award) {
       return false;
     }
-    return (award.issued >= award.badge.count);
+
+    return (
+      (award.issued >= award.badge.count) || dayjs(award?.endDate.toDate()).isAfter(dayjs()) &&
+      award.approved
+    )
   }
 
   public isLoading(arr: any): boolean {
