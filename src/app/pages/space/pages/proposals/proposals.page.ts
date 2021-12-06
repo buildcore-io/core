@@ -57,6 +57,10 @@ export class ProposalsPage implements OnInit, OnDestroy {
   public getList(): BehaviorSubject<Proposal[]|undefined> {
     if (this.selectedListControl.value === this.filterOptions.ACTIVE) {
       return this.data.proposalsActive$;
+    } else if (this.selectedListControl.value === this.filterOptions.DRAFT) {
+      return this.data.proposalsDraft$;
+    } else if (this.selectedListControl.value === this.filterOptions.REJECTED) {
+      return this.data.proposalsRejected$;
     } else {
       return this.data.proposalsCompleted$;
     }
