@@ -8,7 +8,7 @@ initializeApp({
 });
 
 const db = getFirestore();
-const record = COL.SPACE;
+const record = COL.AWARD;
 db.collection(record).get().then((snapshot) => {
   snapshot.docs.forEach((d) => {
     // const output: any = keywords(d.data());
