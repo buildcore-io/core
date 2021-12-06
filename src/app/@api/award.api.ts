@@ -16,9 +16,11 @@ export interface AwardParticipantWithMember extends Member {
 }
 
 export enum AwardFilter {
-  ALL,
-  ACTIVE,
-  COMPLETED
+  ALL = 'all',
+  DRAFT = 'draft',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+  REJECTED = 'rejected'
 }
 
 @Injectable({
@@ -42,9 +44,14 @@ export class AwardApi extends BaseApi<Award> {
       (ref) => {
         let fResult: any = ref.where('space', '==', space);
         if (filter === AwardFilter.ACTIVE) {
-          fResult = fResult.where('completed', '==', false);
+          fResult = fResult.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
         } else if (filter === AwardFilter.COMPLETED) {
-          fResult = fResult.where('completed', '==', true);
+          // todo .where('endDate', '>=', new Date())
+          fResult = fResult.where('completed', '==', true).where('approved', '==', true);
+        } else if (filter === AwardFilter.DRAFT) {
+          fResult = fResult.where('endDate', '>=', new Date()).where('rejected', '==', false).where('approved', '==', false);
+        } else if (filter === AwardFilter.REJECTED) {
+          fResult = fResult.where('rejected', '==', true)
         }
 
         return fResult;
@@ -142,7 +149,15 @@ export class AwardApi extends BaseApi<Award> {
     return this.request(WEN_FUNC.participateAward, req);
   }
 
+  public approveParticipant(req: WenRequest): Observable<Award|undefined> {
+    return this.request(WEN_FUNC.aParticipantAward, req);
+  }
+
   public approve(req: WenRequest): Observable<Award|undefined> {
     return this.request(WEN_FUNC.aAward, req);
+  }
+
+  public reject(req: WenRequest): Observable<Award|undefined> {
+    return this.request(WEN_FUNC.rAward, req);
   }
 }

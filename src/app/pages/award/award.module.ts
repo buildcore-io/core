@@ -24,6 +24,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IpfsBadgeModule } from './../../@core/pipes/ipfs-badge/ipfs-badge.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
+import { AwardStatusModule } from './../../components/award/components/award-status/award-status.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardRoutingModule } from './award-routing.module';
 import { AwardPage } from './pages/award/award.page';
@@ -63,6 +64,7 @@ import { DataService } from './services/data.service';
     NzTypographyModule,
     NzTagModule,
     NzFormModule,
+    AwardStatusModule,
     NzModalModule,
     NzUploadModule,
     NzInputNumberModule,

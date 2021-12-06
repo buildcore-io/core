@@ -1,3 +1,4 @@
+import * as functions from 'firebase-functions';
 import { ValidationResult } from "joi";
 import { WenError } from './../../interfaces/errors';
 import { throwArgument } from "./error.utils";
@@ -33,6 +34,9 @@ export function pSchema(schema: any, o: any, ignoreUnset: string[] = []): any {
 
 export function assertValidation(r: ValidationResult): void {
   if (r.error) {
+    functions.logger.warn('invalid-argument', "Invalid argument", {
+      func: r.error
+    });
     throw throwArgument('invalid-argument', WenError.invalid_params, r.error.details?.[0]?.type);
   }
 }

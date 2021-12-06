@@ -4,7 +4,7 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { AwardType } from './../../interfaces/models/award';
-import { addOwner, approveParticipant, createAward, participate } from './../../src/controls/award.control';
+import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './../../src/controls/award.control';
 import { createMember } from './../../src/controls/member.control';
 import { createSpace, joinSpace } from './../../src/controls/space.control';
 
@@ -298,6 +298,16 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       expect(returns3?.uid).toBeDefined();
 
       walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid
+        }
+      }));
+      const approveA: any = testEnv.wrap(approveAward);
+      const approved = await approveA();
+      expect(approved?.uid).toBeDefined();
+
+      walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress2,
         body: {
           uid: award.uid
@@ -310,19 +320,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       walletSpy.mockRestore();
     });
 
-    it('Fail to participate. Must be within the space.', async () => {
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: wallet.getRandomEthAddress(),
-        body: {
-          uid: award.uid
-        }
-      }));
-
-      const wrapped: any = testEnv.wrap(participate);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.you_are_not_part_of_the_space.key);
-    });
-
-    it('Already participant', async () => {
+    it('Unable to participate, not approved.', async () => {
       // Join space first.
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress2,
@@ -343,6 +341,97 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       }));
 
       const wrapped: any = testEnv.wrap(participate);
+      (<any>expect(wrapped())).rejects.toThrowError(WenError.award_is_not_approved.key);
+    });
+
+    it('Unable to participate, rejected.', async () => {
+      // Join space first.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: space?.uid
+        }
+      }));
+
+      const wrapped3: any = testEnv.wrap(joinSpace);
+      const returns3 = await wrapped3();
+      expect(returns3?.uid).toBeDefined();
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid
+        }
+      }));
+      const approveA: any = testEnv.wrap(rejectAward);
+      const approved = await approveA();
+      expect(approved?.uid).toBeDefined();
+      expect(approved?.rejected).toEqual(true);
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: award.uid
+        }
+      }));
+
+      const wrapped: any = testEnv.wrap(participate);
+      (<any>expect(wrapped())).rejects.toThrowError(WenError.award_is_rejected.key);
+    });
+
+    it('Fail to participate. Must be within the space.', async () => {
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid
+        }
+      }));
+      const approveA: any = testEnv.wrap(approveAward);
+      const approved = await approveA();
+      expect(approved?.uid).toBeDefined();
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: wallet.getRandomEthAddress(),
+        body: {
+          uid: award.uid
+        }
+      }));
+      const wrapped: any = testEnv.wrap(participate);
+      (<any>expect(wrapped())).rejects.toThrowError(WenError.you_are_not_part_of_the_space.key);
+    });
+
+    it('Already participant', async () => {
+      // Join space first.
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: space?.uid
+        }
+      }));
+
+      const wrapped3: any = testEnv.wrap(joinSpace);
+      const returns3 = await wrapped3();
+      expect(returns3?.uid).toBeDefined();
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid
+        }
+      }));
+      const approveA: any = testEnv.wrap(approveAward);
+      const approved = await approveA();
+      expect(approved?.uid).toBeDefined();
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress2,
+        body: {
+          uid: award.uid
+        }
+      }));
+
+      const wrapped: any = testEnv.wrap(participate);
       const returns = await wrapped();
       expect(returns?.uid).toBeDefined();
 
@@ -352,13 +441,22 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
           uid: award.uid
         }
       }));
-
       const wrapped2: any = testEnv.wrap(participate);
       (<any>expect(wrapped2())).rejects.toThrowError(WenError.member_is_already_participant_of_space.key);
       walletSpy.mockRestore();
     });
 
     it('Invalid Award', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid
+        }
+      }));
+      const approveA: any = testEnv.wrap(approveAward);
+      const approved = await approveA();
+      expect(approved?.uid).toBeDefined();
+
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress2,
         body: {
@@ -383,6 +481,17 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       const wrapped3: any = testEnv.wrap(joinSpace);
       const returns3 = await wrapped3();
       expect(returns3?.uid).toBeDefined();
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: memberAddress,
+        body: {
+          uid: award.uid
+        }
+      }));
+
+      const approveA: any = testEnv.wrap(approveAward);
+      const approved = await approveA();
+      expect(approved?.uid).toBeDefined();
 
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress2,

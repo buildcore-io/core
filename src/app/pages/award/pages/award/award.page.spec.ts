@@ -1,3 +1,4 @@
+import { AwardStatusModule } from './../../../../components/award/components/award-status/award-status.module';
 import { IconModule } from '@components/icon/icon.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
@@ -20,7 +21,7 @@ describe('AwardPage', () => {
         return new Observable();
       }
     })],
-    imports: [TabsModule, IconModule, IpfsBadgeModule, IpfsAvatarModule]
+    imports: [TabsModule, IconModule, IpfsBadgeModule, IpfsAvatarModule, AwardStatusModule]
   });
 
   beforeEach(() => {

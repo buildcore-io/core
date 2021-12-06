@@ -7,7 +7,7 @@ import { ProposalStartDateMin, RelatedRecordsResponse } from './../../interfaces
 import { WenError } from './../../interfaces/errors';
 import { AwardType } from './../../interfaces/models/award';
 import { ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
-import { approveParticipant, createAward, participate } from './../../src/controls/award.control';
+import { approveAward, approveParticipant, createAward, participate } from './../../src/controls/award.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './../../src/controls/proposal.control';
 import { addGuardian, createSpace, joinSpace } from './../../src/controls/space.control';
 
@@ -407,6 +407,12 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     const wrappedAward: any = testEnv.wrap(createAward);
     const award = await wrappedAward();
     expect(award?.uid).toBeDefined();
+
+
+    mock(guardian, { uid: award?.uid});
+    const approveA: any = testEnv.wrap(approveAward);
+    const approved = await approveA();
+    expect(approved?.uid).toBeDefined();
 
     // Participate
     mock(address, { uid: award?.uid});
