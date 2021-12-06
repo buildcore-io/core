@@ -121,15 +121,20 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   }
 
   // Decline all pending members.
-  if (params.body.open === false) {
+  let append: any = {};
+  if (params.body.open === true) {
     const query: QuerySnapshot = await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).get();
     for (const g of query.docs) {
       await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(g.data().uid).delete();
     }
+
+    append = {
+      totalPendingMembers: 0
+    };
   }
 
   if (params.body) {
-    await admin.firestore().collection(COL.SPACE).doc(params.body.uid).update(keywords(uOn(pSchema(schema, params.body))));
+    await admin.firestore().collection(COL.SPACE).doc(params.body.uid).update(keywords(uOn(pSchema(schema, merge(params.body, append)))));
 
     // Load latest
     docSpace = await admin.firestore().collection(COL.SPACE).doc(params.body.uid).get();
@@ -244,8 +249,10 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refSpace);
       const totalMembers = (sfDoc.data().totalMembers || 0) - 1;
+      const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? 1 : 0);
       transaction.update(refSpace, {
-        totalMembers: totalMembers
+        totalMembers: totalMembers,
+        totalGuardians: totalGuardians
       });
     });
 

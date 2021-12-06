@@ -592,6 +592,85 @@ describe('SpaceController: member management', () => {
       expect(doc3.uid).toEqual(member);
     });
 
+    it('join space, edit space and still able to accept', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: member,
+        body: {
+          uid: doc.uid
+        }
+      }));
+      const jSpace: any = testEnv.wrap(joinSpace);
+      const doc2 = await jSpace();
+      expect(doc2).toBeDefined();
+      expect(doc2.createdOn).toBeDefined();
+      expect(doc2.uid).toEqual(member);
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian,
+        body: {
+          uid: doc.uid,
+          name: 'This space rocks',
+          open: false
+        }
+      }));
+
+      const upDa: any = testEnv.wrap(updateSpace);
+      doc = await upDa();
+      expect(doc?.uid).toBeDefined();
+
+      // Accepted them
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian,
+        body: {
+          uid: doc.uid,
+          member
+        }
+      }));
+      const aSpace: any = testEnv.wrap(acceptMemberSpace);
+      const doc3 = await aSpace();
+      expect(doc3).toBeDefined();
+      expect(doc3.createdOn).toBeDefined();
+      expect(doc3.uid).toEqual(member);
+    });
+
+    it('join space, edit space to open and it should no longer be able to accept', async () => {
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: member,
+        body: {
+          uid: doc.uid
+        }
+      }));
+      const jSpace: any = testEnv.wrap(joinSpace);
+      const doc2 = await jSpace();
+      expect(doc2).toBeDefined();
+      expect(doc2.createdOn).toBeDefined();
+      expect(doc2.uid).toEqual(member);
+
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian,
+        body: {
+          uid: doc.uid,
+          name: 'This space rocks',
+          open: true
+        }
+      }));
+
+      const upDa: any = testEnv.wrap(updateSpace);
+      doc = await upDa();
+      expect(doc?.uid).toBeDefined();
+
+      // Accepted them
+      walletSpy.mockReturnValue(Promise.resolve({
+        address: guardian,
+        body: {
+          uid: doc.uid,
+          member
+        }
+      }));
+      const aSpace: any = testEnv.wrap(acceptMemberSpace);
+      (<any>expect(aSpace())).rejects.toThrowError(WenError.member_did_not_request_to_join.key);
+    });
+
     it('successfully join space and be rejected', async () => {
       walletSpy.mockReturnValue(Promise.resolve({
         address: member,
