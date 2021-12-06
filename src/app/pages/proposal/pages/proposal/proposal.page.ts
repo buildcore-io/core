@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
+import { FULL_LIST } from "@api/base.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -145,7 +146,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.proposal$));
     // TODO Fix paging.
-    this.subscriptions$.push(this.proposalApi.listenMembers(id, undefined, 'createdOn', 'desc', 2500).pipe(untilDestroyed(this)).subscribe(this.data.members$));
+    this.subscriptions$.push(this.proposalApi.listenMembers(id, undefined, 'createdOn', 'desc', FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.members$));
     this.subscriptions$.push(this.proposalApi.lastVotes(id).pipe(untilDestroyed(this)).subscribe(this.data.transactions$));
   }
 

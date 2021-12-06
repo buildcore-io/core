@@ -146,6 +146,35 @@ export class AwardPage implements OnInit, OnDestroy {
     }
   }
 
+  public async approve(): Promise<void> {
+    if (!this.data.award$.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign({
+        uid: this.data.award$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.awardApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
+  }
+
+  public async reject(): Promise<void> {
+    if (!this.data.award$.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign({
+      uid: this.data.award$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.awardApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
+
+  }
+
   public async participate(): Promise<void> {
     this.isSubmitParticipationModalVisible = false;
     if (!this.data.award$.value?.uid) {

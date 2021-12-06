@@ -2,6 +2,10 @@
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
       <div>
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.DRAFT"
+                (nzCheckedChange)="handleFilterChange(filterOptions.DRAFT)">
+          Pending
+        </nz-tag>
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
                 (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
           Active
@@ -9,6 +13,10 @@
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.COMPLETED"
                 (nzCheckedChange)="handleFilterChange(filterOptions.COMPLETED)">
           Completed
+        </nz-tag>
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.REJECTED"
+                (nzCheckedChange)="handleFilterChange(filterOptions.REJECTED)">
+          Rejected
         </nz-tag>
       </div>
 

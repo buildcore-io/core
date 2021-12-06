@@ -1,16 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AwardFilter } from "@api/award.api";
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { DataService } from "./../../services/data.service";
-
-enum FilterOptions {
-  ACTIVE = 'active',
-  COMPLETED = 'completed'
-}
 
 @UntilDestroy()
 @Component({
@@ -21,7 +17,7 @@ enum FilterOptions {
 })
 export class AwardsPage implements OnInit, OnDestroy {
   public spaceId?: string;
-  public selectedListControl: FormControl = new FormControl(FilterOptions.ACTIVE);
+  public selectedListControl: FormControl = new FormControl(AwardFilter.ACTIVE);
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -43,8 +39,12 @@ export class AwardsPage implements OnInit, OnDestroy {
     });
 
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
-      if (this.spaceId && val === FilterOptions.COMPLETED) {
+      if (this.spaceId && val === AwardFilter.COMPLETED) {
         this.data.listenToCompletedAwards(this.spaceId);
+      } else  if (this.spaceId && val === AwardFilter.REJECTED) {
+        this.data.listenToRejectedAwards(this.spaceId);
+      } else  if (this.spaceId && val === AwardFilter.DRAFT) {
+        this.data.listenToDraftAwards(this.spaceId);
       }
       this.cd.markForCheck();
     });
@@ -53,6 +53,10 @@ export class AwardsPage implements OnInit, OnDestroy {
   public getList(): BehaviorSubject<Award[]|undefined> {
     if (this.selectedListControl.value === this.filterOptions.ACTIVE) {
       return this.data.awardsActive$;
+    } else if (this.selectedListControl.value === this.filterOptions.DRAFT) {
+      return this.data.awardsDraft$;
+    } else if (this.selectedListControl.value === this.filterOptions.REJECTED) {
+      return this.data.awardsRejected$;
     } else {
       return this.data.awardsCompleted$;
     }
@@ -66,13 +70,13 @@ export class AwardsPage implements OnInit, OnDestroy {
     }
   }
 
-  public handleFilterChange(filter: FilterOptions): void {
+  public handleFilterChange(filter: AwardFilter): void {
     this.selectedListControl.setValue(filter);
     this.cd.markForCheck();
   }
 
-  public get filterOptions(): typeof FilterOptions {
-    return FilterOptions;
+  public get filterOptions(): typeof AwardFilter {
+    return AwardFilter;
   }
 
   public trackByUid(index: number, item: any): number {
