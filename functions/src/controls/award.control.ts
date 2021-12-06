@@ -8,7 +8,7 @@ import { WEN_FUNC } from '../../interfaces/functions';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
-import { cOn, dateToTimestamp, serverTime } from "../utils/dateTime.utils";
+import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
@@ -107,7 +107,9 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
       rank: 1,
       completed: false,
       endDate: dateToTimestamp(params.body.endDate),
-      createdBy: owner
+      createdBy: owner,
+      approved: false,
+      rejected: false
     }))));
 
     // Add Owner.
@@ -177,6 +179,94 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   return docAward.data();
 });
 
+export const approveAward: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: scale(WEN_FUNC.aAward),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.aAward, context);
+  // We must part
+  const params: DecodedToken = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
+      uid: Joi.string().length(ethAddressLength).lowercase().required()
+  }));
+  assertValidation(schema.validate(params.body));
+
+  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  const docAward: any = await refAward.get();
+  let docTran: any;
+  if (!docAward.exists) {
+    throw throwInvalidArgument(WenError.award_does_not_exists);
+  }
+
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+  }
+
+  if (docAward.data().approved) {
+    throw throwInvalidArgument(WenError.proposal_is_already_approved);
+  }
+
+  if (params.body) {
+    await refAward.update(uOn({
+      approved: true,
+      approvedBy: owner
+    }));
+
+    // Load latest
+    docTran = await refAward.get();
+  }
+
+  return docTran.data();
+});
+
+export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: scale(WEN_FUNC.rAward),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.rAward, context);
+  // We must part
+  const params: DecodedToken = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
+      uid: Joi.string().length(ethAddressLength).lowercase().required()
+  }));
+  assertValidation(schema.validate(params.body));
+
+  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  const docAward: any = await refAward.get();
+  let docTran: any;
+  if (!docAward.exists) {
+    throw throwInvalidArgument(WenError.proposal_does_not_exists);
+  }
+
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+  }
+
+  if (docAward.data().approved) {
+    throw throwInvalidArgument(WenError.award_is_already_approved);
+  }
+
+  if (docAward.data().rejected) {
+    throw throwInvalidArgument(WenError.award_is_already_rejected);
+  }
+
+  if (params.body) {
+    await refAward.update(uOn({
+      rejected: true,
+      rejectedBy: owner
+    }));
+
+    // Load latest
+    docTran = await refAward.get();
+  }
+
+  return docTran.data();
+});
+
 export const participate: functions.CloudFunction<Award> = functions.runWith({
   // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.participateAward),
@@ -216,6 +306,14 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
     throw throwInvalidArgument(WenError.member_is_already_participant_of_space);
   }
 
+  if (docAward.data().rejected) {
+    throw throwInvalidArgument(WenError.award_is_rejected);
+  }
+
+  if (!docAward.data().approved) {
+    throw throwInvalidArgument(WenError.award_is_not_approved);
+  }
+
   let output: any;
   if (params.body) {
     await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).set({
@@ -236,9 +334,9 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
 
 export const approveParticipant: functions.CloudFunction<Award> = functions.runWith({
   // Keep 1 instance so we never have cold start.
-  minInstances: scale(WEN_FUNC.aAward),
+  minInstances: scale(WEN_FUNC.aParticipantAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
-  appCheck(WEN_FUNC.aAward, context);
+  appCheck(WEN_FUNC.aParticipantAward, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
   // TODO Fix for below validation.

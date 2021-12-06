@@ -11,9 +11,11 @@ import { Transaction, TransactionType } from './../../../functions/interfaces/mo
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum ProposalFilter {
-  ALL,
-  ACTIVE,
-  COMPLETED
+  ALL = 'all',
+  DRAFT = 'draft',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+  REJECTED = 'rejected'
 }
 
 export interface ProposalParticipantWithMember extends Member {
@@ -43,9 +45,13 @@ export class ProposalApi extends BaseApi<Proposal> {
       (ref) => {
         let fResult: any = ref.where('space', '==', space);
         if (filter === ProposalFilter.ACTIVE) {
-          fResult = fResult.where('settings.endDate', '>=', new Date());
+          fResult = fResult.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
         } else if (filter === ProposalFilter.COMPLETED) {
-          fResult = fResult.where('settings.endDate', '<=', new Date());
+          fResult = fResult.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
+        } else if (filter === ProposalFilter.DRAFT) {
+          fResult = fResult.where('rejected', '==', false).where('approved', '==', false);
+        } else if (filter === ProposalFilter.REJECTED) {
+          fResult = fResult.where('rejected', '==', true)
         }
 
         return fResult;

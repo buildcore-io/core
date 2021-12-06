@@ -22,9 +22,13 @@ export class DataService implements OnDestroy {
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public guardians$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
+  public proposalsDraft$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public proposalsActive$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
+  public proposalsRejected$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public proposalsCompleted$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
+  public awardsDraft$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public awardsActive$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public awardsRejected$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public awardsCompleted$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
@@ -32,7 +36,11 @@ export class DataService implements OnDestroy {
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
+  private rejectedProposalsOn = false;
+  private draftProposalsOn = false;
   private completedAwardsOn = false;
+  private rejectedAwardsOn = false;
+  private draftAwardsOn = false;
   private dataStoreMembers: Member[][] = [];
   private dataStorePendingMembers: Member[][] = [];
   private dataStoreBlockedMembers: Member[][] = [];
@@ -86,7 +94,6 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).subscribe(this.guardians$));
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.ACTIVE).subscribe(this.proposalsActive$));
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.ACTIVE).subscribe(this.awardsActive$));
-    this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.ACTIVE).subscribe(this.awardsActive$));
   }
 
   public listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {
@@ -108,6 +115,24 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsCompleted$));
   }
 
+  public listenToRejectedProposals(spaceId: string): void {
+    if (this.rejectedProposalsOn === true) {
+      return;
+    }
+
+    this.rejectedProposalsOn = true;
+    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsRejected$));
+  }
+
+  public listenToDraftProposals(spaceId: string): void {
+    if (this.draftProposalsOn === true) {
+      return;
+    }
+
+    this.draftProposalsOn = true;
+    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsDraft$));
+  }
+
   public listenToCompletedAwards(spaceId: string): void {
     if (this.completedAwardsOn === true) {
       return;
@@ -115,6 +140,24 @@ export class DataService implements OnDestroy {
 
     this.completedAwardsOn = true;
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.COMPLETED).subscribe(this.awardsCompleted$));
+  }
+
+  public listenToRejectedAwards(spaceId: string): void {
+    if (this.rejectedAwardsOn === true) {
+      return;
+    }
+
+    this.rejectedAwardsOn = true;
+    this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.REJECTED).subscribe(this.awardsRejected$));
+  }
+
+  public listenToDraftAwards(spaceId: string): void {
+    if (this.draftAwardsOn === true) {
+      return;
+    }
+
+    this.draftAwardsOn = true;
+    this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.DRAFT).subscribe(this.awardsDraft$));
   }
 
   public isLoading(arr: any): boolean {
@@ -195,9 +238,13 @@ export class DataService implements OnDestroy {
     // Clean up all streams.
     this.space$.next(undefined);
     this.guardians$.next(undefined);
+    this.proposalsDraft$.next(undefined);
+    this.proposalsRejected$.next(undefined);
     this.proposalsActive$.next(undefined);
     this.proposalsCompleted$.next(undefined);
     this.awardsActive$.next(undefined);
+    this.awardsRejected$.next(undefined);
+    this.awardsDraft$.next(undefined);
     this.awardsCompleted$.next(undefined);
     this.members$.next(undefined);
     this.blockedMembers$.next(undefined);
@@ -220,7 +267,11 @@ export class DataService implements OnDestroy {
     });
 
     this.completedProposalsOn = false;
+    this.rejectedProposalsOn = false;
+    this.draftProposalsOn = false;
     this.completedAwardsOn = false;
+    this.draftAwardsOn = false;
+    this.rejectedAwardsOn = false;
     this.dataStoreMembers = [];
     this.dataStorePendingMembers = [];
     this.dataStoreBlockedMembers = [];

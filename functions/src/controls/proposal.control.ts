@@ -104,7 +104,9 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
     await refProposal.set(keywords(cOn(merge(cleanParams(params.body), {
       uid: proposalAddress,
       rank: 1,
-      createdBy: owner
+      createdBy: owner,
+      approved: false,
+      rejected: false
     }))));
 
     // This can't be empty.
@@ -289,12 +291,12 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     throw throwInvalidArgument(WenError.you_are_not_allowed_to_vote_on_this_proposal);
   }
 
-  if (!docProposal.data().approved) {
-    throw throwInvalidArgument(WenError.proposal_is_not_approved);
-  }
-
   if (docProposal.data().rejected) {
     throw throwInvalidArgument(WenError.proposal_is_rejected);
+  }
+
+  if (!docProposal.data().approved) {
+    throw throwInvalidArgument(WenError.proposal_is_not_approved);
   }
 
   if (docProposal.data().type !== ProposalType.MEMBERS) {

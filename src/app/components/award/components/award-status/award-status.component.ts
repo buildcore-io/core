@@ -8,11 +8,11 @@ import { Award } from 'functions/interfaces/models';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AwardStatusComponent {
-  @Input() award?: Award;
+  @Input() award?: Award|null;
   public isCompleted(award: Award|undefined|null): boolean {
     if (!award) {
       return false;
     }
-    return (award.issued >= award.badge.count);
+    return (award.issued >= award.badge.count) && award.approved;
   }
 }

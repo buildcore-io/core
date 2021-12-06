@@ -1,2 +1,6 @@
+<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!award?.approved && !award?.rejected">Draft
+</nz-tag>
+<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="award?.rejected">Rejected
+</nz-tag>
 <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="isCompleted(award)">Completed</nz-tag>
-<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!isCompleted(award)">Available</nz-tag>
+<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!isCompleted(award) && award?.approved">Available</nz-tag>

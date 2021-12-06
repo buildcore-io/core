@@ -76,7 +76,19 @@ export class DataService {
     return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 
-  public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
+  public getProgressWithTotalWeight(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
     return  (proposal?.results?.answers?.[a.value] || 0) / (proposal?.results?.total || 1) * 100;
   }
+
+  public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
+    let total = 1;
+    if (proposal?.results?.answers) {
+      Object.keys(proposal?.results?.answers).forEach((a: any) => {
+        total += a.value || 0;
+      });
+    }
+
+    return  (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
+  }
+
 }

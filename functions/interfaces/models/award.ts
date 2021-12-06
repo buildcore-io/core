@@ -41,4 +41,6 @@ export interface Award extends BaseRecord {
     xp: number;
   },
   issued: number;
+  approved: boolean;
+  rejected: boolean;
 }

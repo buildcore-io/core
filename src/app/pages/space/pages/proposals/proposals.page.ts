@@ -5,12 +5,8 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Proposal } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalFilter } from './../../../../@api/proposal.api';
 import { DataService } from "./../../services/data.service";
-
-enum FilterOptions {
-  ACTIVE = 'active',
-  COMPLETED = 'completed'
-}
 
 @UntilDestroy()
 @Component({
@@ -21,7 +17,7 @@ enum FilterOptions {
 })
 export class ProposalsPage implements OnInit, OnDestroy {
   public spaceId?: string;
-  public selectedListControl: FormControl = new FormControl(FilterOptions.ACTIVE);
+  public selectedListControl: FormControl = new FormControl(ProposalFilter.ACTIVE);
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -47,8 +43,12 @@ export class ProposalsPage implements OnInit, OnDestroy {
     });
 
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
-      if (this.spaceId && val === FilterOptions.COMPLETED) {
+      if (this.spaceId && val === ProposalFilter.COMPLETED) {
         this.data.listenToCompletedProposals(this.spaceId);
+      } else if (this.spaceId && val === ProposalFilter.DRAFT) {
+        this.data.listenToDraftProposals(this.spaceId);
+      } else if (this.spaceId && val === ProposalFilter.REJECTED) {
+        this.data.listenToRejectedProposals(this.spaceId);
       }
       this.cd.markForCheck();
     });
@@ -70,8 +70,8 @@ export class ProposalsPage implements OnInit, OnDestroy {
     }
   }
 
-  public get filterOptions(): typeof FilterOptions {
-    return FilterOptions;
+  public get filterOptions(): typeof ProposalFilter {
+    return ProposalFilter;
   }
 
   public create(): void {
@@ -82,7 +82,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
     ]);
   }
 
-  public handleFilterChange(filter: FilterOptions): void {
+  public handleFilterChange(filter: ProposalFilter): void {
     this.selectedListControl.setValue(filter);
     this.cd.markForCheck();
   }
