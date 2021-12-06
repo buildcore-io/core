@@ -5,6 +5,7 @@ import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
+export const FULL_LIST = 10000;
 
 export interface FbRef {
   (ref: any): any;

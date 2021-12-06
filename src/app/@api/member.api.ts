@@ -10,7 +10,7 @@ import { Member } from './../../../functions/interfaces/models/member';
 import { Proposal } from './../../../functions/interfaces/models/proposal';
 import { Space, SpaceGuardian, SpaceMember } from './../../../functions/interfaces/models/space';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
-import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
 
 @Injectable({
   providedIn: 'root',
@@ -34,19 +34,19 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsActive(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Award[]> {
+  public topAwardsActive(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
     return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (obj: any) => {
       return obj.completed !== true;
     });
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsAll(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Award[]> {
+  public topAwardsAll(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
     return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def);
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = 1000): Observable<Proposal[]> {
+  public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Proposal[]> {
     return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, (obj: any) => {
       return (obj.settings.endDate.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
     });

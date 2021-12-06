@@ -121,7 +121,7 @@ export class DataService implements OnDestroy {
     }
 
     this.rejectedProposalsOn = true;
-    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsRejected$));
+    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.REJECTED).subscribe(this.proposalsRejected$));
   }
 
   public listenToDraftProposals(spaceId: string): void {
@@ -130,7 +130,7 @@ export class DataService implements OnDestroy {
     }
 
     this.draftProposalsOn = true;
-    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsDraft$));
+    this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.DRAFT).subscribe(this.proposalsDraft$));
   }
 
   public listenToCompletedAwards(spaceId: string): void {
