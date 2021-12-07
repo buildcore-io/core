@@ -81,10 +81,10 @@ export class DataService {
   }
 
   public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
-    let total = 1;
+    let total = 0;
     if (proposal?.results?.answers) {
-      Object.keys(proposal?.results?.answers).forEach((a: any) => {
-        total += a.value || 0;
+      Object.keys(proposal?.results?.answers).forEach((b: any) => {
+        total += proposal?.results?.answers[b] || 0;
       });
     }
 
