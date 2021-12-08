@@ -34,7 +34,8 @@
   </div>
 
   <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
-    <ng-container *ngIf="!data.isCompleted(data.award$ | async) && (isLoggedIn$ | async) && (data.award$ | async)?.approved">
+    <ng-container
+      *ngIf="!data.isCompleted(data.award$ | async) && (isLoggedIn$ | async) && (data.award$ | async)?.approved">
       <button nz-button nzType="primary" nzBlock nzSize="large" (click)="showParticipateModal()"
         [disabled]="(data.isParticipantWithinAward$ | async)">
         {{ (data.isParticipantWithinAward$ | async) ? 'Already Participated' : 'Participate'}}
@@ -45,19 +46,20 @@
       <div class="flex flex-row flex-wrap items-center space-x-4">
         <nz-tag class="wen-xp-tag">{{getExperiencePointsPerBadge(data.award$ | async)}} XP</nz-tag>
         <p> + </p>
-        <nz-avatar [nzSrc]="(data.award$ | async)?.badge?.image | ipfsBadge:filesizes.small" class="bg-white border-gray-400" nzShape="circle">
+        <nz-avatar [nzSrc]="(data.award$ | async)?.badge?.image | ipfsBadge:filesizes.small"
+          class="bg-white border-gray-400" nzShape="circle">
         </nz-avatar>
       </div>
     </nz-card>
 
     <nz-card nzTitle="Approve Award"
-            *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected">
-    <div class="mb-8 space-y-4">
-      <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
-        Approve</button>
-      <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
-        Decline</button>
-    </div>
+      *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected">
+      <div class="mb-8 space-y-4">
+        <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
+          Approve</button>
+        <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
+          Decline</button>
+      </div>
     </nz-card>
 
     <nz-card nzTitle="Detailed Info">
@@ -72,7 +74,8 @@
     </nz-card>
 
     <nz-card nzTitle="Owner">
-      <div *ngFor="let g of data.owners$ | async; trackBy: trackByUid" [routerLink]="['/', 'member', g.uid]" class="cursor-pointer">
+      <div *ngFor="let g of data.owners$ | async; trackBy: trackByUid" [routerLink]="['/', 'member', g.uid]"
+        class="cursor-pointer">
         <nz-avatar nzIcon="user" [nzSrc]="g?.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
         </nz-avatar>
         <span>@ {{ (g.name || g.uid) | truncate:[16] }}</span>
@@ -81,12 +84,20 @@
   </div>
 </div>
 
-<nz-modal [(nzVisible)]="isSubmitParticipationModalVisible" nzTitle="Confirm your participation"
-  (nzOnCancel)="handleParticipateCancel()" (nzOnOk)="participate()">
-  <ng-container *nzModalContent>
-    <p class="mb-2">The whole communication is now handled outside the platform, let the award creator know how to
+<nz-modal [(nzVisible)]="isSubmitParticipationModalVisible" nzTitle="Confirm your participation" nzClosable="false"
+  [nzContent]="modalContent" [nzFooter]="modalFooter" [nzWidth]=700>
+  <ng-template #modalContent>
+    <p class="text-lg mb-9">The whole communication is now handled outside the platform, let the award creator know how
+      to
       contact you.</p>
     <textarea nz-input placeholder="Provide description or link to your work." [formControl]="commentControl"
-      rows="4"></textarea>
-  </ng-container>
+      rows="5"></textarea>
+  </ng-template>
+
+  <ng-template #modalFooter>
+    <div class="text-left">
+      <button nz-button class="mr-4" nzType="primary" (click)="participate()">Submit</button>
+      <button nz-button nzType="default" (click)="handleParticipateCancel()">Cancel</button>
+    </div>
+  </ng-template>
 </nz-modal>
