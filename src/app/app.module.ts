@@ -8,6 +8,7 @@ import { provideAppCheck } from "@angular/fire/app-check";
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/compat/firestore';
 import { AngularFireFunctionsModule, USE_EMULATOR as USE_FUNCTIONS_EMULATOR } from '@angular/fire/compat/functions';
+import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/compat/performance';
 import { AngularFireStorageModule, USE_EMULATOR as USE_STORAGE_EMULATOR } from '@angular/fire/compat/storage';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -36,6 +37,7 @@ const imports: any[] = [
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
   AngularFirestoreModule,
   AngularFireFunctionsModule,
+  AngularFirePerformanceModule,
   AngularFireStorageModule
 ];
 
@@ -51,7 +53,9 @@ if (environment.production) {
   declarations: [WenComponent],
   imports: imports,
   bootstrap: [WenComponent],
-  providers: [{
+  providers: [
+    PerformanceMonitoringService,
+    {
     provide: Nzi18n,
     useFactory: (localId: string) => {
       /** keep the same with angular.json/i18n/locales configuration **/
