@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "soonaverse"
-  }
+    "default": "soonaverse",
+    "preview": "soonaverse-test"
+  },
+  "targets": {}
 }

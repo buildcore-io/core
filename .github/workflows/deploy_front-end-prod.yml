@@ -1,9 +1,9 @@
-name: Deploy to Prod
+name: Firebase Functions - DEPLOY Production
 
 on:
-  push:
-    branches:
-      - master
+  release:
+    types: [published]
+
 
 jobs:
   deploy:
@@ -24,5 +24,5 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}"
-          projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
+          projectId: "soonaverse"
           channelId: live
