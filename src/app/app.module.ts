@@ -6,6 +6,7 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { provideAppCheck } from "@angular/fire/app-check";
 import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
 import { AngularFirestoreModule, USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/compat/firestore';
 import { AngularFireFunctionsModule, USE_EMULATOR as USE_FUNCTIONS_EMULATOR } from '@angular/fire/compat/functions';
 import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/compat/performance';
@@ -37,7 +38,6 @@ const imports: any[] = [
   provideFirebaseApp(() => initializeApp(environment.fbConfig)),
   AngularFirestoreModule,
   AngularFireFunctionsModule,
-  AngularFirePerformanceModule,
   AngularFireStorageModule
 ];
 
@@ -47,6 +47,10 @@ if (environment.production) {
     const provider = new ReCaptchaV3Provider(environment.captcha);
     return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
   }));
+
+  // In production enable performance monitoring.
+  imports.push(AngularFirePerformanceModule);
+  imports.push(AngularFireAnalyticsModule);
 }
 
 @NgModule({
