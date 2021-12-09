@@ -1,11 +1,11 @@
-import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { IconModule } from '../../../icon/icon.module';
 import { SpaceCardComponent } from './space-card.component';
 
 
 describe('SpaceCardComponent', () => {
   let spectator: Spectator<SpaceCardComponent>;
-  const createComponent = createComponentFactory({
+  const createComponent = createRoutingFactory({
     component: SpaceCardComponent,
     imports: [IconModule]
   });
