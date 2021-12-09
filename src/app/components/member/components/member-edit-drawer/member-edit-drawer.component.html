@@ -18,7 +18,7 @@
         <h4 nz-typography class="pt-4 mb-1">About</h4>
         <span nz-typography class="mb-6 text-app-gray-400">A brief description of yourself shown on your profile.</span>
         <nz-form-control nzSize="large">
-          <nz-textarea-count [nzMaxCharacterCount]="160">
+          <nz-textarea-count [nzMaxCharacterCount]="maxAboutCharacters">
             <textarea nz-input placeholder="Your description (optional)" rows="4"
               [formControl]="aboutControl"></textarea>
           </nz-textarea-count>
