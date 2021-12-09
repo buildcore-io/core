@@ -1,9 +1,9 @@
-name: Deploy to Prod
+name: Deploy to EDGE
 
 on:
   push:
     branches:
-      - master
+      - develop
 
 jobs:
   deploy:
@@ -12,17 +12,11 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm install
       - run: npm run build:prod
-      # enable maintenance mode.
-      # - name: Enable maintenance mode
-      #   run: |
-      #     cd dist/soonaverse
-      #     # Remove all other files.
-      #     ls | grep -v maintenance.html | xargs rm -fr
-      #     mv maintenance.html index.html
-      # End of maintenance mode.
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}"
-          projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
+          projectId: "soonaverse"
           channelId: live
+          target: edge
+

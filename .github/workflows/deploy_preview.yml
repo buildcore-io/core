@@ -1,9 +1,9 @@
-name: Deploy to Preview (PR)
+name: Deploy to PREVIEW
 
 on:
   push:
     branches:
-      - master
+      - develop
 
 jobs:
   build_and_preview:
@@ -11,11 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - run: npm run build:prod
+      - run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SOONAVERSE }}"
-          projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
-          expires: 14d
-          channelId: wen-after
+          projectId: "soonaverse-test"
+          channelId: live
+          target: prod
