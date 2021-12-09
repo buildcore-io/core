@@ -1,8 +1,7 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <wen-award-card class="block cursor-pointer" [fullWidth]="true"
-      *ngFor="let award of data.awards$ | async; trackBy: trackByUid" [award]="award"
-      [routerLink]="['/award', award.uid]">
+    <wen-award-card class="block" [fullWidth]="true"
+      *ngFor="let award of data.awards$ | async; trackBy: trackByUid" [award]="award">
     </wen-award-card>
     <nz-card *ngIf="(data.awards$ | async)?.length === 0">
       <div class="flex flex-col justify-center text-center h-36">

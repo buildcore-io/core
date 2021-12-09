@@ -6,6 +6,7 @@ import { Award } from '../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 
 @UntilDestroy()
 @Component({
@@ -18,6 +19,7 @@ export class AwardCardComponent implements OnChanges, OnDestroy {
   @Input() award?: Award;
   @Input() fullWidth?: boolean;
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
+  public path = ROUTER_UTILS.config.award.root;
   private subscriptions$: Subscription[] = [];
 
   constructor(private spaceApi: SpaceApi) {
