@@ -18,7 +18,10 @@
         <h4 nz-typography class="pt-4 mb-1">About</h4>
         <span nz-typography class="mb-6 text-app-gray-400">A brief description of yourself shown on your profile.</span>
         <nz-form-control nzSize="large">
-          <textarea nz-input placeholder="Your description (optional)" rows="4" [formControl]="aboutControl"></textarea>
+          <nz-textarea-count [nzMaxCharacterCount]="maxAboutCharacters">
+            <textarea nz-input placeholder="Your description (optional)" rows="4"
+              [formControl]="aboutControl"></textarea>
+          </nz-textarea-count>
         </nz-form-control>
       </nz-form-item>
 
@@ -28,7 +31,8 @@
         <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="!currentProfileImageControl.value">
           <nz-avatar class="border-2 border-app-gray-100 min-w-max" [nzSize]="48" nzSrc="/assets/mocks/no_avatar.png">
           </nz-avatar>
-          <span>Mint a unique avatar for your profile picture.<br/><br/>NFT Avatar collectibles, special guest artist galleries, new alien species and an NFT marketplace coming SOON.</span>
+          <span>Mint a unique avatar for your profile picture.<br /><br />NFT Avatar collectibles, special guest artist
+            galleries, new alien species and an NFT marketplace coming SOON.</span>
           <button nz-button nzSize="small" nzType="primary" type="button" (click)="mint()">Mint Avatar</button>
         </div>
         <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="currentProfileImageControl.value">

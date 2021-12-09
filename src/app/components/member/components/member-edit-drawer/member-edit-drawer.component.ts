@@ -11,6 +11,7 @@ import { NotificationService } from '../../../../@core/services/notification/not
 import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP } from './../../../../../../functions/interfaces/config';
 import { MintApi } from './../../../../@api/mint.api';
 
+const maxAboutCharacters = 160;
 @UntilDestroy()
 @Component({
   selector: 'wen-member-edit-drawer',
@@ -21,12 +22,13 @@ import { MintApi } from './../../../../@api/mint.api';
 export class MemberEditDrawerComponent implements OnInit {
   @Output() public wenOnClose = new EventEmitter<void>();
   public nameControl: FormControl = new FormControl('');
-  public aboutControl: FormControl = new FormControl('');
+  public aboutControl: FormControl = new FormControl('', Validators.maxLength(maxAboutCharacters));
   public currentProfileImageControl: FormControl = new FormControl(undefined);
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public githubControl: FormControl = new FormControl('', Validators.pattern(GITHUB_REGEXP));
   public minted = false;
+  public maxAboutCharacters = maxAboutCharacters;
   public memberForm: FormGroup;
 
   constructor(

@@ -8,6 +8,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -67,6 +68,7 @@ import { DataService } from './services/data.service';
     AwardStatusModule,
     NzModalModule,
     NzUploadModule,
+    NzDropDownModule,
     NzInputNumberModule,
     NzToolTipModule,
     NzDatePickerModule,

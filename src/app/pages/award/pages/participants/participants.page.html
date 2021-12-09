@@ -1,14 +1,14 @@
 <div class="space-y-12">
   <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
-  (scrolled)="onScroll()">
+    (scrolled)="onScroll()">
     <div class="inline-flex justify-between w-full">
       <div>
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
-                (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
+          (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
           Pending
         </nz-tag>
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ISSUED"
-                (nzCheckedChange)="handleFilterChange(filterOptions.ISSUED)">
+          (nzCheckedChange)="handleFilterChange(filterOptions.ISSUED)">
           Issued
         </nz-tag>
       </div>
@@ -26,16 +26,26 @@
     </nz-card>
 
     <wen-member-card class="block cursor-pointer" [fullWidth]="true"
-      *ngFor="let member of (getList() | async); trackBy: trackByUid"
-      [about]="member.comment || ''"
-      [member]="member">
-      <ng-container *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">
-        <button nz-button nzSize="small" type="button" (click)="approve(member.uid)" *ngIf="!member.completed">
-          Give Badge
+      *ngFor="let member of (getList() | async); trackBy: trackByUid" [about]="member.comment || ''" [member]="member">
+      <ng-container
+        *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">
+        <button nz-button nzType="primary" type="button" (click)="approve(member.uid)" *ngIf="!member.completed">
+          Reward
         </button>
-        <button nz-button nzSize="small"  type="button" (click)="approve(member.uid)" *ngIf="member.completed">
-          Give Another
+
+        <button nz-button *ngIf="member.completed" class="float-right wen-secondary" nzShape="circle" nz-dropdown
+          nzTrigger="click" [nzDropdownMenu]="menu" nzPlacement="bottomRight">
+          <wen-icon-more></wen-icon-more>
         </button>
+
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="approve(member.uid)" *ngIf="member.completed">
+              Reward again
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+
       </ng-container>
     </wen-member-card>
   </div>
