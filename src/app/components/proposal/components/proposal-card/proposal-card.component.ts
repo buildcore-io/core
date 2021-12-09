@@ -10,6 +10,7 @@ import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Proposal, ProposalAnswer } from '../../../../../../functions/interfaces/models/proposal';
 import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
+import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 
 export type ChartOptions = {
   chart: ApexChart;
@@ -32,6 +33,7 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
   @Input() fullWidth?: boolean;
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public chartOptions: Partial<ChartOptions>;
+  public path = ROUTER_UTILS.config.proposal.root;
   private subscriptions$: Subscription[] = [];
 
   constructor(private spaceApi: SpaceApi) {

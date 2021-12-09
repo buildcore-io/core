@@ -18,5 +18,5 @@
     </div>
   </nz-card>
 
-  <wen-space-card class="outline-none cursor-pointer" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s" [routerLink]="['/space', s.uid]"></wen-space-card>
+  <wen-space-card class="outline-none" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s"></wen-space-card>
 </div>

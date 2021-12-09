@@ -4,8 +4,7 @@
   <div *ngIf="!isEmpty(pendingSpaces$ | async) && !isLoading(pendingSpaces$ | async)">
     <h3 i18n>Pending Membership Requests</h3>
     <div class="flex flex-wrap gap-6 mb-10">
-      <wen-space-card class="outline-none cursor-pointer" *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid" [space]="space"
-        [routerLink]="['/space', space.uid]"></wen-space-card>
+      <wen-space-card class="outline-none" *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid" [space]="space"></wen-space-card>
     </div>
   </div>
 
@@ -24,8 +23,7 @@
         </div>
       </nz-card>
 
-      <wen-space-card class="outline-none cursor-pointer" *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space"
-        [routerLink]="['/space', space.uid]"></wen-space-card>
+      <wen-space-card class="outline-none" *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space"></wen-space-card>
     </div>
   </div>
 
@@ -36,8 +34,7 @@
       </a> -->
     </h3>
     <div class="flex flex-wrap gap-6 mb-10">
-      <wen-award-card class="outline-none cursor-pointer" *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award"
-        [routerLink]="['/award', award.uid]">
+      <wen-award-card class="outline-none" *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award">
       </wen-award-card>
     </div>
   </div>
@@ -49,8 +46,8 @@
       </a> -->
     </h3>
     <div class="flex flex-wrap gap-6 mb-10">
-      <wen-proposal-card class="outline-none cursor-pointer" *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
-        [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+      <wen-proposal-card class="outline-none" *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
+        [proposal]="proposal">
       </wen-proposal-card>
     </div>
   </div>

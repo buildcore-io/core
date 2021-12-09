@@ -19,7 +19,7 @@
     </div>
   </nz-card>
 
-  <wen-proposal-card class="outline-none cursor-pointer" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid" [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+  <wen-proposal-card class="outline-none" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid" [proposal]="proposal">
   </wen-proposal-card>
 </div>
 
