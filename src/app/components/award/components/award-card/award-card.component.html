@@ -1,26 +1,25 @@
-<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-44 flex' : 'w-75 h-75'" *ngIf="award">
-  <a class="text-current hover:text-current" [routerLink]="['/', this.path, award.uid]">
-    <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
-        <div class="flex items-center w-full space-x-4">
-          <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
-            class="border-2 bg-bg-background min-w-10 border-app-gray-100" nzShape="circle"></nz-avatar>
-          <p nz-typography class="max-w-sm truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
-        </div>
-        <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ award.name || award.uid }}</h3>
+<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-44 flex' : 'w-75 h-75'" *ngIf="award"
+  [routerLink]="['/', this.path, award.uid]">
+  <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
+    <div class="flex items-center w-full space-x-4">
+      <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
+        class="border-2 bg-bg-background min-w-10 border-app-gray-100" nzShape="circle"></nz-avatar>
+      <p nz-typography class="max-w-sm truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
+    </div>
+    <h3 class="mt-2 mb-3 text-lg font-bold truncate">{{ award.name || award.uid }}</h3>
+  </div>
+
+  <div class="relative flex flex-col w-full h-28">
+    <div class="inline-flex items-center space-x-3" [ngClass]="fullWidth ? 'justify-end' : ''">
+      <nz-avatar [nzSrc]="award.badge.image | ipfsBadge:filesizes.small"
+        class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
+      <nz-tag class="wen-xp-tag">{{award.badge.xp / award.badge.count}} XP</nz-tag>
+      <wen-icon-angle-left class="flex rotate-180" *ngIf="fullWidth"></wen-icon-angle-left>
     </div>
 
-    <div class="relative flex flex-col w-full h-28">
-      <div class="inline-flex items-center space-x-3" [ngClass]="fullWidth ? 'justify-end' : ''">
-        <nz-avatar [nzSrc]="award.badge.image | ipfsBadge:filesizes.small" nz-tooltip [nzTooltipTitle]="award.badge.name"
-          class="bg-white border-gray-400" nzShape="circle"></nz-avatar>
-        <nz-tag class="wen-xp-tag">{{award.badge.xp / award.badge.count}} XP</nz-tag>
-        <wen-icon-angle-left class="flex rotate-180" *ngIf="fullWidth"></wen-icon-angle-left>
-      </div>
-
-      <div i18n class="inline-flex mt-6" [ngClass]="fullWidth ? 'absolute bottom-4 right-4' : ''">
-        <wen-award-status [award]="award"></wen-award-status>
-        <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
-      </div>
+    <div i18n class="inline-flex mt-6" [ngClass]="fullWidth ? 'absolute bottom-4 right-4' : ''">
+      <wen-award-status [award]="award"></wen-award-status>
+      <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
     </div>
-  </a>
+  </div>
 </article>
