@@ -30,8 +30,7 @@ export class AwardPage implements OnInit, OnDestroy {
   public isSubmitParticipationModalVisible = false;
   public commentControl: FormControl = new FormControl('');
   private subscriptions$: Subscription[] = [];
-  private isGuardianSubscriptions$?: Subscription;
-  private isMemberSubscription$?: Subscription;
+  private memberSubscriptions$: Subscription[] = [];
 
   constructor(
     private titleService: Title,
@@ -66,23 +65,19 @@ export class AwardPage implements OnInit, OnDestroy {
       }
 
       // Once we load proposal let's load guardians for the space.
-      if (this.isGuardianSubscriptions$) {
-        this.isGuardianSubscriptions$.unsubscribe();
-      }
+      this.memberSubscriptions$.forEach((s) => {
+        s.unsubscribe();
+      });
       if (this.auth.member$.value?.uid) {
-        this.isGuardianSubscriptions$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-                                      .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$);
+        this.memberSubscriptions$.push(this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
+                                  .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
 
+        this.memberSubscriptions$.push(this.awardApi.isMemberParticipant(obj.uid, this.auth.member$.value.uid)
+                                  .pipe(untilDestroyed(this)).subscribe(this.data.isParticipantWithinAward$));
 
-      }
+        this.memberSubscriptions$.push(this.spaceApi.isMemberWithinSpace(obj.space, this.auth.member$.value.uid)
+                                  .pipe(untilDestroyed(this)).subscribe(this.data.isLoggedInMemberWithinSpace$));
 
-      if (this.isMemberSubscription$) {
-        this.isMemberSubscription$.unsubscribe();
-      }
-
-      if (this.auth.member$.value?.uid) {
-        this.isMemberSubscription$ = this.awardApi.isMemberParticipant(obj.uid, this.auth.member$.value.uid)
-                                     .pipe(untilDestroyed(this)).subscribe(this.data.isParticipantWithinAward$);
       }
     });
 
@@ -197,8 +192,8 @@ export class AwardPage implements OnInit, OnDestroy {
     this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.data.resetSubjects();
-    if (this.isGuardianSubscriptions$) {
-      this.isGuardianSubscriptions$.unsubscribe();
-    }
+    this.memberSubscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
   }
 }

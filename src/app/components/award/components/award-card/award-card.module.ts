@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -22,6 +23,7 @@ import { AwardCardComponent } from './award-card.component';
   ],
   imports: [
     CommonModule,
+    RouterModule,
     ParentTitleModule,
     IpfsBadgeModule,
     DateTagModule,

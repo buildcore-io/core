@@ -36,8 +36,8 @@
         </span>
       </div>
     </nz-card>
-    <wen-award-card class="block cursor-pointer" [fullWidth]="true"
-      *ngFor="let award of getList() | async; trackBy: trackByUid" [award]="award" [routerLink]="['/award', award.uid]">
+    <wen-award-card class="block" [fullWidth]="true"
+      *ngFor="let award of getList() | async; trackBy: trackByUid" [award]="award">
     </wen-award-card>
   </div>
 </div>

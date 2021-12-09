@@ -11,7 +11,7 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="block cursor-pointer" [fullWidth]="true"
+    <wen-member-card class="block" [fullWidth]="true"
       *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
       <p class="font-bold">Weight: {{member.weight}}</p>
       <p *ngIf="member.voted" class="font-bold">VOTED</p>

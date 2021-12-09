@@ -36,8 +36,8 @@
       </div>
     </nz-card>
 
-    <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of getList() | async; trackBy: trackByUid"
-      [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+    <wen-proposal-card class="block" [fullWidth]="true" *ngFor="let proposal of getList() | async; trackBy: trackByUid"
+      [proposal]="proposal">
     </wen-proposal-card>
   </div>
 </div>

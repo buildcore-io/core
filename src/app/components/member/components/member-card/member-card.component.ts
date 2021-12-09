@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { Transaction } from "../../../../../../functions/interfaces/models";
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
+import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 
 @UntilDestroy()
 @Component({
@@ -19,6 +20,7 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   @Input() about?: string;
   @Input() role?: string;
   public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
+  public path = ROUTER_UTILS.config.member.root;
 
   constructor(private memberApi: MemberApi) {
     // none.
