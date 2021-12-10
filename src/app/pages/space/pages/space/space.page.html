@@ -43,7 +43,7 @@
     </nz-card>
 
     <nz-card>
-      <div class="flex items-baseline">
+      <div class="flex flex-col items-baseline space-y-3">
         <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
           <wen-icon-members class="text-app-gray-400"></wen-icon-members>
           <span>{{ (data.space$ | async)!.totalMembers }} members
@@ -52,6 +52,9 @@
             </span>
           </span>
         </a>
+        <!-- TODO Show space/award/proposal type within member card #70 -->
+        <nz-tag class="px-2 py-1 text-xs border-none rounded-md">{{ true ? 'Open for anyone to join instantly' : 'Requires a member approval'}}
+        </nz-tag>
       </div>
     </nz-card>
 
@@ -92,7 +95,8 @@
     </nz-card>
 
     <div>
-      <button class="flex justify-center" nz-button nzBlock nzDanger (click)="leave()" *ngIf="data.isMemberWithinSpace$ | async">
+      <button class="flex justify-center" nz-button nzBlock nzDanger (click)="leave()"
+        *ngIf="data.isMemberWithinSpace$ | async">
         <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
         Leave Space
       </button>
