@@ -2,21 +2,31 @@
   <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
     <div class="inline-flex justify-between w-full">
-      <div *ngIf="data.isGuardianWithinSpace$ | async">
-        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
-          (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
-          Active
-        </nz-tag>
-        <nz-tag nzMode="checkable" *ngIf="!(data.space$ | async)?.open"
-          [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
-          (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
-          {{'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')}}
-        </nz-tag>
-        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.BLOCKED"
-          (nzCheckedChange)="handleFilterChange(filterOptions.BLOCKED)">
-          Blocked
-        </nz-tag>
+      <div>
+        <ng-container *ngIf="data.isGuardianWithinSpace$ | async">
+          <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
+            (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
+            Active
+          </nz-tag>
+          <nz-tag nzMode="checkable" *ngIf="!(data.space$ | async)?.open"
+            [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+            (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
+            {{'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')}}
+          </nz-tag>
+          <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.BLOCKED"
+            (nzCheckedChange)="handleFilterChange(filterOptions.BLOCKED)">
+            Blocked
+          </nz-tag>
+        </ng-container>
       </div>
+      <!-- TODO add search input at the top of the members list #71 [formControl]="filterControl" -->
+      <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" class="ml-8 border-none shadow-none outline-0 w-72"
+        nzSearch>
+        <input type="text" nz-input placeholder="Find Member" class="text-base" />
+      </nz-input-group>
+      <ng-template #prefixIconSearch>
+        <i nz-icon nzType="search" class="text-xl"></i>
+      </ng-template>
     </div>
 
     <!-- TODO Loading. -->
