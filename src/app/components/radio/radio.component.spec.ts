@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { RadioComponent } from './radio.component';
+
 
 describe('RadioComponent', () => {
   let component: RadioComponent;
@@ -8,7 +9,9 @@ describe('RadioComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RadioComponent ]
+      declarations: [ RadioComponent ],
+      imports: [NzRadioModule]
+
     })
     .compileComponents();
   });
