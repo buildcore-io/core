@@ -8,4 +8,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class RadioComponent {
   @Input() value: string | boolean | number = '';
+  
+  @Input() disabled = false;
 }
