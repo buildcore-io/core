@@ -22,8 +22,8 @@
       </ng-template>
     </div>
 
-    <!-- TODO Loading. -->
-    <div *ngIf="data.isLoading(getList() | async)">Loading...</div>
+    <nz-skeleton *ngIf="data.isLoading(getList() | async)"  class="p-4 bg-white rounded-2xl" [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+      [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(getList()  | async)">
       <div class="flex flex-col justify-center text-center h-36">
@@ -33,8 +33,8 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="block" [fullWidth]="true"
-      *ngFor="let member of (getList() | async); trackBy: trackByUid" [about]="member.comment || ''" [member]="member">
+    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of (getList() | async); trackBy: trackByUid"
+      [about]="member.comment || ''" [member]="member">
       <ng-container
         *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">
         <button nz-button nzType="primary" type="button" (click)="approve(member.uid)" *ngIf="!member.completed">

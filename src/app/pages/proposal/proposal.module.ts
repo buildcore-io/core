@@ -22,6 +22,7 @@ import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
@@ -70,6 +71,7 @@ import { DataService } from './services/data.service';
     NzFormModule,
     NzToolTipModule,
     NzMenuModule,
+    NzSkeletonModule,
     NzTypographyModule,
     NzProgressModule,
     NzTableModule,
