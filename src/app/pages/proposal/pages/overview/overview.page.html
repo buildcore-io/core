@@ -37,7 +37,7 @@
           <p nz-typography class="text-lg font-medium">{{a.text}}</p>
         </div>
       </wen-radio>
-      <p nz-typography class="pl-16 my-6 text-base leading-6">
+      <p nz-typography class="pl-16 my-6 text-base leading-6 whitespace-pre-line">
         {{a.additionalInfo}}
       </p>
     </div>
@@ -57,7 +57,7 @@
 
 <div class="mx-8 mt-10">
   <h4>Proposal Description</h4>
-  <div
+  <div class="whitespace-pre-line "
     nz-typography
     [innerHTML]="(data.proposal$ | async)?.additionalInfo | markdown"
   ></div>
