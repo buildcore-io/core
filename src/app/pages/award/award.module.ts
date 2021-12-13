@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
+import { RadioModule } from '@components/radio/radio.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -56,6 +57,7 @@ import { DataService } from './services/data.service';
     NzButtonModule,
     NzSelectModule,
     NzRadioModule,
+    RadioModule,
     NzCardModule,
     NzIconModule,
     NzInputModule,
