@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BadgeModule } from "@components/badge/badge.module";
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
+import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -19,7 +20,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
-import { NzRadioModule } from "ng-zorro-antd/radio";
+import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -76,7 +77,8 @@ import { DataService } from './services/data.service';
     NzInputNumberModule,
     NzDividerModule,
     NzDatePickerModule,
-    IconModule
+    IconModule,
+    RadioModule
   ]
 })
 export class ProposalModule { }
