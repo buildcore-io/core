@@ -1,14 +1,15 @@
-<div class="container flex items-center justify-center h-full">
-
-  <article class="w-full text-center bg-whit rounded-2xl">
-    <div class="w-full overflow-hidden h-96 rounded-2xl">
-      <img alt="" src="/assets/mocks/not_found.jpg" class="object-cover w-full h-full" />
-    </div>
-
-    <div class="relative flex flex-col justify-center w-full p-6 text-center h-36">
-      <h3 class="mb-1 text-2xl">The page you were looking for was not found</h3>
-    </div>
-    <a [routerLink]="['/']" nz-button nzType="primary" type="button">
-      Take me somewhere nice </a>
-  </article>
+<div
+  class="flex items-center justify-center w-full h-full overflow-hidden bg-center bg-cover not-found-page"
+>
+  <div
+    class="flex flex-col justify-center max-w-lg px-16 py-10 text-center bg-white rounded-2xl"
+  >
+    <h2 class="mb-3 text-5xl font-bold text-orange">404:(</h2>
+    <p class="mb-6 text-2xl font-bold" i18n>
+      The page you were looking for was not found
+    </p>
+    <a [routerLink]="discoverRoute" nz-button nzType="primary" type="button" i18n>
+      Discover Soonaverse
+    </a>
+  </div>
 </div>

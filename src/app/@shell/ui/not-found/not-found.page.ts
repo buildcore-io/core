@@ -8,4 +8,8 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 })
 export class NotFoundPage {
   path = ROUTER_UTILS.config.base;
+
+  public get discoverRoute() {
+    return ['/', ROUTER_UTILS.config.discover.root]
+  }
 }
