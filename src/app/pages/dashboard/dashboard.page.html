@@ -1,55 +1,81 @@
-<h1 i18n class="mt-12">My Overview</h1>
-<div class="space-y-14">
-
-  <div *ngIf="!isEmpty(pendingSpaces$ | async) && !isLoading(pendingSpaces$ | async)">
-    <h3 i18n>Pending Membership Requests</h3>
-    <div class="flex flex-wrap gap-6 mb-10">
-      <wen-space-card class="outline-none" *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid" [space]="space"></wen-space-card>
+<wen-content>
+  <h1 i18n class="mt-12">My Overview</h1>
+  <div class="space-y-14">
+    <div
+      *ngIf="!isEmpty(pendingSpaces$ | async) && !isLoading(pendingSpaces$ | async)"
+    >
+      <h3 i18n>Pending Membership Requests</h3>
+      <div class="flex flex-wrap gap-6 mb-10">
+        <wen-space-card
+          class="outline-none"
+          *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid"
+          [space]="space"
+        ></wen-space-card>
+      </div>
     </div>
-  </div>
 
-  <div>
-    <h3 i18n>Your spaces</h3>
-    <div class="flex flex-wrap gap-6 mb-10">
-      <!-- TODO Loading. -->
-      <div *ngIf="isLoading(spaces$ | async)">Loading...</div>
+    <div>
+      <h3 i18n>Your spaces</h3>
+      <div class="flex flex-wrap gap-6 mb-10">
+        <!-- TODO Loading. -->
+        <div *ngIf="isLoading(spaces$ | async)">Loading...</div>
 
-      <nz-card class="w-full" *ngIf="isEmpty((spaces$ | async))">
-        <div class="flex flex-col justify-center text-center h-36">
-          <span class="mb-3 leading-7 text-app-gray-400">
-            No Spaces yet
-          </span>
-          <button nz-button nzType="primary" class="self-center w-48" [routerLink]="['/discover', 'spaces']">Discover Spaces</button>
-        </div>
-      </nz-card>
+        <nz-card class="w-full" *ngIf="isEmpty((spaces$ | async))">
+          <div class="flex flex-col justify-center text-center h-36">
+            <span class="mb-3 leading-7 text-app-gray-400">
+              No Spaces yet
+            </span>
+            <button
+              nz-button
+              nzType="primary"
+              class="self-center w-48"
+              [routerLink]="['/discover', 'spaces']"
+            >
+              Discover Spaces
+            </button>
+          </div>
+        </nz-card>
 
-      <wen-space-card class="outline-none" *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space"></wen-space-card>
+        <wen-space-card
+          class="outline-none"
+          *ngFor="let space of spaces$ | async; trackBy: trackByUid"
+          [space]="space"
+        ></wen-space-card>
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
-    <h3 i18n>Active awards
-      <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
+    <div *ngIf="!isEmpty(awards$ | async) && !isLoading(awards$ | async)">
+      <h3 i18n>
+        Active awards
+        <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'awards']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a> -->
-    </h3>
-    <div class="flex flex-wrap gap-6 mb-10">
-      <wen-award-card class="outline-none" *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award">
-      </wen-award-card>
+      </h3>
+      <div class="flex flex-wrap gap-6 mb-10">
+        <wen-award-card
+          class="outline-none"
+          *ngFor="let award of awards$ | async; trackBy: trackByUid"
+          [award]="award"
+        >
+        </wen-award-card>
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
-    <h3 i18n>Active proposals
-      <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
+    <div *ngIf="!isEmpty((proposals$ | async)) && !isLoading(awards$ | async)">
+      <h3 i18n>
+        Active proposals
+        <!-- <a nz-button nzType="link" [routerLink]="['/discover', 'proposals']">Show All
         <i nz-icon nzType="right" nzTheme="outline"></i>
       </a> -->
-    </h3>
-    <div class="flex flex-wrap gap-6 mb-10">
-      <wen-proposal-card class="outline-none" *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
-        [proposal]="proposal">
-      </wen-proposal-card>
+      </h3>
+      <div class="flex flex-wrap gap-6 mb-10">
+        <wen-proposal-card
+          class="outline-none"
+          *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
+          [proposal]="proposal"
+        >
+        </wen-proposal-card>
+      </div>
     </div>
   </div>
-
-</div>
+</wen-content>

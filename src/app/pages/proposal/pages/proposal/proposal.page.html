@@ -1,147 +1,250 @@
-<button nz-button class="wen-back-button mt-14" (click)="nav.goBack()">
-  <wen-icon-angle-left class="flex"></wen-icon-angle-left>
-  {{nav.getTitle()}}
-</button>
+<wen-content [showBackButton]="true">
+  <div class="relative py-12" nz-row [nzGutter]="40">
+    <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px)">
+      <div class="mb-8 space-x-3">
+        <a [routerLink]="['/space', (data.space$ | async)?.uid]">
+          <nz-avatar
+            [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)"
+            class="mr-3 bg-white border-2 border-gray-400"
+            nzShape="circle"
+          >
+          </nz-avatar>
+          <span
+            >{{((data.space$ | async)?.name || (data.space$ | async)?.uid)
+            }}</span
+          >
+        </a>
 
-<div class="relative py-12" nz-row [nzGutter]="40">
-  <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
-    <div class="mb-8 space-x-3">
-      <a [routerLink]="['/space', (data.space$ | async)?.uid]">
-        <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="mr-3 bg-white border-2 border-gray-400"
-          nzShape="circle">
-        </nz-avatar>
-        <span>{{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}</span>
-      </a>
-
-      <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Proposal</nz-tag>
-      <wen-proposal-status [proposal]="data.proposal$ | async"></wen-proposal-status>
-    </div>
-
-    <h1 i18n class="mb-6">{{(data.proposal$ | async)?.name}}</h1>
-
-    <div class="flex items-center space-x-10">
-      <div class="flex items-center">
-        <i nz-icon nzType="calendar" class="pr-2 text-lg text-app-gray-400" nzTheme="outline"></i>
-        <span>{{(data.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
+        <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue"
+          >Proposal</nz-tag
+        >
+        <wen-proposal-status
+          [proposal]="data.proposal$ | async"
+        ></wen-proposal-status>
       </div>
-      <div [routerLink]="['member', (data.creator$ | async)?.uid]">
-        <nz-avatar nzIcon="user" [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
-        </nz-avatar>
-        <span class="cursor-pointer" [routerLink]="['/', 'member', (data.creator$ | async)?.uid]">@{{((data.creator$ | async)?.name ||
-          (data.creator$ | async)?.uid) | truncate:[16]}}</span>
+
+      <h1 i18n class="mb-6">{{(data.proposal$ | async)?.name}}</h1>
+
+      <div class="flex items-center space-x-10">
+        <div class="flex items-center">
+          <i
+            nz-icon
+            nzType="calendar"
+            class="pr-2 text-lg text-app-gray-400"
+            nzTheme="outline"
+          ></i>
+          <span
+            >{{(data.proposal$ | async)?.createdOn?.toDate() |
+            date:'short'}}</span
+          >
+        </div>
+        <div [routerLink]="['member', (data.creator$ | async)?.uid]">
+          <nz-avatar
+            nzIcon="user"
+            [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+            class="mr-2"
+          >
+          </nz-avatar>
+          <span
+            class="cursor-pointer"
+            [routerLink]="['/', 'member', (data.creator$ | async)?.uid]"
+            >@{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid)
+            | truncate:[16]}}</span
+          >
+        </div>
+      </div>
+
+      <wen-tabs class="block mt-12" [tabs]="sections"></wen-tabs>
+      <div class="w-full py-12">
+        <router-outlet></router-outlet>
       </div>
     </div>
 
-    <wen-tabs class="block mt-12" [tabs]="sections"></wen-tabs>
-    <div class="w-full py-12">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
+    <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px">
+      <nz-card
+        nzTitle="Cast your vote"
+        *ngIf="(data.proposal$ | async)?.approved && data.isNativeVote((data.proposal$ | async)?.type)"
+      >
+        <button nz-button nzType="primary" nzBlock nzSize="large">
+          Open Firefly to Vote
+        </button>
+        <h4 nz-typography class="pt-4">Voting instructions</h4>
+        <p>
+          Authoritatively disseminate prospective leadership via opportunities
+          economically sound.
+        </p>
+      </nz-card>
 
-  <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
-    <nz-card nzTitle="Cast your vote"
-      *ngIf="(data.proposal$ | async)?.approved && data.isNativeVote((data.proposal$ | async)?.type)">
-      <button nz-button nzType="primary" nzBlock nzSize="large">
-        Open Firefly to Vote</button>
-      <h4 nz-typography class="pt-4">
-        Voting instructions
-      </h4>
-      <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
-    </nz-card>
+      <nz-card
+        *ngIf="!(data.proposal$ | async)?.rejected && !data.isComplete(data.proposal$ | async) && (data.proposal$ | async)?.approved"
+        [nzTitle]="'Current Results'"
+      >
+        <div
+          class="-mt-3"
+          *ngFor="let q of (data.proposal$ | async)?.questions"
+        >
+          <p class="text-lg">{{q.text}}</p>
 
-    <nz-card
-      *ngIf="!(data.proposal$ | async)?.rejected && !data.isComplete(data.proposal$ | async) && (data.proposal$ | async)?.approved"
-      [nzTitle]="'Current Results'">
-      <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
-        <p class="text-lg">{{q.text}}</p>
+          <ng-container *ngFor="let a of q.answers">
+            <p nz-typography class="text-xs">{{a.text}}</p>
+            <nz-progress
+              [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'"
+              nzStatus="active"
+            >
+            </nz-progress>
+          </ng-container>
+        </div>
+      </nz-card>
 
-        <ng-container *ngFor="let a of q.answers">
-          <p nz-typography class="text-xs">{{a.text}}</p>
-          <nz-progress [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'" nzStatus="active">
-          </nz-progress>
+      <nz-card
+        nzTitle="Casted Votes"
+        *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && !data.isPending(data.proposal$ | async)"
+      >
+        <nz-table
+          #basicTable
+          [nzData]="(data.transactions$ | async) || []"
+          [nzShowPagination]="false"
+        >
+          <thead>
+            <tr>
+              <th>Voter</th>
+              <th>Date</th>
+              <th>Option</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of data.transactions$ | async">
+              <td
+                class="cursor-pointer"
+                [routerLink]="['/', 'member', t.member]"
+              >
+                @{{ t.member | truncate:[16] }}
+              </td>
+              <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
+              <td>
+                {{ findAnswerText((data.proposal$ | async)?.questions,
+                t.payload.values) }}
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-card>
+
+      <nz-card
+        nzTitle="Approve Proposal"
+        *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async) && !(data.proposal$ | async)?.rejected"
+      >
+        <div class="mb-8 space-y-4">
+          <button
+            nz-button
+            nzType="primary"
+            nzBlock
+            nzSize="large"
+            (click)="approve()"
+          >
+            Approve
+          </button>
+          <button
+            nz-button
+            nzDanger
+            nzType="primary"
+            nzBlock
+            nzSize="large"
+            (click)="reject()"
+          >
+            Decline
+          </button>
+        </div>
+      </nz-card>
+
+      <nz-card nzTitle="Proposal Info">
+        <!-- MEMBER VOTE -->
+        <ng-container *ngIf="data.isMemberVote((data.proposal$ | async)?.type)">
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class="text-app-gray-400">Start Date</span>
+            <p nz-typography>
+              {{(data.proposal$ | async)?.settings?.startDate?.toDate() |
+              date:'short'}}
+            </p>
+          </div>
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class="text-app-gray-400">End Date</span>
+            <p nz-typography>
+              {{(data.proposal$ | async)?.settings?.endDate?.toDate() |
+              date:'short'}}
+            </p>
+          </div>
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class="flex text-app-gray-400 flex-nowrap"
+              >Voting Type
+              <wen-icon-question-circle
+                class="ml-1"
+                nz-tooltip
+                nzTooltipTitle="Voting Type of this proposal."
+              ></wen-icon-question-circle
+            ></span>
+            <p nz-typography>
+              {{getVotingTypeText((data.proposal$ | async)?.subType)}}
+            </p>
+          </div>
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class="flex text-app-gray-400 flex-nowrap"
+              >Total Weight
+              <wen-icon-question-circle
+                class="ml-1"
+                nz-tooltip
+                nzTooltipTitle="Total weight within this proposal for all participants."
+              ></wen-icon-question-circle>
+            </span>
+            <p nz-typography>{{(data.proposal$ | async)?.totalWeight || 0}}</p>
+          </div>
         </ng-container>
-      </div>
-    </nz-card>
 
-    <nz-card nzTitle="Casted Votes"
-      *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && !data.isPending(data.proposal$ | async)">
-      <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
-        <thead>
-          <tr>
-            <th>Voter</th>
-            <th>Date</th>
-            <th>Option</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let t of data.transactions$ | async">
-            <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]"> @{{ t.member | truncate:[16] }}</td>
-            <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
-            <td>{{ findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }}</td>
-          </tr>
-        </tbody>
-      </nz-table>
-    </nz-card>
+        <!-- NATIVE VOTE -->
+        <ng-container *ngIf="data.isNativeVote((data.proposal$ | async)?.type)">
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class="text-app-gray-400"
+              >milestoneIndexCommence</span
+            >
+            <p nz-typography>
+              {{(data.proposal$ | async)?.settings?.milestoneIndexCommence}}
+            </p>
+          </div>
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class="text-app-gray-400"
+              >milestoneIndexStart</span
+            >
+            <p nz-typography>
+              {{(data.proposal$ | async)?.settings?.milestoneIndexStart}}
+            </p>
+          </div>
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class="text-app-gray-400"
+              >milestoneIndexEnd</span
+            >
+            <p nz-typography>
+              {{(data.proposal$ | async)?.settings?.milestoneIndexEnd}}
+            </p>
+          </div>
+          <a nz-button nzType="link">Export to JSON</a>
+        </ng-container>
+      </nz-card>
 
-    <nz-card nzTitle="Approve Proposal"
-      *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async) && !(data.proposal$ | async)?.rejected">
-      <div class="mb-8 space-y-4">
-        <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
-          Approve</button>
-        <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
-          Decline</button>
-      </div>
-    </nz-card>
-
-    <nz-card nzTitle="Proposal Info">
-      <!-- MEMBER VOTE -->
-      <ng-container *ngIf="data.isMemberVote((data.proposal$ | async)?.type)">
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class=" text-app-gray-400">Start Date</span>
-          <p nz-typography>{{(data.proposal$ | async)?.settings?.startDate?.toDate() | date:'short'}}</p>
+      <nz-card nzTitle="Selected Badges" *ngIf="(data.badges$ | async)?.length">
+        <div class="flex flex-wrap gap-2">
+          <article
+            *ngFor="let a of (data.badges$ | async); trackBy: trackByUid"
+            nz-tooltip
+            [nzTooltipTitle]="a.badge.name"
+            class="flex flex-col items-center justify-center p-3  w-28 h-28 bg-bg-background rounded-2xl"
+          >
+            <wen-badge-tile
+              [metadata]="a.badge.image"
+              [name]="a.badge.name"
+            ></wen-badge-tile>
+          </article>
         </div>
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class="text-app-gray-400">End Date</span>
-          <p nz-typography>{{(data.proposal$ | async)?.settings?.endDate?.toDate() | date:'short'}}</p>
-        </div>
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class="flex text-app-gray-400 flex-nowrap">Voting Type <wen-icon-question-circle
-              class="ml-1" nz-tooltip nzTooltipTitle="Voting Type of this proposal."></wen-icon-question-circle></span>
-          <p nz-typography>{{getVotingTypeText((data.proposal$ | async)?.subType)}}</p>
-        </div>
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class="flex text-app-gray-400 flex-nowrap">Total Weight <wen-icon-question-circle
-              class="ml-1" nz-tooltip nzTooltipTitle="Total weight within this proposal for all participants."></wen-icon-question-circle> </span>
-          <p nz-typography>{{(data.proposal$ | async)?.totalWeight || 0}}</p>
-        </div>
-      </ng-container>
-
-      <!-- NATIVE VOTE -->
-      <ng-container *ngIf="data.isNativeVote((data.proposal$ | async)?.type)">
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class=" text-app-gray-400">milestoneIndexCommence</span>
-          <p nz-typography>{{(data.proposal$ | async)?.settings?.milestoneIndexCommence}}</p>
-        </div>
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class=" text-app-gray-400">milestoneIndexStart</span>
-          <p nz-typography>{{(data.proposal$ | async)?.settings?.milestoneIndexStart}}</p>
-        </div>
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class=" text-app-gray-400">milestoneIndexEnd</span>
-          <p nz-typography>{{(data.proposal$ | async)?.settings?.milestoneIndexEnd}}</p>
-        </div>
-        <a nz-button nzType="link">Export to JSON</a>
-      </ng-container>
-    </nz-card>
-
-    <nz-card nzTitle="Selected Badges" *ngIf="(data.badges$ | async)?.length">
-      <div class="flex flex-wrap gap-2">
-        <article *ngFor="let a of (data.badges$ | async); trackBy: trackByUid" nz-tooltip
-          [nzTooltipTitle]="a.badge.name"
-          class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
-          <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
-        </article>
-      </div>
-    </nz-card>
+      </nz-card>
+    </div>
   </div>
-</div>
+</wen-content>

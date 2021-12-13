@@ -1,194 +1,342 @@
-<button nz-button class="wen-back-button mt-14" (click)="nav.goBack()">
-  <wen-icon-angle-left class="flex"></wen-icon-angle-left>{{nav.getTitle()}}
-</button>
+<wen-content [showBackButton]="true">
+  <h1 class="mt-7" i18 n>New Proposal</h1>
 
-<h1 class="mt-7" i18 n>New Proposal</h1>
-
-<form nz-form nzLayout="vertical" [formGroup]="proposalForm">
-  <div class="py-4" nz-row [nzGutter]="24">
-
-    <div class="space-y-4" nz-col nzFlex="auto" style="max-width: calc(100% - 450px);">
-      <nz-card [nzBordered]="false" nzTitle="Proposal Info">
-        <nz-form-item>
-          <nz-form-control>
-            <input nz-input placeholder="Title" nzSize="large" [formControl]="nameControl" />
-          </nz-form-control>
-        </nz-form-item>
-        <div class="flex flex-grow space-x-4">
-          <nz-form-item class="w-full">
-            <nz-form-control>
-              <nz-date-picker class="flex flex-grow" nzSize="large" [nzDisabledDate]="disabledStartDate.bind(this)"
-                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
-                nzFormat="yyyy-MM-dd HH:mm" [formControl]="startControl" nzPlaceHolder="Start"
-                (nzOnOpenChange)="handleStartOpenChange($event)">
-              </nz-date-picker>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item class="w-full">
-            <nz-form-control>
-              <nz-date-picker class="flex flex-grow" nzSize="large" #endDatePicker
-                [nzDisabledDate]="disabledEndDate.bind(this)"
-                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
-                nzFormat="yyyy-MM-dd HH:mm" [formControl]="endControl" nzPlaceHolder="End"></nz-date-picker>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-        <nz-form-item>
-          <nz-form-control>
-            <textarea nz-input nzSize="large" placeholder="Proposal description" rows="4"
-              [formControl]="additionalInfoControl"></textarea>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-card>
-      <nz-card [nzBordered]="false" nzTitle="Question">
-        <ng-container *ngFor="let question of questions.controls; let i = index">
+  <form nz-form nzLayout="vertical" [formGroup]="proposalForm">
+    <div class="py-4" nz-row [nzGutter]="24">
+      <div
+        class="space-y-4"
+        nz-col
+        nzFlex="auto"
+        style="max-width: calc(100% - 450px)"
+      >
+        <nz-card [nzBordered]="false" nzTitle="Proposal Info">
           <nz-form-item>
             <nz-form-control>
-              <input nz-input placeholder="Question Title" nzSize="large" [formControl]="gForm(question, 'text')" />
+              <input
+                nz-input
+                placeholder="Title"
+                nzSize="large"
+                [formControl]="nameControl"
+              />
             </nz-form-control>
           </nz-form-item>
-
+          <div class="flex flex-grow space-x-4">
+            <nz-form-item class="w-full">
+              <nz-form-control>
+                <nz-date-picker
+                  class="flex flex-grow"
+                  nzSize="large"
+                  [nzDisabledDate]="disabledStartDate.bind(this)"
+                  [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                  nzFormat="yyyy-MM-dd HH:mm"
+                  [formControl]="startControl"
+                  nzPlaceHolder="Start"
+                  (nzOnOpenChange)="handleStartOpenChange($event)"
+                >
+                </nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="w-full">
+              <nz-form-control>
+                <nz-date-picker
+                  class="flex flex-grow"
+                  nzSize="large"
+                  #endDatePicker
+                  [nzDisabledDate]="disabledEndDate.bind(this)"
+                  [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                  nzFormat="yyyy-MM-dd HH:mm"
+                  [formControl]="endControl"
+                  nzPlaceHolder="End"
+                ></nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <nz-form-item>
+            <nz-form-control>
+              <textarea
+                nz-input
+                nzSize="large"
+                placeholder="Proposal description"
+                rows="4"
+                [formControl]="additionalInfoControl"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+        <nz-card [nzBordered]="false" nzTitle="Question">
+          <ng-container
+            *ngFor="let question of questions.controls; let i = index"
+          >
             <nz-form-item>
               <nz-form-control>
-                <textarea nz-input placeholder="Question description" nzSize="large" rows="4"
-                  [formControl]="gForm(question, 'additionalInfo')"></textarea>
+                <input
+                  nz-input
+                  placeholder="Question Title"
+                  nzSize="large"
+                  [formControl]="gForm(question, 'text')"
+                />
               </nz-form-control>
             </nz-form-item>
 
-        </ng-container>
-      </nz-card>
+            <nz-form-item>
+              <nz-form-control>
+                <textarea
+                  nz-input
+                  placeholder="Question description"
+                  nzSize="large"
+                  rows="4"
+                  [formControl]="gForm(question, 'additionalInfo')"
+                ></textarea>
+              </nz-form-control>
+            </nz-form-item>
+          </ng-container>
+        </nz-card>
 
-      <!-- <button nz-button nzType="primary" nzSize="small" type="button" (click)="addQuestion()"
+        <!-- <button nz-button nzType="primary" nzSize="small" type="button" (click)="addQuestion()"
     i18n>Add Question</button>
             <button nz-button nzType="primary" nzSize="small" type="button" (click)="removeQuestion(i)"
             *ngIf="questions.controls.length > 1">Remove Question</button>-->
 
-      <ng-container *ngFor="let question of questions.controls; let i = index">
-        <ng-container *ngFor="let answer of getAnswers(question); let ii = index">
-          <nz-card [nzBordered]="false" [nzTitle]="'Choice #' + (ii + 1)" [nzExtra]="actionsTpl">
-            <div class="space-y-4">
-              <nz-form-item>
-                <nz-form-control>
-                  <input nz-input placeholder="Answer Text" nzSize="large" [formControl]="gForm(answer, 'text')" />
-                </nz-form-control>
-              </nz-form-item>
-              <nz-form-item>
-                <nz-form-control>
-                  <textarea nz-input placeholder="Answer description" nzSize="large" rows="4"
-                    [formControl]="gForm(answer, 'additionalInfo')"></textarea>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-          </nz-card>
-          <ng-template #actionsTpl>
-            <div class="space-x-4">
-              <!-- This is not important to show. We just default it. No need to allow customization of this value for now. -->
-              <!-- <nz-input-number [nzMin]="0" [nzMax]="250" nzSize="large" placeholder="Answer Value"
+        <ng-container
+          *ngFor="let question of questions.controls; let i = index"
+        >
+          <ng-container
+            *ngFor="let answer of getAnswers(question); let ii = index"
+          >
+            <nz-card
+              [nzBordered]="false"
+              [nzTitle]="'Choice #' + (ii + 1)"
+              [nzExtra]="actionsTpl"
+            >
+              <div class="space-y-4">
+                <nz-form-item>
+                  <nz-form-control>
+                    <input
+                      nz-input
+                      placeholder="Answer Text"
+                      nzSize="large"
+                      [formControl]="gForm(answer, 'text')"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-control>
+                    <textarea
+                      nz-input
+                      placeholder="Answer description"
+                      nzSize="large"
+                      rows="4"
+                      [formControl]="gForm(answer, 'additionalInfo')"
+                    ></textarea>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </nz-card>
+            <ng-template #actionsTpl>
+              <div class="space-x-4">
+                <!-- This is not important to show. We just default it. No need to allow customization of this value for now. -->
+                <!-- <nz-input-number [nzMin]="0" [nzMax]="250" nzSize="large" placeholder="Answer Value"
                 [formControl]="gForm(answer, 'value')">
               </nz-input-number> -->
-              <button nz-button nzDanger nzType="text" nzShape="circle" *ngIf="getAnswers(question).length > 2"
-                (click)="removeAnswer(question, ii)"><i nz-icon nzType="delete"></i></button>
-            </div>
-          </ng-template>
+                <button
+                  nz-button
+                  nzDanger
+                  nzType="text"
+                  nzShape="circle"
+                  *ngIf="getAnswers(question).length > 2"
+                  (click)="removeAnswer(question, ii)"
+                >
+                  <i nz-icon nzType="delete"></i>
+                </button>
+              </div>
+            </ng-template>
+          </ng-container>
+          <button
+            nz-button
+            nzType="default"
+            type="button"
+            (click)="addAnswer(question)"
+            *ngIf="getAnswers(question).length < 4"
+            i18n
+          >
+            <i nz-icon nzType="plus" nzTheme="outline"></i>Add Choice
+          </button>
         </ng-container>
-        <button nz-button nzType="default" type="button" (click)="addAnswer(question)"
-          *ngIf="getAnswers(question).length < 4" i18n><i nz-icon nzType="plus" nzTheme="outline"></i>Add
-          Choice</button>
-      </ng-container>
+      </div>
 
+      <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px">
+        <nz-card [nzBordered]="false" nzTitle="Space Info">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select
+                class="w-full"
+                nzSize="large"
+                nzShowSearch
+                [nzCustomTemplate]="selectTpl"
+                nzAllowClear
+                [nzPlaceHolder]="placeholderTpl"
+                [formControl]="spaceControl"
+              >
+                <nz-option
+                  *ngFor="let s of spaces$ | async; trackBy: trackByUid"
+                  nzCustomContent
+                  [nzLabel]="s.name || s.uid"
+                  [nzValue]="s.uid"
+                >
+                  <nz-avatar
+                    [nzSrc]="getAvatarSize(s.avatarUrl)"
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-app-gray-100"
+                    nzShape="circle"
+                  >
+                  </nz-avatar>
+                  {{s.name || s.uid}}
+                </nz-option>
+              </nz-select>
+              <ng-template #placeholderTpl>
+                <div class="flex items-center space-x-4">
+                  <wen-icon-globe class="text-app-gray-text"></wen-icon-globe>
+                  <span>Select a space</span>
+                </div>
+              </ng-template>
+              <ng-template #selectTpl let-s>
+                <div class="flex items-center space-x-4">
+                  <wen-icon-globe class="text-app-gray-400"></wen-icon-globe>
+                  <span>{{ s.nzLabel }}</span>
+                </div>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+        <nz-card [nzBordered]="false" nzTitle="Space Setup">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-form-label class="text-sm font-medium text-app-gray-600"
+                >Target Participants</nz-form-label
+              ><br />
+              <nz-radio-group
+                class="wen-radio-group"
+                [formControl]="selectedGroupControl"
+              >
+                <label nz-radio [nzValue]="true"
+                  ><span
+                    >All Guardians
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      nzTooltipTitle="Only guardians can vote on this proposal"
+                    ></wen-icon-question-circle> </span
+                ></label>
+                <label nz-radio [nzValue]="false"
+                  ><span
+                    >All Members
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      nzTooltipTitle="All members can vote on this proposal"
+                    ></wen-icon-question-circle> </span
+                ></label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <nz-form-label class="text-sm font-medium text-app-gray-600"
+                >Voting Type</nz-form-label
+              ><br />
+              <nz-radio-group
+                class="wen-radio-group"
+                [formControl]="subTypeControl"
+              >
+                <label nz-radio [nzValue]="subTypes.ONE_MEMBER_ONE_VOTE">
+                  <span
+                    >One Participant One Vote
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      nzTooltipTitle="Each member of the space gets one vote"
+                    ></wen-icon-question-circle> </span
+                ></label>
+                <label
+                  class="flex"
+                  nz-radio
+                  [nzValue]="subTypes.REPUTATION_BASED_ON_SPACE"
+                >
+                  <p class="max-w-xs pr-2">
+                    Based on participant's space reputation
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space"
+                    >
+                    </wen-icon-question-circle>
+                  </p>
+                </label>
+                <label
+                  class="flex"
+                  nz-radio
+                  [nzValue]="subTypes.REPUTATION_BASED_ON_AWARDS"
+                >
+                  <p class="max-w-xs">
+                    Based on participant's badges reputations
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      nzTooltipTitle="Votes are weighted based on total amount of XP a member has for selected badges"
+                    >
+                    </wen-icon-question-circle>
+                  </p>
+                </label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+        <nz-card
+          [nzBordered]="false"
+          nzTitle="Reputation Badges"
+          *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS"
+        >
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select
+                class="w-full"
+                nzSize="large"
+                nzShowSearch
+                nzAllowClear
+                [nzMaxTagCount]="9"
+                nzMode="multiple"
+                nzPlaceHolder="Select Badge"
+                [formControl]="votingAwardControl"
+              >
+                <nz-option
+                  *ngFor="let a of awards$ | async; trackBy: trackByUid"
+                  [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
+                  [nzValue]="a.uid"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+      </div>
     </div>
+  </form>
 
-    <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
-      <nz-card [nzBordered]="false" nzTitle="Space Info">
-        <nz-form-item>
-          <nz-form-control>
-            <nz-select class="w-full" nzSize="large" nzShowSearch [nzCustomTemplate]="selectTpl" nzAllowClear
-              [nzPlaceHolder]="placeholderTpl" [formControl]="spaceControl">
-              <nz-option *ngFor="let s of spaces$ | async; trackBy: trackByUid" nzCustomContent
-                [nzLabel]="s.name || s.uid" [nzValue]="s.uid">
-                <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" [nzSize]="32" class="mr-3 border-2 border-app-gray-100"
-                  nzShape="circle">
-                </nz-avatar>
-                {{s.name || s.uid}}
-              </nz-option>
-            </nz-select>
-            <ng-template #placeholderTpl>
-              <div class="flex items-center space-x-4">
-                <wen-icon-globe class=" text-app-gray-text"></wen-icon-globe>
-                <span>Select a space</span>
-              </div>
-            </ng-template>
-            <ng-template #selectTpl let-s>
-              <div class="flex items-center space-x-4">
-                <wen-icon-globe class=" text-app-gray-400"></wen-icon-globe>
-                <span>{{ s.nzLabel }}</span>
-              </div>
-            </ng-template>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-card>
-      <nz-card [nzBordered]="false" nzTitle="Space Setup">
-        <nz-form-item>
-          <nz-form-control>
-            <nz-form-label class="text-sm font-medium text-app-gray-600">Target Participants</nz-form-label><br />
-            <nz-radio-group class="wen-radio-group" [formControl]="selectedGroupControl">
-              <label nz-radio [nzValue]="true"><span>All Guardians
-                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Only guardians can vote on this proposal"></wen-icon-question-circle>
-                </span></label>
-              <label nz-radio [nzValue]="false"><span>All Members
-                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="All members can vote on this proposal"></wen-icon-question-circle>
-                </span></label>
-            </nz-radio-group>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-control>
-            <nz-form-label class="text-sm font-medium text-app-gray-600">Voting Type</nz-form-label><br />
-            <nz-radio-group class="wen-radio-group" [formControl]="subTypeControl">
-              <label nz-radio [nzValue]="subTypes.ONE_MEMBER_ONE_VOTE"> <span>One Participant One
-                  Vote
-                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Each member of the space gets one vote"></wen-icon-question-circle>
-                </span></label>
-              <label class="flex" nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_SPACE">
-                <p class="max-w-xs pr-2">Based on participant's space reputation
-                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space">
-                  </wen-icon-question-circle>
-                </p>
-              </label>
-              <label class="flex" nz-radio [nzValue]="subTypes.REPUTATION_BASED_ON_AWARDS">
-                <p class="max-w-xs">
-                  Based on participant's badges reputations
-                  <wen-icon-question-circle class="inline-block" nz-tooltip nzTooltipPlacement="right"
-                    nzTooltipTitle="Votes are weighted based on total amount of XP a member has for selected badges">
-                  </wen-icon-question-circle>
-                </p>
-              </label>
-            </nz-radio-group>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-card>
-      <nz-card [nzBordered]="false" nzTitle="Reputation Badges"
-        *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
-        <nz-form-item>
-          <nz-form-control>
-            <nz-select class="w-full" nzSize="large" nzShowSearch nzAllowClear [nzMaxTagCount]="9" nzMode="multiple"
-              nzPlaceHolder="Select Badge" [formControl]="votingAwardControl">
-              <nz-option *ngFor="let a of awards$ | async; trackBy: trackByUid"
-                [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
-                [nzValue]="a.uid"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-card>
-    </div>
-  </div>
-</form>
+  <nz-divider class="mb-8"></nz-divider>
 
-<nz-divider class="mb-8"></nz-divider>
-
-<button nz-button nzType="primary" nzSize="large" type="button" (click)="create()" class="mb-6" i18n>Create
-  Proposal</button>
+  <button
+    nz-button
+    nzType="primary"
+    nzSize="large"
+    type="button"
+    (click)="create()"
+    class="mb-6"
+    i18n
+  >
+    Create Proposal
+  </button>
+</wen-content>

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { IconModule } from '@components/icon/icon.module';
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -73,7 +74,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzUploadModule,
     NzAvatarModule,
     NzToolTipModule,
-    IconModule
+    IconModule,
+    LayoutModule
   ]
 })
 export class SpaceModule { }

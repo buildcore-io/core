@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -72,7 +73,8 @@ import { DataService } from './services/data.service';
     NzInputNumberModule,
     NzToolTipModule,
     NzDatePickerModule,
-    IconModule
+    IconModule,
+    LayoutModule,
   ]
 })
 export class AwardModule { }

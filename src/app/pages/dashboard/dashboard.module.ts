@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ProposalCardModule } from '@components/proposal/components/proposal-card/proposal-card.module';
 import { SpaceModule } from '@components/space/space.module';
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -28,7 +29,8 @@ import { DashboardPage } from './dashboard.page';
     ]),
     NzButtonModule,
     NzIconModule,
-    NzCardModule
+    NzCardModule,
+    LayoutModule
   ],
 })
 export class DashboardModule { }

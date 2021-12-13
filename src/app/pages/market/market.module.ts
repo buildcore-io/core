@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { MarketRoutingModule } from './market-routing.module';
 import { MarketPage } from './pages/market/market.page';
@@ -11,7 +12,8 @@ import { MarketPage } from './pages/market/market.page';
   imports: [
     CommonModule,
     MarketRoutingModule,
-    NzCardModule
+    NzCardModule,
+    LayoutModule
   ]
 })
 export class MarketModule { }

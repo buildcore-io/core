@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NgApexchartsModule } from "ng-apexcharts";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -47,7 +48,8 @@ import { DataService } from './services/data.service';
     NzTypographyModule,
     NzToolTipModule,
     NzIconModule,
-    IconModule
+    IconModule,
+    LayoutModule
   ],
 })
 export class MemberModule {
