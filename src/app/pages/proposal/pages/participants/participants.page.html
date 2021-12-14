@@ -1,7 +1,21 @@
 <div class="space-y-12">
   <div class="space-y-4">
-    <!-- TODO Loading. -->
-    <div *ngIf="data.isLoading(data.members$ | async)">Loading...</div>
+
+    <div class="inline-flex justify-between w-full">
+      <div></div>
+
+      <!-- TODO add search input at the top of the members list #71 [formControl]="filterControl" -->
+      <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" class="ml-8 border-none shadow-none outline-0 w-72"
+        nzSearch>
+        <input type="text" nz-input placeholder="Find Participant" class="text-base" />
+      </nz-input-group>
+      <ng-template #prefixIconSearch>
+        <i nz-icon nzType="search" class="text-xl"></i>
+      </ng-template>
+    </div>
+
+    <nz-skeleton *ngIf="data.isLoading(data.members$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.members$  | async)">
       <div class="flex flex-col justify-center text-center h-36">
@@ -11,8 +25,8 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="block" [fullWidth]="true"
-      *ngFor="let member of data.members$ | async; trackBy: trackByUid" [member]="member">
+    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of data.members$ | async; trackBy: trackByUid"
+      [member]="member">
       <p class="font-bold">Weight: {{member.weight}}</p>
       <p *ngIf="member.voted" class="font-bold">VOTED</p>
     </wen-member-card>

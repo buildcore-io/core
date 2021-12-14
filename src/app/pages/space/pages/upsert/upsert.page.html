@@ -137,12 +137,12 @@
                 [nzLimit]="1"
                 [nzCustomRequest]="uploadFile.bind(this, 'space_avatar')"
                 (nzChange)="uploadChangeAvatar($event)"
-                nzFileType="image/png,image/jpeg,image/gif"
+                nzFileType="image/png,image/jpeg"
                 [nzShowUploadList]="true"
                 [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
               >
                 <ng-container>
-                  <i class="upload-icon" nz-icon nzType="upload"></i>
+                  <i class="upload-icon" nz-icon nzType="upload"></i><span class="pl-2 text-xs">jpeg/png</span>
                 </ng-container>
               </nz-upload>
             </nz-form-control>
@@ -169,13 +169,13 @@
                 [nzLimit]="1"
                 [nzCustomRequest]="uploadFile.bind(this, 'space_banner')"
                 (nzChange)="uploadChangeBanner($event)"
-                nzFileType="image/png,image/jpeg,image/gif"
+                nzFileType="image/png,image/jpeg"
                 [nzPreviewFile]="previewFile"
                 [nzShowUploadList]="true"
                 [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
               >
                 <ng-container>
-                  <i class="upload-icon" nz-icon nzType="upload"></i>
+                  <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
                 </ng-container>
               </nz-upload>
             </nz-form-control>

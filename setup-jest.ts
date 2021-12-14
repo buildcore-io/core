@@ -27,6 +27,7 @@ import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from "ng-zorro-antd/radio";
 import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzStatisticModule } from 'ng-zorro-antd/statistic';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -68,6 +69,7 @@ defineGlobalsInjections({
     NzAvatarModule,
     NzStatisticModule,
     NzLayoutModule,
+    NzSkeletonModule,
     NzDropDownModule,
     NzFormModule,
     NzInputNumberModule,

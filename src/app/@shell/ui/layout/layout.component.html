@@ -1,4 +1,5 @@
-<nz-layout class="bg-white" *ngIf="!isMobile">
+<!-- height$ | async -->
+<nz-layout class="bg-white" *ngIf="!isMobile" [style.height]="4000">
   <nz-sider style="min-height: 60rem;" nzWidth="auto" [nzTheme]="isDarkTheme ? 'dark' : 'light' " *ngIf="showSideBar$ | async">
     <wen-sider></wen-sider>
   </nz-sider>
@@ -6,7 +7,7 @@
   <nz-layout [ngClass]="(showSideBar$ | async) ? 'rounded-l-large' : ''">
     <wen-header></wen-header>
 
-    <div class="flex-1 mx-10 xl:container xl:mx-auto">
+    <div class="flex-1 mx-10 xl:container xl:mx-auto" #content>
       <ng-content></ng-content>
     </div>
 

@@ -19,6 +19,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -69,6 +70,7 @@ import { DataService } from './services/data.service';
     NzFormModule,
     AwardStatusModule,
     NzModalModule,
+    NzSkeletonModule,
     NzUploadModule,
     NzDropDownModule,
     NzInputNumberModule,

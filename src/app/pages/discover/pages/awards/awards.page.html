@@ -4,8 +4,8 @@
 <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
   (scrolled)="onScroll()">
 
-  <!-- TODO Loading. -->
-  <div *ngIf="isLoading(award$ | async)">Loading...</div>
+  <nz-skeleton *ngIf="isLoading(award$ | async)" class="p-4 bg-white rounded-2xl w-75 h-75" [nzActive]="true"
+    [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
   <nz-card class="w-75" *ngIf="isEmpty(award$ | async)">
     <div class="flex flex-col justify-center text-center h-36">

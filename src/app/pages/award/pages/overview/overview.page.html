@@ -1,9 +1,9 @@
 <div class="space-y-6">
   <nz-card nzTitle="Award Description">
-    {{(data.award$ | async)?.description}}
+    <span class="whitespace-pre-line"> {{(data.award$ | async)?.description}}</span>
   </nz-card>
 
   <nz-card *ngIf="(data.award$ | async)?.badge" [nzTitle]="(data.award$ | async)?.badge?.name + ' Badge Description'">
-    {{(data.award$ | async)?.badge?.description}}
+    <span class="whitespace-pre-line"> {{(data.award$ | async)?.badge?.description}}</span>
   </nz-card>
 </div>
