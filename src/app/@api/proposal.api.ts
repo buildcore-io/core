@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Proposal } from "functions/interfaces/models";
-import { map, Observable, of } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
@@ -22,6 +22,10 @@ export interface ProposalParticipantWithMember extends Member {
   voted?: boolean;
   weight?: number;
   values?: number[];
+}
+
+export interface TransactionWithFullMember extends Transaction {
+  memberRec: Member;
 }
 
 @Injectable({
@@ -59,14 +63,34 @@ export class ProposalApi extends BaseApi<Proposal> {
     ).valueChanges();
   }
 
-  public lastVotes(proposalId: string): Observable<Transaction[]> {
+  public lastVotes(proposalId: string): Observable<TransactionWithFullMember[]> {
     return this.afs.collection<Transaction>(
       COL.TRANSACTION,
       // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref) => {
         return ref.where('payload.proposalId', '==', proposalId).where('type', '==', TransactionType.VOTE).limit(DEFAULT_LIST_SIZE)
       }
-    ).valueChanges();
+    ).valueChanges().pipe(switchMap(async (obj: any[]) => {
+      const out: TransactionWithFullMember[] = [];
+      const subRecords: Transaction[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
+        return o.member;
+      }));
+
+      for (const o of obj) {
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.member;
+        });
+
+        out.push({
+          ...o,
+          ...{
+            memberRec: finObj
+          }
+        });
+      }
+
+      return out;
+    }));
   }
 
   public getMembersVotes(proposalId: string, memberId: string): Observable<Transaction[]> {

@@ -14,15 +14,15 @@ db.collection(record).get().then((snapshot) => {
     const participant = await db.collection(record).doc(d.data().uid).collection(SUB_COL.MEMBERS).get();
       for (const part of participant.docs) {
         console.log(d.data().uid, 'no issued', participant.size, 'part', part.data().uid, 'value', part.data().voted);
-        if (!part.data().voted) {
-          try {
-            await db.collection(record).doc(d.data().uid).collection(SUB_COL.MEMBERS).doc(part.data().uid).update({
-              voted: false
-            });
-          } catch(e) {
-            console.error(e);
-          }
-        }
+        // if (!part.data().voted) {
+        //   try {
+        //     await db.collection(record).doc(d.data().uid).collection(SUB_COL.MEMBERS).doc(part.data().uid).update({
+        //       voted: false
+        //     });
+        //   } catch(e) {
+        //     console.error(e);
+        //   }
+        // }
         // console.log(d.data().uid, 'par: ', part.data().uid);
         // await db.collection(record).doc(d.data().uid).collection(SUB_COL.PARTICIPANTS).doc(part.data().uid).delete();
       }
