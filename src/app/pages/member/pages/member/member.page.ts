@@ -10,6 +10,7 @@ import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../@api/member.api';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
@@ -34,6 +35,7 @@ export class MemberPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private auth: AuthService,
     private router: Router,
+    public nav: NavigationService,
     public data: DataService
   ) {
     // none.

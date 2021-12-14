@@ -52,8 +52,7 @@
             </span>
           </span>
         </a>
-        <!-- TODO Show space/award/proposal type within member card #70 -->
-        <nz-tag class="px-2 py-1 text-xs border-none rounded-md">{{ true ? 'Open for anyone to join instantly' : 'Requires a member approval'}}
+        <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>{{ (data.space$ | async)!.open ? 'Open to join instantly' : 'Requires approval to join'}}
         </nz-tag>
       </div>
     </nz-card>
