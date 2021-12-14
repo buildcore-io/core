@@ -93,12 +93,24 @@ export class ProposalApi extends BaseApi<Proposal> {
     );
   }
 
-  public listenMembers(proposalId: string, lastValue?: any, orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
-    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, undefined, (original, finObj) => {
+  public listenPendingMembers(proposalId: string, lastValue?: any, searchIds?: string[], orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
+    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
       finObj.voted = original.voted;
       finObj.weight = original.weight;
       return finObj;
-    }, orderBy, direction, def);
+    }, orderBy, direction, def, (ref: any) => {
+      return ref.where('voted', '==', false);
+    });
+  }
+
+  public listenVotedMembers(proposalId: string, lastValue?: any, searchIds?: string[], orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
+    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
+      finObj.voted = original.voted;
+      finObj.weight = original.weight;
+      return finObj;
+    }, orderBy, direction, def, (ref: any) => {
+      return ref.where('voted', '==', true);
+    });
   }
 
   public create(req: WenRequest): Observable<Proposal|undefined> {

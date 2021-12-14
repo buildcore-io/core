@@ -62,7 +62,11 @@ export class MembersPage implements OnInit, OnDestroy {
     });
 
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.onScroll();
+      if (this.search$.value && this.search$.value.length > 0) {
+        this.search$.next(this.search$.value);
+      } else {
+        this.onScroll();
+      }
       this.cd.markForCheck();
     });
 

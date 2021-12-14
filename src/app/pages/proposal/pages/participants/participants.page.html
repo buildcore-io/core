@@ -2,22 +2,32 @@
   <div class="space-y-4">
 
     <div class="inline-flex justify-between w-full">
-      <div></div>
-
-      <!-- TODO add search input at the top of the members list #71 [formControl]="filterControl" -->
+      <div>
+        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+            (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
+            Pending Vote
+          </nz-tag>
+          <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.VOTED"
+            (nzCheckedChange)="handleFilterChange(filterOptions.VOTED)">
+            Voted
+          </nz-tag>
+      </div>
       <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" class="ml-8 border-none shadow-none outline-0 w-72"
         nzSearch>
-        <input type="text" nz-input i18n-placeholder placeholder="Find Participant" class="text-base" />
+        <input type="text" nz-input i18n-placeholder placeholder="Find Participant" class="text-base"  [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
       </ng-template>
     </div>
 
-    <nz-skeleton *ngIf="data.isLoading(data.members$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+    <!-- TODO Do we need dress this baby up? -->
+    <nz-alert nzType="warning" nzMessage="Showing only few top records..." *ngIf="overTenRecords && data.isEmpty((getList() | async)) === false"></nz-alert>
+
+    <nz-skeleton *ngIf="data.isLoading(getList() | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
-    <nz-card class="w-full" *ngIf="data.isEmpty(data.members$  | async)">
+    <nz-card class="w-full" *ngIf="data.isEmpty(getList()  | async)">
       <div class="flex flex-col justify-center text-center h-36">
         <span class="leading-7 text-app-gray-400">
           No Participants
@@ -25,10 +35,9 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of data.members$ | async; trackBy: trackByUid"
+    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of getList() | async; trackBy: trackByUid"
       [member]="member">
       <p class="font-bold">Weight: {{member.weight}}</p>
-      <p *ngIf="member.voted" class="font-bold">VOTED</p>
     </wen-member-card>
   </div>
 </div>

@@ -69,10 +69,11 @@ export class BaseApi<T> {
     manipulateOutput?: (original: any, finObj: any) => any,
     orderBy: string|string[] = 'createdOn',
     direction: any = 'desc',
-    def = DEFAULT_LIST_SIZE
+    def = DEFAULT_LIST_SIZE,
+    refCust?: (subRef: any) => any,
   ): Observable<T[]> {
     const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
-      let query: any = subRef;
+      let query: any = refCust ? refCust(subRef) : subRef;
 
       // Apply search on IDS.
       if (searchIds && searchIds.length > 0) {

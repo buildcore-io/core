@@ -4,7 +4,7 @@ import { COL } from '../../functions/interfaces/models/base';
 
 export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
-                    .where('complete', '==', false)
+                    .where('completed', '==', false)
                     .where('endDate', '<=', new Date()).get();
   if (qry.size > 0) {
     for (const t of qry.docs) {
@@ -14,7 +14,7 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
         });
 
         await admin.firestore().collection(COL.AWARD).doc(t.data().uid).update({
-          complete: true
+          completed: true
         });
     }
   }
