@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from "functions/interfaces/models";
-import { firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
 import { AwardParticipant } from './../../../functions/interfaces/models/award';
@@ -116,15 +116,25 @@ export class AwardApi extends BaseApi<Award> {
     return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
       // console.log(this.collection, subCol, lastValue, obj);
       const out: T[] = [];
+      const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
+        return o.uid;
+      }));
+
       for (const o of obj) {
-        const finObj: any = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
-        if (manipulateOutput) {
-          out.push(manipulateOutput(o, finObj));
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.uid;
+        });
+
+        if (!finObj) {
+          console.warn('Missing record in database');
         } else {
-          out.push(finObj);
+          if (manipulateOutput) {
+            out.push(manipulateOutput(o, finObj));
+          } else {
+            out.push(finObj);
+          }
         }
       }
-
       return out;
     }));
   }

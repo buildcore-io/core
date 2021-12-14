@@ -5,6 +5,7 @@ import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
+export const WHERE_IN_BATCH = 10;
 export const FULL_LIST = 10000;
 
 export interface FbRef {
@@ -84,19 +85,46 @@ export class BaseApi<T> {
     });
 
     return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
-      // console.log(this.collection, subCol, lastValue, obj);
       const out: T[] = [];
+      const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
+        return o.uid;
+      }));
+
       for (const o of obj) {
-        const finObj: any = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
-        if (manipulateOutput) {
-          out.push(manipulateOutput(o, finObj));
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.uid;
+        });
+
+        if (!finObj) {
+          console.warn('Missing record in database');
         } else {
-          out.push(finObj);
+          if (manipulateOutput) {
+            out.push(manipulateOutput(o, finObj));
+          } else {
+            out.push(finObj);
+          }
         }
       }
 
       return out;
     }));
+  }
+
+  protected async getSubRecordsInBatches(col: COL, records: string[]): Promise<any[]> {
+    const out: any = [];
+    for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {
+        const batchToGet: string[] = records.slice(i, i + WHERE_IN_BATCH);
+        const query: any = await firstValueFrom(this.afs.collection(COL.MEMBER, (ref) => {
+          return ref.where('uid', 'in', batchToGet);
+        }).get());
+        if (query.size > 0) {
+          for (const doc of query.docs) {
+            out.push(doc.data());
+          }
+        }
+    }
+
+    return out;
   }
 
   // TODO Implement proper typings.
