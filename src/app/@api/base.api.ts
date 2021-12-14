@@ -5,6 +5,7 @@ import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
+export const WHERE_IN_BATCH = 10;
 export const FULL_LIST = 10000;
 
 export interface FbRef {
@@ -59,17 +60,26 @@ export class BaseApi<T> {
     return ref.valueChanges();
   }
 
+  // TODO Redo arguments into an object
   public subCollectionMembers<T>(
     docId: string,
     subCol: SUB_COL,
     lastValue?: any,
+    searchIds?: string[],
     manipulateOutput?: (original: any, finObj: any) => any,
     orderBy: string|string[] = 'createdOn',
     direction: any = 'desc',
-    def = DEFAULT_LIST_SIZE
+    def = DEFAULT_LIST_SIZE,
+    refCust?: (subRef: any) => any,
   ): Observable<T[]> {
     const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
-      let query: any = subRef;
+      let query: any = refCust ? refCust(subRef) : subRef;
+
+      // Apply search on IDS.
+      if (searchIds && searchIds.length > 0) {
+        query = query.where('uid', 'in', searchIds);
+      }
+
       const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
       order.forEach((o) => {
         query = query.orderBy(o, direction);
@@ -84,19 +94,46 @@ export class BaseApi<T> {
     });
 
     return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
-      // console.log(this.collection, subCol, lastValue, obj);
       const out: T[] = [];
+      const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
+        return o.uid;
+      }));
+
       for (const o of obj) {
-        const finObj: any = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
-        if (manipulateOutput) {
-          out.push(manipulateOutput(o, finObj));
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.uid;
+        });
+
+        if (!finObj) {
+          console.warn('Missing record in database');
         } else {
-          out.push(finObj);
+          if (manipulateOutput) {
+            out.push(manipulateOutput(o, finObj));
+          } else {
+            out.push(finObj);
+          }
         }
       }
 
       return out;
     }));
+  }
+
+  protected async getSubRecordsInBatches(col: COL, records: string[]): Promise<any[]> {
+    const out: any = [];
+    for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {
+        const batchToGet: string[] = records.slice(i, i + WHERE_IN_BATCH);
+        const query: any = await firstValueFrom(this.afs.collection(col, (ref) => {
+          return ref.where('uid', 'in', batchToGet);
+        }).get());
+        if (query.size > 0) {
+          for (const doc of query.docs) {
+            out.push(doc.data());
+          }
+        }
+    }
+
+    return out;
   }
 
   // TODO Implement proper typings.
@@ -121,11 +158,20 @@ export class BaseApi<T> {
     );
     return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
       const out: any[] = [];
+      const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
+        return o.parentId;
+      }));
+
       for (const o of obj) {
-        const parent: any = <any>await firstValueFrom(this.afs.collection(col).doc(o.parentId).valueChanges());
-        // Custom function to filter.
-        if ((frRef && frRef(parent)) || !frRef) {
-          out.push(parent);
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.parentId;
+        });
+        if (!finObj) {
+          console.warn('Missing record in database');
+        } else {
+          if ((frRef && frRef(finObj)) || !frRef) {
+            out.push(finObj);
+          }
         }
       }
 

@@ -4,6 +4,7 @@ import { addOwner, approveAward, approveParticipant, createAward, participate, r
 import { createMember, updateMember } from './controls/member.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
+import { markAwardsAsComplete } from "./cron";
 admin.initializeApp();
 
 // List all various functions supported by Firebase functions.
@@ -36,3 +37,6 @@ exports[WEN_FUNC.cProposal] = createProposal;
 exports[WEN_FUNC.aProposal] = approveProposal;
 exports[WEN_FUNC.rProposal] = rejectProposal;
 exports[WEN_FUNC.voteOnProposal] = voteOnProposal;
+
+// CRON Tasks
+exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;

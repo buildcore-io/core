@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
@@ -22,11 +22,11 @@ export class MembersPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.listen();
-    this.filter.selectedSort$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
 
-    this.filter.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val) => {
       if (val && val.length > 0) {
         this.listen(val);
       } else {
@@ -59,7 +59,7 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.memberApi.top(this.members$.value[this.members$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.members$.value[this.members$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public isLoading(arr: any): boolean {

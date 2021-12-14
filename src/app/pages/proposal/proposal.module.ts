@@ -7,6 +7,7 @@ import { MemberCardModule } from '@components/member/components/member-card/memb
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { NzAlertModule } from "ng-zorro-antd/alert";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -71,6 +72,8 @@ import { DataService } from './services/data.service';
     NzFormModule,
     NzToolTipModule,
     NzMenuModule,
+    NzAlertModule,
+    NzTagModule,
     NzSkeletonModule,
     NzTypographyModule,
     NzProgressModule,

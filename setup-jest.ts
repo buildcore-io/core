@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { defineGlobalsInjections } from '@ngneat/spectator';
 import 'jest-preset-angular/setup-jest';
 import { MockProvider, ngMocks } from 'ng-mocks';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -70,6 +71,7 @@ defineGlobalsInjections({
     NzStatisticModule,
     NzLayoutModule,
     NzSkeletonModule,
+    NzAlertModule,
     NzDropDownModule,
     NzFormModule,
     NzInputNumberModule,

@@ -1,10 +1,13 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MemberApi } from "@api/member.api";
 import { ROUTER_UTILS } from "@core/utils/router.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from "rxjs";
 import { DataService } from "../../services/data.service";
+import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
+import { Member } from './../../../../../../functions/interfaces/models/member';
 import { AwardApi, AwardParticipantWithMember } from './../../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -26,12 +29,17 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   public selectedListControl: FormControl = new FormControl(FilterOptions.PENDING);
   public pendingParticipants$: BehaviorSubject<AwardParticipantWithMember[]|undefined> = new BehaviorSubject<AwardParticipantWithMember[]|undefined>(undefined);
   public issuedParticipants$: BehaviorSubject<AwardParticipantWithMember[]|undefined> = new BehaviorSubject<AwardParticipantWithMember[]|undefined>(undefined);
+  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public filterControl: FormControl = new FormControl(undefined);
+  public overTenRecords = false;
+  public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
   private subscriptions$: Subscription[] = [];
   private dataStorePending: AwardParticipantWithMember[][] = [];
   private dataStoreIssued: AwardParticipantWithMember[][] = [];
   constructor(
     private auth: AuthService,
     private awardApi: AwardApi,
+    private memberApi: MemberApi,
     private router: Router,
     private route: ActivatedRoute,
     private notification: NotificationService,
@@ -53,23 +61,51 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     });
 
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.onScroll();
+      if (this.search$.value && this.search$.value.length > 0) {
+        this.search$.next(this.search$.value);
+      } else {
+        this.onScroll();
+      }
       this.cd.markForCheck();
     });
+
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async (val) => {
+      // We need reset old values.
+      this.resetParticipantsList();
+      this.overTenRecords = false;
+      if (val && val.length > 0) {
+        const obj: Member[] = await firstValueFrom(this.memberApi.last(undefined, val));
+        const ids: string[] = obj.map((o) => {
+          return o.uid;
+        });
+
+        // Top 10 records only supported
+        this.overTenRecords = ids.length > 10;
+        this.onScroll(ids.slice(0, 10));
+      } else {
+
+        // Show normal list again.
+        this.onScroll();
+      }
+    });
+
+    this.filterControl.valueChanges.pipe(
+      debounceTime(ParticipantsPage.DEBOUNCE_TIME)
+    ).subscribe(this.search$);
 
     // Load initial list.
     this.onScroll();
   }
 
-  public onScroll(): void {
+  public onScroll(searchIds?: string[]): void {
     if (!this.awardId) {
       return;
     }
 
-    this.onParticipantScroll(this.awardId, this.selectedListControl.value);
+    this.onParticipantScroll(this.awardId, this.selectedListControl.value, searchIds);
   }
 
-  public onParticipantScroll(awardId: string, list: FilterOptions): void {
+  public onParticipantScroll(awardId: string, list: FilterOptions, searchIds?: string[]): void {
     let store;
     let handler;
     let stream;
@@ -91,17 +127,17 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
     // For initial load stream will not be defiend.
     const lastValue = stream ? stream[stream.length - 1].createdOn : undefined;
-    handler.call(this, awardId, lastValue);
+    handler.call(this, awardId, lastValue, searchIds);
   }
 
-  public listenPendingParticipant(awardId: string, lastValue?: any): void {
-    this.subscriptions$.push(this.awardApi.listenPendingParticipants(awardId, lastValue).subscribe(
+  public listenPendingParticipant(awardId: string, lastValue?: any, searchIds?: string[]): void {
+    this.subscriptions$.push(this.awardApi.listenPendingParticipants(awardId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.pendingParticipants$, this.dataStorePending, this.dataStorePending.length)
     ));
   }
 
-  public listenIssuedParticipant(awardId: string, lastValue?: any): void {
-    this.subscriptions$.push(this.awardApi.listenIssuedParticipants(awardId, lastValue).subscribe(
+  public listenIssuedParticipant(awardId: string, lastValue?: any, searchIds?: string[]): void {
+    this.subscriptions$.push(this.awardApi.listenIssuedParticipants(awardId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.issuedParticipants$, this.dataStoreIssued, this.dataStoreIssued.length)
     ));
   }
@@ -154,12 +190,19 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     return item.uid;
   }
 
+  private resetParticipantsList(): void {
+    this.dataStorePending = [];
+    this.dataStoreIssued = [];
+    this.pendingParticipants$.next(undefined);
+    this.issuedParticipants$.next(undefined);
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
-    this.pendingParticipants$.next(undefined);
-    this.issuedParticipants$.next(undefined);
+
+    this.resetParticipantsList();
   }
 
   public ngOnDestroy(): void {

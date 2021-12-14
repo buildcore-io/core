@@ -1,5 +1,5 @@
 <div class="space-y-12">
-  <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+  <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
     <div class="inline-flex justify-between w-full">
       <div>
@@ -19,15 +19,17 @@
           </nz-tag>
         </ng-container>
       </div>
-      <!-- TODO add search input at the top of the members list #71 [formControl]="filterControl" -->
       <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" class="ml-8 border-none shadow-none outline-0 w-72"
         nzSearch>
-        <input type="text" nz-input placeholder="Find Member" class="text-base" />
+        <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base" [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
       </ng-template>
     </div>
+
+    <!-- TODO Do we need dress this baby up? -->
+    <nz-alert nzType="warning" nzMessage="Showing only few top records..." *ngIf="overTenRecords && data.isEmpty((getList() | async)) === false"></nz-alert>
 
     <nz-skeleton *ngIf="data.isLoading(getList() | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
-import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { FilterService, SortOptions } from './../../services/filter.service';
@@ -23,11 +23,11 @@ export class SpacesPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.listen();
-    this.filter.selectedSort$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
 
-    this.filter.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val) => {
       if (val && val.length > 0) {
         this.listen(val);
       } else {
