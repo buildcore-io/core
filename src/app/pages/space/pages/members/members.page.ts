@@ -4,7 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, skip, Subscription } from 'rxjs';
+import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -20,6 +21,9 @@ import { DataService, MemberFilterOptions } from "./../../services/data.service"
 export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(MemberFilterOptions.ACTIVE);
+  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public filterControl: FormControl = new FormControl(undefined);
+  public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -58,6 +62,18 @@ export class MembersPage implements OnInit, OnDestroy {
       this.onScroll();
       this.cd.markForCheck();
     });
+
+    this.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (val && val.length > 0) {
+        console.log(val);
+      } else {
+        this.search$.next(undefined);
+      }
+    });
+
+    this.filterControl.valueChanges.pipe(
+      debounceTime(MembersPage.DEBOUNCE_TIME)
+    ).subscribe(this.search$);
 
     // Load initial list.
     this.onScroll();
@@ -219,6 +235,7 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.search$.next(undefined);
     this.cancelSubscriptions();
   }
 }

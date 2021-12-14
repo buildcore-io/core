@@ -22,7 +22,7 @@
       <!-- TODO add search input at the top of the members list #71 [formControl]="filterControl" -->
       <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch" class="ml-8 border-none shadow-none outline-0 w-72"
         nzSearch>
-        <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base" />
+        <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base"  [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
