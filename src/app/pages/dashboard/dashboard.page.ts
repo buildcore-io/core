@@ -32,7 +32,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.memberApi.topSpaces(o.uid).subscribe(this.spaces$));
         this.subscriptions$.push(this.memberApi.pendingSpaces(o.uid).subscribe(this.pendingSpaces$));
         this.subscriptions$.push(this.memberApi.topProposals(o.uid).subscribe(this.proposals$));
-        this.subscriptions$.push(this.memberApi.topAwardsActive(o.uid).subscribe(this.awards$));
+        this.subscriptions$.push(this.memberApi.topAwardsPending(o.uid).subscribe(this.awards$));
       }
     });
   }

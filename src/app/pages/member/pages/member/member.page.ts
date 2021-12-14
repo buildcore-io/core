@@ -81,7 +81,8 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public listenMember(memberId: string): void {
-    this.subscriptions$.push(this.memberApi.topAwardsAll(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awards$));
+    this.subscriptions$.push(this.memberApi.topAwardsCompleted(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
+    this.subscriptions$.push(this.memberApi.topAwardsPending(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsPending$));
     this.subscriptions$.push(this.memberApi.topBadges(memberId).pipe(untilDestroyed(this)).subscribe(this.data.badges$));
     this.subscriptions$.push(this.memberApi.topSpaces(memberId).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
