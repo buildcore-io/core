@@ -8,13 +8,13 @@
 
   <wen-tabs [tabs]="sections"></wen-tabs>
 
-  <div class="w-full py-12">
+  <div class="w-full py-12" [style.min-height]="(height$ | async) + 'px'">
     <router-outlet></router-outlet>
   </div>
 </div>
 
 <div class="absolute top-0 right-0 h-auto min-h-screen px-8 pt-40 pb-20 mr-auto text-center bg-white rounded-l-large"
-  style="width: 420px;">
+  style="width: 420px;" #sidebar>
 
   <nz-avatar [nzSize]="124" [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"></nz-avatar>
   <div class="flex items-baseline justify-center mt-6">

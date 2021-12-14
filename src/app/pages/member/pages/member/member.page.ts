@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
@@ -28,6 +28,8 @@ export class MemberPage implements OnInit, OnDestroy {
     { route: 'yield', label: 'Yield' }
   ]
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
+  public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  @ViewChild('sidebar') private sidebar?: ElementRef;
   private subscriptions$: Subscription[] = [];
   constructor(
     private titleService: Title,
@@ -66,6 +68,11 @@ export class MemberPage implements OnInit, OnDestroy {
     }
 
     return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  public track() {
+    this.height$.next(this.sidebar?.nativeElement.scrollHeight || 0);
   }
 
   public trackByUid(index: number, item: any): number {
