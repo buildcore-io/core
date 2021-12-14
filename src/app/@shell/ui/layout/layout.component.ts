@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { ThemeService } from '@core/services/theme';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -16,6 +16,8 @@ export class LayoutComponent implements OnInit {
   public showSideBar$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public isMobile = false;
   public static MOBILE_MAX_WIDTH = 1023;
+  public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  @ViewChild('content') private content?: ElementRef;
   constructor(
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
@@ -46,6 +48,12 @@ export class LayoutComponent implements OnInit {
         this.cd.markForCheck();
       }
   }
+
+  @HostListener('window:scroll', ['$event'])
+  public track() {
+    this.height$.next(this.content?.nativeElement.scrollHeight || 0);
+  }
+
 
   public get isDarkTheme() {
     return this.themeService.isDarkTheme()

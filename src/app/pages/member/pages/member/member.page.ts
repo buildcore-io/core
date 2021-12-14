@@ -20,8 +20,8 @@ import { DataService } from './../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberPage implements OnInit, OnDestroy {
-  memberId = ''
-  sections = [
+  public memberId = ''
+  public sections = [
     { route: 'activity', label: 'Activity' },
     { route: 'awards', label: 'Awards' },
     { route: 'badges', label: 'Badges' },
