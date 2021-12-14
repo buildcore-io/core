@@ -1,7 +1,7 @@
 <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(spaces$ | async)">
   {{ ((spaces$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} spaces
 </p>
-<div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+<div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
   (scrolled)="onScroll()">
 
   <nz-skeleton *ngIf="isLoading(spaces$ | async)" class="p-4 bg-white rounded-2xl w-75 h-75" [nzActive]="true"

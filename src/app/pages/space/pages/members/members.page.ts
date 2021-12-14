@@ -63,11 +63,11 @@ export class MembersPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.search$.pipe(untilDestroyed(this)).subscribe((val) => {
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val) => {
       if (val && val.length > 0) {
         console.log(val);
       } else {
-        this.search$.next(undefined);
+        // this.search$.value = undefined;
       }
     });
 
