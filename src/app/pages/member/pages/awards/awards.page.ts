@@ -29,9 +29,9 @@ export class AwardsPage {
 
   public getList(): BehaviorSubject<Award[]|undefined> {
     if (this.selectedListControl.value === this.filterOptions.ISSUED) {
-      return this.data.awardsPending$;
-    } else {
       return this.data.awardsCompleted$;
+    } else {
+      return this.data.awardsPending$;
     }
   }
 
