@@ -114,7 +114,7 @@ export class BaseApi<T> {
     const out: any = [];
     for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {
         const batchToGet: string[] = records.slice(i, i + WHERE_IN_BATCH);
-        const query: any = await firstValueFrom(this.afs.collection(COL.MEMBER, (ref) => {
+        const query: any = await firstValueFrom(this.afs.collection(col, (ref) => {
           return ref.where('uid', 'in', batchToGet);
         }).get());
         if (query.size > 0) {
@@ -149,11 +149,20 @@ export class BaseApi<T> {
     );
     return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
       const out: any[] = [];
+      const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
+        return o.parentId;
+      }));
+
       for (const o of obj) {
-        const parent: any = <any>await firstValueFrom(this.afs.collection(col).doc(o.parentId).valueChanges());
-        // Custom function to filter.
-        if ((frRef && frRef(parent)) || !frRef) {
-          out.push(parent);
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.parentId;
+        });
+        if (!finObj) {
+          console.warn('Missing record in database');
+        } else {
+          if ((frRef && frRef(finObj)) || !frRef) {
+            out.push(finObj);
+          }
         }
       }
 
