@@ -94,7 +94,7 @@ export class ProposalApi extends BaseApi<Proposal> {
   }
 
   public listenMembers(proposalId: string, lastValue?: any, orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
-    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, (original, finObj) => {
+    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, undefined, (original, finObj) => {
       finObj.voted = original.voted;
       finObj.weight = original.weight;
       return finObj;

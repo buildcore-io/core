@@ -60,10 +60,12 @@ export class BaseApi<T> {
     return ref.valueChanges();
   }
 
+  // TODO Redo arguments into an object
   public subCollectionMembers<T>(
     docId: string,
     subCol: SUB_COL,
     lastValue?: any,
+    searchIds?: string[],
     manipulateOutput?: (original: any, finObj: any) => any,
     orderBy: string|string[] = 'createdOn',
     direction: any = 'desc',
@@ -71,6 +73,12 @@ export class BaseApi<T> {
   ): Observable<T[]> {
     const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
       let query: any = subRef;
+
+      // Apply search on IDS.
+      if (searchIds && searchIds.length > 0) {
+        query = query.where('uid', 'in', searchIds);
+      }
+
       const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
       order.forEach((o) => {
         query = query.orderBy(o, direction);

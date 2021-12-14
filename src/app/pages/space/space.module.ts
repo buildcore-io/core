@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { IconModule } from '@components/icon/icon.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -73,6 +74,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzSelectModule,
     NzIconModule,
     NzTagModule,
+    NzAlertModule,
     NzUploadModule,
     NzAvatarModule,
     NzToolTipModule,

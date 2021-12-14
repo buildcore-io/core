@@ -57,20 +57,20 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
-  public listenGuardians(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.GUARDIANS, lastValue);
+  public listenGuardians(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.GUARDIANS, lastValue, searchIds);
   }
 
-  public listenMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.MEMBERS, lastValue);
+  public listenMembers(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.MEMBERS, lastValue, searchIds);
   }
 
-  public listenBlockedMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.BLOCKED_MEMBERS, lastValue);
+  public listenBlockedMembers(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.BLOCKED_MEMBERS, lastValue, searchIds);
   }
 
-  public listenPendingMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.KNOCKING_MEMBERS, lastValue);
+  public listenPendingMembers(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.KNOCKING_MEMBERS, lastValue, searchIds);
   }
 
   public create(req: WenRequest): Observable<Space|undefined> {
