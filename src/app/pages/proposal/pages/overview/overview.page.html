@@ -21,7 +21,7 @@
   *ngFor="let q of (data.proposal$ | async)?.questions"
   [nzTitle]="q.text"
 >
-  <span>{{q.additionalInfo}}</span>
+  <span [innerHtml]="q.additionalInfo | markdown"></span>
   <nz-radio-group
     class="w-full mb-4 mt-9"
     [nzDisabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async))"
@@ -37,8 +37,7 @@
           <p nz-typography class="text-lg font-medium">{{a.text}}</p>
         </div>
       </wen-radio>
-      <p nz-typography class="pl-16 my-6 text-base leading-6 whitespace-pre-line">
-        {{a.additionalInfo}}
+      <p nz-typography class="pl-16 my-6 text-base leading-6 whitespace-pre-line" [innerHtml]="a.additionalInfo | markdown">
       </p>
     </div>
   </nz-radio-group>
@@ -59,6 +58,6 @@
   <h4>Proposal Description</h4>
   <div class="whitespace-pre-line "
     nz-typography
-    [innerHTML]="(data.proposal$ | async)?.additionalInfo | markdown"
+    [innerHtml]="(data.proposal$ | async)?.additionalInfo | markdown"
   ></div>
 </div>
