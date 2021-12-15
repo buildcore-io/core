@@ -1,5 +1,6 @@
 import { TabsComponent } from '@components/tabs/tabs.component';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { MockComponent } from 'ng-mocks';
 import { FilterService } from './../../services/filter.service';
 import { DiscoverPage } from './discover.page';
@@ -9,6 +10,7 @@ describe('DiscoverPage', () => {
   const createComponent = createRoutingFactory({
     component: DiscoverPage,
     providers: [ FilterService ],
+    imports: [ LayoutModule ],
     declarations: [MockComponent(TabsComponent)]
   });
 

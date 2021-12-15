@@ -1,25 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
+import { IconModule } from './../../../../components/icon/icon.module';
 import { ContentComponent } from './content.component';
 
-describe('ContentComponent', () => {
-  let component: ContentComponent;
-  let fixture: ComponentFixture<ContentComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ContentComponent ]
-    })
-    .compileComponents();
+describe('ContentComponent', () => {
+  let spectator: Spectator<ContentComponent>;
+  const createComponent = createRoutingFactory({
+    component: ContentComponent,
+    imports: [IconModule]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ContentComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    spectator = createComponent();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
   });
 });
