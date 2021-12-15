@@ -29,19 +29,17 @@
     </div>
   </nz-radio-group>
 
-  <!-- TODO show button only when you are participant -->
-  <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()"
+  <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()" *ngIf="data.canVote$ | async"
     [disabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async))">
-    <span>Vote Now</span>
-    <!-- TODO add logic based on status and show timer -->
-    <span>Voting starts in 10 days</span>
+    <span *ngIf="data.isInProgress(data.proposal$ | async)" i18n>Vote Now</span>
+    <span *ngIf="data.isInProgress(data.proposal$ | async) === false" i18n>Voting starts {{(data.proposal$ | async)?.settings?.startDate | relativeTime}}</span>
   </button>
 
-    <!-- TODO show alert only when you are not participant -->
-  <nz-alert nzType="warning" nzMessage="You are not part of the vote" [nzDescription]="bodyTpl">
+  <nz-alert nzType="warning" *ngIf="(data.canVote$ | async) === false"
+  i18n-nzMessage nzMessage="You are not part of the vote" [nzDescription]="bodyTpl">
     <ng-template #bodyTpl class="block">
-      <span>
-        In order to vote, you must be part of the space before voting begins.
+      <span i18n>
+        In order to vote, you must be part of the space before proposal was created.
       </span>
     </ng-template>
   </nz-alert>
