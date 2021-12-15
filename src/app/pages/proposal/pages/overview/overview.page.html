@@ -32,7 +32,7 @@
   <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()" *ngIf="data.canVote$ | async"
     [disabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async))">
     <span *ngIf="data.isInProgress(data.proposal$ | async)" i18n>Vote Now</span>
-    <span *ngIf="data.isInProgress(data.proposal$ | async) === false" i18n>Voting starts {{(data.proposal$ | async)?.settings?.startDate | relativeTime}}</span>
+    <span *ngIf="data.isInProgressIgnoreStatus(data.proposal$ | async) === false" i18n>Voting starts {{(startDateTicker$ | async) | relativeTime}}</span>
   </button>
 
   <nz-alert nzType="warning" *ngIf="(data.canVote$ | async) === false"

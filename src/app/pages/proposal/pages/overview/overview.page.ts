@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
+import { Timestamp } from "functions/interfaces/models/base";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { BehaviorSubject, interval, Subscription } from "rxjs";
+import { Proposal } from './../../../../../../functions/interfaces/models/proposal';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService } from './../../services/data.service';
@@ -15,6 +19,7 @@ import { DataService } from './../../services/data.service';
 })
 export class OverviewPage implements OnInit {
   public voteControl: FormControl = new FormControl();
+  public startDateTicker$: BehaviorSubject<Timestamp>;
   constructor(
     private auth: AuthService,
     private notification: NotificationService,
@@ -22,7 +27,8 @@ export class OverviewPage implements OnInit {
     private proposalApi: ProposalApi,
     public data: DataService
   ) {
-    // none.
+    // Init start date.
+    this.startDateTicker$ = new BehaviorSubject<Timestamp>(this.data.proposal$.value?.settings?.startDate);
   }
 
   public ngOnInit(): void {
@@ -32,6 +38,21 @@ export class OverviewPage implements OnInit {
         tran?.[0]?.payload?.values.forEach((v: number) => {
           this.voteControl.setValue(v);
         });
+      }
+    });
+
+    this.data.proposal$.pipe(untilDestroyed(this)).subscribe((p) => {
+      this.startDateTicker$.next(p?.settings?.startDate);
+    });
+
+    // Run ticker.
+    const int: Subscription = interval(1000).subscribe(() => {
+      this.startDateTicker$.next(this.startDateTicker$.value);
+
+      // If it's in the past.
+      if (dayjs(this.startDateTicker$.value.toDate()).isBefore(dayjs())) {
+        int.unsubscribe();
+        this.data.proposal$.next(<Proposal>{...this.data.proposal$.value});
       }
     });
   }

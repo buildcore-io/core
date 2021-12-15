@@ -66,6 +66,14 @@ export class DataService {
     return (!this.isComplete(proposal) && !this.isPending(proposal) && !!proposal.approved);
   }
 
+  public isInProgressIgnoreStatus(proposal?: Proposal|null): boolean {
+    if (!proposal || this.isNativeVote(proposal.type)) {
+      return false;
+    }
+
+    return (!this.isComplete(proposal) && !this.isPending(proposal));
+  }
+
   public isPending(proposal?: Proposal|null): boolean {
     if (!proposal || this.isNativeVote(proposal.type) || !proposal.approved) {
       return false;
