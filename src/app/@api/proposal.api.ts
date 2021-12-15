@@ -5,6 +5,7 @@ import { Proposal } from "functions/interfaces/models";
 import { map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { Timestamp } from './../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
 import { ProposalMember } from './../../../functions/interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
@@ -22,6 +23,9 @@ export interface ProposalParticipantWithMember extends Member {
   voted?: boolean;
   weight?: number;
   values?: number[];
+
+  // Only internal variable.
+  _issuedOn?: Timestamp
 }
 
 export interface TransactionWithFullMember extends Transaction {
@@ -120,6 +124,7 @@ export class ProposalApi extends BaseApi<Proposal> {
   public listenPendingMembers(proposalId: string, lastValue?: any, searchIds?: string[], orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
     return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
       finObj.voted = original.voted;
+      finObj._issuedOn = original.createdOn;
       finObj.weight = original.weight;
       return finObj;
     }, orderBy, direction, def, (ref: any) => {
@@ -130,6 +135,7 @@ export class ProposalApi extends BaseApi<Proposal> {
   public listenVotedMembers(proposalId: string, lastValue?: any, searchIds?: string[], orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
     return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
       finObj.voted = original.voted;
+      finObj._issuedOn = original.createdOn;
       finObj.weight = original.weight;
       return finObj;
     }, orderBy, direction, def, (ref: any) => {
