@@ -37,12 +37,12 @@
     <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
       <nz-card nzTitle="Cast your vote"
         *ngIf="(data.proposal$ | async)?.approved && data.isNativeVote((data.proposal$ | async)?.type)">
-        <button nz-button nzType="primary" nzBlock nzSize="large">
+        <button nz-button nzType="primary" nzBlock nzSize="large" i18n>
           Open Firefly to Vote</button>
-        <h4 nz-typography class="pt-4">
+        <h4 nz-typography class="pt-4" i18n>
           Voting instructions
         </h4>
-        <p>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
+        <p i18n>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
       </nz-card>
 
       <nz-card
@@ -59,14 +59,14 @@
         </div>
       </nz-card>
 
-      <nz-card nzTitle="Casted Votes"
+      <nz-card i18n-nzTitle nzTitle="Casted Votes"
         *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && !data.isPending(data.proposal$ | async)">
         <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
           <thead>
             <tr>
-              <th>Voter</th>
-              <th>Date</th>
-              <th>Option</th>
+              <th i18n>Voter</th>
+              <th i18n>Date</th>
+              <th i18n>Option</th>
             </tr>
           </thead>
           <tbody>

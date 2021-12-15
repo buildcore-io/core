@@ -57,6 +57,10 @@ export class OverviewPage implements OnInit {
     });
   }
 
+  public get isLoggedIn$(): BehaviorSubject<boolean> {
+    return this.auth.isLoggedIn$;
+  }
+
   public async vote(): Promise<void> {
     if (!this.data.proposal$.value?.uid) {
       return;
