@@ -28,6 +28,7 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IpfsBadgeModule } from './../../@core/pipes/ipfs-badge/ipfs-badge.module';
+import { MarkDownModule } from './../../@core/pipes/markdown/markdown.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { AwardStatusModule } from './../../components/award/components/award-status/award-status.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
@@ -55,6 +56,7 @@ import { DataService } from './services/data.service';
     InfiniteScrollModule,
     IpfsBadgeModule,
     AwardRoutingModule,
+    MarkDownModule,
     IpfsAvatarModule,
     ReactiveFormsModule,
     MemberCardModule,

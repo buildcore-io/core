@@ -1,64 +1,53 @@
-<nz-card
-  class="mb-4"
-  *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async)"
-  [nzTitle]="'Final Results'"
->
+<nz-card class="mb-4" *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async)"
+  [nzTitle]="'Final Results'">
   <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
     <p class="text-lg">{{q.text}}</p>
 
     <ng-container *ngFor="let a of q.answers">
       <p nz-typography class="text-xs">{{a.text}}</p>
-      <nz-progress
-        [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'"
-        nzStatus="active"
-      >
+      <nz-progress [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'" nzStatus="active">
       </nz-progress>
     </ng-container>
   </div>
 </nz-card>
 
-<nz-card
-  *ngFor="let q of (data.proposal$ | async)?.questions"
-  [nzTitle]="q.text"
->
-  <span>{{q.additionalInfo}}</span>
-  <nz-radio-group
-    class="w-full mb-4 mt-9"
+<nz-card *ngFor="let q of (data.proposal$ | async)?.questions" [nzTitle]="q.text">
+  <span [innerHtml]="q.additionalInfo | markdown"></span>
+  <nz-radio-group class="w-full mb-4 mt-9"
     [nzDisabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async))"
-    [formControl]="voteControl"
-  >
+    [formControl]="voteControl">
     <div *ngFor="let a of q.answers">
-      <wen-radio
-        class="w-full px-5 py-3 border border-solid rounded-large"
-        [value]="a.value"
-      >
+      <wen-radio class="block w-full px-5 py-3 border border-solid rounded-large" [value]="a.value">
         <div class="flex">
           <span class="mr-4 text-lg font-bold">#{{a.value}}</span>
           <p nz-typography class="text-lg font-medium">{{a.text}}</p>
         </div>
       </wen-radio>
-      <p nz-typography class="pl-16 my-6 text-base leading-6 whitespace-pre-line">
-        {{a.additionalInfo}}
+      <p nz-typography class="pl-16 my-6 text-base leading-6 whitespace-pre-line"
+        [innerHtml]="a.additionalInfo | markdown">
       </p>
     </div>
   </nz-radio-group>
 
-  <button
-    nz-button
-    nzType="primary"
-    *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)"
-    nzBlock
-    nzSize="large"
-    (click)="vote()"
-  >
-    Vote Now
+  <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()" *ngIf="data.canVote$ | async"
+    [disabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async))">
+    <span *ngIf="data.isInProgress(data.proposal$ | async)" i18n>Vote Now</span>
+    <span *ngIf="data.isInProgress(data.proposal$ | async) === false" i18n>Voting starts {{(data.proposal$ | async)?.settings?.startDate | relativeTime}}</span>
   </button>
+
+  <nz-alert nzType="warning" *ngIf="(data.canVote$ | async) === false"
+  i18n-nzMessage nzMessage="You are not part of the vote" [nzDescription]="bodyTpl">
+    <ng-template #bodyTpl class="block">
+      <span i18n>
+        In order to vote, you must be part of the space before proposal was created.
+      </span>
+    </ng-template>
+  </nz-alert>
+
 </nz-card>
 
 <div class="mx-8 mt-10">
   <h4>Proposal Description</h4>
-  <div class="whitespace-pre-line "
-    nz-typography
-    [innerHTML]="(data.proposal$ | async)?.additionalInfo | markdown"
-  ></div>
+  <div class="whitespace-pre-line " nz-typography [innerHtml]="(data.proposal$ | async)?.additionalInfo | markdown">
+  </div>
 </div>
