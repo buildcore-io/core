@@ -79,7 +79,7 @@
         <nz-card [nzBordered]="false" nzTitle="Reward">
           <div class="flex items-baseline">
             <nz-form-item class="flex-grow">
-              <nz-form-control>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 1000.">
                 <nz-input-number
                   class="w-full"
                   nzSize="large"
@@ -92,12 +92,13 @@
               class="ml-3 text-app-gray-400"
               nz-tooltip
               nzTooltipPlacement="right"
+              i18n-nzTooltipTitle
               nzTooltipTitle="The amount of the experience points (XP) you want to allocate for this award. Maximum 1000 XP. Total Experience Points / Number of Badges = Member's XP."
             ></wen-icon-question-circle>
           </div>
           <div class="flex items-baseline">
             <nz-form-item class="flex-grow">
-              <nz-form-control>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 1000.">
                 <nz-input-number
                   class="w-full"
                   nzSize="large"
@@ -110,6 +111,7 @@
               class="ml-3 text-app-gray-400"
               nz-tooltip
               nzTooltipPlacement="right"
+              i18n-nzTooltipTitle
               nzTooltipTitle="The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out."
             ></wen-icon-question-circle>
           </div>
