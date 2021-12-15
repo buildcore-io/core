@@ -126,7 +126,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     }
 
     // For initial load stream will not be defiend.
-    const lastValue = stream ? stream[stream.length - 1].createdOn : undefined;
+    const lastValue = stream ? stream[stream.length - 1].participatedOn : undefined;
     handler.call(this, awardId, lastValue, searchIds);
   }
 
