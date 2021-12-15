@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TabsModule } from "@components/tabs/tabs.module";
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -36,7 +37,7 @@ import { FilterService } from './services/filter.service';
   ],
   exports: [
   ],
-  providers: [ FilterService ],
+  providers: [FilterService],
   imports: [
     CommonModule,
     InfiniteScrollModule,
@@ -56,7 +57,8 @@ import { FilterService } from './services/filter.service';
     NzTagModule,
     MemberModule,
     ProposalModule,
-    AwardModule
+    AwardModule,
+    LayoutModule
   ]
 })
 export class DiscoverModule { }

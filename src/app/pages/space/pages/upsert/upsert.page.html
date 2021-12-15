@@ -1,7 +1,4 @@
-<button nz-button class="wen-back-button mt-14" (click)="nav.goBack()">
-  <wen-icon-angle-left class="flex"></wen-icon-angle-left>{{nav.getTitle()}}
-</button>
-
+<wen-content [showBackButton]="true">
 <h1 class="mt-7" *ngIf="!editMode" i18n>Add new space</h1>
 <h1 class="mt-7" *ngIf="editMode" i18n>Edit space</h1>
 <form nz-form nzLayout="vertical" [formGroup]="spaceForm">
@@ -211,3 +208,4 @@
 >
   Save space
 </button>
+</wen-content>
