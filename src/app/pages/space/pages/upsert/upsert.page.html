@@ -39,7 +39,7 @@
       <nz-card [nzBordered]="false" nzTitle="Networking">
         <div class="space-y-4">
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Github username.">
               <nz-input-group nzSize="large" [nzPrefix]="prefixGithub">
                 <input
                   type="text"
@@ -55,7 +55,7 @@
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Twitter username.">
               <nz-input-group nzSize="large" [nzPrefix]="prefixTwitter">
                 <input
                   type="text"
@@ -71,7 +71,7 @@
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Only discord invite code supported (i.e. RBHqpkKC)">
               <nz-input-group nzSize="large" [nzPrefix]="prefixDiscord">
                 <input
                   type="text"

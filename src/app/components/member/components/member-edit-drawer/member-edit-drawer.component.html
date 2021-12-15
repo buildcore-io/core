@@ -46,7 +46,7 @@
       <div class="space-y-4">
         <h4 nz-typography class="pt-4 mb-1">Networking</h4>
         <nz-form-item>
-          <nz-form-control>
+          <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Github username.">
             <nz-input-group [nzPrefix]="prefixGithub" nzSize="large">
               <input type="text" nz-input placeholder="Type your Github account username"
                 [formControl]="githubControl" />
@@ -58,7 +58,7 @@
         </nz-form-item>
 
         <nz-form-item>
-          <nz-form-control>
+          <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Twitter username.">
             <nz-input-group [nzPrefix]="prefixTwitter" nzSize="large">
               <input type="text" nz-input placeholder="Type your Twitter account username"
                 [formControl]="twitterControl" />
@@ -70,7 +70,7 @@
         </nz-form-item>
 
         <nz-form-item>
-          <nz-form-control>
+          <nz-form-control i18n-nzErrorTip nzErrorTip="Only username#1234 format supported.">
             <nz-input-group [nzPrefix]="prefixDiscord" nzSize="large">
               <input type="text" nz-input placeholder="Type your Discord account username"
                 [formControl]="discordControl" />
