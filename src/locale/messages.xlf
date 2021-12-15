@@ -2,32 +2,208 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="406845302341706741" datatype="html">
-        <source> 👋 Welcome to the Soonaverse </source>
+      <trans-unit id="1293704548348941066" datatype="html">
+        <source><x id="START_TAG_DIV" ctype="x-div" equiv-text="w-full px-2 overflow-hidden&quot;&gt;"/><x id="TAG_IMG" ctype="image" equiv-text="&lt;img alt=&quot;&quot; src=&quot;/assets/mocks/soon_placeholder.png&quot; class=&quot;object-contain w-full h-full&quot; /&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/><x id="START_TAG_DIV_1" ctype="x-div_1" equiv-text="&lt;div class=&quot;relative flex flex-col justify-center w-full p-6 text-center h-36&quot;&gt;"/><x id="START_HEADING_LEVEL3" ctype="x-h3" equiv-text="&lt;h3 class=&quot;mb-1 text-2xl&quot;&gt;"/> Your resolution is not yet supported. Coming SOON. <x id="CLOSE_HEADING_LEVEL3" ctype="x-h3" equiv-text="&lt;/h3&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">4,6</context>
+          <context context-type="sourcefile">src/app/@shell/ui/layout/layout.component.html</context>
+          <context context-type="linenumber">19,28</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4076685675329378295" datatype="html">
-        <source> ⚒️ Experience that stays with you forever ⚒️ </source>
+      <trans-unit id="2330577642930707695" datatype="html">
+        <source> Cancel </source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
+          <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
+          <context context-type="linenumber">31,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4380682437442730157" datatype="html">
+        <source><x id="START_TAG_WEN_ICON_LOG_OUT" ctype="x-wen_icon_log_out" equiv-text="&lt;wen-icon-log-out icon&gt;"/><x id="CLOSE_TAG_WEN_ICON_LOG_OUT" ctype="x-wen_icon_log_out" equiv-text="&lt;/wen-icon-log-out&gt;"/>Disconnect
+</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/auth/components/sign-out/sign-out.component.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5404737495272560028" datatype="html">
+        <source><x id="START_TAG_WEN_AWARD_STATUS" ctype="x-wen_award_status" equiv-text="tatus [award]=&quot;award&quot;&gt;"/><x id="CLOSE_TAG_WEN_AWARD_STATUS" ctype="x-wen_award_status" equiv-text="&lt;wen-"/><x id="START_TAG_WEN_DATE_TAG" ctype="x-wen_date_tag" equiv-text="&lt;wen-date-tag [date]=&quot;award.endDate.toDate()&quot;&gt;"/><x id="CLOSE_TAG_WEN_DATE_TAG" ctype="x-wen_date_tag" equiv-text="&lt;/div&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/award/components/award-card/award-card.component.html</context>
+          <context context-type="linenumber">21,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7040475197368691972" datatype="html">
+        <source><x id="START_TAG_NZ_AVATAR" ctype="x-nz_avatar" equiv-text="ngFor=&quot;let badge of (badges$ | async) | slice:0:6;&quot;
+          [nzSrc]=&quot;badge.payload.image | ipfsBadge:filesizes.small&quot; class=&quot;bg-white border-gray-400&quot; nzShape=&quot;circle&quot;&gt;"/><x id="CLOSE_TAG_NZ_AVATAR" ctype="x-nz_avatar" equiv-text="&lt;/nz-avatar&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/member/components/member-card/member-card.component.html</context>
+          <context context-type="linenumber">33,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3401413096534966212" datatype="html">
+        <source><x id="START_TAG_WEN_PROPOSAL_STATUS" ctype="x-wen_proposal_status" equiv-text="l-status [proposal]=&quot;proposal&quot;&gt;"/><x id="CLOSE_TAG_WEN_PROPOSAL_STATUS" ctype="x-wen_proposal_status" equiv-text="&lt;nz"/><x id="START_TAG_NZ_TAG" ctype="x-nz_tag" equiv-text="&lt;nz-tag class=&quot;flex items-center wen-status-tag bg-tag-default border-tag-default&quot;
+          *ngIf=&quot;proposal?.settings?.endDate&quot;&gt;"/><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i nz-icon class=&quot;pr-2&quot; nzType=&quot;clock-circle&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;span&gt;{"/><x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="INTERPOLATION" equiv-text="s?.endDate.toDate() | date:&quot;short&quot;}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/"/><x id="CLOSE_TAG_NZ_TAG" ctype="x-nz_tag" equiv-text="&lt;/nz-tag&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/proposal/components/proposal-card/proposal-card.component.html</context>
+          <context context-type="linenumber">49,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="164861771505817274" datatype="html">
+        <source><x id="START_TAG_WEN_ICON_MEMBERS" ctype="x-wen_icon_members" equiv-text="&lt;wen-icon-members&gt;"/><x id="CLOSE_TAG_WEN_ICON_MEMBERS" ctype="x-wen_icon_members" equiv-text="&lt;/wen-icon-members&gt;"/> <x id="INTERPOLATION" equiv-text="{{ space.totalMembers }}"/> members</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/space/components/space-card/space-card.component.html</context>
+          <context context-type="linenumber">24,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7708270344948043036" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ tab.label }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tabs/tabs.component.html</context>
+          <context context-type="linenumber">13,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="187187500641108332" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="d$ | async)?.name}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
+          <context context-type="linenumber">20,22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
+          <context context-type="linenumber">20,22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6370171716321321620" datatype="html">
+        <source> Create award </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
+          <context context-type="linenumber">256,257</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5393811378729556993" datatype="html">
+        <source>My Overview</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
+          <context context-type="linenumber">1,2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4990338162993841096" datatype="html">
+        <source>Pending Membership Requests</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="805209891822012235" datatype="html">
+        <source>Your spaces</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7215143630645086918" datatype="html">
+        <source>Active awards </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
+          <context context-type="linenumber">35,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5196921830941497319" datatype="html">
+        <source>Active proposals </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
+          <context context-type="linenumber">47,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7235561333256183690" datatype="html">
+        <source>Discover Soonaverse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.html</context>
+          <context context-type="linenumber">1,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7623649064629539622" datatype="html">
+        <source>Marketplace</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4915431133669985304" datatype="html">
+        <source>Profile</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">7,9</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5001416710674933785" datatype="html">
-        <source> Go to dashboard </source>
+      <trans-unit id="9122485038118936580" datatype="html">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="zType=&quot;plus&quot; nzTheme=&quot;outline&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="Add Choice"/>Add Choice </source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">12,14</context>
+          <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7593647772982796896" datatype="html">
-        <source>Choose a theme</source>
+      <trans-unit id="3223270934554427309" datatype="html">
+        <source> Create Proposal
+</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
+          <context context-type="linenumber">339,340</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3668714254942223937" datatype="html">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="zType=&quot;plus&quot; nzTheme=&quot;outline&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="New award
+      &lt;/"/>New award </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.html</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8580960508541770005" datatype="html">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="zType=&quot;plus&quot; nzTheme=&quot;outline&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="New proposal"/>New proposal </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.html</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8323422358213440128" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="ce$ | async)!.open ? &apos;Open to join instantly&apos; : &apos;Requires approval to join&apos;}}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
+          <context context-type="linenumber">55,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2579455901924750877" datatype="html">
+        <source>Add new space</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6689300069946432910" datatype="html">
+        <source>Edit space</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
+          <context context-type="linenumber">6,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7399356884137234367" datatype="html">
+        <source> Create space
+</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
+          <context context-type="linenumber">199,200</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4605118818956710569" datatype="html">
+        <source> Save space
+</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
+          <context context-type="linenumber">212,213</context>
         </context-group>
       </trans-unit>
     </body>

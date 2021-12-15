@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { GLOBAL_DEBOUNCE_TIME } from './../../../../../functions/interfaces/config';
 
 export enum SortOptions {
   RECENT = 'desc',
@@ -12,7 +13,7 @@ export class FilterService {
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(['All']);
   public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
   public hotTags: string[] = ['All', 'Popular'];
-  public static DEBOUNCE_TIME = 500;
+  public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
 
   public handleChange(_checked: boolean, tag: string): void {
     this.selectedTags$.next([tag]);

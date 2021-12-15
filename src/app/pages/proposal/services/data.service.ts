@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Award } from './../../../../../functions/interfaces/models/award';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { ProposalAnswer, ProposalType } from './../../../../../functions/interfaces/models/proposal';
-import { ProposalParticipantWithMember } from './../../../@api/proposal.api';
+import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
 @Injectable()
 export class DataService {
@@ -14,8 +14,7 @@ export class DataService {
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public badges$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-  public members$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
-  public transactions$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
+  public transactions$: BehaviorSubject<TransactionWithFullMember[]|undefined> = new BehaviorSubject<TransactionWithFullMember[]|undefined>(undefined);
   public currentMembersVotes$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public canVote$: BehaviorSubject<boolean|undefined> = new BehaviorSubject<boolean|undefined>(false);
   public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
@@ -30,7 +29,6 @@ export class DataService {
     this.proposal$.next(undefined);
     this.space$.next(undefined);
     this.creator$.next(undefined);
-    this.members$.next(undefined);
     this.transactions$.next(undefined);
     this.guardians$.next(undefined);
     this.canVote$.next(false);

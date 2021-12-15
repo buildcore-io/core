@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { IconModule } from '@components/icon/icon.module';
-import { LayoutModule } from '@shell/ui/layout/layout.module';
+import { RadioModule } from '@components/radio/radio.module';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -15,6 +16,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -66,16 +68,18 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzGridModule,
     NzButtonModule,
     NzTypographyModule,
+    NzSkeletonModule,
     NzCardModule,
     NzInputModule,
     NzSelectModule,
     NzIconModule,
     NzTagModule,
+    NzAlertModule,
     NzUploadModule,
     NzAvatarModule,
     NzToolTipModule,
     IconModule,
-    LayoutModule
+    RadioModule
   ]
 })
 export class SpaceModule { }

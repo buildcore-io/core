@@ -9,6 +9,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -50,6 +51,7 @@ import { FilterService } from './services/filter.service';
     NzButtonModule,
     SpaceModule,
     NzCardModule,
+    NzSkeletonModule,
     NzSelectModule,
     NzToolTipModule,
     NzTagModule,

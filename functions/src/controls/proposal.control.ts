@@ -147,6 +147,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
       await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
         uid: g.data().uid,
         weight: votingWeight,
+        voted: false,
         parentId: proposalAddress,
         parentCol: COL.PROPOSAL,
         createdOn: serverTime()

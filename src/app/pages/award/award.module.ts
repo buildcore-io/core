@@ -3,8 +3,9 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
+import { RadioModule } from '@components/radio/radio.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
-import { LayoutModule } from '@shell/ui/layout/layout.module';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -19,6 +20,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -57,6 +59,7 @@ import { DataService } from './services/data.service';
     NzButtonModule,
     NzSelectModule,
     NzRadioModule,
+    RadioModule,
     NzCardModule,
     NzIconModule,
     NzInputModule,
@@ -68,13 +71,14 @@ import { DataService } from './services/data.service';
     NzFormModule,
     AwardStatusModule,
     NzModalModule,
+    NzSkeletonModule,
     NzUploadModule,
     NzDropDownModule,
+    NzAlertModule,
     NzInputNumberModule,
     NzToolTipModule,
     NzDatePickerModule,
-    IconModule,
-    LayoutModule,
+    IconModule
   ]
 })
 export class AwardModule { }

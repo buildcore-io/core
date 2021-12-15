@@ -168,20 +168,20 @@ export class DataService implements OnDestroy {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public listenMembers(spaceId: string, lastValue?: any): void {
-    this.subscriptions$.push(this.spaceApi.listenMembers(spaceId, lastValue).subscribe(
+  public listenMembers(spaceId: string, lastValue?: any, searchIds?: string[]): void {
+    this.subscriptions$.push(this.spaceApi.listenMembers(spaceId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.members$, this.dataStoreMembers, this.dataStoreMembers.length)
     ));
   }
 
-  public listenBlockedMembers(spaceId: string, lastValue?: any): void {
-    this.subscriptions$.push(this.spaceApi.listenBlockedMembers(spaceId, lastValue).subscribe(
+  public listenBlockedMembers(spaceId: string, lastValue?: any, searchIds?: string[]): void {
+    this.subscriptions$.push(this.spaceApi.listenBlockedMembers(spaceId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.blockedMembers$, this.dataStoreBlockedMembers, this.dataStoreBlockedMembers.length)
     ));
   }
 
-  public listenPendingMembers(spaceId: string, lastValue?: any): void {
-    this.subscriptions$.push(this.spaceApi.listenPendingMembers(spaceId, lastValue).subscribe(
+  public listenPendingMembers(spaceId: string, lastValue?: any, searchIds?: string[]): void {
+    this.subscriptions$.push(this.spaceApi.listenPendingMembers(spaceId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.pendingMembers$, this.dataStorePendingMembers, this.dataStorePendingMembers.length)
     ));
   }
@@ -197,7 +197,7 @@ export class DataService implements OnDestroy {
     stream$.next(Array.prototype.concat.apply([], store));
   }
 
-  public onMemberScroll(spaceId: string, list: MemberFilterOptions): void {
+  public onMemberScroll(spaceId: string, list: MemberFilterOptions, searchIds?: string[]): void {
     let store;
     let handler;
     let stream;
@@ -223,7 +223,7 @@ export class DataService implements OnDestroy {
 
     // For initial load stream will not be defiend.
     const lastValue = stream ? stream[stream.length - 1].createdOn : undefined;
-    handler.call(this, spaceId, lastValue);
+    handler.call(this, spaceId, lastValue, searchIds);
   }
 
   public getPendingMembersCount(members?: Member[]|null): number {
@@ -246,9 +246,19 @@ export class DataService implements OnDestroy {
     this.awardsRejected$.next(undefined);
     this.awardsDraft$.next(undefined);
     this.awardsCompleted$.next(undefined);
+    this.resetMembersSubjects();
+  }
+
+  public resetMembersSubjects(): void {
     this.members$.next(undefined);
     this.blockedMembers$.next(undefined);
     this.pendingMembers$.next(undefined);
+  }
+
+  public resetMembersDataStore(): void {
+    this.dataStoreMembers = [];
+    this.dataStorePendingMembers = [];
+    this.dataStoreBlockedMembers = [];
   }
 
   public resetRelatedRecordsSubjects(): void {
@@ -272,10 +282,7 @@ export class DataService implements OnDestroy {
     this.completedAwardsOn = false;
     this.draftAwardsOn = false;
     this.rejectedAwardsOn = false;
-    this.dataStoreMembers = [];
-    this.dataStorePendingMembers = [];
-    this.dataStoreBlockedMembers = [];
-
+    this.resetMembersDataStore();
     this.resetSubjects();
     this.resetRelatedRecordsSubjects();
   }

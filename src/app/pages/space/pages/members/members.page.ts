@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MemberApi } from "@api/member.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from 'rxjs';
+import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -20,11 +22,16 @@ import { DataService, MemberFilterOptions } from "./../../services/data.service"
 export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(MemberFilterOptions.ACTIVE);
+  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public filterControl: FormControl = new FormControl(undefined);
+  public overTenRecords = false;
+  public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private auth: AuthService,
     private spaceApi: SpaceApi,
+    private memberApi: MemberApi,
     private notification: NotificationService,
     private route: ActivatedRoute,
     private router: Router,
@@ -55,9 +62,38 @@ export class MembersPage implements OnInit, OnDestroy {
     });
 
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
-      this.onScroll();
+      if (this.search$.value && this.search$.value.length > 0) {
+        this.search$.next(this.search$.value);
+      } else {
+        this.onScroll();
+      }
       this.cd.markForCheck();
     });
+
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async (val) => {
+      // We need reset old values.
+      this.data.resetMembersDataStore();
+      this.data.resetMembersSubjects();
+      this.overTenRecords = false;
+      if (val && val.length > 0) {
+        const obj: Member[] = await firstValueFrom(this.memberApi.last(undefined, val));
+        const ids: string[] = obj.map((o) => {
+          return o.uid;
+        });
+
+        // Top 10 records only supported
+        this.overTenRecords = ids.length > 10;
+        this.onScroll(ids.slice(0, 10));
+      } else {
+
+        // Show normal list again.
+        this.onScroll();
+      }
+    });
+
+    this.filterControl.valueChanges.pipe(
+      debounceTime(MembersPage.DEBOUNCE_TIME)
+    ).subscribe(this.search$);
 
     // Load initial list.
     this.onScroll();
@@ -108,12 +144,12 @@ export class MembersPage implements OnInit, OnDestroy {
     return this.selectedListControl.value === MemberFilterOptions.PENDING;
   }
 
-  public onScroll(): void {
+  public onScroll(searchIds?: string[]): void {
     if (!this.spaceId) {
       return;
     }
 
-    this.data.onMemberScroll(this.spaceId, this.selectedListControl.value);
+    this.data.onMemberScroll(this.spaceId, this.selectedListControl.value, searchIds);
   }
 
   public async setGuardian(memberId: string): Promise<void> {
@@ -219,6 +255,7 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.search$.next(undefined);
     this.cancelSubscriptions();
   }
 }

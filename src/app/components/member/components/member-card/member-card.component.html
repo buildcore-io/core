@@ -1,8 +1,8 @@
 <article class="flex flex-row p-4 bg-white w-75 h-75 rounded-2xl wen-card"
   [ngClass]="fullWidth ? 'w-auto h-auto justify-between' : 'w-75 h-75'" *ngIf="member">
-  <a [ngClass]="fullWidth ? 'w-4/5' : 'w-full'" [routerLink]="['/', this.path, member.uid]">
+  <div [ngClass]="fullWidth ? 'w-4/5' : 'w-full'">
     <div class="relative flex flex-col w-full h-40" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
-      <div class="flex items-center w-full space-x-4">
+      <a class="flex items-center w-full space-x-4" [routerLink]="['/', this.path, member.uid]">
         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
           style="max-width: 48px; min-width: 48px;" [nzSize]="48"
           [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
@@ -10,11 +10,12 @@
         <nz-tag *ngIf="role" class="wen-status-tag"
           [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'">
           {{ role }}</nz-tag>
-      </div>
+      </a>
       <span nz-typography class="mt-3 truncate text-app-gray-400" [ngClass]="fullWidth ? 'text-base' : 'text-xs'">
         joined {{ member.createdOn?.toDate() | date:"short" }}
       </span>
-      <p class="mt-2 mb-3 leading-5 text-black" [ngClass]="fullWidth ? 'text-base' : 'text-xs'">{{ (about !== undefined ? about :
+      <p class="mt-2 mb-3 leading-5 text-black" [ngClass]="fullWidth ? 'text-base' : 'text-xs'">{{ (about !== undefined
+        ? about :
         member.about) }}</p>
     </div>
 
@@ -34,7 +35,7 @@
         </nz-avatar>
       </div>
     </div>
-  </a>
+  </div>
   <div class="w-1/5 pl-4 pr-2 text-right" *ngIf="fullWidth">
     <ng-content></ng-content>
   </div>

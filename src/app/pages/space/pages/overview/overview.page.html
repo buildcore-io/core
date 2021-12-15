@@ -1,8 +1,9 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <h3>Active Proposals</h3>
-    <!-- TODO Loading. -->
-    <div *ngIf="data.isLoading(data.proposalsActive$ | async)">Loading...</div>
+
+    <nz-skeleton *ngIf="data.isLoading(data.proposalsActive$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.proposalsActive$ | async)">
       <div class="flex flex-col justify-center text-center h-36">
@@ -21,8 +22,9 @@
 
   <div class="space-y-4">
     <h3>Active Awards</h3>
-    <!-- TODO Loading. -->
-    <div *ngIf="data.isLoading(data.awardsActive$ | async)">Loading...</div>
+
+    <nz-skeleton *ngIf="data.isLoading(data.awardsActive$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.awardsActive$ | async)">
       <div class="flex flex-col justify-center text-center h-36">

@@ -1,5 +1,5 @@
-<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-44 flex' : 'w-75 h-75'" *ngIf="award"
-  [routerLink]="['/', this.path, award.uid]">
+<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-44' : 'w-75 h-75'" *ngIf="award">
+  <a [ngClass]="fullWidth ? 'flex' : ''" [routerLink]="['/', this.path, award.uid]">
   <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'h-40'">
     <div class="flex items-center w-full space-x-4">
       <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
@@ -22,4 +22,5 @@
       <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
     </div>
   </div>
+</a>
 </article>
