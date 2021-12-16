@@ -3,5 +3,23 @@
     "default": "soonaverse",
     "preview": "soonaverse-test"
   },
-  "targets": {}
+  "targets": {
+    "soonaverse": {
+      "hosting": {
+        "edge": [
+          "soonaverse-edge"
+        ],
+        "prod": [
+          "soonaverse"
+        ]
+      }
+    },
+    "soonaverse-test": {
+      "hosting": {
+        "prod": [
+          "soonaverse-test"
+        ]
+      }
+    }
+  }
 }

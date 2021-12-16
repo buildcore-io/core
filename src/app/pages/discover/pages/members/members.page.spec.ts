@@ -3,7 +3,8 @@ import { MockComponent, MockProvider } from 'ng-mocks';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MemberCardComponent } from '../../../../components/member/components/member-card/member-card.component';
 import { MemberApi } from './../../../../@api/member.api';
-import { FilterService, SortOptions } from './../../services/filter.service';
+import { FilterService } from './../../services/filter.service';
+import { SortOptions } from "../../services/sort-options.interface";
 import { MembersPage } from './members.page';
 
 describe('MembersPage', () => {

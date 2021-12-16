@@ -1,46 +1,18 @@
-<h1 i18n class="mt-12">Discover Soonaverse</h1>
+<wen-content>
+  <h1 i18n class="mt-12">Discover Soonaverse</h1>
 
-<div class="flex items-center">
-  <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch"
-    class="mr-8 border-none shadow-none outline-0" nzSearch>
-    <input type="text" nz-input placeholder="Enter the first few letters to search..." class="text-base" [formControl]="filterControl"/>
-  </nz-input-group>
+  <div class="flex items-center">
+    <nz-input-group nzSize="large" [nzPrefix]="prefixIconSearch"
+      class="mr-8 border-none shadow-none outline-0" nzSearch>
+      <input type="text" nz-input placeholder="Enter the first few letters to search..." class="text-base" [formControl]="filterControl"/>
+    </nz-input-group>
 
-  <ng-template #prefixIconSearch>
-    <i nz-icon nzType="search" class="text-xl"></i>
-  </ng-template>
+    <ng-template #prefixIconSearch>
+      <i nz-icon nzType="search" class="text-xl"></i>
+    </ng-template>
 
-  <!-- <ng-template #suffixTemplateInfo>
-    <i nz-icon nz-tooltip nzTooltipTitle="Searching by name is case sensitive and begins at the leftmost character." nzType="font-size"></i>
-  </ng-template> -->
-
-  <!-- Feel free to add but I made this to search as you type which makes more sense. -->
-  <!-- <ng-template #suffixButton>
-    <button nz-button nzType="primary" class="m-2" i18n nz-tooltip nzTooltipTitle="Coming SOON">
-      Search
-    </button>
-  </ng-template> -->
-
-  <wen-tabs [tabs]="sections"></wen-tabs>
-</div>
-
-<div class="flex items-end justify-between">
-  <div class="flex items-center mt-8">
-    <nz-tag *ngFor="let tag of filter.hotTags" nzMode="checkable" [nzChecked]="(filter.selectedTags$ | async)!.indexOf(tag) > -1"
-      (nzCheckedChange)="filter.handleChange($event, tag)" nz-tooltip nzTooltipTitle="Coming SOON">
-      {{ tag }}
-    </nz-tag>
+    <wen-tabs [tabs]="sections"></wen-tabs>
   </div>
-  <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" [formControl]="sortControl" nz-tooltip>
-    <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-    <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-  </nz-select>
-  <ng-template #defaultTemplate let-selected>
-    <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
-    {{ selected.nzLabel }}
-  </ng-template>
-</div>
 
-<div class="grid mt-10 place-items-start">
   <router-outlet></router-outlet>
-</div>
+</wen-content>

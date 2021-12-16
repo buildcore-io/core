@@ -1,25 +1,26 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { marked } from 'marked';
+import reHypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
+import remarkParse from 'remark-parse';
+import remarkReHype from 'remark-rehype';
+import { unified } from 'unified';
 
 @Pipe({
   name: 'markdown',
 })
 export class MarkDownPipe implements PipeTransform {
-  private md = marked.setOptions({
-    breaks: true
-  });
-  constructor() {
-    const walkTokens = (token: any) => {
-      if (token.type === 'heading') {
-        // Add depth.
-        token.depth += 2;
-      }
-    };
+  public transform(str: string | undefined): string {
+    if (!str) {
+      return '';
+    }
 
-    this.md.use({ walkTokens });
-  }
+    const output = unified()
+                  .use(remarkParse)
+                  .use(remarkGfm)
+                  .use(remarkReHype)
+                  .use(reHypeStringify)
+                  .processSync(str);
 
-  transform(str: string | undefined): string {
-    return str ? this.md.parse(str) : '';
+    return String(output);
   }
 }

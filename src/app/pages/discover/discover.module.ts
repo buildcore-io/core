@@ -3,11 +3,13 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TabsModule } from "@components/tabs/tabs.module";
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -35,7 +37,7 @@ import { FilterService } from './services/filter.service';
   ],
   exports: [
   ],
-  providers: [ FilterService ],
+  providers: [FilterService],
   imports: [
     CommonModule,
     InfiniteScrollModule,
@@ -49,12 +51,14 @@ import { FilterService } from './services/filter.service';
     NzButtonModule,
     SpaceModule,
     NzCardModule,
+    NzSkeletonModule,
     NzSelectModule,
     NzToolTipModule,
     NzTagModule,
     MemberModule,
     ProposalModule,
-    AwardModule
+    AwardModule,
+    LayoutModule
   ]
 })
 export class DiscoverModule { }

@@ -2,7 +2,7 @@
   <ng-container *nzModalContent>
     <div class="flex">
       <button nz-button (click)="onClickSignIn()" *ngIf="(auth.showWalletPopup$ | async) === 1"
-      class="flex w-full h-auto gap-6 p-6 border border-app-gray-200 hover:border-app-gray-400 focus:border-app-gray-400 rounded-large">
+      class="flex w-full h-auto gap-6 p-6 mt-10 border border-app-gray-200 hover:border-app-gray-400 focus:border-app-gray-400 rounded-large">
         <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="border-2 border-app-gray-100"></nz-avatar>
         <div class="flex flex-col items-start text-app-gray-text">
           Metamask
@@ -26,7 +26,7 @@
     </div>
   </ng-container>
 
-  <div class="mb-8 text-center" [ngClass]="(auth.showWalletPopup$ | async) === 2 ? 'pt-24' : ''" *nzModalFooter>
+  <div class="text-center" [ngClass]="(auth.showWalletPopup$ | async) === 2 ? 'pt-24' : ''" *nzModalFooter>
     <button nz-button nzType="text" class="text-blue-light1" (click)="handleCancel()" i18n>
       Cancel
     </button>

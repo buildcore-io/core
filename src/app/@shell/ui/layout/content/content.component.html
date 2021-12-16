@@ -1,0 +1,7 @@
+<div class="mx-10 xl:container xl:mx-auto">
+  <button nz-button class="z-10 wen-back-button mt-14" (click)="nav.goBack()" *ngIf="showBackButton">
+    <wen-icon-angle-left class="flex"></wen-icon-angle-left>{{ nav.getTitle() }}
+  </button>
+
+  <ng-content></ng-content>
+</div>

@@ -22,7 +22,7 @@ export class ProposalStatusComponent {
       return false;
     }
 
-    return (dayjs(this.proposal.settings.endDate.toDate()).isBefore(dayjs()) && !!this.proposal?.approved);
+    return (dayjs(this.proposal.settings.endDate.toDate()).isBefore(dayjs()) && !this.proposal.rejected);
   }
 
   public isInProgress(): boolean {
@@ -30,14 +30,19 @@ export class ProposalStatusComponent {
       return false;
     }
 
-    return (!this.isComplete() && !this.isPending() && !!this.proposal.approved);
+    return (!this.isComplete() && !this.isCommencing() && !!this.proposal.approved);
   }
 
   public isPending(): boolean {
-    if (!this.proposal || this.isNativeVote(this.proposal.type) || !this.proposal.approved || this.proposal.rejected) {
+    return (!this.isCommencing() && !this.isInProgress() && !this.isComplete() && !this.proposal?.rejected);
+  }
+
+  public isCommencing(): boolean {
+    if (
+        !this.proposal || this.isNativeVote(this.proposal.type) || !this.proposal.approved || this.proposal.rejected) {
       return false;
     }
 
-    return (dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()));
+    return (dayjs(this.proposal.settings.startDate.toDate()).isAfter(dayjs()) && !this.isComplete());
   }
 }

@@ -69,6 +69,8 @@ function defaultJoiUpdateCreateSchema(): any {
 export const createProposal: functions.CloudFunction<Proposal> = functions.runWith({
   // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cProposal),
+  timeoutSeconds: 300,
+  memory: "2GB",
 }).https.onCall(async (req: WenRequest, context: any): Promise<Proposal> => {
   appCheck(WEN_FUNC.cProposal, context);
   const params: DecodedToken = await decodeAuth(req);
@@ -147,6 +149,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
       await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
         uid: g.data().uid,
         weight: votingWeight,
+        voted: false,
         parentId: proposalAddress,
         parentCol: COL.PROPOSAL,
         createdOn: serverTime()

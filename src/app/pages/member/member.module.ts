@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NgApexchartsModule } from "ng-apexcharts";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -39,6 +41,7 @@ import { DataService } from './services/data.service';
     NgApexchartsModule,
     TruncateModule,
     UserRoutingModule,
+    NzTagModule,
     NzButtonModule,
     NzTimelineModule,
     NzAvatarModule,
@@ -47,7 +50,8 @@ import { DataService } from './services/data.service';
     NzTypographyModule,
     NzToolTipModule,
     NzIconModule,
-    IconModule
+    IconModule,
+    LayoutModule
   ],
 })
 export class MemberModule {

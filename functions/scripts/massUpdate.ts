@@ -1,37 +1,34 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { COL, SUB_COL } from '../interfaces/models/base';
-import serviceAccount from './serviceAccountKey.json';
+import { COL } from '../interfaces/models/base';
+import serviceAccount from './serviceAccountKeyTest.json';
 
 initializeApp({
   credential: cert(<any>serviceAccount)
 });
 
 const db = getFirestore();
-const record = COL.AWARD;
+const record = COL.MEMBER;
 db.collection(record).get().then((snapshot) => {
   snapshot.docs.forEach(async (d) => {
-    if (d.data().issued > 0) {
-      // console.log(d.data().uid, {
-      //   approved: true,
-      //   rejected: false
-      // });
-      db.collection(record).doc(d.data().uid).update({
-        approved: true,
-        rejected: false
-      });
-    } else {
-      const participant = await db.collection(record).doc(d.data().uid).collection(SUB_COL.PARTICIPANTS).get();
-      console.log(d.data().uid, 'no issued', participant.size);
-      // participant.docs.forEach(async (part) => {
-      //   console.log(d.data().uid, 'par: ', part.data().uid);
-      //   // await db.collection(record).doc(d.data().uid).collection(SUB_COL.PARTICIPANTS).doc(part.data().uid).delete();
-      // });
-
-      db.collection(record).doc(d.data().uid).update({
-        approved: false,
-        rejected: false
-      });
-    }
+    // const participant = await db.collection(record).doc(d.data().uid).collection(SUB_COL.MEMBERS).get();
+    //   for (const part of participant.docs) {
+    //     console.log(d.data().uid, 'no issued', participant.size, 'part', part.data().uid, 'value', part.data().voted);
+    //     // if (!part.data().voted) {
+    //     //   try {
+    //     //     await db.collection(record).doc(d.data().uid).collection(SUB_COL.MEMBERS).doc(part.data().uid).update({
+    //     //       voted: false
+    //     //     });
+    //     //   } catch(e) {
+    //     //     console.error(e);
+    //     //   }
+    //     // }
+    //     // console.log(d.data().uid, 'par: ', part.data().uid);
+    //     // await db.collection(record).doc(d.data().uid).collection(SUB_COL.PARTICIPANTS).doc(part.data().uid).delete();
+    //   }
+    console.log(d.data().name.replace('WEN-TEST: ', ''));
+    db.collection(record).doc(d.data().uid).update({
+      name: d.data().name.replace('WEN-TEST: ', '')
+    });
   });
 });

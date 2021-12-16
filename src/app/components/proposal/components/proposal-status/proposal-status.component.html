@@ -1,10 +1,10 @@
-<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!proposal?.approved && !proposal?.rejected">Pending
+<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="isPending()" i18n>Pending
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="proposal?.rejected">Rejected
+<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="proposal?.rejected" i18n>Rejected
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-orange border-tag-orange" *ngIf="isPending()">Pending
+<nz-tag class="wen-status-tag bg-tag-orange border-tag-orange" *ngIf="isCommencing()" i18n>Commencing
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" *ngIf="isInProgress()">
+<nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" *ngIf="isInProgress()" i18n>
   In-Progress</nz-tag>
-<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="isComplete()">Completed
+<nz-tag class="wen-status-tag bg-tag-green border-tag-red" *ngIf="isComplete()" i18n>Completed
 </nz-tag>

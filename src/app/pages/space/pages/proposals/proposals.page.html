@@ -3,30 +3,32 @@
     <div class="inline-flex justify-between w-full">
       <div>
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.DRAFT"
-                (nzCheckedChange)="handleFilterChange(filterOptions.DRAFT)">
+          (nzCheckedChange)="handleFilterChange(filterOptions.DRAFT)">
           Pending
         </nz-tag>
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
-                (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
+          (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
           Active
         </nz-tag>
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.COMPLETED"
-                (nzCheckedChange)="handleFilterChange(filterOptions.COMPLETED)">
+          (nzCheckedChange)="handleFilterChange(filterOptions.COMPLETED)">
           Completed
         </nz-tag>
         <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.REJECTED"
-                (nzCheckedChange)="handleFilterChange(filterOptions.REJECTED)">
+          (nzCheckedChange)="handleFilterChange(filterOptions.REJECTED)">
           Rejected
         </nz-tag>
       </div>
 
       <button nz-button class="bg-blue-dark2 border-blue-dark2 hover:bg-blue-hover hover:border-blue-hover"
-        nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async" i18n>
+        nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async"
+        i18n>
         <i nz-icon nzType="plus" nzTheme="outline"></i>New proposal
       </button>
     </div>
-    <!-- TODO Loading. -->
-    <div *ngIf="data.isLoading(getList() | async)">Loading...</div>
+
+    <nz-skeleton *ngIf="data.isLoading(getList() | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(getList() | async)">
       <div class="flex flex-col justify-center text-center h-36">
@@ -36,8 +38,8 @@
       </div>
     </nz-card>
 
-    <wen-proposal-card class="block cursor-pointer" [fullWidth]="true" *ngFor="let proposal of getList() | async; trackBy: trackByUid"
-      [proposal]="proposal" [routerLink]="['/proposal', proposal.uid]">
+    <wen-proposal-card class="block" [fullWidth]="true" *ngFor="let proposal of getList() | async; trackBy: trackByUid"
+      [proposal]="proposal">
     </wen-proposal-card>
   </div>
 </div>

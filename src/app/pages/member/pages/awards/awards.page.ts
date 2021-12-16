@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
 import { BehaviorSubject } from 'rxjs';
+import { Award } from './../../../../../../functions/interfaces/models/award';
 import { DataService } from './../../services/data.service';
+
+enum FilterOptions {
+  PENDING = 'pending',
+  ISSUED = 'issued'
+}
 
 @Component({
   selector: 'wen-awards',
@@ -10,8 +17,27 @@ import { DataService } from './../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AwardsPage {
-  constructor(private auth: AuthService, public data: DataService) {
+  public selectedListControl: FormControl = new FormControl(FilterOptions.PENDING);
+  constructor(private auth: AuthService, private cd: ChangeDetectorRef, public data: DataService) {
     // none.
+  }
+
+  public get filterOptions(): typeof FilterOptions {
+    return FilterOptions;
+  }
+
+
+  public getList(): BehaviorSubject<Award[]|undefined> {
+    if (this.selectedListControl.value === this.filterOptions.ISSUED) {
+      return this.data.awardsCompleted$;
+    } else {
+      return this.data.awardsPending$;
+    }
+  }
+
+  public handleFilterChange(filter: FilterOptions): void {
+    this.selectedListControl.setValue(filter);
+    this.cd.markForCheck();
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {

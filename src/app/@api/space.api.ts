@@ -6,7 +6,7 @@ import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
-import { BaseApi } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +19,18 @@ export class SpaceApi extends BaseApi<Space> {
 
   public listen(id: EthAddress): Observable<Space|undefined> {
     return super.listen(id);
+  }
+
+  public lastOpen(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
+    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('open', '==', true);
+    });
+  }
+
+  public topOpen(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('open', '==', true);
+    });
   }
 
   public isMemberWithinSpace(spaceId: string, memberId: string): Observable<boolean> {
@@ -57,20 +69,20 @@ export class SpaceApi extends BaseApi<Space> {
     );
   }
 
-  public listenGuardians(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.GUARDIANS, lastValue);
+  public listenGuardians(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.GUARDIANS, lastValue, searchIds);
   }
 
-  public listenMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.MEMBERS, lastValue);
+  public listenMembers(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.MEMBERS, lastValue, searchIds);
   }
 
-  public listenBlockedMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.BLOCKED_MEMBERS, lastValue);
+  public listenBlockedMembers(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.BLOCKED_MEMBERS, lastValue, searchIds);
   }
 
-  public listenPendingMembers(spaceId: string, lastValue?: any): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.KNOCKING_MEMBERS, lastValue);
+  public listenPendingMembers(spaceId: string, lastValue?: any, searchIds?: string[]): Observable<Member[]> {
+    return this.subCollectionMembers(spaceId, SUB_COL.KNOCKING_MEMBERS, lastValue, searchIds);
   }
 
   public create(req: WenRequest): Observable<Space|undefined> {

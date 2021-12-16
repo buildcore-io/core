@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import * as dayjs from 'dayjs';
 import { Award } from 'functions/interfaces/models';
-import { firstValueFrom, Observable, switchMap } from "rxjs";
+import { Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
@@ -34,20 +34,22 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsActive(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
-    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (obj: any) => {
-      return obj.completed !== true;
+  public topAwardsPending(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
+      return ref.where('completed', '==', false);
     });
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsAll(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
-    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def);
+  public topAwardsCompleted(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
+      return ref.where('completed', '==', true);
+    });
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
   public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Proposal[]> {
-    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, (obj: any) => {
+    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, undefined, (obj: any) => {
       return (obj.settings.endDate.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
     });
   }
@@ -82,8 +84,18 @@ export class MemberApi extends BaseApi<Member> {
     );
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
       const out: Space[] = [];
+      const subRecords: Space[] = await this.getSubRecordsInBatches(COL.SPACE, obj.map((o) => {
+        return o.parentId;
+      }));
       for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.parentId;
+        });
+        if (!finObj) {
+          console.warn('Missing record in database');
+        } else {
+          out.push(finObj);
+        }
       }
 
       return out;
@@ -99,8 +111,18 @@ export class MemberApi extends BaseApi<Member> {
     );
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceGuardian[]) => {
       const out: Space[] = [];
+      const subRecords: Space[] = await this.getSubRecordsInBatches(COL.SPACE, obj.map((o) => {
+        return o.parentId;
+      }));
       for (const o of obj) {
-        out.push(<any>await firstValueFrom(this.afs.collection(COL.SPACE).doc(o.parentId).valueChanges()));
+        const finObj: any = subRecords.find((subO: any) => {
+          return subO.uid === o.parentId;
+        });
+        if (!finObj) {
+          console.warn('Missing record in database');
+        } else {
+          out.push(finObj);
+        }
       }
 
       return out;

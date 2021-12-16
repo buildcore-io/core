@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationCancel, NavigationEnd, Router } from '@angular/router';
 import { ThemeService } from '@core/services/theme';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject } from "rxjs";
@@ -27,8 +27,10 @@ export class LayoutComponent implements OnInit {
   public ngOnInit(): void {
     this.router.events.pipe(
       untilDestroyed(this),
-      filter(e => e instanceof NavigationEnd)
-    ).subscribe((obj: any) => {
+      filter((e: any) => {
+        return (e instanceof NavigationEnd || e instanceof NavigationCancel);
+      }))
+    .subscribe((obj: any) => {
       if (obj.url === '/') {
         this.showSideBar$.next(false);
       } else {

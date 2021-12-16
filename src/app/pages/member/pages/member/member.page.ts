@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
@@ -10,6 +10,7 @@ import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { MemberApi } from './../../../../@api/member.api';
+import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
@@ -19,14 +20,16 @@ import { DataService } from './../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberPage implements OnInit, OnDestroy {
-  memberId = ''
-  sections = [
+  public memberId = ''
+  public sections = [
     { route: 'activity', label: 'Activity' },
     { route: 'awards', label: 'Awards' },
     { route: 'badges', label: 'Badges' },
     { route: 'yield', label: 'Yield' }
   ]
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
+  public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  @ViewChild('sidebar') private sidebar?: ElementRef;
   private subscriptions$: Subscription[] = [];
   constructor(
     private titleService: Title,
@@ -34,6 +37,7 @@ export class MemberPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private auth: AuthService,
     private router: Router,
+    public nav: NavigationService,
     public data: DataService
   ) {
     // none.
@@ -66,6 +70,11 @@ export class MemberPage implements OnInit, OnDestroy {
     return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
+  @HostListener('window:scroll', ['$event'])
+  public track() {
+    this.height$.next(this.sidebar?.nativeElement.scrollHeight || 0);
+  }
+
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }
@@ -79,7 +88,8 @@ export class MemberPage implements OnInit, OnDestroy {
   }
 
   public listenMember(memberId: string): void {
-    this.subscriptions$.push(this.memberApi.topAwardsAll(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awards$));
+    this.subscriptions$.push(this.memberApi.topAwardsCompleted(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
+    this.subscriptions$.push(this.memberApi.topAwardsPending(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsPending$));
     this.subscriptions$.push(this.memberApi.topBadges(memberId).pipe(untilDestroyed(this)).subscribe(this.data.badges$));
     this.subscriptions$.push(this.memberApi.topSpaces(memberId).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));

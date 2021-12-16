@@ -1,7 +1,11 @@
 import { registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import de from '@angular/common/locales/de';
 import en from '@angular/common/locales/en';
+import es from '@angular/common/locales/es';
 import fr from '@angular/common/locales/fr';
+import it from '@angular/common/locales/it';
+import tr from '@angular/common/locales/tr';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { provideAppCheck } from "@angular/fire/app-check";
@@ -17,12 +21,23 @@ import { IconDefinition } from '@ant-design/icons-angular';
 import { environment } from '@env/environment';
 import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
 import { WebShellModule } from '@shell/ft/web-shell.module';
-import { en_US as EnUs, fr_FR as FrFr, NZ_I18N as Nzi18n } from 'ng-zorro-antd/i18n';
+import {
+  de_DE as DeDe,
+  // en_US as EnUs,
+  en_GB as EnGb, es_ES as EsEs, fr_FR as FrFr, it_IT as ItIt, NZ_I18N as Nzi18n, tr_TR as TrTR
+} from 'ng-zorro-antd/i18n';
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { CoreModule } from './@core/core.module';
 import { WenComponent } from './app.component';
+
+// Register languages.
 registerLocaleData(en);
+registerLocaleData(de);
 registerLocaleData(fr);
+registerLocaleData(es);
+registerLocaleData(it);
+registerLocaleData(tr);
+
 const icons: IconDefinition[] = [];
 const emulator = false;
 
@@ -65,11 +80,19 @@ if (environment.production) {
       /** keep the same with angular.json/i18n/locales configuration **/
       switch (localId) {
         case 'en':
-          return EnUs;
+          return EnGb;
+        case 'de':
+          return DeDe;
+        case 'es':
+          return EsEs;
         case 'fr':
           return FrFr;
+        case 'it':
+          return ItIt;
+        case 'tr':
+          return TrTR;
         default:
-          return EnUs;
+          return EnGb;
       }
     },
     deps: [LOCALE_ID]

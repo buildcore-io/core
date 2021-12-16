@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from "functions/interfaces/models";
-import { firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
 import { AwardParticipant } from './../../../functions/interfaces/models/award';
@@ -63,70 +63,52 @@ export class AwardApi extends BaseApi<Award> {
     return this.subCollectionMembers(award, SUB_COL.OWNERS, lastValue);
   }
 
-  // TODO: Fix typings.
-  public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
-    return this.subCollectionParticipants<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
-      finObj.comment = original.comment;
-      finObj.participatedOn = original.createdOn;
-      finObj.completed = original.completed;
-      return finObj;
-    }, false);
-  }
-
-  // TODO: Fix typings.
-  public listenIssuedParticipants<AwardParticipantWithMember>(award: string, lastValue?: any): Observable<any> {
-    return this.subCollectionParticipants<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, (original, finObj) => {
-      finObj.comment = original.comment;
-      finObj.participatedOn = original.createdOn;
-      finObj.completed = original.completed;
-      return finObj;
-    }, true);
-  }
-
-  public subCollectionParticipants<T>(
-    docId: string,
-    subCol: SUB_COL,
-    lastValue?: any,
-    manipulateOutput?: (original: any, finObj: any) => any,
-    completed = true
-  ): Observable<T[]> {
-    // TODO Temporary clean up once merged into base.ts
-    const orderBy: string|string[] = 'createdOn';
-    const direction: any = 'desc';
-    const def = DEFAULT_LIST_SIZE;
-    // ---
-
-    const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
-      // TODO consolidate below withsubCollection Members below line is only custom one.
-      let query: any = subRef.where('completed', '==', completed);
-      // --
-      const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-      order.forEach((o) => {
-        query = query.orderBy(o, direction);
-      });
-      if (lastValue) {
-        query = query.startAfter(lastValue).limit(def);
-      } else {
-        query = query.limit(def);
-      }
-
-      return query;
+  public lastActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'endDate', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
     });
+  }
 
-    return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
-      // console.log(this.collection, subCol, lastValue, obj);
-      const out: T[] = [];
-      for (const o of obj) {
-        const finObj: any = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(o.uid).valueChanges());
-        if (manipulateOutput) {
-          out.push(manipulateOutput(o, finObj));
-        } else {
-          out.push(finObj);
-        }
-      }
+  public topActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'endDate', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
+    });
+  }
 
-      return out;
-    }));
+  public lastCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('completed', '==', true).where('approved', '==', true);
+    });
+  }
+
+  public topCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('completed', '==', true).where('approved', '==', true);
+    });
+  }
+
+  // TODO: Fix typings.
+  public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: any, searchIds?: string[]): Observable<any> {
+    return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, searchIds, (original, finObj) => {
+      finObj.comment = original.comment;
+      finObj.participatedOn = original.createdOn;
+      finObj.completed = original.completed;
+      return finObj;
+    }, 'createdOn', 'desc', DEFAULT_LIST_SIZE, (ref: any) => {
+      return ref.where('completed', '==', false);
+    });
+  }
+
+  // TODO: Fix typings.
+  public listenIssuedParticipants<AwardParticipantWithMember>(award: string, lastValue?: any, searchIds?: string[]): Observable<any> {
+    return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, searchIds, (original, finObj) => {
+      finObj.comment = original.comment;
+      finObj.participatedOn = original.createdOn;
+      finObj.completed = original.completed;
+      return finObj;
+    }, 'createdOn', 'desc', DEFAULT_LIST_SIZE, (ref: any) => {
+      return ref.where('completed', '==', true);
+    });
   }
 
   public isMemberParticipant(awardId: string, memberId: string): Observable<boolean> {
