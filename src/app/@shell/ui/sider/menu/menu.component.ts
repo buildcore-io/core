@@ -1,4 +1,5 @@
 import { AfterViewChecked, ChangeDetectionStrategy, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren } from '@angular/core';
+import { Router } from "@angular/router";
 import { ThemeService } from '@core/services/theme';
 import { MenuItem } from "../sider.component";
 import { MenuItemDirective } from './menu-item.directive';
@@ -18,7 +19,7 @@ export class MenuComponent implements AfterViewChecked {
   @ViewChildren(MenuItemDirective) menuItemLabels!: QueryList<MenuItemDirective>;
   private reCreateIcons = false;
 
-  constructor(private themeService: ThemeService, private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private router: Router, private themeService: ThemeService, private componentFactoryResolver: ComponentFactoryResolver) { }
 
   loadIconComponents() {
     if (this.menuItemLabels) {
@@ -35,6 +36,19 @@ export class MenuComponent implements AfterViewChecked {
       this.loadIconComponents();
       this.reCreateIcons = false;
     }
+  }
+
+  public isSelectedRoute(route: any[]): boolean {
+    if (this.router.isActive(this.router.createUrlTree(route), {paths: 'subset', queryParams: 'subset', fragment: 'ignored', matrixParams: 'ignored'})) {
+      return true;
+    }
+
+    // Default to first.
+    if (this.menuItems[0].route === route) {
+      return true;
+    }
+
+    return false;
   }
 
   public get isDarkTheme() {
