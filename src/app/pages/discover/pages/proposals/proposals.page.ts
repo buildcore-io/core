@@ -9,7 +9,7 @@ import { FilterService, SortOptions } from './../../services/filter.service';
 
 export enum HOT_TAGS {
   ALL = 'All',
-  INPROGRESS = 'In-Progress',
+  ACTIVE = 'Active',
   COMPLETED = 'Completed'
 }
 
@@ -21,14 +21,14 @@ export enum HOT_TAGS {
 
 })
 export class ProposalsPage implements OnInit, OnDestroy {
-  public sortControl: FormControl = new FormControl(SortOptions.OLDEST);
+  public sortControl: FormControl;
   public proposal$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
-  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.INPROGRESS, HOT_TAGS.COMPLETED];
-  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.INPROGRESS]);
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.ACTIVE, HOT_TAGS.COMPLETED];
+  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ACTIVE]);
   private dataStore: Proposal[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private proposalApi: ProposalApi, public filter: FilterService) {
-    // none.
+    this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }
 
   public ngOnInit(): void {
@@ -72,7 +72,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Proposal[]> {
-    if (this.selectedTags$.value[0] === HOT_TAGS.INPROGRESS) {
+    if (this.selectedTags$.value[0] === HOT_TAGS.ACTIVE) {
       if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
         return this.proposalApi.lastActive(last, search);
       } else {
@@ -106,7 +106,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
 
     // Def order field.
     let lastValue = this.proposal$.value[this.proposal$.value.length - 1].createdOn;
-    if (this.selectedTags$.value[0] === HOT_TAGS.INPROGRESS || this.selectedTags$.value[0] === HOT_TAGS.COMPLETED) {
+    if (this.selectedTags$.value[0] === HOT_TAGS.ACTIVE || this.selectedTags$.value[0] === HOT_TAGS.COMPLETED) {
       lastValue = this.proposal$.value[this.proposal$.value.length - 1].settings.endDate;
     }
 

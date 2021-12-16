@@ -18,14 +18,14 @@ export enum HOT_TAGS {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MembersPage implements OnInit, OnDestroy {
-  public sortControl: FormControl = new FormControl(SortOptions.OLDEST);
+  public sortControl: FormControl;
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private memberApi: MemberApi, public filter: FilterService) {
-    // none.
+    this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }
 
   public ngOnInit(): void {

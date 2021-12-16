@@ -21,14 +21,14 @@ export enum HOT_TAGS {
 
 })
 export class AwardsPage implements OnInit, OnDestroy {
-  public sortControl: FormControl = new FormControl(SortOptions.OLDEST);
+  public sortControl: FormControl;
   public award$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.ACTIVE, HOT_TAGS.COMPLETED];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ACTIVE]);
   private dataStore: Award[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private awardApi: AwardApi, public filter: FilterService) {
-    // none.
+    this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }
 
   public ngOnInit(): void {

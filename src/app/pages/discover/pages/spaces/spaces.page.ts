@@ -19,7 +19,7 @@ export enum HOT_TAGS {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpacesPage implements OnInit, OnDestroy {
-  public sortControl: FormControl = new FormControl(SortOptions.OLDEST);
+  public sortControl: FormControl;
   public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
@@ -27,7 +27,7 @@ export class SpacesPage implements OnInit, OnDestroy {
   private subscriptions$: Subscription[] = [];
 
   constructor(private spaceApi: SpaceApi, public filter: FilterService) {
-    // none.
+    this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }
 
   public ngOnInit(): void {
