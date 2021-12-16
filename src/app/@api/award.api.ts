@@ -63,6 +63,30 @@ export class AwardApi extends BaseApi<Award> {
     return this.subCollectionMembers(award, SUB_COL.OWNERS, lastValue);
   }
 
+  public lastActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'endDate', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
+    });
+  }
+
+  public topActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'endDate', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
+    });
+  }
+
+  public lastCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('completed', '==', true).where('approved', '==', true);
+    });
+  }
+
+  public topCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('completed', '==', true).where('approved', '==', true);
+    });
+  }
+
   // TODO: Fix typings.
   public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: any, searchIds?: string[]): Observable<any> {
     return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, searchIds, (original, finObj) => {
@@ -86,69 +110,6 @@ export class AwardApi extends BaseApi<Award> {
       return ref.where('completed', '==', true);
     });
   }
-
-  // public subCollectionParticipants<T>(
-  //   docId: string,
-  //   subCol: SUB_COL,
-  //   lastValue?: any,
-  //   searchIds?: string[],
-  //   manipulateOutput?: (original: any, finObj: any) => any,
-  //   completed = true
-  // ): Observable<T[]> {
-  //   // TODO Temporary clean up once merged into base.ts
-  //   const orderBy: string|string[] = 'createdOn';
-  //   const direction: any = 'desc';
-  //   const def = DEFAULT_LIST_SIZE;
-  //   // ---
-
-  //   const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
-  //     // TODO consolidate below withsubCollection Members below line is only custom one.
-  //     let query: any = subRef.where('completed', '==', completed);
-  //     // --
-
-  //     // Apply search on IDS.
-  //     if (searchIds && searchIds.length > 0) {
-  //       query = query.where('uid', 'in', searchIds);
-  //     }
-
-  //     const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-  //     order.forEach((o) => {
-  //       query = query.orderBy(o, direction);
-  //     });
-  //     if (lastValue) {
-  //       query = query.startAfter(lastValue).limit(def);
-  //     } else {
-  //       query = query.limit(def);
-  //     }
-
-  //     return query;
-  //   });
-
-  //   return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
-  //     // console.log(this.collection, subCol, lastValue, obj);
-  //     const out: T[] = [];
-  //     const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
-  //       return o.uid;
-  //     }));
-
-  //     for (const o of obj) {
-  //       const finObj: any = subRecords.find((subO: any) => {
-  //         return subO.uid === o.uid;
-  //       });
-
-  //       if (!finObj) {
-  //         console.warn('Missing record in database');
-  //       } else {
-  //         if (manipulateOutput) {
-  //           out.push(manipulateOutput(o, finObj));
-  //         } else {
-  //           out.push(finObj);
-  //         }
-  //       }
-  //     }
-  //     return out;
-  //   }));
-  // }
 
   public isMemberParticipant(awardId: string, memberId: string): Observable<boolean> {
     if (!awardId || !memberId) {

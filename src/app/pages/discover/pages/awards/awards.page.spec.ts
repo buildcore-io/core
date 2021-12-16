@@ -3,7 +3,8 @@ import { MockComponent, MockProvider } from 'ng-mocks';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AwardCardComponent } from '../../../../components/award/components/award-card/award-card.component';
 import { AwardApi } from './../../../../@api/award.api';
-import { FilterService, SortOptions } from './../../services/filter.service';
+import { FilterService } from './../../services/filter.service';
+import { SortOptions } from "../../services/sort-options.interface";
 import { AwardsPage } from './awards.page';
 
 describe('AwardsPage', () => {

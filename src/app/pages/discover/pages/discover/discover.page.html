@@ -14,24 +14,5 @@
     <wen-tabs [tabs]="sections"></wen-tabs>
   </div>
 
-  <div class="flex items-end justify-between">
-    <div class="flex items-center mt-8">
-      <nz-tag *ngFor="let tag of filter.hotTags" nzMode="checkable" [nzChecked]="(filter.selectedTags$ | async)!.indexOf(tag) > -1"
-        (nzCheckedChange)="filter.handleChange($event, tag)" nz-tooltip nzTooltipTitle="Coming SOON">
-        {{ tag }}
-      </nz-tag>
-    </div>
-    <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" [formControl]="sortControl" nz-tooltip>
-      <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-      <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-    </nz-select>
-    <ng-template #defaultTemplate let-selected>
-      <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
-      {{ selected.nzLabel }}
-    </ng-template>
-  </div>
-
-  <div class="grid mt-10 place-items-start">
-    <router-outlet></router-outlet>
-  </div>
+  <router-outlet></router-outlet>
 </wen-content>

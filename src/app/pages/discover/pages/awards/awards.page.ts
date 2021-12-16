@@ -1,10 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { AwardApi } from './../../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
-import { FilterService, SortOptions } from './../../services/filter.service';
+import { FilterService } from './../../services/filter.service';
+import { SortOptions } from "../../services/sort-options.interface";
+
+export enum HOT_TAGS {
+  ALL = 'All',
+  ACTIVE = 'Active',
+  COMPLETED = 'Completed'
+}
 
 @UntilDestroy()
 @Component({
@@ -14,26 +22,41 @@ import { FilterService, SortOptions } from './../../services/filter.service';
 
 })
 export class AwardsPage implements OnInit, OnDestroy {
+  public sortControl: FormControl;
   public award$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.ACTIVE, HOT_TAGS.COMPLETED];
+  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ACTIVE]);
   private dataStore: Award[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private awardApi: AwardApi, public filter: FilterService) {
-    // none.
+    this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }
 
   public ngOnInit(): void {
-    this.listen();
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
 
-    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val) => {
+    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
       if (val && val.length > 0) {
         this.listen(val);
       } else {
         this.listen();
       }
     });
+
+    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
+      this.filter.selectedSort$.next(val);
+    });
+
+    // Init listen.
+    this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
+      this.listen();
+    });
+  }
+
+  public handleChange(_checked: boolean, tag: string): void {
+    this.selectedTags$.next([tag]);
   }
 
   private listen(search?: string): void {
@@ -42,12 +65,27 @@ export class AwardsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Award[]> {
-    if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.awardApi.last(last, search);
+    if (this.selectedTags$.value[0] === HOT_TAGS.ACTIVE) {
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.awardApi.lastActive(last, search);
+      } else {
+        return this.awardApi.topActive(last, search);
+      }
+    } else if (this.selectedTags$.value[0] === HOT_TAGS.COMPLETED) {
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.awardApi.lastCompleted(last, search);
+      } else {
+        return this.awardApi.topCompleted(last, search);
+      }
     } else {
-      return this.awardApi.top(last, search);
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.awardApi.last(last, search);
+      } else {
+        return this.awardApi.top(last, search);
+      }
     }
   }
+
 
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.
@@ -60,7 +98,13 @@ export class AwardsPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.award$.value[this.award$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+    // Def order field.
+    let order: 'createdOn'|'endDate' = 'createdOn';
+    if (this.selectedTags$.value[0] === HOT_TAGS.ACTIVE) {
+      order = 'endDate';
+    }
+
+    this.subscriptions$.push(this.getHandler(this.award$.value[this.award$.value.length - 1][order]).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public isLoading(arr: any): boolean {

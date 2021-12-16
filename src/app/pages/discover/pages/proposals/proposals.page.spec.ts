@@ -3,7 +3,8 @@ import { MockComponent, MockProvider } from 'ng-mocks';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ProposalCardComponent } from '../../../../components/proposal/components/proposal-card/proposal-card.component';
 import { ProposalApi } from './../../../../@api/proposal.api';
-import { FilterService, SortOptions } from './../../services/filter.service';
+import { FilterService } from './../../services/filter.service';
+import { SortOptions } from "../../services/sort-options.interface";
 import { ProposalsPage } from './proposals.page';
 
 

@@ -45,12 +45,36 @@ export class ProposalApi extends BaseApi<Proposal> {
     return super.listen(id);
   }
 
+  public lastActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+    return this._query(this.collection, 'settings.endDate', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
+    });
+  }
+
+  public topActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+    return this._query(this.collection, 'settings.endDate', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
+    });
+  }
+
+  public lastCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+    return this._query(this.collection, 'settings.endDate', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
+    });
+  }
+
+  public topCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+    return this._query(this.collection, 'settings.endDate', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
+    });
+  }
+
   // TODO implement pagination
   public listenSpace(space: string, filter: ProposalFilter = ProposalFilter.ALL): Observable<Proposal[]> {
     return this.afs.collection<Proposal>(
       this.collection,
       // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref) => {
+      (ref: any) => {
         let fResult: any = ref.where('space', '==', space);
         if (filter === ProposalFilter.ACTIVE) {
           fResult = fResult.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
