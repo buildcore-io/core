@@ -34,7 +34,7 @@ export class MembersPage implements OnInit, OnDestroy {
       this.listen();
     });
 
-    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val) => {
+    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
       if (val && val.length > 0) {
         this.listen(val);
       } else {
@@ -42,7 +42,7 @@ export class MembersPage implements OnInit, OnDestroy {
       }
     });
 
-    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
       this.filter.selectedSort$.next(val);
     });
   }

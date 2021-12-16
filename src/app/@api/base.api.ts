@@ -33,13 +33,21 @@ export class BaseApi<T> {
     return this._query(this.collection, ['rank', 'createdOn'], 'desc', lastValue, search, def);
   }
 
-  protected _query(collection: string, orderBy: string|string[] = 'createdOn', direction: any = 'desc', lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  protected _query(
+    collection: string,
+    orderBy: string|string[] = 'createdOn',
+    direction: any = 'desc',
+    lastValue?: any,
+    search?: string,
+    def = DEFAULT_LIST_SIZE,
+    refCust?: (subRef: any) => any,
+  ): Observable<T[]> {
     const ref: AngularFirestoreCollection<T> = this.afs.collection<T>(
       collection,
       // We limit this to last record only. CreatedOn is always defined part of every record.
-      (ref) => {
+      (ref: any) => {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = ref;
+        let query: any = refCust ? refCust(ref) : ref;
         if (search && search.length > 0) {
           query = query.where('keywords', 'array-contains', search.toLowerCase());
         }
