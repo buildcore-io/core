@@ -5,7 +5,8 @@ import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
-import { FilterService, SortOptions } from './../../services/filter.service';
+import { FilterService } from './../../services/filter.service';
+import { SortOptions } from "../../services/sort-options.interface";
 
 export enum HOT_TAGS {
   ALL = 'All'

@@ -5,7 +5,8 @@ import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { Proposal } from './../../../../../../functions/interfaces/models/proposal';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
-import { FilterService, SortOptions } from './../../services/filter.service';
+import { FilterService } from './../../services/filter.service';
+import { SortOptions } from "../../services/sort-options.interface";
 
 export enum HOT_TAGS {
   ALL = 'All',

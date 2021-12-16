@@ -5,7 +5,8 @@ import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { SpaceApi } from './../../../../@api/space.api';
-import { FilterService, SortOptions } from './../../services/filter.service';
+import { FilterService } from './../../services/filter.service';
+import { SortOptions } from "../../services/sort-options.interface";
 
 export enum HOT_TAGS {
   ALL = 'All',

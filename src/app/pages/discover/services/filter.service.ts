@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../functions/interfaces/config';
-
-export enum SortOptions {
-  RECENT = 'desc',
-  OLDEST = 'asc'
-}
+import { SortOptions } from "./sort-options.interface";
 
 @Injectable()
 export class FilterService {
