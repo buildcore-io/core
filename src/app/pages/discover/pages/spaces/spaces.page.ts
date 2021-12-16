@@ -1,10 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { FilterService, SortOptions } from './../../services/filter.service';
+
+export enum HOT_TAGS {
+  ALL = 'All',
+  OPEN = 'Open',
+  NOT_MEMBER = 'Not Member',
+}
 
 @UntilDestroy()
 @Component({
@@ -13,7 +20,10 @@ import { FilterService, SortOptions } from './../../services/filter.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpacesPage implements OnInit, OnDestroy {
+  public sortControl: FormControl = new FormControl(SortOptions.OLDEST);
   public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN, HOT_TAGS.NOT_MEMBER];
+  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Space[][] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -34,6 +44,14 @@ export class SpacesPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
+
+    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      this.filter.selectedSort$.next(val);
+    });
+  }
+
+  public handleChange(_checked: boolean, tag: string): void {
+    this.selectedTags$.next([tag]);
   }
 
   private listen(search?: string): void {

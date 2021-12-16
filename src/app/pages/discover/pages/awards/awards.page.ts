@@ -1,10 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { AwardApi } from './../../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { FilterService, SortOptions } from './../../services/filter.service';
+
+export enum HOT_TAGS {
+  ALL = 'All',
+  ACTIVE = 'Active',
+  COMPLETED = 'Completed'
+}
 
 @UntilDestroy()
 @Component({
@@ -14,7 +21,10 @@ import { FilterService, SortOptions } from './../../services/filter.service';
 
 })
 export class AwardsPage implements OnInit, OnDestroy {
+  public sortControl: FormControl = new FormControl(SortOptions.OLDEST);
   public award$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.ACTIVE, HOT_TAGS.COMPLETED];
+  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Award[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(private awardApi: AwardApi, public filter: FilterService) {
@@ -34,6 +44,14 @@ export class AwardsPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
+
+    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      this.filter.selectedSort$.next(val);
+    });
+  }
+
+  public handleChange(_checked: boolean, tag: string): void {
+    this.selectedTags$.next([tag]);
   }
 
   private listen(search?: string): void {

@@ -10,14 +10,8 @@ export enum SortOptions {
 @Injectable()
 export class FilterService {
   public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.OLDEST);
-  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(['All']);
   public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
-  public hotTags: string[] = ['All', 'Popular'];
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
-
-  public handleChange(_checked: boolean, tag: string): void {
-    this.selectedTags$.next([tag]);
-  }
 
   public get sortOptions(): typeof SortOptions {
     return SortOptions;
