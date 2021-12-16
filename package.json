@@ -31,12 +31,16 @@
     "dayjs": "1.10.7",
     "firebase": "9.5.0",
     "is-ipfs": "6.0.2",
-    "marked": "4.0.5",
     "ng-apexcharts": "1.6.0",
     "ng-zorro-antd": "12.0.2",
     "ngx-infinite-scroll": "10.0.1",
+    "rehype-stringify": "9.0.2",
+    "remark": "14.0.2",
+    "remark-gfm": "3.0.1",
+    "remark-rehype": "10.1.0",
     "rxfire": "6.0.3",
     "rxjs": "7.4.0",
+    "strip-markdown": "5.0.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
