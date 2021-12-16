@@ -145,12 +145,22 @@ export class BaseApi<T> {
   }
 
   // TODO Implement proper typings.
-  protected topParent(col: COL, subCol: SUB_COL, memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE, frRef?: FbRef): Observable<any[]> {
+  protected topParent(
+    col: COL,
+    subCol: SUB_COL,
+    memberId: EthAddress,
+    orderBy: string|string[] = 'createdOn',
+    lastValue?: any,
+    def = DEFAULT_LIST_SIZE,
+    refCust?: (subRef: any) => any,
+    frRef?: FbRef
+  ): Observable<any[]> {
     const ref: AngularFirestoreCollectionGroup = this.afs.collectionGroup(
       subCol,
       (ref: any) => {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
         let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  col);
+        query = refCust ? refCust(query) : query;
         order.forEach((o) => {
           query = query.orderBy(o, 'desc');
         });

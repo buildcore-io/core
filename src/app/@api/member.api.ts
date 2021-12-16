@@ -35,21 +35,21 @@ export class MemberApi extends BaseApi<Member> {
 
   // TODO We need to tweak this to make sure don't filter locally.
   public topAwardsPending(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
-    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (obj: any) => {
-      return obj.completed !== true;
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
+      return ref.where('completed', '==', false);
     });
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
   public topAwardsCompleted(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
-    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (obj: any) => {
-      return obj.completed === true;
+    return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
+      return ref.where('completed', '==', true);
     });
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
   public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Proposal[]> {
-    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, (obj: any) => {
+    return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, undefined, (obj: any) => {
       return (obj.settings.endDate.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
     });
   }
