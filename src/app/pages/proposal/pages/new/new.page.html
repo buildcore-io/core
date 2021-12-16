@@ -12,7 +12,7 @@
       >
         <nz-card [nzBordered]="false" nzTitle="Proposal Info">
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
               <input
                 nz-input
                 placeholder="Title"
@@ -23,7 +23,7 @@
           </nz-form-item>
           <div class="flex flex-grow space-x-4">
             <nz-form-item class="w-full">
-              <nz-form-control>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Start Date is required.">
                 <nz-date-picker
                   class="flex flex-grow"
                   nzSize="large"
@@ -38,7 +38,7 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item class="w-full">
-              <nz-form-control>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="End Date is required.">
                 <nz-date-picker
                   class="flex flex-grow"
                   nzSize="large"
@@ -69,7 +69,7 @@
             *ngFor="let question of questions.controls; let i = index"
           >
             <nz-form-item>
-              <nz-form-control>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Question Title is required.">
                 <input
                   nz-input
                   placeholder="Question Title"
@@ -109,7 +109,7 @@
             >
               <div class="space-y-4">
                 <nz-form-item>
-                  <nz-form-control>
+                  <nz-form-control i18n-nzErrorTip nzErrorTip="Answer Text is required.">
                     <input
                       nz-input
                       placeholder="Answer Text"
@@ -166,7 +166,7 @@
       <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px">
         <nz-card [nzBordered]="false" nzTitle="Space Info">
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
               <nz-select
                 class="w-full"
                 nzSize="large"

@@ -9,9 +9,9 @@
         nzFlex="auto"
         style="max-width: calc(100% - 450px)"
       >
-        <nz-card [nzBordered]="false" nzTitle="Award Info">
+        <nz-card [nzBordered]="false"  i18n-nzErrorTip nzErrorTip="Title is required.">
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="You must enter name.">
               <input
                 nz-input
                 placeholder="Title"
@@ -22,7 +22,7 @@
           </nz-form-item>
           <div class="flex flex-grow space-x-4">
             <nz-form-item class="w-full">
-              <nz-form-control>
+              <nz-form-control  i18n-nzErrorTip nzErrorTip="End Date is required.">
                 <nz-date-picker
                   [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
                   class="flex flex-grow"
@@ -51,7 +51,7 @@
         <nz-card nzTitle="Badge definition">
           <div class="space-y-4">
             <nz-form-item>
-              <nz-form-control>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Badge Title is required.">
                 <input
                   nz-input
                   nzSize="large"
@@ -118,7 +118,7 @@
         </nz-card>
         <nz-card [nzBordered]="false" nzTitle="Space Info">
           <nz-form-item>
-            <nz-form-control>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
               <nz-select
                 class="w-full"
                 nzSize="large"
