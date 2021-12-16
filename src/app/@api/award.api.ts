@@ -64,14 +64,12 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   public lastActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    console.log(lastValue);
     return this._query(this.collection, 'endDate', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
     });
   }
 
   public topActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    console.log(lastValue);
     return this._query(this.collection, 'endDate', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
     });
