@@ -13,7 +13,7 @@
 
 <ng-container *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async) === false">
   <nz-card *ngFor="let q of (data.proposal$ | async)?.questions" [nzTitle]="q.text">
-    <span [innerHtml]="q.additionalInfo | markdown"></span>
+    <span [innerHtml]="q.additionalInfo"></span>
     <nz-radio-group class="w-full mb-4 mt-9"
       [nzDisabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
       [formControl]="voteControl">
@@ -25,7 +25,7 @@
           </div>
         </wen-radio>
         <p nz-typography class="pl-16 my-6 text-base leading-6 whitespace-pre-line"
-          [innerHtml]="a.additionalInfo | markdown">
+          [innerHtml]="a.additionalInfo">
         </p>
       </div>
     </nz-radio-group>
