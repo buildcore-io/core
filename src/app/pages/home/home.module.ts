@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AwardCardModule } from '@components/award/components/award-card/award-card.module';
+import { FrameModule } from '@components/frame/frame.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -27,7 +28,8 @@ import { HomePage } from './home.page';
     AwardCardModule,
     SpaceCardModule,
     NzIconModule,
-    IconModule
+    IconModule,
+    FrameModule
   ],
 })
 export class HomeModule { }

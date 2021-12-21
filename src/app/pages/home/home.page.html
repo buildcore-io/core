@@ -1,12 +1,15 @@
 <main class="mx-auto mb-40 bg-bg-background">
   <div class="w-full wen-home-vector">
     <div class="container px-8">
-      <h1 class="w-6/12 pt-24 text-6xl text-white xl:pt-52">
-        Welcome to The Soonaverse
-      </h1>
-      <p class="w-6/12 pt-8 mb-12 text-2xl text-white">
-        An all-in-one feeless platform for community engagement and DAO
-        creation. Build, vote, earn, learn and let the best ideas win.
+      <div class="w-6/12 pt-60 lg:pt-24 text-6xl text-white xl:pt-52">
+        <wen-frame-soonaverse *ngIf="deviceService.isMobile$ | async; else welcome"></wen-frame-soonaverse>
+        <ng-template #welcome>
+          Welcome to The Soonaverse?
+        </ng-template>
+      </div>
+      <p class="pt-8 mb-12 text-xl lg:text-2xl font-medium lg:font-light lg:w-6/12 text-white">
+        Connect with the community developing digital public goods,
+        creating financial freedom, and defining the future of the open web.
       </p>
       <button
         nz-button
@@ -21,71 +24,30 @@
   </div>
 
   <div class="-mt-16 rounded-t-large bg-bg-background">
-    <div class="container flex flex-col items-center justify-center pt-24">
-      <h1 class="text-5xl">Creating your community is easy as 1-2-3</h1>
-      <p class="w-9/12 text-2xl text-center text-app-gray-400">
+    <div class="container flex flex-col items-center justify-center pt-24 px-5">
+      <h1 class="text-4xl text-center lg:text-5xl">Creating your community is easy as 1-2-3</h1>
+      <p class="w-9/12 text-xl lg:text-2xl font-medium lg:font-light text-center text-app-gray-400">
         No more worries about “the tech”. Spend your time where it belongs,
         building your community and realizing your collective vision.
       </p>
     </div>
 
-    <div class="container my-16">
+    <div class="container mt-4 lg:my-16 px-5">
       <div class="flex flex-wrap justify-center gap-4 xl:gap-10">
-        <article class="bg-white w-80 h-80 rounded-2xl">
+        <article class="bg-white w-full lg:w-80 rounded-2xl mt-8 lg:mt-0" *ngFor="let item of stepArticles">
           <div class="w-full overflow-hidden h-36 rounded-2xl">
             <img
               alt=""
-              src="/assets/mocks/build_dao_banner.jpg"
+              [src]="item.img"
               class="object-cover w-full h-full"
             />
           </div>
 
           <div
-            class="relative flex flex-col justify-center w-full h-40 p-6 text-center "
+            class="relative flex flex-col justify-center w-full p-6 text-center lg:p-2"
           >
-            <h3 class="my-1 text-2xl">Create your community</h3>
-            <p class="text-lg text-app-gray-400">
-              Feeless, secure, on-chain voting, and “one click” creation tools.
-            </p>
-          </div>
-        </article>
-
-        <article class="bg-white w-80 h-80 rounded-2xl">
-          <div class="w-full overflow-hidden h-36 rounded-2xl">
-            <img
-              alt=""
-              src="/assets/mocks/manage_dao_banner.jpg"
-              class="object-cover w-full h-full"
-            />
-          </div>
-
-          <div
-            class="relative flex flex-col justify-center w-full h-40 p-6 text-center "
-          >
-            <h3 class="my-1 text-2xl">Build reputation and rewards</h3>
-            <p class="text-lg text-app-gray-400">
-              Create incentives and build reputation, trust and community
-              engagement.
-            </p>
-          </div>
-        </article>
-
-        <article class="bg-white w-80 h-80 rounded-2xl">
-          <div class="w-full overflow-hidden h-36 rounded-2xl">
-            <img
-              alt=""
-              src="/assets/mocks/own_dao_banner.jpg"
-              class="object-cover w-full h-full"
-            />
-          </div>
-
-          <div
-            class="relative flex flex-col justify-center w-full h-40 p-6 text-center "
-          >
-            <h3 class="my-1 text-2xl">Manage, Maintain, Grow</h3>
-            <p class="text-lg text-app-gray-400">
-              Governance, voting, for both public and private communities.
-            </p>
+            <h3 class="my-1 text-2xl">{{ item.title }}</h3>
+            <p class="text-lg text-app-gray-400 mt-1 mb-2 lg:mb-1">{{ item.description }}</p>
           </div>
         </article>
       </div>

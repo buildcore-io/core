@@ -14,6 +14,7 @@ import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { LogOutIconComponent } from './log-out/log-out.component';
 import { MarketIconComponent } from './market/market.component';
 import { MembersIconComponent } from './members/members.component';
+import { MenuIconComponent } from './menu/menu.component';
 import { MoonIconComponent } from './moon/moon.component';
 import { MoreIconComponent } from './more/more.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
@@ -49,6 +50,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     DiscordIconComponent,
     RedditIconComponent,
     AngleLeftIconComponent,
+    MenuIconComponent,
   ],
   exports: [
     GlobeIconComponent,
@@ -74,6 +76,7 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     DiscordIconComponent,
     RedditIconComponent,
     AngleLeftIconComponent,
+    MenuIconComponent,
   ],
   imports: [
     CommonModule

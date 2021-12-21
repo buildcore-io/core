@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -26,7 +27,8 @@ export class HeaderComponent implements OnInit {
     private router: Router,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef,
-    public auth: AuthService
+    public auth: AuthService,
+    public deviceService: DeviceService
   ) { }
 
   public ngOnInit(): void {
