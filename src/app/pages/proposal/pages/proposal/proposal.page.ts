@@ -10,7 +10,7 @@ import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
-import { ProposalQuestion, ProposalSubType } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi } from './../../../../@api/file.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
@@ -27,8 +27,7 @@ import { DataService } from './../../services/data.service';
 })
 export class ProposalPage implements OnInit, OnDestroy {
   public sections = [
-    { route: [ROUTER_UTILS.config.proposal.overview], label: 'Overview' },
-    { route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' }
+    { route: [ROUTER_UTILS.config.proposal.overview], label: 'Overview' }
   ];
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
@@ -81,6 +80,11 @@ export class ProposalPage implements OnInit, OnDestroy {
         this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
                                       .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
       }
+
+      if (obj.type !== ProposalType.NATIVE) {
+        this.sections.push({ route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' });
+        this.cd.markForCheck();
+      }
     });
 
     // Guardians might be refreshed alter and we need to apply that on view.
@@ -122,6 +126,10 @@ export class ProposalPage implements OnInit, OnDestroy {
         this.data.canVote$.next(false);
       }
     });
+  }
+
+  public fireflyNotSupported(): void {
+    alert('Firefly deep links does not support this option yet. Use CLI wallet instead.');
   }
 
   public get filesizes(): typeof FILE_SIZES {
@@ -212,7 +220,31 @@ export class ProposalPage implements OnInit, OnDestroy {
         // none.
       });
     });
+  }
 
+  public exportNativeEvent(): void {
+    const proposal: Proposal|undefined = this.data.proposal$.value;
+    if (!proposal) {
+      return;
+    }
+
+    const obj: any = {
+        name: proposal.name,
+        additionalInfo: proposal.additionalInfo || '',
+        milestoneIndexCommence: proposal.settings.milestoneIndexCommence,
+        milestoneIndexStart: proposal.settings.milestoneIndexStart,
+        milestoneIndexEnd: proposal.settings.milestoneIndexEnd,
+        payload: {
+            type: 0,
+            questions: proposal.questions
+        }
+    };
+    const id = 'proposal';
+    const link: any = document.createElement("a");
+    link.download = id + '.json';
+    const data: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+    link.href = "data:" + data;
+    link.click();
   }
 
   private cancelSubscriptions(): void {

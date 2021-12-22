@@ -37,12 +37,12 @@
     <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
       <nz-card nzTitle="Cast your vote"
         *ngIf="(data.proposal$ | async)?.approved && data.isNativeVote((data.proposal$ | async)?.type)">
-        <button nz-button nzType="primary" nzBlock nzSize="large" i18n>
-          Open Firefly to Vote</button>
+        <a nz-button (click)="fireflyNotSupported()" nzType="primary" nzBlock nzSize="large" i18n>
+          Open Firefly to Vote</a>
         <h4 nz-typography class="pt-4" i18n>
           Voting instructions
         </h4>
-        <p i18n>Authoritatively disseminate prospective leadership via opportunities economically sound. </p>
+        <p i18n>You will select your options and execute the vote within Firefly.</p>
       </nz-card>
 
       <nz-card
@@ -126,7 +126,7 @@
             <span nz-typography class=" text-app-gray-400">milestoneIndexEnd</span>
             <p nz-typography>{{(data.proposal$ | async)?.settings?.milestoneIndexEnd}}</p>
           </div>
-          <a nz-button nzType="link">Export to JSON</a>
+          <a nz-button (click)="exportNativeEvent()" nzType="link">Export to JSON</a>
         </ng-container>
       </nz-card>
 
