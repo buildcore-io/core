@@ -5,7 +5,7 @@ import { BehaviorSubject, fromEvent } from 'rxjs';
   providedIn: 'root'
 })
 export class DeviceService {
-  public static MOBILE_MAX_WIDTH = 1023;
+  public static MOBILE_MAX_WIDTH = 1024;
   public isMobile$ = new BehaviorSubject<boolean>(this.getIsMobile());
 
   constructor() { 

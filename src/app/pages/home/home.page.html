@@ -1,15 +1,12 @@
 <main class="mx-auto mb-40 bg-bg-background">
   <div class="w-full wen-home-vector">
     <div class="container px-8">
-      <div class="w-6/12 pt-60 lg:pt-24 text-6xl text-white xl:pt-52">
-        <wen-frame-soonaverse *ngIf="deviceService.isMobile$ | async; else welcome"></wen-frame-soonaverse>
-        <ng-template #welcome>
-          Welcome to The Soonaverse?
-        </ng-template>
-      </div>
-      <p class="pt-8 mb-12 text-xl lg:text-2xl font-medium lg:font-light lg:w-6/12 text-white">
-        Connect with the community developing digital public goods,
-        creating financial freedom, and defining the future of the open web.
+      <h1 class="lg:w-6/12 pt-64 lg:pt-24 text-3xl lg:text-6xl text-white xl:pt-52">
+        Welcome to The Soonaverse?
+      </h1>
+      <p class="lg:pt-8 mb-12 text-xl lg:text-2xl font-medium lg:font-light lg:w-6/12 text-white">
+        An all-in-one feeless platform for community engagement and DAO
+        creation. Build, vote, earn, learn and let the best ideas win.
       </p>
       <button
         nz-button
@@ -44,7 +41,7 @@
           </div>
 
           <div
-            class="relative flex flex-col justify-center w-full p-6 text-center lg:p-2"
+            class="relative flex flex-col justify-center w-full p-6 text-center lg:h-48"
           >
             <h3 class="my-1 text-2xl">{{ item.title }}</h3>
             <p class="text-lg text-app-gray-400 mt-1 mb-2 lg:mb-1">{{ item.description }}</p>
@@ -52,13 +49,13 @@
         </article>
       </div>
 
-      <div class="mt-32">
-        <article class="flex flex-row w-full bg-white h-96 rounded-large">
-          <div class="relative w-1/2 h-full p-10 space-y-6">
+      <div class="mt-32 -ml-5 lg:ml-0 w-screen lg:w-auto">
+        <article class="flex flex-col-reverse lg:flex-row w-full bg-white lg:h-96 rounded-large">
+          <div class="relative lg:w-1/2 h-full px-5 py-16 lg:p-10 space-y-12 lg:space-y-6">
             <h3 class="mb-1 text-4xl">
               Voting is essential and it needs to be on-chain and FREE.
             </h3>
-            <p class="text-lg text-app-gray-400">
+            <p class="text-base lg:mb-0 lg:text-lg text-app-gray-400">
               By building on the IOTA network we have enshrined a crucial
               feature of proper DAO management. Feeless, secure voting. Read
               more about this in our manifesto.
@@ -73,7 +70,7 @@
               Go there now
             </button>
           </div>
-          <div class="w-1/2 h-full ml-8 overflow-hidden rounded-large">
+          <div class="lg:w-1/2 h-64 lg:h-full lg:ml-8 overflow-hidden rounded-large">
             <img
               alt=""
               src="/assets/mocks/treasure_banner.jpg"
@@ -83,23 +80,23 @@
         </article>
       </div>
 
-      <div class="mx-24 mt-32 xl:mx-44">
+      <div class="lg:mx-24 mt-24 lg:mt-32 xl:mx-44">
         <article
-          class="flex flex-row w-full mx-auto bg-white rounded-large h-52"
+          class="flex flex-col lg:flex-row w-full mx-auto bg-white rounded-large lg:h-52"
         >
-          <div class="w-1/2 h-full mr-8 overflow-hidden rounded-large">
+          <div class="w-full lg:w-1/2 h-full mr-8 overflow-hidden rounded-large">
             <img
               alt=""
               src="/assets/mocks/about_us.jpg"
               class="object-cover w-full h-full"
             />
           </div>
-          <div class="relative w-1/2 h-full p-10 space-y-6">
-            <h3 class="mb-1 text-2xl">Want to learn more about SoonLabs?</h3>
+          <div class="relative w-full lg:w-1/2 lg:h-full p-6 lg:p-10 space-y-6">
+            <h3 class="mb-4 text-2xl">Want to learn more about SoonLabs?</h3>
             <p class="text-lg text-app-gray-400"></p>
             <button
               nz-button
-              class="float-right bottom-4"
+              class="float-right bottom-0 lg:bottom-4"
               nzType="primary"
               nzSize="large"
               type="button"
