@@ -1,4 +1,4 @@
-<main class="mx-auto mb-40 bg-bg-background">
+<main class="mx-auto mb-32 lg:mb-40 bg-bg-background">
   <div class="w-full wen-home-vector">
     <div class="container px-8">
       <h1 class="lg:w-6/12 pt-64 lg:pt-24 text-3xl lg:text-6xl text-white xl:pt-52">
@@ -29,7 +29,7 @@
       </p>
     </div>
 
-    <div class="container mt-4 lg:my-16 px-5">
+    <div class="container mt-4 lg:my-16 px-5 lg:px-10">
       <div class="flex flex-wrap justify-center gap-4 xl:gap-10">
         <article class="bg-white w-full lg:w-80 rounded-2xl mt-8 lg:mt-0" *ngFor="let item of stepArticles">
           <div class="w-full overflow-hidden h-36 rounded-2xl">
@@ -109,16 +109,17 @@
       </div>
 
       <div class="mt-32">
-        <h1 class="text-5xl">Get started with the Soonaverse</h1>
+        <h1 class="text-4xl lg:text-5xl mb-4 lg:mb-10">Get started with the Soonaverse</h1>
         <p class="text-lg text-app-gray-400">
           Not sure where to start? Find featured spaces and awards below.
         </p>
 
-        <div class="mt-16 space-y-14">
+        <div class="mt-16 space-y-24 lg:space-y-14">
           <div class="-mx-6 overflow-hidden">
             <h3 class="px-7">
               Popular spaces
               <button
+                *ngIf="deviceService.isDesktop$ | async"
                 nz-button
                 class="float-right"
                 nzType="primary"
@@ -128,19 +129,31 @@
                 Discover more
               </button>
             </h3>
-            <div class="flex gap-6">
+            <div class="flex flex-col lg:flex-row gap-6 px-5 lg:px-0">
               <wen-space-card
                 class="outline-none"
                 *ngFor="let s of spaces$ | async; trackBy: trackByUid"
                 [space]="s"
               ></wen-space-card>
             </div>
+
+            <button
+                *ngIf="deviceService.isMobile$ | async"
+                nz-button
+                class="block mt-12 mx-auto"
+                nzType="primary"
+                type="button"
+                [routerLink]="['/discover', 'spaces']"
+              >
+                Discover more
+            </button>
           </div>
 
           <div class="-mx-6 overflow-hidden">
             <h3 class="px-7">
               Active Awards
               <button
+                *ngIf="deviceService.isDesktop$ | async"
                 nz-button
                 class="float-right"
                 nzType="primary"
@@ -150,7 +163,7 @@
                 Discover more
               </button>
             </h3>
-            <div class="flex gap-6">
+            <div class="flex flex-col lg:flex-row gap-6 px-5 lg:px-0">
               <wen-award-card
                 class="outline-none"
                 *ngFor="let award of award$ | async; trackBy: trackByUid"
@@ -158,25 +171,35 @@
               >
               </wen-award-card>
             </div>
+            <button
+                *ngIf="deviceService.isMobile$ | async"
+                nz-button
+                class="block mt-12 mx-auto"
+                nzType="primary"
+                type="button"
+                [routerLink]="['/discover', 'awards']"
+              >
+                Discover more
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </main>
-<footer class="p-24 -mt-16 bg-bg-footer rounded-t-large">
-  <h1 class="text-5xl">Who’s using the Soonaverse?</h1>
+<footer class="pt-16 lg:p-24 lg:-mt-16 bg-bg-footer rounded-t-large">
+  <h1 class="m-5 lg:m-0 text-4xl lg:text-5xl mt-12 lg:mt-0">Who’s using the Soonaverse?</h1>
 
-  <div class="w-full m-6 overflow-hidden" style="height: 750px">
+  <div class="w-full lg:m-6 overflow-hidden" style="height: 750px">
     <img
       alt=""
       src="/assets/mocks/founders_galaxy.png"
-      class="object-contain w-full h-full"
+      class="object-cover lg:object-contain w-full h-full"
     />
   </div>
 
-  <div class="flex justify-between px-12">
-    <div>
+  <div class="lg:flex justify-between pb-8 lg:pb-0 lg:px-5">
+    <div class="flex lg:block">
       <a
         nz-button
         href="https://twitter.com/soon_labs"
@@ -198,7 +221,7 @@
         <wen-icon-github></wen-icon-github>
       </a>
     </div>
-    <div>
+    <div class="flex flex-wrap lg:block">
       <a
         nz-button
         href="https://forms.gle/VFfYUwY98e2KqE9q6"
@@ -227,6 +250,7 @@
         >Terms</a
       >
       <a
+        *ngIf="deviceService.isDesktop$ | async"
         nz-button
         href="https://www.soonlabs.net"
         target="_new"
@@ -236,5 +260,15 @@
         >Powered by SoonLabs</a
       >
     </div>
+    <a
+        *ngIf="deviceService.isMobile$ | async"
+        nz-button
+        href="https://www.soonlabs.net"
+        target="_new"
+        class="font-normal text-app-gray-text"
+        nzType="link"
+        type="button"
+        >Powered by SoonLabs</a
+      >
   </div>
 </footer>
