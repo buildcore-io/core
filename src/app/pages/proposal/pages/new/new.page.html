@@ -66,7 +66,7 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item class="w-full">
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Commencing milestone.">
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Start milestone.">
                 <nz-input-number
                   class="flex flex-grow"
                   nzSize="large"
@@ -272,7 +272,7 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
 
-                <wen-radio [value]="targetGroups.NATIVE"
+                <wen-radio *ngIf="!isProd" [value]="targetGroups.NATIVE"
                   ><span i18n>IOTA Token Holders
                     <wen-icon-question-circle
                       class="inline-block"

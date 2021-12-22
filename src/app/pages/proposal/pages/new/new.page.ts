@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from "@env/environment";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
@@ -39,9 +40,9 @@ export class NewPage implements OnInit, OnDestroy {
   public selectedGroupControl: FormControl = new FormControl(TargetGroup.GUARDIANS, Validators.required);
   public startControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
-  public milestoneIndexCommenceControl: FormControl = new FormControl([]);
-  public milestoneIndexStartControl: FormControl = new FormControl([]);
-  public milestoneIndexEndControl: FormControl = new FormControl([]);
+  public milestoneIndexCommenceControl: FormControl = new FormControl();
+  public milestoneIndexStartControl: FormControl = new FormControl();
+  public milestoneIndexEndControl: FormControl = new FormControl();
   public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
   public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
   public votingAwardControl: FormControl = new FormControl([]);
@@ -229,6 +230,7 @@ export class NewPage implements OnInit, OnDestroy {
         awards: obj.awards
       };
     } else {
+      // TODO We need to find right milestone.
       obj.settings = {
         milestoneIndexCommence: obj.milestoneIndexCommence,
         milestoneIndexStart: obj.milestoneIndexStart,
@@ -267,6 +269,10 @@ export class NewPage implements OnInit, OnDestroy {
     }
 
     return true;
+  }
+
+  public get isProd(): boolean {
+    return environment.production;
   }
 
   public async create(): Promise<void> {
