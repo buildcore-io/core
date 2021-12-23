@@ -68,11 +68,13 @@ export interface Proposal extends BaseRecord {
   settings: any;
   totalWeight: number;
   questions: ProposalQuestion[];
-  results?: {
-    total: number;
-    voted: number;
-    answers: {
-      [propName: number]: number;
-    }
-  }
+  results?: any;
+  // Consolidate NATIVE.
+  // results?: {
+  //   total: number;
+  //   voted: number;
+  //   answers: {
+  //     [propName: number]: number;
+  //   }
+  // }
 }

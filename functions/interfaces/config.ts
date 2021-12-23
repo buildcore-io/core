@@ -17,6 +17,7 @@ export const TWITTER_REGEXP = /^@?(\w){1,15}$/i;
 export const NFT_CONTRACT_ADDRESS = '';
 export const METAMASK_CHAIN_ID = '0x432';
 export const GLOBAL_DEBOUNCE_TIME = 500;
+export const TIME_GAP_BETWEEN_MILESTONES = 10;
 export const IPFS_GATEWAY = 'https://ipfs.soonaverse.com/ipfs/';
 export const RPC_CHAIN = {
   chainId: METAMASK_CHAIN_ID,

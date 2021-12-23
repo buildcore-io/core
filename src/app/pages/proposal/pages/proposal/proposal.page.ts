@@ -5,9 +5,10 @@ import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
-import { WEN_NAME } from './../../../../../../functions/interfaces/config';
+import { TIME_GAP_BETWEEN_MILESTONES, WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
@@ -19,6 +20,7 @@ import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
+import { UnitsHelper } from './../../../../@core/utils/units-helper';
 import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
@@ -176,7 +178,7 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public getVotingTypeText(subType: ProposalSubType|undefined): string {
     if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
-      return 'One Address One Vote';
+      return 'IOTA Address Vote';
     } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
       return 'One Member One Vote';
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
@@ -186,6 +188,56 @@ export class ProposalPage implements OnInit, OnDestroy {
     } else {
       return '';
     }
+  }
+
+  public getCommenceDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.data.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexCommence');
+    } else {
+      return proposal.createdOn?.toDate() || null;
+    }
+  }
+
+  public getStartDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.data.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexStart');
+    } else {
+      return proposal.settings?.startDate?.toDate() || null;
+    }
+  }
+
+  public getEndDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.data.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexEnd');
+    } else {
+      return proposal.settings?.startDate?.toDate() || null;
+    }
+  }
+
+  private calcDateBasedOnMilestone(proposal: Proposal, f: 'milestoneIndexStart'|'milestoneIndexEnd'|'milestoneIndexCommence'): Date|null  {
+    if (!this.data.lastMilestone$.value || !proposal.settings?.[f]) {
+      return null;
+    }
+
+    // In seconds.
+    const diff: number = (proposal.settings?.[f] - this.data.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
+    return ((diff > 0) ? dayjs().add(diff, 'seconds') : dayjs().subtract(diff, 'seconds')).toDate();
+  }
+
+  public formatBest(value: number): string {
+    return UnitsHelper.formatBest(value);
   }
 
   public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {

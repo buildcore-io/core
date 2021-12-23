@@ -10,7 +10,7 @@ import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, map, skip, Subscription } from 'rxjs';
-import { ProposalStartDateMin } from './../../../../../../functions/interfaces/config';
+import { ProposalStartDateMin, TIME_GAP_BETWEEN_MILESTONES } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
@@ -174,6 +174,16 @@ export class NewPage implements OnInit, OnDestroy {
     }
 
     return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+  }
+
+  public getDateBasedOnMilestone(milestoneValue: number): Date|undefined  {
+    if (!this.lastMilestone$.value) {
+      return undefined;
+    }
+
+    // In seconds.
+    const diff: number = (milestoneValue - this.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
+    return ((diff > 0) ? dayjs().add(diff, 'seconds') : dayjs().subtract(diff, 'seconds')).toDate();
   }
 
   public gForm(f: any, value: string): any {
