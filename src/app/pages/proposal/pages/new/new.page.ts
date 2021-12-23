@@ -9,7 +9,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, first, map, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, map, skip, Subscription } from 'rxjs';
 import { ProposalStartDateMin } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
@@ -126,8 +126,8 @@ export class NewPage implements OnInit, OnDestroy {
       this.milestoneIndexEndControl.updateValueAndValidity();
     });
 
-    this.lastMilestone$.pipe(untilDestroyed(this), skip(1), first()).subscribe((val) => {
-      if (!this.milestoneIndexCommenceControl.value) {
+    this.lastMilestone$.pipe(untilDestroyed(this), skip(1)).subscribe((val) => {
+      if (!this.milestoneIndexCommenceControl.value || (val?.cmi && this.milestoneIndexCommenceControl.value < val.cmi)) {
         this.milestoneIndexCommenceControl.setValue(val?.cmi || 0);
       }
     });
