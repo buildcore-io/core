@@ -115,15 +115,19 @@
         <!-- NATIVE VOTE -->
         <ng-container *ngIf="data.isNativeVote((data.proposal$ | async)?.type)">
           <div class="wen-description-item bg-bg-background">
-            <span nz-typography class=" text-app-gray-400">milestoneIndexCommence</span>
+            <span nz-typography class=" text-app-gray-400" i18n>Current Milestone</span>
+            <p nz-typography>{{(data.lastMilestone$ | async)?.cmi}}</p>
+          </div>
+          <div class="wen-description-item bg-bg-background">
+            <span nz-typography class=" text-app-gray-400" i18n>Commencing Milestone</span>
             <p nz-typography>{{(data.proposal$ | async)?.settings?.milestoneIndexCommence}}</p>
           </div>
           <div class="wen-description-item bg-bg-background">
-            <span nz-typography class=" text-app-gray-400">milestoneIndexStart</span>
+            <span nz-typography class=" text-app-gray-400" i18n>Start Milestone</span>
             <p nz-typography>{{(data.proposal$ | async)?.settings?.milestoneIndexStart}}</p>
           </div>
           <div class="wen-description-item bg-bg-background">
-            <span nz-typography class=" text-app-gray-400">milestoneIndexEnd</span>
+            <span nz-typography class=" text-app-gray-400" i18n>End Milestone</span>
             <p nz-typography>{{(data.proposal$ | async)?.settings?.milestoneIndexEnd}}</p>
           </div>
           <a nz-button (click)="exportNativeEvent()" nzType="link">Export to JSON</a>

@@ -6,13 +6,15 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
-import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
+import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi } from './../../../../@api/file.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
@@ -46,6 +48,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private proposalApi: ProposalApi,
     private memberApi: MemberApi,
     private awardApi: AwardApi,
+    private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
     public data: DataService,
     public nav: NavigationService
@@ -126,6 +129,10 @@ export class ProposalPage implements OnInit, OnDestroy {
         this.data.canVote$.next(false);
       }
     });
+
+    this.milestoneApi.top(undefined, undefined, 1).pipe(untilDestroyed(this), map((o: Milestone[]) => {
+      return o[0];
+    })).subscribe(this.data.lastMilestone$);
   }
 
   public fireflyNotSupported(): void {
@@ -239,7 +246,7 @@ export class ProposalPage implements OnInit, OnDestroy {
             questions: proposal.questions
         }
     };
-    const id = 'proposal';
+    const id = proposal.eventId || 'proposal';
     const link: any = document.createElement("a");
     link.download = id + '.json';
     const data: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));

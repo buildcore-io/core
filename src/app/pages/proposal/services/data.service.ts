@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from '@components/auth/services/auth.service';
 import * as dayjs from 'dayjs';
 import { Proposal, Space, SpaceGuardian, Transaction } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Award } from './../../../../../functions/interfaces/models/award';
 import { Member } from './../../../../../functions/interfaces/models/member';
+import { Milestone } from './../../../../../functions/interfaces/models/milestone';
 import { ProposalAnswer, ProposalType } from './../../../../../functions/interfaces/models/proposal';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
@@ -18,9 +18,8 @@ export class DataService {
   public currentMembersVotes$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public canVote$: BehaviorSubject<boolean|undefined> = new BehaviorSubject<boolean|undefined>(false);
   public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
-  constructor(
-    private auth: AuthService
-  ) {
+  public lastMilestone$: BehaviorSubject<Milestone|undefined> = new BehaviorSubject<Milestone|undefined>(undefined);
+  constructor() {
     // none.
   }
 
@@ -31,6 +30,7 @@ export class DataService {
     this.creator$.next(undefined);
     this.transactions$.next(undefined);
     this.guardians$.next(undefined);
+    this.lastMilestone$.next(undefined);
     this.canVote$.next(false);
   }
 

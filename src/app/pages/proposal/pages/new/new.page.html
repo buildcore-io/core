@@ -53,38 +53,44 @@
             </nz-form-item>
           </div>
 
-          <div class="flex flex-grow space-x-4" *ngIf="selectedGroupControl.value === targetGroups.NATIVE">
-            <nz-form-item class="w-full">
+          <div *ngIf="selectedGroupControl.value === targetGroups.NATIVE">
+            <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Commencing milestone.">
-                <nz-input-number
-                  class="flex flex-grow"
-                  nzSize="large"
-                  [formControl]="milestoneIndexCommenceControl"
-                  nzPlaceHolder="Commencing milestone"
-                >
-                </nz-input-number>
+                <nz-input-group nzAddOnAfter="Date">
+                  <nz-input-number
+                    nzSize="large"
+                    [nzMin]="(lastMilestone$ | async)?.cmi || 0"
+                    [formControl]="milestoneIndexCommenceControl"
+                    nzPlaceHolder="Commencing milestone"
+                  >
+                  </nz-input-number>
+                </nz-input-group>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item class="w-full">
+            <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Start milestone.">
-                <nz-input-number
-                  class="flex flex-grow"
-                  nzSize="large"
-                  [formControl]="milestoneIndexStartControl"
-                  nzPlaceHolder="Start milestone"
-                >
+                <nz-input-group nzAddOnAfter="Date">
+                  <nz-input-number
+                    nzSize="large"
+                    [nzMin]="milestoneIndexCommenceControl.value"
+                    [formControl]="milestoneIndexStartControl"
+                    nzPlaceHolder="Start milestone"
+                  >
                 </nz-input-number>
+                </nz-input-group>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item class="w-full">
+            <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="End milestone.">
-                <nz-input-number
-                  class="flex flex-grow"
-                  nzSize="large"
-                  [formControl]="milestoneIndexEndControl"
-                  nzPlaceHolder="End milestone"
-                >
-                </nz-input-number>
+                <nz-input-group nzAddOnAfter="Date">
+                  <nz-input-number
+                    nzSize="large"
+                    [nzMin]="milestoneIndexStartControl.value"
+                    [formControl]="milestoneIndexEndControl"
+                    nzPlaceHolder="End milestone"
+                  >
+                  </nz-input-number>
+              </nz-input-group>
               </nz-form-control>
             </nz-form-item>
           </div>

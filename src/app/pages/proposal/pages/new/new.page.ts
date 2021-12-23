@@ -9,14 +9,16 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, first, map, skip, Subscription } from 'rxjs';
 import { ProposalStartDateMin } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
+import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -54,6 +56,7 @@ export class NewPage implements OnInit, OnDestroy {
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public lastMilestone$: BehaviorSubject<Milestone|undefined> = new BehaviorSubject<Milestone|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsAwards$?: Subscription;
   private answersIndex = 0;
@@ -65,6 +68,7 @@ export class NewPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private awardApi: AwardApi,
     private route: ActivatedRoute,
+    private milestoneApi: MilestoneApi,
     private router: Router,
     private nzNotification: NzNotificationService,
     public nav: NavigationService
@@ -121,6 +125,16 @@ export class NewPage implements OnInit, OnDestroy {
       this.milestoneIndexStartControl.updateValueAndValidity();
       this.milestoneIndexEndControl.updateValueAndValidity();
     });
+
+    this.lastMilestone$.pipe(untilDestroyed(this), skip(1), first()).subscribe((val) => {
+      if (!this.milestoneIndexCommenceControl.value) {
+        this.milestoneIndexCommenceControl.setValue(val?.cmi || 0);
+      }
+    });
+
+    this.milestoneApi.top(undefined, undefined, 1).pipe(untilDestroyed(this), map((o: Milestone[]) => {
+      return o[0];
+    })).subscribe(this.lastMilestone$);
   }
 
   private getAnswerForm(): FormGroup {
