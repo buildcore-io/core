@@ -52,7 +52,7 @@
           <p class="text-lg">{{q.text}}</p>
 
           <ng-container *ngFor="let a of q.answers">
-            <p nz-typography class="text-xs">{{a.text}} / {{formatBest((data.proposal$ | async)?.results?.questions?.[0].answers[a.value]?.accumulated || 0)}}</p>
+            <p nz-typography class="text-xs">{{a.text}} / {{formatBest((data.proposal$ | async), a.value)}}</p>
             <nz-progress [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'" nzStatus="active">
             </nz-progress>
           </ng-container>
@@ -90,6 +90,11 @@
       </nz-card>
 
       <nz-card nzTitle="Proposal Info">
+          <div class="wen-description-item bg-bg-background"  *ngIf="data.isNativeVote((data.proposal$ | async)?.type)">
+            <span nz-typography class=" text-app-gray-400 flex-nowrap" i18n>Current Milestone</span>
+            <p nz-typography>{{(data.lastMilestone$ | async)?.cmi}}</p>
+          </div>
+
           <div class="wen-description-item bg-bg-background"  *ngIf="data.isNativeVote((data.proposal$ | async)?.type)">
             <span nz-typography class=" text-app-gray-400 flex-nowrap" i18n>Commence Date <wen-icon-question-circle
               class="ml-1" nz-tooltip [nzTooltipTitle]="'Milestone ' + (data.proposal$ | async)?.settings?.milestoneIndexCommence"></wen-icon-question-circle></span>

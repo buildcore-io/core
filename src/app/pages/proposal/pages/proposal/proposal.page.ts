@@ -233,11 +233,20 @@ export class ProposalPage implements OnInit, OnDestroy {
 
     // In seconds.
     const diff: number = (proposal.settings?.[f] - this.data.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
-    return ((diff > 0) ? dayjs().add(diff, 'seconds') : dayjs().subtract(diff, 'seconds')).toDate();
+    return dayjs().add(diff, 'seconds').toDate();
   }
 
-  public formatBest(value: number): string {
-    return UnitsHelper.formatBest(value);
+  public formatBest(proposal: Proposal|null|undefined, value: number): string {
+    if (!proposal) {
+      return '';
+    }
+
+    // ?.results?.questions?.[0].answers[a.value]?.accumulated || 0
+    const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      return suba.value === value;
+    });
+
+    return UnitsHelper.formatBest(ans.accumulated);
   }
 
   public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
