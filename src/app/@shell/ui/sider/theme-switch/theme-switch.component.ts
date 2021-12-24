@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { BehaviorSubject } from 'rxjs';
 
@@ -11,8 +12,10 @@ import { BehaviorSubject } from 'rxjs';
 export class ThemeSwitchComponent {
   theme = ThemeList;
 
-  constructor(private themeService: ThemeService) {
-  }
+  constructor(
+    public deviceService: DeviceService,
+    private themeService: ThemeService
+  ) { }
 
   public get currentTheme$(): BehaviorSubject<ThemeList | undefined> {
     return this.themeService.theme$;

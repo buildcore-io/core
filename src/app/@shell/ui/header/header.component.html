@@ -11,9 +11,18 @@
 
     <button nz-button nzShape="circle"
       class="inline-flex items-center justify-center border-0 wen-header-button ml-5"
-      type="button">
+      type="button"
+      (click)="isMobileMenuVisible = true">
       <wen-icon-menu></wen-icon-menu>
     </button>
+
+    <wen-mobile-menu 
+      [isVisible]="isMobileMenuVisible" 
+      [isLoggedIn$]="isLoggedIn$"
+      [member$]="member$"
+      [filesizes]="filesizes"
+      (isVisibleChanged)="isMobileMenuVisible = $event">
+    </wen-mobile-menu>
   </ng-container>
   
 

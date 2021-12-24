@@ -1,0 +1,70 @@
+<nz-drawer
+      [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+      [nzWidth]="'100vw'"
+      [nzClosable]="false"
+      [nzVisible]="isVisible"
+    >
+    <div *nzDrawerContent class="relative h-full">
+        <div class="flex justify-between items-center">
+          <svg width="22" height="32" viewBox="0 0 22 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13.7018 12.7188C13.4676 12.5524 13.0944 12.2855 12.7028 11.9875C11.4566 11.0314 10.0149 10.3616 8.48015 10.0257L3.62442 8.97627H20.0084V0.01767C12.3516 0.227923 7.22688 -0.768496 3.3756 1.86607C1.01725 3.47313 0.0823338 5.93217 0.0823338 8.7843C0.0823338 15.549 9.77916 19.2476 9.77916 21.3446C9.77916 23.2881 7.6422 22.7634 0 22.8493V31.9907C8.31366 31.8518 11.2428 32.3692 14.6367 31.3271C19.1887 29.9449 21.2891 26.8076 21.2891 23.129C21.2891 21.2679 17.4561 15.4356 13.7018 12.7188Z" fill="#404040"/>
+          </svg>
+          
+          <div class="flex justify-between space-x-5">
+            <button class="bg-blue-light1 w-10 h-10 flex justify-center items-center rounded-full">
+              <wen-icon-plus></wen-icon-plus>
+            </button>
+            <button>
+              <wen-icon-bell></wen-icon-bell>
+            </button>
+            <button (click)="onClose()">
+              <wen-icon-close></wen-icon-close>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-10 w-full h-16 rounded-full bg-tag-default flex justify-between items-center" (click)="onClickProfile()">
+          <div class="ml-2 font-semibold">
+            <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
+              <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar:filesizes?.small" [nzSize]="48"
+                class="mr-1"></nz-avatar>
+                {{
+                  '@ ' + ((member$ | async)?.name || (member$ | async)?.uid || '')
+                  | truncate: [12]
+                }}
+            </ng-container>
+            
+            <ng-template #notLoggedInBlock>
+                <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="border-2 border-app-gray-100 mr-1"></nz-avatar>
+                Connect Metamask
+            </ng-template>
+          </div>
+
+          <button class="mr-6">
+            <wen-icon-angle-right></wen-icon-angle-right>
+          </button>
+        </div>
+
+        <div class="mt-7 w-fit" (click)="onClose()">
+          <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
+        </div>
+
+        <div class="mt-10 ml-2">
+          <wen-theme-switch nz-tooltip nzTooltipTitle="Coming SOON"></wen-theme-switch>
+        </div>
+
+        <div class="absolute bottom-10 w-full flex flex-col justify-between items-center">
+          <div *ngIf="isLoggedIn$ | async"
+            class="flex items-center text-lg font-bold" 
+            (click)="auth.signOut()">
+            <wen-icon-log-out class="mr-5"></wen-icon-log-out>
+            Log out
+          </div>
+
+          <div class="mt-6 flex items-center text-sm font-medium text-app-gray-400">
+            Powered by
+            <wen-icon-soonlabs class="ml-2"></wen-icon-soonlabs>
+          </div>
+        </div>
+      </div>
+</nz-drawer>

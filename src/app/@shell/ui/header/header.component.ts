@@ -23,6 +23,7 @@ export class HeaderComponent implements OnInit {
   public isMemberProfile = false;
   public isLandingPage = false;
   public isAllowedCreation = false;
+  public isMobileMenuVisible = true;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
