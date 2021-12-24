@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SoonlabsIconComponent } from './soonlabs.component';
 
-import { SoonlabsComponent } from './soonlabs.component';
 
-describe('SoonlabsComponent', () => {
-  let component: SoonlabsComponent;
-  let fixture: ComponentFixture<SoonlabsComponent>;
+describe('SoonlabsIconComponent', () => {
+  let component: SoonlabsIconComponent;
+  let fixture: ComponentFixture<SoonlabsIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SoonlabsComponent ]
+      declarations: [ SoonlabsIconComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SoonlabsComponent);
+    fixture = TestBed.createComponent(SoonlabsIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

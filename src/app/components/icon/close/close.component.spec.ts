@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CloseIconComponent } from './close.component';
 
-import { CloseComponent } from './close.component';
 
-describe('CloseComponent', () => {
-  let component: CloseComponent;
-  let fixture: ComponentFixture<CloseComponent>;
+describe('CloseIconComponent', () => {
+  let component: CloseIconComponent;
+  let fixture: ComponentFixture<CloseIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CloseComponent ]
+      declarations: [ CloseIconComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CloseComponent);
+    fixture = TestBed.createComponent(CloseIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

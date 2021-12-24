@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PlusIconComponent } from './plus.component';
 
-import { PlusComponent } from './plus.component';
 
-describe('PlusComponent', () => {
-  let component: PlusComponent;
-  let fixture: ComponentFixture<PlusComponent>;
+describe('PlusIconComponent', () => {
+  let component: PlusIconComponent;
+  let fixture: ComponentFixture<PlusIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PlusComponent ]
+      declarations: [ PlusIconComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PlusComponent);
+    fixture = TestBed.createComponent(PlusIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

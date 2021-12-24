@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { InfoIconComponent } from './info.component';
 
-import { InfoComponent } from './info.component';
 
-describe('InfoComponent', () => {
-  let component: InfoComponent;
-  let fixture: ComponentFixture<InfoComponent>;
+describe('InfoIconComponent', () => {
+  let component: InfoIconComponent;
+  let fixture: ComponentFixture<InfoIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InfoComponent ]
+      declarations: [ InfoIconComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InfoComponent);
+    fixture = TestBed.createComponent(InfoIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
