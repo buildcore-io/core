@@ -56,8 +56,8 @@
           <div *ngIf="selectedGroupControl.value === targetGroups.NATIVE">
             <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Commencing milestone.">
-                <nz-input-group [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexCommenceControl.value) | date:'short') || undefined">
-                  <nz-input-number
+                <nz-input-group nzCompact [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexCommenceControl.value) | date:'short') || undefined">
+                  <nz-input-number class="w-full rounded-r-none"
                     nzSize="large"
                     [nzMin]="(lastMilestone$ | async)?.cmi || 0"
                     [formControl]="milestoneIndexCommenceControl"
@@ -70,7 +70,7 @@
             <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Start milestone.">
                 <nz-input-group [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexStartControl.value) | date:'short') || undefined">
-                  <nz-input-number
+                  <nz-input-number class="w-full rounded-r-none"
                     nzSize="large"
                     [nzMin]="milestoneIndexCommenceControl.value"
                     [formControl]="milestoneIndexStartControl"
@@ -83,7 +83,7 @@
             <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="End milestone.">
                 <nz-input-group [nzAddOnAfter]="(getDateBasedOnMilestone(milestoneIndexEndControl.value) | date:'short') || undefined">
-                  <nz-input-number
+                  <nz-input-number class="w-full rounded-r-none"
                     nzSize="large"
                     [nzMin]="milestoneIndexStartControl.value"
                     [formControl]="milestoneIndexEndControl"
