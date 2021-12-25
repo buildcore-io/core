@@ -50,7 +50,7 @@ export class OverviewPage implements OnInit {
       this.startDateTicker$.next(this.startDateTicker$.value);
 
       // If it's in the past.
-      if (dayjs(this.startDateTicker$.value.toDate()).isBefore(dayjs())) {
+      if (this.startDateTicker$.value && dayjs(this.startDateTicker$.value.toDate()).isBefore(dayjs())) {
         int.unsubscribe();
         this.data.proposal$.next(<Proposal>{...this.data.proposal$.value});
       }

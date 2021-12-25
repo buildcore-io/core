@@ -11,11 +11,11 @@
   </div>
 </nz-card>
 
-<ng-container *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async) === false">
+<ng-container *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async) === false && data.isMemberVote((data.proposal$ | async)?.type)">
   <nz-card *ngFor="let q of (data.proposal$ | async)?.questions" [nzTitle]="q.text">
     <span [innerHtml]="q.additionalInfo | markdown"></span>
     <nz-radio-group class="w-full mb-4 mt-9"
-      [nzDisabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
+      [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
       [formControl]="voteControl">
       <div *ngFor="let a of q.answers">
         <wen-radio class="block w-full px-5 py-3 border border-solid rounded-large" [value]="a.value">
@@ -30,8 +30,8 @@
       </div>
     </nz-radio-group>
 
-    <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()" *ngIf="data.canVote$ | async"
-      [disabled]="!((data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length">
+    <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()" *ngIf="(data.canVote$ | async) && data.isMemberVote((data.proposal$ | async)?.type)"
+      [disabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length">
       <span *ngIf="(data.currentMembersVotes$ | async)?.length" i18n>Voted</span>
       <span *ngIf="data.isInProgress(data.proposal$ | async) && !(data.currentMembersVotes$ | async)?.length" i18n>Vote Now</span>
       <span *ngIf="data.isInProgressIgnoreStatus(data.proposal$ | async) === false && !(data.currentMembersVotes$ | async)?.length" i18n>Voting starts {{(startDateTicker$ | async) | relativeTime}}</span>

@@ -5,18 +5,22 @@ import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
 import { Proposal } from 'functions/interfaces/models';
-import { BehaviorSubject, first, firstValueFrom, skip, Subscription } from 'rxjs';
-import { WEN_NAME } from './../../../../../../functions/interfaces/config';
+import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
+import { TIME_GAP_BETWEEN_MILESTONES, WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
-import { ProposalQuestion, ProposalSubType } from './../../../../../../functions/interfaces/models/proposal';
+import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
+import { ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi } from './../../../../@api/file.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
+import { UnitsHelper } from './../../../../@core/utils/units-helper';
 import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
@@ -27,8 +31,7 @@ import { DataService } from './../../services/data.service';
 })
 export class ProposalPage implements OnInit, OnDestroy {
   public sections = [
-    { route: [ROUTER_UTILS.config.proposal.overview], label: 'Overview' },
-    { route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' }
+    { route: [ROUTER_UTILS.config.proposal.overview], label: 'Overview' }
   ];
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private subscriptions$: Subscription[] = [];
@@ -47,6 +50,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private proposalApi: ProposalApi,
     private memberApi: MemberApi,
     private awardApi: AwardApi,
+    private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
     public data: DataService,
     public nav: NavigationService
@@ -80,6 +84,11 @@ export class ProposalPage implements OnInit, OnDestroy {
       if (this.auth.member$.value?.uid) {
         this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
                                       .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
+      }
+
+      if (obj.type !== ProposalType.NATIVE) {
+        this.sections.push({ route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' });
+        this.cd.markForCheck();
       }
     });
 
@@ -122,6 +131,14 @@ export class ProposalPage implements OnInit, OnDestroy {
         this.data.canVote$.next(false);
       }
     });
+
+    this.milestoneApi.top(undefined, undefined, 1).pipe(untilDestroyed(this), map((o: Milestone[]) => {
+      return o[0];
+    })).subscribe(this.data.lastMilestone$);
+  }
+
+  public fireflyNotSupported(): void {
+    alert('Firefly deep links does not support this option yet. Use CLI wallet instead.');
   }
 
   public get filesizes(): typeof FILE_SIZES {
@@ -161,7 +178,7 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public getVotingTypeText(subType: ProposalSubType|undefined): string {
     if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
-      return 'One Address One Vote';
+      return 'IOTA Address Vote';
     } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
       return 'One Member One Vote';
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
@@ -171,6 +188,65 @@ export class ProposalPage implements OnInit, OnDestroy {
     } else {
       return '';
     }
+  }
+
+  public getCommenceDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.data.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexCommence');
+    } else {
+      return proposal.createdOn?.toDate() || null;
+    }
+  }
+
+  public getStartDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.data.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexStart');
+    } else {
+      return proposal.settings?.startDate?.toDate() || null;
+    }
+  }
+
+  public getEndDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.data.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexEnd');
+    } else {
+      return proposal.settings?.startDate?.toDate() || null;
+    }
+  }
+
+  private calcDateBasedOnMilestone(proposal: Proposal, f: 'milestoneIndexStart'|'milestoneIndexEnd'|'milestoneIndexCommence'): Date|null  {
+    if (!this.data.lastMilestone$.value || !proposal.settings?.[f]) {
+      return null;
+    }
+
+    // In seconds.
+    const diff: number = (proposal.settings?.[f] - this.data.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
+    return dayjs().add(diff, 'seconds').toDate();
+  }
+
+  public formatBest(proposal: Proposal|null|undefined, value: number): string {
+    if (!proposal) {
+      return '';
+    }
+
+    // ?.results?.questions?.[0].answers[a.value]?.accumulated || 0
+    const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      return suba.value === value;
+    });
+
+    return UnitsHelper.formatBest(ans.accumulated);
   }
 
   public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
@@ -212,7 +288,31 @@ export class ProposalPage implements OnInit, OnDestroy {
         // none.
       });
     });
+  }
 
+  public exportNativeEvent(): void {
+    const proposal: Proposal|undefined = this.data.proposal$.value;
+    if (!proposal) {
+      return;
+    }
+
+    const obj: any = {
+        name: proposal.name,
+        additionalInfo: proposal.additionalInfo || '',
+        milestoneIndexCommence: proposal.settings.milestoneIndexCommence,
+        milestoneIndexStart: proposal.settings.milestoneIndexStart,
+        milestoneIndexEnd: proposal.settings.milestoneIndexEnd,
+        payload: {
+            type: 0,
+            questions: proposal.questions
+        }
+    };
+    const id = proposal.eventId || 'proposal';
+    const link: any = document.createElement("a");
+    link.download = id + '.json';
+    const data: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+    link.href = "data:" + data;
+    link.click();
   }
 
   private cancelSubscriptions(): void {
