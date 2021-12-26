@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
-      <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
+      <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" i18n
         *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== false">
         Join Space
       </button>
@@ -30,7 +30,7 @@
         'Ask to Join Space'}}
       </button>
       <div>
-        <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()">
+        <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
           Edit Space
         </button>
       </div>
@@ -97,7 +97,7 @@
       </nz-card>
 
       <div>
-        <button class="flex justify-center" nz-button nzBlock nzDanger (click)="leave()"
+        <button class="flex justify-center" nz-button nzBlock nzDanger (click)="leave()" i18n
           *ngIf="data.isMemberWithinSpace$ | async">
           <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
           Leave Space

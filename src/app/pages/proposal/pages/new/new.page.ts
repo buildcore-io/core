@@ -4,21 +4,30 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { environment } from "@env/environment";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { ProposalStartDateMin } from './../../../../../../functions/interfaces/config';
+import { BehaviorSubject, map, skip, Subscription } from 'rxjs';
+import { ProposalStartDateMin, TIME_GAP_BETWEEN_MILESTONES } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
+import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { AwardApi } from './../../../../@api/award.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
+
+enum TargetGroup {
+  GUARDIANS,
+  MEMBERS,
+  NATIVE
+}
 
 @UntilDestroy()
 @Component({
@@ -30,9 +39,12 @@ import { NotificationService } from './../../../../@core/services/notification/n
 export class NewPage implements OnInit, OnDestroy {
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public nameControl: FormControl = new FormControl('', Validators.required);
-  public selectedGroupControl: FormControl = new FormControl(true, Validators.required);
+  public selectedGroupControl: FormControl = new FormControl(TargetGroup.GUARDIANS, Validators.required);
   public startControl: FormControl = new FormControl('', Validators.required);
   public endControl: FormControl = new FormControl('', Validators.required);
+  public milestoneIndexCommenceControl: FormControl = new FormControl();
+  public milestoneIndexStartControl: FormControl = new FormControl();
+  public milestoneIndexEndControl: FormControl = new FormControl();
   public typeControl: FormControl = new FormControl(ProposalType.MEMBERS, Validators.required);
   public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
   public votingAwardControl: FormControl = new FormControl([]);
@@ -44,6 +56,7 @@ export class NewPage implements OnInit, OnDestroy {
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public lastMilestone$: BehaviorSubject<Milestone|undefined> = new BehaviorSubject<Milestone|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsAwards$?: Subscription;
   private answersIndex = 0;
@@ -55,6 +68,7 @@ export class NewPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private awardApi: AwardApi,
     private route: ActivatedRoute,
+    private milestoneApi: MilestoneApi,
     private router: Router,
     private nzNotification: NzNotificationService,
     public nav: NavigationService
@@ -71,6 +85,9 @@ export class NewPage implements OnInit, OnDestroy {
       group: this.selectedGroupControl,
       start: this.startControl,
       end: this.endControl,
+      milestoneIndexCommence: this.milestoneIndexCommenceControl,
+      milestoneIndexStart: this.milestoneIndexStartControl,
+      milestoneIndexEnd: this.milestoneIndexEndControl,
       additionalInfo: this.additionalInfoControl,
       questions: this.questions,
       awards: this.votingAwardControl
@@ -95,6 +112,29 @@ export class NewPage implements OnInit, OnDestroy {
         this.subscriptions$.push(this.awardApi.top(undefined, undefined, 1000).subscribe(this.awards$));
       }
     });
+
+    this.selectedGroupControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      this.startControl.setValidators((val === TargetGroup.NATIVE) ? [] : [Validators.required]);
+      this.endControl.setValidators((val === TargetGroup.NATIVE) ? [] : [Validators.required]);
+      this.milestoneIndexCommenceControl.setValidators((val === TargetGroup.NATIVE) ? [Validators.required] : []);
+      this.milestoneIndexStartControl.setValidators((val === TargetGroup.NATIVE) ? [Validators.required] : []);
+      this.milestoneIndexEndControl.setValidators((val === TargetGroup.NATIVE) ? [Validators.required] : []);
+      this.startControl.updateValueAndValidity();
+      this.endControl.updateValueAndValidity();
+      this.milestoneIndexCommenceControl.updateValueAndValidity();
+      this.milestoneIndexStartControl.updateValueAndValidity();
+      this.milestoneIndexEndControl.updateValueAndValidity();
+    });
+
+    this.lastMilestone$.pipe(untilDestroyed(this), skip(1)).subscribe((val) => {
+      if (!this.milestoneIndexCommenceControl.value || (val?.cmi && this.milestoneIndexCommenceControl.value < val.cmi)) {
+        this.milestoneIndexCommenceControl.setValue(val?.cmi || 0);
+      }
+    });
+
+    this.milestoneApi.top(undefined, undefined, 1).pipe(untilDestroyed(this), map((o: Milestone[]) => {
+      return o[0];
+    })).subscribe(this.lastMilestone$);
   }
 
   private getAnswerForm(): FormGroup {
@@ -124,12 +164,26 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
+  public get targetGroups(): typeof TargetGroup {
+    return TargetGroup;
+  }
+
   public getAvatarSize(url?: string|null): string|undefined {
     if (!url) {
       return undefined;
     }
 
     return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+  }
+
+  public getDateBasedOnMilestone(milestoneValue: number): Date|undefined  {
+    if (!this.lastMilestone$.value) {
+      return undefined;
+    }
+
+    // In seconds.
+    const diff: number = (milestoneValue - this.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
+    return ((diff > 0) ? dayjs().add(diff, 'seconds') : dayjs().subtract(diff, 'seconds')).toDate();
   }
 
   public gForm(f: any, value: string): any {
@@ -192,13 +246,29 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   private formatSubmitObj(obj: any) {
-    obj.settings = {
-      startDate: obj.start,
-      endDate: obj.end,
-      onlyGuardians: obj.group,
-      awards: obj.awards
-    };
+    if (obj.group !== TargetGroup.NATIVE) {
+      obj.settings = {
+        startDate: obj.start,
+        endDate: obj.end,
+        onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
+        awards: obj.awards
+      };
+    } else {
+      // TODO We need to find right milestone.
+      obj.settings = {
+        milestoneIndexCommence: obj.milestoneIndexCommence,
+        milestoneIndexStart: obj.milestoneIndexStart,
+        milestoneIndexEnd: obj.milestoneIndexEnd,
+      };
 
+      // These are hardcoded for NATIVE.
+      obj.type = ProposalType.NATIVE;
+      obj.subType = ProposalSubType.ONE_ADDRESS_ONE_VOTE;
+    }
+
+    delete obj.milestoneIndexCommence;
+    delete obj.milestoneIndexStart;
+    delete obj.milestoneIndexEnd;
     delete obj.awards;
     delete obj.start;
     delete obj.end;
@@ -223,6 +293,10 @@ export class NewPage implements OnInit, OnDestroy {
     }
 
     return true;
+  }
+
+  public get isProd(): boolean {
+    return environment.production;
   }
 
   public async create(): Promise<void> {

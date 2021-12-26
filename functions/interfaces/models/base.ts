@@ -23,6 +23,7 @@ export const enum COL {
   AWARD = 'award',
   SPACE = 'space',
   PROPOSAL = 'proposal',
+  MILESTONE = 'milestone',
   TRANSACTION = 'transaction',
   BADGES = 'badges',
   AVATARS = 'avatars',
