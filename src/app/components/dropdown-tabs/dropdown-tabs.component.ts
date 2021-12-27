@@ -2,11 +2,13 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TabSection } from '@pages/discover/pages/discover/discover.page';
 
 @Component({
-  selector: 'wen-tabs',
-  templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.less'],
+  selector: 'wen-dropdown-tabs',
+  templateUrl: './dropdown-tabs.component.html',
+  styleUrls: ['./dropdown-tabs.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TabsComponent {
+export class DropdownTabsComponent {
   @Input() tabs: TabSection[] = []
+  @Input() selectedTab?: TabSection
+  public isVisible = false;
 }

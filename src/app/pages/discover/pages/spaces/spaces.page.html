@@ -15,7 +15,7 @@
   </ng-template>
 </div>
 
-<div class="grid mt-10 place-items-start">
+<div class="lg:grid mt-10 place-items-start">
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(spaces$ | async)">
     {{ ((spaces$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} spaces
   </p>
@@ -33,7 +33,7 @@
       </div>
     </nz-card>
 
-    <wen-space-card class="outline-none" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s">
+    <wen-space-card class="outline-none w-full" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s">
     </wen-space-card>
   </div>
 </div>

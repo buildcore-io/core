@@ -1,0 +1,20 @@
+<button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu"
+    nzType="primary" type="button"
+    [(nzVisible)]="isVisible"
+    class="flex items-center gap-2 pr-2" i18n>
+    {{ selectedTab?.label }} <wen-icon-angle-down></wen-icon-angle-down>
+</button>
+
+<nz-dropdown-menu #createMenu="nzDropdownMenu">
+    <button nz-button nzType="primary" type="button"
+        *ngFor="let item of tabs; let i = index"
+        [routerLink]="item.route"
+        (click)="isVisible = false"
+        class="flex items-center gap-2 pr-2 w-32 -mt-1" 
+        [ngClass]="{ 
+            'rounded-b-none': i !== tabs.length - 1,
+            'rounded-t-none': i !== 0
+        }" i18n>
+        {{ item.label }}
+    </button>
+</nz-dropdown-menu>

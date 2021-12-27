@@ -15,7 +15,7 @@
   </ng-template>
 </div>
 
-<div class="grid mt-10 place-items-start">
+<div class="lg:grid mt-10 place-items-start">
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">
     {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} members
   </p>
@@ -33,7 +33,7 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="outline-none" *ngFor="let member of members$ | async; trackBy: trackByUid" [member]="member">
+    <wen-member-card class="outline-none w-full" *ngFor="let member of members$ | async; trackBy: trackByUid" [member]="member">
     </wen-member-card>
   </div>
 </div>
