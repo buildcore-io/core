@@ -13,6 +13,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { MobileHeaderModule } from '../mobile-header/mobile-header.module';
 import { TruncateModule } from './../../../@core/pipes/truncate/truncate.module';
 import { HeaderComponent } from './header.component';
 
@@ -33,7 +34,8 @@ import { HeaderComponent } from './header.component';
     IconModule,
     NzDropDownModule,
     MenuModule,
-    MobileMenuModule
+    MobileMenuModule,
+    MobileHeaderModule
   ],
   exports: [HeaderComponent],
 })

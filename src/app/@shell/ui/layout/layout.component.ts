@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NavigationCancel, NavigationEnd, Router } from '@angular/router';
 import { DeviceService } from '@core/services/device';
+import { RouterService } from '@core/services/router';
 import { ThemeService } from '@core/services/theme';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, combineLatest } from "rxjs";
@@ -19,7 +20,8 @@ export class LayoutComponent implements OnInit {
     private themeService: ThemeService,
     private cd: ChangeDetectorRef,
     private router: Router,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    public routerService: RouterService
   ) { }
 
   public ngOnInit(): void {

@@ -24,9 +24,9 @@ export class MobileMenuComponent {
     private router: Router
   ) { }
 
-  onClose(): void {
-    this.isVisible = false;
-    this.isVisibleChanged.emit(false);
+  onVisibleChange(isVisible: boolean): void {
+    this.isVisible = isVisible;
+    this.isVisibleChanged.emit(isVisible);
   }
 
   onClickProfile(): void {
@@ -37,7 +37,7 @@ export class MobileMenuComponent {
         // Only redirect to dashboard if home.
         if (this.router.url === '/' && res) {
           this.router.navigate([ROUTER_UTILS.config.base.dashboard]);
-          this.onClose();
+          this.onVisibleChange(false);
         }
       });
     }

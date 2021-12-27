@@ -5,7 +5,7 @@
       [nzVisible]="isVisible"
     >
     <div *nzDrawerContent class="relative h-full">
-        <wen-mobile-header [isLoggedIn$]="isLoggedIn$" (close)="onClose()"></wen-mobile-header>
+        <wen-mobile-header [isLoggedIn$]="isLoggedIn$" (onVisibleChange)="onVisibleChange($event)"></wen-mobile-header>
 
         <div class="mt-10 w-full h-16 rounded-full bg-tag-default flex justify-between items-center" (click)="onClickProfile()">
           <div class="ml-2 font-semibold">
@@ -29,7 +29,7 @@
           </button>
         </div>
 
-        <div class="mt-7 w-fit" (click)="onClose()">
+        <div class="mt-7 w-fit" (click)="onVisibleChange(false)">
           <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
         </div>
 
