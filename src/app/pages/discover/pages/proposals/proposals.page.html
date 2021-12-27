@@ -34,7 +34,7 @@
       </div>
     </nz-card>
 
-    <wen-proposal-card class="outline-none w-full" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid"
+    <wen-proposal-card class="outline-none w-full lg:w-auto" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid"
       [proposal]="proposal">
     </wen-proposal-card>
   </div>
