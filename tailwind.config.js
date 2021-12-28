@@ -68,6 +68,7 @@ module.exports = {
       },
       minWidth: {
         10: '2.5rem',
+        32: '8rem'
       },
       maxWidth: {
         fit: 'fit-content',

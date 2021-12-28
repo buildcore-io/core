@@ -25,6 +25,7 @@ import { QuestionCircleIconComponent } from './question-circle/question-circle.c
 import { RedditIconComponent } from './reddit/reddit.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
+import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
 import { SunIconComponent } from './sun/sun.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
@@ -60,7 +61,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     CloseIconComponent,
     AngleRightIconComponent,
     InfoIconComponent,
-    SoonlabsIconComponent
+    SoonlabsIconComponent,
+    SortIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -91,7 +93,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     CloseIconComponent,
     AngleRightIconComponent,
     InfoIconComponent,
-    SoonlabsIconComponent
+    SoonlabsIconComponent,
+    SortIconComponent
   ],
   imports: [
     CommonModule

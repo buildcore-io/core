@@ -1,4 +1,4 @@
-<article class="bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-auto p-6' : 'w-75 h-75 p-4'"
+<article class="bg-white rounded-2xl wen-card w-full lg:w-auto" [ngClass]="fullWidth ? 'w-auto h-auto p-6' : 'w-75 h-75 p-4'"
   *ngIf="proposal">
   <a class="text-current hover:text-current" [routerLink]="['/', this.path, proposal.uid]">
     <wen-icon-angle-left class="absolute flex rotate-180 right-6" *ngIf="fullWidth"></wen-icon-angle-left>

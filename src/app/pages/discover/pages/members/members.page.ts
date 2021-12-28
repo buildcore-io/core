@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
+import { SortOptions } from "../../services/sort-options.interface";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { FilterService } from './../../services/filter.service';
-import { SortOptions } from "../../services/sort-options.interface";
 
 export enum HOT_TAGS {
   ALL = 'All'
@@ -25,7 +26,11 @@ export class MembersPage implements OnInit, OnDestroy {
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
-  constructor(private memberApi: MemberApi, public filter: FilterService) {
+  constructor(
+    private memberApi: MemberApi, 
+    public filter: FilterService,
+    public deviceService: DeviceService
+  ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }
 
@@ -48,7 +53,7 @@ export class MembersPage implements OnInit, OnDestroy {
     });
   }
 
-  public handleChange(_checked: boolean, tag: string): void {
+  public handleChange(tag: string): void {
     this.selectedTags$.next([tag]);
   }
 
