@@ -37,7 +37,6 @@ export class MobileHeaderComponent implements OnInit {
     this.router.events
       .pipe(untilDestroyed(this))
       .subscribe((obj) => {
-        console.log(obj);
         if(obj instanceof ResolveEnd) {
           const goBackUrls = [this.urlToNewSpace, this.urlToNewProposal, this.urlToNewAward];
           this.goBackHeader = goBackUrls.includes(obj.url);

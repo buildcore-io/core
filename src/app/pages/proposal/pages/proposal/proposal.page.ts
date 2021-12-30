@@ -248,7 +248,9 @@ export class ProposalPage implements OnInit, OnDestroy {
     const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
       return suba.value === value;
     });
-
+    if(!ans) { 
+      return '';
+    }
     return UnitsHelper.formatBest(ans.accumulated);
   }
 
