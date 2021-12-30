@@ -13,15 +13,6 @@ import { BehaviorSubject } from 'rxjs';
 export class SpaceAboutComponent {
   @Input() space?: Space | null;
   @Input() avatarUrl?: string;
-  @Input() name?: string;
-  @Input() about?: string;
-  @Input() totalMembers?: number;
-  @Input() totalPendingMembers?: number;
-  @Input() open?: boolean;
-  @Input() github?: string;
-  @Input() twitter?: string;
-  @Input() discord?: string;
-  @Input() totalGuardians?: number;
   @Input() guardians$?: BehaviorSubject<Member[]|undefined>;
   @Input() isMemberWithinSpace?: boolean | null;
   @Input() getMemberUrl?: (memberId: string) => string[];
