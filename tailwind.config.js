@@ -64,6 +64,7 @@ module.exports = {
         pink: '#F20CDF',
       },
       spacing: {
+        18: '4.5rem',
         75: '18.75rem',
       },
       minWidth: {
@@ -77,7 +78,9 @@ module.exports = {
         header: '500px',
       },
       borderRadius: {
+        10: '2.5rem',
         large: '3rem',
+        40: '10rem'
       },
       dropShadow: {
         card: '0px 0px 12px rgba(0, 0, 0, 0.08)',

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MobileHeaderComponent } from './mobile-header.component';
+import { DrawerToggleComponent } from './drawer-toggle.component';
 
-describe('MobileHeaderComponent', () => {
-  let component: MobileHeaderComponent;
-  let fixture: ComponentFixture<MobileHeaderComponent>;
+describe('DrawerToggleComponent', () => {
+  let component: DrawerToggleComponent;
+  let fixture: ComponentFixture<DrawerToggleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MobileHeaderComponent ]
+      declarations: [ DrawerToggleComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MobileHeaderComponent);
+    fixture = TestBed.createComponent(DrawerToggleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

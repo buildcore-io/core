@@ -1,0 +1,37 @@
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { DeviceService } from '@core/services/device';
+import { Member } from 'functions/interfaces/models';
+import { FILE_SIZES } from 'functions/interfaces/models/base';
+import { BehaviorSubject } from 'rxjs';
+
+@Component({
+  selector: 'wen-space-about',
+  templateUrl: './space-about.component.html',
+  styleUrls: ['./space-about.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class SpaceAboutComponent {
+  @Input() avatarUrl?: string;
+  @Input() name?: string;
+  @Input() about?: string;
+  @Input() totalMembers?: number;
+  @Input() totalPendingMembers?: number;
+  @Input() open?: boolean;
+  @Input() github?: string;
+  @Input() twitter?: string;
+  @Input() discord?: string;
+  @Input() totalGuardians?: number;
+  @Input() guardians$?: BehaviorSubject<Member[]|undefined>;
+  @Input() isMemberWithinSpace?: boolean | null;
+  @Input() getMemberUrl?: (memberId: string) => string[];
+  @Input() trackByUid: (index: number, item: any) => number = (index: number) => index;
+  @Output() onLeave = new EventEmitter<void>();
+
+  constructor(
+    public deviceService: DeviceService
+  ) { }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+}

@@ -5,7 +5,17 @@
       [nzVisible]="isVisible"
     >
     <div *nzDrawerContent class="relative h-full">
-        <wen-mobile-header [isLoggedIn$]="isLoggedIn$" (onVisibleChange)="onVisibleChange($event)"></wen-mobile-header>
+        <wen-mobile-header 
+          [isMobileMenuVisible]="isVisible"
+          [isLoggedIn$]="isLoggedIn$" 
+          (onVisibleChange)="onVisibleChange($event)"
+          [isMemberProfile]="isMemberProfile"
+          [isLandingPage]="isLandingPage"
+          [isAllowedCreation]="isAllowedCreation"
+          [urlToNewSpace]="urlToNewSpace"
+          [urlToNewAward]="urlToNewAward"
+          [urlToNewProposal]="urlToNewProposal">
+        </wen-mobile-header>
 
         <div class="mt-10 w-full h-16 rounded-full bg-tag-default flex justify-between items-center" (click)="onClickProfile()">
           <div class="ml-2 font-semibold">

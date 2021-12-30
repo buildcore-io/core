@@ -1,0 +1,98 @@
+<ng-container *ngIf="deviceService.isMobile$ | async">
+    <div class="flex items-center mt-5 ml-6">
+        <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40"
+            class="bg-white border-2 border-gray-400 min-w-10" nzShape="circle">
+        </nz-avatar>
+        <h1 class="mb-0 ml-4 text-2xl w-2/3" i18n>{{ name }}</h1>
+    </div>
+
+    <a nz-button class="flex items-center mt-5 ml-6 mb-5 wen-space-links" nzType="link" [routerLink]="['members']">
+        <wen-icon-members class="text-app-gray-400"></wen-icon-members>
+        <div class="ml-3">{{ totalMembers }} members
+            <span *ngIf="totalPendingMembers">
+                {{'(' + totalPendingMembers + ' pending)'}}
+            </span>
+        </div>
+    </a>
+</ng-container>
+
+
+
+<nz-card nzTitle="About">
+    <p
+        nz-typography
+        [innerHtml]="about"
+        class="text-base font-medium whitespace-pre-line text-app-gray-text">
+    </p>
+</nz-card>
+
+<nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
+    <div class="flex flex-col items-baseline space-y-3">
+        <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
+            <wen-icon-members class="text-app-gray-400"></wen-icon-members>
+            <span>{{ totalMembers }} members
+                <span *ngIf="totalPendingMembers">
+                    {{'(' + totalPendingMembers + ' pending)'}}
+                </span>
+            </span>
+        </a>
+        <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
+            {{ open ? 'Open to join instantly' : 'Requires approval to join'}}
+        </nz-tag>
+    </div>
+</nz-card>
+
+<nz-card nzTitle="Related Links" class="lg:mt-4"
+    *ngIf="github || twitter || discord">
+    <div>
+        <a nz-button class="wen-space-links" nzType="link" target="new"
+            [ngClass]="{
+                'mobile-link': deviceService.isMobile$ | async
+            }"
+            [href]="'https://github.com/' + github">
+            <wen-icon-github class="text-app-gray-400"></wen-icon-github>
+            <span>{{ github }}</span>
+        </a>
+    </div>
+    <div *ngIf="twitter">
+        <a nz-button class="wen-space-links" nzType="link" target="new"
+            [ngClass]="{
+                'mobile-link': deviceService.isMobile$ | async
+            }"
+            [href]="'https://twitter.com/' + twitter">
+            <wen-icon-twitter class="text-app-gray-400"></wen-icon-twitter>
+            <span>{{ twitter }}</span>
+        </a>
+    </div>
+    <div>
+        <a nz-button class="wen-space-links" nzType="link" target="new"
+            [ngClass]="{
+                'mobile-link': deviceService.isMobile$ | async
+            }"
+            [href]="'https://discord.gg/' + discord">
+            <wen-icon-discord class="text-app-gray-400"></wen-icon-discord>
+            <span>{{'discord.gg/' + discord}}</span>
+        </a>
+    </div>
+</nz-card>
+
+<nz-card [nzTitle]="totalGuardians + ' Guardians'" class="lg:mt-4">
+    <div class="space-y-2" *ngIf="guardians$">
+        <div *ngFor="let g of guardians$ | async; trackBy: trackByUid"
+            class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
+            <nz-avatar nzIcon="user" 
+                [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small" 
+                class="mr-2" [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
+            </nz-avatar>
+            <span [routerLink]="getMemberUrl ? getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16] }}</span>
+        </div>
+    </div>
+</nz-card>
+
+<div class="lg:mt-4 pt-6 lg:pt-0">
+    <button class="flex justify-center" nz-button nzBlock nzDanger (click)="onLeave.emit()" i18n
+        *ngIf="!!isMemberWithinSpace">
+        <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
+        Leave Space
+    </button>
+</div>

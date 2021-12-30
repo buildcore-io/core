@@ -15,6 +15,12 @@ import { BehaviorSubject } from 'rxjs';
 export class MobileMenuComponent {
   @Input() isVisible = false;
   @Input() isLoggedIn$ = new BehaviorSubject<boolean>(false);
+  @Input() isMemberProfile = false;
+  @Input() isLandingPage = false;
+  @Input() isAllowedCreation = false;
+  @Input() urlToNewSpace = '';
+  @Input() urlToNewProposal = '';
+  @Input() urlToNewAward = '';
   @Input() member$ = new BehaviorSubject<Member | undefined>(undefined);
   @Input() filesizes!: typeof FILE_SIZES;
   @Output() isVisibleChanged = new EventEmitter<boolean>();

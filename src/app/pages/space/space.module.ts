@@ -2,14 +2,18 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
+import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
+import { FixedCreateButtonModule } from '@components/fixed-create-button/fixed-create-button.module';
 import { IconModule } from '@components/icon/icon.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { SpaceAboutModule } from '@components/space/components/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
@@ -83,7 +87,11 @@ import { SpaceRoutingModule } from './space-routing.module';
     LayoutModule,
     NzToolTipModule,
     IconModule,
-    RadioModule
+    RadioModule,
+    DrawerToggleModule,
+    NzDrawerModule,
+    SpaceAboutModule,
+    FixedCreateButtonModule
   ]
 })
 export class SpaceModule { }

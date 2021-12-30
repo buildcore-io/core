@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -42,7 +43,8 @@ export class UpsertPage implements OnInit {
     private notification: NotificationService,
     private nzNotification: NzNotificationService,
     private cd: ChangeDetectorRef,
-    public nav: NavigationService
+    public nav: NavigationService,
+    public deviceService: DeviceService
   ) {
     this.spaceForm = new FormGroup({
       name: this.nameControl,

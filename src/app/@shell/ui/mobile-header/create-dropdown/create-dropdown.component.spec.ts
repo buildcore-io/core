@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MobileMenuComponent } from './mobile-menu.component';
+import { CreateDropdownComponent } from './create-dropdown.component';
 
-describe('MobileMenuComponent', () => {
-  let component: MobileMenuComponent;
-  let fixture: ComponentFixture<MobileMenuComponent>;
+describe('CreateDropdownComponent', () => {
+  let component: CreateDropdownComponent;
+  let fixture: ComponentFixture<CreateDropdownComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MobileMenuComponent ]
+      declarations: [ CreateDropdownComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MobileMenuComponent);
+    fixture = TestBed.createComponent(CreateDropdownComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

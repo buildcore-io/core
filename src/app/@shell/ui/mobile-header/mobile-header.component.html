@@ -10,16 +10,27 @@
     </a>
     
     <div class="flex justify-between space-x-5">
-      <button *ngIf="isLoggedIn$ | async"
-        class="bg-blue-light1 w-10 h-10 flex justify-center items-center rounded-full">
-        <wen-icon-plus></wen-icon-plus>
-      </button>
-      <button>
-        <wen-icon-bell></wen-icon-bell>
-      </button>
-      <button (click)="onVisibleChange.emit(!isMobileMenuVisible)">
-        <wen-icon-close *ngIf="isMobileMenuVisible"></wen-icon-close>
-        <wen-icon-menu *ngIf="!isMobileMenuVisible"></wen-icon-menu>
+      <ng-container *ngIf="!goBackHeader">
+        <wen-create-dropdown
+          [isLoggedIn$]="isLoggedIn$"
+          [isMemberProfile]="isMemberProfile"
+          [isLandingPage]="isLandingPage"
+          [isAllowedCreation]="isAllowedCreation"
+          [urlToNewSpace]="urlToNewSpace"
+          [urlToNewAward]="urlToNewAward"
+          [urlToNewProposal]="urlToNewProposal"
+        ></wen-create-dropdown>
+        <button>
+          <wen-icon-bell></wen-icon-bell>
+        </button>
+        <button (click)="onVisibleChange.emit(!isMobileMenuVisible)">
+          <wen-icon-close *ngIf="isMobileMenuVisible"></wen-icon-close>
+          <wen-icon-menu *ngIf="!isMobileMenuVisible"></wen-icon-menu>
+        </button>
+      </ng-container>
+      
+      <button *ngIf="goBackHeader" (click)="location.back()">
+        <wen-icon-close></wen-icon-close>
       </button>
     </div>
 </div>

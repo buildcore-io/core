@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MemberApi } from "@api/member.api";
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject } from "rxjs";
 import { Transaction } from "../../../../../../functions/interfaces/models";
@@ -22,7 +23,10 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public path = ROUTER_UTILS.config.member.root;
 
-  constructor(private memberApi: MemberApi) {
+  constructor(
+    private memberApi: MemberApi,
+    public deviceService: DeviceService
+  ) {
     // none.
   }
 

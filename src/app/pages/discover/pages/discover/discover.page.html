@@ -13,7 +13,11 @@
 
 
     <wen-tabs *ngIf="deviceService.isDesktop$ | async" [tabs]="sections"></wen-tabs>
-    <wen-dropdown-tabs *ngIf="(deviceService.isMobile$ | async) && !isSearchInputFocused" [tabs]="sections" [selectedTab]="selectedSection"></wen-dropdown-tabs>
+    <wen-dropdown-tabs 
+      *ngIf="(deviceService.isMobile$ | async) && !isSearchInputFocused" 
+      [tabs]="sections" 
+      [selectedTab]="selectedSection">
+    </wen-dropdown-tabs>
 
     <nz-input-group *ngIf="deviceService.isMobile$ | async" nzSize="small" [nzPrefix]="prefixIconSearchMobile"
       class="ml-auto border-none shadow-none outline-0" [ngStyle]="{ 'width': isSearchInputFocused ? '100%' : 'fit-content' }" nzSearch>

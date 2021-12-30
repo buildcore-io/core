@@ -8,7 +8,13 @@
         '-translate-y-full': !isScrolled && routerService.isHomeRoute
       }"
       [isLoggedIn$]="isLoggedIn$"
+      [isMemberProfile]="isMemberProfile"
+      [isLandingPage]="isLandingPage"
       [isMobileMenuVisible]="isMobileMenuVisible"
+      [isAllowedCreation]="isAllowedCreation"
+      [urlToNewSpace]="urlToNewSpace"
+      [urlToNewAward]="urlToNewAward"
+      [urlToNewProposal]="urlToNewProposal"
       (onVisibleChange)="isMobileMenuVisible = !isMobileMenuVisible">
     </wen-mobile-header>
 
@@ -31,6 +37,12 @@
     <wen-mobile-menu 
       [isVisible]="isMobileMenuVisible" 
       [isLoggedIn$]="isLoggedIn$"
+      [isMemberProfile]="isMemberProfile"
+      [isLandingPage]="isLandingPage"
+      [isAllowedCreation]="isAllowedCreation"
+      [urlToNewSpace]="urlToNewSpace"
+      [urlToNewAward]="urlToNewAward"
+      [urlToNewProposal]="urlToNewProposal"
       [member$]="member$"
       [filesizes]="filesizes"
       (isVisibleChanged)="isMobileMenuVisible = $event">
