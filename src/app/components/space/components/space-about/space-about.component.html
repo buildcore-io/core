@@ -3,14 +3,14 @@
         <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40"
             class="bg-white border-2 border-gray-400 min-w-10" nzShape="circle">
         </nz-avatar>
-        <h1 class="mb-0 ml-4 text-2xl w-2/3" i18n>{{ name }}</h1>
+        <h1 class="mb-0 ml-4 text-2xl w-2/3" i18n>{{ space?.name }}</h1>
     </div>
 
     <a nz-button class="flex items-center mt-5 ml-6 mb-5 wen-space-links" nzType="link" [routerLink]="['members']">
         <wen-icon-members class="text-app-gray-400"></wen-icon-members>
-        <div class="ml-3">{{ totalMembers }} members
-            <span *ngIf="totalPendingMembers">
-                {{'(' + totalPendingMembers + ' pending)'}}
+        <div class="ml-3">{{ space?.totalMembers }} members
+            <span *ngIf="space?.totalPendingMembers">
+                {{'(' + space?.totalPendingMembers + ' pending)'}}
             </span>
         </div>
     </a>
@@ -21,7 +21,7 @@
 <nz-card nzTitle="About">
     <p
         nz-typography
-        [innerHtml]="about"
+        [innerHtml]="space?.about"
         class="text-base font-medium whitespace-pre-line text-app-gray-text">
     </p>
 </nz-card>
@@ -30,53 +30,53 @@
     <div class="flex flex-col items-baseline space-y-3">
         <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
             <wen-icon-members class="text-app-gray-400"></wen-icon-members>
-            <span>{{ totalMembers }} members
-                <span *ngIf="totalPendingMembers">
-                    {{'(' + totalPendingMembers + ' pending)'}}
+            <span>{{ space?.totalMembers }} members
+                <span *ngIf="space?.totalPendingMembers">
+                    {{'(' + space?.totalPendingMembers + ' pending)'}}
                 </span>
             </span>
         </a>
         <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
-            {{ open ? 'Open to join instantly' : 'Requires approval to join'}}
+            {{ space?.open ? 'Open to join instantly' : 'Requires approval to join'}}
         </nz-tag>
     </div>
 </nz-card>
 
 <nz-card nzTitle="Related Links" class="lg:mt-4"
-    *ngIf="github || twitter || discord">
-    <div>
+    *ngIf="space?.github || space?.twitter || space?.discord">
+    <div *ngIf="space?.github">
         <a nz-button class="wen-space-links" nzType="link" target="new"
             [ngClass]="{
                 'mobile-link': deviceService.isMobile$ | async
             }"
-            [href]="'https://github.com/' + github">
+            [href]="'https://github.com/' + space?.github">
             <wen-icon-github class="text-app-gray-400"></wen-icon-github>
-            <span>{{ github }}</span>
+            <span>{{ space?.github }}</span>
         </a>
     </div>
-    <div *ngIf="twitter">
+    <div *ngIf="space?.twitter">
         <a nz-button class="wen-space-links" nzType="link" target="new"
             [ngClass]="{
                 'mobile-link': deviceService.isMobile$ | async
             }"
-            [href]="'https://twitter.com/' + twitter">
+            [href]="'https://twitter.com/' + space?.twitter">
             <wen-icon-twitter class="text-app-gray-400"></wen-icon-twitter>
-            <span>{{ twitter }}</span>
+            <span>{{ space?.twitter }}</span>
         </a>
     </div>
-    <div>
+    <div *ngIf="space?.discord">
         <a nz-button class="wen-space-links" nzType="link" target="new"
             [ngClass]="{
                 'mobile-link': deviceService.isMobile$ | async
             }"
-            [href]="'https://discord.gg/' + discord">
+            [href]="'https://discord.gg/' + space?.discord">
             <wen-icon-discord class="text-app-gray-400"></wen-icon-discord>
-            <span>{{'discord.gg/' + discord}}</span>
+            <span>{{'discord.gg/' + space?.discord}}</span>
         </a>
     </div>
 </nz-card>
 
-<nz-card [nzTitle]="totalGuardians + ' Guardians'" class="lg:mt-4">
+<nz-card [nzTitle]="space?.totalGuardians + ' Guardians'" class="lg:mt-4">
     <div class="space-y-2" *ngIf="guardians$">
         <div *ngFor="let g of guardians$ | async; trackBy: trackByUid"
             class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">

@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
@@ -41,7 +42,8 @@ export class AwardPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private awardApi: AwardApi,
     public data: DataService,
-    public nav: NavigationService
+    public nav: NavigationService,
+    public deviceService: DeviceService
   ) {
     // none.
   }

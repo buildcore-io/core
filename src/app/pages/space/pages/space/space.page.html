@@ -70,14 +70,8 @@
       </div>
 
       <wen-space-about 
-        [about]="(data?.space$ | async)?.about | markdown"
-        [totalMembers]="(data.space$ | async)?.totalMembers"
-        [totalPendingMembers]="(data.space$ | async)?.totalPendingMembers"
-        [open]="(data.space$ | async)?.open"
-        [github]="(data?.space$ | async)?.github"
-        [twitter]="(data?.space$ | async)?.twitter"
-        [discord]="(data?.space$ | async)?.discord"
-        [totalGuardians]="(data.space$ | async)?.totalGuardians"
+        [avatarUrl]="(avatarUrl$ | async) || undefined"
+        [space]="data.space$ | async"
         [guardians$]="data.guardians$"
         [isMemberWithinSpace]="data.isMemberWithinSpace$ | async"
         [getMemberUrl]="getMemberUrl"
@@ -100,15 +94,7 @@
 
         <wen-space-about 
           [avatarUrl]="(avatarUrl$ | async) || undefined"
-          [name]="(data.space$ | async)?.name"
-          [about]="(data?.space$ | async)?.about | markdown"
-          [totalMembers]="(data.space$ | async)?.totalMembers"
-          [totalPendingMembers]="(data.space$ | async)?.totalPendingMembers"
-          [open]="(data.space$ | async)?.open"
-          [github]="(data?.space$ | async)?.github"
-          [twitter]="(data?.space$ | async)?.twitter"
-          [discord]="(data?.space$ | async)?.discord"
-          [totalGuardians]="(data.space$ | async)?.totalGuardians"
+          [space]="data.space$ | async"
           [guardians$]="data.guardians$"
           [isMemberWithinSpace]="data.isMemberWithinSpace$ | async"
           [getMemberUrl]="getMemberUrl"

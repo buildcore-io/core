@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { Member } from 'functions/interfaces/models';
+import { Member, Space } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { BehaviorSubject } from 'rxjs';
 
@@ -11,6 +11,7 @@ import { BehaviorSubject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpaceAboutComponent {
+  @Input() space?: Space | null;
   @Input() avatarUrl?: string;
   @Input() name?: string;
   @Input() about?: string;
