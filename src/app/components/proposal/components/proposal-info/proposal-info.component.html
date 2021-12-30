@@ -1,1 +1,35 @@
-<p>proposal-info works!</p>
+<nz-card nzTitle="Proposal Info">
+    <div class="wen-description-item bg-bg-background"  *ngIf="data?.isNativeVote((data?.proposal$ | async)?.type)">
+        <span nz-typography class=" text-app-gray-400 flex-nowrap" i18n>Current Milestone</span>
+        <p nz-typography>{{(data?.lastMilestone$ | async)?.cmi}}</p>
+    </div>
+
+    <div class="wen-description-item bg-bg-background"  *ngIf="data?.isNativeVote((data?.proposal$ | async)?.type)">
+        <span nz-typography class=" text-app-gray-400 flex-nowrap" i18n>Commence Date <wen-icon-question-circle
+            class="ml-1" nz-tooltip [nzTooltipTitle]="'Milestone ' + (data?.proposal$ | async)?.settings?.milestoneIndexCommence"></wen-icon-question-circle></span>
+        <p nz-typography>{{getCommenceDate(data?.proposal$ | async) | date:'short'}}</p>
+    </div>
+
+    <div class="wen-description-item bg-bg-background">
+        <span nz-typography class=" text-app-gray-400 flex-nowrap" i18n>Start Date <wen-icon-question-circle *ngIf="data?.isNativeVote((data?.proposal$ | async)?.type)"
+            class="ml-1" nz-tooltip [nzTooltipTitle]="'Milestone ' + (data?.proposal$ | async)?.settings?.milestoneIndexStart"></wen-icon-question-circle></span>
+        <p nz-typography>{{getStartDate(data?.proposal$ | async) | date:'short'}}</p>
+    </div>
+    <div class="wen-description-item bg-bg-background">
+        <span nz-typography class="text-app-gray-400 flex-nowrap" i18n>End Date <wen-icon-question-circle *ngIf="data?.isNativeVote((data?.proposal$ | async)?.type)"
+            class="ml-1" nz-tooltip [nzTooltipTitle]="'Milestone ' + (data?.proposal$ | async)?.settings?.milestoneIndexEnd"></wen-icon-question-circle></span>
+        <p nz-typography>{{getEndDate(data?.proposal$ | async) | date:'short'}}</p>
+    </div>
+    <div class="wen-description-item bg-bg-background">
+        <span nz-typography class="flex text-app-gray-400 flex-nowrap" i18n>Voting Type <wen-icon-question-circle
+            class="ml-1" nz-tooltip nzTooltipTitle="Voting Type of this proposal."></wen-icon-question-circle></span>
+        <p nz-typography>{{getVotingTypeText((data?.proposal$ | async)?.subType)}}</p>
+    </div>
+    <div class="wen-description-item bg-bg-background" *ngIf="data?.isMemberVote((data?.proposal$ | async)?.type)">
+        <span nz-typography class="flex text-app-gray-400 flex-nowrap" i18n>Total Weight <wen-icon-question-circle
+            class="ml-1" nz-tooltip nzTooltipTitle="Total weight within this proposal for all participants."></wen-icon-question-circle> </span>
+        <p nz-typography>{{(data?.proposal$ | async)?.totalWeight || 0}}</p>
+    </div>
+
+    <a nz-button (click)="onExportClick.emit()" *ngIf="data?.isNativeVote((data?.proposal$ | async)?.type)" nzType="link">Export to JSON</a>
+</nz-card>

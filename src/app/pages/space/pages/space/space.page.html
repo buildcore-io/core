@@ -71,9 +71,7 @@
 
       <wen-space-about 
         [avatarUrl]="(avatarUrl$ | async) || undefined"
-        [space]="data.space$ | async"
-        [guardians$]="data.guardians$"
-        [isMemberWithinSpace]="data.isMemberWithinSpace$ | async"
+        [data]="data"
         [getMemberUrl]="getMemberUrl"
         [trackByUid]="trackByUid"
         (onLeave)="leave()"
@@ -94,9 +92,7 @@
 
         <wen-space-about 
           [avatarUrl]="(avatarUrl$ | async) || undefined"
-          [space]="data.space$ | async"
-          [guardians$]="data.guardians$"
-          [isMemberWithinSpace]="data.isMemberWithinSpace$ | async"
+          [data]="data"
           [getMemberUrl]="getMemberUrl"
           [trackByUid]="trackByUid"
           (onLeave)="leave()"
