@@ -286,8 +286,8 @@ export class AuthService {
       this.defaultMenuItem1,
       this.defaultMenuItem2,
       this.dashboardMenuItem,
-      this.getMemberMenuItem(memberId),
-      this.aboutMenuItem
+      this.getMemberMenuItem(memberId)
+      // this.aboutMenuItem
     ]);
   }
 
