@@ -5,7 +5,7 @@
 [![Smart Contract Tests](https://github.com/soonlabs/soonaverse/actions/workflows/smart-contracts-unit-test.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/smart-contracts-unit-test.yml)
 [![Functions Unit Tests](https://github.com/soonlabs/soonaverse/actions/workflows/functions-unit-tests.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/functions-unit-tests.yml)
 
-# About
+# About 
 The Soonaverse is a decentralized platform for communities, enabling the seamless creation, management, and interoperability of DAOs.
 
 DAO-on-Demand (DoD) enables the “one-click” setup of DAOs and provides components that simplify complex DAO operations through an integrated set of feeless core modules. This includes the Secure Feeless Voting module, the first feeless, on-chain voting system in the industry. The Soonaverse also includes 2 innovative and feature-enhancing service modules; the Token LaunchPad and the Reputation Station.
