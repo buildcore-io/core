@@ -77,6 +77,9 @@ module.exports = {
       width: {
         header: '500px',
       },
+      minHeight: {
+        180: '45rem'
+      },
       borderRadius: {
         10: '2.5rem',
         large: '3rem',

@@ -1,11 +1,11 @@
 <!-- TODO find better hack for preventing header from jumping because of the scrollbar -->
-<header class="fixed w-full lg:absolute z-30 flex items-center justify-end lg:py-5 lg:pr-0 lg:space-x-8 lg:w-header lg:pr-8 xl:pr-16 right-0">
+<header class="fixed w-full lg:absolute z-30 flex items-center justify-end lg:py-5 lg:space-x-8 lg:w-header lg:pr-8 xl:pr-16 right-0">
   
   <ng-container *ngIf="deviceService.isMobile$ | async; else isDesktop">
     <wen-mobile-header
-      class="absolute transform translate-y-0 w-full p-4 bg-white top-0 z-10 mobile-header-shadow transition-transform duration-300"
+      class="absolute transform -translate-y-1 w-full p-4 bg-white top-0 z-10 mobile-header-shadow transition-transform duration-300"
       [ngClass]="{
-        '-translate-y-full': !isScrolled && routerService.isHomeRoute
+        '-translate-y-full -top-1': !isScrolled && routerService.isHomeRoute
       }"
       [isLoggedIn$]="isLoggedIn$"
       [isMemberProfile]="isMemberProfile"
