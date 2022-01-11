@@ -1,18 +1,28 @@
 <wen-content [showBackButton]="(data.member$ | async)?.uid !== (loggedInMember$ | async)?.uid">
-  <div class="py-12" style="margin-right: 420px;">
+
+  <ng-container *ngIf="deviceService.isMobile$ | async">
+    <wen-drawer-toggle label="Profile Info" (click)="isAboutMemberVisible = true">
+    </wen-drawer-toggle>
+  </ng-container>
+
+  <div class="relative w-full py-12 lg:w-auto" [ngStyle]="{
+    'margin-right': (deviceService.isDesktop$ | async) ? '420px' : '0'
+  }">
     <h1 i18n>Profile</h1>
 
-    <wen-tabs [tabs]="sections"></wen-tabs>
+    <wen-tabs class="block w-full overflow-x-auto overflow-y-hidden lg:w-auto" [tabs]="sections"></wen-tabs>
 
-    <div class="w-full py-12" [style.min-height]="(height$ | async) + 'px'">
+    <div class="relative w-full py-12 lg:w-auto" [style.min-height]="(height$ | async) + 'px'">
       <router-outlet></router-outlet>
     </div>
   </div>
 
-  <div class="absolute top-0 right-0 h-auto min-h-screen px-8 pt-40 pb-20 mr-auto text-center bg-white rounded-l-large"
-    style="width: 420px;" #sidebar>
+  <div
+    class="absolute h-auto min-h-screen px-8 pt-40 pb-20 mr-auto text-center bg-white top-18 lg:top-0 lg:w-auto lg:right-0 rounded-l-large"
+    style="width: 420px;" #sidebar *ngIf="deviceService.isDesktop$ | async">
 
-    <nz-avatar [nzSize]="124" [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"></nz-avatar>
+    <nz-avatar [nzSize]="124" [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large">
+    </nz-avatar>
     <div class="flex items-baseline justify-center mt-6">
       <h3 class="max-w-full mx-4 text-left break-all whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
         ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
@@ -40,8 +50,8 @@
         [href]="'https://twitter.com/' + (data.member$ | async)!.twitter">
         <wen-icon-twitter class="text-app-gray-text hover:text-blue-hover"></wen-icon-twitter>
       </a>
-      <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new"
-        nz-tooltip [nzTooltipTitle]="(data.member$ | async)!.discord">
+      <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new" nz-tooltip
+        [nzTooltipTitle]="(data.member$ | async)!.discord">
         <wen-icon-discord class="text-app-gray-text hover:text-blue-hover"></wen-icon-discord>
       </a>
     </div>
@@ -74,10 +84,9 @@
       <h3>Contributes To</h3>
       <div class="flex flex-wrap gap-2">
         <article *ngFor="let s of (data.space$ | async) | slice:0:6; trackBy: trackByUid"
-                class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl">
+          class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl">
           <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
-            <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10"
-              nzShape="circle">
+            <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">
             </nz-avatar>
             <span class="flex-grow pl-2 truncate">{{ s.name }}</span>
             <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
@@ -91,4 +100,22 @@
       </div>
     </div>
   </div>
+
+  <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }" [nzWidth]="'100vw'" [nzClosable]="false"
+    [nzVisible]="isAboutMemberVisible">
+    <div *nzDrawerContent class="relative h-full">
+      <button class="absolute z-10 -top-0 right-5" (click)="isAboutMemberVisible = false">
+        <wen-icon-close></wen-icon-close>
+      </button>
+
+      <!-- <wen-space-about
+          [avatarUrl]="(avatarUrl$ | async) || undefined"
+          [data]="data"
+          [getMemberUrl]="getMemberUrl"
+          [trackByUid]="trackByUid"
+          (onLeave)="leave()"
+        ></wen-space-about> -->
+    </div>
+  </nz-drawer>
+
 </wen-content>

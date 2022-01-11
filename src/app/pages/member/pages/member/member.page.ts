@@ -3,6 +3,7 @@ import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject, skip, Subscription } from 'rxjs';
@@ -27,6 +28,7 @@ export class MemberPage implements OnInit, OnDestroy {
     { route: 'badges', label: 'Badges' },
     { route: 'yield', label: 'Yield' }
   ]
+  public isAboutMemberVisible = false;
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
   public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   @ViewChild('sidebar') private sidebar?: ElementRef;
@@ -38,7 +40,8 @@ export class MemberPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private router: Router,
     public nav: NavigationService,
-    public data: DataService
+    public data: DataService,
+    public deviceService: DeviceService
   ) {
     // none.
   }
