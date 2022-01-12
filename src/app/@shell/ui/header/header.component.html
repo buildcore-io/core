@@ -10,7 +10,6 @@
       [ngClass]="{
         'mobile-header-no-shadow': !isScrolled && !routerService.isHomeRoute
       }"
-      [isLoggedIn$]="isLoggedIn$"
       [isMemberProfile]="isMemberProfile"
       [isLandingPage]="isLandingPage"
       [isMobileMenuVisible]="isMobileMenuVisible"
@@ -39,14 +38,12 @@
     </div>
     <wen-mobile-menu
       [isVisible]="isMobileMenuVisible"
-      [isLoggedIn$]="isLoggedIn$"
       [isMemberProfile]="isMemberProfile"
       [isLandingPage]="isLandingPage"
       [isAllowedCreation]="isAllowedCreation"
       [urlToNewSpace]="urlToNewSpace"
       [urlToNewAward]="urlToNewAward"
       [urlToNewProposal]="urlToNewProposal"
-      [member$]="member$"
       [filesizes]="filesizes"
       (isVisibleChanged)="isMobileMenuVisible = $event">
     </wen-mobile-menu>

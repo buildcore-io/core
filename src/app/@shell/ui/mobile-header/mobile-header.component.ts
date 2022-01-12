@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ResolveEnd, Router } from '@angular/router';
+import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject } from 'rxjs';
@@ -14,7 +15,7 @@ import { BehaviorSubject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MobileHeaderComponent implements OnInit {
-  @Input() isLoggedIn$ = new BehaviorSubject<boolean>(false);
+  // TODO Clean up this passing around of inputs. This messy.
   @Input() isMobileMenuVisible = false;
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
@@ -24,14 +25,19 @@ export class MobileHeaderComponent implements OnInit {
   @Input() urlToNewAward = '';
   @Input() goBackHeader = false;
   @Output() onVisibleChange = new EventEmitter<boolean>();
-  
+
   public homeRoute = ROUTER_UTILS.config.base.home;
 
   constructor(
+    public auth: AuthService,
     public location: Location,
     private router: Router,
     private cd: ChangeDetectorRef
   ) {}
+
+  public get isLoggedIn$(): BehaviorSubject<boolean> {
+    return this.auth.isLoggedIn$;
+  }
 
   ngOnInit(): void {
     this.router.events

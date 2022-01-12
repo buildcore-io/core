@@ -8,6 +8,7 @@ import { BehaviorSubject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateDropdownComponent {
+  // TODO Clean up this passing around of inputs. This messy.
   @Input() isLoggedIn$ = new BehaviorSubject<boolean>(false);
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
