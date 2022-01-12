@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -8,6 +9,12 @@ import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { AwardApi } from './../../@api/award.api';
 import { SpaceApi } from './../../@api/space.api';
+
+export interface StepArticle {
+  img: string;
+  title: string;
+  description: string;
+}
 
 @UntilDestroy()
 @Component({
@@ -20,8 +27,26 @@ export class HomePage implements OnInit {
   public theme = ThemeList;
   public award$: BehaviorSubject<Award[]> = new BehaviorSubject<Award[]>([]);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
+  public stepArticles: StepArticle[] = [
+    {
+      img: '/assets/mocks/build_dao_banner.jpg',
+      title: 'Create your community',
+      description: 'Feeless, secure, on-chain voting, and “one click” creation tools.'
+    },
+    {
+      img: '/assets/mocks/manage_dao_banner.jpg',
+      title: 'Build reputation and rewards',
+      description: 'Create incentives and build reputation, trust and community engagement.'
+    },
+    {
+      img: '/assets/mocks/own_dao_banner.jpg',
+      title: 'Manage, Maintain, Grow',
+      description: 'Governance, voting, for both public and private communities.'
+    }
+  ]; 
 
   constructor(
+    public deviceService: DeviceService,
     private auth: AuthService,
     private themeService: ThemeService,
     private router: Router,

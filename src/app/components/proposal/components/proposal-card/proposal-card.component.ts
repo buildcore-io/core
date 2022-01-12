@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
 import {
@@ -36,7 +37,10 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
   public path = ROUTER_UTILS.config.proposal.root;
   private subscriptions$: Subscription[] = [];
 
-  constructor(private spaceApi: SpaceApi) {
+  constructor(
+    private spaceApi: SpaceApi,
+    public deviceService: DeviceService
+  ) {
     this.chartOptions = {
       // series: [44, 55, 41, 17, 15],
       chart: {

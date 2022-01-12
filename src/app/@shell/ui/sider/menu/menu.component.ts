@@ -1,7 +1,8 @@
 import { AfterViewChecked, ChangeDetectionStrategy, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren } from '@angular/core';
 import { Router } from "@angular/router";
+import { MenuItem } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ThemeService } from '@core/services/theme';
-import { MenuItem } from "../sider.component";
 import { MenuItemDirective } from './menu-item.directive';
 
 @Component({
@@ -19,7 +20,12 @@ export class MenuComponent implements AfterViewChecked {
   @ViewChildren(MenuItemDirective) menuItemLabels!: QueryList<MenuItemDirective>;
   private reCreateIcons = false;
 
-  constructor(private router: Router, private themeService: ThemeService, private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(
+    public deviceService: DeviceService,
+    private router: Router, 
+    private themeService: ThemeService,
+    private componentFactoryResolver: ComponentFactoryResolver
+  ) { }
 
   loadIconComponents() {
     if (this.menuItemLabels) {

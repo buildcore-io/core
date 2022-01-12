@@ -1,12 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
+import { NavigationEnd, Router } from '@angular/router';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UntilDestroy } from '@ngneat/until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { debounceTime } from "rxjs";
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FilterService } from './../../services/filter.service';
 
+export interface TabSection {
+  label: string;
+  route: string | string[];
+}
 @UntilDestroy()
 @Component({
   selector: 'wen-discover',
@@ -15,15 +21,19 @@ import { FilterService } from './../../services/filter.service';
 })
 export class DiscoverPage implements OnInit, OnDestroy {
   public filterControl: FormControl = new FormControl(undefined);
-  public sections = [
+  public sections: TabSection[] = [
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
     { route: [ ROUTER_UTILS.config.discover.awards], label: 'Awards' },
     { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
   ];
+  public selectedSection?: TabSection;
+  public isSearchInputFocused = false;
   constructor(
     private titleService: Title,
-    public filter: FilterService
+    public filter: FilterService,
+    public deviceService: DeviceService,
+    private router: Router
   ) {
     // none;
   }
@@ -34,6 +44,25 @@ export class DiscoverPage implements OnInit, OnDestroy {
     this.filterControl.valueChanges.pipe(
       debounceTime(FilterService.DEBOUNCE_TIME)
     ).subscribe(this.filter.search$);
+
+    this.setSelectedSection();
+    this.router.events
+      .pipe(untilDestroyed(this))
+      .subscribe((obj) => {
+        if(obj instanceof NavigationEnd) {
+          this.setSelectedSection();
+        }
+      });
+  }
+
+  private setSelectedSection() {
+    this.selectedSection = 
+      this.sections.find((r: TabSection) => 
+        this.router.url.includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
+  }
+
+  onSearchIconClick(): void {
+    this.isSearchInputFocused = !this.isSearchInputFocused;
   }
 
   public ngOnDestroy(): void {

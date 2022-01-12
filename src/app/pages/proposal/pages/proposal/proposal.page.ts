@@ -3,6 +3,7 @@ import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
@@ -34,6 +35,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     { route: [ROUTER_UTILS.config.proposal.overview], label: 'Overview' }
   ];
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isProposaslInfoVisible = false;
   private subscriptions$: Subscription[] = [];
   private guardiansSubscription$?: Subscription;
   private currentMemberVotedTransSubscription$?: Subscription;
@@ -53,7 +55,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
     public data: DataService,
-    public nav: NavigationService
+    public nav: NavigationService,
+    public deviceService: DeviceService
   ) {
     // none.
   }
@@ -245,7 +248,9 @@ export class ProposalPage implements OnInit, OnDestroy {
     const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
       return suba.value === value;
     });
-
+    if(!ans) { 
+      return '';
+    }
     return UnitsHelper.formatBest(ans.accumulated);
   }
 

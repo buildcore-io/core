@@ -21,7 +21,7 @@
   </div>
 
   <div class="space-y-4">
-    <h3>Active Awards</h3>
+    <h3 class="mb-5 lg:mb-6">Active Awards</h3>
 
     <nz-skeleton *ngIf="data.isLoading(data.awardsActive$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>

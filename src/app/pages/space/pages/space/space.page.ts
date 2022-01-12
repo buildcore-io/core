@@ -3,6 +3,7 @@ import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from "@api/file.api";
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from "@pages/space/services/data.service";
@@ -31,6 +32,7 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'treasury', label: 'Treasury' },
     { route: 'members', label: 'Members' }
   ];
+  public isAboutSpaceVisible = false;
 
   constructor(
     private titleService: Title,
@@ -40,7 +42,8 @@ export class SpacePage implements OnInit, OnDestroy {
     private notification: NotificationService,
     private router: Router,
     public data: DataService,
-    public nav: NavigationService
+    public nav: NavigationService,
+    public deviceService: DeviceService
   ) {
     // none.
   }
@@ -78,6 +81,10 @@ export class SpacePage implements OnInit, OnDestroy {
 
   public getBannerUrl(url?: string): string | undefined {
     return url ? FileApi.getUrl(url, 'space_banner', FILE_SIZES.large) : undefined;
+  }
+
+  public get urlToNewSpace(): string {
+    return '/' + ROUTER_UTILS.config.space.root + '/new';
   }
 
   public get avatarUrl$(): Observable<string|undefined> {

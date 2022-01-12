@@ -64,10 +64,12 @@ module.exports = {
         pink: '#F20CDF',
       },
       spacing: {
+        18: '4.5rem',
         75: '18.75rem',
       },
       minWidth: {
         10: '2.5rem',
+        32: '8rem'
       },
       maxWidth: {
         fit: 'fit-content',
@@ -75,8 +77,13 @@ module.exports = {
       width: {
         header: '500px',
       },
+      minHeight: {
+        180: '45rem'
+      },
       borderRadius: {
+        10: '2.5rem',
         large: '3rem',
+        40: '10rem'
       },
       dropShadow: {
         card: '0px 0px 12px rgba(0, 0, 0, 0.08)',

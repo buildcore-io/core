@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -58,7 +59,8 @@ export class NewPage implements OnInit, OnDestroy {
     private router: Router,
     private mintApi: MintApi,
     private cd: ChangeDetectorRef,
-    public nav: NavigationService
+    public nav: NavigationService,
+    public deviceService: DeviceService
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,

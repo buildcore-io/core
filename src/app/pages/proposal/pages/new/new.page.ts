@@ -3,6 +3,7 @@ import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -71,7 +72,8 @@ export class NewPage implements OnInit, OnDestroy {
     private milestoneApi: MilestoneApi,
     private router: Router,
     private nzNotification: NzNotificationService,
-    public nav: NavigationService
+    public nav: NavigationService,
+    public deviceService: DeviceService
   ) {
     this.questions = new FormArray([
       this.getQuestionForm()

@@ -13,7 +13,8 @@
           "strict": true
         },
         "@schematics/angular:component": {
-          "style": "less"
+          "style": "less",
+          "changeDetection": "OnPush"
         },
         "@ngneat/spectator:spectator-component": {
           "jest": true
