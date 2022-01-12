@@ -53,7 +53,7 @@ export class AuthService {
   // private defaultMenuItem3: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: MarketIconComponent, title: 'Discover' };
   private dashboardMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: 'My Overview' };
   private aboutMenuItem: MenuItem = { route: [ROUTER_UTILS.config.about.root], icon: InfoIconComponent, title: 'About' };
-  
+
   constructor(
     private memberApi: MemberApi,
     private ngZone: NgZone,
@@ -106,9 +106,9 @@ export class AuthService {
   }
 
   public async sign(params: any = {}, cb: SignCallback ): Promise<WenRequest|undefined> {
-    const sc: WenRequest|undefined =  await this.signWithMetamask(undefinedToEmpty(params));
+    const sc: WenRequest|undefined|false =  await this.signWithMetamask(undefinedToEmpty(params));
     if (!sc) {
-      this.notification.error('Unable to sign transaction.', '');
+      this.notification.error('Unable to sign transaction. Please try to reload page.', '');
       this.showWalletPopup$.next(WalletStatus.HIDDEN);
       return undefined;
     }
@@ -146,7 +146,7 @@ export class AuthService {
     return true;
   }
 
-  private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
+  private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined|false> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();
     if (provider) {
@@ -216,9 +216,8 @@ export class AuthService {
         return undefined;
       }
     } else {
-      this.notification.error('Please install MetaMask wallet!', '');
       this.showWalletPopup$.next(WalletStatus.HIDDEN);
-      return undefined;
+      return false;
     }
   }
 
@@ -233,9 +232,20 @@ export class AuthService {
   }
 
   public async signIn(): Promise<boolean> {
-    const sc: WenRequest|undefined = await this.signWithMetamask({});
+    const sc: WenRequest|undefined|false = await this.signWithMetamask({});
     if (!sc) {
-      this.notification.error('Failed to log in.', '');
+      // Missing wallet.
+      if (sc === false) {
+        this.notification.success('Redirecting you to MetaMask application.', '');
+
+        // Give them time to register redirect.
+        setTimeout(() => {
+          window.location.href = 'https://metamask.app.link/dapp/' + window.location.host;
+          // window.location.href = 'https://metamask.app.link/wc?uri=' + window.location.host;
+        }, 1500);
+      } else {
+        this.notification.error('Failed to initialize MetaMask, try to reload page.', '');
+      }
       return false;
     }
 
@@ -300,7 +310,7 @@ export class AuthService {
     this.mobileMenuItems$.next([
       this.defaultMenuItem1,
       this.defaultMenuItem2,
-      this.aboutMenuItem
+      // this.aboutMenuItem
     ]);
   }
 

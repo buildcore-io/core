@@ -6,12 +6,12 @@
 </button>
 
 <nz-dropdown-menu #createMenu="nzDropdownMenu">
-    <button nz-button nzType="primary" type="button"
+    <button nz-button [nzType]="item === selectedTab ? 'primary' : 'default'" type="button"
         *ngFor="let item of tabs; let i = index"
         [routerLink]="item.route"
         (click)="isVisible = false"
-        class="flex items-center gap-2 pr-2 w-32 -mt-1" 
-        [ngClass]="{ 
+        class="flex items-center w-32 gap-2 pr-2 -mt-1"
+        [ngClass]="{
             'rounded-b-none': i !== tabs.length - 1,
             'rounded-t-none': i !== 0
         }" i18n>

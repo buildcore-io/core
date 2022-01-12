@@ -8,6 +8,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { MarkDownModule } from './../../../../@core/pipes/markdown/markdown.module';
 import { SpaceAboutComponent } from './space-about.component';
 
 
@@ -18,6 +19,7 @@ import { SpaceAboutComponent } from './space-about.component';
   ],
   imports: [
     CommonModule,
+    MarkDownModule,
     NzCardModule,
     IconModule,
     NzAvatarModule,

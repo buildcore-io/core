@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Member } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { BehaviorSubject } from 'rxjs';
+import { Member } from './../../../../../functions/interfaces/models';
+import { FILE_SIZES } from './../../../../../functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-mobile-menu',
@@ -36,9 +36,7 @@ export class MobileMenuComponent {
   }
 
   onClickProfile(): void {
-    if(this.isLoggedIn$.getValue()) {
-      // Do stuff if logged in
-    } else {
+    if(!this.isLoggedIn$.getValue()) {
       this.auth.signIn().then((res) => {
         // Only redirect to dashboard if home.
         if (this.router.url === '/' && res) {

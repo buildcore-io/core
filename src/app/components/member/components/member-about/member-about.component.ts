@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FileApi } from '@api/file.api';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/member/services/data.service';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { BehaviorSubject } from 'rxjs';
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 
 @Component({

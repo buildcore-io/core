@@ -1,3 +1,4 @@
+import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { TabsComponent } from '@components/tabs/tabs.component';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -10,7 +11,7 @@ describe('DiscoverPage', () => {
   const createComponent = createRoutingFactory({
     component: DiscoverPage,
     providers: [ FilterService ],
-    imports: [ LayoutModule ],
+    imports: [ LayoutModule, DropdownTabsModule ],
     declarations: [MockComponent(TabsComponent)]
   });
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DataService } from '@pages/award/services/data.service';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-award-info',

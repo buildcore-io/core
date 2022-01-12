@@ -3,10 +3,10 @@
         <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40"
             class="bg-white border-2 border-gray-400 min-w-10" nzShape="circle">
         </nz-avatar>
-        <h1 class="mb-0 ml-4 text-2xl w-2/3" i18n>{{ (data?.space$ | async)?.name }}</h1>
+        <h1 class="w-2/3 mb-0 ml-4 text-2xl" i18n>{{ (data?.space$ | async)?.name }}</h1>
     </div>
 
-    <a nz-button class="flex items-center mt-5 ml-6 mb-5 wen-space-links" nzType="link" [routerLink]="['members']">
+    <a nz-button class="flex items-center mt-5 mb-5 ml-6 wen-space-links" nzType="link" [routerLink]="['members']">
         <wen-icon-members class="text-app-gray-400"></wen-icon-members>
         <div class="ml-3">{{ (data?.space$ | async)?.totalMembers }} members
             <span *ngIf="(data?.space$ | async)?.totalPendingMembers">
@@ -16,12 +16,10 @@
     </a>
 </ng-container>
 
-
-
 <nz-card nzTitle="About">
     <p
         nz-typography
-        [innerHtml]="(data?.space$ | async)?.about"
+        [innerHtml]="(data?.space$ | async)?.about | markdown"
         class="text-base font-medium whitespace-pre-line text-app-gray-text">
     </p>
 </nz-card>
@@ -80,8 +78,8 @@
     <div class="space-y-2" *ngIf="data?.guardians$">
         <div *ngFor="let g of data?.guardians$ | async; trackBy: trackByUid"
             class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
-            <nz-avatar nzIcon="user" 
-                [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small" 
+            <nz-avatar nzIcon="user"
+                [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small"
                 class="mr-2" [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
             </nz-avatar>
             <span [routerLink]="getMemberUrl ? getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16] }}</span>
@@ -89,7 +87,7 @@
     </div>
 </nz-card>
 
-<div class="lg:mt-4 pt-6 lg:pt-0">
+<div class="pt-6 lg:mt-4 lg:pt-0">
     <button class="flex justify-center" nz-button nzBlock nzDanger (click)="onLeave.emit()" i18n
         *ngIf="!!(data?.isMemberWithinSpace$ | async)">
         <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
