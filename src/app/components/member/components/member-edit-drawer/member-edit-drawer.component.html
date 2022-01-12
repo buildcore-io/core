@@ -1,5 +1,5 @@
-<nz-drawer nzPlacement="right" [nzTitle]="titleTpl" [nzMask]="false" [nzVisible]="true" [nzWidth]="621"
-  (nzOnClose)="close()" [nzClosable]="true">
+<nz-drawer nzPlacement="right" [nzTitle]="titleTpl" [nzMask]="false" [nzVisible]="true" [nzWidth]="isDesktop ? 621 : '100vw'"
+  (nzOnClose)="close()" [nzClosable]="true" [nzBodyStyle]="!isDesktop ? { overflow: 'auto', padding: '64px 24px 24px' } : {}">
   <ng-container *nzDrawerContent>
     <form class="-mt-16 space-y-12" nz-form nzLayout="vertical" [formGroup]="memberForm">
       <nz-form-item>

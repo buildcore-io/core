@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -29,7 +28,6 @@ export class MemberPage implements OnInit, OnDestroy {
     { route: 'yield', label: 'Yield' }
   ]
   public isAboutMemberVisible = false;
-  public drawerVisible$ = new BehaviorSubject<boolean>(false);
   public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   @ViewChild('sidebar') private sidebar?: ElementRef;
   private subscriptions$: Subscription[] = [];
@@ -65,14 +63,6 @@ export class MemberPage implements OnInit, OnDestroy {
     });
   }
 
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
-  }
-
   @HostListener('window:scroll', ['$event'])
   public track() {
     this.height$.next(this.sidebar?.nativeElement.scrollHeight || 0);
@@ -104,14 +94,6 @@ export class MemberPage implements OnInit, OnDestroy {
 
   public get urlToMembers(): string {
     return '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.members;
-  }
-
-  public openDrawer(): void {
-    this.drawerVisible$.next(true);
-  }
-
-  public closeDrawer(): void {
-    this.drawerVisible$.next(false);
   }
 
   private cancelSubscriptions(): void {

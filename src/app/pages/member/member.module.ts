@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
+import { MemberAboutModule } from '@components/member/components/member-about/member-about.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NgApexchartsModule } from "ng-apexcharts";
@@ -18,8 +19,6 @@ import { AwardCardModule } from '../../components/award/components/award-card/aw
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { BadgeModule } from './../../components/badge/badge.module';
 import { IconModule } from './../../components/icon/icon.module';
-import { MemberEditDrawerModule } from './../../components/member/components/member-edit-drawer/member-edit-drawer.module';
-import { MemberTileModule } from './../../components/member/components/tile/member-tile.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { UserRoutingModule } from './member-routing.module';
 import { ActivityPage } from './pages/activity/activity.page';
@@ -38,8 +37,7 @@ import { DataService } from './services/data.service';
     AwardCardModule,
     TabsModule,
     IpfsAvatarModule,
-    MemberEditDrawerModule,
-    MemberTileModule,
+    MemberAboutModule,
     NgApexchartsModule,
     TruncateModule,
     UserRoutingModule,
