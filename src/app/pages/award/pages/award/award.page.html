@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle
       label="Award info"
@@ -7,7 +7,7 @@
   </ng-container>
 
   <div class="relative py-12" nz-row [nzGutter]="40">
-    <div nz-col nzFlex="auto" 
+    <div nz-col nzFlex="auto"
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <div class="space-y-4 mt-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+    <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
@@ -155,11 +155,11 @@
       [nzVisible]="isAwardInfoVisible"
     >
     <div *nzDrawerContent class="relative h-full">
-      <button class="absolute -top-4 right-5 z-10" (click)="isAwardInfoVisible = false">
+      <button class="absolute z-10 -top-4 right-5" (click)="isAwardInfoVisible = false">
         <wen-icon-close></wen-icon-close>
       </button>
-      
-      <h1 i18n class="ml-5 mb-12 w-3/4 mt-10">{{(data.award$ | async)?.name}}</h1>
+
+      <h1 i18n class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
 
       <wen-award-awards
         [data]="data"

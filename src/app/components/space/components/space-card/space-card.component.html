@@ -1,4 +1,4 @@
-<article class="bg-white w-full lg:w-75 h-75 rounded-2xl wen-card" *ngIf="space">
+<article class="w-full bg-white lg:w-75 lg:h-75 rounded-2xl wen-card" *ngIf="space">
   <a class="text-current hover:text-current" [routerLink]="['/', this.path, space.uid]">
     <div class="w-full h-32 overflow-hidden rounded-2xl">
       <img
@@ -8,17 +8,17 @@
       />
     </div>
 
-    <div class="relative flex flex-col w-full p-5 lg:p-4 h-44">
+    <div class="relative flex flex-col w-full p-5 lg:p-4 lg:h-44">
         <nz-avatar
           class="absolute top-0 transform -translate-y-1/2 bg-white border-2 border-app-gray-100 left-4"
           [nzSrc]="avatarUrl"
           nzShape="circle"
         ></nz-avatar>
 
-        <h3 class="mt-4 lg:mt-2 mb-0 text-lg font-bold truncate">{{ space.name }}</h3>
+        <h3 class="mt-4 mb-0 text-lg font-bold truncate lg:mt-2">{{ space.name }}</h3>
 
 
-      <p class="flex-grow flex-shrink min-h-0 py-3 lg:py-2 overflow-hidden text-sm font-medium">{{ space.about | stripMarkdown | truncate:[110]}}</p>
+      <p class="flex-grow flex-shrink min-h-0 py-3 overflow-hidden text-sm font-medium lg:py-2">{{ space.about | stripMarkdown | truncate:[110]}}</p>
 
       <div i18n class="inline-flex gap-2 text-sm font-medium text-app-gray-400">
         <wen-icon-members></wen-icon-members>

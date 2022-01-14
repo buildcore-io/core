@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle
       label="About space"
@@ -9,18 +9,18 @@
       [route]="urlToNewSpace"
     ></wen-fixed-create-button>
   </ng-container>
-  
 
-  <div class="absolute top-18 lg:top-0 left-0 lg:right-0 w-auto overflow-hidden h-56 lg:h-96 rounded-10 lg:rounded-large lg:rounded-r-none lg:left-20">
+
+  <div class="absolute left-0 w-auto h-56 overflow-hidden top-18 lg:top-0 lg:right-0 lg:h-96 rounded-10 lg:rounded-large lg:rounded-r-none lg:left-20">
     <img alt="" [src]="(bannerUrl$ | async) || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
   </div>
 
-  <div class="relative py-12 mt-48 lg:mt-80 w-full lg:w-auto" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
+  <div class="relative w-full py-12 mt-48 lg:mt-80 lg:w-auto" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
     <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
       class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4" nzShape="circle">
     </nz-avatar>
 
-    <div class="mx-5 lg:mx-0 my-0 p-0 lg:px-5 flex-auto" [ngStyle]="{
+    <div class="flex-auto p-0 mx-5 my-0 lg:mx-0 lg:px-5" [ngStyle]="{
       'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
     }">
       <h1 class="mb-8 lg:mb-10" i18n>{{ (data.space$ | async)!.name }}</h1>
@@ -43,9 +43,9 @@
           </button>
         </div>
       </div>
-      
 
-      <wen-tabs [tabs]="sections" class="block w-full lg:w-auto overflow-x-auto overflow-y-hidden"></wen-tabs>
+
+      <wen-tabs [tabs]="sections" class="block w-full overflow-x-auto overflow-y-hidden lg:w-auto"></wen-tabs>
 
       <div class="w-full py-14 lg:py-12">
         <router-outlet></router-outlet>
@@ -69,7 +69,7 @@
         </button>
       </div>
 
-      <wen-space-about 
+      <wen-space-about
         [avatarUrl]="(avatarUrl$ | async) || undefined"
         [data]="data"
         [getMemberUrl]="getMemberUrl"
@@ -86,11 +86,11 @@
         [nzVisible]="isAboutSpaceVisible"
       >
       <div *nzDrawerContent class="relative h-full">
-        <button class="absolute -top-0 right-5 z-10" (click)="isAboutSpaceVisible = false">
+        <button class="absolute z-10 -top-0 right-5" (click)="isAboutSpaceVisible = false">
           <wen-icon-close></wen-icon-close>
         </button>
 
-        <wen-space-about 
+        <wen-space-about
           [avatarUrl]="(avatarUrl$ | async) || undefined"
           [data]="data"
           [getMemberUrl]="getMemberUrl"

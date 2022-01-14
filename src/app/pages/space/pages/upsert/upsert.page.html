@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
 <h1 class="mt-7" *ngIf="!editMode" i18n>Add new space</h1>
 <h1 class="mt-7" *ngIf="editMode" i18n>Edit space</h1>
 <form nz-form nzLayout="vertical" [formGroup]="spaceForm">
@@ -91,7 +91,7 @@
       </nz-card>
     </div>
 
-    <div class="space-y-4 mt-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
+    <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
       <nz-card [nzBordered]="false" nzTitle="Space Type">
         <nz-form-item>
           <nz-form-control>
@@ -188,7 +188,7 @@
 <button
   nz-button
   nzType="primary"
-  class="w-full lg:w-auto mb-18 lg:mb-6 mt-8 lg:mt-0"
+  class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
   nzSize="large"
   type="button"
   (click)="create()"
@@ -201,7 +201,7 @@
 <button
   nz-button
   nzType="primary"
-  class="w-full lg:w-auto mb-18 lg:mb-6 mt-8 lg:mt-0"
+  class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
   nzSize="large"
   type="button"
   (click)="save()"
