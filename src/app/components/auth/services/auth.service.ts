@@ -236,13 +236,12 @@ export class AuthService {
     if (!sc) {
       // Missing wallet.
       if (sc === false) {
-        this.notification.success('Redirecting you to MetaMask application.', '');
-
+        this.notification.success('You have to open Soonaverse in MetaMask app.', '');
         // Give them time to register redirect.
-        setTimeout(() => {
-          window.location.href = 'https://metamask.app.link/dapp/' + window.location.host;
-          // window.location.href = 'https://metamask.app.link/wc?uri=' + window.location.host;
-        }, 1500);
+        // setTimeout(() => {
+        //   window.location.href = 'https://metamask.app.link/dapp/' + window.location.host;
+        //   // window.location.href = 'https://metamask.app.link/wc?uri=' + window.location.host;
+        // }, 1500);
       } else {
         this.notification.error('Failed to initialize MetaMask, try to reload page.', '');
       }

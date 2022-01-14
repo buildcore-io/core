@@ -22,7 +22,7 @@ export class MenuComponent implements AfterViewChecked {
 
   constructor(
     public deviceService: DeviceService,
-    private router: Router, 
+    private router: Router,
     private themeService: ThemeService,
     private componentFactoryResolver: ComponentFactoryResolver
   ) { }
@@ -50,8 +50,9 @@ export class MenuComponent implements AfterViewChecked {
     }
 
     // Default to first.
+    // TODO Defaulting of discovery when none of the above.
     if (this.menuItems[0].route === route) {
-      return true;
+      // return true;
     }
 
     return false;
