@@ -55,6 +55,15 @@
       </ng-template>
     </nz-alert>
 
+    <nz-alert nzShowIcon nzType="info" *ngIf="(data.proposal$ | async)?.approved === false && (data.proposal$ | async)?.rejected === false"
+    i18n-nzMessage nzMessage="Pending Guardian Approval" [nzDescription]="bodyTpl">
+      <ng-template #bodyTpl class="block">
+        <span i18n>
+          This proposal have not been approved by any Guardian yet.
+        </span>
+      </ng-template>
+    </nz-alert>
+
   </nz-card>
 </ng-container>
 
