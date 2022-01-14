@@ -1,6 +1,12 @@
 import { Injectable, NgZone } from '@angular/core';
+import { GlobeIconComponent } from '@components/icon/globe/globe.component';
+import { InfoIconComponent } from '@components/icon/info/info.component';
+import { MarketIconComponent } from '@components/icon/market/market.component';
+import { RocketIconComponent } from '@components/icon/rocket/rocket.component';
+import { UnamusedIconComponent } from '@components/icon/unamused/unamused.component';
 import { getItem, setItem, StorageItem } from '@core/utils';
 import { undefinedToEmpty } from '@core/utils/manipulations.utils';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, skip, Subscription } from 'rxjs';
@@ -19,6 +25,12 @@ export interface SignCallback {
   (sc: any, finish: any): void;
 };
 
+export interface MenuItem {
+  route: string[];
+  icon: any;
+  title: string;
+}
+
 export enum WalletStatus {
   HIDDEN = 0,
   OPEN = 1,
@@ -33,7 +45,14 @@ export class AuthService {
   public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
   public showWalletPopup$: BehaviorSubject<WalletStatus> = new BehaviorSubject<WalletStatus>(WalletStatus.HIDDEN);
   public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
+  public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
+  private defaultMenuItem1: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: RocketIconComponent, title: 'Discover' };
+  private defaultMenuItem2: MenuItem = { route: [ROUTER_UTILS.config.market.root], icon: MarketIconComponent, title: 'Marketplace' };
+  // private defaultMenuItem3: MenuItem = { route: [ROUTER_UTILS.config.discover.root], icon: MarketIconComponent, title: 'Discover' };
+  private dashboardMenuItem: MenuItem = { route: [ROUTER_UTILS.config.base.dashboard], icon: GlobeIconComponent, title: 'My Overview' };
+  private aboutMenuItem: MenuItem = { route: [ROUTER_UTILS.config.about.root], icon: InfoIconComponent, title: 'About' };
 
   constructor(
     private memberApi: MemberApi,
@@ -58,6 +77,20 @@ export class AuthService {
         this.monitorMember(<EthAddress>getItem(StorageItem.AuthAddress));
       }
     }
+
+    this.member$.subscribe((val) => {
+      if (val) {
+        this.setAuthMenu(val.uid);
+      } else {
+        this.setUnAuthMenu();
+      }
+    });
+
+    this.isLoggedIn$.subscribe((val) => {
+      if (!val) {
+        this.setUnAuthMenu();
+      }
+    });
   }
 
   public openWallet(): void {
@@ -73,9 +106,9 @@ export class AuthService {
   }
 
   public async sign(params: any = {}, cb: SignCallback ): Promise<WenRequest|undefined> {
-    const sc: WenRequest|undefined =  await this.signWithMetamask(undefinedToEmpty(params));
+    const sc: WenRequest|undefined|false =  await this.signWithMetamask(undefinedToEmpty(params));
     if (!sc) {
-      this.notification.error('Unable to sign transaction.', '');
+      this.notification.error('Unable to sign transaction. Please try to reload page.', '');
       this.showWalletPopup$.next(WalletStatus.HIDDEN);
       return undefined;
     }
@@ -113,7 +146,7 @@ export class AuthService {
     return true;
   }
 
-  private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined> {
+  private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined|false> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();
     if (provider) {
@@ -183,9 +216,8 @@ export class AuthService {
         return undefined;
       }
     } else {
-      this.notification.error('Please install MetaMask wallet!', '');
       this.showWalletPopup$.next(WalletStatus.HIDDEN);
-      return undefined;
+      return false;
     }
   }
 
@@ -200,9 +232,19 @@ export class AuthService {
   }
 
   public async signIn(): Promise<boolean> {
-    const sc: WenRequest|undefined = await this.signWithMetamask({});
+    const sc: WenRequest|undefined|false = await this.signWithMetamask({});
     if (!sc) {
-      this.notification.error('Failed to log in.', '');
+      // Missing wallet.
+      if (sc === false) {
+        this.notification.success('You have to open Soonaverse in MetaMask app.', '');
+        // Give them time to register redirect.
+        // setTimeout(() => {
+        //   window.location.href = 'https://metamask.app.link/dapp/' + window.location.host;
+        //   // window.location.href = 'https://metamask.app.link/wc?uri=' + window.location.host;
+        // }, 1500);
+      } else {
+        this.notification.error('Failed to initialize MetaMask, try to reload page.', '');
+      }
       return false;
     }
 
@@ -239,5 +281,43 @@ export class AuthService {
       this.member$.next(undefined);
       this.stopMetamaskListeners();
     });
+  }
+
+  setAuthMenu(memberId: string): void {
+    this.desktopMenuItems$.next([
+      this.defaultMenuItem1,
+      this.defaultMenuItem2,
+      this.dashboardMenuItem,
+      this.getMemberMenuItem(memberId)
+    ]);
+
+    this.mobileMenuItems$.next([
+      this.defaultMenuItem1,
+      this.defaultMenuItem2,
+      this.dashboardMenuItem,
+      this.getMemberMenuItem(memberId)
+      // this.aboutMenuItem
+    ]);
+  }
+
+  setUnAuthMenu(): void {
+    this.desktopMenuItems$.next([
+      this.defaultMenuItem1,
+      this.defaultMenuItem2
+    ]);
+
+    this.mobileMenuItems$.next([
+      this.defaultMenuItem1,
+      this.defaultMenuItem2,
+      // this.aboutMenuItem
+    ]);
+  }
+
+  public getMemberMenuItem(memberId: string): MenuItem {
+    return {
+      route: [ROUTER_UTILS.config.member.root, memberId],
+      icon: UnamusedIconComponent,
+      title: 'My Profile'
+    };
   }
 }

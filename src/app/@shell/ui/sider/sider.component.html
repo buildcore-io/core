@@ -8,7 +8,7 @@
       </svg>
     </a>
 
-    <wen-menu [items]="(menuItems$ | async) || []"></wen-menu>
+    <wen-menu [items]="(auth.desktopMenuItems$ | async) || []"></wen-menu>
   </div>
 
   <div class="sticky bottom-0 flex flex-col flex-shrink px-3">

@@ -1,6 +1,16 @@
-<wen-content [showBackButton]="true">
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
+  <ng-container *ngIf="deviceService.isMobile$ | async">
+    <wen-drawer-toggle
+      label="Award info"
+      (click)="isAwardInfoVisible = true">
+    </wen-drawer-toggle>
+  </ng-container>
+
   <div class="relative py-12" nz-row [nzGutter]="40">
-    <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px)">
+    <div nz-col nzFlex="auto"
+      [ngStyle]="{
+        'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+      }">
       <div class="mb-8 space-x-3">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]">
           <nz-avatar
@@ -41,7 +51,10 @@
       </div>
     </div>
 
-    <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px">
+    <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+      [ngStyle]="{
+        'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+      }">
       <span
         *ngIf="!data.isCompleted(data.award$ | async) && (isLoggedIn$ | async) && (data.award$ | async)?.approved"
         nz-tooltip
@@ -61,20 +74,11 @@
         </button>
       </span>
 
-      <nz-card nzTitle="Award">
-        <div class="flex flex-row flex-wrap items-center space-x-4">
-          <nz-tag class="wen-xp-tag"
-            >{{getExperiencePointsPerBadge(data.award$ | async)}} XP</nz-tag
-          >
-          <p>+</p>
-          <nz-avatar
-            [nzSrc]="(data.award$ | async)?.badge?.image | ipfsBadge:filesizes.small"
-            class="bg-white border-gray-400"
-            nzShape="circle"
-          >
-          </nz-avatar>
-        </div>
-      </nz-card>
+      <wen-award-awards
+        *ngIf="deviceService.isDesktop$ | async"
+        [data]="data"
+        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
+      </wen-award-awards>
 
       <nz-card
         nzTitle="Approve Award"
@@ -103,39 +107,11 @@
         </div>
       </nz-card>
 
-      <nz-card nzTitle="Detailed Info">
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class="text-app-gray-400"
-            >Badges used / available</span
-          >
-          <p nz-typography>
-            {{(data.award$ | async)?.issued}} / {{(data.award$ |
-            async)?.badge?.count}}
-          </p>
-        </div>
-        <div class="wen-description-item bg-bg-background">
-          <span nz-typography class="text-app-gray-400">End Date</span>
-          <p nz-typography>
-            {{(data.award$ | async)?.endDate?.toDate() | date:'short'}}
-          </p>
-        </div>
-      </nz-card>
-
-      <nz-card nzTitle="Owner">
-        <div
-          *ngFor="let g of data.owners$ | async; trackBy: trackByUid"
-          [routerLink]="['/', 'member', g.uid]"
-          class="cursor-pointer"
-        >
-          <nz-avatar
-            nzIcon="user"
-            [nzSrc]="g?.currentProfileImage | ipfsAvatar:filesizes.small"
-            class="mr-2"
-          >
-          </nz-avatar>
-          <span>@ {{ (g.name || g.uid) | truncate:[16] }}</span>
-        </div>
-      </nz-card>
+      <wen-award-info
+        *ngIf="deviceService.isDesktop$ | async"
+        [data]="data"
+        [trackByUid]="trackByUid">
+      </wen-award-info>
     </div>
   </div>
 
@@ -171,4 +147,29 @@
       </div>
     </ng-template>
   </nz-modal>
+
+  <nz-drawer
+      [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }"
+      [nzWidth]="'100vw'"
+      [nzClosable]="false"
+      [nzVisible]="isAwardInfoVisible"
+    >
+    <div *nzDrawerContent class="relative h-full">
+      <button class="absolute z-10 -top-4 right-5" (click)="isAwardInfoVisible = false">
+        <wen-icon-close></wen-icon-close>
+      </button>
+
+      <h1 i18n class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
+
+      <wen-award-awards
+        [data]="data"
+        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
+      </wen-award-awards>
+
+      <wen-award-info
+        [data]="data"
+        [trackByUid]="trackByUid">
+      </wen-award-info>
+    </div>
+  </nz-drawer>
 </wen-content>

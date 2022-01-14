@@ -1,24 +1,58 @@
-<wen-content [showBackButton]="true">
-  <div class="absolute top-0 right-0 w-auto overflow-hidden h-96 rounded-l-large left-20">
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
+  <ng-container *ngIf="deviceService.isMobile$ | async">
+    <wen-drawer-toggle
+      label="About space"
+      (click)="isAboutSpaceVisible = true">
+    </wen-drawer-toggle>
+
+    <wen-fixed-create-button
+      [route]="urlToNewSpace"
+    ></wen-fixed-create-button>
+  </ng-container>
+
+
+  <div class="absolute left-0 w-auto h-56 overflow-hidden top-18 lg:top-0 lg:right-0 lg:h-96 rounded-10 lg:rounded-large lg:rounded-r-none lg:left-20">
     <img alt="" [src]="(bannerUrl$ | async) || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
   </div>
 
-  <div class="relative py-12 mt-80" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
-    <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="120"
+  <div class="relative w-full py-12 mt-48 lg:mt-80 lg:w-auto" nz-row [nzGutter]="40" *ngIf="(data.space$ | async)">
+    <nz-avatar [nzSrc]="(avatarUrl$ | async) || undefined" [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
       class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4" nzShape="circle">
     </nz-avatar>
 
-    <div nz-col nzFlex="auto" style="max-width: calc(100% - 450px)">
-      <h1 i18n>{{ (data.space$ | async)!.name }}</h1>
+    <div class="flex-auto p-0 mx-5 my-0 lg:mx-0 lg:px-5" [ngStyle]="{
+      'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+    }">
+      <h1 class="mb-8 lg:mb-10" i18n>{{ (data.space$ | async)!.name }}</h1>
 
-      <wen-tabs [tabs]="sections"></wen-tabs>
+      <div *ngIf="deviceService.isMobile$ | async" class="mb-14">
+        <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" i18n
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== false">
+          Join Space
+        </button>
 
-      <div class="w-full py-12">
+        <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
+          [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false">
+          {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending Request' :
+          'Ask to Join Space'}}
+        </button>
+        <div>
+          <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
+            Edit Space
+          </button>
+        </div>
+      </div>
+
+
+      <wen-tabs [tabs]="sections" class="block w-full overflow-x-auto overflow-y-hidden lg:w-auto"></wen-tabs>
+
+      <div class="w-full py-14 lg:py-12">
         <router-outlet></router-outlet>
       </div>
     </div>
-    <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;">
-      <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
+    <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;" *ngIf="deviceService.isDesktop$ | async">
+      <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" i18n
         *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open !== false">
         Join Space
       </button>
@@ -30,79 +64,39 @@
         'Ask to Join Space'}}
       </button>
       <div>
-        <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()">
+        <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
           Edit Space
         </button>
       </div>
 
-      <nz-card nzTitle="About">
-        <p
-          nz-typography
-          [innerHtml]="(data.space$ | async)?.about | markdown"
-          class="text-base font-medium whitespace-pre-line text-app-gray-text">
-        </p>
-      </nz-card>
-
-      <nz-card>
-        <div class="flex flex-col items-baseline space-y-3">
-          <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
-            <wen-icon-members class="text-app-gray-400"></wen-icon-members>
-            <span>{{ (data.space$ | async)!.totalMembers }} members
-              <span *ngIf="(data.space$ | async)!.totalPendingMembers">
-                {{'(' + (data.space$ | async)!.totalPendingMembers + ' pending)'}}
-              </span>
-            </span>
-          </a>
-          <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
-            {{ (data.space$ | async)!.open ? 'Open to join instantly' : 'Requires approval to join'}}
-          </nz-tag>
-        </div>
-      </nz-card>
-
-      <nz-card nzTitle="Related Links"
-        *ngIf="(data.space$ | async)?.github || (data.space$ | async)?.twitter || (data.space$ | async)?.discord">
-        <div *ngIf="(data.space$ | async)?.github">
-          <a nz-button class="wen-space-links" nzType="link" target="new"
-            [href]="'https://github.com/' + (data.space$ | async)!.github">
-            <wen-icon-github class="text-app-gray-400"></wen-icon-github>
-            <span>{{(data.space$ | async)!.github}}</span>
-          </a>
-        </div>
-        <div *ngIf="(data.space$ | async)?.twitter">
-          <a nz-button class="wen-space-links" nzType="link" target="new"
-            [href]="'https://twitter.com/' + (data.space$ | async)!.twitter">
-            <wen-icon-twitter class="text-app-gray-400"></wen-icon-twitter><span>{{(data.space$ |
-              async)!.twitter}}</span>
-          </a>
-        </div>
-        <div *ngIf="(data.space$ | async)?.discord">
-          <a nz-button class="wen-space-links" nzType="link" target="new"
-            [href]="'https://discord.gg/' + (data.space$ | async)!.discord">
-            <wen-icon-discord class="text-app-gray-400"></wen-icon-discord>
-            <span>{{'discord.gg/' + (data.space$ |
-              async)!.discord}}</span>
-          </a>
-        </div>
-      </nz-card>
-
-      <nz-card [nzTitle]="(data.space$ | async)!.totalGuardians + ' Guardians'">
-        <div class="space-y-2">
-          <div *ngFor="let g of data.guardians$ | async; trackBy: trackByUid"
-            class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
-            <nz-avatar nzIcon="user" [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
-            </nz-avatar>
-            <span [routerLink]="getMemberUrl(g.uid)">@ {{ (g.name || g.uid) | truncate:[16] }}</span>
-          </div>
-        </div>
-      </nz-card>
-
-      <div>
-        <button class="flex justify-center" nz-button nzBlock nzDanger (click)="leave()"
-          *ngIf="data.isMemberWithinSpace$ | async">
-          <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
-          Leave Space
-        </button>
-      </div>
+      <wen-space-about
+        [avatarUrl]="(avatarUrl$ | async) || undefined"
+        [data]="data"
+        [getMemberUrl]="getMemberUrl"
+        [trackByUid]="trackByUid"
+        (onLeave)="leave()"
+      ></wen-space-about>
     </div>
   </div>
+
+  <nz-drawer
+        [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }"
+        [nzWidth]="'100vw'"
+        [nzClosable]="false"
+        [nzVisible]="isAboutSpaceVisible"
+      >
+      <div *nzDrawerContent class="relative h-full">
+        <button class="absolute z-10 -top-0 right-5" (click)="isAboutSpaceVisible = false">
+          <wen-icon-close></wen-icon-close>
+        </button>
+
+        <wen-space-about
+          [avatarUrl]="(avatarUrl$ | async) || undefined"
+          [data]="data"
+          [getMemberUrl]="getMemberUrl"
+          [trackByUid]="trackByUid"
+          (onLeave)="leave()"
+        ></wen-space-about>
+      </div>
+  </nz-drawer>
 </wen-content>

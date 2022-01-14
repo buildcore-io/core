@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from '@components/auth/services/auth.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -20,6 +20,8 @@ const maxAboutCharacters = 160;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberEditDrawerComponent implements OnInit {
+  @Input() isDesktop?: boolean;
+
   @Output() public wenOnClose = new EventEmitter<void>();
   public nameControl: FormControl = new FormControl('');
   public aboutControl: FormControl = new FormControl('', Validators.maxLength(maxAboutCharacters));

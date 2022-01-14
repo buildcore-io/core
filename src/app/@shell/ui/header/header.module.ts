@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthModule } from '@components/auth/auth.module';
 import { IconModule } from '@components/icon/icon.module';
-import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { MenuModule } from '@components/menu/menu.module';
+import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
@@ -12,6 +12,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { MobileHeaderModule } from '../mobile-header/mobile-header.module';
+import { MobileMenuModule } from '../mobile-menu/mobile-menu.module';
 import { TruncateModule } from './../../../@core/pipes/truncate/truncate.module';
 import { HeaderComponent } from './header.component';
 
@@ -31,7 +33,9 @@ import { HeaderComponent } from './header.component';
     NzAvatarModule,
     IconModule,
     NzDropDownModule,
-    MenuModule
+    MenuModule,
+    MobileMenuModule,
+    MobileHeaderModule
   ],
   exports: [HeaderComponent],
 })

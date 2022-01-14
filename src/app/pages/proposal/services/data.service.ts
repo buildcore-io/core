@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from '@components/auth/services/auth.service';
 import * as dayjs from 'dayjs';
 import { Proposal, Space, SpaceGuardian, Transaction } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Award } from './../../../../../functions/interfaces/models/award';
 import { Member } from './../../../../../functions/interfaces/models/member';
+import { Milestone } from './../../../../../functions/interfaces/models/milestone';
 import { ProposalAnswer, ProposalType } from './../../../../../functions/interfaces/models/proposal';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
@@ -18,9 +18,8 @@ export class DataService {
   public currentMembersVotes$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public canVote$: BehaviorSubject<boolean|undefined> = new BehaviorSubject<boolean|undefined>(false);
   public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
-  constructor(
-    private auth: AuthService
-  ) {
+  public lastMilestone$: BehaviorSubject<Milestone|undefined> = new BehaviorSubject<Milestone|undefined>(undefined);
+  constructor() {
     // none.
   }
 
@@ -31,6 +30,7 @@ export class DataService {
     this.creator$.next(undefined);
     this.transactions$.next(undefined);
     this.guardians$.next(undefined);
+    this.lastMilestone$.next(undefined);
     this.canVote$.next(false);
   }
 
@@ -87,14 +87,33 @@ export class DataService {
   }
 
   public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
-    let total = 0;
-    if (proposal?.results?.answers) {
-      Object.keys(proposal?.results?.answers).forEach((b: any) => {
-        total += proposal?.results?.answers[b] || 0;
-      });
-    }
+    if (proposal?.type === ProposalType.MEMBERS) {
+      let total = 0;
+      if (proposal?.results?.answers) {
+        Object.keys(proposal?.results?.answers).forEach((b: any) => {
+          total += proposal?.results?.answers[b] || 0;
+        });
+      }
 
-    return  (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
+      return  (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
+    } else {
+      let total = 0;
+      if ((<any>proposal?.results)?.questions?.[0].answers) {
+        (<any>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
+          if (b.value === 0 || b.value === 255) {
+            return;
+          }
+
+          total += b.accumulated || 0;
+        });
+      }
+
+      const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+        return suba.value === a.value;
+      });
+
+      return  (ans?.accumulated || 0) / (total) * 100;
+    }
   }
 
 }

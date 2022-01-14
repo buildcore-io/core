@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
+import { IconModule } from '@components/icon/icon.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -41,6 +43,7 @@ import { FilterService } from './services/filter.service';
   imports: [
     CommonModule,
     InfiniteScrollModule,
+    FormsModule,
     ReactiveFormsModule,
     TabsModule,
     RouterModule,
@@ -58,7 +61,9 @@ import { FilterService } from './services/filter.service';
     MemberModule,
     ProposalModule,
     AwardModule,
-    LayoutModule
+    LayoutModule,
+    DropdownTabsModule,
+    IconModule
   ]
 })
 export class DiscoverModule { }

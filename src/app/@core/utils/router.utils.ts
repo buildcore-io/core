@@ -58,5 +58,8 @@ export const ROUTER_UTILS = {
     errorResponse: {
       notFound: '404',
     },
+    about: {
+      root: 'about'
+    }
   },
 };

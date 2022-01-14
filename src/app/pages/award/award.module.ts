@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AwardAwardsModule } from '@components/award/components/award-awards/award-awards.module';
+import { AwardInfoModule } from '@components/award/components/award-info/award-info.module';
+import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { RadioModule } from '@components/radio/radio.module';
@@ -11,6 +14,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
@@ -82,7 +86,11 @@ import { DataService } from './services/data.service';
     NzInputNumberModule,
     NzToolTipModule,
     NzDatePickerModule,
-    IconModule
+    IconModule,
+    DrawerToggleModule,
+    NzDrawerModule,
+    AwardInfoModule,
+    AwardAwardsModule
   ]
 })
 export class AwardModule { }

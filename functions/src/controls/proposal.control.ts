@@ -113,49 +113,51 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
 
     // This can't be empty.
     // Add Owners based on space's guardians or members.
-    let query: QuerySnapshot;
-    if (params.body.onlyGuardians) {
-      query = await refSpace.collection(SUB_COL.GUARDIANS).get();
-    } else {
-      query = await refSpace.collection(SUB_COL.MEMBERS).get();
-    }
     let totalWeight = 0;
-    for (const g of query.docs) {
-      // Based on the subtype we determine number of voting power.
-      let votingWeight = 1;
-      if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||  params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
-        const qry = await admin.firestore().collection(COL.TRANSACTION)
-                    .where('type', '==', TransactionType.BADGE)
-                    .where('member', '==', g.data().uid).get();
-        if (qry.size > 0) {
-          let totalReputation = 0;
-          for (const t of qry.docs) {
-            if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
-              // We only consider certain badges coming from certain awards.
-              if (params.body.settings.awards.includes(t.data().payload.award)) {
+    if (params.body.type === ProposalType.MEMBERS) {
+      let query: QuerySnapshot;
+      if (params.body.onlyGuardians) {
+        query = await refSpace.collection(SUB_COL.GUARDIANS).get();
+      } else {
+        query = await refSpace.collection(SUB_COL.MEMBERS).get();
+      }
+      for (const g of query.docs) {
+        // Based on the subtype we determine number of voting power.
+        let votingWeight = 1;
+        if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||  params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+          const qry = await admin.firestore().collection(COL.TRANSACTION)
+                      .where('type', '==', TransactionType.BADGE)
+                      .where('member', '==', g.data().uid).get();
+          if (qry.size > 0) {
+            let totalReputation = 0;
+            for (const t of qry.docs) {
+              if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+                // We only consider certain badges coming from certain awards.
+                if (params.body.settings.awards.includes(t.data().payload.award)) {
+                  totalReputation += t.data().payload?.xp || 0;
+                }
+              } else {
                 totalReputation += t.data().payload?.xp || 0;
               }
-            } else {
-              totalReputation += t.data().payload?.xp || 0;
             }
+
+            votingWeight = totalReputation;
+          } else {
+            votingWeight = 0;
           }
-
-          votingWeight = totalReputation;
-        } else {
-          votingWeight = 0;
         }
+
+        await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
+          uid: g.data().uid,
+          weight: votingWeight,
+          voted: false,
+          parentId: proposalAddress,
+          parentCol: COL.PROPOSAL,
+          createdOn: serverTime()
+        });
+
+        totalWeight += votingWeight;
       }
-
-      await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
-        uid: g.data().uid,
-        weight: votingWeight,
-        voted: false,
-        parentId: proposalAddress,
-        parentCol: COL.PROPOSAL,
-        createdOn: serverTime()
-      });
-
-      totalWeight += votingWeight;
     }
 
     await refProposal.update({

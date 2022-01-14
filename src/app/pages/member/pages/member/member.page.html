@@ -1,94 +1,35 @@
-<wen-content [showBackButton]="(data.member$ | async)?.uid !== (loggedInMember$ | async)?.uid">
-  <div class="py-12" style="margin-right: 420px;">
+<wen-content
+  [showBackButton]="((data.member$ | async)?.uid !== (loggedInMember$ | async)?.uid) || (deviceService.isMobile$ | async) === true">
+
+  <ng-container *ngIf="deviceService.isMobile$ | async">
+    <wen-drawer-toggle label="Profile Info" (click)="isAboutMemberVisible = true">
+    </wen-drawer-toggle>
+  </ng-container>
+
+  <div class="relative w-full py-12 lg:w-auto"
+    [ngStyle]="{'margin-right': (deviceService.isDesktop$ | async) ? '420px' : '0'}">
     <h1 i18n>Profile</h1>
 
-    <wen-tabs [tabs]="sections"></wen-tabs>
+    <wen-tabs class="block w-full overflow-x-auto overflow-y-hidden lg:w-auto" [tabs]="sections"></wen-tabs>
 
-    <div class="w-full py-12" [style.min-height]="(height$ | async) + 'px'">
+    <div class="relative w-full py-12 lg:w-auto" [style.min-height]="(height$ | async) + 'px'">
       <router-outlet></router-outlet>
     </div>
   </div>
 
-  <div class="absolute top-0 right-0 h-auto min-h-screen px-8 pt-40 pb-20 mr-auto text-center bg-white rounded-l-large"
-    style="width: 420px;" #sidebar>
+  <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large" [data]="data"
+    [trackByUid]="trackByUid" [loggedInMember]="loggedInMember$" *ngIf="deviceService.isDesktop$ | async"></wen-member-about>
 
-    <nz-avatar [nzSize]="124" [nzSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"></nz-avatar>
-    <div class="flex items-baseline justify-center mt-6">
-      <h3 class="max-w-full mx-4 text-left break-all whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
-        ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
-      <div *ngIf="(data.member$ | async)?.uid === (loggedInMember$ | async)?.uid">
-        <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
-          class="ml-4 text-center text-current">
-          <i nz-icon class="text-white " nzType="edit"></i>
-        </a>
-        <wen-member-edit-drawer *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">
-        </wen-member-edit-drawer>
-      </div>
+  <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }" [nzWidth]="'100vw'" [nzClosable]="false"
+    [nzVisible]="isAboutMemberVisible">
+    <div *nzDrawerContent class="relative h-full">
+      <button class="absolute z-10 -top-0 right-5" (click)="isAboutMemberVisible = false">
+        <wen-icon-close></wen-icon-close>
+      </button>
+
+      <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large" [data]="data"
+    [trackByUid]="trackByUid" [loggedInMember]="loggedInMember$"></wen-member-about>
     </div>
+  </nz-drawer>
 
-    <p class="mt-4" nz-typography nzType="secondary" *ngIf="(data.member$ | async)?.about">
-      {{(data.member$ | async)!.about}}
-    </p>
-
-    <div class="mt-6 space-x-6"
-      *ngIf="(data.member$ | async)?.github || (data.member$ | async)?.twitter || (data.member$ | async)?.discord">
-      <a *ngIf="(data.member$ | async)?.github" nz-button nzType="link" target="new"
-        [href]="'https://github.com/' + (data.member$ | async)!.github">
-        <wen-icon-github class="text-app-gray-text hover:text-blue-hover"></wen-icon-github>
-      </a>
-      <a *ngIf="(data.member$ | async)?.twitter" nz-button nzType="link" target="new"
-        [href]="'https://twitter.com/' + (data.member$ | async)!.twitter">
-        <wen-icon-twitter class="text-app-gray-text hover:text-blue-hover"></wen-icon-twitter>
-      </a>
-      <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new"
-        nz-tooltip [nzTooltipTitle]="(data.member$ | async)!.discord">
-        <wen-icon-discord class="text-app-gray-text hover:text-blue-hover"></wen-icon-discord>
-      </a>
-    </div>
-
-    <div class="flex justify-center mt-10 space-x-4">
-      <wen-member-tile [title]="'Awards Completed'" [value]="(data.member$ | async)?.awardsCompleted || 0">
-      </wen-member-tile>
-      <wen-member-tile [title]="'Total Reputation'" [value]="(data.member$ | async)?.totalReputation || 0" suffix="XP">
-      </wen-member-tile>
-    </div>
-
-    <div class="mt-10 text-left">
-      <h3>Earned Badges</h3>
-      <div class="flex flex-wrap gap-2">
-        <article *ngFor="let t of (data.badges$ | async) | slice:0:6; trackBy: trackByUid"
-          class="flex flex-col items-center justify-center w-16 h-16 p-3">
-          <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name"></wen-badge-tile>
-        </article>
-
-        <article *ngIf="(data.badges$ | async)?.length === 0"
-          class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
-          <span>No badges</span>
-        </article>
-      </div>
-      <a class="float-right" nz-button nzType="link" [routerLink]="['badges']"
-        *ngIf="(data.badges$ | async) && (data.badges$ | async)!.length > 6">See all</a>
-    </div>
-
-    <div class="mt-10 text-left">
-      <h3>Contributes To</h3>
-      <div class="flex flex-wrap gap-2">
-        <article *ngFor="let s of (data.space$ | async) | slice:0:6; trackBy: trackByUid"
-                class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl">
-          <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
-            <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10"
-              nzShape="circle">
-            </nz-avatar>
-            <span class="flex-grow pl-2 truncate">{{ s.name }}</span>
-            <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
-          </a>
-        </article>
-
-        <article *ngIf="(data.space$ | async)?.length === 0"
-          class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
-          <span>No Contribution Yet.</span>
-        </article>
-      </div>
-    </div>
-  </div>
 </wen-content>

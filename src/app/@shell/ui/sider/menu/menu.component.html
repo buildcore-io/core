@@ -1,8 +1,15 @@
 <nav nz-menu nzMode="horizontal" [nzTheme]="isDarkTheme ? 'dark' : 'light'"
-  class="flex flex-col items-center w-full gap-5 mt-12 border-b-0">
+  class="flex flex-col items-start lg:items-center w-full gap-5 mt-7 lg:mt-12 border-b-0">
   <a nz-popover nzPopoverPlacement="right"
-    *ngFor="let item of menuItems" nz-menu-item class="w-10 h-10 p-0 text-current rounded-3xl" [routerLink]="item.route" [nzPopoverContent]="item.title"
+    *ngFor="let item of menuItems" 
+    nz-menu-item class="lg:w-10 h-12 lg:h-10 p-0 pl-8 text-current rounded-3xl"
+    [routerLink]="item.route" [nzPopoverContent]="item.title"
     [nzSelected]="isSelectedRoute(item.route)">
-    <ng-template [wenMenuItem]="item"></ng-template>
+    <div class="ml-4 lg:ml-0">
+      <ng-template [wenMenuItem]="item"></ng-template>
+    </div>
+    <div *ngIf="deviceService.isMobile$ | async" class="font-bold text-lg ml-5 lg:ml-0 mr-4 lg:mr-0">
+      {{ item.title }}
+    </div>
   </a>
 </nav>

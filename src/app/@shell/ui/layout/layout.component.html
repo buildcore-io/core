@@ -1,4 +1,4 @@
-<nz-layout class="bg-white" *ngIf="!isMobile">
+<nz-layout class="bg-white">
   <nz-sider style="min-height: 60rem;" nzWidth="auto" [nzTheme]="isDarkTheme ? 'dark' : 'light' " *ngIf="showSideBar$ | async">
     <wen-sider></wen-sider>
   </nz-sider>
@@ -6,21 +6,16 @@
   <nz-layout [ngClass]="(showSideBar$ | async) ? 'rounded-l-large' : ''">
     <wen-header></wen-header>
 
-    <div class="flex-1">
+    <div class="relative bg-white h-28 w-full lg:hidden"
+      [ngClass]="{
+        'hidden': this.routerService.isHomeRoute
+      }">
+      <div class="absolute bottom-0 bg-tag-default h-10 w-full rounded-t-40"></div>
+    </div>
+    <div class="flex-1 ">
       <ng-content></ng-content>
     </div>
 
     <wen-footer></wen-footer>
   </nz-layout>
 </nz-layout>
-
-<article class="flex flex-col justify-center w-full h-screen -mt-4 text-center bg-white" *ngIf="isMobile" i18n>
-  <div class="w-full px-2 overflow-hidden">
-    <img alt="" src="/assets/mocks/soon_placeholder.jpg" class="object-contain w-full h-full" />
-  </div>
-
-  <div class="relative flex flex-col justify-center w-full p-6 text-center h-36">
-    <h3 class="mb-1 text-2xl"> Your resolution is not yet supported. Coming SOON.
-    </h3>
-  </div>
-</article>

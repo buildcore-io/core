@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from 'rxjs';
@@ -36,7 +37,8 @@ export class MembersPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private cd: ChangeDetectorRef,
-    public data: DataService
+    public data: DataService,
+    public deviceService: DeviceService
   ) {
     // none.
   }

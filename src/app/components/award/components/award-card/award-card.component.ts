@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -22,7 +23,10 @@ export class AwardCardComponent implements OnChanges, OnDestroy {
   public path = ROUTER_UTILS.config.award.root;
   private subscriptions$: Subscription[] = [];
 
-  constructor(private spaceApi: SpaceApi) {
+  constructor(
+    private spaceApi: SpaceApi,
+    public deviceService: DeviceService
+  ) {
     // none.
   }
 

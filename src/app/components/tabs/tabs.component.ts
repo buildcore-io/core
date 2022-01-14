@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { TabSection } from '@pages/discover/pages/discover/discover.page';
 
 @Component({
   selector: 'wen-tabs',
@@ -7,5 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TabsComponent {
-  @Input() tabs: { label: string, route: string | string[] }[] = []
+  @Input() tabs: TabSection[] = []
 }

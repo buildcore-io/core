@@ -8,7 +8,10 @@ import { Observable } from 'rxjs';
 import { AwardApi } from './../../../../@api/award.api';
 import { IpfsBadgeModule } from './../../../../@core/pipes/ipfs-badge/ipfs-badge.module';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
+import { AwardAwardsModule } from './../../../../components/award/components/award-awards/award-awards.module';
+import { AwardInfoModule } from './../../../../components/award/components/award-info/award-info.module';
 import { AwardStatusModule } from './../../../../components/award/components/award-status/award-status.module';
+import { DrawerToggleModule } from './../../../../components/drawer-toggle/drawer-toggle.module';
 import { TabsModule } from './../../../../components/tabs/tabs.module';
 import { AwardPage } from './award.page';
 
@@ -22,7 +25,7 @@ describe('AwardPage', () => {
         return new Observable();
       }
     })],
-    imports: [TabsModule, IconModule, IpfsBadgeModule, IpfsAvatarModule, AwardStatusModule, LayoutModule]
+    imports: [TabsModule, IconModule, IpfsBadgeModule, IpfsAvatarModule, AwardStatusModule, LayoutModule, DrawerToggleModule, AwardInfoModule, AwardAwardsModule ]
   });
 
   beforeEach(() => {

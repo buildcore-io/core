@@ -50,7 +50,7 @@ export class MemberApi extends BaseApi<Member> {
   // TODO We need to tweak this to make sure don't filter locally.
   public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Proposal[]> {
     return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, undefined, (obj: any) => {
-      return (obj.settings.endDate.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
+      return (obj.settings.endDate?.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
     });
   }
 
