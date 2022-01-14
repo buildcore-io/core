@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
 
   <h1 class="mt-7" i18 n>New Proposal</h1>
 
@@ -207,7 +207,7 @@
         </ng-container>
       </div>
 
-      <div class="space-y-4 mt-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'" style="max-width: 450px">
+      <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'" style="max-width: 450px">
         <nz-card [nzBordered]="false" nzTitle="Space Info">
           <nz-form-item>
             <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
@@ -383,7 +383,7 @@
     nzSize="large"
     type="button"
     (click)="create()"
-    class="w-full lg:w-auto mb-18 lg:mb-6 mt-8 lg:mt-0"
+    class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
     i18n
   >
     Create Proposal

@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="true">
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle
       label="Proposal info"
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="space-y-4 mt-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'" style="max-width: 450px;">
+    <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'" style="max-width: 450px;">
       <nz-card nzTitle="Cast your vote"
         *ngIf="(data.proposal$ | async)?.approved && data.isNativeVote((data.proposal$ | async)?.type)">
         <a nz-button (click)="fireflyNotSupported()" nzType="primary" nzBlock nzSize="large" i18n>
@@ -101,7 +101,7 @@
 
       <wen-proposal-info
         class="block mt-4"
-        *ngIf="deviceService.isDesktop$ | async" 
+        *ngIf="deviceService.isDesktop$ | async"
         [data]="data"
         [getCommenceDate]="getCommenceDate"
         [getStartDate]="getStartDate"
@@ -109,7 +109,7 @@
         [getVotingTypeText]="getVotingTypeText"
         (onExportClick)="exportNativeEvent()">
       </wen-proposal-info>
-      
+
       <nz-card nzTitle="Selected Badges" *ngIf="(data.badges$ | async)?.length">
         <div class="flex flex-wrap gap-2">
           <article *ngFor="let a of (data.badges$ | async); trackBy: trackByUid" nz-tooltip
@@ -129,7 +129,7 @@
       [nzVisible]="isProposaslInfoVisible"
     >
     <div *nzDrawerContent class="relative h-full">
-      <button class="absolute top-4 right-5 z-10" (click)="isProposaslInfoVisible = false">
+      <button class="absolute z-10 top-4 right-5" (click)="isProposaslInfoVisible = false">
         <wen-icon-close></wen-icon-close>
       </button>
 
