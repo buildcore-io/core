@@ -12,59 +12,45 @@
 </nz-card>
 
 <ng-container *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async) === false && data.isMemberVote((data.proposal$ | async)?.type)">
-  <nz-card *ngFor="let q of (data.proposal$ | async)?.questions" [nzTitle]="q.text">
-    <span [innerHtml]="q.additionalInfo | markdown"></span>
-    <nz-radio-group class="w-full mb-4 mt-9"
+  <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
+    <nz-card [nzTitle]="q.text">
+      <span [innerHtml]="q.additionalInfo | markdown"></span>
+      <nz-radio-group class="w-full mb-4 mt-9" *ngIf="deviceService.isDesktop$ | async"
+        [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
+        [formControl]="voteControl">
+        <div *ngFor="let a of q.answers">
+          <wen-proposal-answer 
+            [answer]="a">
+          </wen-proposal-answer>
+        </div>
+      </nz-radio-group>
+  
+      <wen-proposal-vote-action
+        *ngIf="deviceService.isDesktop$ | async"
+        [data]="data"
+        [startDateTicker$]="startDateTicker$"
+        (onVote)="vote()">
+      </wen-proposal-vote-action>
+    </nz-card>
+
+    <nz-radio-group class="w-full" *ngIf="deviceService.isMobile$ | async"
       [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
       [formControl]="voteControl">
-      <div *ngFor="let a of q.answers">
-        <wen-radio class="block w-full px-5 py-3 border border-solid rounded-large" [value]="a.value">
-          <div class="flex">
-            <span class="mr-4 text-lg font-bold">#{{a.value}}</span>
-            <p nz-typography class="text-lg font-medium">{{a.text}}</p>
-          </div>
-        </wen-radio>
-        <p nz-typography class="pl-16 my-6 text-base leading-6 whitespace-pre-line"
-          [innerHtml]="a.additionalInfo | markdown">
-        </p>
-      </div>
+      <nz-card *ngFor="let a of q.answers" class="block mt-4">
+        <wen-proposal-answer 
+          [answer]="a">
+        </wen-proposal-answer>
+      </nz-card>
     </nz-radio-group>
 
-    <button nz-button nzType="primary" nzBlock nzSize="large" (click)="vote()" *ngIf="(data.canVote$ | async) && data.isMemberVote((data.proposal$ | async)?.type)"
-      [disabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length">
-      <span *ngIf="(data.currentMembersVotes$ | async)?.length" i18n>Voted</span>
-      <span *ngIf="data.isInProgress(data.proposal$ | async) && !(data.currentMembersVotes$ | async)?.length" i18n>Vote Now</span>
-      <span *ngIf="data.isInProgressIgnoreStatus(data.proposal$ | async) === false && !(data.currentMembersVotes$ | async)?.length" i18n>Voting starts {{(startDateTicker$ | async) | relativeTime}}</span>
-    </button>
-
-    <nz-alert nzShowIcon nzType="error" *ngIf="(data.canVote$ | async) === false && (isLoggedIn$ | async)"
-    i18n-nzMessage nzMessage="You are not part of the vote" [nzDescription]="bodyTpl">
-      <ng-template #bodyTpl class="block">
-        <span i18n>
-          In order to vote, you must be part of the space before proposal was created.
-        </span>
-      </ng-template>
-    </nz-alert>
-
-    <nz-alert nzShowIcon nzType="info" *ngIf="(isLoggedIn$ | async) === false"
-    i18n-nzMessage nzMessage="Log in to vote" [nzDescription]="bodyTpl">
-      <ng-template #bodyTpl class="block">
-        <span i18n>
-          In order to vote, you must login first.
-        </span>
-      </ng-template>
-    </nz-alert>
-
-    <nz-alert nzShowIcon nzType="info" *ngIf="(data.proposal$ | async)?.approved === false && (data.proposal$ | async)?.rejected === false"
-    i18n-nzMessage nzMessage="Pending Guardian Approval" [nzDescription]="bodyTpl">
-      <ng-template #bodyTpl class="block">
-        <span i18n>
-          This proposal have not been approved by any Guardian yet.
-        </span>
-      </ng-template>
-    </nz-alert>
-
-  </nz-card>
+    <wen-proposal-vote-action
+      *ngIf="deviceService.isMobile$ | async"
+      class="block mt-10"
+      [data]="data"
+      [startDateTicker$]="startDateTicker$"
+      (onVote)="vote()">
+    </wen-proposal-vote-action>
+  </ng-container>
 </ng-container>
 
 <div class="mx-8 mt-10">

@@ -5,7 +5,9 @@ import { BadgeModule } from "@components/badge/badge.module";
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
+import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
 import { ProposalInfoModule } from '@components/proposal/components/proposal-info/proposal-info.module';
+import { ProposalVoteActionModule } from '@components/proposal/components/proposal-vote-action/proposal-vote-action.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
@@ -95,7 +97,9 @@ import { DataService } from './services/data.service';
     RadioModule,
     DrawerToggleModule,
     NzDrawerModule,
-    ProposalInfoModule
+    ProposalInfoModule,
+    ProposalAnswerModule,
+    ProposalVoteActionModule
   ]
 })
 export class ProposalModule { }
