@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { RouterService } from '@core/services/router';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -13,7 +14,8 @@ export class CreateDropdownComponent {
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
   @Input() isAllowedCreation = false;
-  @Input() urlToNewSpace = '';
-  @Input() urlToNewProposal = '';
-  @Input() urlToNewAward = '';
+
+  constructor(
+    public routerService: RouterService
+  ) {}
 }
