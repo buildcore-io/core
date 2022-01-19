@@ -1,7 +1,7 @@
 <nav nz-menu nzMode="horizontal" [nzTheme]="isDarkTheme ? 'dark' : 'light'"
   class="flex flex-col items-start lg:items-center w-full gap-5 mt-7 lg:mt-12 border-b-0">
   <a nz-popover nzPopoverPlacement="right"
-    *ngFor="let item of menuItems" 
+    *ngFor="let item of menuItems; trackBy: trackByTitle" 
     nz-menu-item class="lg:w-10 h-12 lg:h-10 p-0 pl-8 text-current rounded-3xl"
     [routerLink]="item.route" [nzPopoverContent]="item.title"
     [nzSelected]="isSelectedRoute(item.route)">

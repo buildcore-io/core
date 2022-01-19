@@ -13,15 +13,14 @@ import { Member } from './../../../../../../functions/interfaces/models/member';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberAboutComponent {
-  @Input() data?: DataService;
   @Input() avatarSrc?: string;
   @Input() loggedInMember?: BehaviorSubject<Member|undefined>;
-  @Input() trackByUid: (index: number, item: any) => number = (index: number) => index;
 
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
 
   constructor(
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public data: DataService
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
@@ -42,5 +41,9 @@ export class MemberAboutComponent {
 
   public closeDrawer(): void {
     this.drawerVisible$.next(false);
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 }

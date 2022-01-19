@@ -11,11 +11,11 @@ import { BehaviorSubject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProposalVoteActionComponent {
-  @Input() data?: DataService;
   @Input() startDateTicker$?: BehaviorSubject<Timestamp>;
   @Output() onVote: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(
-    public auth: AuthService
+    public auth: AuthService,
+    public data: DataService
   ) { }
 }

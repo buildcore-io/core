@@ -75,9 +75,7 @@
       </span>
 
       <wen-award-awards
-        *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
-        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
+        *ngIf="deviceService.isDesktop$ | async">
       </wen-award-awards>
 
       <nz-card
@@ -108,9 +106,7 @@
       </nz-card>
 
       <wen-award-info
-        *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
-        [trackByUid]="trackByUid">
+        *ngIf="deviceService.isDesktop$ | async">
       </wen-award-info>
     </div>
   </div>
@@ -161,15 +157,9 @@
 
       <h1 i18n class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
 
-      <wen-award-awards
-        [data]="data"
-        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
-      </wen-award-awards>
+      <wen-award-awards></wen-award-awards>
 
-      <wen-award-info
-        [data]="data"
-        [trackByUid]="trackByUid">
-      </wen-award-info>
+      <wen-award-info></wen-award-info>
     </div>
   </nz-drawer>
 </wen-content>

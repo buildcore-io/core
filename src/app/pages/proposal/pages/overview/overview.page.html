@@ -27,7 +27,6 @@
   
       <wen-proposal-vote-action
         *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
         [startDateTicker$]="startDateTicker$"
         (onVote)="vote()">
       </wen-proposal-vote-action>
@@ -36,17 +35,19 @@
     <nz-radio-group class="w-full" *ngIf="deviceService.isMobile$ | async"
       [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
       [formControl]="voteControl">
-      <nz-card *ngFor="let a of q.answers" class="block mt-4">
-        <wen-proposal-answer 
-          [answer]="a">
-        </wen-proposal-answer>
+      <nz-card *ngFor="let a of q.answers" class="block mt-4"
+        [ngClass]="{
+          'border-2 border-solid border-orange': a.value === voteControl.value
+        }">
+          <wen-proposal-answer 
+            [answer]="a">
+          </wen-proposal-answer>
       </nz-card>
     </nz-radio-group>
 
     <wen-proposal-vote-action
       *ngIf="deviceService.isMobile$ | async"
       class="block mt-10"
-      [data]="data"
       [startDateTicker$]="startDateTicker$"
       (onVote)="vote()">
     </wen-proposal-vote-action>

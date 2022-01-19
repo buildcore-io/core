@@ -10,17 +10,19 @@ import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpaceAboutComponent {
-  @Input() data?: DataService;
   @Input() avatarUrl?: string;
-  @Input() getMemberUrl?: (memberId: string) => string[];
-  @Input() trackByUid: (index: number, item: any) => number = (index: number) => index;
   @Output() onLeave = new EventEmitter<void>();
 
   constructor(
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public data: DataService
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 }

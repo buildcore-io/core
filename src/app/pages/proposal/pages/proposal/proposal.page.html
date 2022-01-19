@@ -102,11 +102,6 @@
       <wen-proposal-info
         class="block mt-4"
         *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
-        [getCommenceDate]="getCommenceDate"
-        [getStartDate]="getStartDate"
-        [getEndDate]="getEndDate"
-        [getVotingTypeText]="getVotingTypeText"
         (onExportClick)="exportNativeEvent()">
       </wen-proposal-info>
 
@@ -134,11 +129,6 @@
       </button>
 
       <wen-proposal-info
-        [data]="data"
-        [getCommenceDate]="getCommenceDate"
-        [getStartDate]="getStartDate"
-        [getEndDate]="getEndDate"
-        [getVotingTypeText]="getVotingTypeText"
         (onExportClick)="exportNativeEvent()">
       </wen-proposal-info>
     </div>

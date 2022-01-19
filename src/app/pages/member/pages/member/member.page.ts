@@ -68,10 +68,6 @@ export class MemberPage implements OnInit, OnDestroy {
     this.height$.next(this.sidebar?.nativeElement.scrollHeight || 0);
   }
 
-  public trackByUid(index: number, item: any): number {
-    return item.uid;
-  }
-
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }

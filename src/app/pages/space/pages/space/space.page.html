@@ -71,9 +71,6 @@
 
       <wen-space-about
         [avatarUrl]="(avatarUrl$ | async) || undefined"
-        [data]="data"
-        [getMemberUrl]="getMemberUrl"
-        [trackByUid]="trackByUid"
         (onLeave)="leave()"
       ></wen-space-about>
     </div>
@@ -92,9 +89,6 @@
 
         <wen-space-about
           [avatarUrl]="(avatarUrl$ | async) || undefined"
-          [data]="data"
-          [getMemberUrl]="getMemberUrl"
-          [trackByUid]="trackByUid"
           (onLeave)="leave()"
         ></wen-space-about>
       </div>

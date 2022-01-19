@@ -17,8 +17,8 @@
     </div>
   </div>
 
-  <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large" [data]="data"
-    [trackByUid]="trackByUid" [loggedInMember]="loggedInMember$" *ngIf="deviceService.isDesktop$ | async"></wen-member-about>
+  <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"
+    [loggedInMember]="loggedInMember$" *ngIf="deviceService.isDesktop$ | async"></wen-member-about>
 
   <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }" [nzWidth]="'100vw'" [nzClosable]="false"
     [nzVisible]="isAboutMemberVisible">
@@ -27,8 +27,8 @@
         <wen-icon-close></wen-icon-close>
       </button>
 
-      <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large" [data]="data"
-    [trackByUid]="trackByUid" [loggedInMember]="loggedInMember$"></wen-member-about>
+      <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"
+        [loggedInMember]="loggedInMember$"></wen-member-about>
     </div>
   </nz-drawer>
 
