@@ -13,7 +13,7 @@
     <div *ngIf="isOptionsOpen"
         [ngClass]="optionsWrapperClasses"
         class="absolute rounded-2xl bg-white px-6 pt-1 pb-5 z-20 options-wrapper-shadow">
-        <div *ngFor="let opt of options" 
+        <div *ngFor="let opt of options; trackBy: trackBy" 
             class="mt-4 flex items-center"
             (click)="onOptionClick(opt.value)"
             [ngClass]="{

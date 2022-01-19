@@ -28,44 +28,48 @@ export class SelectBoxComponent implements ControlValueAccessor {
 
   @ViewChild('wrapper', { static: true }) wrapper?: ElementRef;
 
-  onChange = (v: string | undefined) => undefined;
-  disabled = false;
-  isOptionsOpen = false;
-  optionValue?: SelectBoxOption;
+  public onChange = (v: string | undefined) => undefined;
+  public disabled = false;
+  public isOptionsOpen = false;
+  public optionValue?: SelectBoxOption;
 
   constructor(
     private cd: ChangeDetectorRef
   ) {}
 
-  registerOnChange(fn: any): void {
+  public registerOnChange(fn: (v: string | undefined) => undefined): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  public registerOnTouched(): void {
     return undefined;
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
 
-  writeValue(value: string): void {
+  public writeValue(value: string): void {
     this.value = value;
     this.optionValue = this.options.find(r => r.value === value);
     this.cd.markForCheck();
   }
 
-  onOptionClick(value: string): void {
+  public onOptionClick(value: string): void {
     this.writeValue(value);
     this.onChange(this.value);
     this.wrapper?.nativeElement.blur();
   }
 
-  onFocus(): void {
+  public onFocus(): void {
     this.isOptionsOpen = true;
   }
 
-  onBlur(): void {
+  public onBlur(): void {
     this.isOptionsOpen = false;
+  }
+
+  public trackBy(index: number, item: SelectBoxOption): string {
+    return item.value;
   }
 }
