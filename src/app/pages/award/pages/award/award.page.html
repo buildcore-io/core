@@ -44,13 +44,15 @@
           >
         </div>
       </div>
+      
+      <wen-tabs class="block mt-12 w-screen lg:w-auto -ml-5 lg:ml-0" [tabs]="sections"></wen-tabs>
 
-      <wen-tabs class="block mt-12" [tabs]="sections"></wen-tabs>
+      <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
+
       <div class="w-full py-12">
         <router-outlet></router-outlet>
       </div>
     </div>
-
     <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
