@@ -8,6 +8,7 @@ export class DeviceService {
   public static MOBILE_MAX_WIDTH = 1024;
   public isDesktop$ = new BehaviorSubject<boolean>(false);
   public isMobile$ = new BehaviorSubject<boolean>(false);
+  public innerWidth$ = new BehaviorSubject<number>(0);
 
   constructor() { 
     this.setDevice();
@@ -18,6 +19,7 @@ export class DeviceService {
   private setDevice(): void {
     this.isDesktop$.next(!this.getIsMobile());
     this.isMobile$.next(this.getIsMobile());
+    this.innerWidth$.next(window.innerWidth);
   }
 
   private getIsMobile(): boolean {

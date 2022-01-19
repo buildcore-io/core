@@ -4,10 +4,6 @@
       label="About space"
       (click)="isAboutSpaceVisible = true">
     </wen-drawer-toggle>
-
-    <wen-fixed-create-button
-      [route]="urlToNewSpace"
-    ></wen-fixed-create-button>
   </ng-container>
 
 
@@ -45,7 +41,9 @@
       </div>
 
 
-      <wen-tabs [tabs]="sections" class="block w-full overflow-x-auto overflow-y-hidden lg:w-auto"></wen-tabs>
+      <wen-tabs [tabs]="sections" class="block w-screen lg:w-auto -ml-5 lg:ml-0 overflow-x-auto overflow-y-hidden"></wen-tabs>
+      
+      <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
 
       <div class="w-full py-14 lg:py-12">
         <router-outlet></router-outlet>
