@@ -1,5 +1,5 @@
 <div class="flex items-end justify-between">
-  <div class="flex items-center mt-12 lg:mt-8">
+  <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
     <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
       <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
         (nzCheckedChange)="handleChange(tag)">
