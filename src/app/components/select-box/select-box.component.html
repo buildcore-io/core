@@ -1,0 +1,26 @@
+<div class="relative text-base font-semibold" 
+    #wrapper
+    tabindex="0"
+    (focus)="onFocus()"
+    (blur)="onBlur()">
+    <div class="rounded-3xl bg-white px-3 py-2 flex justify-between items-center">
+        {{ optionValue?.label }}
+        <div class="ml-3" *ngIf="suffixIcon">
+            <ng-container *ngTemplateOutlet="suffixIcon"></ng-container>
+        </div>
+    </div>
+    
+    <div *ngIf="isOptionsOpen"
+        [ngClass]="optionsWrapperClasses"
+        class="absolute rounded-2xl bg-white px-6 pt-1 pb-5 z-20 options-wrapper-shadow">
+        <div *ngFor="let opt of options; trackBy: trackBy" 
+            class="mt-4 flex items-center"
+            (click)="onOptionClick(opt.value)"
+            [ngClass]="{
+                'text-orange': opt.value === value
+            }">
+                {{ opt.label }}
+                <wen-icon-check *ngIf="opt.value === value" class="ml-3"></wen-icon-check>
+        </div>
+    </div>
+</div>

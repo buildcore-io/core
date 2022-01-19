@@ -8,9 +8,13 @@
     </ng-container>
 
     <ng-template #hotTagsMobileBlock>
-      <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-        <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
-      </nz-select>
+      <wen-select-box
+        class="w-fit min-w-32"
+        [ngModel]="hotTagsFormatted[0].value"
+        (ngModelChange)="handleChange($event)"
+        [optionsWrapperClasses]="'top-12 left-2'"
+        [options]="hotTagsFormatted">
+      </wen-select-box>
     </ng-template>
   </div>
 
@@ -27,13 +31,21 @@
   </ng-container>
   <ng-template #sortMobileBlock>
     <div class="relative">
-      <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-        <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-        <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-      </nz-select>
-  
+      <wen-select-box
+        class="w-32"
+        [formControl]="sortControl"
+        [suffixIcon]="mobileSuffixIcon"
+        [optionsWrapperClasses]="'top-12 right-2'"
+        [options]="[{
+          label: 'Recent',
+          value: filter.sortOptions.RECENT
+        }, {
+          label: 'Oldest',
+          value: filter.sortOptions.OLDEST
+        }]">
+      </wen-select-box>
       <ng-template #mobileSuffixIcon>
-        <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
+        <wen-icon-sort></wen-icon-sort>
       </ng-template>
     </div>
   </ng-template>
