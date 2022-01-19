@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import * as dayjs from 'dayjs';
+import { TIME_GAP_BETWEEN_MILESTONES } from 'functions/interfaces/config';
 import { Proposal, Space, SpaceGuardian, Transaction } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Award } from './../../../../../functions/interfaces/models/award';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Milestone } from './../../../../../functions/interfaces/models/milestone';
-import { ProposalAnswer, ProposalType } from './../../../../../functions/interfaces/models/proposal';
+import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../functions/interfaces/models/proposal';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
 @Injectable()
@@ -116,4 +117,76 @@ export class DataService {
     }
   }
 
+  public getVotingTypeText(subType: ProposalSubType|undefined): string {
+    if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
+      return 'IOTA Address Vote';
+    } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
+      return 'One Member One Vote';
+    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
+      return 'Reputation within Space';
+    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+      return 'Reputation within Badges';
+    } else {
+      return '';
+    }
+  }
+  
+  public getCommenceDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexCommence');
+    } else {
+      return proposal.createdOn?.toDate() || null;
+    }
+  }
+
+  private calcDateBasedOnMilestone(proposal: Proposal, f: 'milestoneIndexStart'|'milestoneIndexEnd'|'milestoneIndexCommence'): Date|null  {
+    if (!this.lastMilestone$.value || !proposal.settings?.[f]) {
+      return null;
+    }
+
+    // In seconds.
+    const diff: number = (proposal.settings?.[f] - this.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
+    return dayjs().add(diff, 'seconds').toDate();
+  }
+
+  public getStartDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexStart');
+    } else {
+      return proposal.settings?.startDate?.toDate() || null;
+    }
+  }
+
+  public getEndDate(proposal?: Proposal|null): Date|null {
+    if (!proposal) {
+      return null;
+    }
+
+    if (this.isNativeVote(proposal.type)) {
+      return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexEnd');
+    } else {
+      return proposal.settings?.startDate?.toDate() || null;
+    }
+  }
+
+  public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
+    let text = '';
+    qs?.forEach((q: ProposalQuestion) => {
+      q.answers.forEach((a) => {
+        if (values.includes(a.value)) {
+          text = a.text;
+        }
+      });
+    });
+
+    return text;
+  }
 }

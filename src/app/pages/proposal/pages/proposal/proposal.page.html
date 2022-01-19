@@ -74,11 +74,6 @@
         *ngIf="deviceService.isDesktop$ | async"
         [data]="data"
         [isGuardianWithinSpace$]="isGuardianWithinSpace$"
-        [getCommenceDate]="getCommenceDate"
-        [getStartDate]="getStartDate"
-        [getEndDate]="getEndDate"
-        [getVotingTypeText]="getVotingTypeText"
-        [findAnswerText]="findAnswerText"
         (onExportClick)="exportNativeEvent()"
         (onApprove)="approve()"
         (onReject)="reject()">
@@ -110,11 +105,6 @@
       <wen-proposal-info
         [data]="data"
         [isGuardianWithinSpace$]="isGuardianWithinSpace$"
-        [getCommenceDate]="getCommenceDate"
-        [getStartDate]="getStartDate"
-        [getEndDate]="getEndDate"
-        [getVotingTypeText]="getVotingTypeText"
-        [findAnswerText]="findAnswerText"
         (onExportClick)="exportNativeEvent()"
         (onApprove)="approve()"
         (onReject)="reject()">
