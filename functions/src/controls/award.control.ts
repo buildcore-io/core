@@ -420,15 +420,25 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     });
 
     // We've to update the members stats.
+    // - We need to track it per space as well.
+    // - We need to track on space who they have alliance with and use that to determine which XP/awards to pick
     const refMember: any = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refMember);
       const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
       const totalReputation = (sfDoc.data().totalReputation || 0) + xp;
-      transaction.update(refMember, {
+      const finalObj: any = {
         awardsCompleted: awardsCompleted,
         totalReputation: totalReputation
-      });
+      };
+
+      // Calculate for space.
+      finalObj.statsPerSpace = finalObj.statsPerSpace || {};
+      finalObj.statsPerSpace[docAward.data().space] = finalObj.statsPerSpace[docAward.data().space] || { createdOn: serverTime() };
+      finalObj.statsPerSpace[docAward.data().space].awardsCompleted = (finalObj.statsPerSpace[docAward.data().space].awardsCompleted || 0) + 1;
+      finalObj.statsPerSpace[docAward.data().space].totalReputation = (finalObj.statsPerSpace[docAward.data().space].totalReputation || 0) + 1;
+      finalObj.statsPerSpace[docAward.data().space].updatedOn = serverTime();
+      transaction.update(refMember, finalObj);
     });
 
 
