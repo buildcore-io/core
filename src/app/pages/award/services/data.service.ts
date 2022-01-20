@@ -40,4 +40,12 @@ export class DataService {
     this.isGuardianWithinSpace$.next(false);
     this.isParticipantWithinAward$.next(false);
   }
+
+  public getExperiencePointsPerBadge(award: Award|undefined|null): number {
+    if (award?.badge?.xp && award.badge.xp > 0 && award?.badge?.count > 1) {
+      return (award.badge.xp || 0) / (award.badge.count || 0);
+    } else {
+      return award?.badge?.xp || 0;
+    }
+  }
 }

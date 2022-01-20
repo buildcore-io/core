@@ -4,21 +4,21 @@
         >Badges used / available</span
       >
       <p nz-typography>
-        {{(data?.award$ | async)?.issued}} / {{(data?.award$ |
+        {{(data.award$ | async)?.issued}} / {{(data.award$ |
         async)?.badge?.count}}
       </p>
     </div>
     <div class="wen-description-item bg-bg-background">
       <span nz-typography class="text-app-gray-400">End Date</span>
       <p nz-typography>
-        {{(data?.award$ | async)?.endDate?.toDate() | date:'short'}}
+        {{(data.award$ | async)?.endDate?.toDate() | date:'short'}}
       </p>
     </div>
 </nz-card>
 
 <nz-card nzTitle="Owner">
     <div
-      *ngFor="let g of data?.owners$ | async; trackBy: trackByUid"
+      *ngFor="let g of data.owners$ | async; trackBy: trackByUid"
       [routerLink]="['/', 'member', g.uid]"
       class="cursor-pointer"
     >

@@ -112,10 +112,6 @@ export class AwardPage implements OnInit, OnDestroy {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }
 
-  public trackByUid(index: number, item: any): number {
-    return item.uid;
-  }
-
   private listenToAward(id: string): void {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.award$));
@@ -134,14 +130,6 @@ export class AwardPage implements OnInit, OnDestroy {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
-  }
-
-  public getExperiencePointsPerBadge(award: Award|undefined|null): number {
-    if (award?.badge?.xp && award.badge.xp > 0 && award?.badge?.count > 1) {
-      return (award.badge.xp || 0) / (award.badge.count || 0);
-    } else {
-      return award?.badge?.xp || 0;
-    }
   }
 
   public async approve(): Promise<void> {
