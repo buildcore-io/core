@@ -8,13 +8,13 @@
 
     <div class="relative bg-white h-28 w-full lg:hidden"
       [ngClass]="{
-        'hidden': this.routerService.isHomeRoute,
-        'h-28': !this.routerService.isNewRoute,
-        'h-20': this.routerService.isNewRoute
+        'hidden': routerService.isHomeRoute$ | async,
+        'h-28': (routerService.isNewRoute$ | async) === false,
+        'h-20': routerService.isNewRoute$ | async
       }">
       <div class="absolute bottom-0 bg-tag-default h-10 w-full rounded-t-40"
         [ngClass]="{
-          'h-4 rounded-t-none z-50': this.routerService.isNewRoute
+          'h-4 rounded-t-none z-50': routerService.isNewRoute$  | async
         }"></div>
     </div>
     <div class="flex-1 ">

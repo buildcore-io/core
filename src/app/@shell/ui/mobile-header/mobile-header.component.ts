@@ -4,7 +4,6 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { RouterService } from '@core/services/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { BehaviorSubject } from 'rxjs';
 
 
 @UntilDestroy()
@@ -31,7 +30,14 @@ export class MobileHeaderComponent {
     public routerService: RouterService
   ) {}
 
-  public get isLoggedIn$(): BehaviorSubject<boolean> {
-    return this.auth.isLoggedIn$;
+  public setMobileMenuVisible(isVisible: boolean): void {
+    this.isMobileMenuVisible = isVisible;
+    this.onVisibleChange.emit(isVisible);
+  }
+
+  public onCreateClick(): void {
+    if(this.isMobileMenuVisible) {
+      this.setMobileMenuVisible(false);
+    }
   }
 }

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AuthService } from '@components/auth/services/auth.service';
 import { RouterService } from '@core/services/router';
-import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'wen-create-dropdown',
@@ -10,12 +10,13 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class CreateDropdownComponent {
   // TODO Clean up this passing around of inputs. This messy.
-  @Input() isLoggedIn$ = new BehaviorSubject<boolean>(false);
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
-  @Input() isAllowedCreation = false;
+  @Input() isAllowedCreation = true;
+  @Output() onCreateClick = new EventEmitter<void>();
 
   constructor(
-    public routerService: RouterService
+    public routerService: RouterService,
+    public auth: AuthService
   ) {}
 }
