@@ -1,10 +1,10 @@
 <main class="mx-auto mb-32 lg:mb-40 bg-bg-background">
   <div class="w-full wen-home-vector">
     <div class="container px-8">
-      <h1 class="lg:w-6/12 pt-64 lg:pt-24 text-3xl lg:text-6xl text-white xl:pt-52">
+      <h1 class="pt-64 mb-6 text-3xl text-white lg:w-6/12 lg:pt-24 lg:text-6xl xl:pt-52">
         Welcome to The Soonaverse?
       </h1>
-      <p class="lg:pt-8 mb-12 text-xl lg:text-2xl font-medium lg:font-light lg:w-6/12 text-white">
+      <p class="mb-12 text-xl font-medium text-white lg:text-2xl lg:font-light lg:w-6/12">
         An all-in-one feeless platform for community engagement and DAO
         creation. Build, vote, earn, learn and let the best ideas win.
       </p>
@@ -21,17 +21,17 @@
   </div>
 
   <div class="-mt-16 rounded-t-large bg-bg-background">
-    <div class="container flex flex-col items-center justify-center pt-24 px-5">
+    <div class="container flex flex-col items-center justify-center px-5 pt-24">
       <h1 class="text-4xl text-center lg:text-5xl">Creating your community is easy as 1-2-3</h1>
-      <p class="w-9/12 text-xl lg:text-2xl font-medium lg:font-light text-center text-app-gray-400">
+      <p class="w-9/12 text-xl font-medium text-center lg:text-2xl lg:font-light text-app-gray-400">
         No more worries about “the tech”. Spend your time where it belongs,
         building your community and realizing your collective vision.
       </p>
     </div>
 
-    <div class="container mt-4 lg:my-16 px-5 lg:px-10">
+    <div class="container px-5 mt-4 lg:my-16 lg:px-10">
       <div class="flex flex-wrap justify-center gap-4 xl:gap-10">
-        <article class="bg-white w-full lg:w-80 rounded-2xl mt-8 lg:mt-0" *ngFor="let item of stepArticles">
+        <article class="w-full mt-8 bg-white lg:w-80 rounded-2xl lg:mt-0" *ngFor="let item of stepArticles">
           <div class="w-full overflow-hidden h-36 rounded-2xl">
             <img
               alt=""
@@ -44,14 +44,14 @@
             class="relative flex flex-col justify-center w-full p-6 text-center lg:h-48"
           >
             <h3 class="my-1 text-2xl">{{ item.title }}</h3>
-            <p class="text-lg text-app-gray-400 mt-1 mb-2 lg:mb-1">{{ item.description }}</p>
+            <p class="mt-1 mb-2 text-lg text-app-gray-400 lg:mb-1">{{ item.description }}</p>
           </div>
         </article>
       </div>
 
-      <div class="mt-32 -ml-5 lg:ml-0 w-screen lg:w-auto">
-        <article class="flex flex-col-reverse lg:flex-row w-full bg-white lg:h-96 rounded-large">
-          <div class="relative lg:w-1/2 h-full px-5 py-16 lg:p-10 space-y-12 lg:space-y-6">
+      <div class="w-screen mt-32 -ml-5 lg:ml-0 lg:w-auto">
+        <article class="flex flex-col-reverse w-full bg-white lg:flex-row lg:h-96 rounded-large">
+          <div class="relative h-full px-5 py-16 space-y-12 lg:w-1/2 lg:p-10 lg:space-y-6">
             <h3 class="mb-1 text-4xl">
               Voting is essential and it needs to be on-chain and FREE.
             </h3>
@@ -70,7 +70,7 @@
               Go there now
             </button>
           </div>
-          <div class="lg:w-1/2 h-64 lg:h-full lg:ml-8 overflow-hidden rounded-large">
+          <div class="h-64 overflow-hidden lg:w-1/2 lg:h-full lg:ml-8 rounded-large">
             <img
               alt=""
               src="/assets/mocks/treasure_banner.jpg"
@@ -80,23 +80,23 @@
         </article>
       </div>
 
-      <div class="lg:mx-24 mt-24 lg:mt-32 xl:mx-44">
+      <div class="mt-24 lg:mx-24 lg:mt-32 xl:mx-44">
         <article
-          class="flex flex-col lg:flex-row w-full mx-auto bg-white rounded-large lg:h-52"
+          class="flex flex-col w-full mx-auto bg-white lg:flex-row rounded-large lg:h-52"
         >
-          <div class="w-full lg:w-1/2 h-full mr-8 overflow-hidden rounded-large">
+          <div class="w-full h-full mr-8 overflow-hidden lg:w-1/2 rounded-large">
             <img
               alt=""
               src="/assets/mocks/about_us.jpg"
               class="object-cover w-full h-full"
             />
           </div>
-          <div class="relative w-full lg:w-1/2 lg:h-full p-6 lg:p-10 space-y-6">
+          <div class="relative w-full p-6 space-y-6 lg:w-1/2 lg:h-full lg:p-10">
             <h3 class="mb-4 text-2xl">Want to learn more about SoonLabs?</h3>
             <p class="text-lg text-app-gray-400"></p>
             <button
               nz-button
-              class="float-right bottom-0 lg:bottom-4"
+              class="bottom-0 float-right lg:bottom-4"
               nzType="primary"
               nzSize="large"
               type="button"
@@ -109,7 +109,7 @@
       </div>
 
       <div class="mt-32">
-        <h1 class="text-4xl lg:text-5xl mb-4 lg:mb-10">Get started with the Soonaverse</h1>
+        <h1 class="mb-4 text-4xl lg:text-5xl lg:mb-10">Get started with the Soonaverse</h1>
         <p class="text-lg text-app-gray-400">
           Not sure where to start? Find featured spaces and awards below.
         </p>
@@ -129,7 +129,7 @@
                 Discover more
               </button>
             </h3>
-            <div class="flex flex-col lg:flex-row gap-6 px-5 lg:px-0">
+            <div class="flex flex-col gap-6 px-5 lg:flex-row lg:px-0">
               <wen-space-card
                 class="outline-none"
                 *ngFor="let s of spaces$ | async; trackBy: trackByUid"
@@ -140,7 +140,7 @@
             <button
                 *ngIf="deviceService.isMobile$ | async"
                 nz-button
-                class="block mt-12 mx-auto"
+                class="block mx-auto mt-12"
                 nzType="primary"
                 type="button"
                 [routerLink]="['/discover', 'spaces']"
@@ -163,7 +163,7 @@
                 Discover more
               </button>
             </h3>
-            <div class="flex flex-col lg:flex-row gap-6 px-5 lg:px-0">
+            <div class="flex flex-col gap-6 px-5 lg:flex-row lg:px-0">
               <wen-award-card
                 class="outline-none"
                 *ngFor="let award of award$ | async; trackBy: trackByUid"
@@ -174,7 +174,7 @@
             <button
                 *ngIf="deviceService.isMobile$ | async"
                 nz-button
-                class="block mt-12 mx-auto"
+                class="block mx-auto mt-12"
                 nzType="primary"
                 type="button"
                 [routerLink]="['/discover', 'awards']"
@@ -188,17 +188,17 @@
   </div>
 </main>
 <footer class="pt-16 lg:p-24 lg:-mt-16 bg-bg-footer rounded-t-large">
-  <h1 class="m-5 lg:m-0 text-4xl lg:text-5xl mt-12 lg:mt-0">Who’s using the Soonaverse?</h1>
+  <h1 class="m-5 mt-12 text-4xl lg:m-0 lg:text-5xl lg:mt-0">Who’s using the Soonaverse?</h1>
 
-  <div class="w-full lg:m-6 overflow-hidden" style="height: 750px">
+  <div class="w-full overflow-hidden lg:m-6" style="height: 750px">
     <img
       alt=""
       src="/assets/mocks/founders_galaxy.png"
-      class="object-cover lg:object-contain w-full h-full"
+      class="object-cover w-full h-full lg:object-contain"
     />
   </div>
 
-  <div class="lg:flex justify-between pb-8 lg:pb-0 lg:px-5">
+  <div class="justify-between pb-8 lg:flex lg:pb-0 lg:px-5">
     <div class="flex lg:block">
       <a
         nz-button
