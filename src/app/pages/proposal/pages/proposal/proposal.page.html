@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'" style="max-width: 450px;">
+    <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
       <nz-card nzTitle="Cast your vote"
         *ngIf="(data.proposal$ | async)?.approved && data.isNativeVote((data.proposal$ | async)?.type)">
         <a nz-button (click)="fireflyNotSupported()" nzType="primary" nzBlock nzSize="large" i18n>
