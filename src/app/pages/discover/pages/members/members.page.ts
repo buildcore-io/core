@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { SelectBoxOption } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -10,9 +10,10 @@ import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { FilterService } from './../../services/filter.service';
 
-export enum HOT_TAGS {
-  ALL = 'All'
-}
+export const DEFAULT_SPACE: SelectBoxOption = {
+  label: 'All',
+  value: 'all'
+};
 
 @UntilDestroy()
 @Component({
@@ -22,10 +23,46 @@ export enum HOT_TAGS {
 })
 export class MembersPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
+  public spaceForm: FormGroup;
+  public spacesList: SelectBoxOption[] = [DEFAULT_SPACE, 
+    { label: 'Space 1', value: 'space1', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 2', value: 'space2', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 3', value: 'space3', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 4', value: 'space4', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 5', value: 'space5', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 6', value: 'space6', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 7', value: 'space7', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 8', value: 'space8', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 9', value: 'space9', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 10', value: 'space10', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 11', value: 'space11', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 12', value: 'space12', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 13', value: 'space13', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 14', value: 'space14', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 15', value: 'space15', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 16', value: 'space16', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 17', value: 'space17', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 18', value: 'space18', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 19', value: 'space19', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 20', value: 'space20', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 21', value: 'space21', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 22', value: 'space22', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 23', value: 'space23', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 24', value: 'space24', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 25', value: 'space25', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 26', value: 'space26', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 27', value: 'space27', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 28', value: 'space28', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 29', value: 'space29', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 30', value: 'space30', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 31', value: 'space31', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 32', value: 'space32', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 33', value: 'space33', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 34', value: 'space34', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 35', value: 'space35', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
+    { label: 'Space 36', value: 'space36', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }
+  ];
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public hotTags: string[] = [HOT_TAGS.ALL];
-  public hotTagsFormatted: SelectBoxOption[] = [];
-  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(
@@ -34,10 +71,13 @@ export class MembersPage implements OnInit, OnDestroy {
     public deviceService: DeviceService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
+    this.spaceForm = new FormGroup({
+      space: new FormControl(DEFAULT_SPACE.value),
+      includeAlliances: new FormControl(false)
+    });
   }
 
   public ngOnInit(): void {
-    this.hotTagsFormatted = this.hotTags.map((tag: string) => ({ value: tag, label: tag }));
     this.listen();
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
@@ -54,10 +94,6 @@ export class MembersPage implements OnInit, OnDestroy {
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
       this.filter.selectedSort$.next(val);
     });
-  }
-
-  public handleChange(tag: string): void {
-    this.selectedTags$.next([tag]);
   }
 
   private listen(search?: string): void {

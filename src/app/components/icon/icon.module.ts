@@ -9,7 +9,9 @@ import { BellIconComponent } from './bell/bell.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
+import { DefaultSpaceIconComponent } from './default-space/default-space.component';
 import { DiscordIconComponent } from './discord/discord.component';
+import { EraseIconComponent } from './erase/erase.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
@@ -25,6 +27,7 @@ import { PlusIconComponent } from './plus/plus.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
 import { RedditIconComponent } from './reddit/reddit.component';
 import { RocketIconComponent } from './rocket/rocket.component';
+import { SearchIconComponent } from './search/search.component';
 import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
 import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
@@ -64,7 +67,10 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     InfoIconComponent,
     SoonlabsIconComponent,
     SortIconComponent,
-    CheckIconComponent
+    CheckIconComponent,
+    DefaultSpaceIconComponent,
+    SearchIconComponent,
+    EraseIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -97,7 +103,10 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     InfoIconComponent,
     SoonlabsIconComponent,
     SortIconComponent,
-    CheckIconComponent
+    CheckIconComponent,
+    DefaultSpaceIconComponent,
+    SearchIconComponent,
+    EraseIconComponent
   ],
   imports: [
     CommonModule

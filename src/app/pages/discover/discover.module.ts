@@ -9,6 +9,7 @@ import { TabsModule } from "@components/tabs/tabs.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -65,7 +66,8 @@ import { FilterService } from './services/filter.service';
     LayoutModule,
     DropdownTabsModule,
     IconModule,
-    SelectBoxModule
+    SelectBoxModule,
+    NzCheckboxModule
   ]
 })
 export class DiscoverModule { }
