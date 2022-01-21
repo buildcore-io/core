@@ -96,18 +96,6 @@ export class HeaderComponent implements OnInit {
     return this.auth.member$;
   }
 
-  public get urlToNewSpace(): string {
-    return '/' + ROUTER_UTILS.config.space.root + '/new';
-  }
-
-  public get urlToNewProposal(): string {
-    return '/' + ROUTER_UTILS.config.proposal.root + '/new';
-  }
-
-  public get urlToNewAward(): string {
-    return '/' + ROUTER_UTILS.config.award.root + '/new';
-  }
-
   public get urlToDiscover(): string {
     return '/' + ROUTER_UTILS.config.discover.root;
   }

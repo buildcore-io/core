@@ -18,9 +18,6 @@ export class MobileMenuComponent {
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
   @Input() isAllowedCreation = false;
-  @Input() urlToNewSpace = '';
-  @Input() urlToNewProposal = '';
-  @Input() urlToNewAward = '';
   @Input() filesizes!: typeof FILE_SIZES;
   @Output() isVisibleChanged = new EventEmitter<boolean>();
 
