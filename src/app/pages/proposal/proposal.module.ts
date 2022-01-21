@@ -6,7 +6,6 @@ import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.modu
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
 import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
-import { ProposalInfoModule } from '@components/proposal/components/proposal-info/proposal-info.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
@@ -42,6 +41,7 @@ import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalVoteActionComponent } from './pages/overview/proposal-vote-action/proposal-vote-action.component';
 import { ParticipantsPage } from './pages/participants/participants.page';
+import { ProposalInfoComponent } from './pages/proposal/proposal-info/proposal-info.component';
 import { ProposalPage } from './pages/proposal/proposal.page';
 import { ProposalRoutingModule } from './proposal-routing.module';
 import { DataService } from './services/data.service';
@@ -52,6 +52,7 @@ import { DataService } from './services/data.service';
     OverviewPage,
     ParticipantsPage,
     NewPage,
+    ProposalInfoComponent,
     ProposalVoteActionComponent
   ],
   providers: [
@@ -98,7 +99,6 @@ import { DataService } from './services/data.service';
     RadioModule,
     DrawerToggleModule,
     NzDrawerModule,
-    ProposalInfoModule,
     ProposalAnswerModule
   ]
 })

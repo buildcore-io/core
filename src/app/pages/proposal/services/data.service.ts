@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Award } from './../../../../../functions/interfaces/models/award';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Milestone } from './../../../../../functions/interfaces/models/milestone';
-import { ProposalAnswer, ProposalSubType, ProposalType } from './../../../../../functions/interfaces/models/proposal';
+import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../functions/interfaces/models/proposal';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
 @Injectable()
@@ -130,7 +130,6 @@ export class DataService {
       return '';
     }
   }
-
   public getCommenceDate(proposal?: Proposal|null): Date|null {
     if (!proposal) {
       return null;
@@ -175,5 +174,18 @@ export class DataService {
     // In seconds.
     const diff: number = (proposal.settings?.[f] - this.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
     return dayjs().add(diff, 'seconds').toDate();
+  }
+
+  public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
+    let text = '';
+    qs?.forEach((q: ProposalQuestion) => {
+      q.answers.forEach((a) => {
+        if (values.includes(a.value)) {
+          text = a.text;
+        }
+      });
+    });
+
+    return text;
   }
 }
