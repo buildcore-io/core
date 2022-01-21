@@ -11,4 +11,8 @@ export class DropdownTabsComponent {
   @Input() tabs: TabSection[] = []
   @Input() selectedTab?: TabSection
   public isVisible = false;
+
+  public trackByLabel(index: number, tab: TabSection): string {
+    return tab.label;
+  }
 }

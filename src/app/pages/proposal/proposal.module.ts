@@ -5,6 +5,7 @@ import { BadgeModule } from "@components/badge/badge.module";
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
+import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
@@ -38,6 +39,7 @@ import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { ProposalStatusModule } from './../../components/proposal/components/proposal-status/proposal-status.module';
 import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
+import { ProposalVoteActionComponent } from './pages/overview/proposal-vote-action/proposal-vote-action.component';
 import { ParticipantsPage } from './pages/participants/participants.page';
 import { ProposalInfoComponent } from './pages/proposal/proposal-info/proposal-info.component';
 import { ProposalPage } from './pages/proposal/proposal.page';
@@ -50,7 +52,8 @@ import { DataService } from './services/data.service';
     OverviewPage,
     ParticipantsPage,
     NewPage,
-    ProposalInfoComponent
+    ProposalInfoComponent,
+    ProposalVoteActionComponent
   ],
   providers: [
     DataService
@@ -95,7 +98,8 @@ import { DataService } from './services/data.service';
     IconModule,
     RadioModule,
     DrawerToggleModule,
-    NzDrawerModule
+    NzDrawerModule,
+    ProposalAnswerModule
   ]
 })
 export class ProposalModule { }

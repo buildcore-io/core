@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { SelectBoxOption } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from "functions/interfaces/models";
@@ -24,6 +25,7 @@ export class SpacesPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN];
+  public hotTagsFormatted: SelectBoxOption[] = [];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Space[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -37,6 +39,7 @@ export class SpacesPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.hotTagsFormatted = this.hotTags.map((tag: string) => ({ value: tag, label: tag }));
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
     });

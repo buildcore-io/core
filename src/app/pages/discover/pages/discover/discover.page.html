@@ -11,8 +11,8 @@
       <i nz-icon nzType="search" class="text-xl"></i>
     </ng-template>
 
-
     <wen-tabs *ngIf="deviceService.isDesktop$ | async" [tabs]="sections"></wen-tabs>
+    
     <wen-dropdown-tabs
       *ngIf="(deviceService.isMobile$ | async) && !isSearchInputFocused"
       [tabs]="sections"
@@ -29,6 +29,8 @@
       <i nz-icon nzType="search" class="block -mr-1 text-xl" (click)="onSearchIconClick()"></i>
     </ng-template>
   </div>
+
+  <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-app-gray-100 mt-6"></div>
 
   <router-outlet></router-outlet>
 </wen-content>

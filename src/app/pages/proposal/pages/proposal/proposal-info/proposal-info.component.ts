@@ -10,13 +10,13 @@ import { BehaviorSubject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProposalInfoComponent {
-  @Input() data?: DataService;
   @Input() isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   @Output() onExportClick = new EventEmitter<void>();
   @Output() onApprove = new EventEmitter<void>();
   @Output() onReject = new EventEmitter<void>();
 
   constructor(
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public data: DataService
   ) {}
 }

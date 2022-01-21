@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DataService } from '@pages/award/services/data.service';
-import { Award } from 'functions/interfaces/models';
 import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 
 @Component({
@@ -10,8 +9,9 @@ import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AwardAwardsComponent {
-  @Input() data?: DataService;
-  @Input() getExperiencePointsPerBadge: (award: Award|undefined|null) => number = (award: Award|undefined|null) => 0;
+  constructor(
+    public data: DataService
+  ) {}
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

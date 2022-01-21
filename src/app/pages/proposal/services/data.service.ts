@@ -130,7 +130,6 @@ export class DataService {
       return '';
     }
   }
-  
   public getCommenceDate(proposal?: Proposal|null): Date|null {
     if (!proposal) {
       return null;
@@ -141,16 +140,6 @@ export class DataService {
     } else {
       return proposal.createdOn?.toDate() || null;
     }
-  }
-
-  private calcDateBasedOnMilestone(proposal: Proposal, f: 'milestoneIndexStart'|'milestoneIndexEnd'|'milestoneIndexCommence'): Date|null  {
-    if (!this.lastMilestone$.value || !proposal.settings?.[f]) {
-      return null;
-    }
-
-    // In seconds.
-    const diff: number = (proposal.settings?.[f] - this.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
-    return dayjs().add(diff, 'seconds').toDate();
   }
 
   public getStartDate(proposal?: Proposal|null): Date|null {
@@ -175,6 +164,16 @@ export class DataService {
     } else {
       return proposal.settings?.startDate?.toDate() || null;
     }
+  }
+
+  private calcDateBasedOnMilestone(proposal: Proposal, f: 'milestoneIndexStart'|'milestoneIndexEnd'|'milestoneIndexCommence'): Date|null  {
+    if (!this.lastMilestone$.value || !proposal.settings?.[f]) {
+      return null;
+    }
+
+    // In seconds.
+    const diff: number = (proposal.settings?.[f] - this.lastMilestone$.value.cmi) * TIME_GAP_BETWEEN_MILESTONES;
+    return dayjs().add(diff, 'seconds').toDate();
   }
 
   public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
