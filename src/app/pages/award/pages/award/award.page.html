@@ -44,13 +44,15 @@
           >
         </div>
       </div>
+      
+      <wen-tabs class="block mt-12 w-screen lg:w-auto -ml-5 lg:ml-0" [tabs]="sections"></wen-tabs>
 
-      <wen-tabs class="block mt-12" [tabs]="sections"></wen-tabs>
+      <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
+
       <div class="w-full py-12">
         <router-outlet></router-outlet>
       </div>
     </div>
-
     <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
@@ -75,9 +77,7 @@
       </span>
 
       <wen-award-awards
-        *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
-        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
+        *ngIf="deviceService.isDesktop$ | async">
       </wen-award-awards>
 
       <nz-card
@@ -108,9 +108,7 @@
       </nz-card>
 
       <wen-award-info
-        *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
-        [trackByUid]="trackByUid">
+        *ngIf="deviceService.isDesktop$ | async">
       </wen-award-info>
     </div>
   </div>
@@ -161,15 +159,9 @@
 
       <h1 i18n class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
 
-      <wen-award-awards
-        [data]="data"
-        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
-      </wen-award-awards>
+      <wen-award-awards></wen-award-awards>
 
-      <wen-award-info
-        [data]="data"
-        [trackByUid]="trackByUid">
-      </wen-award-info>
+      <wen-award-info></wen-award-info>
     </div>
   </nz-drawer>
 </wen-content>

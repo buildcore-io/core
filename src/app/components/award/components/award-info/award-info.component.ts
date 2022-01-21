@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DataService } from '@pages/award/services/data.service';
 import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 
@@ -9,10 +9,15 @@ import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AwardInfoComponent {
-  @Input() data?: DataService;
-  @Input() trackByUid: (index: number, item: any) => number = (index: number, item: any) => index;
+  constructor(
+    public data: DataService
+  ) {}
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 }

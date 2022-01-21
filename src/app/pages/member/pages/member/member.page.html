@@ -10,15 +10,17 @@
     [ngStyle]="{'margin-right': (deviceService.isDesktop$ | async) ? '420px' : '0'}">
     <h1 i18n>Profile</h1>
 
-    <wen-tabs class="block w-full overflow-x-auto overflow-y-hidden lg:w-auto" [tabs]="sections"></wen-tabs>
+    <wen-tabs class="block w-screen lg:w-auto -ml-5 lg:ml-0 overflow-x-auto overflow-y-hidden" [tabs]="sections"></wen-tabs>
+    
+    <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
 
     <div class="relative w-full py-12 lg:w-auto" [style.min-height]="(height$ | async) + 'px'">
       <router-outlet></router-outlet>
     </div>
   </div>
 
-  <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large" [data]="data"
-    [trackByUid]="trackByUid" [loggedInMember]="loggedInMember$" *ngIf="deviceService.isDesktop$ | async"></wen-member-about>
+  <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"
+    [loggedInMember]="loggedInMember$" *ngIf="deviceService.isDesktop$ | async"></wen-member-about>
 
   <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }" [nzWidth]="'100vw'" [nzClosable]="false"
     [nzVisible]="isAboutMemberVisible">
@@ -27,8 +29,8 @@
         <wen-icon-close></wen-icon-close>
       </button>
 
-      <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large" [data]="data"
-    [trackByUid]="trackByUid" [loggedInMember]="loggedInMember$"></wen-member-about>
+      <wen-member-about [avatarSrc]="(data.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.large"
+        [loggedInMember]="loggedInMember$"></wen-member-about>
     </div>
   </nz-drawer>
 

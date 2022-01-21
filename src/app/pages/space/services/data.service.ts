@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
@@ -285,6 +286,10 @@ export class DataService implements OnDestroy {
     this.resetMembersDataStore();
     this.resetSubjects();
     this.resetRelatedRecordsSubjects();
+  }
+
+  public getMemberUrl(memberId: string): string[] {
+    return ['/', ROUTER_UTILS.config.member.root, memberId];
   }
 
   public ngOnDestroy(): void {

@@ -7,6 +7,7 @@ import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
+import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
 import { DiscordIconComponent } from './discord/discord.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
@@ -62,7 +63,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     AngleRightIconComponent,
     InfoIconComponent,
     SoonlabsIconComponent,
-    SortIconComponent
+    SortIconComponent,
+    CheckIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -94,7 +96,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     AngleRightIconComponent,
     InfoIconComponent,
     SoonlabsIconComponent,
-    SortIconComponent
+    SortIconComponent,
+    CheckIconComponent
   ],
   imports: [
     CommonModule

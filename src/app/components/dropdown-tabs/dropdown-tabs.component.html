@@ -7,7 +7,7 @@
 
 <nz-dropdown-menu #createMenu="nzDropdownMenu">
     <button nz-button [nzType]="item === selectedTab ? 'primary' : 'default'" type="button"
-        *ngFor="let item of tabs; let i = index"
+        *ngFor="let item of tabs; let i = index; trackBy: trackByLabel"
         [routerLink]="item.route"
         (click)="isVisible = false"
         class="flex items-center w-32 gap-2 pr-2 -mt-1"
