@@ -19,11 +19,13 @@ import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "
 import { ProposalStartDateMin, RelatedRecordsResponse } from './../../interfaces/config';
 import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
+import { CommonJoi } from './../services/joi/common';
+import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
-    space: Joi.string().length(ethAddressLength).lowercase().required(),
+    space: CommonJoi.uidCheck(),
     additionalInfo: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(ProposalType.MEMBERS, ProposalType.NATIVE).required(),
     subType: Joi.when('type', {
@@ -83,9 +85,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
@@ -190,7 +190,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -232,7 +232,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -277,7 +277,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
+      uid: CommonJoi.uidCheck(),
       // TODO Validate across multiple questions.
       values: Joi.array().items(Joi.number()).min(1).max(1).unique().required()
   }));
