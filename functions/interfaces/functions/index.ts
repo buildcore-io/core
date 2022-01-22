@@ -15,6 +15,7 @@ export const enum WEN_FUNC {
   declineMemberSpace = "declineMemberSpace",
   addGuardianSpace = "addGuardianSpace",
   removeGuardianSpace = "removeGuardianSpace",
+  setAlliance = "setAlliance",
 
 
   // Award functions

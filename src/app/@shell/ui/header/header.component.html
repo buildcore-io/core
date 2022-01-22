@@ -5,18 +5,14 @@
     <wen-mobile-header
       class="absolute top-0 z-10 w-full p-4 transition-transform duration-300 transform -translate-y-1 bg-white mobile-header-shadow"
       [ngClass]="{
-        '-translate-y-full -top-1 ': !isScrolled && routerService.isHomeRoute
-      }"
-      [ngClass]="{
-        'mobile-header-no-shadow': !isScrolled && !routerService.isHomeRoute
+        '-translate-y-full -top-1 ': !isScrolled && (routerService.isHomeRoute$ | async),
+        'mobile-header-no-shadow': !isScrolled && ((routerService.isHomeRoute$ | async) === false),
+        'bg-tag-default': routerService.isNewRoute$ | async
       }"
       [isMemberProfile]="isMemberProfile"
       [isLandingPage]="isLandingPage"
       [isMobileMenuVisible]="isMobileMenuVisible"
       [isAllowedCreation]="isAllowedCreation"
-      [urlToNewSpace]="urlToNewSpace"
-      [urlToNewAward]="urlToNewAward"
-      [urlToNewProposal]="urlToNewProposal"
       (onVisibleChange)="isMobileMenuVisible = !isMobileMenuVisible">
     </wen-mobile-header>
 
@@ -41,9 +37,6 @@
       [isMemberProfile]="isMemberProfile"
       [isLandingPage]="isLandingPage"
       [isAllowedCreation]="isAllowedCreation"
-      [urlToNewSpace]="urlToNewSpace"
-      [urlToNewAward]="urlToNewAward"
-      [urlToNewProposal]="urlToNewProposal"
       [filesizes]="filesizes"
       (isVisibleChanged)="isMobileMenuVisible = $event">
     </wen-mobile-menu>
@@ -65,13 +58,13 @@
 
     <nz-dropdown-menu #createMenu="nzDropdownMenu">
       <wen-menu *ngIf="isAllowedCreation">
-        <wen-menu-item [routerLink]="urlToNewSpace" i18n>
+        <wen-menu-item [routerLink]="routerService.urlToNewSpace" i18n>
           <wen-icon-space icon></wen-icon-space>Space
         </wen-menu-item>
-        <wen-menu-item [routerLink]="urlToNewProposal" *ngIf="enableCreateAwardProposal" i18n>
+        <wen-menu-item [routerLink]="routerService.urlToNewProposal" *ngIf="enableCreateAwardProposal" i18n>
           <wen-icon-check-circle icon></wen-icon-check-circle>Proposal
         </wen-menu-item>
-        <wen-menu-item [routerLink]="urlToNewAward" *ngIf="enableCreateAwardProposal" i18n>
+        <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal" i18n>
           <wen-icon-award icon></wen-icon-award>Award
         </wen-menu-item>
       </wen-menu>

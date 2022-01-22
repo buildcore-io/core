@@ -11,10 +11,12 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
 import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
+import { CommonJoi } from './../services/joi/common';
+import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -105,7 +107,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {
-    uid: Joi.string().length(ethAddressLength).lowercase().required()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -116,9 +118,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   }
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
+  await SpaceValidator.isGuardian(refSpace, guardian);
 
   // Decline all pending members.
   let append: any = {};
@@ -154,7 +154,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -216,14 +216,12 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
@@ -277,21 +275,17 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace: any;
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
+  await SpaceValidator.isGuardian(refSpace, guardian);
 
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
@@ -334,20 +328,16 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
+  await SpaceValidator.isGuardian(refSpace, guardian);
 
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_part_of_the_space);
@@ -388,22 +378,18 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace: any;
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   const isGuardian: boolean = (await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get()).exists;
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
+  await SpaceValidator.isGuardian(refSpace, guardian);
 
   const isMember = (await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get()).exists;
   const isKnockingMember = (await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).get()).exists;
@@ -476,20 +462,16 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
+  await SpaceValidator.isGuardian(refSpace, guardian);
 
   if (!(await refSpace.collection(SUB_COL.BLOCKED_MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_is_not_blocked_in_the_space);
@@ -514,21 +496,17 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace: any;
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
+  await SpaceValidator.isGuardian(refSpace, guardian);
 
   if (!(await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_did_not_request_to_join);
@@ -571,20 +549,14 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions.runW
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
-
-  // Validate guardian is an guardian within the space.
-  if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
+  await SpaceValidator.spaceExists(refSpace);
+  await SpaceValidator.isGuardian(refSpace, guardian);
 
   if (!(await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).get()).exists) {
     throw throwInvalidArgument(WenError.member_did_not_request_to_join);
@@ -597,4 +569,65 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions.runW
   return {
     status: 'success'
   };
+});
+
+export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: scale(WEN_FUNC.setAlliance),
+}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+  appCheck(WEN_FUNC.setAlliance, context);
+  // We must part
+  const params: DecodedToken = await decodeAuth(req);
+  const guardian = params.address.toLowerCase();
+
+  const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
+      uid: CommonJoi.uidCheck(),
+      targetSpaceId: CommonJoi.uidCheck(),
+      enabled: Joi.bool().required(),
+      weight: Joi.number().min(0).required()
+  }));
+
+  assertValidation(schema.validate(params.body));
+
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refTargetAllianceSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.targetSpaceId);
+  let docSpace: any;
+  await SpaceValidator.spaceExists(refSpace);
+  await SpaceValidator.spaceExists(refTargetAllianceSpace);
+  await SpaceValidator.isGuardian(refSpace, guardian);
+  if (params.body) {
+    const currentSpace: any = (await refSpace.get()).data();
+    const targetSpace: any = (await refTargetAllianceSpace.get()).data();
+    let established = true;
+    const targetSpaceAli: any = targetSpace.alliances?.[params.body.uid];
+    if (!targetSpaceAli || targetSpaceAli.enabled === false || params.body.enabled === false) {
+      established = false;
+    }
+
+    currentSpace.alliances = currentSpace.alliances || {};
+    currentSpace.alliances[params.body.targetSpaceId] = {
+      uid: params.body.targetSpaceId,
+      enabled: params.body.enabled,
+      established: established,
+      weight: params.body.weight,
+      updatedOn: serverTime(),
+      createdOn: currentSpace.alliances[params.body.targetSpaceId]?.createdOn || serverTime()
+    };
+
+    // Update space.
+    await refSpace.update(currentSpace);
+
+    if (targetSpaceAli) {
+      targetSpace.alliances[params.body.uid] = {
+        established: established,
+        updatedOn: serverTime()
+      };
+      await refTargetAllianceSpace.update(targetSpace);
+    }
+
+    // Load latest
+    docSpace = await refSpace.get();
+  }
+
+  return docSpace.data();
 });

@@ -1,3 +1,34 @@
+<nz-card i18n-nzTitle [nzTitle]="(deviceService.isDesktop$ | async) ?
+    'Casted Votes' : 'Votes (' + ((data?.transactions$ | async) || []).length + ')'"
+    *ngIf="(data?.proposal$ | async)?.approved && data?.isMemberVote((data?.proposal$ | async)?.type) && !data?.isPending(data?.proposal$ | async)">
+    <nz-table #basicTable [nzData]="(data?.transactions$ | async) || []" [nzShowPagination]="false">
+    <thead>
+        <tr>
+        <th i18n>Voter</th>
+        <th i18n>Date</th>
+        <th i18n>Option</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let t of data?.transactions$ | async">
+            <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]"> @{{ (t.memberRec.name || t.member )| truncate:[16] }}</td>
+            <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
+            <td>{{ data.findAnswerText((data?.proposal$ | async)?.questions, t.payload.values) }}</td>
+        </tr>
+    </tbody>
+    </nz-table>
+</nz-card>
+
+<nz-card nzTitle="Approve Proposal"
+    *ngIf="!(data?.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async) && !(data?.proposal$ | async)?.rejected">
+    <div class="mb-8 space-y-4">
+    <button nz-button nzType="primary" nzBlock nzSize="large" (click)="onApprove.emit()">
+        Approve</button>
+    <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="onReject.emit()">
+        Decline</button>
+    </div>
+</nz-card>
+
 <nz-card nzTitle="Proposal Info">
     <div class="wen-description-item bg-bg-background"  *ngIf="data.isNativeVote((data.proposal$ | async)?.type)">
         <span nz-typography class=" text-app-gray-400 flex-nowrap" i18n>Current Milestone</span>

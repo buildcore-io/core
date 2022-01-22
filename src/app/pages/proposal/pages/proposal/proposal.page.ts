@@ -12,7 +12,7 @@ import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
-import { ProposalQuestion, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
+import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { FileApi } from './../../../../@api/file.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { MilestoneApi } from './../../../../@api/milestone.api';
@@ -191,19 +191,6 @@ export class ProposalPage implements OnInit, OnDestroy {
       return '';
     }
     return UnitsHelper.formatBest(ans.accumulated);
-  }
-
-  public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
-    let text = '';
-    qs?.forEach((q: ProposalQuestion) => {
-      q.answers.forEach((a) => {
-        if (values.includes(a.value)) {
-          text = a.text;
-        }
-      });
-    });
-
-    return text;
   }
 
   public async approve(): Promise<void> {

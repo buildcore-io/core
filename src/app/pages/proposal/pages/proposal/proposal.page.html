@@ -70,41 +70,14 @@
             </nz-progress>
           </ng-container>
         </div>
-      </nz-card>
-
-      <nz-card i18n-nzTitle nzTitle="Casted Votes"
-        *ngIf="(data.proposal$ | async)?.approved && data.isMemberVote((data.proposal$ | async)?.type) && !data.isPending(data.proposal$ | async)">
-        <nz-table #basicTable [nzData]="(data.transactions$ | async) || []" [nzShowPagination]="false">
-          <thead>
-            <tr>
-              <th i18n>Voter</th>
-              <th i18n>Date</th>
-              <th i18n>Option</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let t of data.transactions$ | async">
-              <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]"> @{{ (t.memberRec.name || t.member )| truncate:[16] }}</td>
-              <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
-              <td>{{ findAnswerText((data.proposal$ | async)?.questions, t.payload.values) }}</td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </nz-card>
-
-      <nz-card nzTitle="Approve Proposal"
-        *ngIf="!(data.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async) && !(data.proposal$ | async)?.rejected">
-        <div class="mb-8 space-y-4">
-          <button nz-button nzType="primary" nzBlock nzSize="large" (click)="approve()">
-            Approve</button>
-          <button nz-button nzDanger nzType="primary" nzBlock nzSize="large" (click)="reject()">
-            Decline</button>
-        </div>
-      </nz-card>
-
+      </nz-card>      
+      
       <wen-proposal-info
         class="block mt-4"
         *ngIf="deviceService.isDesktop$ | async"
+        [isGuardianWithinSpace$]="isGuardianWithinSpace$"
+        (onApprove)="approve()"
+        (onReject)="reject()">
         (onExportClick)="exportNativeEvent()">
       </wen-proposal-info>
 
@@ -132,6 +105,9 @@
       </button>
 
       <wen-proposal-info
+        [isGuardianWithinSpace$]="isGuardianWithinSpace$"
+        (onApprove)="approve()"
+        (onReject)="reject()">
         (onExportClick)="exportNativeEvent()">
       </wen-proposal-info>
     </div>
