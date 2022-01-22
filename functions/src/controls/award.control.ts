@@ -20,6 +20,7 @@ import { Award, AwardType } from './../../interfaces/models/award';
 import { WenRequest } from './../../interfaces/models/base';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 import { CommonJoi } from './../services/joi/common';
+import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -73,9 +74,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   const member = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!member.exists) {

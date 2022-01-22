@@ -20,6 +20,7 @@ import { ProposalStartDateMin, RelatedRecordsResponse } from './../../interfaces
 import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 import { CommonJoi } from './../services/joi/common';
+import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -84,9 +85,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
