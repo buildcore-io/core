@@ -596,30 +596,37 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
   await SpaceValidator.spaceExists(refTargetAllianceSpace);
   await SpaceValidator.isGuardian(refSpace, guardian);
   if (params.body) {
-    const targetSpace: any = await refTargetAllianceSpace.collection(SUB_COL.ALLIANCES).doc(params.body.uid).get();
+    const currentSpace: any = (await refSpace.get()).data();
+    const targetSpace: any = (await refTargetAllianceSpace.get()).data();
     let established = true;
-    if (!targetSpace.exists || targetSpace.data()?.enabled === false || params.body.enabled === false) {
+    const targetSpaceAli: any = targetSpace.alliances?.[params.body.uid];
+    if (!targetSpaceAli || targetSpaceAli.enabled === false || params.body.enabled === false) {
       established = false;
     }
 
-    await refSpace.collection(SUB_COL.ALLIANCES).doc(params.body.targetSpaceId).set({
+    currentSpace.alliances = currentSpace.alliances || {};
+    currentSpace.alliances[params.body.targetSpaceId] = {
       uid: params.body.targetSpaceId,
-      parentId: params.body.uid,
-      parentCol: COL.SPACE,
       enabled: params.body.enabled,
       established: established,
       weight: params.body.weight,
-      createdOn: serverTime()
-    });
+      updatedOn: serverTime(),
+      createdOn: currentSpace.alliances[params.body.targetSpaceId]?.createdOn || serverTime()
+    };
 
-    if (targetSpace.exists) {
-      await refTargetAllianceSpace.collection(SUB_COL.ALLIANCES).doc(params.body.uid).update({
-        established: established
-      });
+    // Update space.
+    await refSpace.update(currentSpace);
+
+    if (targetSpaceAli) {
+      targetSpace.alliances[params.body.uid] = {
+        established: established,
+        updatedOn: serverTime()
+      };
+      await refTargetAllianceSpace.update(targetSpace);
     }
 
     // Load latest
-    docSpace = await refSpace.collection(SUB_COL.ALLIANCES).doc(params.body.targetSpaceId).get();
+    docSpace = await refSpace.get();
   }
 
   return docSpace.data();

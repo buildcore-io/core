@@ -741,10 +741,11 @@ describe('SpaceController: member management', () => {
         const ret1 = await cSpace('Abc1');
         const ret2 = await cSpace('Abc2');
         const all = await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
-        expect(all?.uid).toEqual(ret2?.uid);
-        expect(all?.weight).toEqual(0.5);
-        expect(all?.enabled).toEqual(true);
-        expect(all?.established).toEqual(false);
+        console.log(all);
+        expect(all?.alliances[ret2?.uid]).toBeDefined();
+        expect(all?.alliances[ret2?.uid].weight).toEqual(0.5);
+        expect(all?.alliances[ret2?.uid].enabled).toEqual(true);
+        expect(all?.alliances[ret2?.uid].established).toEqual(false);
         walletSpy.mockRestore();
       });
 
@@ -753,10 +754,10 @@ describe('SpaceController: member management', () => {
         const ret2 = await cSpace('Abc2');
         await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
         const all2 = await sAlliance(ret2?.uid, ret1?.uid, 1, true);
-        expect(all2?.uid).toEqual(ret1?.uid);
-        expect(all2?.weight).toEqual(1);
-        expect(all2?.enabled).toEqual(true);
-        expect(all2?.established).toEqual(true);
+        expect(all2?.alliances[ret1?.uid].uid).toEqual(ret1?.uid);
+        expect(all2?.alliances[ret1?.uid].weight).toEqual(1);
+        expect(all2?.alliances[ret1?.uid].enabled).toEqual(true);
+        expect(all2?.alliances[ret1?.uid].established).toEqual(true);
         walletSpy.mockRestore();
       });
 
@@ -766,7 +767,7 @@ describe('SpaceController: member management', () => {
         await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
         await sAlliance(ret2?.uid, ret1?.uid, 1, true);
         const all2 = await sAlliance(ret2?.uid, ret1?.uid, 1, false);
-        expect(all2?.established).toEqual(false);
+        expect(all2?.alliances[ret1?.uid].established).toEqual(false);
         walletSpy.mockRestore();
       });
 
@@ -776,9 +777,9 @@ describe('SpaceController: member management', () => {
         await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
         await sAlliance(ret2?.uid, ret1?.uid, 1, true);
         const all2 = await sAlliance(ret1?.uid, ret2?.uid, 0.3, true);
-        expect(all2?.weight).toEqual(0.3);
-        expect(all2?.enabled).toEqual(true);
-        expect(all2?.established).toEqual(true);
+        expect(all2?.alliances[ret2?.uid].weight).toEqual(0.3);
+        expect(all2?.alliances[ret2?.uid].enabled).toEqual(true);
+        expect(all2?.alliances[ret2?.uid].established).toEqual(true);
         walletSpy.mockRestore();
       });
 
