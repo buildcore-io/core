@@ -436,7 +436,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
       finalObj.statsPerSpace = finalObj.statsPerSpace || {};
       finalObj.statsPerSpace[docAward.data().space] = finalObj.statsPerSpace[docAward.data().space] || { createdOn: serverTime() };
       finalObj.statsPerSpace[docAward.data().space].awardsCompleted = (finalObj.statsPerSpace[docAward.data().space].awardsCompleted || 0) + 1;
-      finalObj.statsPerSpace[docAward.data().space].totalReputation = (finalObj.statsPerSpace[docAward.data().space].totalReputation || 0) + 1;
+      finalObj.statsPerSpace[docAward.data().space].totalReputation = (finalObj.statsPerSpace[docAward.data().space].totalReputation || 0) + xp;
       finalObj.statsPerSpace[docAward.data().space].updatedOn = serverTime();
       transaction.update(refMember, finalObj);
     });
