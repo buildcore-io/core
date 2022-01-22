@@ -63,6 +63,8 @@ export class MembersPage implements OnInit, OnDestroy {
     { label: 'Space 36', value: 'space36', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }
   ];
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
+  public defaultSpace = DEFAULT_SPACE;
+  public reputationModalVisibleIndex?: number;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(

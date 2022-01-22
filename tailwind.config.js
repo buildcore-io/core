@@ -71,7 +71,8 @@ module.exports = {
         6: '1.5rem',
         10: '2.5rem',
         32: '8rem',
-        100: '25rem'
+        100: '25rem',
+        120: '30rem'
       },
       maxWidth: {
         fit: 'fit-content',
@@ -84,6 +85,8 @@ module.exports = {
         180: '45rem'
       },
       maxHeight: {
+        56: '14rem',
+        80: '20rem',
         128: '32rem'
       },
       borderRadius: {

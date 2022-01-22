@@ -8,7 +8,11 @@
       [isSearchable]="true">
     </wen-select-box>
 
-    <label class="ml-6 text-base font-medium text-app-gray-text" nz-checkbox formControlName="includeAlliances">Include alliances</label>
+    <label class="ml-6 text-base font-medium text-app-gray-text" 
+      nz-checkbox formControlName="includeAlliances"
+      [nzDisabled]="spaceForm.value.space === defaultSpace.value">
+        Include alliances {{ spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+    </label>
   </form>
 
   <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
@@ -62,7 +66,14 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="outline-none w-full lg:w-auto" *ngFor="let member of members$ | async; trackBy: trackByUid" [member]="member">
+    <wen-member-card class="outline-none w-full lg:w-auto relative"
+      [ngClass]="{
+        'z-10': reputationModalVisibleIndex === i
+      }" 
+      *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member"
+      [allowReputationModal]="spaceForm.value.includeAlliances"
+      [reputationModalVisible]="reputationModalVisibleIndex === i"
+      (reputationModalVisibleChange)="reputationModalVisibleIndex = i">
     </wen-member-card>
   </div>
 </div>

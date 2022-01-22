@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MemberApi } from "@api/member.api";
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -20,8 +20,15 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   @Input() fullWidth?: boolean;
   @Input() about?: string;
   @Input() role?: string;
+  @Input() allowReputationModal?: boolean;
+  @Input()
+  set reputationModalVisible(value: boolean) {
+    this.isReputationModalVisible  = value;
+  }
+  @Output() reputationModalVisibleChange = new EventEmitter<boolean>(false);
   public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public path = ROUTER_UTILS.config.member.root;
+  public isReputationModalVisible = false;
 
   constructor(
     private memberApi: MemberApi,
@@ -38,6 +45,12 @@ export class MemberCardComponent implements OnInit, OnDestroy {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+
+  public setIsReputationModalVisible(value: boolean): void {
+    if(!this.allowReputationModal) return;
+    this.isReputationModalVisible = value;
+    this.reputationModalVisibleChange.emit(value);
   }
 
   public ngOnDestroy(): void {
