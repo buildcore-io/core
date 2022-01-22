@@ -741,7 +741,6 @@ describe('SpaceController: member management', () => {
         const ret1 = await cSpace('Abc1');
         const ret2 = await cSpace('Abc2');
         const all = await sAlliance(ret1?.uid, ret2?.uid, 0.5, true);
-        console.log(all);
         expect(all?.alliances[ret2?.uid]).toBeDefined();
         expect(all?.alliances[ret2?.uid].weight).toEqual(0.5);
         expect(all?.alliances[ret2?.uid].enabled).toEqual(true);
