@@ -11,10 +11,11 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
 import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
+import { CommonJoi } from './../services/joi/common';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -105,7 +106,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {
-    uid: Joi.string().length(ethAddressLength).lowercase().required()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -154,7 +155,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -216,7 +217,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -277,8 +278,8 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -334,8 +335,8 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -388,8 +389,8 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -476,8 +477,8 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -514,8 +515,8 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -571,8 +572,8 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions.runW
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 

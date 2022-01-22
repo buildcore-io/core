@@ -13,19 +13,20 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { StandardResponse } from './../../interfaces/functions/index';
 import { Award, AwardType } from './../../interfaces/models/award';
 import { WenRequest } from './../../interfaces/models/base';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
+import { CommonJoi } from './../services/joi/common';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(AwardType.PARTICIPATE_AND_APPROVE).required(),
-    space: Joi.string().length(ethAddressLength).lowercase().required(),
+    space: CommonJoi.uidCheck(),
     endDate: Joi.date().required(),
     badge: Joi.object({
       name: Joi.string().required(),
@@ -145,8 +146,8 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -188,7 +189,7 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -230,7 +231,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -277,7 +278,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
   const participant = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
+      uid: CommonJoi.uidCheck(),
       comment: Joi.string().allow(null, '').optional()
   }));
   assertValidation(schema.validate(params.body));
@@ -343,8 +344,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
   const owner = params.address.toLowerCase();
   const tranId = getRandomEthAddress();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
