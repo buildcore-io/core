@@ -8,7 +8,7 @@ export interface AllianceItem {
   img: string;
   name: string;
   awards: number;
-  iXP: number;
+  XP: number;
 }
 
 @UntilDestroy()
@@ -23,7 +23,7 @@ export class MemberReputationModalComponent implements OnInit {
   public set alliances(value: AllianceItem[]) {
     this._alliances = value;
     this.totalAwards = this.alliances.reduce((acc, alliance) => acc + alliance.awards, 0);
-    this.totaliXP = this.alliances.reduce((acc, alliance) => acc + alliance.iXP, 0);
+    this.totalXP = this.alliances.reduce((acc, alliance) => acc + alliance.XP, 0);
   }
   public get alliances(): AllianceItem[] {
     return this._alliances;
@@ -34,7 +34,7 @@ export class MemberReputationModalComponent implements OnInit {
 
   private _alliances: AllianceItem[] = [];
   public totalAwards = 0;
-  public totaliXP = 0;
+  public totalXP = 0;
   public leftPosition = true;
 
   constructor(

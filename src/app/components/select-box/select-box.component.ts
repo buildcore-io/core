@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, TemplateRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export interface SelectBoxOption {
   label: string;
@@ -7,6 +8,7 @@ export interface SelectBoxOption {
   img?: string;
 }
 
+@UntilDestroy()
 @Component({
   selector: 'wen-select-box',
   templateUrl: './select-box.component.html',
@@ -20,7 +22,7 @@ export interface SelectBoxOption {
     }
   ]
 })
-export class SelectBoxComponent implements ControlValueAccessor {
+export class SelectBoxComponent implements OnInit, ControlValueAccessor {
 
   @Input() value?: string;
   @Input() 
@@ -41,13 +43,19 @@ export class SelectBoxComponent implements ControlValueAccessor {
   public isOptionsOpen = false;
   public optionValue?: SelectBoxOption;
   public showImages = true;
-  public searchValue = '';
+  public searchControl: FormControl = new FormControl('');
   public shownOptions: SelectBoxOption[] = [];
   private _options: SelectBoxOption[] = [];
 
   constructor(
     private cd: ChangeDetectorRef
   ) {}
+
+  public ngOnInit(): void {
+      this.searchControl.valueChanges
+        .pipe(untilDestroyed(this))
+        .subscribe(this.onSearchValueChange.bind(this));
+  }
 
   public registerOnChange(fn: (v: string | undefined) => undefined): void {
     this.onChange = fn;
@@ -80,12 +88,12 @@ export class SelectBoxComponent implements ControlValueAccessor {
 
   public onSearchValueChange(): void {
     this.shownOptions = this.options.filter(r => 
-      r.label.toLowerCase().includes(this.searchValue.toLowerCase()) || 
-      r.value.toLowerCase().includes(this.searchValue.toLowerCase()));
+      r.label.toLowerCase().includes(this.searchControl.value.toLowerCase()) || 
+      r.value.toLowerCase().includes(this.searchControl.value.toLowerCase()));
   }
 
   public onEraseClick(): void {
-    this.searchValue = '';
+    this.searchControl.setValue('');
     this.onSearchValueChange();
   }
 }
