@@ -23,7 +23,6 @@ export class RouterService {
     
     this.router.events.subscribe((obj) => {
       if (obj instanceof NavigationEnd) {
-        console.log(obj);
         this.updateVariables();
       }
     });

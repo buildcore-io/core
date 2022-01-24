@@ -40,6 +40,202 @@
     </div>
 </nz-card>
 
+<nz-card class="lg:mt-4 relative">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center">
+            <div class="text-lg font-bold">Alliances</div>
+            <div class="relative flex justify-center items-center ml-2">
+                <wen-icon-question-circle class="alliances-question cursor-help"></wen-icon-question-circle>
+                <div class="alliances-tooltip hidden z-10 p-6 rounded-3xl text-sm font-medium bg-white 
+                    absolute text-app-gra-text w-96 top-full transform translate-y-2">
+                        Alliances between spaces enable different comunities to recognise their members experience points.
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center text-blue-light1 text-sm font-semibold cursor-pointer"
+            (click)="isAlliancesListModal = true">
+            Show all
+            <wen-icon-angle-right class="ml-2"></wen-icon-angle-right>
+        </div>
+    </div>
+    
+    <div class="text-sm font-semibold text-app-gray-400 mt-3 w-5/6">
+        Allied spaces that recognize points earned at IOTA Treasury
+    </div>
+    
+    <div class="mt-6">
+        <div *ngFor="let ally of alliedSpaces; let i = index" class="mt-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img [src]="ally.img" alt="Allied space image" class="min-w-8">
+                    
+                    <div class="text-sm font-bold ml-3">{{ ally.name }}</div>
+                </div>
+                
+                <div *ngIf="ally.status === 'established'" class="flex items-center text-sm font-medium text-green-success">
+                    Established
+                    <wen-icon-check class="ml-3"></wen-icon-check>
+                </div>
+                <div *ngIf="ally.status === 'recognised'" class="flex items-center text-sm font-medium text-app-gray-400">
+                    Recognised
+                    <wen-icon-eye class="ml-3"></wen-icon-eye>
+                </div>
+            </div>
+            
+            <div *ngIf="i !== alliedSpaces.length - 1" class="mt-3 h-px w-full bg-app-gray-separator"></div>
+        </div>
+    </div>
+
+    <div class="mt-8 bg-blue-light1 text-sm font-semibold cursor-pointer
+        flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
+        (click)="openNewAlliance()">
+            New alliance
+    </div>
+
+    <ng-template #allianceSuccessAlert>
+        <div class="flex items-start">
+            <wen-icon-air-blow class="text-green-success"></wen-icon-air-blow>
+            <div class="ml-4">
+                <div class="text-base font-bold">
+                    Alliance request has been sent
+                </div>
+                <div class="text-xs font-medium text-app-gray-400 mt-2">
+                    If the other space does not establish an alliance, your relationship will be in a state “Recognised”.
+                </div>
+                <div class="mt-5 bg-blue-light1 text-sm font-semibold cursor-pointer
+                    flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
+                    (click)="notificationService.remove()">
+                        I understand
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <nz-modal
+      [(nzVisible)]="isAlliancesListModal"
+      nzCentered
+      [nzClosable]="false"
+      [nzMaskClosable]="true"
+      [nzMask]="true"
+      (nzOnCancel)="isAlliancesListModal = false"
+      [nzContent]="alliancesListModalContent"
+      [nzFooter]="null"
+      [nzBodyStyle]="{ padding: '28px 24px 0px 24px' }"
+    >
+        <ng-template #alliancesListModalContent>
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-bold">IOTA Treasury alliances</div>
+                <div class="bg-blue-light1 text-sm font-semibold cursor-pointer
+                    flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
+                    (click)="openNewAlliance()">
+                        New alliance
+                </div>
+            </div>
+
+            <div class="h-96 overflow-y-auto mt-7">
+                <div *ngFor="let ally of alliedSpacesDialog; let i = index" class="mt-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img [src]="ally.img" alt="Allied space image" class="min-w-8">
+                            
+                            <div class="text-sm font-bold ml-3">{{ ally.name }}</div>
+                        </div>
+                        
+                        <div *ngIf="ally.status === 'established'" class="flex items-center text-sm font-medium text-green-success">
+                            Established
+                            <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit(ally)"></wen-icon-edit>
+                        </div>
+                        <div *ngIf="ally.status === 'recognised'" class="flex items-center text-sm font-medium text-app-gray-400">
+                            Recognised
+                            <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit(ally)"></wen-icon-edit>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="i !== alliedSpacesDialog.length - 1" class="mt-3 h-px w-full bg-app-gray-separator"></div>
+                </div>
+            </div>
+        </ng-template>
+    </nz-modal>
+
+    <nz-modal
+        [(nzVisible)]="isNewAllianceModalOpen"
+        nzCentered
+        [nzClosable]="false"
+        [nzMaskClosable]="true"
+        [nzMask]="true"
+        (nzOnCancel)="closeNewAlliance()"
+        [nzContent]="newAllianceModalContent"
+        [nzFooter]="null"
+        [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
+    >
+      <ng-template #newAllianceModalContent>
+        <div class="flex items-start justify-between">
+            <div class="text-2xl font-bold">New alliance</div>
+            <wen-icon-close class="cursor-pointer" (click)="closeNewAlliance()"></wen-icon-close>
+        </div>
+
+        <div class="mt-7">
+            <nz-form-item>
+                <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
+                    <nz-select
+                        class="w-full"
+                        nzSize="large"
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="Select space"
+                        [formControl]="spaceControl"
+                    >
+                        <nz-option
+                            *ngFor="let s of alliedSpacesDialog; trackBy: trackByAlliedSpaceLabel"
+                            nzCustomContent
+                            [nzLabel]="s.name"
+                            [nzValue]="s.name"
+                            >
+                            <nz-avatar
+                                [nzSrc]="s.img"
+                                [nzSize]="32"
+                                class="mr-3 border-2 border-app-gray-100"
+                                nzShape="circle"
+                            >
+                            </nz-avatar>
+                            {{s.name}}
+                        </nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-control i18n-nzErrorTip nzErrorTip="">
+                    <nz-input-number
+                        class="w-full"
+                        nzSize="large"
+                        nzPlaceHolder="Reputation weight"
+                        [formControl]="reputationWeightControl"
+                    ></nz-input-number>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+
+        <div class="mt-2 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="bg-blue-light1 text-sm font-semibold cursor-pointer
+                    flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
+                    (click)="onAllianceSave()">
+                        Save
+                </div>
+                <div class="text-sm font-semibold cursor-pointer text-blue-light1 ml-8"
+                    (click)="isNewAllianceModalOpen = false">Cancel</div>
+            </div>
+
+            <div class="flex items-center text-orange-darkest text-sm font-semibold">
+                <wen-icon-terminated class="mr-2"></wen-icon-terminated>
+                Terminate alliance
+            </div>
+        </div>
+      </ng-template>
+  </nz-modal>
+</nz-card>
+
 <nz-card nzTitle="Related Links" class="lg:mt-4"
     *ngIf="(data.space$ | async)?.github || (data.space$ | async)?.twitter || (data.space$ | async)?.discord">
     <div *ngIf="(data.space$ | async)?.github">
@@ -76,7 +272,7 @@
 
 <nz-card [nzTitle]="(data.space$ | async)?.totalGuardians + ' Guardians'" class="lg:mt-4">
     <div class="space-y-2" *ngIf="data.guardians$">
-        <div *ngFor="let g of data.guardians$ | async; trackBy: trackByUid"
+        <div *ngFor="let g of data.guardians$ | async; trackBy: trackByGuardianUid"
             class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
             <nz-avatar nzIcon="user"
                 [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small"

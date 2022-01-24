@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
@@ -7,6 +8,11 @@ import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { MarkDownModule } from './../../../../@core/pipes/markdown/markdown.module';
 import { SpaceAboutComponent } from './space-about.component';
@@ -27,7 +33,14 @@ import { SpaceAboutComponent } from './space-about.component';
     NzTagModule,
     TruncateModule,
     IpfsAvatarModule,
-    NzButtonModule
+    NzButtonModule,
+    NzModalModule,
+    NzFormModule,
+    NzSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzInputNumberModule,
+    NzNotificationModule
   ],
   exports: [
     SpaceAboutComponent
