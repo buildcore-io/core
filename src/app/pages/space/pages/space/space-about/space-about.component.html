@@ -40,76 +40,60 @@
     </div>
 </nz-card>
 
-<nz-card class="lg:mt-4 relative">
+<nz-card class="relative lg:mt-4">
     <div class="flex items-center justify-between">
         <div class="flex items-center">
             <div class="text-lg font-bold">Alliances</div>
-            <div class="relative flex justify-center items-center ml-2">
+            <div class="relative flex items-center justify-center ml-2">
                 <wen-icon-question-circle class="alliances-question cursor-help"></wen-icon-question-circle>
-                <div class="alliances-tooltip hidden z-10 p-6 rounded-3xl text-sm font-medium bg-white 
-                    absolute text-app-gra-text w-96 top-full transform translate-y-2">
-                        Alliances between spaces enable different comunities to recognise their members experience points.
+                <div class="absolute z-10 hidden p-6 text-sm font-medium transform translate-y-2 bg-white alliances-tooltip rounded-3xl text-app-gra-text w-96 top-full">
+                        Alliances between spaces enable different communities to recognize their members experience points. Established alliances means that the other space created one with you as well.
                 </div>
             </div>
         </div>
-        <div class="flex items-center text-blue-light1 text-sm font-semibold cursor-pointer"
+        <div class="flex items-center text-sm font-semibold cursor-pointer text-blue-light1" *ngIf="getSortedAlliances(data.space$ | async).length > 0"
             (click)="isAlliancesListModal = true">
             Show all
             <wen-icon-angle-right class="ml-2"></wen-icon-angle-right>
         </div>
     </div>
-    
-    <div class="text-sm font-semibold text-app-gray-400 mt-3 w-5/6">
-        Allied spaces that recognize points earned at IOTA Treasury
+
+    <div class="w-5/6 mt-3 text-sm font-semibold text-app-gray-400">
+        Allied spaces that you recognize
     </div>
-    
+
     <div class="mt-6">
-        <div *ngFor="let ally of alliedSpaces; let i = index" class="mt-3">
+        <div *ngFor="let ally of getSortedAlliances(data.space$ | async); let i = index; let last = last" class="mt-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <img [src]="ally.img" alt="Allied space image" class="min-w-8">
-                    
-                    <div class="text-sm font-bold ml-3">{{ ally.name }}</div>
+                  <nz-avatar
+                    [nzSrc]="getAvatarSize(ally._record.avatarUrl)"
+                    class="mr-3 bg-white border-gray-400"
+                    nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="ml-3 text-sm font-bold">{{ ally._record.name }}</div>
                 </div>
-                
-                <div *ngIf="ally.status === 'established'" class="flex items-center text-sm font-medium text-green-success">
+
+                <div *ngIf="ally.established === true" class="flex items-center text-sm font-medium text-green-success" i18n>
                     Established
                     <wen-icon-check class="ml-3"></wen-icon-check>
                 </div>
-                <div *ngIf="ally.status === 'recognised'" class="flex items-center text-sm font-medium text-app-gray-400">
+                <div *ngIf="ally.established === false" class="flex items-center text-sm font-medium text-app-gray-400" i18n>
                     Recognised
                     <wen-icon-eye class="ml-3"></wen-icon-eye>
                 </div>
             </div>
-            
-            <div *ngIf="i !== alliedSpaces.length - 1" class="mt-3 h-px w-full bg-app-gray-separator"></div>
+
+            <div *ngIf="last" class="w-full h-px mt-3 bg-app-gray-separator"></div>
         </div>
     </div>
 
-    <div class="mt-8 bg-blue-light1 text-sm font-semibold cursor-pointer
-        flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
-        (click)="openNewAlliance()">
+    <div class="flex items-center justify-center px-3 py-1 mt-8 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
+        *ngIf="data.isGuardianWithinSpace$ | async"
+        (click)="openAlliance()" i18n>
             New alliance
     </div>
-
-    <ng-template #allianceSuccessAlert>
-        <div class="flex items-start">
-            <wen-icon-air-blow class="text-green-success"></wen-icon-air-blow>
-            <div class="ml-4">
-                <div class="text-base font-bold">
-                    Alliance request has been sent
-                </div>
-                <div class="text-xs font-medium text-app-gray-400 mt-2">
-                    If the other space does not establish an alliance, your relationship will be in a state “Recognised”.
-                </div>
-                <div class="mt-5 bg-blue-light1 text-sm font-semibold cursor-pointer
-                    flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
-                    (click)="notificationService.remove()">
-                        I understand
-                </div>
-            </div>
-        </div>
-    </ng-template>
 
     <nz-modal
       [(nzVisible)]="isAlliancesListModal"
@@ -124,34 +108,37 @@
     >
         <ng-template #alliancesListModalContent>
             <div class="flex items-center justify-between">
-                <div class="text-2xl font-bold">IOTA Treasury alliances</div>
-                <div class="bg-blue-light1 text-sm font-semibold cursor-pointer
-                    flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
-                    (click)="openNewAlliance()">
+                <div class="text-2xl font-bold">Space Alliances</div>
+                <div class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
+                    (click)="openAlliance()" i18n>
                         New alliance
                 </div>
             </div>
 
-            <div class="h-96 overflow-y-auto mt-7">
-                <div *ngFor="let ally of alliedSpacesDialog; let i = index" class="mt-3">
+            <div class="overflow-y-auto h-96 mt-7">
+                <div *ngFor="let ally of getSortedAlliances(data.space$ | async); let i = index; let last = last;" class="mt-3">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <img [src]="ally.img" alt="Allied space image" class="min-w-8">
-                            
-                            <div class="text-sm font-bold ml-3">{{ ally.name }}</div>
+                            <nz-avatar
+                              [nzSrc]="getAvatarSize(ally._record.avatarUrl)"
+                              class="mr-3 bg-white border-gray-400"
+                              nzShape="circle"
+                            >
+                            </nz-avatar>
+                            <div class="ml-3 text-sm font-bold">{{ ally._record.name }}</div>
                         </div>
-                        
-                        <div *ngIf="ally.status === 'established'" class="flex items-center text-sm font-medium text-green-success">
+
+                        <div *ngIf="ally.established === true" class="flex items-center text-sm font-medium text-green-success">
                             Established
                             <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit(ally)"></wen-icon-edit>
                         </div>
-                        <div *ngIf="ally.status === 'recognised'" class="flex items-center text-sm font-medium text-app-gray-400">
+                        <div *ngIf="ally.established !== true" class="flex items-center text-sm font-medium text-app-gray-400">
                             Recognised
                             <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit(ally)"></wen-icon-edit>
                         </div>
                     </div>
-                    
-                    <div *ngIf="i !== alliedSpacesDialog.length - 1" class="mt-3 h-px w-full bg-app-gray-separator"></div>
+
+                    <div *ngIf="!last" class="w-full h-px mt-3 bg-app-gray-separator"></div>
                 </div>
             </div>
         </ng-template>
@@ -183,22 +170,21 @@
                         nzShowSearch
                         nzAllowClear
                         nzPlaceHolder="Select space"
-                        [formControl]="spaceControl"
+                        [formControl]="spaceAllianceControl"
                     >
                         <nz-option
-                            *ngFor="let s of alliedSpacesDialog; trackBy: trackByAlliedSpaceLabel"
+                            *ngFor="let s of (allSpaces$ | async); trackBy: trackByAlliedSpaceUid"
                             nzCustomContent
-                            [nzLabel]="s.name"
-                            [nzValue]="s.name"
+                            [nzLabel]="s.name || s.uid"
+                            [nzValue]="s.uid"
                             >
                             <nz-avatar
-                                [nzSrc]="s.img"
+                                [nzSrc]="getAvatarSize(s.avatarUrl)"
                                 [nzSize]="32"
                                 class="mr-3 border-2 border-app-gray-100"
-                                nzShape="circle"
-                            >
+                                nzShape="circle">
                             </nz-avatar>
-                            {{s.name}}
+                            {{s.name || s.uid}}
                         </nz-option>
                     </nz-select>
                 </nz-form-control>
@@ -216,18 +202,17 @@
             </nz-form-item>
         </div>
 
-        <div class="mt-2 flex items-center justify-between">
+        <div class="flex items-center justify-between mt-2">
             <div class="flex items-center">
-                <div class="bg-blue-light1 text-sm font-semibold cursor-pointer
-                    flex justify-center items-center px-3 py-1 rounded-3xl w-max text-white"
+                <div class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
                     (click)="onAllianceSave()">
                         Save
                 </div>
-                <div class="text-sm font-semibold cursor-pointer text-blue-light1 ml-8"
+                <div class="ml-8 text-sm font-semibold cursor-pointer text-blue-light1"
                     (click)="isNewAllianceModalOpen = false">Cancel</div>
             </div>
 
-            <div class="flex items-center text-orange-darkest text-sm font-semibold">
+            <div class="flex items-center text-sm font-semibold cursor-pointer text-orange-darkest" (click)="onAllianceSave(false)" *ngIf="!isNewAlliance">
                 <wen-icon-terminated class="mr-2"></wen-icon-terminated>
                 Terminate alliance
             </div>

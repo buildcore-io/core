@@ -14,7 +14,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { MarkDownModule } from './../../../../@core/pipes/markdown/markdown.module';
+import { MarkDownModule } from '../../../../../@core/pipes/markdown/markdown.module';
 import { SpaceAboutComponent } from './space-about.component';
 
 

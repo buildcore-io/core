@@ -3,7 +3,7 @@ import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
 import { createMember, updateMember } from './controls/member.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
-import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, unblockMember, updateSpace } from './controls/space.control';
+import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { markAwardsAsComplete } from "./cron";
 admin.initializeApp();
 
@@ -23,6 +23,7 @@ exports[WEN_FUNC.blockMemberSpace] = blockMember;
 exports[WEN_FUNC.unblockMemberSpace] = unblockMember;
 exports[WEN_FUNC.acceptMemberSpace] = acceptMemberSpace;
 exports[WEN_FUNC.declineMemberSpace] = declineMemberSpace;
+exports[WEN_FUNC.setAlliance] = setAlliance;
 
 // Award Functions
 exports[WEN_FUNC.cAward] = createAward;
