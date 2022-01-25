@@ -1,0 +1,277 @@
+<ng-container *ngIf="deviceService.isMobile$ | async">
+    <div class="flex items-center mt-5 ml-6">
+        <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40"
+            class="bg-white border-2 border-gray-400 min-w-10" nzShape="circle">
+        </nz-avatar>
+        <h1 class="w-2/3 mb-0 ml-4 text-2xl" i18n>{{ (data.space$ | async)?.name }}</h1>
+    </div>
+
+    <a nz-button class="flex items-center mt-5 mb-5 ml-6 wen-space-links" nzType="link" [routerLink]="['members']">
+        <wen-icon-members class="text-app-gray-400"></wen-icon-members>
+        <div class="ml-3">{{ (data.space$ | async)?.totalMembers }} members
+            <span *ngIf="(data.space$ | async)?.totalPendingMembers">
+                {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
+            </span>
+        </div>
+    </a>
+</ng-container>
+
+<nz-card nzTitle="About">
+    <p
+        nz-typography
+        [innerHtml]="(data.space$ | async)?.about | markdown"
+        class="text-base font-medium whitespace-pre-line text-app-gray-text">
+    </p>
+</nz-card>
+
+<nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
+    <div class="flex flex-col items-baseline space-y-3">
+        <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
+            <wen-icon-members class="text-app-gray-400"></wen-icon-members>
+            <span>{{ (data.space$ | async)?.totalMembers }} members
+                <span *ngIf="(data.space$ | async)?.totalPendingMembers">
+                    {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
+                </span>
+            </span>
+        </a>
+        <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
+            {{ (data.space$ | async)?.open ? 'Open to join instantly' : 'Requires approval to join'}}
+        </nz-tag>
+    </div>
+</nz-card>
+
+<nz-card class="relative lg:mt-4">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center">
+            <div class="text-lg font-bold">Alliances</div>
+            <div class="relative flex items-center justify-center ml-2">
+                <wen-icon-question-circle class="alliances-question cursor-help"></wen-icon-question-circle>
+                <div class="absolute z-10 hidden p-6 text-sm font-medium transform translate-y-2 bg-white alliances-tooltip rounded-3xl text-app-gra-text w-96 top-full" i18n>
+                  Alliances between spaces enables members of one space to recognize alliance members of another space via their experience points. Established alliances means both parties agreed to an alliance.
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center text-sm font-semibold cursor-pointer text-blue-light1" *ngIf="getSortedAlliances(data.space$ | async).length > 0"
+            (click)="isAlliancesListModal = true">
+            Show all
+            <wen-icon-angle-right class="ml-2"></wen-icon-angle-right>
+        </div>
+    </div>
+
+    <div class="w-5/6 mt-3 text-sm font-semibold text-app-gray-400">
+        Allied spaces that you recognize
+    </div>
+
+    <div class="mt-6">
+        <div *ngFor="let ally of getSortedAlliances(data.space$ | async); let i = index; let last = last" class="mt-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <nz-avatar
+                    [nzSrc]="getAvatarSize(ally._record.avatarUrl)"
+                    class="mr-3 bg-white border-gray-400"
+                    nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="ml-3 text-sm font-bold">{{ ally._record.name }}</div>
+                </div>
+
+                <div *ngIf="ally.established === true" class="flex items-center text-sm font-medium text-green-success" i18n>
+                    Established
+                    <wen-icon-check class="ml-3"></wen-icon-check>
+                </div>
+                <div *ngIf="ally.established === false" class="flex items-center text-sm font-medium text-app-gray-400" i18n>
+                    Recognised
+                    <wen-icon-eye class="ml-3"></wen-icon-eye>
+                </div>
+            </div>
+
+            <div *ngIf="last" class="w-full h-px mt-3 bg-app-gray-separator"></div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-center px-3 py-1 mt-8 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
+        *ngIf="data.isGuardianWithinSpace$ | async"
+        (click)="openAlliance()" i18n>
+            New alliance
+    </div>
+
+    <nz-modal
+      [(nzVisible)]="isAlliancesListModal"
+      nzCentered
+      [nzClosable]="false"
+      [nzMaskClosable]="true"
+      [nzMask]="true"
+      (nzOnCancel)="isAlliancesListModal = false"
+      [nzContent]="alliancesListModalContent"
+      [nzFooter]="null"
+      [nzBodyStyle]="{ padding: '28px 24px 0px 24px' }"
+    >
+        <ng-template #alliancesListModalContent>
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-bold">Space Alliances</div>
+                <div class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
+                    (click)="openAlliance()" i18n>
+                        New alliance
+                </div>
+            </div>
+
+            <div class="overflow-y-auto h-96 mt-7">
+                <div *ngFor="let ally of getSortedAlliances(data.space$ | async); let i = index; let last = last;" class="mt-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <nz-avatar
+                              [nzSrc]="getAvatarSize(ally._record.avatarUrl)"
+                              class="mr-3 bg-white border-gray-400"
+                              nzShape="circle"
+                            >
+                            </nz-avatar>
+                            <div class="ml-3 text-sm font-bold">{{ ally._record.name }}</div>
+                        </div>
+
+                        <div *ngIf="ally.established === true" class="flex items-center text-sm font-medium text-green-success">
+                            Established
+                            <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit(ally)"></wen-icon-edit>
+                        </div>
+                        <div *ngIf="ally.established !== true" class="flex items-center text-sm font-medium text-app-gray-400">
+                            Recognised
+                            <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit(ally)"></wen-icon-edit>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!last" class="w-full h-px mt-3 bg-app-gray-separator"></div>
+                </div>
+            </div>
+        </ng-template>
+    </nz-modal>
+
+    <nz-modal
+        [(nzVisible)]="isNewAllianceModalOpen"
+        nzCentered
+        [nzClosable]="false"
+        [nzMaskClosable]="true"
+        [nzMask]="true"
+        (nzOnCancel)="closeNewAlliance()"
+        [nzContent]="newAllianceModalContent"
+        [nzFooter]="null"
+        [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
+    >
+      <ng-template #newAllianceModalContent>
+        <div class="flex items-start justify-between">
+            <div class="text-2xl font-bold">New alliance</div>
+            <wen-icon-close class="cursor-pointer" (click)="closeNewAlliance()"></wen-icon-close>
+        </div>
+
+        <div class="mt-7">
+            <nz-form-item>
+                <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
+                    <nz-select
+                        class="w-full"
+                        nzSize="large"
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="Select space"
+                        [formControl]="spaceAllianceControl"
+                    >
+                        <nz-option
+                            *ngFor="let s of (allSpaces$ | async); trackBy: trackByAlliedSpaceUid"
+                            nzCustomContent
+                            [nzLabel]="s.name || s.uid"
+                            [nzValue]="s.uid"
+                            >
+                            <nz-avatar
+                                [nzSrc]="getAvatarSize(s.avatarUrl)"
+                                [nzSize]="32"
+                                class="mr-3 border-2 border-app-gray-100"
+                                nzShape="circle">
+                            </nz-avatar>
+                            {{s.name || s.uid}}
+                        </nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-control i18n-nzErrorTip nzErrorTip="">
+                    <nz-input-number
+                        class="w-full"
+                        nzSize="large"
+                        nzPlaceHolder="Reputation weight"
+                        [formControl]="reputationWeightControl"
+                    ></nz-input-number>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+
+        <div class="flex items-center justify-between mt-2">
+            <div class="flex items-center">
+                <div class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
+                    (click)="onAllianceSave()">
+                        Save
+                </div>
+                <div class="ml-8 text-sm font-semibold cursor-pointer text-blue-light1"
+                    (click)="isNewAllianceModalOpen = false">Cancel</div>
+            </div>
+
+            <div class="flex items-center text-sm font-semibold cursor-pointer text-orange-darkest" (click)="onAllianceSave(false)" *ngIf="!isNewAlliance">
+                <wen-icon-terminated class="mr-2"></wen-icon-terminated>
+                Terminate alliance
+            </div>
+        </div>
+      </ng-template>
+  </nz-modal>
+</nz-card>
+
+<nz-card nzTitle="Related Links" class="lg:mt-4"
+    *ngIf="(data.space$ | async)?.github || (data.space$ | async)?.twitter || (data.space$ | async)?.discord">
+    <div *ngIf="(data.space$ | async)?.github">
+        <a nz-button class="wen-space-links" nzType="link" target="new"
+            [ngClass]="{
+                'mobile-link': deviceService.isMobile$ | async
+            }"
+            [href]="'https://github.com/' + (data.space$ | async)?.github">
+            <wen-icon-github class="text-app-gray-400"></wen-icon-github>
+            <span>{{ (data.space$ | async)?.github }}</span>
+        </a>
+    </div>
+    <div *ngIf="(data.space$ | async)?.twitter">
+        <a nz-button class="wen-space-links" nzType="link" target="new"
+            [ngClass]="{
+                'mobile-link': deviceService.isMobile$ | async
+            }"
+            [href]="'https://twitter.com/' + (data.space$ | async)?.twitter">
+            <wen-icon-twitter class="text-app-gray-400"></wen-icon-twitter>
+            <span>{{ (data.space$ | async)?.twitter }}</span>
+        </a>
+    </div>
+    <div *ngIf="(data.space$ | async)?.discord">
+        <a nz-button class="wen-space-links" nzType="link" target="new"
+            [ngClass]="{
+                'mobile-link': deviceService.isMobile$ | async
+            }"
+            [href]="'https://discord.gg/' + (data.space$ | async)?.discord">
+            <wen-icon-discord class="text-app-gray-400"></wen-icon-discord>
+            <span>{{'discord.gg/' + (data.space$ | async)?.discord}}</span>
+        </a>
+    </div>
+</nz-card>
+
+<nz-card [nzTitle]="(data.space$ | async)?.totalGuardians + ' Guardians'" class="lg:mt-4">
+    <div class="space-y-2" *ngIf="data.guardians$">
+        <div *ngFor="let g of data.guardians$ | async; trackBy: trackByGuardianUid"
+            class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
+            <nz-avatar nzIcon="user"
+                [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small"
+                class="mr-2" [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
+            </nz-avatar>
+            <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16] }}</span>
+        </div>
+    </div>
+</nz-card>
+
+<div class="pt-6 lg:mt-4 lg:pt-0">
+    <button class="flex justify-center" nz-button nzBlock nzDanger (click)="onLeave.emit()" i18n
+        *ngIf="!!(data.isMemberWithinSpace$ | async)">
+        <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
+        Leave Space
+    </button>
+</div>

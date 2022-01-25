@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AwardAwardsModule } from '@components/award/components/award-awards/award-awards.module';
-import { AwardInfoModule } from '@components/award/components/award-info/award-info.module';
+import { AwardInfoModule } from '@pages/award/pages/award/award-info/award-info.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
