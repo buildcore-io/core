@@ -64,7 +64,6 @@ export class MembersPage implements OnInit, OnDestroy {
   ];
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public defaultSpace = DEFAULT_SPACE;
-  public reputationModalVisibleIndex?: number;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(

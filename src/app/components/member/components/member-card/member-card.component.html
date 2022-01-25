@@ -26,8 +26,8 @@
     </div>
 
     <div class="bottom-0 flex lg:relative" [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'">
-      <div class="relative inline-flex items-center space-x-3">
-        <nz-tag class="wen-xp-tag cursor-pointer" (click)="setIsReputationModalVisible(!isReputationModalVisible)">
+      <div class="relative inline-flex items-center space-x-3" #xpWrapper>
+        <nz-tag class="wen-xp-tag cursor-pointer" (click)="isReputationModalVisible = allowReputationModal || false">
           {{ member.totalReputation ? member.totalReputation : 0 }} XP</nz-tag>
         <nz-tag class="flex items-center space-x-3 bg-transparent border-transparent wen-status-tag">
           <wen-icon-award class="w-4 h-4 text-app-gray-400"></wen-icon-award>
@@ -36,7 +36,7 @@
         </nz-tag>
         
         <wen-member-reputation-modal
-          *ngIf="isReputationModalVisible"
+          [isOpen]="isReputationModalVisible"
           [alliances]="[
             { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
             { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
@@ -68,7 +68,11 @@
             { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
             { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 }
           ]"
-          [member]="member">
+          [member]="member"
+          [leftPosition]="reputationModalLeftPosition"
+          [bottomPosition]="reputationModalBottomPosition"
+          [rightPosition]="reputationModalRightPosition"
+          (onClose)="isReputationModalVisible = false">
         </wen-member-reputation-modal>
       </div>
 

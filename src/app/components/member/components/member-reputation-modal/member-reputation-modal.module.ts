@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { MemberReputationModalComponent } from './member-reputation-modal.component';
@@ -17,7 +18,8 @@ import { MemberReputationModalComponent } from './member-reputation-modal.compon
     NzTableModule,
     NzAvatarModule,
     IpfsAvatarModule,
-    NzTypographyModule
+    NzTypographyModule,
+    NzModalModule
   ],
   exports: [
     MemberReputationModalComponent

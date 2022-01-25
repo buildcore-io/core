@@ -67,13 +67,8 @@
     </nz-card>
 
     <wen-member-card class="outline-none w-full lg:w-auto relative"
-      [ngClass]="{
-        'z-10': reputationModalVisibleIndex === i
-      }" 
       *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member"
-      [allowReputationModal]="spaceForm.value.includeAlliances"
-      [reputationModalVisible]="reputationModalVisibleIndex === i"
-      (reputationModalVisibleChange)="reputationModalVisibleIndex = i">
+      [allowReputationModal]="spaceForm.value.includeAlliances">
     </wen-member-card>
   </div>
 </div>

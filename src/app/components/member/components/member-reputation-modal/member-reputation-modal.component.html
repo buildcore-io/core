@@ -1,35 +1,52 @@
-<div class="absolute bottom-12 z-10 rounded-2xl bg-white px-6 py-2 wrapper-shadow lg:min-w-120" #wrapper
-    [ngClass]="leftPosition ? 'left-1' : 'right-1'">
-    <div class="flex items-center mt-3">
-        <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-            style="max-width: 48px; min-width: 48px;" [nzSize]="48"
-            [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
-        <div class="ml-3 mb-0 truncate text-lg font-bold">{{ member?.name ? '@' + member?.name : member?.uid }}</div>
-    </div>
+<nz-modal
+    [(nzVisible)]="isOpen"
+    [nzClosable]="false"
+    [nzMaskClosable]="true"
+    [nzMask]="true"
+    (nzOnCancel)="onCancel()"
+    [nzContent]="modalContent"
+    [nzFooter]="null"
+    [nzStyle]="{ 
+        position: 'absolute',
+        left: leftPosition ? leftPosition + 'px' : 'auto',
+        top: bottomPosition ? 'auto' : (topPosition || 100) + 'px',  
+        right: rightPosition ? rightPosition + 'px' : 'auto',  
+        bottom: topPosition ? 'auto' : (bottomPosition || 100) + 'px'
+    }"
+    [nzBodyStyle]="{ padding: '0px' }"
+  >
+    <ng-template #modalContent>
+        <div class="flex items-center px-5 py-5">
+            <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                style="max-width: 48px; min-width: 48px;" [nzSize]="48"
+                [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
+            <div class="ml-3 mb-0 truncate text-lg font-bold">{{ member?.name ? '@' + member?.name : member?.uid }}</div>
+        </div>
+        
+        <nz-table class="block max-h-56 mt-5 px-5 overflow-y-auto" [nzData]="alliances" [nzShowPagination]="false">
+            <thead>
+                <tr>
+                    <th #alliancesHeader i18n style="padding:0px">Alliances</th>
+                    <th #awardsHeader i18n style="padding:0px; text-align: right">Awards</th>
+                    <th #XPHeader i18n style="padding:0px; text-align: right">XP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of alliances">
+                    <td class="flex items-center" style="padding-left: 0px; padding-right: 0px">
+                        <img [src]="item.img" alt="Space image" class="mr-3">
+                        {{ item.name }}
+                    </td>
+                    <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.awards }}</td>
+                    <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.XP }}</td>
+                </tr>
+            </tbody>
+        </nz-table>
     
-    <nz-table class="block max-h-56 mt-5 overflow-y-auto" [nzData]="alliances" [nzShowPagination]="false">
-        <thead>
-            <tr>
-                <th #alliancesHeader i18n style="padding:0px">Alliances</th>
-                <th #awardsHeader i18n style="padding:0px; text-align: right">Awards</th>
-                <th #XPHeader i18n style="padding:0px; text-align: right">XP</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of alliances">
-                <td class="flex items-center" style="padding-left: 0px; padding-right: 0px">
-                    <img [src]="item.img" alt="Space image" class="mr-3">
-                    {{ item.name }}
-                </td>
-                <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.awards }}</td>
-                <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.XP }}</td>
-            </tr>
-        </tbody>
-    </nz-table>
-
-    <div class="text-sm font-bold mt-3 flex items-center">
-        <div [style.width]="alliancesHeader.offsetWidth + 'px'">Total reputation</div>
-        <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ totalAwards }}</div>
-        <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ totalXP }}</div>
-    </div>
-</div>
+        <div class="text-sm font-bold px-5 py-3 flex items-center">
+            <div [style.width]="alliancesHeader.offsetWidth + 'px'">Total reputation</div>
+            <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ totalAwards }}</div>
+            <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ totalXP }}</div>
+        </div>
+    </ng-template>
+</nz-modal>
