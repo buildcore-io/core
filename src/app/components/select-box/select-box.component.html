@@ -39,7 +39,7 @@
         </ng-container>
         
         <div class="max-h-128 overflow-y-auto">
-            <div *ngFor="let opt of shownOptions; trackBy: trackBy" 
+            <div *ngFor="let opt of shownOptions; trackBy: trackBy"
                 class="mt-4 lg:mt-5 flex items-center cursor-pointer hover:text-orange whitespace-nowrap"
                 (click)="onOptionClick(opt.value)"
                 [ngClass]="{

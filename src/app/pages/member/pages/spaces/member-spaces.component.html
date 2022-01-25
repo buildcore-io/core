@@ -1,0 +1,27 @@
+<form [formGroup]="spaceForm" class="flex items-center justify-between">
+    <label class="ml-6 text-base font-medium text-app-gray-text" 
+        nz-checkbox formControlName="includeAlliances"
+        [nzDisabled]="includeAlliancesDisabled">
+            Include alliances {{ includeAlliancesDisabled ? '(Join space with alliance)' : '' }}
+    </label>
+
+    <nz-input-group nzSize="default" [nzPrefix]="prefixIconSearch"
+      class="w-56 border-none shadow-none outline-0" nzSearch>
+        <input type="text" nz-input i18n-placeholder 
+            placeholder="Find space" 
+            class="text-base" formControlName="space"/>
+    </nz-input-group>
+
+    <ng-template #prefixIconSearch>
+        <i nz-icon nzType="search" class="text-xl"></i>
+    </ng-template>
+</form>
+
+<div>
+    <wen-member-space-row
+        *ngFor="let item of shownSpaces"
+        class="block w-full"
+        [space]="item"
+        [allowReputationModal]="spaceForm.value.includeAlliances">
+    </wen-member-space-row>
+</div>

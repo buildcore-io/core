@@ -20,7 +20,7 @@
             <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                 style="max-width: 48px; min-width: 48px;" [nzSize]="48"
                 [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
-            <div class="ml-3 mb-0 truncate text-lg font-bold">{{ member?.name ? '@' + member?.name : member?.uid }}</div>
+            <div class="ml-3 mb-0 truncate text-lg font-bold">{{ member?.name ? '@' + member?.name : member?.uid }} reputation</div>
         </div>
         
         <nz-table class="block max-h-56 mt-5 px-5 overflow-y-auto" [nzData]="alliances" [nzShowPagination]="false">
