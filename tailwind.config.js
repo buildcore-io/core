@@ -39,6 +39,7 @@ module.exports = {
         green: {
           dark: '#11A696',
           neon: '#58F218',
+          success: '#8FE46C'
         },
         'app-gray': {
           text: '#333333',
@@ -46,6 +47,7 @@ module.exports = {
           200: '#CAC8BD',
           400: '#9F9D93',
           600: '#999999',
+          separator: '#F5F4EF'
         },
         tag: {
           blue: '#DCEFF9',
