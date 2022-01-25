@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { AirBlowIconComponent } from './air-blow/air-blow.component';
 import { AngleDownIconComponent } from './angle-down/angle-down.component';
 import { AngleLeftIconComponent } from './angle-left/angle-left.component';
 import { AngleRightIconComponent } from './angle-right/angle-right.component';
@@ -10,6 +11,8 @@ import { CheckCircleIconComponent } from './check-circle/check-circle.component'
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
 import { DiscordIconComponent } from './discord/discord.component';
+import { EditIconComponent } from './edit/edit.component';
+import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
@@ -29,6 +32,7 @@ import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
 import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
 import { SunIconComponent } from './sun/sun.component';
+import { TerminatedIconComponent } from './terminated/terminated.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 
@@ -64,7 +68,11 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     InfoIconComponent,
     SoonlabsIconComponent,
     SortIconComponent,
-    CheckIconComponent
+    CheckIconComponent,
+    EyeIconComponent,
+    EditIconComponent,
+    TerminatedIconComponent,
+    AirBlowIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -97,7 +105,11 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     InfoIconComponent,
     SoonlabsIconComponent,
     SortIconComponent,
-    CheckIconComponent
+    CheckIconComponent,
+    EyeIconComponent,
+    EditIconComponent,
+    TerminatedIconComponent,
+    AirBlowIconComponent
   ],
   imports: [
     CommonModule

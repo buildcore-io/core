@@ -17,7 +17,6 @@ export const enum WEN_FUNC {
   removeGuardianSpace = "removeGuardianSpace",
   setAlliance = "setAlliance",
 
-
   // Award functions
   cAward = "cAward",
   aAward = "aAward",

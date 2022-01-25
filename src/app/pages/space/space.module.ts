@@ -6,7 +6,7 @@ import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.modu
 import { FixedCreateButtonModule } from '@components/fixed-create-button/fixed-create-button.module';
 import { IconModule } from '@components/icon/icon.module';
 import { RadioModule } from '@components/radio/radio.module';
-import { SpaceAboutModule } from '@components/space/components/space-about/space-about.module';
+import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
