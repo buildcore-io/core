@@ -12,8 +12,8 @@ import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
 import { DefaultSpaceIconComponent } from './default-space/default-space.component';
 import { DiscordIconComponent } from './discord/discord.component';
-import { EraseIconComponent } from './erase/erase.component';
 import { EditIconComponent } from './edit/edit.component';
+import { EraseIconComponent } from './erase/erase.component';
 import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
 import { GithubIconComponent } from './github/github.component';
@@ -74,9 +74,9 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     CheckIconComponent,
     DefaultSpaceIconComponent,
     SearchIconComponent,
-    EraseIconComponent
-    EyeIconComponent,
+    EraseIconComponent,
     EditIconComponent,
+    EyeIconComponent,
     TerminatedIconComponent,
     AirBlowIconComponent
   ],
@@ -114,9 +114,9 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     CheckIconComponent,
     DefaultSpaceIconComponent,
     SearchIconComponent,
-    EraseIconComponent
-    EyeIconComponent,
+    EraseIconComponent,
     EditIconComponent,
+    EyeIconComponent,
     TerminatedIconComponent,
     AirBlowIconComponent
   ],
