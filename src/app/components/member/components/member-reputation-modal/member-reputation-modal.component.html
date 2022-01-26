@@ -14,6 +14,7 @@
         bottom: topPosition ? 'auto' : (bottomPosition || 100) + 'px'
     }"
     [nzBodyStyle]="{ padding: '0px' }"
+    [nzWidth]="width || 520"
   >
     <ng-template #modalContent>
         <div class="flex items-center px-5 py-5">
@@ -23,30 +24,8 @@
             <div class="ml-3 mb-0 truncate text-lg font-bold">{{ member?.name ? '@' + member?.name : member?.uid }} reputation</div>
         </div>
         
-        <nz-table class="block max-h-56 mt-5 px-5 overflow-y-auto" [nzData]="alliances" [nzShowPagination]="false">
-            <thead>
-                <tr>
-                    <th #alliancesHeader i18n style="padding:0px">Alliances</th>
-                    <th #awardsHeader i18n style="padding:0px; text-align: right">Awards</th>
-                    <th #XPHeader i18n style="padding:0px; text-align: right">XP</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of alliances">
-                    <td class="flex items-center" style="padding-left: 0px; padding-right: 0px">
-                        <img [src]="item.img" alt="Space image" class="mr-3">
-                        {{ item.name }}
-                    </td>
-                    <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.awards }}</td>
-                    <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.XP }}</td>
-                </tr>
-            </tbody>
-        </nz-table>
-    
-        <div class="text-sm font-bold px-5 py-3 flex items-center">
-            <div [style.width]="alliancesHeader.offsetWidth + 'px'">Total reputation</div>
-            <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ totalAwards }}</div>
-            <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ totalXP }}</div>
-        </div>
+        <wen-member-alliances-table
+            [alliances]="alliances">
+        </wen-member-alliances-table>
     </ng-template>
 </nz-modal>

@@ -33,14 +33,11 @@ export class MemberCardComponent implements OnInit, OnDestroy {
     this.reputationModalRightPosition = undefined;
     this.reputationModalBottomPosition = undefined;
     const wrapperRect = this.xpWrapper?.nativeElement.getBoundingClientRect();
-    const wrapperLeft = wrapperRect?.left || 0;
-    const wrapperRight = wrapperRect?.right || 0;
-    const wrapperBottom = wrapperRect?.bottom || 0;
-    this.reputationModalBottomPosition = window.innerHeight - wrapperBottom + (wrapperRect?.height || 0);
-    if (wrapperLeft <= window.innerWidth / 2) {
-      this.reputationModalLeftPosition = wrapperLeft;
+    this.reputationModalBottomPosition = window.innerHeight - (wrapperRect?.bottom || 0) + (wrapperRect?.height || 0);
+    if ((wrapperRect?.left || 0) <= window.innerWidth / 2) {
+      this.reputationModalLeftPosition = wrapperRect?.left || 0;
     } else  {
-      this.reputationModalRightPosition = window.innerWidth - wrapperRight;
+      this.reputationModalRightPosition = window.innerWidth - (wrapperRect?.right || 0);
     }
 
     this.cd.markForCheck();

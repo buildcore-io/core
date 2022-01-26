@@ -5,8 +5,8 @@
             Include alliances {{ includeAlliancesDisabled ? '(Join space with alliance)' : '' }}
     </label>
 
-    <nz-input-group nzSize="default" [nzPrefix]="prefixIconSearch"
-      class="w-56 border-none shadow-none outline-0" nzSearch>
+    <nz-input-group *ngIf="deviceService.isDesktop$ | async" nzSize="default" [nzPrefix]="prefixIconSearch"
+      class="w-16 focus:w-56 lg:w-56 border-none shadow-none outline-0" nzSearch>
         <input type="text" nz-input i18n-placeholder 
             placeholder="Find space" 
             class="text-base" formControlName="space"/>
@@ -15,12 +15,14 @@
     <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
     </ng-template>
+
+    <wen-mobile-search *ngIf="deviceService.isMobile$ | async" formControlName="space" placeholder="Search"></wen-mobile-search>
 </form>
 
 <div>
     <wen-member-space-row
         *ngFor="let item of shownSpaces"
-        class="block w-full"
+        class="block w-full mt-3 lg:mt-4"
         [space]="item"
         [allowReputationModal]="spaceForm.value.includeAlliances">
     </wen-member-space-row>

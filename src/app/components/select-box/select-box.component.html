@@ -1,15 +1,29 @@
-<div class="relative text-base font-semibold select-none" wenClickOutside (clickOutside)="isOptionsOpen = false">
-    <div class="rounded-3xl bg-white px-3 py-2 flex justify-between items-center cursor-pointer" (click)="isOptionsOpen = !isOptionsOpen">
-        <div *ngIf="showImages" class="mr-2">
-            <img *ngIf="optionValue?.img" [src]="optionValue?.img" alt="Chosen option image" class="min-w-6">
-            <wen-icon-default-space *ngIf="!optionValue?.img"></wen-icon-default-space>
+<div class="relative select-none w-full" wenClickOutside (clickOutside)="isOptionsOpen = false">
+    <div class="rounded-9 bg-white flex items-center cursor-pointer border border-white" 
+        [ngClass]="{
+            'px-3 py-2 text-base font-semibold': size === selectBoxSizes.SMALL,
+            'px-4 py-4 text-2xl font-bold': size === selectBoxSizes.LARGE,
+            'border-app-gray-200': size === selectBoxSizes.LARGE && !isOptionsOpen,
+            'border-orange': isOptionsOpen
+        }" (click)="isOptionsOpen = !isOptionsOpen">
+        <div *ngIf="showImages" 
+            [ngClass]="{
+                'mr-2': size === selectBoxSizes.SMALL,
+                'mr-4': size === selectBoxSizes.LARGE
+            }">
+            <img *ngIf="optionValue?.img" [src]="optionValue?.img" alt="Chosen option image" 
+                [ngClass]="{
+                    'min-w-6': size === selectBoxSizes.SMALL,
+                    'min-w-10': size === selectBoxSizes.LARGE
+                }">
+            <wen-icon-default-space *ngIf="!optionValue?.img" [size]="size === selectBoxSizes.SMALL ? 24 : 40"></wen-icon-default-space>
         </div>
         {{ optionValue?.label }}
-        <div class="ml-3" *ngIf="suffixIcon">
+        <div class="ml-auto" *ngIf="suffixIcon">
             <ng-container *ngTemplateOutlet="suffixIcon"></ng-container>
         </div>
 
-        <div *ngIf="showArrow" class="ml-1">
+        <div *ngIf="showArrow" class="ml-auto">
             <wen-icon-angle-down *ngIf="!isOptionsOpen"></wen-icon-angle-down>
             <wen-icon-angle-up *ngIf="isOptionsOpen"></wen-icon-angle-up>
         </div>

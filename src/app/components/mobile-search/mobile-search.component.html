@@ -1,0 +1,9 @@
+<nz-input-group nzSize="small" [nzPrefix]="prefixIconSearchMobile" wenClickOutside (clickOutside)="isSearchInputFocused = false"
+    class="border-none shadow-none outline-0" [ngStyle]="{ 'width': isSearchInputFocused ? '100%' : 'fit-content' }" nzSearch>
+    <input type="text" nz-input class="w-0 text-base" [formControl]="searchControl"
+        [ngClass]="{ 'w-full': isSearchInputFocused }" [placeholder]="placeholder"/>
+</nz-input-group>
+
+<ng-template #prefixIconSearchMobile>
+    <i nz-icon nzType="search" class="block -mr-1 text-xl" (click)="isSearchInputFocused = !isSearchInputFocused"></i>
+</ng-template>

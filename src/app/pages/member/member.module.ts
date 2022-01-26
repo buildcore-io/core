@@ -3,7 +3,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { MemberAboutModule } from '@components/member/components/member-about/member-about.module';
+import { MemberAlliancesTableModule } from '@components/member/components/member-alliances-table/member-alliances-table.module';
 import { MemberSpaceRowModule } from '@components/member/components/member-space-row/member-space-row.module';
+import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
+import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
+import { SelectBoxModule } from '@components/select-box/select-box.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NgApexchartsModule } from "ng-apexcharts";
@@ -62,7 +66,11 @@ import { DataService } from './services/data.service';
     FormsModule,
     ReactiveFormsModule,
     NzInputModule,
-    MemberSpaceRowModule
+    MemberSpaceRowModule,
+    SelectBoxModule,
+    MemberTileModule,
+    MemberAlliancesTableModule,
+    MobileSearchModule
   ],
 })
 export class MemberModule {

@@ -13,7 +13,6 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { BadgeModule } from './../../../../components/badge/badge.module';
 import { MemberEditDrawerModule } from './../../../../components/member/components/member-edit-drawer/member-edit-drawer.module';
-import { MemberTileModule } from './../../../../components/member/components/tile/member-tile.module';
 import { MemberAboutComponent } from './member-about.component';
 
 @NgModule({
@@ -32,7 +31,6 @@ import { MemberAboutComponent } from './member-about.component';
     NzButtonModule,
     NzIconModule,
     MemberEditDrawerModule,
-    MemberTileModule,
     NzDrawerModule,
     NzToolTipModule,
     BadgeModule

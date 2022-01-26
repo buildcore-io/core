@@ -8,6 +8,11 @@ export interface SelectBoxOption {
   img?: string;
 }
 
+export enum SelectBoxSizes {
+  SMALL = 'small',
+  LARGE = 'large'
+}
+
 @UntilDestroy()
 @Component({
   selector: 'wen-select-box',
@@ -35,6 +40,7 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
   }
   @Input() suffixIcon: TemplateRef<any> | null = null;
   @Input() optionsWrapperClasses = '';
+  @Input() size: SelectBoxSizes = SelectBoxSizes.SMALL;
   @Input() showArrow = false;
   @Input() isSearchable = false;
   
@@ -45,6 +51,7 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
   public showImages = true;
   public searchControl: FormControl = new FormControl('');
   public shownOptions: SelectBoxOption[] = [];
+  public selectBoxSizes = SelectBoxSizes;
   private _options: SelectBoxOption[] = [];
 
   constructor(

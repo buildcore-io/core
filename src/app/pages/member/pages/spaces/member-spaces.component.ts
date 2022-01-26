@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 @UntilDestroy()
@@ -45,9 +46,11 @@ export class MemberSpacesComponent implements OnInit {
   ];
   public shownSpaces: any[] = [];
   public includeAlliancesDisabled = false;
+  public isSearchInputFocused = false;
 
   constructor(
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    public deviceService: DeviceService
   ) {
     this.spaceForm = new FormGroup({
       space: new FormControl(''),

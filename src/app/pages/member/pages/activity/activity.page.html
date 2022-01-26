@@ -1,5 +1,103 @@
 <div class="space-y-12">
   <div class="space-y-4">
+    <nz-card>
+      <form class="" [formGroup]="spaceForm">
+        <div class="flex items-center justify-between">
+          <wen-select-box
+            class="block w-full"
+            formControlName="space"
+            [optionsWrapperClasses]="'top-20 left-0 w-full'"
+            [options]="spacesList"
+            [showArrow]="true"
+            [isSearchable]="true"
+            [size]="selectBoxSizes.LARGE">
+          </wen-select-box>
+
+          <a class="ml-6 flex items-center text-sm font-semibold cursor-pointer text-blue-light1 whitespace-nowrap" 
+            [routerLink]=""
+            *ngIf="deviceService.isDesktop$ | async">
+              <span i18n>View space</span>
+              <wen-icon-angle-right></wen-icon-angle-right>
+          </a>
+        </div>
+    
+        <label class="mt-3 text-base font-medium text-app-gray-text" 
+          nz-checkbox formControlName="includeAlliances"
+          [nzDisabled]="spaceForm.value.space === defaultSpace.value" i18n>
+            Include alliances {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+        </label>
+      </form>
+
+      <div class="w-full bg-bg-background h-px mt-8"></div>
+
+      <div class="mt-6 flex flex-col lg:flex-row lg:items-center justify-between">
+        <div class="flex items-center">          
+          <wen-member-tile [title]="'Awards Completed'" [value]="(data.member$ | async)?.awardsCompleted || 0">
+          </wen-member-tile>
+          <wen-member-tile class="ml-20" [title]="'Total Reputation'" [value]="(data.member$ | async)?.totalReputation || 0">
+          </wen-member-tile>
+        </div>
+        
+        <div *ngIf="deviceService.isMobile$ | async" class="w-full bg-bg-background h-px mt-8"></div>
+
+        <div class="w-full lg:w-max mt-6 lg:mt-0">
+          <div class="text-app-gray-400 text-xs font-medium flex items-center justify-between">
+            <span i18n>Earned badges</span>
+            <a class="ml-6 flex items-center text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap" 
+              [routerLink]="">
+                <span i18n>More</span>
+                <wen-icon-angle-right></wen-icon-angle-right>
+            </a>
+          </div>
+          <div class="flex items-center mt-2">
+            <wen-badge-tile 
+              class="mr-2"
+              *ngFor="let badge of data.badges$ | async | slice:0:7; trackBy: trackByUid" 
+              [metadata]="badge.payload.image" 
+              [name]="badge.payload.name"
+              [size]="48">
+            </wen-badge-tile>
+          </div>
+        </div>
+      </div>
+    </nz-card>
+
+    <nz-card i18n-nzTitle nzTitle="Alliances" *ngIf="spaceForm.value.includeAlliances">
+      <wen-member-alliances-table
+        [alliances]="[
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+          { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 }
+        ]">
+      </wen-member-alliances-table>
+    </nz-card>
+
     <nz-card nzTitle="Reputation">
       <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [colors]="chartOptions.colors!"
         [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [markers]="chartOptions.markers!"
