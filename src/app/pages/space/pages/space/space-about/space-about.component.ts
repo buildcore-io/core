@@ -22,8 +22,8 @@ export class SpaceAboutComponent implements OnDestroy {
   @Input() avatarUrl?: string;
   @Output() onLeave = new EventEmitter<void>();
 
-  public isAlliancesListModal = false;
-  public isNewAllianceModalOpen = false;
+  public isAlliancesListOpen = false;
+  public isNewAllianceOpen = false;
   public isNewAlliance = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(null, Validators.required);
@@ -41,17 +41,13 @@ export class SpaceAboutComponent implements OnDestroy {
     return FILE_SIZES;
   }
 
-  public trackByGuardianUid(index: number, item: any): number {
-    return item.uid;
-  }
-
-  public trackByAlliedSpaceUid(index: number, item: any): string {
+  public trackByUid(index: number, item: any): number {
     return item.uid;
   }
 
   public openAlliance(newAlliance = true): void {
-    this.isAlliancesListModal = false;
-    this.isNewAllianceModalOpen = true;
+    this.isAlliancesListOpen = false;
+    this.isNewAllianceOpen = true;
     this.isNewAlliance = newAlliance;
 
     // Load spaces if not loaded yet.
@@ -76,7 +72,7 @@ export class SpaceAboutComponent implements OnDestroy {
     this.reputationWeightControl.setValue('');
     this.reputationWeightControl.reset();
     this.reputationWeightControl.markAsPristine();
-    this.isNewAllianceModalOpen = false;
+    this.isNewAllianceOpen = false;
   }
 
   public getSortedAlliances(space?: SpaceWithAlliances|null): AllianceExtended[] {

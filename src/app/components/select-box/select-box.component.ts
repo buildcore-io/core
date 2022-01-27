@@ -45,6 +45,7 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
   @Input() size: SelectBoxSizes = SelectBoxSizes.SMALL;
   @Input() showArrow = false;
   @Input() isSearchable = false;
+  @Input() mobileDrawer = false;
   
   public onChange = (v: string | undefined) => undefined;
   public disabled = false;
@@ -106,10 +107,7 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
   }
 
   public onClickOutside(): void {
-    console.log('aaaaaa');
-    if (this.deviceService.isDesktop$.getValue()) {
-      this.isOptionsOpen = false;
-    }
+    this.isOptionsOpen = false;
     this.cd.markForCheck();
   }
 

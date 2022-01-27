@@ -1,0 +1,38 @@
+<nz-form-item>
+    <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
+        <nz-select
+            class="w-full"
+            nzSize="large"
+            nzShowSearch
+            nzAllowClear
+            nzPlaceHolder="Select space"
+            [formControl]="spaceAllianceControl"
+        >
+            <nz-option
+                *ngFor="let s of spaces; trackBy: trackByUid"
+                nzCustomContent
+                [nzLabel]="s.name || s.uid"
+                [nzValue]="s.uid"
+                >
+                <nz-avatar
+                    [nzSrc]="getAvatarSize(s.avatarUrl)"
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-app-gray-100"
+                    nzShape="circle">
+                </nz-avatar>
+                {{s.name || s.uid}}
+            </nz-option>
+        </nz-select>
+    </nz-form-control>
+</nz-form-item>
+
+<nz-form-item>
+    <nz-form-control i18n-nzErrorTip nzErrorTip="">
+        <nz-input-number
+            class="w-full"
+            nzSize="large"
+            nzPlaceHolder="Reputation weight"
+            [formControl]="reputationWeightControl"
+        ></nz-input-number>
+    </nz-form-control>
+</nz-form-item>

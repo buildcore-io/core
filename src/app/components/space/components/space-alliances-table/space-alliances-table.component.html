@@ -1,0 +1,26 @@
+<div *ngFor="let ally of alliances; let i = index; let last = last;" class="mt-3">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center">
+            <nz-avatar
+              [nzSrc]="getAvatarSize(ally._record.avatarUrl)"
+              class="mr-3 bg-white border-gray-400"
+              nzShape="circle"
+            >
+            </nz-avatar>
+            <div class="ml-3 text-sm font-bold">{{ ally._record.name }}</div>
+        </div>
+
+        <div *ngIf="ally.established" class="flex items-center text-sm font-medium text-green-success">
+            <span i18n *ngIf="deviceService.isDesktop$ | async">Established</span> 
+            <wen-icon-check *ngIf="deviceService.isMobile$ | async"></wen-icon-check>
+            <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit.emit(ally)"></wen-icon-edit>
+        </div>
+        <div *ngIf="!ally.established" class="flex items-center text-sm font-medium text-app-gray-400">
+            <span i18n *ngIf="deviceService.isDesktop$ | async">Recognised</span> 
+            <wen-icon-eye *ngIf="deviceService.isMobile$ | async"></wen-icon-eye>
+            <wen-icon-edit class="ml-10 cursor-pointer" (click)="onAllianceEdit.emit(ally)"></wen-icon-edit>
+        </div>
+    </div>
+
+    <div *ngIf="!last" class="w-full h-px mt-3 bg-app-gray-separator"></div>
+</div>

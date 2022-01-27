@@ -30,7 +30,7 @@
         </div>
     </div>
     
-    <wen-select-box-options *ngIf="deviceService.isDesktop$ | async"
+    <wen-select-box-options *ngIf="(deviceService.isDesktop$ | async) || !mobileDrawer; else drawerBlock"
         [value]="value"
         [isOptionsOpen]="isOptionsOpen"
         [optionsWrapperClasses]="optionsWrapperClasses"
@@ -43,31 +43,33 @@
         (onOptionClick)="onOptionClick($event)">
     </wen-select-box-options>
 
-    <nz-drawer *ngIf="deviceService.isMobile$ | async"
-        [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-        [nzWidth]="'100vw'"
-        [nzClosable]="false"
-        [nzVisible]="isDrawerOpen">
-        >
-        <div *nzDrawerContent class="relative h-full">
-            <button class="absolute z-10 top-0 right-5" (click)="isDrawerOpen = false; isOptionsOpen = false">
-              <wen-icon-close></wen-icon-close>
-            </button>
-            <div class="text-3xl font-bold">{{ title }}</div>
-            <div>
-                <wen-select-box-options
-                    [value]="value"
-                    [isOptionsOpen]="isOptionsOpen"
-                    [optionsWrapperClasses]="optionsWrapperClasses"
-                    [isSearchable]="isSearchable"
-                    [searchControl]="searchControl"
-                    [options]="options"
-                    [shownOptions]="shownOptions"
-                    [showImages]="showImages"
-                    (onEraseClick)="onEraseClick()"
-                    (onOptionClick)="onOptionClick($event)">
-                </wen-select-box-options>
+    <ng-template #drawerBlock>
+        <nz-drawer *ngIf="deviceService.isMobile$ | async"
+            [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+            [nzWidth]="'100vw'"
+            [nzClosable]="false"
+            [nzVisible]="isDrawerOpen">
+            >
+            <div *nzDrawerContent class="relative h-full">
+                <button class="absolute z-10 top-0 right-5" (click)="isDrawerOpen = false; isOptionsOpen = false">
+                  <wen-icon-close></wen-icon-close>
+                </button>
+                <div class="text-3xl font-bold">{{ title }}</div>
+                <div>
+                    <wen-select-box-options
+                        [value]="value"
+                        [isOptionsOpen]="isOptionsOpen"
+                        [optionsWrapperClasses]="optionsWrapperClasses"
+                        [isSearchable]="isSearchable"
+                        [searchControl]="searchControl"
+                        [options]="options"
+                        [shownOptions]="shownOptions"
+                        [showImages]="showImages"
+                        (onEraseClick)="onEraseClick()"
+                        (onOptionClick)="onOptionClick($event)">
+                    </wen-select-box-options>
+                </div>
             </div>
-        </div>
-    </nz-drawer>
+        </nz-drawer>
+    </ng-template>
 </div>
