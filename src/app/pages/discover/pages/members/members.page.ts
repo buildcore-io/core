@@ -1,18 +1,23 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { SelectBoxOption } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { SortOptions } from "../../services/sort-options.interface";
 import { Member } from './../../../../../../functions/interfaces/models/member';
-import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
+import { Space } from './../../../../../../functions/interfaces/models/space';
+import { DEFAULT_LIST_SIZE, FULL_LIST } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { SpaceApi } from './../../../../@api/space.api';
+import { AuthService } from './../../../../components/auth/services/auth.service';
+import { MemberAllianceItem } from './../../../../components/member/components/member-reputation-modal/member-reputation-modal.component';
 import { FilterService } from './../../services/filter.service';
 
-export enum HOT_TAGS {
-  ALL = 'All'
-}
+export const DEFAULT_SPACE: SelectBoxOption = {
+  label: 'All Spaces',
+  value: 'all'
+};
 
 @UntilDestroy()
 @Component({
@@ -22,22 +27,28 @@ export enum HOT_TAGS {
 })
 export class MembersPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
+  public spaceForm: FormGroup;
+  public spaceList$ = new BehaviorSubject<Space[]>([]);
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public hotTags: string[] = [HOT_TAGS.ALL];
-  public hotTagsFormatted: SelectBoxOption[] = [];
-  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
+  public defaultSpace = DEFAULT_SPACE;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(
-    private memberApi: MemberApi, 
     public filter: FilterService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    private memberApi: MemberApi,
+    private spaceApi: SpaceApi,
+    private auth: AuthService,
+    private cd: ChangeDetectorRef
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
+    this.spaceForm = new FormGroup({
+      space: new FormControl(DEFAULT_SPACE.value),
+      includeAlliances: new FormControl(false)
+    });
   }
 
   public ngOnInit(): void {
-    this.hotTagsFormatted = this.hotTags.map((tag: string) => ({ value: tag, label: tag }));
     this.listen();
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
@@ -54,10 +65,58 @@ export class MembersPage implements OnInit, OnDestroy {
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
       this.filter.selectedSort$.next(val);
     });
+
+    this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.spaceList$);
   }
 
-  public handleChange(tag: string): void {
-    this.selectedTags$.next([tag]);
+  public getAlliances(member: Member): MemberAllianceItem[] {
+    const out: MemberAllianceItem[] = [];
+    const space: Space | undefined = this.spaceList$.value.find((s) => {
+      return s.uid === this.spaceForm.value.space;
+    });
+    // It self.
+    if (space && this.spaceForm.value.space !== this.defaultSpace.value) {
+      if (this.spaceForm.value.includeAlliances) {
+        for (const [spaceId, values] of Object.entries(space?.alliances || {})) {
+          const allianceSpace: Space | undefined = this.spaceList$.value.find((s) => {
+            return s.uid === spaceId;
+          });
+          if (
+            allianceSpace &&
+            values.enabled === true
+          ) {
+            out.push({
+              avatar: allianceSpace.avatarUrl,
+              name: allianceSpace.name || allianceSpace.uid,
+              totalAwards: member.statsPerSpace?.[allianceSpace.uid]?.awardsCompleted || 0,
+              totalXp: member.statsPerSpace?.[allianceSpace.uid]?.totalReputation || 0
+            });
+          }
+        }
+      }
+
+      out.push({
+        avatar: space.avatarUrl,
+        name: space.name || space.uid,
+        totalAwards: member.statsPerSpace?.[space.uid]?.awardsCompleted || 0,
+        totalXp: member.statsPerSpace?.[space.uid]?.totalReputation || 0
+      });
+    }
+
+    return out;
+  }
+
+  public get isLoggedIn$(): BehaviorSubject<boolean> {
+    return this.auth.isLoggedIn$;
+  }
+
+  public getSpaceListOptions(list?: Space[] | null): SelectBoxOption[] {
+    return [DEFAULT_SPACE].concat((list || []).map((o) => {
+      return {
+        label: o.name || o.uid,
+        value: o.uid
+      };
+    }));
   }
 
   private listen(search?: string): void {

@@ -25,7 +25,7 @@ export const ROUTER_UTILS = {
       activity: 'activity',
       awards: 'awards',
       badges: 'badges',
-      yield: 'yield',
+      spaces: 'spaces'
     },
     space: {
       // Redirect back to discovery

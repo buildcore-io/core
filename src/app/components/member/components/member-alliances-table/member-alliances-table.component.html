@@ -1,0 +1,31 @@
+<nz-table class="block px-5 mt-5 overflow-y-auto max-h-56" [nzData]="alliances" [nzShowPagination]="false">
+    <thead>
+        <tr>
+            <th #alliancesHeader i18n style="padding:0px">Alliances</th>
+            <th #awardsHeader i18n style="padding:0px; text-align: right">Awards</th>
+            <th #XPHeader i18n style="padding:0px; text-align: right">XP</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of alliances">
+            <td class="flex items-center" style="padding-left: 0px; padding-right: 0px">
+                <nz-avatar
+                    [nzSrc]="getAvatarSize(item.avatar)"
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-app-gray-100"
+                    nzShape="circle"
+                >
+                </nz-avatar>
+                {{ item.name }}
+            </td>
+            <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.totalAwards }}</td>
+            <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.totalXp }}</td>
+        </tr>
+    </tbody>
+</nz-table>
+
+<div class="flex items-center px-5 py-3 text-sm font-bold">
+    <div [style.width]="alliancesHeader.offsetWidth + 'px'">Total reputation</div>
+    <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ totalAwards }}</div>
+    <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ totalXp }}</div>
+</div>

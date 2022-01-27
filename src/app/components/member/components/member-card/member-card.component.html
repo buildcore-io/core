@@ -26,13 +26,25 @@
     </div>
 
     <div class="bottom-0 flex lg:relative" [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'">
-      <div class="inline-flex items-center space-x-3">
-        <nz-tag class="wen-xp-tag">{{ member.totalReputation ? member.totalReputation : 0 }} XP</nz-tag>
+      <div class="relative inline-flex items-center space-x-3" #xpWrapper>
+        <nz-tag class="cursor-pointer wen-xp-tag" (click)="isReputationModalVisible = (alliances.length > 0) || false">
+          {{ totalXp }} XP</nz-tag>
         <nz-tag class="flex items-center space-x-3 bg-transparent border-transparent wen-status-tag">
           <wen-icon-award class="w-4 h-4 text-app-gray-400"></wen-icon-award>
-          <span>{{ member.awardsCompleted ? member.awardsCompleted : 0 }} awards
+          <span>{{ totalAwards }} awards
           </span>
         </nz-tag>
+
+        <wen-member-reputation-modal
+          *ngIf="alliances.length > 0"
+          [isOpen]="isReputationModalVisible"
+          [alliances]="alliances"
+          [member]="member"
+          [leftPosition]="reputationModalLeftPosition"
+          [bottomPosition]="reputationModalBottomPosition"
+          [rightPosition]="reputationModalRightPosition"
+          (onClose)="isReputationModalVisible = false">
+        </wen-member-reputation-modal>
       </div>
 
       <div i18n class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">

@@ -4,11 +4,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
+import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { SelectBoxModule } from '@components/select-box/select-box.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -65,7 +67,9 @@ import { FilterService } from './services/filter.service';
     LayoutModule,
     DropdownTabsModule,
     IconModule,
-    SelectBoxModule
+    SelectBoxModule,
+    NzCheckboxModule,
+    MobileSearchModule
   ]
 })
 export class DiscoverModule { }

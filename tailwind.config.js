@@ -70,8 +70,11 @@ module.exports = {
         75: '18.75rem',
       },
       minWidth: {
+        6: '1.5rem',
         10: '2.5rem',
-        32: '8rem'
+        32: '8rem',
+        100: '25rem',
+        120: '30rem'
       },
       maxWidth: {
         fit: 'fit-content',
@@ -80,9 +83,16 @@ module.exports = {
         header: '500px',
       },
       minHeight: {
+        24: '6rem',
         180: '45rem'
       },
+      maxHeight: {
+        56: '14rem',
+        80: '20rem',
+        128: '32rem'
+      },
       borderRadius: {
+        9: '2.25rem',
         10: '2.5rem',
         large: '3rem',
         40: '10rem'
