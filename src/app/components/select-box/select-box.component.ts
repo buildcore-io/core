@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export interface SelectBoxOption {
@@ -40,9 +41,12 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
   }
   @Input() suffixIcon: TemplateRef<any> | null = null;
   @Input() optionsWrapperClasses = '';
+  @Input() title = '';
   @Input() size: SelectBoxSizes = SelectBoxSizes.SMALL;
   @Input() showArrow = false;
   @Input() isSearchable = false;
+  @Input() mobileDrawer = false;
+  @Input() isAvatar = false;
   
   public onChange = (v: string | undefined) => undefined;
   public disabled = false;
@@ -52,10 +56,12 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
   public searchControl: FormControl = new FormControl('');
   public shownOptions: SelectBoxOption[] = [];
   public selectBoxSizes = SelectBoxSizes;
+  public isDrawerOpen = false;
   private _options: SelectBoxOption[] = [];
 
   constructor(
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    public deviceService: DeviceService
   ) {}
 
   public ngOnInit(): void {
@@ -87,10 +93,7 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
     this.writeValue(value);
     this.onChange(this.value);
     this.isOptionsOpen = false;
-  }
-
-  public trackBy(index: number, item: SelectBoxOption): string {
-    return item.value;
+    this.isDrawerOpen = false;
   }
 
   public onSearchValueChange(): void {
@@ -98,9 +101,20 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
       r.label.toLowerCase().includes(this.searchControl.value.toLowerCase()) || 
       r.value.toLowerCase().includes(this.searchControl.value.toLowerCase()));
   }
-
+  
   public onEraseClick(): void {
     this.searchControl.setValue('');
     this.onSearchValueChange();
+  }
+
+  public onClickOutside(): void {
+    this.isOptionsOpen = false;
+    this.cd.markForCheck();
+  }
+
+  public onAngleClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.isOptionsOpen = !this.isOptionsOpen;
+    this.isDrawerOpen = true;
   }
 }

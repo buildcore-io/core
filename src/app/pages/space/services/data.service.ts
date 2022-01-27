@@ -1,6 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { FileApi } from '@api/file.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Award } from 'functions/interfaces/models';
+import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
@@ -290,6 +292,14 @@ export class DataService implements OnDestroy {
 
   public getMemberUrl(memberId: string): string[] {
     return ['/', ROUTER_UTILS.config.member.root, memberId];
+  }
+
+  public getAvatarSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public ngOnDestroy(): void {

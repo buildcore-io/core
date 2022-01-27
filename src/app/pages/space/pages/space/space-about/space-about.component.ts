@@ -5,7 +5,6 @@ import { DataService } from '@pages/space/services/data.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
 import { Space } from '../../../../../../../functions/interfaces/models/space';
-import { FileApi } from '../../../../../@api/file.api';
 import { SpaceApi } from '../../../../../@api/space.api';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
@@ -22,8 +21,8 @@ export class SpaceAboutComponent implements OnDestroy {
   @Input() avatarUrl?: string;
   @Output() onLeave = new EventEmitter<void>();
 
-  public isAlliancesListModal = false;
-  public isNewAllianceModalOpen = false;
+  public isAlliancesListOpen = false;
+  public isNewAllianceOpen = false;
   public isNewAlliance = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(null, Validators.required);
@@ -41,17 +40,13 @@ export class SpaceAboutComponent implements OnDestroy {
     return FILE_SIZES;
   }
 
-  public trackByGuardianUid(index: number, item: any): number {
-    return item.uid;
-  }
-
-  public trackByAlliedSpaceUid(index: number, item: any): string {
+  public trackByUid(index: number, item: any): number {
     return item.uid;
   }
 
   public openAlliance(newAlliance = true): void {
-    this.isAlliancesListModal = false;
-    this.isNewAllianceModalOpen = true;
+    this.isAlliancesListOpen = false;
+    this.isNewAllianceOpen = true;
     this.isNewAlliance = newAlliance;
 
     // Load spaces if not loaded yet.
@@ -61,14 +56,6 @@ export class SpaceAboutComponent implements OnDestroy {
     }
   }
 
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
-  }
-
   public closeNewAlliance(): void {
     this.spaceAllianceControl.setValue('');
     this.spaceAllianceControl.reset();
@@ -76,7 +63,7 @@ export class SpaceAboutComponent implements OnDestroy {
     this.reputationWeightControl.setValue('');
     this.reputationWeightControl.reset();
     this.reputationWeightControl.markAsPristine();
-    this.isNewAllianceModalOpen = false;
+    this.isNewAllianceOpen = false;
   }
 
   public getSortedAlliances(space?: SpaceWithAlliances|null): AllianceExtended[] {

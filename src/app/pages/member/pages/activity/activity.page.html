@@ -10,7 +10,10 @@
             [options]="getSpaceListOptions(data.spaceList$ | async)"
             [showArrow]="true"
             [isSearchable]="true"
-            [size]="selectBoxSizes.LARGE">
+            [size]="selectBoxSizes.LARGE"
+            title="Select space"
+            [mobileDrawer]="true"
+            [isAvatar]="true">
           </wen-select-box>
 
           <a class="flex items-center ml-6 text-sm font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
@@ -64,7 +67,8 @@
 
     <nz-card i18n-nzTitle nzTitle="Alliances" *ngIf="spaceForm.value.includeAlliances">
       <wen-member-alliances-table
-        [alliances]="data.getAlliances(spaceForm.value.space, spaceForm.value.includeAlliances)">
+        [alliances]="data.getAlliances(spaceForm.value.space, spaceForm.value.includeAlliances)"
+        tableClasses="max-h-56">
       </wen-member-alliances-table>
     </nz-card>
 

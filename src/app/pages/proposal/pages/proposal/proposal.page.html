@@ -12,29 +12,29 @@
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
       <div class="mb-8 space-x-3">
-        <a [routerLink]="['/space', (data.space$ | async)?.uid]">
-          <nz-avatar [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)" class="mr-3 bg-white border-2 border-gray-400"
+        <a [routerLink]="['/space', (proposalData.space$ | async)?.uid]">
+          <nz-avatar [nzSrc]="spaceData.getAvatarSize((proposalData.space$ | async)?.avatarUrl)" class="mr-3 bg-white border-2 border-gray-400"
             nzShape="circle">
           </nz-avatar>
-          <span>{{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}</span>
+          <span>{{((proposalData.space$ | async)?.name || (proposalData.space$ | async)?.uid) }}</span>
         </a>
 
         <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Proposal</nz-tag>
-        <wen-proposal-status [proposal]="data.proposal$ | async"></wen-proposal-status>
+        <wen-proposal-status [proposal]="proposalData.proposal$ | async"></wen-proposal-status>
       </div>
 
-      <h1 i18n class="mb-6">{{(data.proposal$ | async)?.name}}</h1>
+      <h1 i18n class="mb-6">{{(proposalData.proposal$ | async)?.name}}</h1>
 
       <div class="flex items-center space-x-10">
         <div class="flex items-center">
           <i nz-icon nzType="calendar" class="pr-2 text-lg text-app-gray-400" nzTheme="outline"></i>
-          <span>{{(data.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
+          <span>{{(proposalData.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
         </div>
-        <div [routerLink]="['member', (data.creator$ | async)?.uid]">
-          <nz-avatar nzIcon="user" [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
+        <div [routerLink]="['member', (proposalData.creator$ | async)?.uid]">
+          <nz-avatar nzIcon="user" [nzSrc]="(proposalData.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2">
           </nz-avatar>
-          <span class="cursor-pointer" [routerLink]="['/', 'member', (data.creator$ | async)?.uid]">@{{((data.creator$ | async)?.name ||
-            (data.creator$ | async)?.uid) | truncate:[16]}}</span>
+          <span class="cursor-pointer" [routerLink]="['/', 'member', (proposalData.creator$ | async)?.uid]">@{{((proposalData.creator$ | async)?.name ||
+            (proposalData.creator$ | async)?.uid) | truncate:[16]}}</span>
         </div>
       </div>
 
@@ -49,7 +49,7 @@
 
     <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
       <nz-card nzTitle="Cast your vote"
-        *ngIf="(data.proposal$ | async)?.approved && data.isNativeVote((data.proposal$ | async)?.type)">
+        *ngIf="(proposalData.proposal$ | async)?.approved && proposalData.isNativeVote((proposalData.proposal$ | async)?.type)">
         <a nz-button (click)="fireflyNotSupported()" nzType="primary" nzBlock nzSize="large" i18n>
           Open Firefly to Vote</a>
         <h4 nz-typography class="pt-4" i18n>
@@ -59,14 +59,14 @@
       </nz-card>
 
       <nz-card
-        *ngIf="!(data.proposal$ | async)?.rejected && !data.isComplete(data.proposal$ | async) && (data.proposal$ | async)?.approved"
+        *ngIf="!(proposalData.proposal$ | async)?.rejected && !proposalData.isComplete(proposalData.proposal$ | async) && (proposalData.proposal$ | async)?.approved"
         [nzTitle]="'Current Results'">
-        <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
+        <div class="-mt-3" *ngFor="let q of (proposalData.proposal$ | async)?.questions">
           <p class="text-lg">{{q.text}}</p>
 
           <ng-container *ngFor="let a of q.answers">
-            <p nz-typography class="text-xs">{{a.text}} / {{formatBest((data.proposal$ | async), a.value)}}</p>
-            <nz-progress [nzPercent]="data.getProgress(data.proposal$ | async, a) | number : '1.2-2'" nzStatus="active">
+            <p nz-typography class="text-xs">{{a.text}} / {{formatBest((proposalData.proposal$ | async), a.value)}}</p>
+            <nz-progress [nzPercent]="proposalData.getProgress(proposalData.proposal$ | async, a) | number : '1.2-2'" nzStatus="active">
             </nz-progress>
           </ng-container>
         </div>
@@ -81,9 +81,9 @@
         (onExportClick)="exportNativeEvent()">
       </wen-proposal-info>
 
-      <nz-card nzTitle="Selected Badges" *ngIf="(data.badges$ | async)?.length">
+      <nz-card nzTitle="Selected Badges" *ngIf="(proposalData.badges$ | async)?.length">
         <div class="flex flex-wrap gap-2">
-          <article *ngFor="let a of (data.badges$ | async); trackBy: trackByUid" nz-tooltip
+          <article *ngFor="let a of (proposalData.badges$ | async); trackBy: trackByUid" nz-tooltip
             [nzTooltipTitle]="a.badge.name"
             class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
             <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>

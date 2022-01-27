@@ -5,9 +5,9 @@
   <nz-avatar [nzSize]="124" [nzSrc]="avatarSrc">
   </nz-avatar>
   <div class="flex items-baseline justify-center mt-6">
-    <h3 class="max-w-full mx-4 text-left break-all whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
-      ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
-    <div *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+    <h3 class="max-w-full mx-4 text-left break-all whitespace-pre-wrap">@ {{ (memberData.member$ | async)?.name ||
+      ((memberData.member$ | async)?.uid | truncate:[12]) }}</h3>
+    <div *ngIf="(memberData.member$ | async)?.uid === (loggedInMember | async)?.uid">
       <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
         class="ml-4 text-center text-current">
         <i nz-icon class="text-white" nzType="edit"></i>
@@ -17,22 +17,22 @@
     </div>
   </div>
 
-  <p class="mt-4" nz-typography nzType="secondary" *ngIf="(data.member$ | async)?.about">
-    {{(data.member$ | async)!.about}}
+  <p class="mt-4" nz-typography nzType="secondary" *ngIf="(memberData.member$ | async)?.about">
+    {{(memberData.member$ | async)!.about}}
   </p>
 
   <div class="mt-6 space-x-6"
-    *ngIf="(data.member$ | async)?.github || (data.member$ | async)?.twitter || (data.member$ | async)?.discord">
-    <a *ngIf="(data.member$ | async)?.github" nz-button nzType="link" target="new"
-      [href]="'https://github.com/' + (data.member$ | async)!.github">
+    *ngIf="(memberData.member$ | async)?.github || (memberData.member$ | async)?.twitter || (memberData.member$ | async)?.discord">
+    <a *ngIf="(memberData.member$ | async)?.github" nz-button nzType="link" target="new"
+      [href]="'https://github.com/' + (memberData.member$ | async)!.github">
       <wen-icon-github class="text-app-gray-text hover:text-blue-hover"></wen-icon-github>
     </a>
-    <a *ngIf="(data.member$ | async)?.twitter" nz-button nzType="link" target="new"
-      [href]="'https://twitter.com/' + (data.member$ | async)!.twitter">
+    <a *ngIf="(memberData.member$ | async)?.twitter" nz-button nzType="link" target="new"
+      [href]="'https://twitter.com/' + (memberData.member$ | async)!.twitter">
       <wen-icon-twitter class="text-app-gray-text hover:text-blue-hover"></wen-icon-twitter>
     </a>
-    <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new" nz-tooltip
-      [nzTooltipTitle]="(data.member$ | async)!.discord">
+    <a *ngIf="(memberData.member$ | async)?.discord" nz-button nzType="link" target="new" nz-tooltip
+      [nzTooltipTitle]="(memberData.member$ | async)!.discord">
       <wen-icon-discord class="text-app-gray-text hover:text-blue-hover"></wen-icon-discord>
     </a>
   </div>
@@ -47,10 +47,10 @@
       </a>
     </h3>
     <div class="flex flex-wrap gap-2">
-      <article *ngFor="let s of (data.space$ | async) | slice:0:4; trackBy: trackByUid"
+      <article *ngFor="let s of (memberData.space$ | async) | slice:0:4; trackBy: trackByUid"
         class="flex flex-col items-center justify-center w-full p-3 lg:h-16 bg-bg-background rounded-2xl">
         <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
-          <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">
+          <nz-avatar [nzSrc]="spaceData.getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">
             </nz-avatar>
           <span class="flex-grow pl-2"
           [ngClass]="{
@@ -61,7 +61,7 @@
         </a>
       </article>
 
-      <article *ngIf="(data.space$ | async)?.length === 0"
+      <article *ngIf="(memberData.space$ | async)?.length === 0"
         class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
         <span>No Contribution Yet.</span>
       </article>
@@ -71,17 +71,17 @@
   <div class="mt-10 text-left">
     <h3 i18n>Latest Badges</h3>
     <div class="flex flex-wrap gap-2">
-      <article *ngFor="let t of (data.badges$ | async) | slice:0:6; trackBy: trackByUid"
+      <article *ngFor="let t of (memberData.badges$ | async) | slice:0:6; trackBy: trackByUid"
         class="flex flex-col items-center justify-center p-3 lg:w-16 lg:h-16">
         <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name"></wen-badge-tile>
       </article>
 
-      <article *ngIf="(data.badges$ | async)?.length === 0"
+      <article *ngIf="(memberData.badges$ | async)?.length === 0"
         class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
         <span i18n>No badges</span>
       </article>
     </div>
     <a class="float-right" nz-button nzType="link" [routerLink]="['badges']"
-      *ngIf="(data.badges$ | async) && (data.badges$ | async)!.length > 6">See all</a>
+      *ngIf="(memberData.badges$ | async) && (memberData.badges$ | async)!.length > 6">See all</a>
   </div>
 </div>

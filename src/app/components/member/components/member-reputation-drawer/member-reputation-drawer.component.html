@@ -1,0 +1,24 @@
+<nz-drawer
+    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+    [nzWidth]="'100vw'"
+    [nzClosable]="false"
+    [nzVisible]="isOpen">
+    >
+    <div *nzDrawerContent class="relative" class="h-full">
+        <button class="absolute z-10 top-4 right-5" (click)="onCancel()">
+            <wen-icon-close></wen-icon-close>
+        </button>
+        <div class="flex items-center px-5 py-5">
+            <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                style="max-width: 48px; min-width: 48px;" [nzSize]="48"
+                [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
+            <div class="ml-3 mb-0 truncate text-lg font-bold">{{ member?.name ? '@' + member?.name : member?.uid }} reputation</div>
+        </div>
+        
+        <wen-member-alliances-table
+            class="block"
+            style="height: calc(100% - 150px)"
+            [alliances]="alliances">
+        </wen-member-alliances-table>
+    </div>
+</nz-drawer>

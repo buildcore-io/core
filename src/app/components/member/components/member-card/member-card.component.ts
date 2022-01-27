@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MemberApi } from "@api/member.api";
 import { DeviceService } from '@core/services/device';
@@ -32,28 +33,32 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   @Input() fullWidth?: boolean;
   @Input() about?: string;
   @Input() role?: string;
+  @Input() allowReputationModal?: boolean;
+
   @ViewChild('xpWrapper', { static: false }) xpWrapper?: ElementRef<HTMLDivElement>;
+  
   public get alliances(): MemberAllianceItem[] {
     return this._alliances;
   }
   public totalAwards = 0;
   public totalXp = 0;
 
-  public get isReputationModalVisible(): boolean {
-    return this._isReputationModalVisible;
+  public get isReputationVisible(): boolean {
+    return this._isReputationVisible;
   }
-
-  public set isReputationModalVisible(value: boolean) {
-    this._isReputationModalVisible = value;
-    this.reputationModalLeftPosition = undefined;
-    this.reputationModalRightPosition = undefined;
-    this.reputationModalBottomPosition = undefined;
-    const wrapperRect = this.xpWrapper?.nativeElement.getBoundingClientRect();
-    this.reputationModalBottomPosition = window.innerHeight - (wrapperRect?.bottom || 0) + (wrapperRect?.height || 0);
-    if ((wrapperRect?.left || 0) <= window.innerWidth / 2) {
-      this.reputationModalLeftPosition = wrapperRect?.left || 0;
-    } else  {
-      this.reputationModalRightPosition = window.innerWidth - (wrapperRect?.right || 0);
+  public set isReputationVisible(value: boolean) {
+    this._isReputationVisible = value;
+    if (this.deviceService.isDesktop$.getValue()) {
+      this.reputationModalLeftPosition = undefined;
+      this.reputationModalRightPosition = undefined;
+      this.reputationModalBottomPosition = undefined;
+      const xpWrapperRect = this.xpWrapper?.nativeElement.getBoundingClientRect();
+      this.reputationModalBottomPosition = window.innerHeight - (xpWrapperRect?.bottom || 0) + (xpWrapperRect?.height || 0);
+      if ((xpWrapperRect?.left || 0) <= window.innerWidth / 2) {
+        this.reputationModalLeftPosition = xpWrapperRect?.left || 0;
+      } else  {
+        this.reputationModalRightPosition = window.innerWidth - (xpWrapperRect?.right || 0);
+      }
     }
 
     this.cd.markForCheck();
@@ -64,7 +69,7 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   public reputationModalBottomPosition?: number;
   public reputationModalLeftPosition?: number;
   public reputationModalRightPosition?: number;
-  private _isReputationModalVisible = false;
+  private _isReputationVisible = false;
   private _alliances: MemberAllianceItem[] = [];
 
   constructor(

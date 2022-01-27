@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { SelectBoxOption } from '@components/select-box/select-box.component';
+import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
@@ -31,6 +31,7 @@ export class MembersPage implements OnInit, OnDestroy {
   public spaceList$ = new BehaviorSubject<Space[]>([]);
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public defaultSpace = DEFAULT_SPACE;
+  public selectBoxSizes = SelectBoxSizes;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(
@@ -114,7 +115,8 @@ export class MembersPage implements OnInit, OnDestroy {
     return [DEFAULT_SPACE].concat((list || []).map((o) => {
       return {
         label: o.name || o.uid,
-        value: o.uid
+        value: o.uid,
+        img: o.avatarUrl
       };
     }));
   }
