@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { Space } from 'functions/interfaces/models';
 import {
   ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
@@ -39,7 +39,7 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
   constructor(
     private spaceApi: SpaceApi,
     public deviceService: DeviceService,
-    public spaceData: SpaceDataService
+    public avatarService: AvatarService
   ) {
     this.chartOptions = {
       // series: [44, 55, 41, 17, 15],

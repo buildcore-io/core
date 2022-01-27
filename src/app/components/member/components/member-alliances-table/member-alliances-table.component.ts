@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { MemberAllianceItem } from '../member-reputation-modal/member-reputation-modal.component';
 
 @Component({
@@ -25,6 +25,6 @@ export class MemberAlliancesTableComponent {
   private _alliances: MemberAllianceItem[] = [];
 
   constructor(
-    public spaceData: SpaceDataService
+    public avatarService: AvatarService
   ) {}
 }

@@ -3,10 +3,10 @@ import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
@@ -54,7 +54,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
     public proposalData: ProposalDataService,
-    public spaceData: SpaceDataService,
+    public avatarService: AvatarService,
     public nav: NavigationService,
     public deviceService: DeviceService
   ) {

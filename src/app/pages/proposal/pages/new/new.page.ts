@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import * as dayjs from 'dayjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -73,7 +73,7 @@ export class NewPage implements OnInit, OnDestroy {
     private nzNotification: NzNotificationService,
     public nav: NavigationService,
     public deviceService: DeviceService,
-    public spaceData: SpaceDataService
+    public avatarService: AvatarService
   ) {
     this.questions = new FormArray([
       this.getQuestionForm()

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { Member, Space } from "functions/interfaces/models";
 import { MemberAllianceItem } from './../member-reputation-modal/member-reputation-modal.component';
 @Component({
@@ -44,7 +44,7 @@ export class MemberSpaceRowComponent {
   constructor(
     public auth: AuthService,
     public deviceService: DeviceService,
-    public spaceData: SpaceDataService,
+    public avatarService: AvatarService,
     private cd: ChangeDetectorRef
   ) {}
 }

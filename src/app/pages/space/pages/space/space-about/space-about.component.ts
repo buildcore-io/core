@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/space/services/data.service';
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -31,6 +32,7 @@ export class SpaceAboutComponent implements OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
+    public avatarService: AvatarService,
     private notification: NotificationService,
     private auth: AuthService,
     private spaceApi: SpaceApi

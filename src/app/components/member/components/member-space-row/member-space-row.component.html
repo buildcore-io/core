@@ -2,7 +2,7 @@
     <div>
       <div class="flex items-center justify-between">
           <nz-avatar
-            [nzSrc]="spaceData.getAvatarSize(space?.avatarUrl)"
+            [nzSrc]="avatarService.getAvatarSize(space?.avatarUrl)"
             [nzSize]="32"
             class="mr-3 border-2 border-app-gray-100"
             nzShape="circle"

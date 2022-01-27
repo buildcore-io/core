@@ -2,10 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { Award } from '../../../../../../functions/interfaces/models';
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
@@ -15,7 +15,7 @@ import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
-import { DataService as AwardDataService } from './../../services/data.service';
+import { DataService } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
@@ -42,8 +42,8 @@ export class AwardPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
-    public awardData: AwardDataService,
-    public spaceData: SpaceDataService,
+    public data: DataService,
+    public avatarService: AvatarService,
     public nav: NavigationService,
     public deviceService: DeviceService
   ) {
@@ -62,7 +62,7 @@ export class AwardPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.awardData.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award|undefined) => {
+    this.data.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -74,20 +74,20 @@ export class AwardPage implements OnInit, OnDestroy {
       });
       if (this.auth.member$.value?.uid) {
         this.memberSubscriptions$.push(this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.awardData.isGuardianWithinSpace$));
+                                  .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
 
         this.memberSubscriptions$.push(this.awardApi.isMemberParticipant(obj.uid, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.awardData.isParticipantWithinAward$));
+                                  .pipe(untilDestroyed(this)).subscribe(this.data.isParticipantWithinAward$));
 
         this.memberSubscriptions$.push(this.spaceApi.isMemberWithinSpace(obj.space, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.awardData.isLoggedInMemberWithinSpace$));
+                                  .pipe(untilDestroyed(this)).subscribe(this.data.isLoggedInMemberWithinSpace$));
 
       }
     });
 
-    this.awardData.award$.pipe(skip(1), first()).subscribe((a) => {
+    this.data.award$.pipe(skip(1), first()).subscribe((a) => {
       if (a) {
-        this.subscriptions$.push(this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.awardData.space$));
+        this.subscriptions$.push(this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
       }
     });
   }
@@ -106,8 +106,8 @@ export class AwardPage implements OnInit, OnDestroy {
 
   private listenToAward(id: string): void {
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.awardData.award$));
-    this.subscriptions$.push(this.awardApi.listenOwners(id).pipe(untilDestroyed(this)).subscribe(this.awardData.owners$));
+    this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.award$));
+    this.subscriptions$.push(this.awardApi.listenOwners(id).pipe(untilDestroyed(this)).subscribe(this.data.owners$));
   }
 
   public showParticipateModal(): void {
@@ -125,12 +125,12 @@ export class AwardPage implements OnInit, OnDestroy {
   }
 
   public async approve(): Promise<void> {
-    if (!this.awardData.award$.value?.uid) {
+    if (!this.data.award$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-        uid: this.awardData.award$.value.uid
+        uid: this.data.award$.value.uid
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
         // none.
@@ -139,12 +139,12 @@ export class AwardPage implements OnInit, OnDestroy {
   }
 
   public async reject(): Promise<void> {
-    if (!this.awardData.award$.value?.uid) {
+    if (!this.data.award$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-      uid: this.awardData.award$.value.uid
+      uid: this.data.award$.value.uid
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
         // none.
@@ -155,12 +155,12 @@ export class AwardPage implements OnInit, OnDestroy {
 
   public async participate(): Promise<void> {
     this.isSubmitParticipationModalVisible = false;
-    if (!this.awardData.award$.value?.uid) {
+    if (!this.data.award$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-      uid: this.awardData.award$.value.uid,
+      uid: this.data.award$.value.uid,
       comment: this.commentControl.value || undefined
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.participate(sc), 'Participated.', finish).subscribe(() => {
@@ -174,7 +174,7 @@ export class AwardPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
-    this.awardData.resetSubjects();
+    this.data.resetSubjects();
     this.memberSubscriptions$.forEach((s) => {
       s.unsubscribe();
     });

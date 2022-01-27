@@ -2,7 +2,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { Space } from 'functions/interfaces/models';
 
 @Component({
@@ -17,7 +17,7 @@ export class SpaceNewAllianceComponent {
     this.spaceOptions = value.map(space => ({
       label: space.name || '',
       value: space.uid,
-      img: this.spaceData.getAvatarSize(space.avatarUrl)
+      img: this.avatarService.getAvatarSize(space.avatarUrl)
     }));
   }
   @Input() spaceAllianceControl: FormControl = new FormControl('');
@@ -32,7 +32,7 @@ export class SpaceNewAllianceComponent {
   private _spaces: Space[] = [];
 
   constructor(
-    public spaceData: SpaceDataService
+    public avatarService: AvatarService
   ) {}
   
   public trackByUid(index: number, item: any): number {

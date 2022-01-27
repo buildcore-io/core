@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
@@ -61,7 +61,7 @@ export class NewPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     public nav: NavigationService,
     public deviceService: DeviceService,
-    public spaceData: SpaceDataService
+    public avatarService: AvatarService
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,

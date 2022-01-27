@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
-import { DataService as MemberDataService } from '@pages/member/services/data.service';
-import { DataService as SpaceDataService } from '@pages/space/services/data.service';
+import { DataService } from '@pages/member/services/data.service';
 import { BehaviorSubject } from 'rxjs';
 import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
@@ -20,8 +20,8 @@ export class MemberAboutComponent {
 
   constructor(
     public deviceService: DeviceService,
-    public memberData: MemberDataService,
-    public spaceData: SpaceDataService
+    public data: DataService,
+    public avatarService: AvatarService
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
