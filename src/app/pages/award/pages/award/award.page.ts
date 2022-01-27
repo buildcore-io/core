@@ -5,17 +5,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { Award } from '../../../../../../functions/interfaces/models';
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { AwardApi } from './../../../../@api/award.api';
-import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
-import { DataService } from './../../services/data.service';
+import { DataService as AwardDataService } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
@@ -42,7 +42,8 @@ export class AwardPage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute,
     private awardApi: AwardApi,
-    public data: DataService,
+    public awardData: AwardDataService,
+    public spaceData: SpaceDataService,
     public nav: NavigationService,
     public deviceService: DeviceService
   ) {
@@ -61,7 +62,7 @@ export class AwardPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award|undefined) => {
+    this.awardData.award$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Award|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -73,20 +74,20 @@ export class AwardPage implements OnInit, OnDestroy {
       });
       if (this.auth.member$.value?.uid) {
         this.memberSubscriptions$.push(this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
+                                  .pipe(untilDestroyed(this)).subscribe(this.awardData.isGuardianWithinSpace$));
 
         this.memberSubscriptions$.push(this.awardApi.isMemberParticipant(obj.uid, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.data.isParticipantWithinAward$));
+                                  .pipe(untilDestroyed(this)).subscribe(this.awardData.isParticipantWithinAward$));
 
         this.memberSubscriptions$.push(this.spaceApi.isMemberWithinSpace(obj.space, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.data.isLoggedInMemberWithinSpace$));
+                                  .pipe(untilDestroyed(this)).subscribe(this.awardData.isLoggedInMemberWithinSpace$));
 
       }
     });
 
-    this.data.award$.pipe(skip(1), first()).subscribe((a) => {
+    this.awardData.award$.pipe(skip(1), first()).subscribe((a) => {
       if (a) {
-        this.subscriptions$.push(this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+        this.subscriptions$.push(this.spaceApi.listen(a.space).pipe(untilDestroyed(this)).subscribe(this.awardData.space$));
       }
     });
   }
@@ -94,15 +95,6 @@ export class AwardPage implements OnInit, OnDestroy {
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
-  }
-
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
     return this.auth.isLoggedIn$;
@@ -114,8 +106,8 @@ export class AwardPage implements OnInit, OnDestroy {
 
   private listenToAward(id: string): void {
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.award$));
-    this.subscriptions$.push(this.awardApi.listenOwners(id).pipe(untilDestroyed(this)).subscribe(this.data.owners$));
+    this.subscriptions$.push(this.awardApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.awardData.award$));
+    this.subscriptions$.push(this.awardApi.listenOwners(id).pipe(untilDestroyed(this)).subscribe(this.awardData.owners$));
   }
 
   public showParticipateModal(): void {
@@ -133,12 +125,12 @@ export class AwardPage implements OnInit, OnDestroy {
   }
 
   public async approve(): Promise<void> {
-    if (!this.data.award$.value?.uid) {
+    if (!this.awardData.award$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-        uid: this.data.award$.value.uid
+        uid: this.awardData.award$.value.uid
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
         // none.
@@ -147,12 +139,12 @@ export class AwardPage implements OnInit, OnDestroy {
   }
 
   public async reject(): Promise<void> {
-    if (!this.data.award$.value?.uid) {
+    if (!this.awardData.award$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-      uid: this.data.award$.value.uid
+      uid: this.awardData.award$.value.uid
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
         // none.
@@ -163,12 +155,12 @@ export class AwardPage implements OnInit, OnDestroy {
 
   public async participate(): Promise<void> {
     this.isSubmitParticipationModalVisible = false;
-    if (!this.data.award$.value?.uid) {
+    if (!this.awardData.award$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-      uid: this.data.award$.value.uid,
+      uid: this.awardData.award$.value.uid,
       comment: this.commentControl.value || undefined
     }, (sc, finish) => {
       this.notification.processRequest(this.awardApi.participate(sc), 'Participated.', finish).subscribe(() => {
@@ -182,7 +174,7 @@ export class AwardPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
-    this.data.resetSubjects();
+    this.awardData.resetSubjects();
     this.memberSubscriptions$.forEach((s) => {
       s.unsubscribe();
     });

@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { FileApi } from '@api/file.api';
+import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
+import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { Space } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-space-new-alliance',
@@ -11,19 +12,30 @@ import { FILE_SIZES } from 'functions/interfaces/models/base';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpaceNewAllianceComponent {
-  @Input() spaces: Space[] = [];
+  @Input() 
+  public set spaces(value: Space[]) {
+    this.spaceOptions = value.map(space => ({
+      label: space.name || '',
+      value: space.uid,
+      img: this.spaceData.getAvatarSize(space.avatarUrl)
+    }));
+  }
   @Input() spaceAllianceControl: FormControl = new FormControl('');
   @Input() reputationWeightControl: FormControl = new FormControl(null);
+
+  public get spaces(): Space[] {
+    return this._spaces;
+  }
+
+  public selectBoxSizes = SelectBoxSizes;
+  public spaceOptions: SelectBoxOption[] = [];
+  private _spaces: Space[] = [];
+
+  constructor(
+    public spaceData: SpaceDataService
+  ) {}
   
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 }

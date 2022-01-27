@@ -17,6 +17,7 @@ export class SelectBoxOptionsComponent {
   @Input() options: SelectBoxOption[] = [];
   @Input() shownOptions: SelectBoxOption[] = [];
   @Input() showImages = true;
+  @Input() isAvatar = false;
   @Output() onEraseClick = new EventEmitter<void>();
   @Output() onOptionClick = new EventEmitter<string>();
 

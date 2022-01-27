@@ -9,7 +9,8 @@
     [isSearchable]="true"
     [size]="selectBoxSizes.LARGE"
     title="Select space"
-    [mobileDrawer]="true">
+    [mobileDrawer]="true"
+    [isAvatar]="true">
   </wen-select-box>
 
   <div class="flex items-center justify-between w-full lg:mt-8">
@@ -20,7 +21,8 @@
         [optionsWrapperClasses]="'top-12 left-2'"
         [options]="getSpaceListOptions(spaceList$ | async)"
         [showArrow]="true"
-        [isSearchable]="true">
+        [isSearchable]="true"
+        [isAvatar]="true">
       </wen-select-box>
   
       <label class="lg:ml-6 text-base font-medium text-app-gray-text" 

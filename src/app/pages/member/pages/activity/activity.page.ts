@@ -161,7 +161,8 @@ export class ActivityPage implements OnInit {
     return [DEFAULT_SPACE].concat((list || []).map((o) => {
       return {
         label: o.name || o.uid,
-        value: o.uid
+        value: o.uid,
+        img: o.avatarUrl
       };
     }));
   }

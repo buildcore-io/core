@@ -21,7 +21,7 @@
         </div>
     </ng-container>
     
-    <div class="max-h-128 overflow-y-auto">
+    <div class="lg:max-h-56 overflow-y-auto" style="max-height: calc(100% - 40);">
         <div *ngFor="let opt of shownOptions; trackBy: trackBy"
             class="mt-4 lg:mt-5 flex items-center cursor-pointer hover:text-orange whitespace-nowrap"
             (click)="onOptionClick.emit(opt.value)"
@@ -29,7 +29,19 @@
                 'text-orange': opt.value === value
             }">
                 <div *ngIf="showImages" class="mr-2">
-                    <img *ngIf="opt?.img" [src]="opt?.img" alt="Chosen option image" class="min-w-6">
+                    <ng-container *ngIf="opt?.img">
+                        <img *ngIf="!isAvatar" [src]="opt?.img" alt="Chosen option image" class="border-2 border-app-gray-100 min-w-6">
+
+                        <nz-avatar
+                            *ngIf="isAvatar"
+                            [nzSrc]="opt.img"
+                            [nzSize]="24"
+                            class="mr-3 border-2 border-app-gray-100"
+                            nzShape="circle"
+                        >
+                        </nz-avatar>
+                    </ng-container>
+                    
                     <wen-icon-default-space *ngIf="!(opt?.img)"></wen-icon-default-space>
                 </div>
                 {{ opt.label }}

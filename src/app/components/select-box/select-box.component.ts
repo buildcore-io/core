@@ -46,6 +46,7 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
   @Input() showArrow = false;
   @Input() isSearchable = false;
   @Input() mobileDrawer = false;
+  @Input() isAvatar = false;
   
   public onChange = (v: string | undefined) => undefined;
   public disabled = false;

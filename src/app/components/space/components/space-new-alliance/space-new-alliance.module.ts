@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SelectBoxModule } from '@components/select-box/select-box.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
@@ -20,7 +21,8 @@ import { SpaceNewAllianceComponent } from './space-new-alliance.component';
     NzAvatarModule,
     NzInputNumberModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SelectBoxModule
   ],
   exports: [
     SpaceNewAllianceComponent

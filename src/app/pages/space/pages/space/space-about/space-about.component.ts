@@ -5,7 +5,6 @@ import { DataService } from '@pages/space/services/data.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
 import { Space } from '../../../../../../../functions/interfaces/models/space';
-import { FileApi } from '../../../../../@api/file.api';
 import { SpaceApi } from '../../../../../@api/space.api';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
@@ -55,14 +54,6 @@ export class SpaceAboutComponent implements OnDestroy {
       // TODO Add searching / pagging.
       this.spacesSubscription = this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.allSpaces$);
     }
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public closeNewAlliance(): void {

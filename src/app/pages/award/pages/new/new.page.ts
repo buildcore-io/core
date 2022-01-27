@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi } from '@api/file.api';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
@@ -60,7 +60,8 @@ export class NewPage implements OnInit, OnDestroy {
     private mintApi: MintApi,
     private cd: ChangeDetectorRef,
     public nav: NavigationService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public spaceData: SpaceDataService
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,
@@ -132,14 +133,6 @@ export class NewPage implements OnInit, OnDestroy {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public async create(): Promise<void> {

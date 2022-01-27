@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { MemberAllianceItem } from '../member-reputation-modal/member-reputation-modal.component';
-import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
-import { FileApi } from './../../../../@api/file.api';
 
 @Component({
   selector: 'wen-member-alliances-table',
@@ -25,11 +24,7 @@ export class MemberAlliancesTableComponent {
   public totalXp = 0;
   private _alliances: MemberAllianceItem[] = [];
 
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
-  }
+  constructor(
+    public spaceData: SpaceDataService
+  ) {}
 }

@@ -3,11 +3,12 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { ClickOutsideModule } from '@core/directives/click-outside/click-outside.module';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { SelectBoxComponent } from './select-box.component';
 import { SelectBoxOptionsComponent } from './select-box-options/select-box-options.component';
+import { SelectBoxComponent } from './select-box.component';
 
 
 
@@ -24,7 +25,8 @@ import { SelectBoxOptionsComponent } from './select-box-options/select-box-optio
     ReactiveFormsModule,
     ClickOutsideModule,
     NzButtonModule,
-    NzDrawerModule
+    NzDrawerModule,
+    NzAvatarModule
   ],
   exports: [
     SelectBoxComponent

@@ -1,32 +1,18 @@
-<nz-form-item>
-    <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
-        <nz-select
-            class="w-full"
-            nzSize="large"
-            nzShowSearch
-            nzAllowClear
-            nzPlaceHolder="Select space"
-            [formControl]="spaceAllianceControl"
-        >
-            <nz-option
-                *ngFor="let s of spaces; trackBy: trackByUid"
-                nzCustomContent
-                [nzLabel]="s.name || s.uid"
-                [nzValue]="s.uid"
-                >
-                <nz-avatar
-                    [nzSrc]="getAvatarSize(s.avatarUrl)"
-                    [nzSize]="32"
-                    class="mr-3 border-2 border-app-gray-100"
-                    nzShape="circle">
-                </nz-avatar>
-                {{s.name || s.uid}}
-            </nz-option>
-        </nz-select>
-    </nz-form-control>
-</nz-form-item>
+<wen-select-box
+    class="block w-full"
+    [formControl]="spaceAllianceControl"
+    [optionsWrapperClasses]="'top-20 left-0 w-full'"
+    [options]="spaceOptions"
+    [showArrow]="true"
+    [isSearchable]="true"
+    [size]="selectBoxSizes.LARGE"
+    [isAvatar]="true"
+    title="Select space"
+    [mobileDrawer]="true"
+    [isAvatar]="true">
+</wen-select-box>
 
-<nz-form-item>
+<nz-form-item class="mt-6">
     <nz-form-control i18n-nzErrorTip nzErrorTip="">
         <nz-input-number
             class="w-full"

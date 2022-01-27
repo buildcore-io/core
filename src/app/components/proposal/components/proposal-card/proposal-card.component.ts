@@ -1,15 +1,14 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService as SpaceDataService } from '@pages/space/services/data.service';
 import { Space } from 'functions/interfaces/models';
 import {
   ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
   ApexResponsive
 } from "ng-apexcharts";
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Proposal, ProposalAnswer, ProposalType } from '../../../../../../functions/interfaces/models/proposal';
-import { FileApi } from './../../../../@api/file.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 
@@ -39,7 +38,8 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
 
   constructor(
     private spaceApi: SpaceApi,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public spaceData: SpaceDataService
   ) {
     this.chartOptions = {
       // series: [44, 55, 41, 17, 15],
@@ -125,14 +125,6 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
         answerTwo
       ];
     }
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public ngOnChanges(): void {
