@@ -9,13 +9,13 @@
     <tbody>
         <tr *ngFor="let item of alliances">
             <td class="flex items-center" style="padding-left: 0px; padding-right: 0px">
-              <nz-avatar
-                  [nzSrc]="getAvatarSize(item.avatar)"
-                  [nzSize]="32"
-                  class="mr-3 border-2 border-app-gray-100"
-                  nzShape="circle"
-              >
-              </nz-avatar>
+                <nz-avatar
+                    [nzSrc]="getAvatarSize(item.avatar)"
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-app-gray-100"
+                    nzShape="circle"
+                >
+                </nz-avatar>
                 {{ item.name }}
             </td>
             <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.totalAwards }}</td>

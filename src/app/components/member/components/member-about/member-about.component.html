@@ -40,14 +40,14 @@
   <div class="mt-10 text-left">
     <h3 class="flex items-center justify-between">
       Recently joined spaces
-      <a i18n class="ml-6 flex items-center text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap" 
+      <a i18n class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
         [routerLink]="">
           All
           <wen-icon-angle-right></wen-icon-angle-right>
       </a>
     </h3>
     <div class="flex flex-wrap gap-2">
-      <article *ngFor="let s of (data.space$ | async) | slice:0:6; trackBy: trackByUid"
+      <article *ngFor="let s of (data.space$ | async) | slice:0:4; trackBy: trackByUid"
         class="flex flex-col items-center justify-center w-full p-3 lg:h-16 bg-bg-background rounded-2xl">
         <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
           <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">

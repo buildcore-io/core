@@ -1,25 +1,31 @@
 <div class="flex items-start justify-between w-full px-6 py-5 bg-white lg:items-center rounded-2xl" #wrapper>
     <div>
       <div class="flex items-center justify-between">
-          <img [src]="space.img" alt="Space image" class="min-w-6 lg:min-w-10">
-          <div class="ml-4 text-lg font-bold">{{ space.name }}</div>
+              <nz-avatar
+              [nzSrc]="getAvatarSize(space?.avatarUrl)"
+              [nzSize]="32"
+              class="mr-3 border-2 border-app-gray-100"
+              nzShape="circle"
+          >
+          </nz-avatar>
+          <div class="ml-4 text-lg font-bold">{{ space?.name }}</div>
       </div>
 
       <nz-tag *ngIf="deviceService.isMobile$ | async"
         class="mt-4 cursor-pointer wen-xp-tag"
         (click)="isReputationModalVisible = allowReputationModal || false">
-        {{ space.XP }} XP</nz-tag>
+        {{ member?.statsPerSpace?.[space!.uid]?.totalReputation || 0 }} XP</nz-tag>
     </div>
     <div class="flex items-center mt-1 lg:mt-0" #xpWrapper>
         <nz-tag *ngIf="deviceService.isDesktop$ | async"
           class="cursor-pointer wen-xp-tag"
           (click)="isReputationModalVisible = allowReputationModal || false">
-          {{ space.XP }} XP</nz-tag>
+          {{ member?.statsPerSpace?.[space!.uid]?.awardsCompleted || 0 }} XP</nz-tag>
         <wen-icon-angle-right class="ml-4 cursor-pointer"></wen-icon-angle-right>
 
         <wen-member-reputation-modal
           [isOpen]="isReputationModalVisible"
-          [alliances]="[]"
+          [alliances]="alliances"
           [member]="(auth.member$ | async) || undefined"
           [bottomPosition]="reputationModalBottomPosition"
           [rightPosition]="reputationModalRightPosition"

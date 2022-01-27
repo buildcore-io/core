@@ -7,15 +7,15 @@
             class="block w-full"
             formControlName="space"
             [optionsWrapperClasses]="'top-20 left-0 w-full'"
-            [options]="spacesList"
+            [options]="getSpaceListOptions(data.spaceList$ | async)"
             [showArrow]="true"
             [isSearchable]="true"
             [size]="selectBoxSizes.LARGE">
           </wen-select-box>
 
           <a class="flex items-center ml-6 text-sm font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
-            [routerLink]=""
-            *ngIf="deviceService.isDesktop$ | async">
+            [routerLink]="getSpaceRoute(spaceForm.value.space)"
+            *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value">
               <span i18n>View space</span>
               <wen-icon-angle-right></wen-icon-angle-right>
           </a>
@@ -32,9 +32,9 @@
 
       <div class="flex flex-col justify-between mt-6 lg:flex-row lg:items-center">
         <div class="flex items-center">
-          <wen-member-tile [title]="'Awards Completed'" [value]="(data.member$ | async)?.awardsCompleted || 0">
+          <wen-member-tile [title]="'Awards Completed'" [value]="getAwardsCompleted(data.member$ | async)">
           </wen-member-tile>
-          <wen-member-tile class="ml-20" [title]="'Total Reputation'" [value]="(data.member$ | async)?.totalReputation || 0">
+          <wen-member-tile class="ml-20" [title]="'Total Reputation'" [value]="getReputation(data.member$ | async)">
           </wen-member-tile>
         </div>
 
@@ -44,7 +44,7 @@
           <div class="flex items-center justify-between text-xs font-medium text-app-gray-400">
             <span i18n>Earned badges</span>
             <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
-              [routerLink]="">
+              [routerLink]="getBadgeRoute()">
                 <span i18n>More</span>
                 <wen-icon-angle-right></wen-icon-angle-right>
             </a>
@@ -64,7 +64,7 @@
 
     <nz-card i18n-nzTitle nzTitle="Alliances" *ngIf="spaceForm.value.includeAlliances">
       <wen-member-alliances-table
-        [alliances]="[]">
+        [alliances]="data.getAlliances(spaceForm.value.space, spaceForm.value.includeAlliances)">
       </wen-member-alliances-table>
     </nz-card>
 

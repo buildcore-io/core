@@ -15,7 +15,7 @@ import { MemberAllianceItem } from './../../../../components/member/components/m
 import { FilterService } from './../../services/filter.service';
 
 export const DEFAULT_SPACE: SelectBoxOption = {
-  label: 'All',
+  label: 'All Spaces',
   value: 'all'
 };
 
@@ -67,19 +67,6 @@ export class MembersPage implements OnInit, OnDestroy {
     });
 
     this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.spaceList$);
-    // this.spaceForm.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
-    //   const space: Space | undefined = this.spaceList$.value.find((s) => {
-    //     return s.uid === val.space;
-    //   });
-
-    //   // Unable to find space.
-    //   if (!space) {
-    //     return;
-    //   }
-
-    //   console.log(space);
-    //   this.cd.markForCheck();
-    // });
   }
 
   public getAlliances(member: Member): MemberAllianceItem[] {
@@ -124,7 +111,6 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public getSpaceListOptions(list?: Space[] | null): SelectBoxOption[] {
-    // console.log(list);
     return [DEFAULT_SPACE].concat((list || []).map((o) => {
       return {
         label: o.name || o.uid,
