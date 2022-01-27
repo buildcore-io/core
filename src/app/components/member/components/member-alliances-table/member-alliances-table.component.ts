@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AllianceItem } from '../member-reputation-modal/member-reputation-modal.component';
+import { MemberAllianceItem } from '../member-reputation-modal/member-reputation-modal.component';
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
+import { FileApi } from './../../../../@api/file.api';
 
 @Component({
   selector: 'wen-member-alliances-table',
@@ -10,17 +12,24 @@ import { AllianceItem } from '../member-reputation-modal/member-reputation-modal
 export class MemberAlliancesTableComponent {
 
   @Input() tableClasses = '';
-  @Input() 
-  public set alliances(value: AllianceItem[]) {
+  @Input()
+  public set alliances(value: MemberAllianceItem[]) {
     this._alliances = value;
-    this.totalAwards = this.alliances.reduce((acc, alliance) => acc + alliance.awards, 0);
-    this.totalXP = this.alliances.reduce((acc, alliance) => acc + alliance.XP, 0);
+    this.totalAwards = this.alliances.reduce((acc, alliance) => acc + alliance.totalAwards, 0);
+    this.totalXp = this.alliances.reduce((acc, alliance) => acc + alliance.totalXp, 0);
   }
-  public get alliances(): AllianceItem[] {
+  public get alliances(): MemberAllianceItem[] {
     return this._alliances;
   }
-  private _alliances: AllianceItem[] = [];
   public totalAwards = 0;
-  public totalXP = 0;
+  public totalXp = 0;
+  private _alliances: MemberAllianceItem[] = [];
 
+  public getAvatarSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+  }
 }

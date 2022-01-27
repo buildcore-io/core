@@ -2,13 +2,15 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChil
 import { FormControl, FormGroup } from '@angular/forms';
 import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import * as dayjs from 'dayjs';
-import { Transaction } from "functions/interfaces/models";
+import { Member, Space, Transaction } from "functions/interfaces/models";
 import {
   ApexAxisChartSeries,
   ApexChart, ApexDataLabels, ApexFill, ApexMarkers, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
 } from "ng-apexcharts";
 import { map } from "rxjs";
+import { DEFAULT_SPACE } from './../../../discover/pages/members/members.page';
 import { DataService } from "./../../services/data.service";
 
 export type ChartOptions = {
@@ -26,11 +28,6 @@ export type ChartOptions = {
   toolbar: any;
 };
 
-export const DEFAULT_SPACE: SelectBoxOption = {
-  label: 'All spaces',
-  value: 'all'
-};
-
 @Component({
   selector: 'wen-activity',
   templateUrl: './activity.page.html',
@@ -43,47 +40,9 @@ export class ActivityPage implements OnInit {
   public chartOptions: Partial<ChartOptions> = {};
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
-  public spacesList: SelectBoxOption[] = [DEFAULT_SPACE, 
-    { label: 'Space 1', value: 'space1', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 2', value: 'space2', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 3', value: 'space3', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 4', value: 'space4', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 5', value: 'space5', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 6', value: 'space6', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 7', value: 'space7', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 8', value: 'space8', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 9', value: 'space9', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 10', value: 'space10', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 11', value: 'space11', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 12', value: 'space12', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 13', value: 'space13', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 14', value: 'space14', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 15', value: 'space15', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 16', value: 'space16', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 17', value: 'space17', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 18', value: 'space18', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 19', value: 'space19', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 20', value: 'space20', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 21', value: 'space21', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 22', value: 'space22', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 23', value: 'space23', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 24', value: 'space24', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 25', value: 'space25', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 26', value: 'space26', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 27', value: 'space27', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 28', value: 'space28', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 29', value: 'space29', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 30', value: 'space30', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 31', value: 'space31', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 32', value: 'space32', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 33', value: 'space33', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 34', value: 'space34', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 35', value: 'space35', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }, 
-    { label: 'Space 36', value: 'space36', img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png' }
-  ];
   public defaultSpace = DEFAULT_SPACE;
   public selectBoxSizes = SelectBoxSizes;
-  
+
   constructor(
     private cd: ChangeDetectorRef,
     public data: DataService,
@@ -126,6 +85,38 @@ export class ActivityPage implements OnInit {
     });
   }
 
+  public getAwardsCompleted(member: Member | null | undefined): number {
+    if (this.spaceForm.value.space !== this.defaultSpace.value) {
+      if (this.spaceForm.value.includeAlliances) {
+        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => acc + alliance.totalAwards, 0);
+      } else {
+        return member?.statsPerSpace?.[this.spaceForm.value.space]?.awardsCompleted || 0;
+      }
+    } else {
+      return member?.awardsCompleted || 0;
+    }
+  }
+
+  public getReputation(member: Member | null | undefined): number {
+    if (this.spaceForm.value.space !== this.defaultSpace.value) {
+      if (this.spaceForm.value.includeAlliances) {
+        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => acc + alliance.totalXp, 0);
+      } else {
+        return member?.statsPerSpace?.[this.spaceForm.value.space]?.totalReputation || 0;
+      }
+    } else {
+      return member?.totalReputation || 0;
+    }
+  }
+
+  public getBadgeRoute(): string[] {
+    return ['../', ROUTER_UTILS.config.member.badges];
+  }
+
+  public getSpaceRoute(spaceId: string): string[] {
+    return ['/', ROUTER_UTILS.config.space.root, spaceId]
+  }
+
   public initChart(data: any): void {
     this.chartOptions = {
       series: [
@@ -164,6 +155,15 @@ export class ActivityPage implements OnInit {
       }
     };
     this.cd.markForCheck();
+  }
+
+  public getSpaceListOptions(list?: Space[] | null): SelectBoxOption[] {
+    return [DEFAULT_SPACE].concat((list || []).map((o) => {
+      return {
+        label: o.name || o.uid,
+        value: o.uid
+      };
+    }));
   }
 
   public trackByUid(index: number, item: any): number {

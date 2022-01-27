@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inpu
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
-import { Space } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
-
+import { Member, Space } from "functions/interfaces/models";
+import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
+import { MemberAllianceItem } from './../member-reputation-modal/member-reputation-modal.component';
 @Component({
   selector: 'wen-member-space-row',
   templateUrl: './member-space-row.component.html',
@@ -12,12 +12,12 @@ import { FILE_SIZES } from 'functions/interfaces/models/base';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberSpaceRowComponent {
+  @Input() alliances: MemberAllianceItem[] = [];
   @Input() space?: Space;
+  @Input() member?: Member;
   @Input() allowReputationModal?: boolean;
-  
   @ViewChild('wrapper', { static: false }) wrapper?: ElementRef<HTMLDivElement>;
   @ViewChild('xpWrapper', { static: false }) xpWrapper?: ElementRef<HTMLDivElement>;
-
   public get isReputationModalVisible(): boolean {
     return this._isReputationModalVisible;
   }
@@ -35,14 +35,12 @@ export class MemberSpaceRowComponent {
       this.reputationModalRightPosition = window.innerWidth - (wrapperRect?.right || 0);
       this.reputationModalWidth = wrapperRect?.width || 0;
     }
-    console.log(wrapperRect, this.reputationModalRightPosition,);
     this.cd.markForCheck();
   }
-  
-  private _isReputationModalVisible = false;
   public reputationModalBottomPosition?: number;
   public reputationModalRightPosition?: number;
   public reputationModalWidth?: number;
+  private _isReputationModalVisible = false;
 
   constructor(
     public auth: AuthService,

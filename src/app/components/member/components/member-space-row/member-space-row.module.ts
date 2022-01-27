@@ -16,8 +16,8 @@ import { MemberSpaceRowComponent } from './member-space-row.component';
     CommonModule,
     IconModule,
     NzTagModule,
-    MemberReputationModalModule,
-    NzAvatarModule
+    NzAvatarModule,
+    MemberReputationModalModule
   ],
   exports: [
     MemberSpaceRowComponent

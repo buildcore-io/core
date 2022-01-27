@@ -9,7 +9,9 @@ import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
+import { FULL_LIST } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
 
@@ -35,6 +37,7 @@ export class MemberPage implements OnInit, OnDestroy {
     private titleService: Title,
     private route: ActivatedRoute,
     private memberApi: MemberApi,
+    private spaceApi: SpaceApi,
     private auth: AuthService,
     private router: Router,
     public nav: NavigationService,
@@ -80,7 +83,9 @@ export class MemberPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.memberApi.topAwardsCompleted(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
     this.subscriptions$.push(this.memberApi.topAwardsPending(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsPending$));
     this.subscriptions$.push(this.memberApi.topBadges(memberId).pipe(untilDestroyed(this)).subscribe(this.data.badges$));
-    this.subscriptions$.push(this.memberApi.topSpaces(memberId).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+    // TODO Implement search. This is parked since we will be implementing new search here.
+    this.subscriptions$.push(this.memberApi.topSpaces(memberId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+    this.subscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.data.spaceList$));
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
   }
 

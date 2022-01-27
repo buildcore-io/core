@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { Member } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 
-export interface AllianceItem {
-  img: string;
+export interface MemberAllianceItem {
+  avatar?: string;
   name: string;
-  awards: number;
-  XP: number;
+  totalAwards: number;
+  totalXp: number;
 }
 
 @Component({
@@ -16,7 +16,7 @@ export interface AllianceItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberReputationModalComponent {
-  @Input() alliances: AllianceItem[] = [];
+  @Input() alliances: MemberAllianceItem[] = [];
   @Input() member?: Member;
   @Input() isOpen = false;
   @Input() leftPosition?: number;

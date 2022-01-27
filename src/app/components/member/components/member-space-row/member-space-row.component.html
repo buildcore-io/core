@@ -1,56 +1,31 @@
-<div class="flex items-start lg:items-center justify-between py-5 px-6 bg-white rounded-2xl w-full" #wrapper>
+<div class="flex items-start justify-between w-full px-6 py-5 bg-white lg:items-center rounded-2xl" #wrapper>
     <div>
       <div class="flex items-center justify-between">
-          <nz-avatar [nzSrc]="getAvatarSize(space?.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">
-            </nz-avatar>
+          <nz-avatar
+            [nzSrc]="getAvatarSize(space?.avatarUrl)"
+            [nzSize]="32"
+            class="mr-3 border-2 border-app-gray-100"
+            nzShape="circle"
+          >
+          </nz-avatar>
           <div class="ml-4 text-lg font-bold">{{ space?.name }}</div>
       </div>
-      
+
       <nz-tag *ngIf="deviceService.isMobile$ | async"
-        class="wen-xp-tag cursor-pointer cursor-pointer mt-4" 
+        class="mt-4 cursor-pointer wen-xp-tag"
         (click)="isReputationModalVisible = allowReputationModal || false">
-        30 XP</nz-tag>
+        {{ member?.statsPerSpace?.[space!.uid]?.totalReputation || 0 }} XP</nz-tag>
     </div>
     <div class="flex items-center mt-1 lg:mt-0" #xpWrapper>
         <nz-tag *ngIf="deviceService.isDesktop$ | async"
-          class="wen-xp-tag cursor-pointer cursor-pointer" 
+          class="cursor-pointer wen-xp-tag"
           (click)="isReputationModalVisible = allowReputationModal || false">
-          30 XP</nz-tag>
+          {{ member?.statsPerSpace?.[space!.uid]?.awardsCompleted || 0 }} XP</nz-tag>
         <wen-icon-angle-right class="ml-4 cursor-pointer"></wen-icon-angle-right>
 
         <wen-member-reputation-modal
           [isOpen]="isReputationModalVisible"
-          [alliances]="[
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
-            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 }
-          ]"
+          [alliances]="alliances"
           [member]="(auth.member$ | async) || undefined"
           [bottomPosition]="reputationModalBottomPosition"
           [rightPosition]="reputationModalRightPosition"
