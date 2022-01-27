@@ -27,7 +27,7 @@
 
     <div class="bottom-0 flex lg:relative" [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'">
       <div class="relative inline-flex items-center space-x-3" #xpWrapper>
-        <nz-tag class="wen-xp-tag cursor-pointer" (click)="isReputationModalVisible = allowReputationModal || false">
+        <nz-tag class="wen-xp-tag cursor-pointer" (click)="isReputationVisible = allowReputationModal || false">
           {{ member.totalReputation ? member.totalReputation : 0 }} XP</nz-tag>
         <nz-tag class="flex items-center space-x-3 bg-transparent border-transparent wen-status-tag">
           <wen-icon-award class="w-4 h-4 text-app-gray-400"></wen-icon-award>
@@ -36,7 +36,8 @@
         </nz-tag>
         
         <wen-member-reputation-modal
-          [isOpen]="isReputationModalVisible"
+          *ngIf="deviceService.isDesktop$ | async"
+          [isOpen]="isReputationVisible"
           [alliances]="[
             { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
             { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
@@ -72,8 +73,46 @@
           [leftPosition]="reputationModalLeftPosition"
           [bottomPosition]="reputationModalBottomPosition"
           [rightPosition]="reputationModalRightPosition"
-          (onClose)="isReputationModalVisible = false">
+          (onClose)="isReputationVisible = false">
         </wen-member-reputation-modal>
+
+        <wen-member-reputation-drawer
+          *ngIf="deviceService.isMobile$ | async"
+          [isOpen]="isReputationVisible"
+          [alliances]="[
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
+            { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 }
+          ]"
+          [member]="member"
+          (onClose)="isReputationVisible = false">
+        </wen-member-reputation-drawer>
       </div>
 
       <div i18n class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">

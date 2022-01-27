@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { Space } from 'functions/interfaces/models';
+import { FILE_SIZES } from 'functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-member-space-row',
@@ -9,7 +12,7 @@ import { DeviceService } from '@core/services/device';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberSpaceRowComponent {
-  @Input() space: any;
+  @Input() space?: Space;
   @Input() allowReputationModal?: boolean;
   
   @ViewChild('wrapper', { static: false }) wrapper?: ElementRef<HTMLDivElement>;
@@ -46,4 +49,12 @@ export class MemberSpaceRowComponent {
     public deviceService: DeviceService,
     private cd: ChangeDetectorRef
   ) {}
+
+  public getAvatarSize(url?: string|null): string|undefined {
+    if (!url) {
+      return undefined;
+    }
+
+    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+  }
 }

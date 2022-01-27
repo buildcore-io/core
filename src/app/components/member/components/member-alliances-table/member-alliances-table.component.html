@@ -1,4 +1,5 @@
-<nz-table class="block max-h-56 mt-5 px-5 overflow-y-auto" [nzData]="alliances" [nzShowPagination]="false">
+<nz-table class="block h-full lg:min-h-0 lg:max-h-56 mt-5 px-5 overflow-y-auto" [ngClass]="tableClasses"
+    [nzData]="alliances" [nzShowPagination]="false">
     <thead>
         <tr>
             <th #alliancesHeader i18n style="padding:0px">Alliances</th>

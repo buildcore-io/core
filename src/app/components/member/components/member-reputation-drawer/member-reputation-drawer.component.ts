@@ -1,29 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Member } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
-
-export interface AllianceItem {
-  img: string;
-  name: string;
-  awards: number;
-  XP: number;
-}
+import { AllianceItem } from '../member-reputation-modal/member-reputation-modal.component';
 
 @Component({
-  selector: 'wen-member-reputation-modal',
-  templateUrl: './member-reputation-modal.component.html',
-  styleUrls: ['./member-reputation-modal.component.less'],
+  selector: 'wen-member-reputation-drawer',
+  templateUrl: './member-reputation-drawer.component.html',
+  styleUrls: ['./member-reputation-drawer.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MemberReputationModalComponent {
+export class MemberReputationDrawerComponent {
   @Input() alliances: AllianceItem[] = [];
   @Input() member?: Member;
   @Input() isOpen = false;
-  @Input() leftPosition?: number;
-  @Input() topPosition?: number;
-  @Input() rightPosition?: number;
-  @Input() bottomPosition?: number;
-  @Input() width?: number;
   @Output() onClose = new EventEmitter<void>();
 
   constructor(

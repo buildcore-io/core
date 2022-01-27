@@ -1,52 +1,67 @@
-<div class="flex items-end justify-between">
-  <form class="flex items-center mt-6 lg:mt-12 lg:mt-8" [formGroup]="spaceForm">
-    <wen-select-box
-      formControlName="space"
-      [optionsWrapperClasses]="'top-12 left-2'"
-      [options]="spacesList"
-      [showArrow]="true"
-      [isSearchable]="true">
-    </wen-select-box>
+<form class="flex flex-col lg:flex-row items-end justify-between" [formGroup]="spaceForm">
+  <wen-select-box
+    *ngIf="deviceService.isMobile$ | async"
+    class="w-full mt-6 mb-6"
+    formControlName="space"
+    [optionsWrapperClasses]="'top-16 left-0'"
+    [options]="spacesList"
+    [showArrow]="true"
+    [isSearchable]="true"
+    [size]="selectBoxSizes.LARGE"
+    title="Select space">
+  </wen-select-box>
 
-    <label class="ml-6 text-base font-medium text-app-gray-text" 
-      nz-checkbox formControlName="includeAlliances"
-      [nzDisabled]="spaceForm.value.space === defaultSpace.value">
-        Include alliances {{ spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
-    </label>
-  </form>
-
-  <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-    <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" 
-      [formControl]="sortControl" nz-tooltip>
-      <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-      <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-    </nz-select>
-    <ng-template #defaultTemplate let-selected>
-      <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
-      {{ selected.nzLabel }}
-    </ng-template>
-  </ng-container>
-  <ng-template #sortMobileBlock>
-    <div class="relative">
+  <div class="flex items-center justify-between w-full lg:mt-8">
+    <div class="flex items-center">
       <wen-select-box
-        class="w-32"
-        [formControl]="sortControl"
-        [suffixIcon]="mobileSuffixIcon"
-        [optionsWrapperClasses]="'top-12 right-2'"
-        [options]="[{
-          label: 'Recent',
-          value: filter.sortOptions.RECENT
-        }, {
-          label: 'Oldest',
-          value: filter.sortOptions.OLDEST
-        }]">
+        *ngIf="deviceService.isDesktop$ | async"
+        formControlName="space"
+        [optionsWrapperClasses]="'top-12 left-2'"
+        [options]="spacesList"
+        [showArrow]="true"
+        [isSearchable]="true">
       </wen-select-box>
-      <ng-template #mobileSuffixIcon>
-        <wen-icon-sort></wen-icon-sort>
-      </ng-template>
+  
+      <label class="lg:ml-6 text-base font-medium text-app-gray-text" 
+        nz-checkbox formControlName="includeAlliances"
+        [nzDisabled]="spaceForm.value.space === defaultSpace.value">
+          Include alliances {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+      </label>
     </div>
-  </ng-template>
-</div>
+  
+    <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
+      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" 
+        [formControl]="sortControl" nz-tooltip>
+        <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+        <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
+      </nz-select>
+      <ng-template #defaultTemplate let-selected>
+        <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
+        {{ selected.nzLabel }}
+      </ng-template>
+    </ng-container>
+    <ng-template #sortMobileBlock>
+      <div class="relative">
+        <wen-select-box
+          class="w-32"
+          [formControl]="sortControl"
+          [suffixIcon]="mobileSuffixIcon"
+          [optionsWrapperClasses]="'top-12 right-2'"
+          [options]="[{
+            label: 'Recent',
+            value: filter.sortOptions.RECENT
+          }, {
+            label: 'Oldest',
+            value: filter.sortOptions.OLDEST
+          }]">
+        </wen-select-box>
+        <ng-template #mobileSuffixIcon>
+          <wen-icon-sort></wen-icon-sort>
+        </ng-template>
+      </div>
+    </ng-template>
+  </div>
+</form>
 
 <div class="lg:grid mt-10 place-items-start">
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">

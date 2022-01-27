@@ -21,7 +21,7 @@
 
 <div>
     <wen-member-space-row
-        *ngFor="let item of shownSpaces"
+        *ngFor="let item of shownSpaces; trackBy: trackByUid"
         class="block w-full mt-3 lg:mt-4"
         [space]="item"
         [allowReputationModal]="spaceForm.value.includeAlliances">

@@ -10,7 +10,8 @@
             [options]="spacesList"
             [showArrow]="true"
             [isSearchable]="true"
-            [size]="selectBoxSizes.LARGE">
+            [size]="selectBoxSizes.LARGE"
+            title="Select space">
           </wen-select-box>
 
           <a class="ml-6 flex items-center text-sm font-semibold cursor-pointer text-blue-light1 whitespace-nowrap" 
@@ -94,7 +95,8 @@
           { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
           { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 },
           { img: 'https://icons.iconarchive.com/icons/martz90/circle/24/video-camera-icon.png', name: 'IOTA Pioneers', awards: 3, XP: 550 }
-        ]">
+        ]"
+        [tableClasses]="'max-h-56'">
       </wen-member-alliances-table>
     </nz-card>
 

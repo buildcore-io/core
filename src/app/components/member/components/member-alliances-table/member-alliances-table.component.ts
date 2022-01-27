@@ -9,6 +9,7 @@ import { AllianceItem } from '../member-reputation-modal/member-reputation-modal
 })
 export class MemberAlliancesTableComponent {
 
+  @Input() tableClasses = '';
   @Input() 
   public set alliances(value: AllianceItem[]) {
     this._alliances = value;

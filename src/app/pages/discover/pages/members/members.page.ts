@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { SelectBoxOption } from '@components/select-box/select-box.component';
+import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
@@ -64,6 +64,7 @@ export class MembersPage implements OnInit, OnDestroy {
   ];
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public defaultSpace = DEFAULT_SPACE;
+  public selectBoxSizes = SelectBoxSizes;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(
