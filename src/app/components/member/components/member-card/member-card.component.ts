@@ -7,6 +7,7 @@ import { Transaction } from "../../../../../../functions/interfaces/models";
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
+import { MemberAllianceItem } from './../member-reputation-modal/member-reputation-modal.component';
 
 @UntilDestroy()
 @Component({
@@ -16,17 +17,32 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberCardComponent implements OnInit, OnDestroy {
+  @Input()
+  public set alliances(value: MemberAllianceItem[]) {
+    this._alliances = value;
+    if (value.length > 0) {
+      this.totalAwards = this.alliances.reduce((acc, alliance) => acc + alliance.totalAwards, 0);
+      this.totalXp = this.alliances.reduce((acc, alliance) => acc + alliance.totalXp, 0);
+    } else {
+      this.totalAwards = this.member?.awardsCompleted || 0;
+      this.totalXp = this.member?.totalReputation || 0;
+    }
+  }
   @Input() member?: Member;
   @Input() fullWidth?: boolean;
   @Input() about?: string;
   @Input() role?: string;
-  @Input() allowReputationModal?: boolean;
-
   @ViewChild('xpWrapper', { static: false }) xpWrapper?: ElementRef<HTMLDivElement>;
+  public get alliances(): MemberAllianceItem[] {
+    return this._alliances;
+  }
+  public totalAwards = 0;
+  public totalXp = 0;
 
   public get isReputationModalVisible(): boolean {
     return this._isReputationModalVisible;
   }
+
   public set isReputationModalVisible(value: boolean) {
     this._isReputationModalVisible = value;
     this.reputationModalLeftPosition = undefined;
@@ -49,6 +65,7 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   public reputationModalLeftPosition?: number;
   public reputationModalRightPosition?: number;
   private _isReputationModalVisible = false;
+  private _alliances: MemberAllianceItem[] = [];
 
   constructor(
     private memberApi: MemberApi,

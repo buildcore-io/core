@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { MemberAlliancesTableComponent } from './member-alliances-table.component';
 
@@ -11,7 +12,8 @@ import { MemberAlliancesTableComponent } from './member-alliances-table.componen
   ],
   imports: [
     CommonModule,
-    NzTableModule
+    NzTableModule,
+    NzAvatarModule
   ],
   exports: [
     MemberAlliancesTableComponent

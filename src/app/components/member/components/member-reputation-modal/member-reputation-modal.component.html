@@ -6,11 +6,11 @@
     (nzOnCancel)="onCancel()"
     [nzContent]="modalContent"
     [nzFooter]="null"
-    [nzStyle]="{ 
+    [nzStyle]="{
         position: 'absolute',
         left: leftPosition ? leftPosition + 'px' : 'auto',
-        top: bottomPosition ? 'auto' : (topPosition || 100) + 'px',  
-        right: rightPosition ? rightPosition + 'px' : 'auto',  
+        top: bottomPosition ? 'auto' : (topPosition || 100) + 'px',
+        right: rightPosition ? rightPosition + 'px' : 'auto',
         bottom: topPosition ? 'auto' : (bottomPosition || 100) + 'px'
     }"
     [nzBodyStyle]="{ padding: '0px' }"
@@ -21,11 +21,10 @@
             <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                 style="max-width: 48px; min-width: 48px;" [nzSize]="48"
                 [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
-            <div class="ml-3 mb-0 truncate text-lg font-bold">{{ member?.name ? '@' + member?.name : member?.uid }} reputation</div>
+            <div class="mb-0 ml-3 text-lg font-bold truncate">{{ member?.name ? '@' + member?.name : member?.uid }} reputation</div>
         </div>
-        
-        <wen-member-alliances-table
-            [alliances]="alliances">
+
+        <wen-member-alliances-table [alliances]="alliances">
         </wen-member-alliances-table>
     </ng-template>
 </nz-modal>

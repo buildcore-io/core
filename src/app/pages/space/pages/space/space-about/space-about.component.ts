@@ -9,6 +9,7 @@ import { FileApi } from '../../../../../@api/file.api';
 import { SpaceApi } from '../../../../../@api/space.api';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
+import { FULL_LIST } from './../../../../../@api/base.api';
 import { AllianceExtended, SpaceWithAlliances } from './../../../../../@api/space.api';
 
 @Component({
@@ -56,7 +57,7 @@ export class SpaceAboutComponent implements OnDestroy {
     // Load spaces if not loaded yet.
     if (!this.spacesSubscription) {
       // TODO Add searching / pagging.
-      this.spacesSubscription = this.spaceApi.alphabetical(undefined, undefined, 1000).subscribe(this.allSpaces$);
+      this.spacesSubscription = this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.allSpaces$);
     }
   }
 
