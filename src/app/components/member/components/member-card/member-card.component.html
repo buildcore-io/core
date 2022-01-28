@@ -17,7 +17,7 @@
           {{ role }}</nz-tag>
 
         <span nz-typography class="truncate lg:mt-3 text-app-gray-400" [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'">
-          joined {{ member.createdOn?.toDate() | date:"short" }}
+          <span i18n>joined</span> {{ member.createdOn?.toDate() | date:"short" }}
         </span>
       </div>
       <p class="mt-2 mb-3 leading-5 text-black whitespace-pre-line truncate-line-3" [ngClass]="fullWidth ? 'text-base' : 'text-xs'">{{ (about !== undefined
@@ -27,16 +27,20 @@
 
     <div class="bottom-0 flex lg:relative" [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'">
       <div class="relative inline-flex items-center space-x-3" #xpWrapper>
-        <nz-tag class="cursor-pointer wen-xp-tag" (click)="isReputationVisible = !!getSelectedSpace() || false">
-          {{ getTotal('totalReputation') }} XP</nz-tag>
+        <nz-tag class="wen-xp-tag flex items-center">
+          {{ getTotal('totalReputation') }} <span i18n>XP</span>
+          <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400 ml-2"
+            *ngIf="!!getSelectedSpace() && includeAlliances"
+            (click)="isReputationVisible = true"></i>
+        </nz-tag>
         <nz-tag class="flex items-center space-x-3 bg-transparent border-transparent wen-status-tag">
           <wen-icon-award class="w-4 h-4 text-app-gray-400"></wen-icon-award>
-          <span>{{ getTotal('awardsCompleted') }} awards
+          <span>{{ getTotal('awardsCompleted') }} <span i18n>awards</span>
           </span>
         </nz-tag>
 
         <wen-member-reputation-modal
-          *ngIf="(deviceService.isDesktop$ | async) && !!getSelectedSpace()"
+          *ngIf="(deviceService.isDesktop$ | async) && !!getSelectedSpace() && includeAlliances"
           [isOpen]="isReputationVisible"
           [member]="member"
           [selectedSpace]="selectedSpace"
@@ -47,7 +51,7 @@
         </wen-member-reputation-modal>
 
         <wen-member-reputation-drawer
-          *ngIf="(deviceService.isMobile$ | async) && !!getSelectedSpace()"
+          *ngIf="(deviceService.isMobile$ | async) && !!getSelectedSpace() && includeAlliances"
           [isOpen]="isReputationVisible"
           [selectedSpace]="selectedSpace"
           [member]="member"

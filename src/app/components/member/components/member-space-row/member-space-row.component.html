@@ -12,15 +12,22 @@
       </div>
 
       <nz-tag *ngIf="deviceService.isMobile$ | async"
-        class="mt-4 cursor-pointer wen-xp-tag"
-        (click)="isReputationModalVisible = allowReputationModal || false">
-        {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} XP</nz-tag>
+        class="mt-4 wen-xp-tag w-max flex items-center">
+        {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span> 
+        <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400 ml-2"
+          *ngIf="allowReputationModal"
+          (click)="isReputationModalVisible = true"></i>
+      </nz-tag>
     </div>
     <div class="flex items-center mt-1 lg:mt-0" #xpWrapper>
         <nz-tag *ngIf="deviceService.isDesktop$ | async"
-          class="cursor-pointer wen-xp-tag"
-          (click)="isReputationModalVisible = allowReputationModal || false">
-          {{ member?.spaces?.[space!.uid]?.awardsCompleted || 0 }} XP</nz-tag>
+          class="wen-xp-tag flex w-max items-center">
+          {{ member?.spaces?.[space!.uid]?.awardsCompleted || 0 }} <span i18n>XP</span> 
+          <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400 ml-2"
+            *ngIf="allowReputationModal"
+            (click)="isReputationModalVisible = true"></i>
+        </nz-tag>
+
         <wen-icon-angle-right class="ml-4 cursor-pointer"></wen-icon-angle-right>
 
         <wen-member-reputation-modal

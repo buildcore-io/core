@@ -34,7 +34,6 @@ export class MemberCardComponent implements OnDestroy {
   @Input() fullWidth?: boolean;
   @Input() about?: string;
   @Input() role?: string;
-  @Input() allowReputationModal?: boolean;
 
   @ViewChild('xpWrapper', { static: false }) xpWrapper?: ElementRef<HTMLDivElement>;
   public get isReputationVisible(): boolean {
