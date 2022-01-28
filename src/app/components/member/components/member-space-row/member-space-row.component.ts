@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inpu
 import { AuthService } from '@components/auth/services/auth.service';
 import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Member, Space } from "functions/interfaces/models";
 @Component({
   selector: 'wen-member-space-row',
@@ -45,4 +46,8 @@ export class MemberSpaceRowComponent {
     public avatarService: AvatarService,
     private cd: ChangeDetectorRef
   ) {}
+  
+  public getSpaceRoute(): string[] {
+    return ['/', ROUTER_UTILS.config.space.root, this.space?.uid || ''];
+  }
 }

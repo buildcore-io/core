@@ -26,7 +26,7 @@
 </nz-table>
 
 <div class="flex items-center px-5 py-3 text-sm font-bold">
-    <div [style.width]="alliancesHeader.offsetWidth + 'px'">Total reputation</div>
+    <div [style.width]="'calc(100% - ' + (awardsHeader.offsetWidth + XPHeader.offsetWidth) + 'px'">Total reputation</div>
     <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ getTotal('awardsCompleted') }}</div>
     <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ getTotal('totalReputation') }}</div>
 </div>

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -19,7 +20,8 @@ import { MemberSpaceRowComponent } from './member-space-row.component';
     NzTagModule,
     NzAvatarModule,
     MemberReputationModalModule,
-    NzIconModule
+    NzIconModule,
+    RouterModule
   ],
   exports: [
     MemberSpaceRowComponent

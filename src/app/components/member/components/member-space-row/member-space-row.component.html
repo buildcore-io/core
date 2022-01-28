@@ -28,7 +28,8 @@
             (click)="isReputationModalVisible = true"></i>
         </nz-tag>
 
-        <wen-icon-angle-right class="ml-4 cursor-pointer"></wen-icon-angle-right>
+        <wen-icon-angle-right class="ml-4 cursor-pointer" 
+          [routerLink]="getSpaceRoute()"></wen-icon-angle-right>
 
         <wen-member-reputation-modal
           [isOpen]="isReputationModalVisible"
