@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { MemberApi } from "@api/member.api";
+import { TransactionApi } from "@api/transaction.api";
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { Space, Transaction } from "../../../../../../functions/interfaces/models";
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
@@ -17,8 +18,13 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
   styleUrls: ['./member-card.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MemberCardComponent implements OnInit, OnDestroy {
-  @Input() selectedSpace?: string;
+export class MemberCardComponent implements OnDestroy {
+  @Input()
+  public set selectedSpace(value: string | undefined) {
+    this._selectedSpace = value;
+    this.refreshBadges();
+  }
+
   @Input() includeAlliances = false;
   @Input() member?: Member;
   @Input() fullWidth?: boolean;
@@ -30,6 +36,10 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   public get isReputationVisible(): boolean {
     return this._isReputationVisible;
   }
+  public get selectedSpace(): string | undefined {
+    return this._selectedSpace;
+  }
+
   public set isReputationVisible(value: boolean) {
     this._isReputationVisible = value;
     if (this.deviceService.isDesktop$.getValue()) {
@@ -49,14 +59,17 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   }
 
   public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
+  public totalVisibleBadges = 6;
   public path = ROUTER_UTILS.config.member.root;
   public reputationModalBottomPosition?: number;
   public reputationModalLeftPosition?: number;
   public reputationModalRightPosition?: number;
   private _isReputationVisible = false;
+  private _selectedSpace?: string;
 
   constructor(
     private memberApi: MemberApi,
+    private tranApi: TransactionApi,
     private cd: ChangeDetectorRef,
     private cache: CacheService,
     public deviceService: DeviceService
@@ -64,20 +77,34 @@ export class MemberCardComponent implements OnInit, OnDestroy {
     // none.
   }
 
-  public ngOnInit(): void {
+  public async refreshBadges(): Promise<void> {
     if (this.member?.uid) {
       if (!this.getSelectedSpace()) {
         this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
       } else {
-        // We've to consider there alliances.
-        // this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
+        this.badges$.next(undefined);
+        const allBadges: string[] = this.member?.spaces?.[this.getSelectedSpace()!.uid]?.badges || [];
+        for (const [spaceId] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+          allBadges.push(...(this.member.spaces?.[spaceId]?.badges || []));
+        }
+
+        // Let's get first 6 badges.
+        const finalBadgeTransactions: Transaction[] = [];
+        for (const tran of allBadges.slice(0, this.totalVisibleBadges)) {
+          const obj: Transaction | undefined = await firstValueFrom(this.tranApi.listen(tran));
+          if (obj) {
+            finalBadgeTransactions.push(obj);
+          }
+        }
+
+        this.badges$.next(finalBadgeTransactions);
       }
     }
   }
 
   public getSelectedSpace(): Space | undefined {
     return this.cache.allSpaces$.value.find((s) => {
-      return s.uid === this.selectedSpace;
+      return s.uid === this._selectedSpace;
     });
   }
 

@@ -1,10 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { AvatarService } from '@core/services/avatar/avatar.service';
 import { Member, Space } from "functions/interfaces/models";
+import { first } from 'rxjs';
+import { SpaceApi } from './../../../../@api/space.api';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 
 interface MemberAllianceItem {
   avatar?: string;
+  uid: string;
   name: string;
   totalAwards: number;
   totalXp: number;
@@ -16,14 +19,23 @@ interface MemberAllianceItem {
   styleUrls: ['./member-alliances-table.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MemberAlliancesTableComponent {
+export class MemberAlliancesTableComponent implements OnInit {
   @Input() selectedSpace?: string;
   @Input() member?: Member | null;
   @Input() tableClasses = '';
+  public memberWithinSpace: {
+    [propName: string]: boolean
+  } = {};
   constructor(
     public avatarService: AvatarService,
+    private spaceApi: SpaceApi,
+    private cd: ChangeDetectorRef,
     private cache: CacheService
   ) {}
+
+  public ngOnInit(): void {
+    this.checkIfMembersWithinSpace();
+  }
 
   public getSelectedSpace(): Space | undefined {
     return this.cache.allSpaces$.value.find((s) => {
@@ -47,6 +59,18 @@ export class MemberAlliancesTableComponent {
     return Math.trunc(total);
   }
 
+  public checkIfMembersWithinSpace(): void {
+    if (!this.member) {
+      return;
+    }
+    for (const [spaceId] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+      this.spaceApi.isMemberWithinSpace(spaceId, this.member.uid).pipe(first()).subscribe((val) => {
+        this.memberWithinSpace[spaceId] = val;
+        this.cd.markForCheck();
+      });
+    }
+  }
+
   public getAlliances(): MemberAllianceItem[] {
     if (!this.getSelectedSpace() || !this.member) {
       return [];
@@ -62,6 +86,7 @@ export class MemberAlliancesTableComponent {
         values.enabled === true
       ) {
         out.push({
+          uid: allianceSpace.uid,
           avatar: allianceSpace.avatarUrl,
           name: allianceSpace.name || allianceSpace.uid,
           totalAwards: this.member!.spaces?.[allianceSpace.uid]?.awardsCompleted || 0,
@@ -71,6 +96,7 @@ export class MemberAlliancesTableComponent {
     }
 
     out.push({
+      uid: this.getSelectedSpace()!.uid,
       avatar: this.getSelectedSpace()!.avatarUrl,
       name: this.getSelectedSpace()!.name || this.getSelectedSpace()!.uid,
       totalAwards: this.member!.spaces?.[this.getSelectedSpace()!.uid]?.awardsCompleted || 0,

@@ -14,6 +14,14 @@ const record = COL.TRANSACTION;
 db.collection(record).get().then(async (snapshot) => {
   let i = 0;
   for (const tran of snapshot.docs) {
+    // Fix transaction ID
+    await db.collection(record).doc(tran.id).update({
+      ...tran.data(),
+      ...{
+        uid: tran.id
+      }
+    });
+
     if (tran.data() && tran.data().type === TransactionType.BADGE) {
       // Set member obj.
       members[tran.data().member] = members[tran.data().member] || { };
@@ -25,7 +33,7 @@ db.collection(record).get().then(async (snapshot) => {
       members[tran.data().member].spaces = members[tran.data().member].spaces || {};
       members[tran.data().member].spaces[tran.data().space] = members[tran.data().member].spaces[tran.data().space] || { uid: tran.data().space };
       members[tran.data().member].spaces[tran.data().space].badges = (members[tran.data().member].spaces[tran.data().space].badges || []);
-      members[tran.data().member].spaces[tran.data().space].badges.push(tran.data().uid);
+      members[tran.data().member].spaces[tran.data().space].badges.push(tran.id);
       members[tran.data().member].spaces[tran.data().space].awardsCompleted = (members[tran.data().member].spaces[tran.data().space].awardsCompleted || 0) + 1;
       members[tran.data().member].spaces[tran.data().space].totalReputation = (members[tran.data().member].spaces[tran.data().space].totalReputation || 0) + tran.data().payload.xp;
 

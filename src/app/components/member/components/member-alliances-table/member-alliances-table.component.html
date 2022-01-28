@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let item of getAlliances()">
-            <td class="flex items-center" style="padding-left: 0px; padding-right: 0px">
+            <td class="flex items-center" [class.font-bold]="memberWithinSpace[item.uid]" style="padding-left: 0px; padding-right: 0px">
                 <nz-avatar
                     [nzSrc]="avatarService.getAvatarSize(item.avatar)"
                     [nzSize]="32"

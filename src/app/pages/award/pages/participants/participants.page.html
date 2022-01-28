@@ -36,7 +36,7 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of (getList() | async); trackBy: trackByUid"
+    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of (getList() | async); trackBy: trackByUid" [selectedSpace]="(data.space$ | async)?.uid"
       [about]="member.comment || ''" [member]="member">
       <ng-container
         *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">

@@ -56,7 +56,7 @@
       </div>
 
       <div i18n class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">
-        <nz-avatar *ngFor="let badge of (badges$ | async) | slice:0:6;"
+        <nz-avatar *ngFor="let badge of (badges$ | async) | slice:0:totalVisibleBadges;"
           [nzSrc]="badge.payload.image | ipfsBadge:filesizes.small"
           class="mr-2 bg-white border-gray-400 lg:mr-0" nzShape="circle"
           [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 24">
