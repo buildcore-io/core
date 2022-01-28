@@ -1,5 +1,5 @@
 <nz-card i18n-nzTitle [nzTitle]="(deviceService.isDesktop$ | async) ?
-    'Casted Votes' : 'Votes (' + ((data?.transactions$ | async) || []).length + ')'"
+    'Casted Votes' : 'Votes (' + ((data?.transactions$ | async) || []).length + ')'" class="block"
     *ngIf="(data?.proposal$ | async)?.approved && data?.isMemberVote((data?.proposal$ | async)?.type) && !data?.isPending(data?.proposal$ | async)">
     <nz-table #basicTable [nzData]="(data?.transactions$ | async) || []" [nzShowPagination]="false">
     <thead>
@@ -19,7 +19,7 @@
     </nz-table>
 </nz-card>
 
-<nz-card nzTitle="Approve Proposal"
+<nz-card nzTitle="Approve Proposal" class="block"
     *ngIf="!(data?.proposal$ | async)?.approved && (isGuardianWithinSpace$ | async) && !(data?.proposal$ | async)?.rejected">
     <div class="mb-8 space-y-4">
     <button nz-button nzType="primary" nzBlock nzSize="large" (click)="onApprove.emit()">
@@ -29,7 +29,7 @@
     </div>
 </nz-card>
 
-<nz-card nzTitle="Proposal Info">
+<nz-card nzTitle="Proposal Info" class="block">
     <div class="wen-description-item bg-bg-background"  *ngIf="data.isNativeVote((data.proposal$ | async)?.type)">
         <span nz-typography class=" text-app-gray-400 flex-nowrap" i18n>Current Milestone</span>
         <p nz-typography>{{(data.lastMilestone$ | async)?.cmi}}</p>
