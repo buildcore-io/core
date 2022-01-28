@@ -38,10 +38,10 @@
         </div>
       </div>
 
-      <wen-tabs class="block mt-12 w-screen lg:w-auto -ml-5 lg:ml-0" [tabs]="sections"></wen-tabs>
-      
-      <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
-      
+      <wen-tabs class="block w-screen mt-12 -ml-5 lg:w-auto lg:ml-0" [tabs]="sections"></wen-tabs>
+
+      <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-app-gray-100"></div>
+
       <div class="w-full py-12">
         <router-outlet></router-outlet>
       </div>
@@ -70,10 +70,10 @@
             </nz-progress>
           </ng-container>
         </div>
-      </nz-card>      
-      
+      </nz-card>
+
       <wen-proposal-info
-        class="block mt-4"
+        class="block mt-4 space-y-4"
         *ngIf="deviceService.isDesktop$ | async"
         [isGuardianWithinSpace$]="isGuardianWithinSpace$"
         (onApprove)="approve()"

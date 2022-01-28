@@ -1,16 +1,13 @@
 <wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
-    <wen-drawer-toggle
-      label="About space"
-      (click)="isAboutSpaceVisible = true">
+    <wen-drawer-toggle label="About space" (click)="isAboutSpaceVisible = true">
     </wen-drawer-toggle>
-    <wen-fixed-create-button
-      [route]="routerService.urlToNewSpace"
-    ></wen-fixed-create-button>
+    <wen-fixed-create-button [route]="routerService.urlToNewSpace"></wen-fixed-create-button>
   </ng-container>
 
 
-  <div class="absolute left-0 w-auto h-56 overflow-hidden top-18 lg:top-0 lg:right-0 lg:h-96 rounded-10 lg:rounded-large lg:rounded-r-none lg:left-20">
+  <div
+    class="absolute left-0 w-auto h-56 overflow-hidden top-18 lg:top-0 lg:right-0 lg:h-96 rounded-10 lg:rounded-large lg:rounded-r-none lg:left-20">
     <img alt="" [src]="(bannerUrl$ | async) || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
   </div>
 
@@ -44,9 +41,10 @@
       </div>
 
 
-      <wen-tabs [tabs]="sections" class="block w-screen lg:w-auto -ml-5 lg:ml-0 overflow-x-auto overflow-y-hidden"></wen-tabs>
-      
-      <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
+      <wen-tabs [tabs]="sections" class="block w-screen -ml-5 overflow-x-auto overflow-y-hidden lg:w-auto lg:ml-0">
+      </wen-tabs>
+
+      <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-app-gray-100"></div>
 
       <div class="w-full py-14 lg:py-12">
         <router-outlet></router-outlet>
@@ -64,34 +62,23 @@
         {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending Request' :
         'Ask to Join Space'}}
       </button>
-      <div>
-        <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
-          Edit Space
-        </button>
-      </div>
 
-      <wen-space-about
-        [avatarUrl]="(avatarUrl$ | async) || undefined"
-        (onLeave)="leave()"
-      ></wen-space-about>
+      <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
+        Edit Space
+      </button>
+
+      <wen-space-about class="block" [avatarUrl]="(avatarUrl$ | async) || undefined" (onLeave)="leave()"></wen-space-about>
     </div>
   </div>
 
-  <nz-drawer
-        [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }"
-        [nzWidth]="'100vw'"
-        [nzClosable]="false"
-        [nzVisible]="isAboutSpaceVisible"
-      >
-      <div *nzDrawerContent class="relative h-full">
-        <button class="absolute z-10 -top-0 right-5" (click)="isAboutSpaceVisible = false">
-          <wen-icon-close></wen-icon-close>
-        </button>
+  <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }" [nzWidth]="'100vw'" [nzClosable]="false"
+    [nzVisible]="isAboutSpaceVisible">
+    <div *nzDrawerContent class="relative h-full">
+      <button class="absolute z-10 -top-0 right-5" (click)="isAboutSpaceVisible = false">
+        <wen-icon-close></wen-icon-close>
+      </button>
 
-        <wen-space-about
-          [avatarUrl]="(avatarUrl$ | async) || undefined"
-          (onLeave)="leave()"
-        ></wen-space-about>
-      </div>
+      <wen-space-about [avatarUrl]="(avatarUrl$ | async) || undefined" (onLeave)="leave()"></wen-space-about>
+    </div>
   </nz-drawer>
 </wen-content>
