@@ -21,7 +21,10 @@
         </div>
     </ng-container>
     
-    <div class="lg:max-h-56 overflow-y-auto" style="max-height: calc(100% - 40);">
+    <div class="lg:max-h-56 overflow-x-hidden" style="max-height: calc(100% - 40);"
+        [ngClass]="{
+            'overflow-y-hidden': disableHorizontalScroll
+        }">
         <div *ngFor="let opt of shownOptions; trackBy: trackBy"
             class="mt-4 lg:mt-5 flex items-center cursor-pointer hover:text-orange whitespace-nowrap"
             (click)="onOptionClick.emit(opt.value)"

@@ -3,7 +3,7 @@
     *ngIf="deviceService.isMobile$ | async"
     class="w-full mt-6 mb-6"
     formControlName="space"
-    [optionsWrapperClasses]="'top-16 left-0'"
+    [optionsWrapperClasses]="'top-20 left-0 w-full'"
     [options]="getSpaceListOptions(cache.allSpaces$| async)"
     [showArrow]="true"
     [isSearchable]="true"

@@ -18,6 +18,7 @@ export class SelectBoxOptionsComponent {
   @Input() shownOptions: SelectBoxOption[] = [];
   @Input() showImages = true;
   @Input() isAvatar = false;
+  @Input() disableHorizontalScroll = false;
   @Output() onEraseClick = new EventEmitter<void>();
   @Output() onOptionClick = new EventEmitter<string>();
 
