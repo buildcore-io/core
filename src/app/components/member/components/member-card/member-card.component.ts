@@ -4,11 +4,11 @@ import { MemberApi } from "@api/member.api";
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject } from "rxjs";
-import { Transaction } from "../../../../../../functions/interfaces/models";
+import { Space, Transaction } from "../../../../../../functions/interfaces/models";
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
+import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
-import { MemberAllianceItem } from './../member-reputation-modal/member-reputation-modal.component';
 
 @UntilDestroy()
 @Component({
@@ -18,17 +18,8 @@ import { MemberAllianceItem } from './../member-reputation-modal/member-reputati
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberCardComponent implements OnInit, OnDestroy {
-  @Input()
-  public set alliances(value: MemberAllianceItem[]) {
-    this._alliances = value;
-    if (value.length > 0) {
-      this.totalAwards = this.alliances.reduce((acc, alliance) => (acc + alliance.totalAwards), 0);
-      this.totalXp = this.alliances.reduce((acc, alliance) => (acc + alliance.totalXp) * alliance.weight, 0);
-    } else {
-      this.totalAwards = this.member?.awardsCompleted || 0;
-      this.totalXp = this.member?.totalReputation || 0;
-    }
-  }
+  @Input() selectedSpace?: string;
+  @Input() includeAlliances = false;
   @Input() member?: Member;
   @Input() fullWidth?: boolean;
   @Input() about?: string;
@@ -36,13 +27,6 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   @Input() allowReputationModal?: boolean;
 
   @ViewChild('xpWrapper', { static: false }) xpWrapper?: ElementRef<HTMLDivElement>;
-
-  public get alliances(): MemberAllianceItem[] {
-    return this._alliances;
-  }
-  public totalAwards = 0;
-  public totalXp = 0;
-
   public get isReputationVisible(): boolean {
     return this._isReputationVisible;
   }
@@ -70,11 +54,11 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   public reputationModalLeftPosition?: number;
   public reputationModalRightPosition?: number;
   private _isReputationVisible = false;
-  private _alliances: MemberAllianceItem[] = [];
 
   constructor(
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef,
+    private cache: CacheService,
     public deviceService: DeviceService
   ) {
     // none.
@@ -82,14 +66,41 @@ export class MemberCardComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     if (this.member?.uid) {
-      // We've to consider there alliances.
-      if (this._alliances.length > 0) {
-        // TODO Add filtering by space.
+      if (!this.getSelectedSpace()) {
         this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
       } else {
-        this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
+        // We've to consider there alliances.
+        // this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
       }
     }
+  }
+
+  public getSelectedSpace(): Space | undefined {
+    return this.cache.allSpaces$.value.find((s) => {
+      return s.uid === this.selectedSpace;
+    });
+  }
+
+  public getTotal(what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
+    let total = 0;
+    if (!this.getSelectedSpace()) {
+      total = this.member?.[what] || 0;
+    } else {
+      total = this.member?.spaces?.[this.getSelectedSpace()!.uid]?.[what] || 0;
+      if (this.includeAlliances) {
+        for (const [spaceId, values] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+          const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
+            return s.uid === spaceId;
+          });
+          if (allianceSpace && values.enabled === true ) {
+            const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
+            total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
+          }
+        }
+      }
+    }
+
+    return Math.trunc(total);
   }
 
   public get filesizes(): typeof FILE_SIZES {

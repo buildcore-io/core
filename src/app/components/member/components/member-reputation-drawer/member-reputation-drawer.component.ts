@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Member } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { MemberAllianceItem } from '../member-reputation-modal/member-reputation-modal.component';
 
 @Component({
   selector: 'wen-member-reputation-drawer',
@@ -10,7 +9,7 @@ import { MemberAllianceItem } from '../member-reputation-modal/member-reputation
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberReputationDrawerComponent {
-  @Input() alliances: MemberAllianceItem[] = [];
+  @Input() selectedSpace?: string;
   @Input() member?: Member;
   @Input() isOpen = false;
   @Output() onClose = new EventEmitter<void>();

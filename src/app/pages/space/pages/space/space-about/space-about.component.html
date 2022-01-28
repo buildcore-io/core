@@ -174,7 +174,7 @@
 
         <div class="mt-7">
             <wen-space-new-alliance
-                [spaces]="(data.allSpaces$ | async) || []"
+                [spaces]="(cache.allSpaces$ | async) || []"
                 [spaceAllianceControl]="spaceAllianceControl"
                 [reputationWeightControl]="reputationWeightControl">
             </wen-space-new-alliance>
@@ -208,7 +208,7 @@
             <div class="pb-4 text-3xl font-bold" i18n>{{ isNewAlliance ? 'New' : 'Edit' }} alliance</div>
 
             <wen-space-new-alliance
-                [spaces]="(data.allSpaces$ | async) || []"
+                [spaces]="(cache.allSpaces$ | async) || []"
                 [spaceAllianceControl]="spaceAllianceControl"
                 [reputationWeightControl]="reputationWeightControl">
             </wen-space-new-alliance>

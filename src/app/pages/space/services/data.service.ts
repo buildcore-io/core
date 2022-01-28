@@ -1,11 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Award, Space } from 'functions/interfaces/models';
+import { Award } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
 import { AwardApi, AwardFilter } from './../../../@api/award.api';
-import { DEFAULT_LIST_SIZE, FULL_LIST } from './../../../@api/base.api';
+import { DEFAULT_LIST_SIZE } from './../../../@api/base.api';
 import { ProposalApi, ProposalFilter } from './../../../@api/proposal.api';
 import { SpaceApi, SpaceWithAlliances } from './../../../@api/space.api';
 import { AuthService } from './../../../components/auth/services/auth.service';
@@ -34,7 +34,6 @@ export class DataService implements OnDestroy {
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public pendingMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public allSpaces$ = new BehaviorSubject<Space[]>([]);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -96,7 +95,6 @@ export class DataService implements OnDestroy {
     this.subscriptions$.push(this.spaceApi.listenGuardians(spaceId).subscribe(this.guardians$));
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.ACTIVE).subscribe(this.proposalsActive$));
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.ACTIVE).subscribe(this.awardsActive$));
-    this.subscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.allSpaces$));
   }
 
   public listenToRelatedRecordWithMember(spaceId: string, memberId: string): void {

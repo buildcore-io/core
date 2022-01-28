@@ -9,6 +9,7 @@ import { SpaceApi } from '../../../../../@api/space.api';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
 import { AllianceExtended, SpaceWithAlliances } from './../../../../../@api/space.api';
+import { CacheService } from './../../../../../@core/services/cache/cache.service';
 
 @Component({
   selector: 'wen-space-about',
@@ -30,6 +31,7 @@ export class SpaceAboutComponent implements OnDestroy {
     public deviceService: DeviceService,
     public data: DataService,
     public avatarService: AvatarService,
+    public cache: CacheService,
     private notification: NotificationService,
     private auth: AuthService,
     private spaceApi: SpaceApi
@@ -77,7 +79,7 @@ export class SpaceAboutComponent implements OnDestroy {
       uid: this.data.space$.value.uid,
       targetSpaceId: this.spaceAllianceControl.value,
       enabled: enabled,
-      weight: !enabled ? 0 : parseInt(this.reputationWeightControl.value) || 0
+      weight: !enabled ? 0 : parseFloat(this.reputationWeightControl.value) || 0
     }, (sc, finish) => {
       this.notification.processRequest(
         this.spaceApi.setAlliance(sc),

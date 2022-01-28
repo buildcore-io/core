@@ -42,7 +42,7 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="block" [fullWidth]="true" [alliances]="getAlliances(member)"
+    <wen-member-card class="block" [fullWidth]="true"
       [role]="memberIsGuardian(member.uid) && isActiveList() ? 'Guardian' : 'Member'"
       *ngFor="let member of getList() | async; trackBy: trackByUid" [member]="member">
       <a class="w-full" [routerLink]="['/', member.uid]" *ngIf="(data.isGuardianWithinSpace$ | async) === false">

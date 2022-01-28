@@ -3,7 +3,6 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { Member, Space } from "functions/interfaces/models";
-import { MemberAllianceItem } from './../member-reputation-modal/member-reputation-modal.component';
 @Component({
   selector: 'wen-member-space-row',
   templateUrl: './member-space-row.component.html',
@@ -11,7 +10,6 @@ import { MemberAllianceItem } from './../member-reputation-modal/member-reputati
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberSpaceRowComponent {
-  @Input() alliances: MemberAllianceItem[] = [];
   @Input() space?: Space;
   @Input() member?: Member;
   @Input() allowReputationModal?: boolean;

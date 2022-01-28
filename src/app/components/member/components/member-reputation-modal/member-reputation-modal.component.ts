@@ -2,14 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { Member } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 
-export interface MemberAllianceItem {
-  avatar?: string;
-  name: string;
-  weight: number;
-  totalAwards: number;
-  totalXp: number;
-}
-
 @Component({
   selector: 'wen-member-reputation-modal',
   templateUrl: './member-reputation-modal.component.html',
@@ -17,7 +9,7 @@ export interface MemberAllianceItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberReputationModalComponent {
-  @Input() alliances: MemberAllianceItem[] = [];
+  @Input() selectedSpace?: string;
   @Input() member?: Member;
   @Input() isOpen = false;
   @Input() leftPosition?: number;

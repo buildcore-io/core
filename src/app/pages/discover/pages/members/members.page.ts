@@ -7,11 +7,10 @@ import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { SortOptions } from "../../services/sort-options.interface";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { Space } from './../../../../../../functions/interfaces/models/space';
-import { DEFAULT_LIST_SIZE, FULL_LIST } from './../../../../@api/base.api';
+import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
-import { SpaceApi } from './../../../../@api/space.api';
+import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
-import { MemberAllianceItem } from './../../../../components/member/components/member-reputation-modal/member-reputation-modal.component';
 import { FilterService } from './../../services/filter.service';
 
 export const DEFAULT_SPACE: SelectBoxOption = {
@@ -28,7 +27,6 @@ export const DEFAULT_SPACE: SelectBoxOption = {
 export class MembersPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaceForm: FormGroup;
-  public spaceList$ = new BehaviorSubject<Space[]>([]);
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public defaultSpace = DEFAULT_SPACE;
   public selectBoxSizes = SelectBoxSizes;
@@ -37,8 +35,8 @@ export class MembersPage implements OnInit, OnDestroy {
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
+    public cache: CacheService,
     private memberApi: MemberApi,
-    private spaceApi: SpaceApi,
     private auth: AuthService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
@@ -65,47 +63,6 @@ export class MembersPage implements OnInit, OnDestroy {
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
       this.filter.selectedSort$.next(val);
     });
-
-    this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.spaceList$);
-  }
-
-  public getAlliances(member: Member): MemberAllianceItem[] {
-    const out: MemberAllianceItem[] = [];
-    const space: Space | undefined = this.spaceList$.value.find((s) => {
-      return s.uid === this.spaceForm.value.space;
-    });
-    // It self.
-    if (space && this.spaceForm.value.space !== this.defaultSpace.value) {
-      if (this.spaceForm.value.includeAlliances) {
-        for (const [spaceId, values] of Object.entries(space?.alliances || {})) {
-          const allianceSpace: Space | undefined = this.spaceList$.value.find((s) => {
-            return s.uid === spaceId;
-          });
-          if (
-            allianceSpace &&
-            values.enabled === true
-          ) {
-            out.push({
-              avatar: allianceSpace.avatarUrl,
-              name: allianceSpace.name || allianceSpace.uid,
-              weight: values.weight,
-              totalAwards: member.statsPerSpace?.[allianceSpace.uid]?.awardsCompleted || 0,
-              totalXp: member.statsPerSpace?.[allianceSpace.uid]?.totalReputation || 0
-            });
-          }
-        }
-      }
-
-      out.push({
-        avatar: space.avatarUrl,
-        name: space.name || space.uid,
-        weight: 1,
-        totalAwards: member.statsPerSpace?.[space.uid]?.awardsCompleted || 0,
-        totalXp: member.statsPerSpace?.[space.uid]?.totalReputation || 0
-      });
-    }
-
-    return out;
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {

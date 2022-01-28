@@ -10,6 +10,7 @@ import {
   ApexChart, ApexDataLabels, ApexFill, ApexMarkers, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
 } from "ng-apexcharts";
 import { map } from "rxjs";
+import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DEFAULT_SPACE } from './../../../discover/pages/members/members.page';
 import { DataService } from "./../../services/data.service";
 
@@ -46,6 +47,7 @@ export class ActivityPage implements OnInit {
   constructor(
     private cd: ChangeDetectorRef,
     public data: DataService,
+    public cache: CacheService,
     public deviceService: DeviceService
   ) {
     // Init empty.
@@ -85,28 +87,30 @@ export class ActivityPage implements OnInit {
     });
   }
 
-  public getAwardsCompleted(member: Member | null | undefined): number {
-    if (this.spaceForm.value.space !== this.defaultSpace.value) {
-      if (this.spaceForm.value.includeAlliances) {
-        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => acc + alliance.totalAwards, 0);
-      } else {
-        return member?.statsPerSpace?.[this.spaceForm.value.space]?.awardsCompleted || 0;
-      }
-    } else {
-      return member?.awardsCompleted || 0;
-    }
-  }
+  public getTotal(member: Member | null | undefined, what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
+    let total = 0;
+    const space: Space|undefined = this.cache.allSpaces$.value.find((s) => {
+      return s.uid === this.spaceForm.value.space;
+    });
 
-  public getReputation(member: Member | null | undefined): number {
-    if (this.spaceForm.value.space !== this.defaultSpace.value) {
-      if (this.spaceForm.value.includeAlliances) {
-        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => (acc + alliance.totalXp) * alliance.weight, 0);
-      } else {
-        return member?.statsPerSpace?.[this.spaceForm.value.space]?.totalReputation || 0;
-      }
+    if (this.spaceForm.value.space === this.defaultSpace.value) {
+      total = member?.[what] || 0;
     } else {
-      return member?.totalReputation || 0;
+      total = member?.spaces?.[this.spaceForm.value.space]?.[what] || 0;
+      if (this.spaceForm.value.includeAlliances) {
+        for (const [spaceId, values] of Object.entries(space?.alliances || {})) {
+          const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
+            return s.uid === spaceId;
+          });
+          if (allianceSpace && values.enabled === true ) {
+            const value: number = member?.spaces?.[allianceSpace.uid]?.[what] || 0;
+            total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
+          }
+        }
+      }
     }
+
+    return Math.trunc(total);
   }
 
   public getBadgeRoute(): string[] {

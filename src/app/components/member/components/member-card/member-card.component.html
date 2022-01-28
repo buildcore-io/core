@@ -27,19 +27,19 @@
 
     <div class="bottom-0 flex lg:relative" [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'">
       <div class="relative inline-flex items-center space-x-3" #xpWrapper>
-        <nz-tag class="cursor-pointer wen-xp-tag" (click)="isReputationVisible = (alliances.length > 0) || false">
-          {{ totalXp }} XP</nz-tag>
+        <nz-tag class="cursor-pointer wen-xp-tag" (click)="isReputationVisible = !!getSelectedSpace() || false">
+          {{ getTotal('totalReputation') }} XP</nz-tag>
         <nz-tag class="flex items-center space-x-3 bg-transparent border-transparent wen-status-tag">
           <wen-icon-award class="w-4 h-4 text-app-gray-400"></wen-icon-award>
-          <span>{{ totalAwards }} awards
+          <span>{{ getTotal('awardsCompleted') }} awards
           </span>
         </nz-tag>
 
         <wen-member-reputation-modal
-          *ngIf="(deviceService.isDesktop$ | async) && alliances.length > 0"
+          *ngIf="(deviceService.isDesktop$ | async) && !!getSelectedSpace()"
           [isOpen]="isReputationVisible"
-          [alliances]="alliances"
           [member]="member"
+          [selectedSpace]="selectedSpace"
           [leftPosition]="reputationModalLeftPosition"
           [bottomPosition]="reputationModalBottomPosition"
           [rightPosition]="reputationModalRightPosition"
@@ -47,9 +47,9 @@
         </wen-member-reputation-modal>
 
         <wen-member-reputation-drawer
-          *ngIf="(deviceService.isMobile$ | async) && alliances.length > 0"
+          *ngIf="(deviceService.isMobile$ | async) && !!getSelectedSpace()"
           [isOpen]="isReputationVisible"
-          [alliances]="alliances"
+          [selectedSpace]="selectedSpace"
           [member]="member"
           (onClose)="isReputationVisible = false">
         </wen-member-reputation-drawer>
