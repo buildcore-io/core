@@ -9,6 +9,7 @@ import { MemberTileModule } from '@components/member/components/tile/member-tile
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { SelectBoxModule } from '@components/select-box/select-box.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
+import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NgApexchartsModule } from "ng-apexcharts";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -70,7 +71,8 @@ import { DataService } from './services/data.service';
     SelectBoxModule,
     MemberTileModule,
     MemberAlliancesTableModule,
-    MobileSearchModule
+    MobileSearchModule,
+    IpfsBadgeModule
   ],
 })
 export class MemberModule {

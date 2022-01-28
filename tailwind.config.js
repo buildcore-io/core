@@ -85,7 +85,9 @@ module.exports = {
         header: '500px',
       },
       minHeight: {
+        6: '1.5rem',
         8: '2rem',
+        10: '2.5rem',
         24: '6rem',
         180: '45rem'
       },
