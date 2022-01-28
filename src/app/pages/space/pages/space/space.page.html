@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
+<wen-content [showBackButton]="true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle
       label="About space"
@@ -44,7 +44,7 @@
       </div>
 
 
-      <wen-tabs [tabs]="sections" class="block w-screen lg:w-auto -ml-5 lg:ml-0 overflow-x-auto overflow-y-hidden"></wen-tabs>
+      <wen-tabs [tabs]="sections" class="block w-screen lg:w-max -ml-5 lg:ml-0 overflow-x-auto overflow-y-hidden"></wen-tabs>
       
       <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
 
@@ -61,11 +61,12 @@
       <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
         [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
         *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false">
-        {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending Request' :
+        {{(data.isPendingMemberWithSpace$ | async) ? 'Pending Request' :
         'Ask to Join Space'}}
       </button>
       <div>
-        <button nz-button nzBlock nzSize="large" *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
+        <button class="mb-4" nz-button nzBlock nzSize="large" 
+          *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
           Edit Space
         </button>
       </div>

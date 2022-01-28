@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
+<wen-content [showBackButton]="true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle
       label="Proposal info"

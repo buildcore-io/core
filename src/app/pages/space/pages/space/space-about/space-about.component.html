@@ -68,19 +68,20 @@
                 <div class="flex items-center">
                   <nz-avatar
                     [nzSrc]="avatarService.getAvatarSize(ally._record.avatarUrl)"
-                    class="mr-3 bg-white border-gray-400"
+                    class="mr-3 bg-white border-gray-400 min-w-8 min-h-8"
                     nzShape="circle"
+                    [nzSize]="32"
                     >
                     </nz-avatar>
                     <div class="ml-3 text-sm font-bold">{{ ally._record.name }}</div>
                 </div>
 
-                <div *ngIf="ally.established === true" class="flex items-center text-sm font-medium text-green-success" i18n>
-                    Established
+                <div *ngIf="ally.established === true" class="flex items-center text-sm font-medium text-green-success">
+                    <span i18n>Established</span> 
                     <wen-icon-check class="ml-3"></wen-icon-check>
                 </div>
-                <div *ngIf="ally.established === false" class="flex items-center text-sm font-medium text-app-gray-400" i18n>
-                    Recognised
+                <div *ngIf="ally.established === false" class="flex items-center text-sm font-medium text-app-gray-400">
+                    <span i18n>Recognised</span> 
                     <wen-icon-eye class="ml-3"></wen-icon-eye>
                 </div>
             </div>

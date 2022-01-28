@@ -71,6 +71,7 @@ module.exports = {
       },
       minWidth: {
         6: '1.5rem',
+        8: '2rem',
         10: '2.5rem',
         32: '8rem',
         100: '25rem',
@@ -83,6 +84,7 @@ module.exports = {
         header: '500px',
       },
       minHeight: {
+        8: '2rem',
         24: '6rem',
         180: '45rem'
       },
