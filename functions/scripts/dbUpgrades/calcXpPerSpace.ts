@@ -15,12 +15,14 @@ db.collection(record).get().then(async (snapshot) => {
   let i = 0;
   for (const tran of snapshot.docs) {
     // Fix transaction ID
-    await db.collection(record).doc(tran.id).update({
-      ...tran.data(),
-      ...{
-        uid: tran.id
-      }
-    });
+    if (tran.data().uid !== tran.id) {
+      await db.collection(record).doc(tran.id).update({
+        ...tran.data(),
+        ...{
+          uid: tran.id
+        }
+      });
+    }
 
     if (tran.data() && tran.data().type === TransactionType.BADGE) {
       // Set member obj.

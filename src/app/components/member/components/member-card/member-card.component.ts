@@ -25,7 +25,11 @@ export class MemberCardComponent implements OnDestroy {
     this.refreshBadges();
   }
 
-  @Input() includeAlliances = false;
+  @Input()
+  public set includeAlliances(value: boolean) {
+    this._includeAlliances = value;
+    this.refreshBadges();
+  }
   @Input() member?: Member;
   @Input() fullWidth?: boolean;
   @Input() about?: string;
@@ -38,6 +42,9 @@ export class MemberCardComponent implements OnDestroy {
   }
   public get selectedSpace(): string | undefined {
     return this._selectedSpace;
+  }
+  public get includeAlliances(): boolean {
+    return this._includeAlliances;
   }
 
   public set isReputationVisible(value: boolean) {
@@ -66,6 +73,7 @@ export class MemberCardComponent implements OnDestroy {
   public reputationModalRightPosition?: number;
   private _isReputationVisible = false;
   private _selectedSpace?: string;
+  private _includeAlliances = false;
 
   constructor(
     private memberApi: MemberApi,
@@ -83,9 +91,11 @@ export class MemberCardComponent implements OnDestroy {
         this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
       } else {
         this.badges$.next(undefined);
-        const allBadges: string[] = this.member?.spaces?.[this.getSelectedSpace()!.uid]?.badges || [];
-        for (const [spaceId] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
-          allBadges.push(...(this.member.spaces?.[spaceId]?.badges || []));
+        const allBadges: string[] = [...(this.member?.spaces?.[this.getSelectedSpace()!.uid]?.badges || [])];
+        if (this.includeAlliances) {
+          for (const [spaceId] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+            allBadges.push(...(this.member.spaces?.[spaceId]?.badges || []));
+          }
         }
 
         // Let's get first 6 badges.

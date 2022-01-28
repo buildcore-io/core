@@ -85,7 +85,7 @@
     </nz-card>
 
     <wen-member-card class="relative w-full outline-none lg:w-auto"
-      *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member"
+      *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member" [includeAlliances]="spaceForm.value.includeAlliances"
       [selectedSpace]="spaceForm.value.space === defaultSpace.value ? undefined : spaceForm.value.space">
     </wen-member-card>
   </div>

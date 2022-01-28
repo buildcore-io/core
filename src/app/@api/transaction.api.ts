@@ -10,7 +10,7 @@ import { BaseApi } from './base.api';
   providedIn: 'root',
 })
 export class TransactionApi extends BaseApi<Transaction> {
-  public collection = COL.SPACE;
+  public collection = COL.TRANSACTION;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
   }
