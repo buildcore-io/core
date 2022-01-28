@@ -40,6 +40,7 @@ export class DataService {
             out.push({
               avatar: allianceSpace.avatarUrl,
               name: allianceSpace.name || allianceSpace.uid,
+              weight: values.weight,
               totalAwards: this.member$.value?.statsPerSpace?.[allianceSpace.uid]?.awardsCompleted || 0,
               totalXp: this.member$.value?.statsPerSpace?.[allianceSpace.uid]?.totalReputation || 0
             });
@@ -50,6 +51,7 @@ export class DataService {
       out.push({
         avatar: space.avatarUrl,
         name: space.name || space.uid,
+        weight: 1,
         totalAwards: this.member$.value?.statsPerSpace?.[space.uid]?.awardsCompleted || 0,
         totalXp: this.member$.value?.statsPerSpace?.[space.uid]?.totalReputation || 0
       });

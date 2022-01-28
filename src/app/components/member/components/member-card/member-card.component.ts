@@ -22,8 +22,8 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   public set alliances(value: MemberAllianceItem[]) {
     this._alliances = value;
     if (value.length > 0) {
-      this.totalAwards = this.alliances.reduce((acc, alliance) => acc + alliance.totalAwards, 0);
-      this.totalXp = this.alliances.reduce((acc, alliance) => acc + alliance.totalXp, 0);
+      this.totalAwards = this.alliances.reduce((acc, alliance) => (acc + alliance.totalAwards), 0);
+      this.totalXp = this.alliances.reduce((acc, alliance) => (acc + alliance.totalXp) * alliance.weight, 0);
     } else {
       this.totalAwards = this.member?.awardsCompleted || 0;
       this.totalXp = this.member?.totalReputation || 0;
@@ -36,7 +36,7 @@ export class MemberCardComponent implements OnInit, OnDestroy {
   @Input() allowReputationModal?: boolean;
 
   @ViewChild('xpWrapper', { static: false }) xpWrapper?: ElementRef<HTMLDivElement>;
-  
+
   public get alliances(): MemberAllianceItem[] {
     return this._alliances;
   }
@@ -82,7 +82,13 @@ export class MemberCardComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     if (this.member?.uid) {
-      this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
+      // We've to consider there alliances.
+      if (this._alliances.length > 0) {
+        // TODO Add filtering by space.
+        this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
+      } else {
+        this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
+      }
     }
   }
 

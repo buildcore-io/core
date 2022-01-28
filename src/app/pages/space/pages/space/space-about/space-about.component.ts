@@ -3,13 +3,11 @@ import { FormControl, Validators } from '@angular/forms';
 import { AvatarService } from '@core/services/avatar/avatar.service';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/space/services/data.service';
-import { BehaviorSubject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
-import { Space } from '../../../../../../../functions/interfaces/models/space';
 import { SpaceApi } from '../../../../../@api/space.api';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
-import { FULL_LIST } from './../../../../../@api/base.api';
 import { AllianceExtended, SpaceWithAlliances } from './../../../../../@api/space.api';
 
 @Component({
@@ -27,7 +25,6 @@ export class SpaceAboutComponent implements OnDestroy {
   public isNewAlliance = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(null, Validators.required);
-  public allSpaces$: BehaviorSubject<Space[]|[]> = new BehaviorSubject<Space[]|[]>([]);
   private spacesSubscription?: Subscription;
   constructor(
     public deviceService: DeviceService,
@@ -50,12 +47,6 @@ export class SpaceAboutComponent implements OnDestroy {
     this.isAlliancesListOpen = false;
     this.isNewAllianceOpen = true;
     this.isNewAlliance = newAlliance;
-
-    // Load spaces if not loaded yet.
-    if (!this.spacesSubscription) {
-      // TODO Add searching / pagging.
-      this.spacesSubscription = this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.allSpaces$);
-    }
   }
 
   public closeNewAlliance(): void {

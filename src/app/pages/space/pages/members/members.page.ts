@@ -6,11 +6,13 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Space } from "functions/interfaces/models";
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from 'rxjs';
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
+import { MemberAllianceItem } from './../../../../components/member/components/member-reputation-modal/member-reputation-modal.component';
 import { DataService, MemberFilterOptions } from "./../../services/data.service";
 
 @UntilDestroy()
@@ -132,6 +134,37 @@ export class MembersPage implements OnInit, OnDestroy {
     } else {
       return 'Active';
     }
+  }
+
+  public getAlliances(member: Member): MemberAllianceItem[] {
+    const out: MemberAllianceItem[] = [];
+    for (const [spaceId, values] of Object.entries(this.data.space$.value?.alliances || {})) {
+      const allianceSpace: Space | undefined = this.data.allSpaces$.value.find((s) => {
+        return s.uid === spaceId;
+      });
+      if (
+        allianceSpace &&
+        values.enabled === true
+      ) {
+        out.push({
+          avatar: allianceSpace.avatarUrl,
+          name: allianceSpace.name || allianceSpace.uid,
+          weight: values.weight,
+          totalAwards: member.statsPerSpace?.[allianceSpace.uid]?.awardsCompleted || 0,
+          totalXp: member.statsPerSpace?.[allianceSpace.uid]?.totalReputation || 0
+        });
+      }
+    }
+
+    out.push({
+      avatar: this.data.space$.value!.avatarUrl,
+      name: this.data.space$.value!.name || this.data.space$.value!.uid,
+      weight: 1,
+      totalAwards: member.statsPerSpace?.[this.data.space$.value!.uid]?.awardsCompleted || 0,
+      totalXp: member.statsPerSpace?.[this.data.space$.value!.uid]?.totalReputation || 0
+    });
+
+    return out;
   }
 
   public isActiveList(): boolean {

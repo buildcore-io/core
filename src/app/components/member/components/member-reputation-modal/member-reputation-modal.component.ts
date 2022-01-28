@@ -5,6 +5,7 @@ import { FILE_SIZES } from 'functions/interfaces/models/base';
 export interface MemberAllianceItem {
   avatar?: string;
   name: string;
+  weight: number;
   totalAwards: number;
   totalXp: number;
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
@@ -39,8 +39,7 @@ export class MembersPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     private memberApi: MemberApi,
     private spaceApi: SpaceApi,
-    private auth: AuthService,
-    private cd: ChangeDetectorRef
+    private auth: AuthService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceForm = new FormGroup({
@@ -89,6 +88,7 @@ export class MembersPage implements OnInit, OnDestroy {
             out.push({
               avatar: allianceSpace.avatarUrl,
               name: allianceSpace.name || allianceSpace.uid,
+              weight: values.weight,
               totalAwards: member.statsPerSpace?.[allianceSpace.uid]?.awardsCompleted || 0,
               totalXp: member.statsPerSpace?.[allianceSpace.uid]?.totalReputation || 0
             });
@@ -99,6 +99,7 @@ export class MembersPage implements OnInit, OnDestroy {
       out.push({
         avatar: space.avatarUrl,
         name: space.name || space.uid,
+        weight: 1,
         totalAwards: member.statsPerSpace?.[space.uid]?.awardsCompleted || 0,
         totalXp: member.statsPerSpace?.[space.uid]?.totalReputation || 0
       });

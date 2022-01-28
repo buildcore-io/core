@@ -1,4 +1,4 @@
-<form class="flex flex-col lg:flex-row items-end justify-between" [formGroup]="spaceForm">
+<form class="flex flex-col items-end justify-between lg:flex-row" [formGroup]="spaceForm">
   <wen-select-box
     *ngIf="deviceService.isMobile$ | async"
     class="w-full mt-6 mb-6"
@@ -24,16 +24,16 @@
         [isSearchable]="true"
         [isAvatar]="true">
       </wen-select-box>
-  
-      <label class="lg:ml-6 text-base font-medium text-app-gray-text" 
+
+      <label class="text-base font-medium lg:ml-6 text-app-gray-text"
         nz-checkbox formControlName="includeAlliances"
         [nzDisabled]="spaceForm.value.space === defaultSpace.value">
           Include alliances {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
       </label>
     </div>
-  
+
     <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" 
+      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
         [formControl]="sortControl" nz-tooltip>
         <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
         <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>

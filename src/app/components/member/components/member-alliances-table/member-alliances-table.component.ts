@@ -15,7 +15,7 @@ export class MemberAlliancesTableComponent {
   public set alliances(value: MemberAllianceItem[]) {
     this._alliances = value;
     this.totalAwards = this.alliances.reduce((acc, alliance) => acc + alliance.totalAwards, 0);
-    this.totalXp = this.alliances.reduce((acc, alliance) => acc + alliance.totalXp, 0);
+    this.totalXp = this.alliances.reduce((acc, alliance) => (acc + alliance.totalXp) * alliance.weight, 0);
   }
   public get alliances(): MemberAllianceItem[] {
     return this._alliances;

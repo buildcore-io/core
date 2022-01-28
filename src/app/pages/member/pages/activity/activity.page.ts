@@ -100,7 +100,7 @@ export class ActivityPage implements OnInit {
   public getReputation(member: Member | null | undefined): number {
     if (this.spaceForm.value.space !== this.defaultSpace.value) {
       if (this.spaceForm.value.includeAlliances) {
-        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => acc + alliance.totalXp, 0);
+        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => (acc + alliance.totalXp) * alliance.weight, 0);
       } else {
         return member?.statsPerSpace?.[this.spaceForm.value.space]?.totalReputation || 0;
       }
