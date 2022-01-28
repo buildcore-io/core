@@ -4,7 +4,7 @@
         [ngClass]="{
             'px-3 py-2 text-base font-semibold': size === selectBoxSizes.SMALL,
             'px-4 py-4 text-2xl font-bold': size === selectBoxSizes.LARGE,
-            'border-app-gray-200': size === selectBoxSizes.LARGE && !isOptionsOpen,
+            'border-app-gray-200': !isOptionsOpen,
             'border-orange': isOptionsOpen
         }">
         <div *ngIf="showImages" 
@@ -51,6 +51,7 @@
         [shownOptions]="shownOptions"
         [showImages]="showImages"
         [isAvatar]="isAvatar"
+        (click)="onClick($event)"
         (onEraseClick)="onEraseClick()"
         (onOptionClick)="onOptionClick($event)">
     </wen-select-box-options>
@@ -78,6 +79,7 @@
                         [shownOptions]="shownOptions"
                         [showImages]="showImages"
                         [isAvatar]="isAvatar"
+                        (click)="onClick($event)"
                         (onEraseClick)="onEraseClick()"
                         (onOptionClick)="onOptionClick($event)">
                     </wen-select-box-options>

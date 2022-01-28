@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AllianceExtended } from '@api/space.api';
-import { AvatarService } from '@core/services/avatar/avatar.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 
 @Component({

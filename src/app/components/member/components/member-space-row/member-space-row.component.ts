@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
-import { AvatarService } from '@core/services/avatar/avatar.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { Member, Space } from "functions/interfaces/models";
 @Component({

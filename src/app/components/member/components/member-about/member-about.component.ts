@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AvatarService } from '@core/services/avatar/avatar.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/member/services/data.service';
 import { BehaviorSubject } from 'rxjs';

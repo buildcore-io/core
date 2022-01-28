@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChil
 import { FormControl, FormGroup } from '@angular/forms';
 import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
+import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
 import {
@@ -29,6 +31,7 @@ export type ChartOptions = {
   toolbar: any;
 };
 
+@UntilDestroy()
 @Component({
   selector: 'wen-activity',
   templateUrl: './activity.page.html',
@@ -46,6 +49,7 @@ export class ActivityPage implements OnInit {
 
   constructor(
     private cd: ChangeDetectorRef,
+    private storageService: StorageService,
     public data: DataService,
     public cache: CacheService,
     public deviceService: DeviceService
@@ -53,8 +57,8 @@ export class ActivityPage implements OnInit {
     // Init empty.
     this.initChart([]);
     this.spaceForm = new FormGroup({
-      space: new FormControl(DEFAULT_SPACE.value),
-      includeAlliances: new FormControl(false)
+      space: new FormControl(storageService.selectedSpace.getValue()),
+      includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
   }
 
@@ -84,6 +88,17 @@ export class ActivityPage implements OnInit {
       }
 
       this.initChart(data || []);
+    });
+
+    this.spaceForm.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((o) => {
+        if (o.space === this.defaultSpace.value && o.includeAlliances) {
+          this.spaceForm.controls.includeAlliances.setValue(false);
+          return;
+        }
+        this.storageService.selectedSpace.next(o.space);
+        this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
     });
   }
 

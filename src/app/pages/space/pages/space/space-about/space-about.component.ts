@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { AvatarService } from '@core/services/avatar/avatar.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/space/services/data.service';
 import { Subscription } from "rxjs";

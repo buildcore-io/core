@@ -2,7 +2,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
-import { AvatarService } from '@core/services/avatar/avatar.service';
+import { AvatarService } from '@core/services/avatar';
 import { Space } from 'functions/interfaces/models';
 
 @Component({

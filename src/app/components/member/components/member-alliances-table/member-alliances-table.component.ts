@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { AvatarService } from '@core/services/avatar/avatar.service';
+import { AvatarService } from '@core/services/avatar';
 import { Member, Space } from "functions/interfaces/models";
 import { first } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -45,7 +45,7 @@ export class MemberAlliancesTableComponent implements OnInit {
 
   public getTotal(what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
     let total = 0;
-    total = this.member?.spaces?.[this.getSelectedSpace()!.uid]?.[what] || 0;
+    total = this.member?.spaces?.[this.getSelectedSpace()?.uid || 0]?.[what] || 0;
     for (const [spaceId, values] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
       const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
         return s.uid === spaceId;

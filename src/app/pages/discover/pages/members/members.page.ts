@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl, FormGroup } from '@angular/forms';
 import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
+import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { SortOptions } from "../../services/sort-options.interface";
@@ -37,12 +38,13 @@ export class MembersPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public cache: CacheService,
     private memberApi: MemberApi,
-    private auth: AuthService
+    private auth: AuthService,
+    private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceForm = new FormGroup({
-      space: new FormControl(DEFAULT_SPACE.value),
-      includeAlliances: new FormControl(false)
+      space: new FormControl(storageService.selectedSpace.getValue()),
+      includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
   }
 
@@ -62,6 +64,17 @@ export class MembersPage implements OnInit, OnDestroy {
 
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
       this.filter.selectedSort$.next(val);
+    });
+
+    this.spaceForm.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((o) => {
+        if (o.space === this.defaultSpace.value && o.includeAlliances) {
+          this.spaceForm.controls.includeAlliances.setValue(false);
+          return;
+        }
+        this.storageService.selectedSpace.next(o.space);
+        this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
     });
   }
 

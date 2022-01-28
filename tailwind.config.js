@@ -79,6 +79,7 @@ module.exports = {
       },
       maxWidth: {
         fit: 'fit-content',
+        128: '32rem'
       },
       width: {
         header: '500px',

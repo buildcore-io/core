@@ -107,6 +107,10 @@ export class SelectBoxComponent implements OnInit, ControlValueAccessor {
     this.onSearchValueChange();
   }
 
+  public onClick(event: MouseEvent): void {
+    event.stopPropagation();
+  }
+
   public onClickOutside(): void {
     this.isOptionsOpen = false;
     this.cd.markForCheck();
