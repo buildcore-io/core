@@ -28,7 +28,7 @@
       <label class="text-base font-medium lg:ml-6 text-app-gray-text"
         nz-checkbox formControlName="includeAlliances"
         [nzDisabled]="spaceForm.value.space === defaultSpace.value">
-          Include alliances {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+          Include connections {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
       </label>
     </div>
 

@@ -27,7 +27,7 @@
         <label class="mt-3 text-base font-medium text-app-gray-text"
           nz-checkbox formControlName="includeAlliances"
           [nzDisabled]="spaceForm.value.space === defaultSpace.value" i18n>
-            Include alliances {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+            Include connections {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
         </label>
       </form>
 
@@ -65,7 +65,7 @@
       </div>
     </nz-card>
 
-    <nz-card i18n-nzTitle nzTitle="Alliances" *ngIf="spaceForm.value.includeAlliances">
+    <nz-card i18n-nzTitle nzTitle="Connections" *ngIf="spaceForm.value.includeAlliances">
       <wen-member-alliances-table tableClasses="max-h-56" [member]="data.member$ | async" [selectedSpace]="spaceForm.value.space"></wen-member-alliances-table>
     </nz-card>
 
@@ -78,14 +78,14 @@
 
     <nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="(data.badges$ | async)?.length">
       <div *ngFor="let t of (data.badges$ | async) | slice:0:(showAllBadges ? (data.badges$ | async)?.length : 3); trackBy: trackByUid"
-        class="flex items-center mt-3 relative">
+        class="relative flex items-center mt-3">
           <div class="absolute w-0.5 h-96 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"></div>
 
-          <div class="flex items-center justify-center min-w-6 min-h-6 bg-orange text-white rounded-full mr-4 relative z-10">
+          <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
             <wen-icon-check></wen-icon-check>
           </div>
 
-          <div class="flex items-center justify-between p-3 lg:p-5 border border-app-gray-100 rounded-large w-full">
+          <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
             <div class="flex items-center">
               <nz-avatar
                 [nzSrc]="t?.payload.image | ipfsBadge:filesizes.small"
@@ -106,7 +106,7 @@
           </div>
       </div>
 
-      <button nz-button nzType="primary" class="self-center w-48 mt-6 mx-auto block" 
+      <button nz-button nzType="primary" class="self-center block w-48 mx-auto mt-6"
         *ngIf="(data.badges$ | async) && ((data.badges$ | async)?.length || 0) > 3"
         (click)="showAllBadges = !showAllBadges">{{ showAllBadges ? 'Show less' : 'Show more' }}</button>
     </nz-card>
