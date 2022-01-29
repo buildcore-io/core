@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FileApi } from '@api/file.api';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/member/services/data.service';
 import { BehaviorSubject } from 'rxjs';
@@ -20,19 +20,12 @@ export class MemberAboutComponent {
 
   constructor(
     public deviceService: DeviceService,
-    public data: DataService
+    public data: DataService,
+    public avatarService: AvatarService
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public openDrawer(): void {

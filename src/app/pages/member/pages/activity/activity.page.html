@@ -7,10 +7,13 @@
             class="block w-full"
             formControlName="space"
             [optionsWrapperClasses]="'top-20 left-0 w-full'"
-            [options]="getSpaceListOptions(data.spaceList$ | async)"
+            [options]="getSpaceListOptions(cache.allSpaces$ | async)"
             [showArrow]="true"
-            [isSearchable]="true"
-            [size]="selectBoxSizes.LARGE">
+            [isSearchable]="false"
+            [size]="selectBoxSizes.LARGE"
+            title="Select space"
+            [mobileDrawer]="true"
+            [isAvatar]="true">
           </wen-select-box>
 
           <a class="flex items-center ml-6 text-sm font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
@@ -32,9 +35,9 @@
 
       <div class="flex flex-col justify-between mt-6 lg:flex-row lg:items-center">
         <div class="flex items-center">
-          <wen-member-tile [title]="'Awards Completed'" [value]="getAwardsCompleted(data.member$ | async)">
+          <wen-member-tile [title]="'Awards Completed'" [value]="getTotal(data.member$ | async, 'awardsCompleted')">
           </wen-member-tile>
-          <wen-member-tile class="ml-20" [title]="'Total Reputation'" [value]="getReputation(data.member$ | async)">
+          <wen-member-tile class="ml-20" [title]="'Total Reputation'" [value]="getTotal(data.member$ | async, 'totalReputation')">
           </wen-member-tile>
         </div>
 
@@ -63,9 +66,7 @@
     </nz-card>
 
     <nz-card i18n-nzTitle nzTitle="Alliances" *ngIf="spaceForm.value.includeAlliances">
-      <wen-member-alliances-table
-        [alliances]="data.getAlliances(spaceForm.value.space, spaceForm.value.includeAlliances)">
-      </wen-member-alliances-table>
+      <wen-member-alliances-table tableClasses="max-h-56" [member]="data.member$ | async" [selectedSpace]="spaceForm.value.space"></wen-member-alliances-table>
     </nz-card>
 
     <nz-card nzTitle="Reputation">
@@ -75,12 +76,39 @@
 
     </nz-card>
 
-    <nz-card nzTitle="Timeline">
-      <nz-timeline>
-        <nz-timeline-item *ngFor="let t of data.badges$ | async; trackBy: trackByUid">
-          Earned Badge {{t.payload.name}} with {{t.payload.xp}}XP on {{t.createdOn?.toDate() | date:"short"}}
-        </nz-timeline-item>
-      </nz-timeline>
+    <nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="(data.badges$ | async)?.length">
+      <div *ngFor="let t of (data.badges$ | async) | slice:0:(showAllBadges ? (data.badges$ | async)?.length : 3); trackBy: trackByUid"
+        class="flex items-center mt-3 relative">
+          <div class="absolute w-0.5 h-96 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"></div>
+
+          <div class="flex items-center justify-center min-w-6 min-h-6 bg-orange text-white rounded-full mr-4 relative z-10">
+            <wen-icon-check></wen-icon-check>
+          </div>
+
+          <div class="flex items-center justify-between p-3 lg:p-5 border border-app-gray-100 rounded-large w-full">
+            <div class="flex items-center">
+              <nz-avatar
+                [nzSrc]="t?.payload.image | ipfsBadge:filesizes.small"
+                class="bg-white border-gray-400 min-w-10 min-h-10"
+                nzShape="circle"
+              >
+              </nz-avatar>
+
+              <div class="ml-6">
+                <div class="text-xs font-medium text-gray-400">
+                  {{ t.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
+                <div class="text-base font-medium mt-0.5">
+                  <span i18n>Earned Badge</span> {{t.payload.name}} <span i18n>with</span> {{t.payload.xp}}XP</div>
+              </div>
+            </div>
+
+            <wen-icon-angle-right *ngIf="deviceService.isDesktop$ | async"></wen-icon-angle-right>
+          </div>
+      </div>
+
+      <button nz-button nzType="primary" class="self-center w-48 mt-6 mx-auto block" 
+        *ngIf="(data.badges$ | async) && ((data.badges$ | async)?.length || 0) > 3"
+        (click)="showAllBadges = !showAllBadges">{{ showAllBadges ? 'Show less' : 'Show more' }}</button>
     </nz-card>
   </div>
 </div>

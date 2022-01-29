@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Transaction } from "@google-cloud/firestore";
+import { Transaction } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { COL, EthAddress } from '../../../functions/interfaces/models/base';
 import { BaseApi } from './base.api';
@@ -10,7 +10,7 @@ import { BaseApi } from './base.api';
   providedIn: 'root',
 })
 export class TransactionApi extends BaseApi<Transaction> {
-  public collection = COL.SPACE;
+  public collection = COL.TRANSACTION;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
   }

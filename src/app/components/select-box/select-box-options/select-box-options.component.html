@@ -1,0 +1,54 @@
+<div *ngIf="isOptionsOpen"
+    [ngClass]="optionsWrapperClasses"
+    class="absolute rounded-2xl bg-white px-6 pt-1 pb-5 z-20 options-wrapper-shadow min-w-full lg:min-w-100 lg:max-w-160">
+    <ng-container *ngIf="isSearchable">
+        <div class="flex items-center mt-3">
+            <wen-icon-search></wen-icon-search>
+            <input class="w-full px-3 py-2 text-sm text-gray-600 outline-0"
+                [formControl]="searchControl"
+                placeholder="Search"
+                nz-input
+                nzSize="large"
+                [nzBorderless]="true">
+            <wen-icon-erase *ngIf="searchControl.value" (click)="onEraseClick.emit()" class="cursor-pointer"></wen-icon-erase>
+        </div>
+        
+        <div class="h-px w-full bg-app-gray-100 mt-2 mb-2"></div>
+
+        <div *ngIf="shownOptions.length === 0 && options.length > 0"
+            class="flex justify-center items-center min-h-24 text-app-gray-400 text-xs font-medium">
+            No results for "{{ searchControl.value }}"
+        </div>
+    </ng-container>
+    
+    <div class="lg:max-h-56 overflow-x-hidden" style="max-height: calc(100% - 40);"
+        [ngClass]="{
+            'overflow-y-hidden': disableHorizontalScroll
+        }">
+        <div *ngFor="let opt of shownOptions; trackBy: trackBy"
+            class="mt-4 lg:mt-5 flex items-center cursor-pointer hover:text-orange whitespace-nowrap"
+            (click)="onOptionClick.emit(opt.value)"
+            [ngClass]="{
+                'text-orange': opt.value === value
+            }">
+                <div *ngIf="showImages" class="mr-2">
+                    <ng-container *ngIf="opt?.img">
+                        <img *ngIf="!isAvatar" [src]="opt?.img" alt="Chosen option image" class="border-2 border-app-gray-100 min-w-6">
+
+                        <nz-avatar
+                            *ngIf="isAvatar"
+                            [nzSrc]="opt.img"
+                            [nzSize]="24"
+                            class="mr-3 border-2 border-app-gray-100"
+                            nzShape="circle"
+                        >
+                        </nz-avatar>
+                    </ng-container>
+                    
+                    <wen-icon-default-space *ngIf="!(opt?.img)"></wen-icon-default-space>
+                </div>
+                {{ opt.label }}
+                <wen-icon-check *ngIf="opt.value === value" class="ml-3"></wen-icon-check>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-<wen-content>
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
   <h1 class="mt-7" *ngIf="!editMode" i18n>Add new space</h1>
   <h1 class="mt-7" *ngIf="editMode" i18n>Edit space</h1>
   <form nz-form nzLayout="vertical" [formGroup]="spaceForm">

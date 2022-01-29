@@ -3,6 +3,7 @@ import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -13,7 +14,6 @@ import { Award } from './../../../../../../functions/interfaces/models/award';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { ProposalType } from './../../../../../../functions/interfaces/models/proposal';
-import { FileApi } from './../../../../@api/file.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { MilestoneApi } from './../../../../@api/milestone.api';
 import { ProposalApi } from './../../../../@api/proposal.api';
@@ -21,7 +21,7 @@ import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { UnitsHelper } from './../../../../@core/utils/units-helper';
-import { DataService } from './../../services/data.service';
+import { DataService as ProposalDataService } from './../../services/data.service';
 
 @UntilDestroy()
 @Component({
@@ -53,7 +53,8 @@ export class ProposalPage implements OnInit, OnDestroy {
     private awardApi: AwardApi,
     private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
-    public data: DataService,
+    public proposalData: ProposalDataService,
+    public avatarService: AvatarService,
     public nav: NavigationService,
     public deviceService: DeviceService
   ) {
@@ -72,7 +73,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.proposal$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Proposal|undefined) => {
+    this.proposalData.proposal$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Proposal|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -88,23 +89,24 @@ export class ProposalPage implements OnInit, OnDestroy {
                                       .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
       }
 
-      if (obj.type !== ProposalType.NATIVE) {
+      if (obj.type !== ProposalType.NATIVE && this.sections.length === 1) {
         this.sections.push({ route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' });
+        this.sections = [...this.sections];
         this.cd.markForCheck();
       }
     });
 
     // Guardians might be refreshed alter and we need to apply that on view.
-    this.data.guardians$.subscribe(() => {
+    this.proposalData.guardians$.subscribe(() => {
       this.cd.markForCheck();
     });
 
     // Once we get proposal get space.
-    this.data.proposal$.pipe(skip(1), first()).subscribe(async (p) => {
+    this.proposalData.proposal$.pipe(skip(1), first()).subscribe(async (p) => {
       if (p) {
-        this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+        this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.proposalData.space$));
         if (p.createdBy) {
-          this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
+          this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.proposalData.creator$));
         }
 
         // Get badges to show.
@@ -118,7 +120,7 @@ export class ProposalPage implements OnInit, OnDestroy {
           }
         }
 
-        this.data.badges$.next(awards);
+        this.proposalData.badges$.next(awards);
       }
     });
 
@@ -126,17 +128,17 @@ export class ProposalPage implements OnInit, OnDestroy {
       this.currentMemberVotedTransSubscription$?.unsubscribe();
       this.canVoteSubscription$?.unsubscribe();
       if (member?.uid && this.proposalId) {
-        this.currentMemberVotedTransSubscription$ = this.proposalApi.getMembersVotes(this.proposalId, member.uid).subscribe(this.data.currentMembersVotes$);
-        this.currentMemberVotedTransSubscription$ = this.proposalApi.canMemberVote(this.proposalId, member.uid).subscribe(this.data.canVote$);
+        this.currentMemberVotedTransSubscription$ = this.proposalApi.getMembersVotes(this.proposalId, member.uid).subscribe(this.proposalData.currentMembersVotes$);
+        this.currentMemberVotedTransSubscription$ = this.proposalApi.canMemberVote(this.proposalId, member.uid).subscribe(this.proposalData.canVote$);
       } else {
-        this.data.currentMembersVotes$.next(undefined);
-        this.data.canVote$.next(false);
+        this.proposalData.currentMembersVotes$.next(undefined);
+        this.proposalData.canVote$.next(false);
       }
     });
 
     this.milestoneApi.top(undefined, undefined, 1).pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
-    })).subscribe(this.data.lastMilestone$);
+    })).subscribe(this.proposalData.lastMilestone$);
   }
 
   public fireflyNotSupported(): void {
@@ -147,14 +149,6 @@ export class ProposalPage implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
 
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
-  }
-
   private notFound(): void {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }
@@ -162,16 +156,16 @@ export class ProposalPage implements OnInit, OnDestroy {
   private listenToProposal(id: string): void {
     this.proposalId = id;
     this.cancelSubscriptions();
-    this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.proposal$));
-    this.subscriptions$.push(this.proposalApi.lastVotes(id).pipe(untilDestroyed(this)).subscribe(this.data.transactions$));
+    this.subscriptions$.push(this.proposalApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.proposalData.proposal$));
+    this.subscriptions$.push(this.proposalApi.lastVotes(id).pipe(untilDestroyed(this)).subscribe(this.proposalData.transactions$));
   }
 
   public memberIsPartOfVote(memberId: string): boolean {
-    if (!this.data.guardians$.value) {
+    if (!this.proposalData.guardians$.value) {
       return false;
     }
 
-    return this.data.guardians$.value.filter(e => e.uid === memberId).length > 0;
+    return this.proposalData.guardians$.value.filter(e => e.uid === memberId).length > 0;
   }
 
   public trackByUid(index: number, item: any): number {
@@ -187,19 +181,19 @@ export class ProposalPage implements OnInit, OnDestroy {
     const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
       return suba.value === value;
     });
-    if(!ans) { 
+    if(!ans) {
       return '';
     }
     return UnitsHelper.formatBest(ans.accumulated);
   }
 
   public async approve(): Promise<void> {
-    if (!this.data.proposal$.value?.uid) {
+    if (!this.proposalData.proposal$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-        uid: this.data.proposal$.value.uid
+        uid: this.proposalData.proposal$.value.uid
     }, (sc, finish) => {
       this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
         // none.
@@ -208,12 +202,12 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   public async reject(): Promise<void> {
-    if (!this.data.proposal$.value?.uid) {
+    if (!this.proposalData.proposal$.value?.uid) {
       return;
     }
 
     await this.auth.sign({
-      uid: this.data.proposal$.value.uid
+      uid: this.proposalData.proposal$.value.uid
     }, (sc, finish) => {
       this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
         // none.
@@ -222,7 +216,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   }
 
   public exportNativeEvent(): void {
-    const proposal: Proposal|undefined = this.data.proposal$.value;
+    const proposal: Proposal|undefined = this.proposalData.proposal$.value;
     if (!proposal) {
       return;
     }
@@ -257,7 +251,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
-    this.data.resetSubjects();
+    this.proposalData.resetSubjects();
     if (this.guardiansSubscription$) {
       this.guardiansSubscription$.unsubscribe();
     }

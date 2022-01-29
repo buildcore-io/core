@@ -1,0 +1,25 @@
+<wen-select-box
+    class="block w-full"
+    [formControl]="spaceAllianceControl"
+    [optionsWrapperClasses]="'top-20 left-0 w-full'"
+    [options]="spaceOptions"
+    [showArrow]="true"
+    [isSearchable]="true"
+    [size]="selectBoxSizes.LARGE"
+    [isAvatar]="true"
+    title="Select space"
+    [mobileDrawer]="true"
+    [isAvatar]="true">
+</wen-select-box>
+
+<nz-form-item class="mt-6">
+    <nz-form-control i18n-nzErrorTip nzErrorTip="">
+        <nz-input-number
+            class="w-full"
+            nzSize="large"
+            [nzStep]="0.01"
+            nzPlaceHolder="Reputation weight"
+            [formControl]="reputationWeightControl"
+        ></nz-input-number>
+    </nz-form-control>
+</nz-form-item>

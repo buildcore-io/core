@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { DataService } from './../../services/data.service';
+import { DataService } from '@pages/member/services/data.service';
+import { Space } from 'functions/interfaces/models';
+import { map } from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -13,8 +15,8 @@ import { DataService } from './../../services/data.service';
 })
 export class MemberSpacesComponent implements OnInit {
   public spaceForm: FormGroup;
-  public spacesList = [];
-  public shownSpaces: any[] = [];
+  public spacesList: Space[] = [];
+  public shownSpaces: Space[] = [];
   public includeAlliancesDisabled = false;
   public isSearchInputFocused = false;
 
@@ -33,15 +35,29 @@ export class MemberSpacesComponent implements OnInit {
     this.spaceForm.controls.space.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe(this.onSearchValueChange.bind(this));
+
+    this.data.space$
+      .pipe(
+        map((spaces: Space[] | undefined) => spaces || []),
+        untilDestroyed(this)
+      )
+      .subscribe((spaces: Space[]) => {
+          this.spacesList = spaces;
+          this.onSearchValueChange();
+      });
   }
 
   public onSearchValueChange(): void {
     const searchValue = this.spaceForm.controls.space.value;
-    this.shownSpaces = this.spacesList.filter((space: any) => { space.name.toLowerCase().includes(searchValue.toLowerCase()) });
+    this.shownSpaces = this.spacesList.filter(space => (space.name || '').toLowerCase().includes(searchValue.toLowerCase()));
   }
 
   public onEraseClick(): void {
     this.spaceForm.controls.space.setValue('');
     this.onSearchValueChange();
+  }
+  
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 }

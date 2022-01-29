@@ -1,21 +1,33 @@
-<div class="relative select-none w-full" wenClickOutside (clickOutside)="isOptionsOpen = false">
+<div class="relative select-none w-full" wenClickOutside (clickOutside)="onClickOutside()"
+    (click)="isOptionsOpen = !isOptionsOpen; isDrawerOpen = true">
     <div class="rounded-9 bg-white flex items-center cursor-pointer border border-white" 
         [ngClass]="{
             'px-3 py-2 text-base font-semibold': size === selectBoxSizes.SMALL,
             'px-4 py-4 text-2xl font-bold': size === selectBoxSizes.LARGE,
-            'border-app-gray-200': size === selectBoxSizes.LARGE && !isOptionsOpen,
+            'border-app-gray-200': !isOptionsOpen,
             'border-orange': isOptionsOpen
-        }" (click)="isOptionsOpen = !isOptionsOpen">
+        }">
         <div *ngIf="showImages" 
             [ngClass]="{
                 'mr-2': size === selectBoxSizes.SMALL,
                 'mr-4': size === selectBoxSizes.LARGE
             }">
-            <img *ngIf="optionValue?.img" [src]="optionValue?.img" alt="Chosen option image" 
-                [ngClass]="{
-                    'min-w-6': size === selectBoxSizes.SMALL,
-                    'min-w-10': size === selectBoxSizes.LARGE
-                }">
+            <ng-container *ngIf="optionValue?.img">
+                <img *ngIf="!isAvatar" [src]="optionValue?.img" alt="Chosen option image"
+                    [ngClass]="{
+                        'min-w-6': size === selectBoxSizes.SMALL,
+                        'min-w-10': size === selectBoxSizes.LARGE
+                    }">
+
+                <nz-avatar
+                    *ngIf="isAvatar"
+                    [nzSrc]="optionValue?.img"
+                    [nzSize]="size === selectBoxSizes.SMALL ? 24 : 40"
+                    class="mr-3 border-2 border-app-gray-100"
+                    nzShape="circle"
+                >
+                </nz-avatar>
+            </ng-container>
             <wen-icon-default-space *ngIf="!optionValue?.img" [size]="size === selectBoxSizes.SMALL ? 24 : 40"></wen-icon-default-space>
         </div>
         {{ optionValue?.label }}
@@ -23,49 +35,57 @@
             <ng-container *ngTemplateOutlet="suffixIcon"></ng-container>
         </div>
 
-        <div *ngIf="showArrow" class="ml-auto">
-            <wen-icon-angle-down *ngIf="!isOptionsOpen"></wen-icon-angle-down>
-            <wen-icon-angle-up *ngIf="isOptionsOpen"></wen-icon-angle-up>
+        <div *ngIf="showArrow" class="ml-auto" (click)="onAngleClick($event)">
+            <wen-icon-angle-down *ngIf="!isOptionsOpen" class="block"></wen-icon-angle-down>
+            <wen-icon-angle-up *ngIf="isOptionsOpen" class="block"></wen-icon-angle-up>
         </div>
     </div>
     
-    <div *ngIf="isOptionsOpen"
-        [ngClass]="optionsWrapperClasses"
-        class="absolute rounded-2xl bg-white px-6 pt-1 pb-5 z-20 options-wrapper-shadow lg:min-w-100">
-        <ng-container *ngIf="isSearchable">
-            <div class="flex items-center mt-3">
-                <wen-icon-search></wen-icon-search>
-                <input class="w-full px-3 py-2 text-sm text-gray-600 outline-0"
-                    [formControl]="searchControl"
-                    placeholder="Search"
-                    nz-input
-                    nzSize="large"
-                    [nzBorderless]="true">
-                <wen-icon-erase (click)="onEraseClick()" class="cursor-pointer"></wen-icon-erase>
-            </div>
-            
-            <div class="h-px w-full bg-app-gray-100 mt-2 mb-2"></div>
+    <wen-select-box-options *ngIf="(deviceService.isDesktop$ | async) || !mobileDrawer; else drawerBlock"
+        [value]="value"
+        [isOptionsOpen]="isOptionsOpen"
+        [optionsWrapperClasses]="optionsWrapperClasses"
+        [isSearchable]="isSearchable"
+        [searchControl]="searchControl"
+        [options]="options"
+        [shownOptions]="shownOptions"
+        [showImages]="showImages"
+        [isAvatar]="isAvatar"
+        (click)="onClick($event)"
+        (onEraseClick)="onEraseClick()"
+        (onOptionClick)="onOptionClick($event)">
+    </wen-select-box-options>
 
-            <div *ngIf="shownOptions.length === 0 && options.length > 0"
-                class="flex justify-center items-center min-h-24 text-app-gray-400 text-xs font-medium">
-                No results for "{{ searchControl.value }}"
+    <ng-template #drawerBlock>
+        <nz-drawer *ngIf="deviceService.isMobile$ | async"
+            [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+            [nzWidth]="'100vw'"
+            [nzClosable]="false"
+            [nzVisible]="isDrawerOpen">
+            >
+            <div *nzDrawerContent class="relative h-full">
+                <button class="absolute z-10 top-0 right-5" (click)="isDrawerOpen = false; isOptionsOpen = false">
+                  <wen-icon-close></wen-icon-close>
+                </button>
+                <div class="text-3xl font-bold">{{ title }}</div>
+                <div>
+                    <wen-select-box-options
+                        [value]="value"
+                        [isOptionsOpen]="isOptionsOpen"
+                        [optionsWrapperClasses]="optionsWrapperClasses"
+                        [isSearchable]="isSearchable"
+                        [searchControl]="searchControl"
+                        [options]="options"
+                        [shownOptions]="shownOptions"
+                        [showImages]="showImages"
+                        [isAvatar]="isAvatar"
+                        [disableHorizontalScroll]="true"
+                        (click)="onClick($event)"
+                        (onEraseClick)="onEraseClick()"
+                        (onOptionClick)="onOptionClick($event)">
+                    </wen-select-box-options>
+                </div>
             </div>
-        </ng-container>
-        
-        <div class="max-h-128 overflow-y-auto">
-            <div *ngFor="let opt of shownOptions; trackBy: trackBy"
-                class="mt-4 lg:mt-5 flex items-center cursor-pointer hover:text-orange whitespace-nowrap"
-                (click)="onOptionClick(opt.value)"
-                [ngClass]="{
-                    'text-orange': opt.value === value
-                }">
-                    <div *ngIf="showImages" class="mr-2">
-                        <img *ngIf="opt?.img" [src]="opt?.img" alt="Chosen option image" class="min-w-6">
-                        <wen-icon-default-space *ngIf="!(opt?.img)"></wen-icon-default-space>
-                    </div>
-                    {{ opt.label }}
-                    <wen-icon-check *ngIf="opt.value === value" class="ml-3"></wen-icon-check>
-            </div>
-        </div>
-    </div>
+        </nz-drawer>
+    </ng-template>
 </div>

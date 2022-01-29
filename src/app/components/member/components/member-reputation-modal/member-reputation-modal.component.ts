@@ -1,13 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Member } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
-
-export interface MemberAllianceItem {
-  avatar?: string;
-  name: string;
-  totalAwards: number;
-  totalXp: number;
-}
 
 @Component({
   selector: 'wen-member-reputation-modal',
@@ -16,7 +9,7 @@ export interface MemberAllianceItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberReputationModalComponent {
-  @Input() alliances: MemberAllianceItem[] = [];
+  @Input() selectedSpace?: string;
   @Input() member?: Member;
   @Input() isOpen = false;
   @Input() leftPosition?: number;
@@ -25,8 +18,6 @@ export class MemberReputationModalComponent {
   @Input() bottomPosition?: number;
   @Input() width?: number;
   @Output() onClose = new EventEmitter<void>();
-
-  @ViewChild('wrapper', { static: true }) wrapper?: ElementRef;
 
   constructor(
     private cd: ChangeDetectorRef

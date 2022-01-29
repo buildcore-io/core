@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
@@ -14,7 +14,6 @@ import { BehaviorSubject, map, skip, Subscription } from 'rxjs';
 import { ProposalStartDateMin, TIME_GAP_BETWEEN_MILESTONES } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
-import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { AwardApi } from './../../../../@api/award.api';
@@ -73,7 +72,8 @@ export class NewPage implements OnInit, OnDestroy {
     private router: Router,
     private nzNotification: NzNotificationService,
     public nav: NavigationService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public avatarService: AvatarService
   ) {
     this.questions = new FormArray([
       this.getQuestionForm()
@@ -168,14 +168,6 @@ export class NewPage implements OnInit, OnDestroy {
 
   public get targetGroups(): typeof TargetGroup {
     return TargetGroup;
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public getDateBasedOnMilestone(milestoneValue: number): Date|undefined  {

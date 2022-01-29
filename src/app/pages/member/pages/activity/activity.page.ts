@@ -1,15 +1,22 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MemberApi } from '@api/member.api';
+import { TransactionApi } from '@api/transaction.api';
 import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
+import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
+import { FILE_SIZES } from 'functions/interfaces/models/base';
 import {
   ApexAxisChartSeries,
   ApexChart, ApexDataLabels, ApexFill, ApexMarkers, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
 } from "ng-apexcharts";
-import { map } from "rxjs";
+import { firstValueFrom, map } from "rxjs";
+import { FULL_LIST } from './../../../../@api/base.api';
+import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DEFAULT_SPACE } from './../../../discover/pages/members/members.page';
 import { DataService } from "./../../services/data.service";
 
@@ -28,6 +35,7 @@ export type ChartOptions = {
   toolbar: any;
 };
 
+@UntilDestroy()
 @Component({
   selector: 'wen-activity',
   templateUrl: './activity.page.html',
@@ -42,17 +50,22 @@ export class ActivityPage implements OnInit {
   public spaceForm: FormGroup;
   public defaultSpace = DEFAULT_SPACE;
   public selectBoxSizes = SelectBoxSizes;
+  public showAllBadges = false;
 
   constructor(
     private cd: ChangeDetectorRef,
+    private storageService: StorageService,
+    private memberApi: MemberApi,
+    private tranApi: TransactionApi,
     public data: DataService,
+    public cache: CacheService,
     public deviceService: DeviceService
   ) {
     // Init empty.
     this.initChart([]);
     this.spaceForm = new FormGroup({
-      space: new FormControl(DEFAULT_SPACE.value),
-      includeAlliances: new FormControl(false)
+      space: new FormControl(storageService.selectedSpace.getValue()),
+      includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
   }
 
@@ -83,30 +96,86 @@ export class ActivityPage implements OnInit {
 
       this.initChart(data || []);
     });
+
+    this.spaceForm.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((o) => {
+        if (o.space === this.defaultSpace.value && o.includeAlliances) {
+          this.spaceForm.controls.includeAlliances.setValue(false);
+          return;
+        }
+        this.storageService.selectedSpace.next(o.space);
+        this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
+        this.refreshBadges();
+    });
+
+    let prev: string | undefined;
+    this.data.member$.subscribe((obj) => {
+      if (prev !== obj?.uid) {
+        this.refreshBadges();
+        prev = obj?.uid;
+      }
+    });
   }
 
-  public getAwardsCompleted(member: Member | null | undefined): number {
-    if (this.spaceForm.value.space !== this.defaultSpace.value) {
-      if (this.spaceForm.value.includeAlliances) {
-        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => acc + alliance.totalAwards, 0);
+  public getSelectedSpace(): Space | undefined {
+    return this.cache.allSpaces$.value.find((s) => {
+      return s.uid === this.spaceForm.value.space;
+    });
+  }
+
+  private async refreshBadges(): Promise<void> {
+    if (this.data.member$.value?.uid) {
+      if (!this.getSelectedSpace()) {
+        // TODO implement paging.
+        this.memberApi.topBadges(this.data.member$.value.uid, 'createdOn', undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.badges$);
       } else {
-        return member?.statsPerSpace?.[this.spaceForm.value.space]?.awardsCompleted || 0;
+        this.data.badges$.next(undefined);
+        const allBadges: string[] = [...(this.data.member$.value.spaces?.[this.getSelectedSpace()!.uid]?.badges || [])];
+        if (this.spaceForm.value.includeAlliances) {
+          for (const [spaceId] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+            allBadges.push(...(this.data.member$.value.spaces?.[spaceId]?.badges || []));
+          }
+        }
+
+        // Let's get first 6 badges.
+        const finalBadgeTransactions: Transaction[] = [];
+        for (const tran of allBadges) {
+          const obj: Transaction | undefined = await firstValueFrom(this.tranApi.listen(tran));
+          if (obj) {
+            finalBadgeTransactions.push(obj);
+          }
+        }
+
+        this.data.badges$.next(finalBadgeTransactions);
       }
-    } else {
-      return member?.awardsCompleted || 0;
     }
   }
 
-  public getReputation(member: Member | null | undefined): number {
-    if (this.spaceForm.value.space !== this.defaultSpace.value) {
-      if (this.spaceForm.value.includeAlliances) {
-        return this.data.getAlliances(this.spaceForm.value.space, true).reduce((acc, alliance) => acc + alliance.totalXp, 0);
-      } else {
-        return member?.statsPerSpace?.[this.spaceForm.value.space]?.totalReputation || 0;
-      }
+  public getTotal(member: Member | null | undefined, what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
+    let total = 0;
+    const space: Space|undefined = this.cache.allSpaces$.value.find((s) => {
+      return s.uid === this.spaceForm.value.space;
+    });
+
+    if (this.spaceForm.value.space === this.defaultSpace.value) {
+      total = member?.[what] || 0;
     } else {
-      return member?.totalReputation || 0;
+      total = member?.spaces?.[this.spaceForm.value.space]?.[what] || 0;
+      if (this.spaceForm.value.includeAlliances) {
+        for (const [spaceId, values] of Object.entries(space?.alliances || {})) {
+          const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
+            return s.uid === spaceId;
+          });
+          if (allianceSpace && values.enabled === true ) {
+            const value: number = member?.spaces?.[allianceSpace.uid]?.[what] || 0;
+            total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
+          }
+        }
+      }
     }
+
+    return Math.trunc(total);
   }
 
   public getBadgeRoute(): string[] {
@@ -161,12 +230,17 @@ export class ActivityPage implements OnInit {
     return [DEFAULT_SPACE].concat((list || []).map((o) => {
       return {
         label: o.name || o.uid,
-        value: o.uid
+        value: o.uid,
+        img: o.avatarUrl
       };
     }));
   }
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 }

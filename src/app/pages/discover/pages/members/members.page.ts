@@ -1,17 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { SelectBoxOption } from '@components/select-box/select-box.component';
+import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
+import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { SortOptions } from "../../services/sort-options.interface";
+import { cyrb53 } from "./../../../../../../functions/interfaces/hash.utils";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { Space } from './../../../../../../functions/interfaces/models/space';
-import { DEFAULT_LIST_SIZE, FULL_LIST } from './../../../../@api/base.api';
+import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
-import { SpaceApi } from './../../../../@api/space.api';
+import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
-import { MemberAllianceItem } from './../../../../components/member/components/member-reputation-modal/member-reputation-modal.component';
 import { FilterService } from './../../services/filter.service';
 
 export const DEFAULT_SPACE: SelectBoxOption = {
@@ -28,23 +29,27 @@ export const DEFAULT_SPACE: SelectBoxOption = {
 export class MembersPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaceForm: FormGroup;
-  public spaceList$ = new BehaviorSubject<Space[]>([]);
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public defaultSpace = DEFAULT_SPACE;
+  public selectBoxSizes = SelectBoxSizes;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
+  private spaceControl: FormControl;
+  private includeAlliancesControl: FormControl;
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
+    public cache: CacheService,
     private memberApi: MemberApi,
-    private spaceApi: SpaceApi,
     private auth: AuthService,
-    private cd: ChangeDetectorRef
+    private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
+    this.spaceControl = new FormControl(storageService.selectedSpace.getValue());
+    this.includeAlliancesControl = new FormControl(storageService.isIncludeAlliancesChecked.getValue());
     this.spaceForm = new FormGroup({
-      space: new FormControl(DEFAULT_SPACE.value),
-      includeAlliances: new FormControl(false)
+      space: this.spaceControl,
+      includeAlliances: this.includeAlliancesControl
     });
   }
 
@@ -66,44 +71,17 @@ export class MembersPage implements OnInit, OnDestroy {
       this.filter.selectedSort$.next(val);
     });
 
-    this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.spaceList$);
-  }
-
-  public getAlliances(member: Member): MemberAllianceItem[] {
-    const out: MemberAllianceItem[] = [];
-    const space: Space | undefined = this.spaceList$.value.find((s) => {
-      return s.uid === this.spaceForm.value.space;
-    });
-    // It self.
-    if (space && this.spaceForm.value.space !== this.defaultSpace.value) {
-      if (this.spaceForm.value.includeAlliances) {
-        for (const [spaceId, values] of Object.entries(space?.alliances || {})) {
-          const allianceSpace: Space | undefined = this.spaceList$.value.find((s) => {
-            return s.uid === spaceId;
-          });
-          if (
-            allianceSpace &&
-            values.enabled === true
-          ) {
-            out.push({
-              avatar: allianceSpace.avatarUrl,
-              name: allianceSpace.name || allianceSpace.uid,
-              totalAwards: member.statsPerSpace?.[allianceSpace.uid]?.awardsCompleted || 0,
-              totalXp: member.statsPerSpace?.[allianceSpace.uid]?.totalReputation || 0
-            });
-          }
+    this.spaceForm.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((o) => {
+        if (o.space === this.defaultSpace.value && o.includeAlliances) {
+          this.spaceForm.controls.includeAlliances.setValue(false);
+          return;
         }
-      }
-
-      out.push({
-        avatar: space.avatarUrl,
-        name: space.name || space.uid,
-        totalAwards: member.statsPerSpace?.[space.uid]?.awardsCompleted || 0,
-        totalXp: member.statsPerSpace?.[space.uid]?.totalReputation || 0
-      });
-    }
-
-    return out;
+        this.storageService.selectedSpace.next(o.space);
+        this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
+        this.listen();
+    });
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
@@ -114,7 +92,8 @@ export class MembersPage implements OnInit, OnDestroy {
     return [DEFAULT_SPACE].concat((list || []).map((o) => {
       return {
         label: o.name || o.uid,
-        value: o.uid
+        value: o.uid,
+        img: o.avatarUrl
       };
     }));
   }
@@ -124,11 +103,46 @@ export class MembersPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
+  private getEnabledAlliancesKeys(alliances?: any): string[] {
+    if (!alliances) {
+      return [];
+    }
+
+    const out: string[] = [];
+    for ( const [key, space] of Object.entries(alliances)) {
+      if ((<any>space).enabled) {
+        out.push(key);
+      }
+    }
+
+    return out;
+  }
+
   public getHandler(last?: any, search?: string): Observable<Member[]> {
-    if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.memberApi.last(last, search);
+    if (this.spaceControl.value === this.defaultSpace.value) {
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.memberApi.last(last, search);
+      } else {
+        return this.memberApi.top(last, search);
+      }
     } else {
-      return this.memberApi.top(last, search);
+      const space: Space | undefined = this.cache.allSpaces$.value.find((s) => {
+        return s.uid === this.spaceControl.value;
+      });
+      let linkedEntity = -1;
+      if (space) {
+        if (this.includeAlliancesControl.value) {
+          linkedEntity = cyrb53([space.uid, ...this.getEnabledAlliancesKeys(space.alliances)].join(''));
+        } else {
+          linkedEntity = cyrb53(space.uid);
+        }
+      }
+
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.memberApi.last(last, search, DEFAULT_LIST_SIZE, linkedEntity);
+      } else {
+        return this.memberApi.top(last, search, DEFAULT_LIST_SIZE, linkedEntity);
+      }
     }
   }
 

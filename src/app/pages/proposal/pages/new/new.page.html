@@ -1,4 +1,4 @@
-<wen-content>
+<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
   <h1 class="mt-7" i18 n>New Proposal</h1>
 
   <form nz-form nzLayout="vertical" [formGroup]="proposalForm">
@@ -226,7 +226,7 @@
                   [nzValue]="s.uid"
                 >
                   <nz-avatar
-                    [nzSrc]="getAvatarSize(s.avatarUrl)"
+                    [nzSrc]="avatarService.getAvatarSize(s.avatarUrl)"
                     [nzSize]="32"
                     class="mr-3 border-2 border-app-gray-100"
                     nzShape="circle"

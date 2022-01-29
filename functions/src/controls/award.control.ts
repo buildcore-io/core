@@ -406,7 +406,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
 
     await refTran.set(<Transaction>{
       type: TransactionType.BADGE,
-      uid: getRandomEthAddress(),
+      uid: tranId,
       member: params.body.member,
       space: docAward.data().space,
       createdOn: serverTime(),
@@ -433,11 +433,13 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
       };
 
       // Calculate for space.
-      finalObj.statsPerSpace = finalObj.statsPerSpace || {};
-      finalObj.statsPerSpace[docAward.data().space] = finalObj.statsPerSpace[docAward.data().space] || { createdOn: serverTime() };
-      finalObj.statsPerSpace[docAward.data().space].awardsCompleted = (finalObj.statsPerSpace[docAward.data().space].awardsCompleted || 0) + 1;
-      finalObj.statsPerSpace[docAward.data().space].totalReputation = (finalObj.statsPerSpace[docAward.data().space].totalReputation || 0) + xp;
-      finalObj.statsPerSpace[docAward.data().space].updatedOn = serverTime();
+      finalObj.spaces = finalObj.spaces || {};
+      finalObj.spaces[docAward.data().space] = finalObj.spaces[docAward.data().space] || { uid: docAward.data().space, createdOn: serverTime() };
+      finalObj.spaces[docAward.data().space].badges = (finalObj.spaces[docAward.data().space].badges || []);
+      finalObj.spaces[docAward.data().space].badges.push(tranId);
+      finalObj.spaces[docAward.data().space].awardsCompleted = (finalObj.spaces[docAward.data().space].awardsCompleted || 0) + 1;
+      finalObj.spaces[docAward.data().space].totalReputation = (finalObj.spaces[docAward.data().space].totalReputation || 0) + xp;
+      finalObj.spaces[docAward.data().space].updatedOn = serverTime();
       transaction.update(refMember, finalObj);
     });
 

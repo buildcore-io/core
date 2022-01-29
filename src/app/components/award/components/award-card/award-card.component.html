@@ -3,7 +3,7 @@
     <div class="relative flex flex-col lg:w-full" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-40'">
       <div class="flex items-center w-full space-x-4">
         <ng-container *ngIf="deviceService.isDesktop$ | async">
-          <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
+          <nz-avatar [nzSrc]="avatarService.getAvatarSize((space$ | async)?.avatarUrl)"
             class="border-2 bg-bg-background min-w-10 border-app-gray-100" nzShape="circle"></nz-avatar>
           <p nz-typography class="max-w-sm truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
         </ng-container>

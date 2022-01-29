@@ -5,7 +5,7 @@
     <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-24'">
       <h3 class="max-w-md mt-2 mb-2 text-lg font-bold lg:truncate">{{ proposal.name || proposal.uid }}</h3>
       <div class="flex items-center w-full space-x-4" *ngIf="deviceService.isDesktop$ | async">
-        <nz-avatar [nzSrc]="getAvatarSize((space$ | async)?.avatarUrl)"
+        <nz-avatar [nzSrc]="avatarService.getAvatarSize((space$ | async)?.avatarUrl)"
           class="border-2 border-app-gray-100 bg-bg-background min-w-10" nzShape="circle">
         </nz-avatar>
         <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>

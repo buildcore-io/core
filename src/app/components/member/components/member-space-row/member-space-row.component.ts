@@ -1,11 +1,9 @@
-import { MemberAllianceItem } from './../member-reputation-modal/member-reputation-modal.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Member, Space } from "functions/interfaces/models";
-import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
-import { FileApi } from './../../../../@api/file.api';
-
 @Component({
   selector: 'wen-member-space-row',
   templateUrl: './member-space-row.component.html',
@@ -13,7 +11,6 @@ import { FileApi } from './../../../../@api/file.api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberSpaceRowComponent {
-  @Input() alliances: MemberAllianceItem[] = [];
   @Input() space?: Space;
   @Input() member?: Member;
   @Input() allowReputationModal?: boolean;
@@ -46,14 +43,11 @@ export class MemberSpaceRowComponent {
   constructor(
     public auth: AuthService,
     public deviceService: DeviceService,
+    public avatarService: AvatarService,
     private cd: ChangeDetectorRef
   ) {}
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
+  
+  public getSpaceRoute(): string[] {
+    return ['/', ROUTER_UTILS.config.space.root, this.space?.uid || ''];
   }
 }

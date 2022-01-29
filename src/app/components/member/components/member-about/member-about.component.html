@@ -50,7 +50,7 @@
       <article *ngFor="let s of (data.space$ | async) | slice:0:4; trackBy: trackByUid"
         class="flex flex-col items-center justify-center w-full p-3 lg:h-16 bg-bg-background rounded-2xl">
         <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
-          <nz-avatar [nzSrc]="getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">
+          <nz-avatar [nzSrc]="avatarService.getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">
             </nz-avatar>
           <span class="flex-grow pl-2"
           [ngClass]="{
