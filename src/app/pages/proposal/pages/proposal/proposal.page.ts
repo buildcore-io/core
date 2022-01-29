@@ -89,8 +89,9 @@ export class ProposalPage implements OnInit, OnDestroy {
                                       .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
       }
 
-      if (obj.type !== ProposalType.NATIVE) {
+      if (obj.type !== ProposalType.NATIVE && this.sections.length === 1) {
         this.sections.push({ route: [ROUTER_UTILS.config.proposal.participants], label: 'Participants' });
+        this.sections = [...this.sections];
         this.cd.markForCheck();
       }
     });
@@ -180,7 +181,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
       return suba.value === value;
     });
-    if(!ans) { 
+    if(!ans) {
       return '';
     }
     return UnitsHelper.formatBest(ans.accumulated);
