@@ -111,7 +111,6 @@ export class MembersPage implements OnInit, OnDestroy {
         return this.memberApi.top(last, search);
       }
     } else {
-      // TODO Generate this based on the space.
       const space: Space | undefined = this.cache.allSpaces$.value.find((s) => {
         return s.uid === this.spaceControl.value;
       });

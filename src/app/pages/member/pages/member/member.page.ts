@@ -11,7 +11,6 @@ import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { FULL_LIST } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
-import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
 
@@ -37,7 +36,6 @@ export class MemberPage implements OnInit, OnDestroy {
     private titleService: Title,
     private route: ActivatedRoute,
     private memberApi: MemberApi,
-    private spaceApi: SpaceApi,
     private auth: AuthService,
     private router: Router,
     public nav: NavigationService,

@@ -101,6 +101,7 @@ export class ActivityPage implements OnInit {
         }
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
+        this.data.badges$.next([]);
     });
   }
 

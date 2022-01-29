@@ -737,29 +737,39 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
 
     // Update all members with newHash
     if (prevHash !== newHash) {
-      const query: QuerySnapshot = await refSpace.collection(SUB_COL.MEMBERS).get();
-      for (const g of query.docs) {
-        const refMember: any = admin.firestore().collection(COL.MEMBER).doc(g.data().uid);
-        await admin.firestore().runTransaction(async (transaction) => {
-          const sfDoc: any = await transaction.get(refMember);
-          if (sfDoc.data()) {
-            const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-            if (prevHash && linkedEntities.length > 0) {
-              const index = linkedEntities.indexOf(prevHash);
-              if (index > -1) {
-                linkedEntities.splice(index, 1);
-              }
-            }
-
-            if (newHash) {
-              linkedEntities.push(newHash);
-            }
-
-            transaction.update(refMember, {
-              linkedEntities: linkedEntities
-            });
+      // We have to go through each space.
+      const updatedMembers: string[] = [];
+      for(const spaceId of [currentSpace.uid, ...Object.keys(currentSpace.alliances)]) {
+        const spaceToUpdate: any = admin.firestore().collection(COL.SPACE).doc(spaceId);
+        const query: QuerySnapshot = await spaceToUpdate.collection(SUB_COL.MEMBERS).get();
+        for (const g of query.docs) {
+          const refMember: any = admin.firestore().collection(COL.MEMBER).doc(g.data().uid);
+          if (updatedMembers.indexOf(g.data().uid) > -1) {
+            continue;
           }
-        });
+
+          updatedMembers.push(g.data().uid);
+          await admin.firestore().runTransaction(async (transaction) => {
+            const sfDoc: any = await transaction.get(refMember);
+            if (sfDoc.data()) {
+              const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
+              if (prevHash && linkedEntities.length > 0) {
+                const index = linkedEntities.indexOf(prevHash);
+                if (index > -1) {
+                  linkedEntities.splice(index, 1);
+                }
+              }
+
+              if (newHash) {
+                linkedEntities.push(newHash);
+              }
+
+              transaction.update(refMember, {
+                linkedEntities: linkedEntities
+              });
+            }
+          });
+        }
       }
     }
 
