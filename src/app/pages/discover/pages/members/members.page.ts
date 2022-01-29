@@ -6,6 +6,7 @@ import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { SortOptions } from "../../services/sort-options.interface";
+import { cyrb53 } from "./../../../../../../functions/interfaces/hash.utils";
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { Space } from './../../../../../../functions/interfaces/models/space';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
@@ -33,6 +34,8 @@ export class MembersPage implements OnInit, OnDestroy {
   public selectBoxSizes = SelectBoxSizes;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
+  private spaceControl: FormControl;
+  private includeAlliancesControl: FormControl;
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
@@ -42,9 +45,11 @@ export class MembersPage implements OnInit, OnDestroy {
     private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
+    this.spaceControl = new FormControl(storageService.selectedSpace.getValue());
+    this.includeAlliancesControl = new FormControl(storageService.isIncludeAlliancesChecked.getValue());
     this.spaceForm = new FormGroup({
-      space: new FormControl(storageService.selectedSpace.getValue()),
-      includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
+      space: this.spaceControl,
+      includeAlliances: this.includeAlliancesControl
     });
   }
 
@@ -75,6 +80,7 @@ export class MembersPage implements OnInit, OnDestroy {
         }
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
+        this.listen();
     });
   }
 
@@ -98,10 +104,31 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Member[]> {
-    if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.memberApi.last(last, search);
+    if (this.spaceControl.value === this.defaultSpace.value) {
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.memberApi.last(last, search);
+      } else {
+        return this.memberApi.top(last, search);
+      }
     } else {
-      return this.memberApi.top(last, search);
+      // TODO Generate this based on the space.
+      const space: Space | undefined = this.cache.allSpaces$.value.find((s) => {
+        return s.uid === this.spaceControl.value;
+      });
+      let linkedEntity = -1;
+      if (space) {
+        if (this.includeAlliancesControl.value) {
+          linkedEntity = cyrb53([space.uid, ...Object.keys(space.alliances || {})].join(''));
+        } else {
+          linkedEntity = cyrb53(space.uid);
+        }
+      }
+
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.memberApi.last(last, search, DEFAULT_LIST_SIZE, linkedEntity);
+      } else {
+        return this.memberApi.top(last, search, DEFAULT_LIST_SIZE, linkedEntity);
+      }
     }
   }
 

@@ -25,6 +25,18 @@ export class MemberApi extends BaseApi<Member> {
     return super.listen(id);
   }
 
+  public last(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
+      return linkedEntity ? ref.where('linkedEntities', 'array-contains', linkedEntity) : ref;
+    });
+  }
+
+  public top(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return linkedEntity ? ref.where('linkedEntities', 'array-contains', linkedEntity) : ref;
+    });
+  }
+
   public topSpaces(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
     return this.topParent(COL.SPACE, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def);
   }

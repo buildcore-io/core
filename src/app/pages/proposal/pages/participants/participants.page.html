@@ -35,7 +35,7 @@
         </span>
       </div>
     </nz-card>
-    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of getList() | async; trackBy: trackByUid"
+    <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of getList() | async; trackBy: trackByUid" [includeAlliances]="true"
       [member]="member" [selectedSpace]="(data.space$ | async)?.uid">
       <p class="font-bold">Weight: {{member.weight}}</p>
     </wen-member-card>
