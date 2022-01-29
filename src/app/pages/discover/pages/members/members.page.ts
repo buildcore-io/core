@@ -103,6 +103,21 @@ export class MembersPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
+  private getEnabledAlliancesKeys(alliances?: any): string[] {
+    if (!alliances) {
+      return [];
+    }
+
+    const out: string[] = [];
+    for ( const [key, space] of Object.entries(alliances)) {
+      if ((<any>space).enabled) {
+        out.push(key);
+      }
+    }
+
+    return out;
+  }
+
   public getHandler(last?: any, search?: string): Observable<Member[]> {
     if (this.spaceControl.value === this.defaultSpace.value) {
       if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
@@ -117,7 +132,7 @@ export class MembersPage implements OnInit, OnDestroy {
       let linkedEntity = -1;
       if (space) {
         if (this.includeAlliancesControl.value) {
-          linkedEntity = cyrb53([space.uid, ...Object.keys(space.alliances || {})].join(''));
+          linkedEntity = cyrb53([space.uid, ...this.getEnabledAlliancesKeys(space.alliances)].join(''));
         } else {
           linkedEntity = cyrb53(space.uid);
         }

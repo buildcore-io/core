@@ -770,10 +770,12 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
             const sfDoc: any = await transaction.get(refMember);
             if (sfDoc.data()) {
               const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-              if (prevHash && linkedEntities.length > 0) {
-                const index = linkedEntities.indexOf(prevHash);
-                if (index > -1) {
-                  linkedEntities.splice(index, 1);
+              if (prevHash !== cyrb53(params.body.uid)) {
+                if (prevHash && linkedEntities.length > 0) {
+                  const index = linkedEntities.indexOf(prevHash);
+                  if (index > -1) {
+                    linkedEntities.splice(index, 1);
+                  }
                 }
               }
 
