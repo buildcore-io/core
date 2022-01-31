@@ -52,11 +52,12 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center text-sm font-semibold cursor-pointer text-blue-light1" *ngIf="getSortedAlliances(data.space$ | async).length > 0"
+        <button nz-button nzType="link" nzSize="small" class="flex items-center"
+            *ngIf="getSortedAlliances(data.space$ | async).length > 0" 
             (click)="isAlliancesListOpen = true">
-            Show all
+            <span i18n>Show All</span>
             <wen-icon-angle-right class="ml-2"></wen-icon-angle-right>
-        </div>
+        </button>
     </div>
 
     <div class="w-5/6 mt-3 text-sm font-semibold text-app-gray-400">
@@ -91,11 +92,12 @@
         </div>
     </div>
 
-    <div class="flex items-center justify-center px-3 py-1 mt-8 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
-        *ngIf="(data.isGuardianWithinSpace$ | async)"
-        (click)="openAlliance()" i18n>
-            New connection
-    </div>
+    <button *ngIf="(data.isGuardianWithinSpace$ | async)" 
+        nz-button nzType="primary" nzSize="small" i18n 
+        class="mt-8"
+        (click)="openAlliance()">
+        New connection
+    </button>
 
     <nz-modal *ngIf="deviceService.isDesktop$ | async"
       [(nzVisible)]="isAlliancesListOpen"
@@ -111,11 +113,11 @@
         <ng-template #alliancesListModalContent>
             <div class="flex items-center justify-between">
                 <div class="text-2xl font-bold">Space Connections</div>
-                <div *ngIf="(data.isGuardianWithinSpace$ | async)"
-                    class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
-                    (click)="openAlliance()" i18n>
+                <button *ngIf="(data.isGuardianWithinSpace$ | async)" 
+                    nz-button nzType="primary" nzSize="small" i18n 
+                    (click)="openAlliance()">
                         New connection
-                </div>
+                </button>
             </div>
 
             <div class="overflow-y-auto h-96 mt-7">
@@ -147,13 +149,14 @@
             </wen-space-alliances-table>
 
             <div class="absolute bottom-0 z-10 flex items-center w-full bg-white" #spaceAlliancesActions>
-                <div  class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
-                  *ngIf="(data.isGuardianWithinSpace$ | async)"
-                    (click)="openAlliance()" i18n>
-                        New connection
-                </div>
-                <div class="ml-8 text-sm font-semibold cursor-pointer text-blue-light1"
-                    (click)="isAlliancesListOpen = false" i18n>Close</div>
+                <button *ngIf="(data.isGuardianWithinSpace$ | async)" 
+                    nz-button nzType="primary" nzSize="small" i18n 
+                    (click)="openAlliance()">
+                    New connection
+                </button>
+                <button nz-button nzType="link" nzSize="small" class="ml-8" (click)="isAlliancesListOpen = false" i18n>
+                    Close
+                </button>
             </div>
         </div>
     </nz-drawer>
@@ -185,12 +188,12 @@
 
         <div class="flex items-center justify-between mt-2">
             <div class="flex items-center">
-                <div class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
-                    (click)="onAllianceSave()" i18n>
-                        {{ isNewAlliance ? 'Form a connection' : 'Save' }}
-                </div>
-                <div class="ml-8 text-sm font-semibold cursor-pointer text-blue-light1"
-                    (click)="closeNewAlliance()" i18n>Cancel</div>
+                <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()" i18n>
+                    {{ isNewAlliance ? 'Form a connection' : 'Save' }}
+                </button>
+                <button nz-button nzType="link" nzSize="small" class="ml-8" (click)="closeNewAlliance()" i18n>
+                    Cancel
+                </button>
             </div>
 
             <div class="flex items-center text-sm font-semibold cursor-pointer text-orange-darkest"
@@ -217,12 +220,12 @@
             </wen-space-new-alliance>
 
             <div class="z-10 flex items-center w-full bg-white">
-                <div class="flex items-center justify-center px-3 py-1 text-sm font-semibold text-white cursor-pointer bg-blue-light1 rounded-3xl w-max"
-                    (click)="onAllianceSave()" i18n>
-                        {{ isNewAlliance ? 'Form a connection' : 'Save' }}
-                </div>
-                <div class="ml-8 text-sm font-semibold cursor-pointer text-blue-light1"
-                    (click)="closeNewAlliance()" i18n>Cancel</div>
+                <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()" i18n>
+                    {{ isNewAlliance ? 'Form a connection' : 'Save' }}
+                </button>
+                <button nz-button nzType="link" nzSize="small" class="ml-8" (click)="closeNewAlliance()" i18n>
+                    Cancel
+                </button>
             </div>
             <div class="flex items-center mt-12 text-sm font-semibold cursor-pointer text-orange-darkest"
                     (click)="onAllianceSave(false)" *ngIf="!isNewAlliance">

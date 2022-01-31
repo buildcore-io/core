@@ -40,7 +40,7 @@
         </div>
       </div>
       
-      <wen-tabs [tabs]="sections" class="block w-screen -ml-5 overflow-x-auto overflow-y-hidden lg:w-auto lg:ml-0">
+      <wen-tabs [tabs]="sections" class="block w-screen -ml-5 overflow-x-auto overflow-y-hidden lg:w-max lg:ml-0">
       </wen-tabs>
 
       <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-app-gray-100"></div>
