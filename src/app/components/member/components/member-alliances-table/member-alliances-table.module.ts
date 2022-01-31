@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { MemberAlliancesTableComponent } from './member-alliances-table.component';
@@ -13,7 +14,8 @@ import { MemberAlliancesTableComponent } from './member-alliances-table.componen
   imports: [
     CommonModule,
     NzTableModule,
-    NzAvatarModule
+    NzAvatarModule,
+    TruncateModule
   ],
   exports: [
     MemberAlliancesTableComponent

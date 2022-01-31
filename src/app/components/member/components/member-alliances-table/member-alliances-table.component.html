@@ -2,14 +2,14 @@
     [nzData]="getAlliances()" [nzShowPagination]="false">
     <thead>
         <tr>
-            <th #alliancesHeader i18n style="padding:0px">Connections</th>
-            <th #awardsHeader i18n style="padding:0px; text-align: right">Awards</th>
-            <th #XPHeader i18n style="padding:0px; text-align: right">XP</th>
+            <th #alliancesHeader i18n class="alliance-header">Connections</th>
+            <th #awardsHeader i18n class="awards-header">Awards</th>
+            <th #XPHeader i18n class="xp-header">XP</th>
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let item of getAlliances()">
-            <td class="flex items-center" [class.font-bold]="memberWithinSpace[item.uid]" style="padding-left: 0px; padding-right: 0px">
+        <tr *ngFor="let item of getAlliances(); trackBy: trackByUid" class="wrapper-row">
+            <td class="alliance-data flex items-center" [class.font-bold]="memberWithinSpace[item.uid]">
                 <nz-avatar
                     [nzSrc]="avatarService.getAvatarSize(item.avatar)"
                     [nzSize]="32"
@@ -17,10 +17,10 @@
                     nzShape="circle"
                 >
                 </nz-avatar>
-                {{ item.name }}
+                {{ item.name | truncate:[32] }}
             </td>
-            <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.totalAwards }}</td>
-            <td class="text-right" style="padding-left: 0px; padding-right: 0px">{{ item.totalXp }}</td>
+            <td class="awards-data text-right">{{ item.totalAwards }}</td>
+            <td class="xp-data text-right">{{ item.totalXp }}</td>
         </tr>
     </tbody>
 </nz-table>
