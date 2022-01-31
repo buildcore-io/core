@@ -55,7 +55,7 @@
           <div class="flex items-center mt-2">
             <wen-badge-tile
               class="mr-2"
-              *ngFor="let badge of data.badges$ | async | slice:0:7; trackBy: trackByUid"
+              *ngFor="let badge of data.badges$ | async | slice:0:4; trackBy: trackByUid"
               [metadata]="badge.payload.image"
               [name]="badge.payload.name"
               [size]="48">

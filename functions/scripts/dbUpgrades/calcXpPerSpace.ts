@@ -14,16 +14,6 @@ const record = COL.TRANSACTION;
 db.collection(record).get().then(async (snapshot) => {
   let i = 0;
   for (const tran of snapshot.docs) {
-    // Fix transaction ID
-    if (tran.data().uid !== tran.id) {
-      await db.collection(record).doc(tran.id).update({
-        ...tran.data(),
-        ...{
-          uid: tran.id
-        }
-      });
-    }
-
     if (tran.data() && tran.data().type === TransactionType.BADGE) {
       // Set member obj.
       members[tran.data().member] = members[tran.data().member] || { };
@@ -55,11 +45,11 @@ db.collection(record).get().then(async (snapshot) => {
       }
       const data: any = docMember.data();
       data.spaces = member.spaces;
-      data.statsPerSpace = null;
+      delete data.statsPerSpace;
       data.awardsCompleted = member.awardsCompleted;
       data.totalReputation = member.totalReputation;
       console.log('Updating...' + i + '...' + key);
-      await refMember.update(data);
+      refMember.update(data);
       i++;
   }
 });
