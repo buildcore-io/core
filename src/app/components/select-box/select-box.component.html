@@ -1,9 +1,9 @@
 <div class="relative select-none w-full" wenClickOutside (clickOutside)="onClickOutside()"
     (click)="isOptionsOpen = !isOptionsOpen; isDrawerOpen = true">
-    <div class="rounded-9 bg-white flex items-center cursor-pointer border border-white" 
+    <div class="rounded-9 bg-white flex items-center cursor-pointer border border-white text-base" 
         [ngClass]="{
-            'px-3 py-2 text-base font-semibold': size === selectBoxSizes.SMALL,
-            'px-4 py-4 text-2xl font-bold': size === selectBoxSizes.LARGE,
+            'px-3 py-2 font-semibold': size === selectBoxSizes.SMALL,
+            'px-4 py-4 font-bold': size === selectBoxSizes.LARGE,
             'border-app-gray-200': !isOptionsOpen,
             'border-orange': isOptionsOpen
         }">
@@ -30,7 +30,9 @@
             </ng-container>
             <wen-icon-default-space *ngIf="!optionValue?.img" [size]="size === selectBoxSizes.SMALL ? 24 : 40"></wen-icon-default-space>
         </div>
-        {{ optionValue?.label }}
+        <div class="option-label">
+            {{ optionValue?.label }}
+        </div>
         <div class="ml-auto" *ngIf="suffixIcon">
             <ng-container *ngTemplateOutlet="suffixIcon"></ng-container>
         </div>

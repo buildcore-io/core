@@ -61,7 +61,7 @@
         </a>
       </article>
 
-      <article *ngIf="(data.space$ | async)?.length === 0"
+      <article *ngIf="!(data.space$ | async)?.length"
         class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
         <span>No Contribution Yet.</span>
       </article>

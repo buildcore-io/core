@@ -107,7 +107,8 @@ module.exports = {
         card: '0px 0px 12px rgba(0, 0, 0, 0.08)'
       },
       boxShadow: {
-        header: '0px 2px 3px #E6E5DE'
+        header: '0px 2px 3px #E6E5DE',
+        modal: '0px 2px 32px rgba(0, 0, 0, 0.16)'
       }
     },
   },

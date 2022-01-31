@@ -105,4 +105,8 @@ export class MemberAlliancesTableComponent implements OnInit {
 
     return out;
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }
