@@ -20,7 +20,7 @@ interface MemberAllianceItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberAlliancesTableComponent implements OnInit {
-  @Input() selectedSpace?: string;
+  @Input() selectedSpace?: Space;
   @Input() member?: Member | null;
   @Input() tableClasses = '';
   public memberWithinSpace: {
@@ -37,16 +37,10 @@ export class MemberAlliancesTableComponent implements OnInit {
     this.checkIfMembersWithinSpace();
   }
 
-  public getSelectedSpace(): Space | undefined {
-    return this.cache.allSpaces$.value.find((s) => {
-      return s.uid === this.selectedSpace;
-    });
-  }
-
   public getTotal(what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
     let total = 0;
-    total = this.member?.spaces?.[this.getSelectedSpace()?.uid || 0]?.[what] || 0;
-    for (const [spaceId, values] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+    total = this.member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0;
+    for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
       const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
         return s.uid === spaceId;
       });
@@ -63,7 +57,7 @@ export class MemberAlliancesTableComponent implements OnInit {
     if (!this.member) {
       return;
     }
-    for (const [spaceId] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+    for (const [spaceId] of Object.entries(this.selectedSpace?.alliances || {})) {
       this.spaceApi.isMemberWithinSpace(spaceId, this.member.uid).pipe(first()).subscribe((val) => {
         this.memberWithinSpace[spaceId] = val;
         this.cd.markForCheck();
@@ -72,12 +66,12 @@ export class MemberAlliancesTableComponent implements OnInit {
   }
 
   public getAlliances(): MemberAllianceItem[] {
-    if (!this.getSelectedSpace() || !this.member) {
+    if (!this.selectedSpace || !this.member) {
       return [];
     }
 
     const out: MemberAllianceItem[] = [];
-    for (const [spaceId, values] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+    for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
       const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
         return s.uid === spaceId;
       });
@@ -96,11 +90,11 @@ export class MemberAlliancesTableComponent implements OnInit {
     }
 
     out.push({
-      uid: this.getSelectedSpace()!.uid,
-      avatar: this.getSelectedSpace()!.avatarUrl,
-      name: this.getSelectedSpace()!.name || this.getSelectedSpace()!.uid,
-      totalAwards: this.member!.spaces?.[this.getSelectedSpace()!.uid]?.awardsCompleted || 0,
-      totalXp: this.member!.spaces?.[this.getSelectedSpace()!.uid]?.totalReputation || 0
+      uid: this.selectedSpace!.uid,
+      avatar: this.selectedSpace!.avatarUrl,
+      name: this.selectedSpace!.name || this.selectedSpace!.uid,
+      totalAwards: this.member!.spaces?.[this.selectedSpace!.uid]?.awardsCompleted || 0,
+      totalXp: this.member!.spaces?.[this.selectedSpace!.uid]?.totalReputation || 0
     });
 
     return out;

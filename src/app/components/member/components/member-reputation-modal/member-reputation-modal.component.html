@@ -6,13 +6,6 @@
     (nzOnCancel)="onCancel()"
     [nzContent]="modalContent"
     [nzFooter]="null"
-    [nzStyle]="{
-        position: 'absolute',
-        left: leftPosition ? leftPosition + 'px' : 'auto',
-        top: bottomPosition ? 'auto' : (topPosition || 100) + 'px',
-        right: rightPosition ? rightPosition + 'px' : 'auto',
-        bottom: topPosition ? 'auto' : (bottomPosition || 100) + 'px'
-    }"
     [nzBodyStyle]="{ padding: '0px' }"
     [nzWidth]="width || 520"
   >
