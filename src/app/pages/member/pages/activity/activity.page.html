@@ -43,7 +43,7 @@
 
         <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-8 bg-bg-background"></div>
 
-        <div class="w-full mt-6 lg:w-max lg:mt-0">
+        <div class="w-full mt-6 lg:w-max lg:mt-0" *ngIf="(data.badges$ | async)?.length">
           <div class="flex items-center justify-between text-xs font-medium text-app-gray-400">
             <span i18n>Earned badges</span>
             <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
@@ -55,7 +55,7 @@
           <div class="flex items-center mt-2">
             <wen-badge-tile
               class="mr-2"
-              *ngFor="let badge of data.badges$ | async | slice:0:4; trackBy: trackByUid"
+              *ngFor="let badge of (data.badges$ | async) | slice:0:4; trackBy: trackByUid"
               [metadata]="badge.payload.image"
               [name]="badge.payload.name"
               [size]="48">

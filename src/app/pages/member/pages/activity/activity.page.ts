@@ -51,6 +51,7 @@ export class ActivityPage implements OnInit {
   public defaultSpace = DEFAULT_SPACE;
   public selectBoxSizes = SelectBoxSizes;
   public showAllBadges = false;
+  private lastLoadedAllBadges: boolean = false;
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -127,9 +128,16 @@ export class ActivityPage implements OnInit {
   private async refreshBadges(): Promise<void> {
     if (this.data.member$.value?.uid) {
       if (!this.getSelectedSpace()) {
+        // Already loaded. Do nothing. Reduce network requests.
+        if (this.lastLoadedAllBadges) {
+          return;
+        }
+
         // TODO implement paging.
+        this.lastLoadedAllBadges = true;
         this.memberApi.topBadges(this.data.member$.value.uid, 'createdOn', undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.badges$);
       } else {
+        this.lastLoadedAllBadges = false;
         this.data.badges$.next(undefined);
         const allBadges: string[] = [...(this.data.member$.value.spaces?.[this.getSelectedSpace()!.uid]?.badges || [])];
         if (this.spaceForm.value.includeAlliances) {

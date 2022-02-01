@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { AuthService } from '@components/auth/services/auth.service';
 import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -41,12 +40,11 @@ export class MemberSpaceRowComponent {
   private _isReputationModalVisible = false;
 
   constructor(
-    public auth: AuthService,
     public deviceService: DeviceService,
     public avatarService: AvatarService,
     private cd: ChangeDetectorRef
   ) {}
-  
+
   public getSpaceRoute(): string[] {
     return ['/', ROUTER_UTILS.config.space.root, this.space?.uid || ''];
   }

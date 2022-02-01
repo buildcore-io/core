@@ -4,7 +4,6 @@ import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import { Space } from 'functions/interfaces/models';
-import { map } from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -36,15 +35,16 @@ export class MemberSpacesComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(this.onSearchValueChange.bind(this));
 
-    this.data.space$
-      .pipe(
-        map((spaces: Space[] | undefined) => spaces || []),
-        untilDestroyed(this)
-      )
-      .subscribe((spaces: Space[]) => {
-          this.spacesList = spaces;
-          this.onSearchValueChange();
-      });
+    // not used.
+    // this.data.space$
+    //   .pipe(
+    //     map((spaces: Space[] | undefined) => spaces || []),
+    //     untilDestroyed(this)
+    //   )
+    //   .subscribe((spaces: Space[]) => {
+    //       this.spacesList = spaces;
+    //       this.onSearchValueChange();
+    //   });
   }
 
   public onSearchValueChange(): void {
@@ -56,7 +56,7 @@ export class MemberSpacesComponent implements OnInit {
     this.spaceForm.controls.space.setValue('');
     this.onSearchValueChange();
   }
-  
+
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }

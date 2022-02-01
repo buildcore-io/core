@@ -12,28 +12,29 @@
       </div>
 
       <nz-tag *ngIf="deviceService.isMobile$ | async"
-        class="mt-4 wen-xp-tag w-max flex items-center">
-        {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span> 
-        <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400 ml-2"
+        class="flex items-center mt-4 wen-xp-tag w-max">
+        {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
+        <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-app-gray-400"
           *ngIf="allowReputationModal"
           (click)="isReputationModalVisible = true"></i>
       </nz-tag>
     </div>
     <div class="flex items-center mt-1 lg:mt-0" #xpWrapper>
         <nz-tag *ngIf="deviceService.isDesktop$ | async"
-          class="wen-xp-tag flex w-max items-center">
-          {{ member?.spaces?.[space!.uid]?.awardsCompleted || 0 }} <span i18n>XP</span> 
-          <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400 ml-2"
+          class="flex items-center wen-xp-tag w-max">
+          {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
+          <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-app-gray-400"
             *ngIf="allowReputationModal"
             (click)="isReputationModalVisible = true"></i>
         </nz-tag>
 
-        <wen-icon-angle-right class="ml-4 cursor-pointer" 
+        <wen-icon-angle-right class="ml-4 cursor-pointer"
           [routerLink]="getSpaceRoute()"></wen-icon-angle-right>
 
         <wen-member-reputation-modal
           [isOpen]="isReputationModalVisible"
-          [member]="(auth.member$ | async) || undefined"
+          [selectedSpace]="space?.uid"
+          [member]="member"
           [bottomPosition]="reputationModalBottomPosition"
           [rightPosition]="reputationModalRightPosition"
           [width]="reputationModalWidth"
