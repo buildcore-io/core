@@ -10,7 +10,20 @@ initializeApp({
 const db = getFirestore();
 const recs = [COL.MEMBER, COL.SPACE, COL.AWARD, COL.PROPOSAL, COL.TRANSACTION, COL.MILESTONE];
 recs.forEach((r) => {
-  db.collection(r).get().then((snapshot) => {
-    console.log('Total ' + r + ': ', snapshot.size);
-  });
+  // db.collection(r).get().then((snapshot) => {
+  //   console.log('Total ' + r + ': ', snapshot.size);
+  // });
+});
+
+
+// Export of members within space.
+// 0xdf1ed923ad76de09600e88baa84327b32182288d/members
+console.log('spaceId,ETH_Address,Username,totalReputation,joined')
+db.collection('space').doc('0xdf1ed923ad76de09600e88baa84327b32182288d').collection('members').get().then(async (snapshot) => {
+  for (const member of snapshot.docs) {
+    const refMember: any = db.collection(COL.MEMBER).doc(member.data().uid);
+    const docMember: any = await refMember.get();
+    const data: any = docMember.data();
+    console.log(member.data().parentId+','+data.uid+','+data.name+','+(data.spaces?.[member.data().parentId]?.totalReputations || 0).toString()+','+member.data().createdOn.toDate().toString());
+  }
 });

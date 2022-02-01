@@ -83,6 +83,9 @@ export class MemberPage implements OnInit, OnDestroy {
     // TODO Implement search. This is parked since we will be implementing new search here.
     this.subscriptions$.push(this.memberApi.topSpaces(memberId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
+
+    // Badges.
+    this.data.refreshBadges(undefined, false);
   }
 
   public get loggedInMember$(): BehaviorSubject<Member|undefined> {

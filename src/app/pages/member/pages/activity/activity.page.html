@@ -43,9 +43,9 @@
 
         <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-8 bg-bg-background"></div>
 
-        <div class="w-full mt-6 lg:w-max lg:mt-0" *ngIf="(data.badges$ | async)?.length">
+        <div class="w-full mt-6 lg:w-max lg:mt-0">
           <div class="flex items-center justify-between text-xs font-medium text-app-gray-400">
-            <span i18n>Earned badges</span>
+            <span i18n>Earned badges {{(data.badges$ | async)?.length}}</span>
             <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
               [routerLink]="getBadgeRoute()">
                 <span i18n>More</span>
