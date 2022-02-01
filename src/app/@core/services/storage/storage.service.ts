@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_SPACE } from '@pages/member/services/data.service';
+import { DEFAULT_SPACE } from '@components/select-space/select-space.component';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({

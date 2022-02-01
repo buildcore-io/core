@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SelectBoxComponent } from './select-box.component';
+import { SelectSpaceComponent } from './select-space.component';
 
-describe('SelectBoxComponent', () => {
-  let component: SelectBoxComponent;
-  let fixture: ComponentFixture<SelectBoxComponent>;
+describe('SelectSpaceComponent', () => {
+  let component: SelectSpaceComponent;
+  let fixture: ComponentFixture<SelectSpaceComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SelectBoxComponent ]
+      declarations: [ SelectSpaceComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SelectBoxComponent);
+    fixture = TestBed.createComponent(SelectSpaceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

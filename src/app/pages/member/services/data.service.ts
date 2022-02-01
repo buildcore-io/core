@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { MemberApi } from '@api/member.api';
-import { SelectBoxOption } from '@components/select-box/select-box.component';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
@@ -8,11 +7,6 @@ import { Member } from './../../../../../functions/interfaces/models/member';
 import { Transaction } from './../../../../../functions/interfaces/models/transaction';
 import { FULL_LIST } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
-
-export const DEFAULT_SPACE: SelectBoxOption = {
-  label: 'All spaces',
-  value: 'all'
-};
 
 @UntilDestroy()
 @Injectable()

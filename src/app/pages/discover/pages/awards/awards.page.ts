@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { SelectBoxOption } from '@components/select-box/select-box.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
@@ -27,7 +26,6 @@ export class AwardsPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public award$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.ACTIVE, HOT_TAGS.COMPLETED];
-  public hotTagsFormatted: SelectBoxOption[] = [];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ACTIVE]);
   private dataStore: Award[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -40,7 +38,6 @@ export class AwardsPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.hotTagsFormatted = this.hotTags.map((tag: string) => ({ value: tag, label: tag }));
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
