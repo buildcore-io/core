@@ -42,6 +42,7 @@ import { TreasuryPage } from './pages/treasury/treasury.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from "./services/data.service";
 import { SpaceRoutingModule } from './space-routing.module';
+import { CollectionsPage } from './pages/collections/collections.page';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     AwardsPage,
     TreasuryPage,
     MembersPage,
-    UpsertPage
+    UpsertPage,
+    CollectionsPage
   ],
   providers: [DataService],
   imports: [

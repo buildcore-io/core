@@ -25,6 +25,7 @@ import { ProposalModule } from '../../components/proposal/proposals.module';
 import { SpaceModule } from '../../components/space/space.module';
 import { DiscoverRoutingModule } from './discover-routing.module';
 import { AwardsPage } from './pages/awards/awards.page';
+import { CollectionsPage } from './pages/collections/collections.page';
 import { DiscoverPage } from './pages/discover/discover.page';
 import { MembersPage } from './pages/members/members.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
@@ -38,7 +39,8 @@ import { FilterService } from './services/filter.service';
     SpacesPage,
     MembersPage,
     AwardsPage,
-    ProposalsPage
+    ProposalsPage,
+    CollectionsPage
   ],
   exports: [
   ],
