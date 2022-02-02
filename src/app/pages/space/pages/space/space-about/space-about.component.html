@@ -46,14 +46,14 @@
             <div class="text-lg font-bold">Connections</div>
             <div class="relative flex items-center justify-center ml-2">
                 <wen-icon-question-circle class="alliances-question cursor-help"></wen-icon-question-circle>
-                <div class="absolute z-10 hidden p-6 text-sm font-medium transform translate-x-16 translate-y-2 bg-white lg:translate-x-0 
+                <div class="absolute z-10 hidden p-6 text-sm font-medium transform translate-x-16 translate-y-2 bg-white lg:translate-x-0
                     alliances-tooltip shadow-modal rounded-3xl text-app-gra-text w-96 top-full" i18n>
-                  Connections between spaces enables members of one space to recognize members of another space experience points. Established connection turns into alliances.
+                  Connections between spaces enables members of one space to recognize members of another space's experience points. Established connection turns into alliances.
                 </div>
             </div>
         </div>
         <button nz-button nzType="link" nzSize="small" class="flex items-center"
-            *ngIf="getSortedAlliances(data.space$ | async).length > 0" 
+            *ngIf="getSortedAlliances(data.space$ | async).length > 0"
             (click)="isAlliancesListOpen = true">
             <span i18n>Show All</span>
             <wen-icon-angle-right class="ml-2"></wen-icon-angle-right>
@@ -92,8 +92,8 @@
         </div>
     </div>
 
-    <button *ngIf="(data.isGuardianWithinSpace$ | async)" 
-        nz-button nzType="primary" nzSize="small" i18n 
+    <button *ngIf="(data.isGuardianWithinSpace$ | async)"
+        nz-button nzType="primary" nzSize="small" i18n
         class="mt-8"
         (click)="openAlliance()">
         New connection
@@ -113,8 +113,8 @@
         <ng-template #alliancesListModalContent>
             <div class="flex items-center justify-between">
                 <div class="text-2xl font-bold">Space Connections</div>
-                <button *ngIf="(data.isGuardianWithinSpace$ | async)" 
-                    nz-button nzType="primary" nzSize="small" i18n 
+                <button *ngIf="(data.isGuardianWithinSpace$ | async)"
+                    nz-button nzType="primary" nzSize="small" i18n
                     (click)="openAlliance()">
                         New connection
                 </button>
@@ -149,8 +149,8 @@
             </wen-space-alliances-table>
 
             <div class="absolute bottom-0 z-10 flex items-center w-full bg-white" #spaceAlliancesActions>
-                <button *ngIf="(data.isGuardianWithinSpace$ | async)" 
-                    nz-button nzType="primary" nzSize="small" i18n 
+                <button *ngIf="(data.isGuardianWithinSpace$ | async)"
+                    nz-button nzType="primary" nzSize="small" i18n
                     (click)="openAlliance()">
                     New connection
                 </button>
