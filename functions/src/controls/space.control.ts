@@ -18,6 +18,7 @@ import { WenError } from './../../interfaces/errors';
 import { Alliance, Space } from './../../interfaces/models/space';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
+import { getEnabledAlliancesKeys } from "../utils/alliance.utils";
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -35,21 +36,6 @@ function defaultJoiUpdateCreateSchema(): any {
     }).optional()
   });
 };
-
-function getEnabledAlliancesKeys(alliances?: any): string[] {
-  if (!alliances) {
-    return [];
-  }
-
-  const out: string[] = [];
-  for ( const [key, space] of Object.entries(alliances)) {
-    if ((<any>space).enabled) {
-      out.push(key);
-    }
-  }
-
-  return out;
-}
 
 export const createSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.

@@ -124,6 +124,8 @@ export class DataService {
       return 'One Member One Vote';
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
       return 'Reputation within Space';
+    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE) {
+      return 'Reputation within Space inc. connections';
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
       return 'Reputation within Badges';
     } else {

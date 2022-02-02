@@ -327,6 +327,21 @@
                 </wen-radio>
                 <wen-radio
                   class="flex"
+                  [value]="subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
+                >
+                  <p class="max-w-xs pr-2">
+                    Based on participant's space reputation inc. connections
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space & connections"
+                    >
+                    </wen-icon-question-circle>
+                  </p>
+                </wen-radio>
+                <wen-radio
+                  class="flex"
                   [value]="subTypes.REPUTATION_BASED_ON_AWARDS"
                 >
                   <p class="max-w-xs">
