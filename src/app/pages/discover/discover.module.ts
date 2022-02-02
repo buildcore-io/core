@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
-import { SelectBoxModule } from '@components/select-box/select-box.module';
+import { SelectSpaceModule } from '@components/select-space/select-space.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -67,9 +67,9 @@ import { FilterService } from './services/filter.service';
     LayoutModule,
     DropdownTabsModule,
     IconModule,
-    SelectBoxModule,
     NzCheckboxModule,
-    MobileSearchModule
+    MobileSearchModule,
+    SelectSpaceModule
   ]
 })
 export class DiscoverModule { }

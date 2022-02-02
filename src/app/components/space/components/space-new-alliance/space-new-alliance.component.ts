@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
+import { SelectSpaceOption } from '@components/select-space/select-space.component';
 import { AvatarService } from '@core/services/avatar';
 import { DataService } from '@pages/space/services/data.service';
 import { Space } from 'functions/interfaces/models';
@@ -23,7 +23,7 @@ export class SpaceNewAllianceComponent {
         .map(space => ({
           label: space.name || '',
           value: space.uid,
-          img: this.avatarService.getAvatarSize(space.avatarUrl)
+          img: space.avatarUrl
         }));
   }
   @Input() spaceAllianceControl: FormControl = new FormControl('');
@@ -33,8 +33,7 @@ export class SpaceNewAllianceComponent {
     return this._spaces;
   }
 
-  public selectBoxSizes = SelectBoxSizes;
-  public spaceOptions: SelectBoxOption[] = [];
+  public spaceOptions: SelectSpaceOption[] = [];
   private _spaces: Space[] = [];
 
   constructor(

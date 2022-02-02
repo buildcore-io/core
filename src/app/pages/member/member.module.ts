@@ -7,7 +7,7 @@ import { MemberAlliancesTableModule } from '@components/member/components/member
 import { MemberSpaceRowModule } from '@components/member/components/member-space-row/member-space-row.module';
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
-import { SelectBoxModule } from '@components/select-box/select-box.module';
+import { SelectSpaceModule } from '@components/select-space/select-space.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -68,11 +68,11 @@ import { DataService } from './services/data.service';
     ReactiveFormsModule,
     NzInputModule,
     MemberSpaceRowModule,
-    SelectBoxModule,
     MemberTileModule,
     MemberAlliancesTableModule,
     MobileSearchModule,
-    IpfsBadgeModule
+    IpfsBadgeModule,
+    SelectSpaceModule
   ],
 })
 export class MemberModule {

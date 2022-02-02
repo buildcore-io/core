@@ -1,29 +1,21 @@
 <form class="flex flex-col items-end justify-between lg:flex-row" [formGroup]="spaceForm">
-  <wen-select-box
+  <wen-select-space
     *ngIf="deviceService.isMobile$ | async"
-    class="w-full mt-6 mb-6"
+    class="block w-full mt-6 mb-6"
     formControlName="space"
-    [optionsWrapperClasses]="'top-20 left-0 w-full'"
-    [options]="getSpaceListOptions(cache.allSpaces$| async)"
-    [showArrow]="true"
-    [isSearchable]="true"
-    [size]="selectBoxSizes.LARGE"
-    title="Select space"
-    [mobileDrawer]="true"
-    [isAvatar]="true">
-  </wen-select-box>
+    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+    size="large">
+  </wen-select-space>
 
   <div class="flex items-center justify-between w-full lg:mt-8">
     <div class="flex items-center">
-      <wen-select-box
+      <wen-select-space
         *ngIf="deviceService.isDesktop$ | async"
+        class="block w-44"
         formControlName="space"
-        [optionsWrapperClasses]="'top-12 left-2'"
-        [options]="getSpaceListOptions(cache.allSpaces$ | async)"
-        [showArrow]="true"
-        [isSearchable]="true"
-        [isAvatar]="true">
-      </wen-select-box>
+        [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+        size="small">
+      </wen-select-space>
 
       <label class="text-base font-medium lg:ml-6 text-app-gray-text"
         nz-checkbox formControlName="includeAlliances"
@@ -45,21 +37,12 @@
     </ng-container>
     <ng-template #sortMobileBlock>
       <div class="relative">
-        <wen-select-box
-          class="w-32"
-          [formControl]="sortControl"
-          [suffixIcon]="mobileSuffixIcon"
-          [optionsWrapperClasses]="'top-12 right-2'"
-          [options]="[{
-            label: 'Recent',
-            value: filter.sortOptions.RECENT
-          }, {
-            label: 'Oldest',
-            value: filter.sortOptions.OLDEST
-          }]">
-        </wen-select-box>
+        <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
+          <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+          <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
+        </nz-select>
         <ng-template #mobileSuffixIcon>
-          <wen-icon-sort></wen-icon-sort>
+          <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
         </ng-template>
       </div>
     </ng-template>
