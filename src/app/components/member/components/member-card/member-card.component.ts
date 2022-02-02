@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
 import { MemberApi } from "@api/member.api";
 import { TransactionApi } from "@api/transaction.api";
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, first, firstValueFrom } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Space, Transaction } from "../../../../../../functions/interfaces/models";
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
@@ -20,8 +21,9 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 })
 export class MemberCardComponent implements OnDestroy {
   @Input()
-  public set selectedSpace(value: string | undefined) {
-    this._selectedSpace = value;
+  public set selectedSpace(value: Space |  string | undefined) {
+    this._selectedSpace = typeof value === 'string' ?
+      this.cache.allSpaces$.getValue().find((s) => s.uid === value) : value;
     this.refreshBadges();
   }
 
@@ -35,43 +37,18 @@ export class MemberCardComponent implements OnDestroy {
   @Input() about?: string;
   @Input() role?: string;
 
-  @ViewChild('xpWrapper', { static: false }) xpWrapper?: ElementRef<HTMLDivElement>;
-  public get isReputationVisible(): boolean {
-    return this._isReputationVisible;
-  }
-  public get selectedSpace(): string | undefined {
+  public get selectedSpace(): Space | undefined {
     return this._selectedSpace;
   }
   public get includeAlliances(): boolean {
     return this._includeAlliances;
   }
 
-  public set isReputationVisible(value: boolean) {
-    this._isReputationVisible = value;
-    if (this.deviceService.isDesktop$.getValue()) {
-      this.reputationModalLeftPosition = undefined;
-      this.reputationModalRightPosition = undefined;
-      this.reputationModalBottomPosition = undefined;
-      const xpWrapperRect = this.xpWrapper?.nativeElement.getBoundingClientRect();
-      this.reputationModalBottomPosition = window.innerHeight - (xpWrapperRect?.bottom || 0) + (xpWrapperRect?.height || 0);
-      if ((xpWrapperRect?.left || 0) <= window.innerWidth / 2) {
-        this.reputationModalLeftPosition = xpWrapperRect?.left || 0;
-      } else  {
-        this.reputationModalRightPosition = window.innerWidth - (xpWrapperRect?.right || 0);
-      }
-    }
-
-    this.cd.markForCheck();
-  }
-
   public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public totalVisibleBadges = 6;
   public path = ROUTER_UTILS.config.member.root;
-  public reputationModalBottomPosition?: number;
-  public reputationModalLeftPosition?: number;
-  public reputationModalRightPosition?: number;
-  private _isReputationVisible = false;
-  private _selectedSpace?: string;
+  public isReputationVisible = false;
+  private _selectedSpace?: Space;
   private _includeAlliances = false;
 
   constructor(
@@ -86,13 +63,19 @@ export class MemberCardComponent implements OnDestroy {
 
   public async refreshBadges(): Promise<void> {
     if (this.member?.uid) {
-      if (!this.getSelectedSpace()) {
-        this.memberApi.topBadges(this.member.uid).pipe(untilDestroyed(this)).subscribe(this.badges$);
+      if (!this.selectedSpace) {
+        this.memberApi.topBadges(this.member.uid)
+          .pipe(
+            first(),
+            filter(() => !this.selectedSpace),
+            untilDestroyed(this)
+          )
+          .subscribe(this.badges$);
       } else {
         this.badges$.next(undefined);
-        const allBadges: string[] = [...(this.member?.spaces?.[this.getSelectedSpace()!.uid]?.badges || [])];
+        const allBadges: string[] = [...(this.member?.spaces?.[this.selectedSpace!.uid]?.badges || [])];
         if (this.includeAlliances) {
-          for (const [spaceId] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+          for (const [spaceId] of Object.entries(this.selectedSpace?.alliances || {})) {
             allBadges.push(...(this.member.spaces?.[spaceId]?.badges || []));
           }
         }
@@ -111,20 +94,14 @@ export class MemberCardComponent implements OnDestroy {
     }
   }
 
-  public getSelectedSpace(): Space | undefined {
-    return this.cache.allSpaces$.value.find((s) => {
-      return s.uid === this._selectedSpace;
-    });
-  }
-
   public getTotal(what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
     let total = 0;
-    if (!this.getSelectedSpace()) {
+    if (!this.selectedSpace) {
       total = this.member?.[what] || 0;
     } else {
-      total = this.member?.spaces?.[this.getSelectedSpace()!.uid]?.[what] || 0;
+      total = this.member?.spaces?.[this.selectedSpace!.uid]?.[what] || 0;
       if (this.includeAlliances) {
-        for (const [spaceId, values] of Object.entries(this.getSelectedSpace()?.alliances || {})) {
+        for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
           const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
             return s.uid === spaceId;
           });

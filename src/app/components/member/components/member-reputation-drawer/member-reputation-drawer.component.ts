@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Member } from 'functions/interfaces/models';
+import { Member, Space } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 
 @Component({
@@ -9,7 +9,7 @@ import { FILE_SIZES } from 'functions/interfaces/models/base';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberReputationDrawerComponent {
-  @Input() selectedSpace?: string;
+  @Input() selectedSpace?: Space;
   @Input() member?: Member;
   @Input() isOpen = false;
   @Output() onClose = new EventEmitter<void>();
