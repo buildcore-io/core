@@ -32,6 +32,7 @@ export const enum WEN_FUNC {
 
   // Member functions.
   cCollection = "cCollection",
+  uCollection = "uCollection",
 
 }
 

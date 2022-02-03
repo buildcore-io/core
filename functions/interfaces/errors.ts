@@ -50,5 +50,6 @@ export const WenError = {
   award_is_already_rejected: { code: 2043, key: 'Award is already rejected.' },
   award_is_not_approved: { code: 2044, key: 'Award is not approved.' },
   award_is_rejected: { code: 2045, key: 'Award is rejected.' },
+  collection_does_not_exists: { code: 2046, key: 'Collection does not exists.' },
 }
 
