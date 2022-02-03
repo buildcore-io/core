@@ -21,7 +21,7 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.member.awards, component: AwardsPage },
       { path: ROUTER_UTILS.config.member.badges, component: BadgesPage },
       { path: ROUTER_UTILS.config.member.spaces, component: MemberSpacesComponent },
-      { path: ROUTER_UTILS.config.member.NFTs, component: NFTsPage }
+      { path: ROUTER_UTILS.config.member.nfts, component: NFTsPage }
     ]
   },
   {

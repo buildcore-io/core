@@ -11,7 +11,7 @@ export const ROUTER_UTILS = {
     market: {
       root: 'market',
       collections: 'collections',
-      NFTs: 'NFTs',
+      nfts: 'nfts',
     },
     discover: {
       root: 'discover',
@@ -29,7 +29,7 @@ export const ROUTER_UTILS = {
       awards: 'awards',
       badges: 'badges',
       spaces: 'spaces',
-      NFTs: 'NFTs'
+      nfts: 'nfts'
     },
     space: {
       // Redirect back to discovery
@@ -65,8 +65,8 @@ export const ROUTER_UTILS = {
       newCollection: 'new'
     },
     nft: {
-      root: 'NFT',
-      newNFT: 'new'
+      root: 'nft',
+      newNft: 'new'
     },
     errorResponse: {
       notFound: '404',

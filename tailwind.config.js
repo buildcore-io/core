@@ -47,7 +47,10 @@ module.exports = {
           200: '#CAC8BD',
           400: '#9F9D93',
           600: '#999999',
-          separator: '#F5F4EF'
+          separator: {
+            light: '#F5F4EF',
+            dark: '#C4C4C4'
+          }
         },
         tag: {
           blue: '#DCEFF9',
