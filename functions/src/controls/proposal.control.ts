@@ -123,7 +123,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
     let totalWeight = 0;
     if (params.body.type === ProposalType.MEMBERS) {
       let query: QuerySnapshot;
-      if (params.body.onlyGuardians) {
+      if (params.body.settings.onlyGuardians) {
         query = await refSpace.collection(SUB_COL.GUARDIANS).get();
       } else {
         query = await refSpace.collection(SUB_COL.MEMBERS).get();
@@ -168,8 +168,8 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
         }
 
         // Respect defaultMinWeight.
-        if (params.body.defaultMinWeight > 0 && votingWeight < params.body.defaultMinWeight) {
-          votingWeight = params.body.defaultMinWeight;
+        if (params.body.settings.defaultMinWeight > 0 && votingWeight < params.body.settings.defaultMinWeight) {
+          votingWeight = params.body.settings.defaultMinWeight;
         }
 
         if (votingWeight > 0) {

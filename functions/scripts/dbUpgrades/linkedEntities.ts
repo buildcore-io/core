@@ -2,7 +2,7 @@ import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { cyrb53 } from '../../interfaces/hash.utils';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import serviceAccount from '../serviceAccountKeyProd.json';
+import serviceAccount from '../serviceAccountKeyTest.json';
 
 initializeApp({
   credential: cert(<any>serviceAccount)

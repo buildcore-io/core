@@ -35,12 +35,12 @@ export class NewPage implements OnInit, OnDestroy {
   public badgeNameControl: FormControl = new FormControl('', Validators.required);
   public badgeXpControl: FormControl = new FormControl('', [
     Validators.min(0),
-    Validators.max(1000),
+    Validators.max(10000),
     Validators.required
   ]);
   public badgeCountControl: FormControl = new FormControl('', [
     Validators.min(0),
-    Validators.max(1000),
+    Validators.max(10000),
     Validators.required
   ]);
 

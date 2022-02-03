@@ -32,8 +32,8 @@ function defaultJoiUpdateCreateSchema(): any {
     badge: Joi.object({
       name: Joi.string().required(),
       description: Joi.string().allow(null, '').optional(),
-      // Let's keep everything within 1Mi for now.
-      count: Joi.number().min(1).max(1000).required(),
+      // Let's keep everything within 10Mi for now.
+      count: Joi.number().min(1).max(10000).required(),
       image: Joi.object({
         metadata: Joi.string().custom((value) => {
           return cid(value);
@@ -47,7 +47,7 @@ function defaultJoiUpdateCreateSchema(): any {
         }).required()
       }).optional(),
       // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
-      xp: Joi.number().min(0).max(1000).required()
+      xp: Joi.number().min(0).max(10000).required()
     }).custom((obj, helper) => {
       // Validate value is dividable by count.
       if (obj.xp === 0 || (obj.xp % obj.count) == 0) {
