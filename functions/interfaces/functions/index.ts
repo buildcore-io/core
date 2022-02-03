@@ -28,7 +28,12 @@ export const enum WEN_FUNC {
   cProposal = "cProposal",
   aProposal = "aProposal", // Approve
   rProposal = "rProposal", // Reject
-  voteOnProposal = "voteOnProposal"
+  voteOnProposal = "voteOnProposal",
+
+  // Member functions.
+  cCollection = "cCollection",
+  uCollection = "uCollection",
+
 }
 
 export interface cMemberNotExists {

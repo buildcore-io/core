@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
+import { createCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
@@ -38,6 +39,10 @@ exports[WEN_FUNC.cProposal] = createProposal;
 exports[WEN_FUNC.aProposal] = approveProposal;
 exports[WEN_FUNC.rProposal] = rejectProposal;
 exports[WEN_FUNC.voteOnProposal] = voteOnProposal;
+
+// Collection functions
+exports[WEN_FUNC.cCollection] = createCollection;
+exports[WEN_FUNC.uCollection] = updateCollection;
 
 // CRON Tasks
 exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;

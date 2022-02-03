@@ -81,11 +81,11 @@
         <nz-card [nzBordered]="false" nzTitle="Reward">
           <div class="flex items-baseline">
             <nz-form-item class="flex-grow">
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 1000.">
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
                 <nz-input-number
                   class="w-full"
                   nzSize="large"
-                  nzPlaceHolder="Total XP (Max 1000)"
+                  nzPlaceHolder="Total XP (Max 10000)"
                   [formControl]="badgeXpControl"
                 ></nz-input-number>
               </nz-form-control>
@@ -95,12 +95,12 @@
               nz-tooltip
               nzTooltipPlacement="right"
               i18n-nzTooltipTitle
-              nzTooltipTitle="The amount of the experience points (XP) you want to allocate for this award. Maximum 1000 XP. Total Experience Points / Number of Badges = Member's XP."
+              nzTooltipTitle="The amount of the experience points (XP) you want to allocate for this award. Maximum 10000 XP. Total Experience Points / Number of Badges = Member's XP."
             ></wen-icon-question-circle>
           </div>
           <div class="flex items-baseline">
             <nz-form-item class="flex-grow">
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 1000.">
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
                 <nz-input-number
                   class="w-full"
                   nzSize="large"

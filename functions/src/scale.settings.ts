@@ -34,5 +34,9 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.rProposal] = low;
   scaleSettings[WEN_FUNC.voteOnProposal] = medium;
 
+  // Collections
+  scaleSettings[WEN_FUNC.cCollection] = medium;
+  scaleSettings[WEN_FUNC.uCollection] = medium;
+
   return scaleSettings[func] || low;
 }

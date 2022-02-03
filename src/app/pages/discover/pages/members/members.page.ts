@@ -95,7 +95,7 @@ export class MembersPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
-  private getEnabledAlliancesKeys(alliances?: any): string[] {
+  private getAlliancesKeys(alliances?: any): string[] {
     if (!alliances) {
       return [];
     }
@@ -124,7 +124,7 @@ export class MembersPage implements OnInit, OnDestroy {
       let linkedEntity = -1;
       if (space) {
         if (this.includeAlliancesControl.value) {
-          linkedEntity = cyrb53([space.uid, ...this.getEnabledAlliancesKeys(space.alliances)].join(''));
+          linkedEntity = cyrb53([space.uid, ...this.getAlliancesKeys(space.alliances)].join(''));
         } else {
           linkedEntity = cyrb53(space.uid);
         }
