@@ -14,7 +14,7 @@ export enum AddressType {
 export class SpaceSpecifyAddressComponent {
   @Input() type = AddressType.IOTA;
 
-  public isVerifyAddressOpen = true;
+  public isVerifyAddressOpen = false;
   public addressTypes = AddressType;
 
   constructor(
