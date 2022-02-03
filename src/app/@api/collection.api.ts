@@ -1,3 +1,9 @@
+export enum CollectionFilter {
+    ALL = 'all',
+    PENDING = 'pending',
+    AVAILABLE = 'available'
+}
+
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';

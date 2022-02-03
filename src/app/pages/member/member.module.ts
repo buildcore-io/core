@@ -36,9 +36,10 @@ import { BadgesPage } from './pages/badges/badges.page';
 import { MemberPage } from './pages/member/member.page';
 import { MemberSpacesComponent } from './pages/spaces/member-spaces.component';
 import { DataService } from './services/data.service';
+import { NFTsPage } from './pages/nfts/nfts.page';
 
 @NgModule({
-  declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, MemberSpacesComponent],
+  declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, MemberSpacesComponent, NFTsPage],
   providers: [ DataService ],
   imports: [
     CommonModule,

@@ -1,0 +1,27 @@
+<div class="space-y-12">
+    <div class="space-y-4">
+        <div class="inline-flex justify-between w-full">
+            <div class="space-y-4">
+                <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ALL"
+                        (nzCheckedChange)="handleFilterChange(filterOptions.ALL)">
+                    All
+                </nz-tag>
+                <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
+                        (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
+                    Pending
+                </nz-tag>
+                <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.AVAILABLE"
+                        (nzCheckedChange)="handleFilterChange(filterOptions.AVAILABLE)">
+                    Available
+                </nz-tag>
+            </div>
+    
+            <button nz-button class="bg-blue-dark2 border-blue-dark2 hover:bg-blue-hover hover:border-blue-hover"
+                nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async"
+                i18n>
+                <i nz-icon nzType="plus" nzTheme="outline"></i>Create collection
+            </button>
+        </div>
+    </div>
+</div>
+  

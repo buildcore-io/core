@@ -62,6 +62,9 @@ module.exports = {
           background: '#F6F5F0',
           footer: '#ECE8DE',
         },
+        alerts: {
+          error: '#D94B08'
+        },
         brown: '#A66300',
         pink: '#F20CDF',
       },

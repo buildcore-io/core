@@ -38,6 +38,7 @@ import { SunIconComponent } from './sun/sun.component';
 import { TerminatedIconComponent } from './terminated/terminated.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
+import { WalletIconComponent } from './wallet/wallet.component';
 
 @NgModule({
   declarations: [
@@ -78,7 +79,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     EditIconComponent,
     EyeIconComponent,
     TerminatedIconComponent,
-    AirBlowIconComponent
+    AirBlowIconComponent,
+    WalletIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -118,7 +120,8 @@ import { UnamusedIconComponent } from './unamused/unamused.component';
     EditIconComponent,
     EyeIconComponent,
     TerminatedIconComponent,
-    AirBlowIconComponent
+    AirBlowIconComponent,
+    WalletIconComponent
   ],
   imports: [
     CommonModule
