@@ -7,6 +7,7 @@ import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/funct
 import { cyrb53 } from "../../interfaces/hash.utils";
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
+import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -15,10 +16,9 @@ import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.uti
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
 import { WenError } from './../../interfaces/errors';
-import { Alliance, Space } from './../../interfaces/models/space';
+import { Space } from './../../interfaces/models/space';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
-import { getEnabledAlliancesKeys } from "../utils/alliance.utils";
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -36,6 +36,53 @@ function defaultJoiUpdateCreateSchema(): any {
     }).optional()
   });
 };
+
+async function updateLinkedEntityForMember(opp: 'add'|'remove', space: Space, memberId: string): Promise<void> {
+  // Establish space hashes.
+  const hashes: number[] = [];
+
+  // Space hash.
+  hashes.push(cyrb53(space.uid));
+
+  // Current space + alliances / this might be ignored if no alliances.
+  hashes.push(cyrb53([space.uid, ...getAlliancesKeys(space.alliances)].join('')));
+
+  // Other alliances
+  for (const key of Object.keys(space.alliances || {})) {
+    // Load space.
+    const sDoc: any = await admin.firestore().collection(COL.SPACE).doc(key).get();
+
+    if (sDoc.data().alliances[space.uid]?.enabled) {
+      hashes.push(cyrb53([key, ...getAlliancesKeys(sDoc.data().alliances)].join('')));
+    }
+  }
+
+  const refMember: any = admin.firestore().collection(COL.MEMBER).doc(memberId);
+  await admin.firestore().runTransaction(async (transaction) => {
+    const sfDoc: any = await transaction.get(refMember);
+    if (sfDoc.data()) {
+      const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
+      if (opp === 'add') {
+        for (const hash of hashes) {
+          if (linkedEntities.indexOf(hash) === -1) {
+            linkedEntities.push(hash);
+          }
+        }
+      } else {
+        for (const hash of hashes) {
+          const index = linkedEntities.indexOf(hash);
+          if (index > -1) {
+            linkedEntities.splice(index, 1);
+          }
+        }
+      }
+
+      transaction.update(refMember, {
+        linkedEntities: linkedEntities
+      });
+    }
+  });
+}
 
 export const createSpace: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
@@ -185,9 +232,6 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
     });
 
     // Set members.
-    let alliances: {
-      [propName: string]: Alliance;
-    } = {};
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refSpace);
       let totalMembers = (sfDoc.data().totalMembers || 0);
@@ -197,7 +241,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
       } else {
         totalPendingMembers++;
       }
-      alliances = sfDoc.data().alliances || {};
+
       transaction.update(refSpace, {
         totalMembers: totalMembers,
         totalPendingMembers: totalPendingMembers
@@ -206,23 +250,8 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
 
     // Let's add hash within member.
     if (isOpenSpace) {
-      const hash: number = cyrb53([params.body.uid, ...getEnabledAlliancesKeys(alliances)].join(''));
-      const refMember: any = admin.firestore().collection(COL.MEMBER).doc(owner);
-      await admin.firestore().runTransaction(async (transaction) => {
-        const sfDoc: any = await transaction.get(refMember);
-        if (sfDoc.data()) {
-          const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-          if (linkedEntities.indexOf(hash) === -1) {
-            linkedEntities.push(hash);
-          }
+      await updateLinkedEntityForMember('add', docSpace.data(), owner);
 
-          // Add space.
-          linkedEntities.push(cyrb53(params.body.uid));
-          transaction.update(refMember, {
-            linkedEntities: linkedEntities
-          });
-        }
-      });
     }
 
     // Load latest
@@ -249,6 +278,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   await SpaceValidator.spaceExists(refSpace);
+  const docSpace: any = await refSpace.get();
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
@@ -270,45 +300,17 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 
   if (params.body) {
     await refSpace.collection(SUB_COL.MEMBERS).doc(owner).delete();
-    let alliances: {
-      [propName: string]: Alliance;
-    } = {};
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refSpace);
       const totalMembers = (sfDoc.data().totalMembers || 0) - 1;
       const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? 1 : 0);
-      alliances = sfDoc.data().alliances || {};
       transaction.update(refSpace, {
         totalMembers: totalMembers,
         totalGuardians: totalGuardians
       });
     });
 
-    // Remove alliance from their profile.
-    // Let's add hash within member.
-    const hash: number = cyrb53([params.body.uid, ...getEnabledAlliancesKeys(alliances)].join(''));
-    const refMember: any = admin.firestore().collection(COL.MEMBER).doc(owner);
-    await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refMember);
-      if (sfDoc.data()) {
-        const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-        const index = linkedEntities.indexOf(hash);
-        if (index > -1) {
-          linkedEntities.splice(index, 1);
-        }
-
-        // Remove space.
-        const index2 = linkedEntities.indexOf(cyrb53(params.body.uid));
-        if (index2 > -1) {
-          linkedEntities.splice(index2, 1);
-        }
-
-
-        transaction.update(refMember, {
-          linkedEntities: linkedEntities
-        });
-      }
-    });
+    await updateLinkedEntityForMember('remove', docSpace.data(), owner);
 
     // If this member is always guardian he must be removed.
     if (isGuardian) {
@@ -489,15 +491,11 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
       await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
     }
 
-    let alliances: {
-      [propName: string]: Alliance;
-    } = {};
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refSpace);
       const totalPendingMembers = (sfDoc.data().totalPendingMembers || 0) - (isKnockingMember ? 1 : 0);
       const totalMembers = (sfDoc.data().totalMembers || 0) - (isKnockingMember ? 0 : 1);
       const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? (isKnockingMember ? 0 : 1) : 0);
-      alliances = sfDoc.data().alliances || {};
       transaction.update(refSpace, {
         totalGuardians: totalGuardians,
         totalMembers: totalMembers,
@@ -506,28 +504,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
     });
 
     if (isMember) {
-      const hash: number = cyrb53([params.body.uid, ...getEnabledAlliancesKeys(alliances)].join(''));
-      const refMember: any = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
-      await admin.firestore().runTransaction(async (transaction) => {
-        const sfDoc: any = await transaction.get(refMember);
-        if (sfDoc.data()) {
-          const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-          const index = linkedEntities.indexOf(hash);
-          if (index > -1) {
-            linkedEntities.splice(index, 1);
-          }
-
-          // Remove space.
-          const index2 = linkedEntities.indexOf(cyrb53(params.body.uid));
-          if (index2 > -1) {
-            linkedEntities.splice(index2, 1);
-          }
-
-          transaction.update(refMember, {
-            linkedEntities: linkedEntities
-          });
-        }
-      });
+      await updateLinkedEntityForMember('remove', (await refSpace.get()).data(), params.body.member);
     }
 
     // Load latest
@@ -607,37 +584,17 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
 
     await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).delete();
 
-    let alliances: {
-      [propName: string]: Alliance;
-    } = {};
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refSpace);
       const totalMembers = (sfDoc.data().totalMembers || 0) + 1;
       const totalPendingMembers = (sfDoc.data().totalPendingMembers || 0) - 1;
-      alliances = sfDoc.data().alliances || {};
       transaction.update(refSpace, {
         totalMembers: totalMembers,
         totalPendingMembers: totalPendingMembers
       });
     });
 
-    const hash: number = cyrb53([params.body.uid, ...getEnabledAlliancesKeys(alliances)].join(''));
-    const refMember: any = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
-    await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refMember);
-      if (sfDoc.data()) {
-        const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-        if (linkedEntities.indexOf(hash) === -1) {
-          linkedEntities.push(hash);
-        }
-
-        // Add space.
-        linkedEntities.push(cyrb53(params.body.uid));
-        transaction.update(refMember, {
-          linkedEntities: linkedEntities
-        });
-      }
-    });
+    await updateLinkedEntityForMember('add', (await refSpace.get()).data(), params.body.member);
 
     // Load latest
     docSpace = await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get();
@@ -682,7 +639,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
   // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.setAlliance),
   timeoutSeconds: 300,
-  memory: '2GB'
+  memory: '4GB'
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.setAlliance, context);
   // We must part
@@ -714,7 +671,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
     }
 
     currentSpace.alliances = currentSpace.alliances || {};
-    const prevHash: number = cyrb53([params.body.uid, ...getEnabledAlliancesKeys(currentSpace.alliances)].join(''));
+    const prevHash: number = cyrb53([params.body.uid, ...getAlliancesKeys(currentSpace.alliances)].join(''));
     currentSpace.alliances[params.body.targetSpaceId] = {
       uid: params.body.targetSpaceId,
       enabled: params.body.enabled,
@@ -723,58 +680,76 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
       updatedOn: serverTime(),
       createdOn: currentSpace.alliances[params.body.targetSpaceId]?.createdOn || serverTime()
     };
-    const newHash: number = cyrb53([params.body.uid,...getEnabledAlliancesKeys(currentSpace.alliances)].join(''));
+    const newHash: number = cyrb53([params.body.uid,...getAlliancesKeys(currentSpace.alliances)].join(''));
 
     // Update space.
     await refSpace.update(currentSpace);
 
-    if (targetSpaceAli) {
-      targetSpace.alliances[params.body.uid] = {
-        established: established,
-        updatedOn: serverTime()
-      };
-      await refTargetAllianceSpace.update(targetSpace);
-    }
+    // We always create reference in target space.
+    targetSpace.alliances = targetSpace.alliances || {};
+    targetSpace.alliances[params.body.uid] = {
+      uid: params.body.uid,
+      enabled: targetSpace.alliances[params.body.uid]?.enabled || false,
+      established: established,
+      weight: targetSpace.alliances[params.body.uid]?.weight || 0,
+      updatedOn: serverTime(),
+      createdOn: targetSpace.alliances[params.body.uid]?.createdOn || serverTime()
+    };
+    await refTargetAllianceSpace.update(targetSpace);
 
     // Update all members with newHash
     if (prevHash !== newHash) {
       // We have to go through each space.
-      const updatedMembers: string[] = [];
-      for(const spaceId of [currentSpace.uid, ...getEnabledAlliancesKeys(currentSpace.alliances)]) {
+      const updateMembers: string[] = [];
+      for(const spaceId of [currentSpace.uid, ...getAlliancesKeys(currentSpace.alliances)]) {
         const spaceToUpdate: any = admin.firestore().collection(COL.SPACE).doc(spaceId);
         const query: QuerySnapshot = await spaceToUpdate.collection(SUB_COL.MEMBERS).get();
         for (const g of query.docs) {
-          const refMember: any = admin.firestore().collection(COL.MEMBER).doc(g.data().uid);
-          if (updatedMembers.indexOf(g.data().uid) > -1) {
+          if (updateMembers.indexOf(g.data().uid) > -1) {
             continue;
           }
 
-          updatedMembers.push(g.data().uid);
+          updateMembers.push(g.data().uid);
+        }
+      }
 
-          // We don't wait.
-          admin.firestore().runTransaction(async (transaction) => {
-            const sfDoc: any = await transaction.get(refMember);
-            if (sfDoc.data()) {
-              const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-              if (prevHash !== cyrb53(params.body.uid)) {
-                if (prevHash && linkedEntities.length > 0) {
-                  const index = linkedEntities.indexOf(prevHash);
-                  if (index > -1) {
-                    linkedEntities.splice(index, 1);
+      // Update members.
+      const chunk = 500;
+      for (let i = 0; i < updateMembers.length; i += chunk) {
+          await admin.firestore().runTransaction(async (transaction) => {
+            const updates: any[] = [];
+            for (const m of updateMembers.slice(i, i + chunk)) {
+              const refMember: any = admin.firestore().collection(COL.MEMBER).doc(m);
+              const sfDoc: any = await transaction.get(refMember);
+              if (sfDoc.data()) {
+                const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
+                if (prevHash !== cyrb53(params.body.uid)) {
+                  if (prevHash && linkedEntities.length > 0) {
+                    const index = linkedEntities.indexOf(prevHash);
+                    if (index > -1) {
+                      linkedEntities.splice(index, 1);
+                    }
                   }
                 }
-              }
 
-              if (newHash) {
-                linkedEntities.push(newHash);
-              }
+                if (newHash) {
+                  linkedEntities.push(newHash);
+                }
 
-              transaction.update(refMember, {
-                linkedEntities: linkedEntities
-              });
+                updates.push({
+                  ref: refMember,
+                  linkedEntities: linkedEntities
+                });
+              }
+            }
+
+            // Trigger updates.
+            for (const u of updates) {
+                transaction.update(u.ref, {
+                  linkedEntities: u.linkedEntities
+                });
             }
           });
-        }
       }
     }
 
