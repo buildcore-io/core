@@ -718,13 +718,13 @@ describe('ProposalController: ' + WEN_FUNC.cProposal + ' MEMBERS', () => {
     await apprProposal(memberId, proposal)
 
     // Let's vote.
-    await vote(memberId1, proposal, [2]);
+    // await vote(memberId1, proposal, [2]);
     const v: any = await vote(memberId, proposal, [1]);
 
     expect(v?.payload).toBeDefined();
     expect(v?.payload?.weight).toEqual(30);
     expect(v._relatedRecs.proposal.results.answers['1']).toEqual(30);
-    expect(v._relatedRecs.proposal.results.answers['2']).toEqual(0);
+    // expect(v._relatedRecs.proposal.results.answers['2']).toEqual(0);
     expect(v._relatedRecs.proposal.results.voted).toEqual(30);
     expect(v._relatedRecs.proposal.results.total).toEqual(30);
     expect(v._relatedRecs.proposal.totalWeight).toEqual(30);

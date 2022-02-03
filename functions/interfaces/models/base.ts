@@ -21,6 +21,7 @@ export interface WenRequest {
 export const enum COL {
   MEMBER = 'member',
   AWARD = 'award',
+  COLLECTION = 'collection',
   SPACE = 'space',
   PROPOSAL = 'proposal',
   MILESTONE = 'milestone',
