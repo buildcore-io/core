@@ -3,20 +3,18 @@
     <nz-card>
       <form class="" [formGroup]="spaceForm">
         <div class="flex items-center justify-between">
-          <wen-select-box
-            class="block w-full"
+          <wen-select-space
+            [ngStyle]="{
+              width: (deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value ? 
+                'calc(100% - 150px)' : '100%'
+            }"
             formControlName="space"
-            [optionsWrapperClasses]="'top-20 left-0 w-full'"
-            [options]="getSpaceListOptions(cache.allSpaces$ | async)"
-            [showArrow]="true"
-            [isSearchable]="false"
-            [size]="selectBoxSizes.LARGE"
-            title="Select space"
-            [mobileDrawer]="true"
-            [isAvatar]="true">
-          </wen-select-box>
+            [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+            size="large">
+          </wen-select-space>
 
-          <a class="flex items-center ml-6 text-sm font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
+          <a nz-button nzType="link" nzSize="small" #viewSpaceButton
+            class="flex items-center ml-6"
             [routerLink]="getSpaceRoute(spaceForm.value.space)"
             *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value">
               <span i18n>View space</span>
@@ -46,7 +44,8 @@
         <div class="w-full mt-6 lg:w-max lg:mt-0">
           <div class="flex items-center justify-between text-xs font-medium text-app-gray-400">
             <span i18n>Earned badges {{(data.badges$ | async)?.length}}</span>
-            <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
+            <a nz-button nzType="link" nzSize="small"
+              class="flex items-center ml-6"
               [routerLink]="getBadgeRoute()">
                 <span i18n>More</span>
                 <wen-icon-angle-right></wen-icon-angle-right>

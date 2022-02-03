@@ -10,6 +10,7 @@ import { DecodedToken, StandardResponse } from '../../interfaces/functions/index
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Proposal } from '../../interfaces/models/proposal';
 import { scale } from "../scale.settings";
+import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -34,7 +35,8 @@ function defaultJoiUpdateCreateSchema(): any {
       otherwise: Joi.number().equal(
         ProposalSubType.ONE_MEMBER_ONE_VOTE,
         ProposalSubType.REPUTATION_BASED_ON_AWARDS,
-        ProposalSubType.REPUTATION_BASED_ON_SPACE
+        ProposalSubType.REPUTATION_BASED_ON_SPACE,
+        ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE
       ).required()
     }),
     settings: Joi.when('type', {
@@ -52,6 +54,10 @@ function defaultJoiUpdateCreateSchema(): any {
         awards: Joi.when('subType', {
           is: Joi.exist().valid(ProposalSubType.REPUTATION_BASED_ON_AWARDS),
           then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+        }),
+        defaultMinWeight: Joi.when('subType', {
+          is: Joi.exist().valid(ProposalSubType.REPUTATION_BASED_ON_SPACE, ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE, ProposalSubType.REPUTATION_BASED_ON_AWARDS),
+          then: Joi.number().optional()
         })
       }).required()
     }),
@@ -87,6 +93,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
   await SpaceValidator.spaceExists(refSpace);
 
+  const docSpace: any = await refSpace.get();
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
@@ -116,7 +123,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
     let totalWeight = 0;
     if (params.body.type === ProposalType.MEMBERS) {
       let query: QuerySnapshot;
-      if (params.body.onlyGuardians) {
+      if (params.body.settings.onlyGuardians) {
         query = await refSpace.collection(SUB_COL.GUARDIANS).get();
       } else {
         query = await refSpace.collection(SUB_COL.MEMBERS).get();
@@ -124,7 +131,10 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
       for (const g of query.docs) {
         // Based on the subtype we determine number of voting power.
         let votingWeight = 1;
-        if (params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||  params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
+        if (
+          params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE ||
+          params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE ||
+          params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
           const qry = await admin.firestore().collection(COL.TRANSACTION)
                       .where('type', '==', TransactionType.BADGE)
                       .where('member', '==', g.data().uid).get();
@@ -136,8 +146,18 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
                 if (params.body.settings.awards.includes(t.data().payload.award)) {
                   totalReputation += t.data().payload?.xp || 0;
                 }
-              } else {
-                totalReputation += t.data().payload?.xp || 0;
+              } else if (
+                (getAlliancesKeys(docSpace.data().alliances).indexOf(t.data().space) > -1) ||
+                t.data().space === docSpace.data().uid
+              ) {
+                let repo: number = t.data().payload?.xp || 0;
+
+                // It's alliance apply weight.
+                if (t.data().space !== docSpace.data().uid) {
+                  repo = repo * docSpace.data().alliances[t.data().space].weight;
+                }
+
+                totalReputation += Math.trunc(repo);
               }
             }
 
@@ -147,14 +167,21 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
           }
         }
 
-        await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
-          uid: g.data().uid,
-          weight: votingWeight,
-          voted: false,
-          parentId: proposalAddress,
-          parentCol: COL.PROPOSAL,
-          createdOn: serverTime()
-        });
+        // Respect defaultMinWeight.
+        if (params.body.settings.defaultMinWeight > 0 && votingWeight < params.body.settings.defaultMinWeight) {
+          votingWeight = params.body.settings.defaultMinWeight;
+        }
+
+        if (votingWeight > 0) {
+          await refProposal.collection(SUB_COL.MEMBERS).doc(g.data().uid).set({
+            uid: g.data().uid,
+            weight: votingWeight,
+            voted: false,
+            parentId: proposalAddress,
+            parentCol: COL.PROPOSAL,
+            createdOn: serverTime()
+          });
+        }
 
         totalWeight += votingWeight;
       }

@@ -10,7 +10,8 @@ export enum ProposalSubType {
   REPUTATION_BASED_ON_SPACE = 2,
   REPUTATION_BASED_ON_AWARDS = 3,
   QUADRATIC_BASED_ON_SPACE = 4,
-  QUADRATIC_BASED_ON_BADGE = 5
+  QUADRATIC_BASED_ON_BADGE = 5,
+  REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE = 6,
 }
 
 export interface ProposalMember extends BaseSubCollection {

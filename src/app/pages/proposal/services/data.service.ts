@@ -123,9 +123,11 @@ export class DataService {
     } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
       return 'One Member One Vote';
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE) {
-      return 'Reputation within Space';
+      return 'XP Reputation - Space';
+    } else if (subType === ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE) {
+      return 'XP Reputation - Space + Connection';
     } else if (subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
-      return 'Reputation within Badges';
+      return 'XP Reputation - Selected Badges';
     } else {
       return '';
     }

@@ -2,34 +2,32 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
-import { ClickOutsideModule } from '@core/directives/click-outside/click-outside.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { SelectBoxOptionsComponent } from './select-box-options/select-box-options.component';
-import { SelectBoxComponent } from './select-box.component';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { SelectSpaceComponent } from './select-space.component';
 
 
 
 @NgModule({
   declarations: [
-    SelectBoxComponent,
-    SelectBoxOptionsComponent
+    SelectSpaceComponent
   ],
   imports: [
     CommonModule,
+    NzSelectModule,
+    NzFormModule,
+    NzAvatarModule,
     IconModule,
-    NzInputModule,
     FormsModule,
     ReactiveFormsModule,
-    ClickOutsideModule,
-    NzButtonModule,
     NzDrawerModule,
-    NzAvatarModule
+    NzInputModule
   ],
   exports: [
-    SelectBoxComponent
+    SelectSpaceComponent
   ]
 })
-export class SelectBoxModule { }
+export class SelectSpaceModule { }

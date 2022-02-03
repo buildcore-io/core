@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -14,7 +14,6 @@ import {
 } from "ng-apexcharts";
 import { map } from "rxjs";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
-import { DEFAULT_SPACE } from './../../../discover/pages/members/members.page';
 import { DataService } from "./../../services/data.service";
 
 export type ChartOptions = {
@@ -46,7 +45,6 @@ export class ActivityPage implements OnInit {
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public defaultSpace = DEFAULT_SPACE;
-  public selectBoxSizes = SelectBoxSizes;
   public showAllBadges = false;
 
   constructor(
@@ -194,13 +192,11 @@ export class ActivityPage implements OnInit {
     this.cd.markForCheck();
   }
 
-  public getSpaceListOptions(list?: Space[] | null): SelectBoxOption[] {
-    return [DEFAULT_SPACE].concat((list || []).map((o) => {
-      return {
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
-      };
+  public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
+    return (list || []).map((o) => ({
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 

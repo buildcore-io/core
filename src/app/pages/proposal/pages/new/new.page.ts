@@ -49,6 +49,7 @@ export class NewPage implements OnInit, OnDestroy {
   public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
   public votingAwardControl: FormControl = new FormControl([]);
   public additionalInfoControl: FormControl = new FormControl('', Validators.required);
+  public defaultMinWeight: FormControl = new FormControl(0);
   public subTypes = ProposalSubType;
   // Questions / answers.
   public questions: FormArray;
@@ -92,7 +93,8 @@ export class NewPage implements OnInit, OnDestroy {
       milestoneIndexEnd: this.milestoneIndexEndControl,
       additionalInfo: this.additionalInfoControl,
       questions: this.questions,
-      awards: this.votingAwardControl
+      awards: this.votingAwardControl,
+      defaultMinWeight: this.defaultMinWeight
     });
   }
 
@@ -247,6 +249,10 @@ export class NewPage implements OnInit, OnDestroy {
         onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
         awards: obj.awards
       };
+
+      if (obj.defaultMinWeight > 0) {
+        obj.settings.defaultMinWeight = obj.defaultMinWeight;
+      }
     } else {
       // TODO We need to find right milestone.
       obj.settings = {
@@ -267,6 +273,7 @@ export class NewPage implements OnInit, OnDestroy {
     delete obj.start;
     delete obj.end;
     delete obj.group;
+    delete obj.defaultMinWeight;
     return obj;
   }
 

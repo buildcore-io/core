@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { SelectBoxOption, SelectBoxSizes } from '@components/select-box/select-box.component';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -15,11 +15,6 @@ import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 import { FilterService } from './../../services/filter.service';
 
-export const DEFAULT_SPACE: SelectBoxOption = {
-  label: 'All Spaces',
-  value: 'all'
-};
-
 @UntilDestroy()
 @Component({
   templateUrl: './members.page.html',
@@ -31,7 +26,6 @@ export class MembersPage implements OnInit, OnDestroy {
   public spaceForm: FormGroup;
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public defaultSpace = DEFAULT_SPACE;
-  public selectBoxSizes = SelectBoxSizes;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
   private spaceControl: FormControl;
@@ -74,7 +68,7 @@ export class MembersPage implements OnInit, OnDestroy {
     this.spaceForm.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((o) => {
-        if (o.space === this.defaultSpace.value && o.includeAlliances) {
+        if (o.space === DEFAULT_SPACE.value && o.includeAlliances) {
           this.spaceForm.controls.includeAlliances.setValue(false);
           return;
         }
@@ -88,13 +82,11 @@ export class MembersPage implements OnInit, OnDestroy {
     return this.auth.isLoggedIn$;
   }
 
-  public getSpaceListOptions(list?: Space[] | null): SelectBoxOption[] {
-    return [DEFAULT_SPACE].concat((list || []).map((o) => {
-      return {
+  public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
+    return (list || []).map((o) => ({
         label: o.name || o.uid,
         value: o.uid,
         img: o.avatarUrl
-      };
     }));
   }
 
@@ -103,7 +95,7 @@ export class MembersPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
-  private getEnabledAlliancesKeys(alliances?: any): string[] {
+  private getAlliancesKeys(alliances?: any): string[] {
     if (!alliances) {
       return [];
     }
@@ -119,7 +111,7 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Member[]> {
-    if (this.spaceControl.value === this.defaultSpace.value) {
+    if (this.spaceControl.value === DEFAULT_SPACE.value) {
       if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
         return this.memberApi.last(last, search);
       } else {
@@ -132,7 +124,7 @@ export class MembersPage implements OnInit, OnDestroy {
       let linkedEntity = -1;
       if (space) {
         if (this.includeAlliancesControl.value) {
-          linkedEntity = cyrb53([space.uid, ...this.getEnabledAlliancesKeys(space.alliances)].join(''));
+          linkedEntity = cyrb53([space.uid, ...this.getAlliancesKeys(space.alliances)].join(''));
         } else {
           linkedEntity = cyrb53(space.uid);
         }

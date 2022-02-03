@@ -301,8 +301,7 @@
                 [formControl]="subTypeControl"
               >
                 <wen-radio [value]="subTypes.ONE_MEMBER_ONE_VOTE">
-                  <span
-                    >One Participant One Vote
+                  <span>Member - One Vote
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -315,7 +314,7 @@
                   [value]="subTypes.REPUTATION_BASED_ON_SPACE"
                 >
                   <p class="max-w-xs pr-2">
-                    Based on participant's space reputation
+                    XP Reputation - Space
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -327,10 +326,25 @@
                 </wen-radio>
                 <wen-radio
                   class="flex"
+                  [value]="subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
+                >
+                  <p class="max-w-xs pr-2">
+                    XP Reputation - Space + Connection
+                    <wen-icon-question-circle
+                      class="inline-block"
+                      nz-tooltip
+                      nzTooltipPlacement="right"
+                      nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space & connections"
+                    >
+                    </wen-icon-question-circle>
+                  </p>
+                </wen-radio>
+                <wen-radio
+                  class="flex"
                   [value]="subTypes.REPUTATION_BASED_ON_AWARDS"
                 >
                   <p class="max-w-xs">
-                    Based on participant's badges reputations
+                    XP Reputation - Selected Badges
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -346,10 +360,22 @@
         </nz-card>
         <nz-card
           [nzBordered]="false"
-          nzTitle="Reputation Badges"
-          *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS"
+          nzTitle="Reputation Options"
+          *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
         >
-          <nz-form-item>
+          <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE">
+            <nz-form-control>
+              <nz-input-group>
+                <nz-input-number class="w-full rounded-r-none"
+                  nzSize="large"
+                  [nzMin]="defaultMinWeight.value"
+                  [formControl]="defaultMinWeight"
+                  nzPlaceHolder="Set Minimum Weight">
+                </nz-input-number>
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS">
             <nz-form-control>
               <nz-select
                 class="w-full"
