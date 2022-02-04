@@ -10,7 +10,7 @@ const routes: Routes = [
     component: NFTPage
   },
   {
-    path: ROUTER_UTILS.config.nft.newNFT,
+    path: ROUTER_UTILS.config.nft.newNft,
     component: NewPage
   }
 ];
