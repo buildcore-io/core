@@ -19,6 +19,7 @@ import { FacebookIconComponent } from './facebook/facebook.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
 import { InfoIconComponent } from './info/info.component';
+import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { LogOutIconComponent } from './log-out/log-out.component';
 import { MarketIconComponent } from './market/market.component';
@@ -80,7 +81,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     EyeIconComponent,
     TerminatedIconComponent,
     AirBlowIconComponent,
-    WalletIconComponent
+    WalletIconComponent,
+    LinkIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -121,7 +123,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     EyeIconComponent,
     TerminatedIconComponent,
     AirBlowIconComponent,
-    WalletIconComponent
+    WalletIconComponent,
+    LinkIconComponent
   ],
   imports: [
     CommonModule

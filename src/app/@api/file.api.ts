@@ -23,7 +23,7 @@ export class FileApi {
     return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
   }
 
-  public upload(memberId: string, item: NzUploadXHRArgs, type: 'space_avatar'|'space_banner'): Subscription {
+  public upload(memberId: string, item: NzUploadXHRArgs, type: 'space_avatar'|'space_banner'|'collection_banner'): Subscription {
     const file: NzUploadFile = item.file;
     const uid: string = file.uid;
     const filePath: string = memberId + '/' + uid + '/' + type;

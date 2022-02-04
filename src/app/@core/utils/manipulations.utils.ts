@@ -25,3 +25,8 @@ export function undefinedToEmpty(o: any): any {
 
   return o;
 }
+
+export function enumToArray(e: any): any[] {
+  const obj = Object.values(e);
+  return obj.slice(0, obj.length / 2).map((v: any) => ({ key: v, value: e[v] }));
+}

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { CollectionPage } from './pages/collection/collection.page';
-import { NewPage } from './pages/new/new.page';
+import { UpsertPage } from './pages/upsert/upsert.page';
 
 const routes: Routes = [
   {
@@ -10,8 +10,12 @@ const routes: Routes = [
     component: CollectionPage
   },
   {
-    path: ROUTER_UTILS.config.collection.newCollection,
-    component: NewPage
+    path: ROUTER_UTILS.config.collection.new,
+    component: UpsertPage
+  },
+  {
+    path: ROUTER_UTILS.config.collection.edit,
+    component: UpsertPage
   }
 ];
 

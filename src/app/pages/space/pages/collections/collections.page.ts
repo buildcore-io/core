@@ -48,7 +48,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public create(): void {
     this.router.navigate([
       ('/' + ROUTER_UTILS.config.collection.root),
-      ROUTER_UTILS.config.collection.newCollection,
+      ROUTER_UTILS.config.collection.new,
       { space: this.spaceId }
     ]);
   }
