@@ -16,7 +16,7 @@ const routes: Routes = [
     component: MarketPage,
     children: [
       { path: ROUTER_UTILS.config.market.collections, component: CollectionsPage },
-      { path: ROUTER_UTILS.config.market.NFTs, component: NFTsPage }
+      { path: ROUTER_UTILS.config.market.nfts, component: NFTsPage }
     ]
   },
 ];

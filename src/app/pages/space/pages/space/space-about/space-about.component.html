@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <div *ngIf="last" class="w-full h-px mt-3 bg-app-gray-separator"></div>
+            <div *ngIf="last" class="w-full h-px mt-3 bg-app-gray-separator-light"></div>
         </div>
     </div>
 
@@ -237,52 +237,7 @@
 </nz-card>
 
 <nz-card nzTitle="Your wallet" class="lg:mt-4">
-    <div class="flex justify-between items-center">
-        <div class="flex items-center">
-            <wen-icon-wallet class="text-app-gray-400 mr-3"></wen-icon-wallet>
-            <span class="text-alerts-error text-xs font-medium">Not verified</span>
-            <div class="w-4 h-4 flex justify-center items-center bg-alerts-error rounded-full ml-2">
-                <wen-icon-close class="text-white" [size]="12"></wen-icon-close>
-            </div>
-        </div>
-        <button nz-button nzType="primary" nzSize="small" (click)="isVerifyIOTAAddressOpen = true" i18n>Verify wallet</button>
-    </div>
-
-    <nz-modal *ngIf="deviceService.isDesktop$ | async"
-        [(nzVisible)]="isVerifyIOTAAddressOpen"
-        nzCentered
-        [nzClosable]="false"
-        [nzMaskClosable]="true"
-        [nzMask]="true"
-        (nzOnCancel)="isVerifyIOTAAddressOpen = false"
-        [nzContent]="verifyIOTAAddressModalContent"
-        [nzFooter]="null"
-        [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
-    >
-        <ng-template #verifyIOTAAddressModalContent>
-            <div class="flex items-start justify-between">
-                <div class="text-2xl font-bold" i18n>Verify your IOTA address</div>
-                <wen-icon-close class="cursor-pointer" (click)="isVerifyIOTAAddressOpen = false"></wen-icon-close>
-            </div>
-
-            <wen-space-verify-iota-address></wen-space-verify-iota-address>
-        </ng-template>
-    </nz-modal>
-
-    <nz-drawer *ngIf="deviceService.isMobile$ | async"
-        [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-        [nzWidth]="'100vw'"
-        [nzClosable]="false"
-        [nzVisible]="isVerifyIOTAAddressOpen">
-        <div *nzDrawerContent class="relative h-full">
-            <div class="pb-4 text-3xl font-bold" i18n>Verify your IOTA address</div>
-            <button class="absolute z-10 top-4 right-5" (click)="isVerifyIOTAAddressOpen = false">
-                <wen-icon-close></wen-icon-close>
-            </button>
-
-            <wen-space-verify-iota-address></wen-space-verify-iota-address>
-        </div>
-    </nz-drawer>
+    <wen-wallet-address></wen-wallet-address>
 </nz-card>
 
 <nz-card nzTitle="Related Links" class="lg:mt-4"

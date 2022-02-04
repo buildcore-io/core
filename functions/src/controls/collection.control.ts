@@ -13,7 +13,7 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { DISCORD_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
-import { Collection, CollectionType } from './../../interfaces/models/collection';
+import { Categories, Collection, CollectionType } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -26,6 +26,7 @@ function defaultJoiUpdateCreateSchema(): any {
     bannerUrl: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
+    category: Joi.number().equal(...Object.keys(Categories)).required(),
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0.01).max(1).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
@@ -47,7 +48,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   minInstances: scale(WEN_FUNC.cCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const creator = params.address.toLowerCase();
   const collectionAddress: string = getRandomEthAddress();
@@ -89,7 +90,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   minInstances: scale(WEN_FUNC.uCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {
@@ -134,7 +135,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
   minInstances: scale(WEN_FUNC.approveCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
   const schema: ObjectSchema<Collection> = Joi.object({
@@ -176,7 +177,7 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions.r
   minInstances: scale(WEN_FUNC.rejectCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
   const schema: ObjectSchema<Collection> = Joi.object({

@@ -30,6 +30,7 @@ import { MoreIconComponent } from './more/more.component';
 import { PlusIconComponent } from './plus/plus.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
 import { RedditIconComponent } from './reddit/reddit.component';
+import { RefreshIconComponent } from './refresh/refresh.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SearchIconComponent } from './search/search.component';
 import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
@@ -82,7 +83,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TerminatedIconComponent,
     AirBlowIconComponent,
     WalletIconComponent,
-    LinkIconComponent
+    LinkIconComponent,
+    RefreshIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -124,7 +126,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TerminatedIconComponent,
     AirBlowIconComponent,
     WalletIconComponent,
-    LinkIconComponent
+    LinkIconComponent,
+    RefreshIconComponent
   ],
   imports: [
     CommonModule

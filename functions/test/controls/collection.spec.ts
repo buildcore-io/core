@@ -1,5 +1,5 @@
 import { WEN_FUNC } from "../../interfaces/functions";
-import { CollectionType } from "../../interfaces/models/collection";
+import { Categories, CollectionType } from "../../interfaces/models/collection";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
@@ -41,6 +41,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: 'babba',
       type: CollectionType.CLASSIC,
+      category: Categories.ART,
       royaltiesFee: 0.6,
       space: space.uid,
       royaltiesSpace: space.uid
@@ -65,6 +66,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 4,
       space: space.uid,
       type: CollectionType.CLASSIC,
+      category: Categories.ART,
       royaltiesSpace: space.uid
     });
     const wrapped: any = testEnv.wrap(createCollection);
@@ -79,6 +81,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       description: 'babba',
       royaltiesFee: 0.1,
       type: CollectionType.CLASSIC,
+      category: Categories.ART,
       space: space.uid
     });
     const wrapped: any = testEnv.wrap(createCollection);
@@ -94,6 +97,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       description: 'babba',
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
+      category: Categories.ART,
       space: space.uid,
       royaltiesSpace: space.uid
     });
@@ -109,6 +113,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       description: 'babba',
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
+      category: Categories.ART,
       space: space.uid,
       royaltiesSpace: space.uid
     });
@@ -123,6 +128,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: '123',
       royaltiesFee: 0.6,
+      category: Categories.ART,
       type: CollectionType.CLASSIC,
       space: space.uid,
       royaltiesSpace: space.uid
@@ -138,6 +144,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     cSpaceHelper({
       name: 'Collection A',
       description: 'babba',
+      category: Categories.ART,
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
       space: space.uid,
@@ -164,6 +171,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     cSpaceHelper({
       name: 'Collection A',
       description: 'babba',
+      category: Categories.ART,
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
       space: space.uid,

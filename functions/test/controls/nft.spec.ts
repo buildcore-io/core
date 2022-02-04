@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { WEN_FUNC } from "../../interfaces/functions";
-import { CollectionType } from "../../interfaces/models/collection";
+import { Categories, CollectionType } from "../../interfaces/models/collection";
 import { createCollection } from '../../src/controls/collection.control';
 import { createMember } from '../../src/controls/member.control';
 import { createSpace } from '../../src/controls/space.control';
@@ -44,6 +44,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       description: 'babba',
       type: CollectionType.CLASSIC,
       royaltiesFee: 0.6,
+      category: Categories.ART,
       space: space.uid,
       royaltiesSpace: space.uid
     });

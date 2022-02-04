@@ -1,0 +1,51 @@
+<div class="flex justify-between items-center">
+    <div class="flex items-center">
+        <wen-icon-wallet class="text-app-gray-400 mr-3"></wen-icon-wallet>
+        <span class="text-alerts-error text-xs font-medium">Not verified</span>
+        <div class="w-4 h-4 flex justify-center items-center bg-alerts-error rounded-full ml-2">
+            <wen-icon-close class="text-white" [size]="12"></wen-icon-close>
+        </div>
+    </div>
+    <button nz-button nzType="primary" nzSize="small" (click)="isVerifyAddressOpen = true" i18n>Verify wallet</button>
+</div>
+
+<nz-modal *ngIf="deviceService.isDesktop$ | async"
+    [(nzVisible)]="isVerifyAddressOpen"
+    nzCentered
+    [nzClosable]="false"
+    [nzMaskClosable]="true"
+    [nzMask]="true"
+    (nzOnCancel)="isVerifyAddressOpen = false"
+    [nzContent]="verifyAddressModalContent"
+    [nzFooter]="null"
+    [nzWidth]="getModalWidth()"
+    [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
+>
+    <ng-template #verifyAddressModalContent>
+        <div class="flex items-start justify-between">
+            <div class="text-2xl font-bold" i18n>Verify your {{ type }} address</div>
+            <wen-icon-close class="cursor-pointer" (click)="isVerifyAddressOpen = false"></wen-icon-close>
+        </div>
+
+        <ng-container [ngSwitch]="type">
+            <wen-iota-address *ngSwitchCase="addressTypes.IOTA"></wen-iota-address>
+        </ng-container>
+    </ng-template>
+</nz-modal>
+
+<nz-drawer *ngIf="deviceService.isMobile$ | async"
+    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+    [nzWidth]="'100vw'"
+    [nzClosable]="false"
+    [nzVisible]="isVerifyAddressOpen">
+    <div *nzDrawerContent class="relative h-full">
+        <div class="pb-4 text-3xl font-bold" i18n>Verify your {{ type }} address</div>
+        <button class="absolute z-10 top-4 right-5" (click)="isVerifyAddressOpen = false">
+            <wen-icon-close></wen-icon-close>
+        </button>
+
+        <ng-container [ngSwitch]="type">
+            <wen-iota-address *ngSwitchCase="addressTypes.IOTA"></wen-iota-address>
+        </ng-container>
+    </div>
+</nz-drawer>

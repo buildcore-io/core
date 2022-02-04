@@ -1,9 +1,3 @@
-export enum CollectionFilter {
-    ALL = 'all',
-    PENDING = 'pending',
-    AVAILABLE = 'available'
-}
-
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
@@ -12,6 +6,12 @@ import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { BaseApi } from './base.api';
+
+export enum CollectionFilter {
+    ALL = 'all',
+    PENDING = 'pending',
+    AVAILABLE = 'available'
+}
 
 @Injectable({
   providedIn: 'root',
