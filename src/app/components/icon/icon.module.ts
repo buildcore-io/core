@@ -41,6 +41,7 @@ import { TerminatedIconComponent } from './terminated/terminated.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 import { WalletIconComponent } from './wallet/wallet.component';
+import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
 
 @NgModule({
   declarations: [
@@ -84,7 +85,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     AirBlowIconComponent,
     WalletIconComponent,
     LinkIconComponent,
-    RefreshIconComponent
+    RefreshIconComponent,
+    ArrowRightIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -127,7 +129,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     AirBlowIconComponent,
     WalletIconComponent,
     LinkIconComponent,
-    RefreshIconComponent
+    RefreshIconComponent,
+    ArrowRightIconComponent
   ],
   imports: [
     CommonModule

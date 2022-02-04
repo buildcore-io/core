@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
@@ -11,11 +11,13 @@ import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DISCORD_REGEXP, TWITTER_REGEXP, URL_REGEXP } from 'functions/interfaces/config';
-import { CollectionType } from 'functions/interfaces/models';
+import { Categories, CollectionType } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
+
+const MAX_DISCOUNT_COUNT = 5;
 
 @UntilDestroy()
 @Component({
@@ -33,11 +35,13 @@ export class UpsertPage implements OnInit {
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public bannerUrlControl: FormControl = new FormControl('');
   public categoryControl: FormControl = new FormControl('', Validators.required);
-  public discountControl: FormControl = new FormControl('', Validators.required);
+  public typeControl: FormControl = new FormControl(CollectionType.CLASSIC);
+  public discounts: FormArray;
   public collectionForm: FormGroup;
   public editMode = false;
   public collectionId?: number;
   public collectionTypes = enumToArray(CollectionType);
+  public collectionCategories = enumToArray(Categories);
 
   
   constructor(
@@ -52,6 +56,10 @@ export class UpsertPage implements OnInit {
     private nzNotification: NzNotificationService,
     private fileApi: FileApi
   ) {
+    this.discounts = new FormArray([
+      this.getDiscountForm()
+    ]);
+
     this.collectionForm = new FormGroup({
       name: this.nameControl,
       description: this.descriptionControl,
@@ -61,7 +69,7 @@ export class UpsertPage implements OnInit {
       discord: this.discordControl,
       bannerUrl: this.bannerUrlControl,
       category: this.categoryControl,
-      discount: this.discountControl
+      discounts: this.discounts
     });
   }
 
@@ -156,5 +164,32 @@ export class UpsertPage implements OnInit {
       //   this.router.navigate([ROUTER_UTILS.config.collection.root, val?.uid]);
       // });
     });
+  }
+
+  public trackByValue(index: number, item: any): number {
+    return item.value;
+  }
+
+  private getDiscountForm(): FormGroup {
+    return new FormGroup({
+      xp: new FormControl('', Validators.required),
+      amount: new FormControl('', Validators.required)
+    });
+  }
+
+  public addDiscount(): void {
+    if (this.discounts.controls.length < MAX_DISCOUNT_COUNT){
+      this.discounts.push(this.getDiscountForm());
+    }
+  }
+
+  public removeDiscount(questionIndex: number): void {
+    if (this.discounts.controls.length > 1) {
+      this.discounts.removeAt(questionIndex);
+    }
+  }
+
+  public gForm(f: any, value: string): any {
+    return f.get(value);
   }
 }

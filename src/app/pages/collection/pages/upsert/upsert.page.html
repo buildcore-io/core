@@ -102,6 +102,20 @@
             </div>
 
             <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
+                <nz-card [nzBordered]="false" nzTitle="Space Type">
+                    <nz-form-item>
+                        <nz-form-control>
+                            <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
+                                <wen-radio *ngFor="let type of collectionTypes; trackBy: trackByValue" [value]="type.value">
+                                    <span class="inline-flex" i18n>
+                                        {{ type.key }}
+                                    </span>
+                                </wen-radio>
+                            </nz-radio-group>
+                        </nz-form-control>
+                    </nz-form-item>
+                </nz-card>
+
                 <nz-card [nzBordered]="false">
                     <nz-card-meta
                         nzTitle="Banner"
@@ -147,9 +161,9 @@
                                 [formControl]="categoryControl"
                                 >
                                 <nz-option
-                                    *ngFor="let ct of collectionTypes"
-                                    [nzLabel]="ct.key"
-                                    [nzValue]="ct.value"
+                                    *ngFor="let cc of collectionCategories"
+                                    [nzLabel]="cc.key"
+                                    [nzValue]="cc.value"
                                 >
                                 </nz-option>
                             </nz-select>
@@ -163,6 +177,36 @@
                         nzDescription="Space support an ability to airdrop NFTs to their members for free or at discount."
                     >
                     </nz-card-meta>
+
+                    <div class="pt-4">
+                        <div class="flex items-center justify-between mt-4"
+                            *ngFor="let discount of discounts.controls; let i = index">
+                                <nz-input-group nzAddOnBefore="XP >">
+                                    <input 
+                                        type="text"
+                                        nz-input
+                                        nzSize="large"
+                                        [formControl]="gForm(discount, 'xp')" 
+                                    />
+                                </nz-input-group>
+            
+                                <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
+            
+                                <nz-input-group nzPrefix="%">
+                                    <input
+                                        type="text"
+                                        nz-input
+                                        nzSize="large"
+                                        [formControl]="gForm(discount, 'amount')"
+                                    />
+                                </nz-input-group>
+                        </div>
+                    </div>
+
+                    <button nz-button nzType="link" class="flex items-center pl-0 mt-3" (click)="addDiscount()">
+                        <wen-icon-plus class="mr-0.5"></wen-icon-plus>
+                        <span i18n>Add discount level</span>
+                    </button>
                 </nz-card>
             </div>
         </div>
