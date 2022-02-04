@@ -25,7 +25,8 @@ export class DiscoverPage implements OnInit, OnDestroy {
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
     { route: [ ROUTER_UTILS.config.discover.awards], label: 'Awards' },
     { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
-    { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
+    { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' },
+    { route: [ ROUTER_UTILS.config.discover.collections], label: 'Collections' }
   ];
   public selectedSection?: TabSection;
   public isSearchInputFocused = false;

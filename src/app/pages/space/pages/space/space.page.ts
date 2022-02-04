@@ -31,6 +31,7 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'proposals', label: 'Proposals' },
     { route: 'awards', label: 'Awards' },
     { route: 'treasury', label: 'Treasury' },
+    { route: 'collections', label: 'Collections' },
     { route: 'members', label: 'Members' }
   ];
   public isAboutSpaceVisible = false;

@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { SpaceAlliancesTableModule } from '@components/space/components/space-alliances-table/space-alliances-table.module';
 import { SpaceNewAllianceModule } from '@components/space/components/space-new-alliance/space-new-alliance.module';
+import { SpaceVerifyIOTAAddressModule } from '@components/space/components/space-verify-iota-address/space-verify-iota-address.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -46,7 +47,8 @@ import { SpaceAboutComponent } from './space-about.component';
     NzNotificationModule,
     SpaceAlliancesTableModule,
     NzDrawerModule,
-    SpaceNewAllianceModule
+    SpaceNewAllianceModule,
+    SpaceVerifyIOTAAddressModule
   ],
   exports: [
     SpaceAboutComponent

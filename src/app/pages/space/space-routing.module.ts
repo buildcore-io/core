@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from './../../@core/utils/router.utils';
 import { AwardsPage } from "./pages/awards/awards.page";
+import { CollectionsPage } from './pages/collections/collections.page';
 import { MembersPage } from "./pages/members/members.page";
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from "./pages/proposals/proposals.page";
@@ -30,7 +31,8 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.space.treasury, component: TreasuryPage },
       { path: ROUTER_UTILS.config.space.awards, component: AwardsPage },
       { path: ROUTER_UTILS.config.space.members, component: MembersPage },
-      { path: ROUTER_UTILS.config.space.proposals, component: ProposalsPage }
+      { path: ROUTER_UTILS.config.space.proposals, component: ProposalsPage },
+      { path: ROUTER_UTILS.config.space.collections, component: CollectionsPage }
     ]
   },
   {

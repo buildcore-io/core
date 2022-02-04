@@ -23,6 +23,7 @@ export class SpaceAboutComponent implements OnDestroy {
 
   public isAlliancesListOpen = false;
   public isNewAllianceOpen = false;
+  public isVerifyIOTAAddressOpen = false;
   public isNewAlliance = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(null, Validators.required);

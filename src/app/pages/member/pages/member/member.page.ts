@@ -26,7 +26,8 @@ export class MemberPage implements OnInit, OnDestroy {
     { route: 'activity', label: 'Activity' },
     { route: 'awards', label: 'Awards' },
     { route: 'badges', label: 'Badges' },
-    { route: 'spaces', label: 'Spaces' }
+    { route: 'spaces', label: 'Spaces' },
+    { route: 'NFTs', label: 'NFTs' }
   ]
   public isAboutMemberVisible = false;
   public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
