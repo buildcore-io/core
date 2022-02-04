@@ -1,8 +1,9 @@
 import { WEN_FUNC } from "../../interfaces/functions";
+import { CollectionType } from "../../interfaces/models/collection";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
-import { createCollection, updateCollection } from './../../src/controls/collection.control';
+import { approveCollection, createCollection, rejectCollection, updateCollection } from './../../src/controls/collection.control';
 import { createMember } from './../../src/controls/member.control';
 import { createSpace } from './../../src/controls/space.control';
 
@@ -39,6 +40,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     cSpaceHelper({
       name: 'Collection A',
       description: 'babba',
+      type: CollectionType.CLASSIC,
       royaltiesFee: 0.6,
       space: space.uid,
       royaltiesSpace: space.uid
@@ -62,6 +64,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       description: 'babba',
       royaltiesFee: 4,
       space: space.uid,
+      type: CollectionType.CLASSIC,
       royaltiesSpace: space.uid
     });
     const wrapped: any = testEnv.wrap(createCollection);
@@ -75,6 +78,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: 'babba',
       royaltiesFee: 0.1,
+      type: CollectionType.CLASSIC,
       space: space.uid
     });
     const wrapped: any = testEnv.wrap(createCollection);
@@ -89,6 +93,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: 'babba',
       royaltiesFee: 0.6,
+      type: CollectionType.CLASSIC,
       space: space.uid,
       royaltiesSpace: space.uid
     });
@@ -103,6 +108,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: 'babba',
       royaltiesFee: 0.6,
+      type: CollectionType.CLASSIC,
       space: space.uid,
       royaltiesSpace: space.uid
     });
@@ -117,6 +123,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: '123',
       royaltiesFee: 0.6,
+      type: CollectionType.CLASSIC,
       space: space.uid,
       royaltiesSpace: space.uid
     });
@@ -124,6 +131,58 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const returns2 = await wrapped2();
     expect(returns2?.uid).toBeDefined();
     expect(returns2?.description).toBe('123');
+    walletSpy.mockRestore();
+  });
+
+  it('successfully create collection & approve', async () => {
+    cSpaceHelper({
+      name: 'Collection A',
+      description: 'babba',
+      royaltiesFee: 0.6,
+      type: CollectionType.CLASSIC,
+      space: space.uid,
+      royaltiesSpace: space.uid
+    });
+
+    const wrapped: any = testEnv.wrap(createCollection);
+    const returns = await wrapped();
+    expect(returns?.uid).toBeDefined();
+    expect(returns?.description).toBe('babba');
+
+    cSpaceHelper({
+      uid: returns?.uid,
+    });
+    const wrapped2: any = testEnv.wrap(approveCollection);
+    const returns2 = await wrapped2();
+    expect(returns2?.uid).toBeDefined();
+    expect(returns2?.approved).toBe(true);
+    expect(returns2?.rejected).toBe(false);
+    walletSpy.mockRestore();
+  });
+
+  it('successfully create collection & reject', async () => {
+    cSpaceHelper({
+      name: 'Collection A',
+      description: 'babba',
+      royaltiesFee: 0.6,
+      type: CollectionType.CLASSIC,
+      space: space.uid,
+      royaltiesSpace: space.uid
+    });
+
+    const wrapped: any = testEnv.wrap(createCollection);
+    const returns = await wrapped();
+    expect(returns?.uid).toBeDefined();
+    expect(returns?.description).toBe('babba');
+
+    cSpaceHelper({
+      uid: returns?.uid,
+    });
+    const wrapped2: any = testEnv.wrap(rejectCollection);
+    const returns2 = await wrapped2();
+    expect(returns2?.uid).toBeDefined();
+    expect(returns2?.approved).toBe(false);
+    expect(returns2?.rejected).toBe(true);
     walletSpy.mockRestore();
   });
 });

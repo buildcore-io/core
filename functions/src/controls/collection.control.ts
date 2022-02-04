@@ -13,7 +13,7 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { DISCORD_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
-import { Collection } from './../../interfaces/models/collection';
+import { Collection, CollectionType } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -26,6 +26,7 @@ function defaultJoiUpdateCreateSchema(): any {
     bannerUrl: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
+    type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0.01).max(1).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
     // TODO Validate XP is not the same.
@@ -41,10 +42,10 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 }
 
-export const createCollection: functions.CloudFunction<Member> = functions.runWith({
+export const createCollection: functions.CloudFunction<Collection> = functions.runWith({
   // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
+}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
@@ -79,14 +80,14 @@ export const createCollection: functions.CloudFunction<Member> = functions.runWi
     docCollection = await refCollection.get();
   }
 
-  // Return member.
-  return <Member>docCollection.data();
+  // Return Collection.
+  return <Collection>docCollection.data();
 });
 
-export const updateCollection: functions.CloudFunction<Member> = functions.runWith({
+export const updateCollection: functions.CloudFunction<Collection> = functions.runWith({
   // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.uCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
+}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // We must part
   const params: DecodedToken = await decodeAuth(req);
@@ -113,11 +114,101 @@ export const updateCollection: functions.CloudFunction<Member> = functions.runWi
   }
 
   // Document does not exists.
-  await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update(keywords(uOn(pSchema(schema, params.body))));
+  await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update(keywords(uOn(pSchema(
+    schema,
+    params.body,
+    ['type', 'royaltiesFee', 'royaltiesSpace', 'space']
+  ))));
 
 
   // Load latest
   docCollection = await refCollection.get();
-  // Return member.
-  return <Member>docCollection.data();
+
+  // Return Collection.
+  return <Collection>docCollection.data();
+});
+
+
+export const approveCollection: functions.CloudFunction<Collection> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: scale(WEN_FUNC.approveCollection),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+  appCheck(WEN_FUNC.approveCollection, context);
+  // We must part
+  const params: DecodedToken = await decodeAuth(req);
+  const member = params.address.toLowerCase();
+  const schema: ObjectSchema<Collection> = Joi.object({
+    uid: CommonJoi.uidCheck()
+  });
+  assertValidation(schema.validate(params.body));
+
+  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(member).get();
+  if (!docMember.exists) {
+    throw throwInvalidArgument(WenError.member_does_not_exists);
+  }
+
+  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
+  let docCollection: any = await refCollection.get();
+  if (!docCollection.exists) {
+    throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  // Validate space exists.
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
+  await SpaceValidator.spaceExists(refSpace);
+  await SpaceValidator.isGuardian(refSpace, member);
+
+  // Document does not exists.
+  await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update({
+    approved: true
+  });
+
+  // Load latest
+  docCollection = await refCollection.get();
+
+  // Return Collection.
+  return <Collection>docCollection.data();
+});
+
+
+export const rejectCollection: functions.CloudFunction<Collection> = functions.runWith({
+  // Keep 1 instance so we never have cold start.
+  minInstances: scale(WEN_FUNC.rejectCollection),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+  appCheck(WEN_FUNC.rejectCollection, context);
+  // We must part
+  const params: DecodedToken = await decodeAuth(req);
+  const member = params.address.toLowerCase();
+  const schema: ObjectSchema<Collection> = Joi.object({
+    uid: CommonJoi.uidCheck()
+  });
+  assertValidation(schema.validate(params.body));
+
+  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(member).get();
+  if (!docMember.exists) {
+    throw throwInvalidArgument(WenError.member_does_not_exists);
+  }
+
+  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
+  let docCollection: any = await refCollection.get();
+  if (!docCollection.exists) {
+    throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  // Validate space exists.
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
+  await SpaceValidator.spaceExists(refSpace);
+  await SpaceValidator.isGuardian(refSpace, member);
+
+
+  // Document does not exists.
+  await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update({
+    rejected: true
+  });
+
+  // Load latest
+  docCollection = await refCollection.get();
+
+  // Return Collection.
+  return <Collection>docCollection.data();
 });

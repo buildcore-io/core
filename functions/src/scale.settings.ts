@@ -37,6 +37,10 @@ export function scale(func: WEN_FUNC): number {
   // Collections
   scaleSettings[WEN_FUNC.cCollection] = medium;
   scaleSettings[WEN_FUNC.uCollection] = medium;
+  scaleSettings[WEN_FUNC.approveCollection] = low;
+  scaleSettings[WEN_FUNC.rejectCollection] = low;
+
+  scaleSettings[WEN_FUNC.cNft] = medium;
 
   return scaleSettings[func] || low;
 }

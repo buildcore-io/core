@@ -30,9 +30,14 @@ export const enum WEN_FUNC {
   rProposal = "rProposal", // Reject
   voteOnProposal = "voteOnProposal",
 
-  // Member functions.
+  // Collection functions.
   cCollection = "cCollection",
   uCollection = "uCollection",
+  approveCollection = "approveCollection",
+  rejectCollection = "rejectCollection",
+
+  // NFT functions.
+  cNft = "cNft",
 
 }
 
