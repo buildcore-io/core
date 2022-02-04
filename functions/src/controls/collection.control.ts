@@ -48,7 +48,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   minInstances: scale(WEN_FUNC.cCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const creator = params.address.toLowerCase();
   const collectionAddress: string = getRandomEthAddress();
@@ -90,7 +90,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   minInstances: scale(WEN_FUNC.uCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {
@@ -135,7 +135,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
   minInstances: scale(WEN_FUNC.approveCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
   const schema: ObjectSchema<Collection> = Joi.object({
@@ -177,7 +177,7 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions.r
   minInstances: scale(WEN_FUNC.rejectCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
   const schema: ObjectSchema<Collection> = Joi.object({

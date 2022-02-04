@@ -213,7 +213,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
   minInstances: scale(WEN_FUNC.aProposal),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aProposal, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
@@ -255,7 +255,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
   minInstances: scale(WEN_FUNC.rProposal),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rProposal, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {

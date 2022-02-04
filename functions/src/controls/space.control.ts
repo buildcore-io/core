@@ -151,7 +151,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.uSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
   appCheck(WEN_FUNC.uSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
@@ -198,7 +198,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.joinSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
   appCheck(WEN_FUNC.joinSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -267,7 +267,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.leaveSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.leaveSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -328,7 +328,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.addGuardianSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addGuardianSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
@@ -381,7 +381,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
   minInstances: scale(WEN_FUNC.removeGuardianSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.removeGuardianSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
@@ -431,7 +431,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.blockMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.blockMemberSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
@@ -519,7 +519,7 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.unblockMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.unblockMemberSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
@@ -553,7 +553,7 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
   minInstances: scale(WEN_FUNC.acceptMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.acceptMemberSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
@@ -608,7 +608,7 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions.runW
   minInstances: scale(WEN_FUNC.declineMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.declineMemberSpace, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 
@@ -642,7 +642,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
   memory: '4GB'
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.setAlliance, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const guardian = params.address.toLowerCase();
 

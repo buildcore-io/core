@@ -41,7 +41,7 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.cNft),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
   appCheck(WEN_FUNC.cNft, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const creator = params.address.toLowerCase();
   const nftAddress: string = getRandomEthAddress();

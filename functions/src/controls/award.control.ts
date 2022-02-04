@@ -140,7 +140,7 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.addOwnerAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addOwnerAward, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -184,7 +184,7 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.aAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aAward, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
@@ -226,7 +226,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.rAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rAward, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
@@ -272,7 +272,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.participateAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.participateAward, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const participant = params.address.toLowerCase();
 
@@ -337,7 +337,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
   minInstances: scale(WEN_FUNC.aParticipantAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aParticipantAward, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   // TODO Fix for below validation.
   const owner = params.address.toLowerCase();
