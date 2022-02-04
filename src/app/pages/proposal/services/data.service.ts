@@ -164,7 +164,7 @@ export class DataService {
     if (this.isNativeVote(proposal.type)) {
       return this.calcDateBasedOnMilestone(proposal, 'milestoneIndexEnd');
     } else {
-      return proposal.settings?.startDate?.toDate() || null;
+      return proposal.settings?.endDate?.toDate() || null;
     }
   }
 
