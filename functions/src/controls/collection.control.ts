@@ -13,7 +13,7 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { DISCORD_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
-import { Collection, CollectionType } from './../../interfaces/models/collection';
+import { Categories, Collection, CollectionType } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -26,6 +26,7 @@ function defaultJoiUpdateCreateSchema(): any {
     bannerUrl: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
+    category: Joi.number().equal(...Object.keys(Categories)).required(),
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0.01).max(1).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
