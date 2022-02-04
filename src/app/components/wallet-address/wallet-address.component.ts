@@ -6,12 +6,12 @@ export enum AddressType {
 }
 
 @Component({
-  selector: 'wen-space-specify-address',
-  templateUrl: './space-specify-address.component.html',
-  styleUrls: ['./space-specify-address.component.less'],
+  selector: 'wen-wallet-address',
+  templateUrl: './wallet-address.component.html',
+  styleUrls: ['./wallet-address.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SpaceSpecifyAddressComponent {
+export class WalletAddressComponent {
   @Input() type = AddressType.IOTA;
 
   public isVerifyAddressOpen = false;

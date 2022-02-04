@@ -5,13 +5,13 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { IOTAAddressComponent } from './iota-address/iota-address.component';
-import { SpaceSpecifyAddressComponent } from './space-specify-address.component';
+import { WalletAddressComponent } from './wallet-address.component';
 
 
 
 @NgModule({
   declarations: [
-    SpaceSpecifyAddressComponent,
+    WalletAddressComponent,
     IOTAAddressComponent
   ],
   imports: [
@@ -22,8 +22,7 @@ import { SpaceSpecifyAddressComponent } from './space-specify-address.component'
     NzButtonModule
   ],
   exports: [
-    SpaceSpecifyAddressComponent,
-    IOTAAddressComponent
+    WalletAddressComponent
   ]
 })
-export class SpaceSpecifyAddressModule { }
+export class WalletAddressModule { }

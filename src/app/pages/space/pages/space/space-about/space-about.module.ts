@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { SpaceAlliancesTableModule } from '@components/space/components/space-alliances-table/space-alliances-table.module';
 import { SpaceNewAllianceModule } from '@components/space/components/space-new-alliance/space-new-alliance.module';
-import { SpaceSpecifyAddressModule } from '@components/space/components/space-specify-address/space-specify-address.module';
+import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -48,7 +48,7 @@ import { SpaceAboutComponent } from './space-about.component';
     SpaceAlliancesTableModule,
     NzDrawerModule,
     SpaceNewAllianceModule,
-    SpaceSpecifyAddressModule
+    WalletAddressModule
   ],
   exports: [
     SpaceAboutComponent
