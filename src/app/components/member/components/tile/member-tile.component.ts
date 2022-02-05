@@ -9,5 +9,4 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class MemberTileComponent {
   @Input() public title = '';
   @Input() public value = 0;
-  @Input() public suffix = '';
 }

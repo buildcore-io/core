@@ -1,0 +1,17 @@
+<wen-select-space
+    [formControl]="spaceAllianceControl"
+    [spaces]="spaceOptions"
+    size="large">
+</wen-select-space>
+
+<nz-form-item class="mt-6">
+    <nz-form-control i18n-nzErrorTip nzErrorTip="">
+        <nz-input-number
+            class="w-full"
+            nzSize="large"
+            [nzStep]="0.01"
+            nzPlaceHolder="Reputation weight"
+            [formControl]="reputationWeightControl"
+        ></nz-input-number>
+    </nz-form-control>
+</nz-form-item>

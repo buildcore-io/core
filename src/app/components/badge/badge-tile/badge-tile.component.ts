@@ -8,7 +8,7 @@ import { FileMetedata, FILE_SIZES } from "../../../../../functions/interfaces/mo
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BadgeTileComponent {
-  @Input() size?: string;
+  @Input() size?: number;
   @Input() name?: string;
   @Input() metadata?: FileMetedata;
 

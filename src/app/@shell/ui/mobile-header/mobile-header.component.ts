@@ -1,10 +1,9 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ResolveEnd, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { RouterService } from '@core/services/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject } from 'rxjs';
+import { UntilDestroy } from '@ngneat/until-destroy';
 
 
 @UntilDestroy()
@@ -14,15 +13,12 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./mobile-header.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MobileHeaderComponent implements OnInit {
+export class MobileHeaderComponent {
   // TODO Clean up this passing around of inputs. This messy.
   @Input() isMobileMenuVisible = false;
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
   @Input() isAllowedCreation = false;
-  @Input() urlToNewSpace = '';
-  @Input() urlToNewProposal = '';
-  @Input() urlToNewAward = '';
   @Input() goBackHeader = false;
   @Output() onVisibleChange = new EventEmitter<boolean>();
 
@@ -31,23 +27,17 @@ export class MobileHeaderComponent implements OnInit {
   constructor(
     public auth: AuthService,
     public location: Location,
-    private router: Router,
-    private cd: ChangeDetectorRef
+    public routerService: RouterService
   ) {}
 
-  public get isLoggedIn$(): BehaviorSubject<boolean> {
-    return this.auth.isLoggedIn$;
+  public setMobileMenuVisible(isVisible: boolean): void {
+    this.isMobileMenuVisible = isVisible;
+    this.onVisibleChange.emit(isVisible);
   }
 
-  ngOnInit(): void {
-    this.router.events
-      .pipe(untilDestroyed(this))
-      .subscribe((obj) => {
-        if(obj instanceof ResolveEnd) {
-          const goBackUrls = [this.urlToNewSpace, this.urlToNewProposal, this.urlToNewAward];
-          this.goBackHeader = goBackUrls.includes(obj.url);
-          this.cd.markForCheck();
-        }
-      });
+  public onCreateClick(): void {
+    if(this.isMobileMenuVisible) {
+      this.setMobileMenuVisible(false);
+    }
   }
 }

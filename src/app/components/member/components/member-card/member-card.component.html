@@ -17,7 +17,7 @@
           {{ role }}</nz-tag>
 
         <span nz-typography class="truncate lg:mt-3 text-app-gray-400" [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'">
-          joined {{ member.createdOn?.toDate() | date:"short" }}
+          <span i18n>joined</span> {{ member.createdOn?.toDate() | date:"short" }}
         </span>
       </div>
       <p class="mt-2 mb-3 leading-5 text-black whitespace-pre-line truncate-line-3" [ngClass]="fullWidth ? 'text-base' : 'text-xs'">{{ (about !== undefined
@@ -26,17 +26,38 @@
     </div>
 
     <div class="bottom-0 flex lg:relative" [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'">
-      <div class="inline-flex items-center space-x-3">
-        <nz-tag class="wen-xp-tag">{{ member.totalReputation ? member.totalReputation : 0 }} XP</nz-tag>
+      <div class="relative inline-flex items-center space-x-3">
+        <nz-tag class="wen-xp-tag flex items-center">
+          {{ getTotal('totalReputation') }} <span i18n>XP</span>
+          <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400 ml-2"
+            *ngIf="!!selectedSpace && includeAlliances"
+            (click)="isReputationVisible = true"></i>
+        </nz-tag>
         <nz-tag class="flex items-center space-x-3 bg-transparent border-transparent wen-status-tag">
           <wen-icon-award class="w-4 h-4 text-app-gray-400"></wen-icon-award>
-          <span>{{ member.awardsCompleted ? member.awardsCompleted : 0 }} awards
+          <span>{{ getTotal('awardsCompleted') }} <span i18n>awards</span>
           </span>
         </nz-tag>
+
+        <wen-member-reputation-modal
+          *ngIf="(deviceService.isDesktop$ | async) && !!selectedSpace && includeAlliances"
+          [isOpen]="isReputationVisible"
+          [member]="member"
+          [selectedSpace]="selectedSpace"
+          (onClose)="isReputationVisible = false">
+        </wen-member-reputation-modal>
+
+        <wen-member-reputation-drawer
+          *ngIf="(deviceService.isMobile$ | async) && !!selectedSpace && includeAlliances"
+          [isOpen]="isReputationVisible"
+          [selectedSpace]="selectedSpace"
+          [member]="member"
+          (onClose)="isReputationVisible = false">
+        </wen-member-reputation-drawer>
       </div>
 
       <div i18n class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">
-        <nz-avatar *ngFor="let badge of (badges$ | async) | slice:0:6;"
+        <nz-avatar *ngFor="let badge of (badges$ | async) | slice:0:totalVisibleBadges;"
           [nzSrc]="badge.payload.image | ipfsBadge:filesizes.small"
           class="mr-2 bg-white border-gray-400 lg:mr-0" nzShape="circle"
           [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 24">

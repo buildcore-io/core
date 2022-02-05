@@ -13,25 +13,27 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
 import { StandardResponse } from './../../interfaces/functions/index';
 import { Award, AwardType } from './../../interfaces/models/award';
 import { WenRequest } from './../../interfaces/models/base';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
+import { CommonJoi } from './../services/joi/common';
+import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(AwardType.PARTICIPATE_AND_APPROVE).required(),
-    space: Joi.string().length(ethAddressLength).lowercase().required(),
+    space: CommonJoi.uidCheck(),
     endDate: Joi.date().required(),
     badge: Joi.object({
       name: Joi.string().required(),
       description: Joi.string().allow(null, '').optional(),
-      // Let's keep everything within 1Mi for now.
-      count: Joi.number().min(1).max(1000).required(),
+      // Let's keep everything within 10Mi for now.
+      count: Joi.number().min(1).max(10000).required(),
       image: Joi.object({
         metadata: Joi.string().custom((value) => {
           return cid(value);
@@ -45,7 +47,7 @@ function defaultJoiUpdateCreateSchema(): any {
         }).required()
       }).optional(),
       // Let's CAP at 100 XP per badge for now. XP must be dividable by count.
-      xp: Joi.number().min(0).max(1000).required()
+      xp: Joi.number().min(0).max(10000).required()
     }).custom((obj, helper) => {
       // Validate value is dividable by count.
       if (obj.xp === 0 || (obj.xp % obj.count) == 0) {
@@ -72,9 +74,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
-  if (!(await refSpace.get()).exists) {
-    throw throwInvalidArgument(WenError.space_does_not_exists);
-  }
+  await SpaceValidator.spaceExists(refSpace);
 
   const member = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!member.exists) {
@@ -145,8 +145,8 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -188,7 +188,7 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -230,7 +230,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -277,7 +277,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
   const participant = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
+      uid: CommonJoi.uidCheck(),
       comment: Joi.string().allow(null, '').optional()
   }));
   assertValidation(schema.validate(params.body));
@@ -343,8 +343,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
   const owner = params.address.toLowerCase();
   const tranId = getRandomEthAddress();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: Joi.string().length(ethAddressLength).lowercase().required(),
-      member: Joi.string().length(ethAddressLength).lowercase().required()
+      uid: CommonJoi.uidCheck(),
+      member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -406,7 +406,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
 
     await refTran.set(<Transaction>{
       type: TransactionType.BADGE,
-      uid: getRandomEthAddress(),
+      uid: tranId,
       member: params.body.member,
       space: docAward.data().space,
       createdOn: serverTime(),
@@ -420,15 +420,30 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     });
 
     // We've to update the members stats.
+    // - We need to track it per space as well.
+    // - We need to track on space who they have alliance with and use that to determine which XP/awards to pick
     const refMember: any = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
     await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: any = await transaction.get(refMember);
       const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
       const totalReputation = (sfDoc.data().totalReputation || 0) + xp;
-      transaction.update(refMember, {
-        awardsCompleted: awardsCompleted,
-        totalReputation: totalReputation
-      });
+      const finalObj: any = {
+        ...sfDoc.data(),
+        ...{
+          awardsCompleted: awardsCompleted,
+          totalReputation: totalReputation
+        }
+      };
+
+      // Calculate for space.
+      finalObj.spaces = finalObj.spaces || {};
+      finalObj.spaces[docAward.data().space] = finalObj.spaces[docAward.data().space] || { uid: docAward.data().space, createdOn: serverTime() };
+      finalObj.spaces[docAward.data().space].badges = (finalObj.spaces[docAward.data().space].badges || []);
+      finalObj.spaces[docAward.data().space].badges.push(tranId);
+      finalObj.spaces[docAward.data().space].awardsCompleted = (finalObj.spaces[docAward.data().space].awardsCompleted || 0) + 1;
+      finalObj.spaces[docAward.data().space].totalReputation = (finalObj.spaces[docAward.data().space].totalReputation || 0) + xp;
+      finalObj.spaces[docAward.data().space].updatedOn = serverTime();
+      transaction.update(refMember, finalObj);
     });
 
 

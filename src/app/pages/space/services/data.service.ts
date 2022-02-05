@@ -1,12 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Award, Space } from 'functions/interfaces/models';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Award } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
 import { AwardApi, AwardFilter } from './../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../@api/base.api';
 import { ProposalApi, ProposalFilter } from './../../../@api/proposal.api';
-import { SpaceApi } from './../../../@api/space.api';
+import { SpaceApi, SpaceWithAlliances } from './../../../@api/space.api';
 import { AuthService } from './../../../components/auth/services/auth.service';
 
 export enum MemberFilterOptions {
@@ -17,7 +18,7 @@ export enum MemberFilterOptions {
 
 @Injectable()
 export class DataService implements OnDestroy {
-  public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
+  public space$: BehaviorSubject<SpaceWithAlliances|undefined> = new BehaviorSubject<SpaceWithAlliances|undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -285,6 +286,10 @@ export class DataService implements OnDestroy {
     this.resetMembersDataStore();
     this.resetSubjects();
     this.resetRelatedRecordsSubjects();
+  }
+
+  public getMemberUrl(memberId: string): string[] {
+    return ['/', ROUTER_UTILS.config.member.root, memberId];
   }
 
   public ngOnDestroy(): void {

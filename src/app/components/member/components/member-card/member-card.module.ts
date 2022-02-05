@@ -8,6 +8,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { TruncateModule } from '../../../../@core/pipes/truncate/truncate.module';
+import { MemberReputationDrawerModule } from '../member-reputation-drawer/member-reputation-drawer.module';
+import { MemberReputationModalModule } from '../member-reputation-modal/member-reputation-modal.module';
 import { IconModule } from './../../../../components/icon/icon.module';
 import { MemberCardComponent } from './member-card.component';
 
@@ -28,7 +30,9 @@ import { MemberCardComponent } from './member-card.component';
     NzAvatarModule,
     NzIconModule,
     IconModule,
-    NzTagModule
+    NzTagModule,
+    MemberReputationModalModule,
+    MemberReputationDrawerModule
   ]
 })
 

@@ -8,16 +8,29 @@ export class DeviceService {
   public static MOBILE_MAX_WIDTH = 1024;
   public isDesktop$ = new BehaviorSubject<boolean>(false);
   public isMobile$ = new BehaviorSubject<boolean>(false);
+  public innerWidth$ = new BehaviorSubject<number>(0);
+  public scrollX$ = new BehaviorSubject<number>(0);
+  public scrollY$ = new BehaviorSubject<number>(0);
 
   constructor() { 
     this.setDevice();
+    this.setScroll();
+
     fromEvent(window, 'resize')
       .subscribe(this.setDevice.bind(this));
+    fromEvent(window, 'scroll')
+      .subscribe(this.setScroll.bind(this));
   }
 
   private setDevice(): void {
     this.isDesktop$.next(!this.getIsMobile());
     this.isMobile$.next(this.getIsMobile());
+    this.innerWidth$.next(window.innerWidth);
+  }
+
+  private setScroll(): void {
+    this.scrollX$.next(window.scrollX);
+    this.scrollY$.next(window.scrollY);
   }
 
   private getIsMobile(): boolean {

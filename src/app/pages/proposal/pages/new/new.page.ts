@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
@@ -14,7 +14,6 @@ import { BehaviorSubject, map, skip, Subscription } from 'rxjs';
 import { ProposalStartDateMin, TIME_GAP_BETWEEN_MILESTONES } from './../../../../../../functions/interfaces/config';
 import { Space } from './../../../../../../functions/interfaces/models';
 import { Award } from './../../../../../../functions/interfaces/models/award';
-import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Milestone } from './../../../../../../functions/interfaces/models/milestone';
 import { ProposalSubType, ProposalType } from './../../../../../../functions/interfaces/models/proposal';
 import { AwardApi } from './../../../../@api/award.api';
@@ -50,6 +49,7 @@ export class NewPage implements OnInit, OnDestroy {
   public subTypeControl: FormControl = new FormControl(ProposalSubType.ONE_MEMBER_ONE_VOTE, Validators.required);
   public votingAwardControl: FormControl = new FormControl([]);
   public additionalInfoControl: FormControl = new FormControl('', Validators.required);
+  public defaultMinWeight: FormControl = new FormControl(0);
   public subTypes = ProposalSubType;
   // Questions / answers.
   public questions: FormArray;
@@ -73,7 +73,8 @@ export class NewPage implements OnInit, OnDestroy {
     private router: Router,
     private nzNotification: NzNotificationService,
     public nav: NavigationService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public avatarService: AvatarService
   ) {
     this.questions = new FormArray([
       this.getQuestionForm()
@@ -92,7 +93,8 @@ export class NewPage implements OnInit, OnDestroy {
       milestoneIndexEnd: this.milestoneIndexEndControl,
       additionalInfo: this.additionalInfoControl,
       questions: this.questions,
-      awards: this.votingAwardControl
+      awards: this.votingAwardControl,
+      defaultMinWeight: this.defaultMinWeight
     });
   }
 
@@ -168,14 +170,6 @@ export class NewPage implements OnInit, OnDestroy {
 
   public get targetGroups(): typeof TargetGroup {
     return TargetGroup;
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public getDateBasedOnMilestone(milestoneValue: number): Date|undefined  {
@@ -255,6 +249,10 @@ export class NewPage implements OnInit, OnDestroy {
         onlyGuardians: !!(obj.group === TargetGroup.GUARDIANS),
         awards: obj.awards
       };
+
+      if (obj.defaultMinWeight > 0) {
+        obj.settings.defaultMinWeight = obj.defaultMinWeight;
+      }
     } else {
       // TODO We need to find right milestone.
       obj.settings = {
@@ -275,6 +273,7 @@ export class NewPage implements OnInit, OnDestroy {
     delete obj.start;
     delete obj.end;
     delete obj.group;
+    delete obj.defaultMinWeight;
     return obj;
   }
 

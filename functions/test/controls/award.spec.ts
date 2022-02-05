@@ -124,7 +124,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     });
 
     it('failed to create award - badge over limit', async () => {
-      body.badge.count = 1001;
+      body.badge.count = 10001;
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress,
         body: body
@@ -149,7 +149,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     });
 
     it('failed to create award - badge over XP limit', async () => {
-      body.badge.count = 1001;
+      body.badge.count = 10001;
       walletSpy.mockReturnValue(Promise.resolve({
         address: memberAddress,
         body: body

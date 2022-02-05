@@ -39,6 +39,7 @@ module.exports = {
         green: {
           dark: '#11A696',
           neon: '#58F218',
+          success: '#8FE46C'
         },
         'app-gray': {
           text: '#333333',
@@ -46,6 +47,7 @@ module.exports = {
           200: '#CAC8BD',
           400: '#9F9D93',
           600: '#999999',
+          separator: '#F5F4EF'
         },
         tag: {
           blue: '#DCEFF9',
@@ -68,28 +70,50 @@ module.exports = {
         75: '18.75rem',
       },
       minWidth: {
+        6: '1.5rem',
+        8: '2rem',
         10: '2.5rem',
-        32: '8rem'
+        32: '8rem',
+        100: '25rem',
+        120: '30rem'
       },
       maxWidth: {
         fit: 'fit-content',
+        128: '32rem',
+        160: '40rem'
       },
       width: {
         header: '500px',
       },
       minHeight: {
+        6: '1.5rem',
+        8: '2rem',
+        10: '2.5rem',
+        24: '6rem',
         180: '45rem'
       },
+      maxHeight: {
+        56: '14rem',
+        80: '20rem',
+        128: '32rem'
+      },
       borderRadius: {
+        9: '2.25rem',
         10: '2.5rem',
         large: '3rem',
         40: '10rem'
       },
       dropShadow: {
-        card: '0px 0px 12px rgba(0, 0, 0, 0.08)',
+        card: '0px 0px 12px rgba(0, 0, 0, 0.08)'
+      },
+      boxShadow: {
+        header: '0px 2px 3px #E6E5DE',
+        modal: '0px 2px 32px rgba(0, 0, 0, 0.16)'
       }
     },
   },
   variants: {},
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/line-clamp')
+  ],
 };

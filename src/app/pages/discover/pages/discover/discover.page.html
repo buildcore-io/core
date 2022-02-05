@@ -11,24 +11,19 @@
       <i nz-icon nzType="search" class="text-xl"></i>
     </ng-template>
 
-
     <wen-tabs *ngIf="deviceService.isDesktop$ | async" [tabs]="sections"></wen-tabs>
+    
     <wen-dropdown-tabs
       *ngIf="(deviceService.isMobile$ | async) && !isSearchInputFocused"
       [tabs]="sections"
       [selectedTab]="selectedSection">
     </wen-dropdown-tabs>
 
-    <nz-input-group *ngIf="deviceService.isMobile$ | async" nzSize="small" [nzPrefix]="prefixIconSearchMobile"
-      class="ml-auto border-none shadow-none outline-0" [ngStyle]="{ 'width': isSearchInputFocused ? '100%' : 'fit-content' }" nzSearch>
-      <input type="text" nz-input class="w-0 text-base" [formControl]="filterControl"
-        [ngClass]="{ 'w-full': isSearchInputFocused }"/>
-    </nz-input-group>
-
-    <ng-template #prefixIconSearchMobile>
-      <i nz-icon nzType="search" class="block -mr-1 text-xl" (click)="onSearchIconClick()"></i>
-    </ng-template>
+    <wen-mobile-search *ngIf="deviceService.isMobile$ | async" [formControl]="filterControl" class="ml-auto" placeholder="Search">
+    </wen-mobile-search>
   </div>
+
+  <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-app-gray-100 mt-6"></div>
 
   <router-outlet></router-outlet>
 </wen-content>

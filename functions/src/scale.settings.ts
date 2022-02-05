@@ -20,6 +20,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.unblockMemberSpace] = low;
   scaleSettings[WEN_FUNC.acceptMemberSpace] = medium;
   scaleSettings[WEN_FUNC.declineMemberSpace] = low;
+  scaleSettings[WEN_FUNC.setAlliance] = low;
 
   // Award Functions
   scaleSettings[WEN_FUNC.cAward] = low;

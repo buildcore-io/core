@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FileApi } from '@api/file.api';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/member/services/data.service';
 import { BehaviorSubject } from 'rxjs';
@@ -13,27 +13,19 @@ import { Member } from './../../../../../../functions/interfaces/models/member';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberAboutComponent {
-  @Input() data?: DataService;
   @Input() avatarSrc?: string;
   @Input() loggedInMember?: BehaviorSubject<Member|undefined>;
-  @Input() trackByUid: (index: number, item: any) => number = (index: number) => index;
 
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
 
   constructor(
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public data: DataService,
+    public avatarService: AvatarService
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public openDrawer(): void {
@@ -42,5 +34,9 @@ export class MemberAboutComponent {
 
   public closeDrawer(): void {
     this.drawerVisible$.next(false);
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 }

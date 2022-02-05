@@ -1,5 +1,73 @@
 <div class="space-y-12">
   <div class="space-y-4">
+    <nz-card>
+      <form class="" [formGroup]="spaceForm">
+        <div class="flex items-center justify-between">
+          <wen-select-space
+            [ngStyle]="{
+              width: (deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value ? 
+                'calc(100% - 150px)' : '100%'
+            }"
+            formControlName="space"
+            [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+            size="large">
+          </wen-select-space>
+
+          <a nz-button nzType="link" nzSize="small" #viewSpaceButton
+            class="flex items-center ml-6"
+            [routerLink]="getSpaceRoute(spaceForm.value.space)"
+            *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value">
+              <span i18n>View space</span>
+              <wen-icon-angle-right></wen-icon-angle-right>
+          </a>
+        </div>
+
+        <label class="mt-3 text-base font-medium text-app-gray-text"
+          nz-checkbox formControlName="includeAlliances"
+          [nzDisabled]="spaceForm.value.space === defaultSpace.value" i18n>
+            Include connections {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+        </label>
+      </form>
+
+      <div class="w-full h-px mt-8 bg-bg-background"></div>
+
+      <div class="flex flex-col justify-between mt-6 lg:flex-row lg:items-center">
+        <div class="flex items-center">
+          <wen-member-tile [title]="'Awards Completed'" [value]="getTotal(data.member$ | async, 'awardsCompleted')">
+          </wen-member-tile>
+          <wen-member-tile class="ml-20" [title]="'Total Reputation'" [value]="getTotal(data.member$ | async, 'totalReputation')">
+          </wen-member-tile>
+        </div>
+
+        <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-8 bg-bg-background"></div>
+
+        <div class="w-full mt-6 lg:w-max lg:mt-0">
+          <div class="flex items-center justify-between text-xs font-medium text-app-gray-400">
+            <span i18n>Earned badges {{(data.badges$ | async)?.length}}</span>
+            <a nz-button nzType="link" nzSize="small"
+              class="flex items-center ml-6"
+              [routerLink]="getBadgeRoute()">
+                <span i18n>More</span>
+                <wen-icon-angle-right></wen-icon-angle-right>
+            </a>
+          </div>
+          <div class="flex items-center mt-2">
+            <wen-badge-tile
+              class="mr-2"
+              *ngFor="let badge of (data.badges$ | async) | slice:0:4; trackBy: trackByUid"
+              [metadata]="badge.payload.image"
+              [name]="badge.payload.name"
+              [size]="48">
+            </wen-badge-tile>
+          </div>
+        </div>
+      </div>
+    </nz-card>
+
+    <nz-card i18n-nzTitle nzTitle="Connections" *ngIf="spaceForm.value.includeAlliances">
+      <wen-member-alliances-table tableClasses="max-h-56" [member]="data.member$ | async" [selectedSpace]="spaceForm.value.space"></wen-member-alliances-table>
+    </nz-card>
+
     <nz-card nzTitle="Reputation">
       <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [colors]="chartOptions.colors!"
         [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [markers]="chartOptions.markers!"
@@ -7,12 +75,39 @@
 
     </nz-card>
 
-    <nz-card nzTitle="Timeline">
-      <nz-timeline>
-        <nz-timeline-item *ngFor="let t of data.badges$ | async; trackBy: trackByUid">
-          Earned Badge {{t.payload.name}} with {{t.payload.xp}}XP on {{t.createdOn?.toDate() | date:"short"}}
-        </nz-timeline-item>
-      </nz-timeline>
+    <nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="(data.badges$ | async)?.length">
+      <div *ngFor="let t of (data.badges$ | async) | slice:0:(showAllBadges ? (data.badges$ | async)?.length : 3); trackBy: trackByUid"
+        class="relative flex items-center mt-3">
+          <div class="absolute w-0.5 h-96 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"></div>
+
+          <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
+            <wen-icon-check></wen-icon-check>
+          </div>
+
+          <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
+            <div class="flex items-center">
+              <nz-avatar
+                [nzSrc]="t?.payload.image | ipfsBadge:filesizes.small"
+                class="bg-white border-gray-400 min-w-10 min-h-10"
+                nzShape="circle"
+              >
+              </nz-avatar>
+
+              <div class="ml-6">
+                <div class="text-xs font-medium text-gray-400">
+                  {{ t.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
+                <div class="text-base font-medium mt-0.5">
+                  <span i18n>Earned Badge</span> {{t.payload.name}} <span i18n>with</span> {{t.payload.xp}}XP</div>
+              </div>
+            </div>
+
+            <wen-icon-angle-right *ngIf="deviceService.isDesktop$ | async"></wen-icon-angle-right>
+          </div>
+      </div>
+
+      <button nz-button nzType="primary" class="self-center block w-48 mx-auto mt-6"
+        *ngIf="(data.badges$ | async) && ((data.badges$ | async)?.length || 0) > 3"
+        (click)="showAllBadges = !showAllBadges">{{ showAllBadges ? 'Show less' : 'Show more' }}</button>
     </nz-card>
   </div>
 </div>

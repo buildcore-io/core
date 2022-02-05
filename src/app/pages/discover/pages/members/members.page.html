@@ -1,45 +1,55 @@
-<div class="flex items-end justify-between">
-  <div class="flex items-center mt-12 lg:mt-8">
-    <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-      <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-        (nzCheckedChange)="handleChange(tag)">
-        {{ tag }}
-      </nz-tag>
-    </ng-container>
+<form class="flex flex-col items-end justify-between lg:flex-row" [formGroup]="spaceForm">
+  <wen-select-space
+    *ngIf="deviceService.isMobile$ | async"
+    class="block w-full mt-6 mb-6"
+    formControlName="space"
+    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+    size="large">
+  </wen-select-space>
 
-    <ng-template #hotTagsMobileBlock>
-      <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-        <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
-      </nz-select>
-    </ng-template>
-  </div>
+  <div class="flex items-center justify-between w-full lg:mt-8">
+    <div class="flex items-center">
+      <wen-select-space
+        *ngIf="deviceService.isDesktop$ | async"
+        class="block w-44"
+        formControlName="space"
+        [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+        size="small">
+      </wen-select-space>
 
-  <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-    <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" 
-      [formControl]="sortControl" nz-tooltip>
-      <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-      <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-    </nz-select>
-    <ng-template #defaultTemplate let-selected>
-      <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
-      {{ selected.nzLabel }}
-    </ng-template>
-  </ng-container>
-  <ng-template #sortMobileBlock>
-    <div class="relative">
-      <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
+      <label class="text-base font-medium lg:ml-6 text-app-gray-text"
+        nz-checkbox formControlName="includeAlliances"
+        [nzDisabled]="spaceForm.value.space === defaultSpace.value">
+          Include connections {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+      </label>
+    </div>
+
+    <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
+      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
+        [formControl]="sortControl" nz-tooltip>
         <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
         <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
       </nz-select>
-  
-      <ng-template #mobileSuffixIcon>
-        <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
+      <ng-template #defaultTemplate let-selected>
+        <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
+        {{ selected.nzLabel }}
       </ng-template>
-    </div>
-  </ng-template>
-</div>
+    </ng-container>
+    <ng-template #sortMobileBlock>
+      <div class="relative">
+        <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
+          <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+          <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
+        </nz-select>
+        <ng-template #mobileSuffixIcon>
+          <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
+        </ng-template>
+      </div>
+    </ng-template>
+  </div>
+</form>
 
-<div class="lg:grid mt-10 place-items-start">
+<div class="mt-10 lg:grid place-items-start">
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">
     {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} members
   </p>
@@ -57,7 +67,9 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="outline-none w-full lg:w-auto" *ngFor="let member of members$ | async; trackBy: trackByUid" [member]="member">
+    <wen-member-card class="relative w-full outline-none lg:w-auto"
+      *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member" [includeAlliances]="spaceForm.value.includeAlliances"
+      [selectedSpace]="spaceForm.value.space === defaultSpace.value ? undefined : spaceForm.value.space">
     </wen-member-card>
   </div>
 </div>
