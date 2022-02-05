@@ -7,6 +7,7 @@ import { createNft } from './controls/nft.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { markAwardsAsComplete } from "./cron";
+import { milestoneWrite } from './triggers/milestone.trigger';
 admin.initializeApp();
 
 // List all various functions supported by Firebase functions.
@@ -51,3 +52,6 @@ exports[WEN_FUNC.cNft] = createNft;
 
 // CRON Tasks
 exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;
+
+// TRIGGER Tasks
+exports['trigger_milestoneWrite'] = milestoneWrite;
