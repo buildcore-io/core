@@ -45,6 +45,7 @@ export const enum AWARD_COL {
 }
 
 export type EthAddress = string;
+export type IotaAddress = string;
 export type IpfsCid = string;
 
 export interface Base {
