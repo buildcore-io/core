@@ -19,6 +19,35 @@ interface TransactionMatch {
   to: MilestoneTransactionEntry;
 }
 
+// Listen for changes in all documents in the 'users' collection
+export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
+  timeoutSeconds: 300,
+  memory: "8GB",
+}).firestore.document(COL.MILESTONE + '/{milestoneId}').onWrite(async (change) => {
+  const newValue: any = change.after.data();
+  const previousValue: any = change.before.data();
+  if ((!previousValue || previousValue.complete === false) && previousValue?.processed !== true && newValue.complete === true) {
+    // We need to scan ALL transactions with certain type.
+    if (newValue.transactions) {
+      const service: ProcessingService = new ProcessingService(newValue.transactions);
+      await service.processOrders();
+      await service.processBillPayments();
+      await service.processCredits();
+
+      // Wait for all wallet operations to finish.
+      await Promise.all(service.walletOperations);
+    }
+
+    // Mark milestone as processed.
+    return change.after.ref.set({
+      processed: true
+    }, {merge: true});
+  } else {
+    console.log('Nothing to process.');
+    return;
+  }
+});
+
 class ProcessingService {
   public walletOperations: Promise<any>[] = [];
   private walletService: WalletService;
@@ -343,26 +372,3 @@ class ProcessingService {
   }
 
 }
-
-// Listen for changes in all documents in the 'users' collection
-export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.firestore.document(COL.MILESTONE + '/{milestoneId}').onWrite(async (change) => {
-  const newValue: any = change.after.data();
-  const previousValue: any = change.before.data();
-  if ((!previousValue || previousValue.complete === false) && previousValue?.processed !== true && newValue.complete === true) {
-    // We need to scan ALL transactions with certain type.
-    if (newValue.transactions) {
-      const service: ProcessingService = new ProcessingService(newValue.transactions);
-      await service.processOrders();
-      await service.processBillPayments();
-      await service.processCredits();
-    }
-
-    // Mark milestone as processed.
-    return change.after.ref.set({
-      processed: true
-    }, {merge: true});
-  } else {
-    console.log('Nothing to process.');
-    return;
-  }
-});
