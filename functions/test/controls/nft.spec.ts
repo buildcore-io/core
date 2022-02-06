@@ -131,3 +131,6 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     walletSpy.mockRestore();
   });
 });
+
+// TODO test invalid royalty amount
+// TODO add set new price once owned.

@@ -15,6 +15,7 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { CollectionType } from './../../interfaces/models/collection';
+import { MIN_AMOUNT_TO_TRANSFER } from './../services/wallet/wallet';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -54,9 +55,15 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
   }
 
   const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
-  const docDollection: any = await refCollection.get();
-  if (!docDollection.exists) {
+  const docCollection: any = await refCollection.get();
+  if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  // Royalty from the price must not be below 1 Mi.
+  const calculatedRoyalty = docCollection.data().royaltiesFee * params.body.price;
+  if (calculatedRoyalty < MIN_AMOUNT_TO_TRANSFER) {
+    throw throwInvalidArgument(WenError.royalty_payout_must_be_above_1_mi);
   }
 
   const refNft: any = admin.firestore().collection(COL.NFT).doc(nftAddress);
@@ -65,9 +72,9 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
     // Document does not exists.
     await refNft.set(keywords(cOn(merge(cleanParams(params.body), {
       uid: nftAddress,
-      space: docDollection.data().space,
-      type: docDollection.data().type,
-      hidden: (CollectionType.CLASSIC !== docDollection.data().type),
+      space: docCollection.data().space,
+      type: docCollection.data().type,
+      hidden: (CollectionType.CLASSIC !== docCollection.data().type),
       createdBy: creator
     }))));
 

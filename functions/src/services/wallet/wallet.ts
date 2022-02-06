@@ -26,7 +26,10 @@ interface Output {
   amount: number;
 }
 
-export class Wallet {
+export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
+export const KEY_NAME_TANGLE = 'Soonaverse';
+
+export class WalletService {
   // private API_ENDPOINT = "https://chrysalis-nodes.iota.org"; // Mainnet
   private API_ENDPOINT = 'https://api.lb-0.h.chrysalis-devnet.iota.cafe';   // DEV NET
   private client: SingleNodeClient;
@@ -68,7 +71,7 @@ export class Wallet {
     return newAddressHex;
   }
 
-  public async sendFromGenesis(fromAddress: AddressDetails, toAddress: string, amount: number, key: string, data: string): Promise<string> {
+  public async sendFromGenesis(fromAddress: AddressDetails, toAddress: string, amount: number, data: string): Promise<string> {
     const genesisAddressOutputs = await this.client.addressEd25519Outputs(fromAddress.hex);
     const inputsWithKeyPairs: Input[] = [];
     let totalGenesis = 0;
@@ -108,7 +111,7 @@ export class Wallet {
     }
 
     const { messageId } = await sendAdvanced(this.client, inputsWithKeyPairs, outputs, {
-        key: Converter.utf8ToBytes(key),
+        key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
         data: Converter.utf8ToBytes(data)
     });
 

@@ -4,6 +4,7 @@ import { addOwner, approveAward, approveParticipant, createAward, participate, r
 import { createCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { createNft } from './controls/nft.control';
+import { orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { markAwardsAsComplete } from "./cron";
@@ -48,7 +49,12 @@ exports[WEN_FUNC.uCollection] = updateCollection;
 exports[WEN_FUNC.approveCollection] = updateCollection;
 exports[WEN_FUNC.rejectCollection] = updateCollection;
 
+// NFT Functions
 exports[WEN_FUNC.cNft] = createNft;
+
+// Order functions
+exports[WEN_FUNC.orderNft] = orderNft;
+exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
 exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;
