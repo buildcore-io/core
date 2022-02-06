@@ -56,5 +56,6 @@ export const WenError = {
   nft_not_available_for_sale: { code: 2048, key: 'NFT is not available for sale.' },
   space_already_have_validated_address: { code: 2048, key: 'Space already have validated address.' },
   member_already_have_validated_address: { code: 2048, key: 'Member already have validated address.' },
+  nft_locked_for_sale: { code: 2048, key: 'NFT is currently locked.' },
 }
 

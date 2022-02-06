@@ -72,6 +72,8 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
     // Document does not exists.
     await refNft.set(keywords(cOn(merge(cleanParams(params.body), {
       uid: nftAddress,
+      locked: false,
+      lockedBy: null,
       space: docCollection.data().space,
       type: docCollection.data().type,
       hidden: (CollectionType.CLASSIC !== docCollection.data().type),

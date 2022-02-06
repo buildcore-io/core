@@ -59,6 +59,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     throw throwInvalidArgument(WenError.nft_not_available_for_sale);
   }
 
+  if (docNft.data().locked) {
+    throw throwInvalidArgument(WenError.nft_locked_for_sale);
+  }
+
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
@@ -94,6 +98,12 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       nft: docNftData.uid,
       collection: docCollectionData.uid
     }
+  });
+
+  // Lock NFT.
+  await refNft.update({
+    locked: true,
+    lockedBy: tranId
   });
 
   // Load latest

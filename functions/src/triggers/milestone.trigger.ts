@@ -31,8 +31,8 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
     if (newValue.transactions) {
       const service: ProcessingService = new ProcessingService(newValue.transactions);
       await service.processOrders();
-      await service.processBillPayments();
-      await service.processCredits();
+      await service.reconcileBillPayments();
+      await service.reconcileCredits();
 
       // Wait for all wallet operations to finish.
       await Promise.all(service.walletOperations);
@@ -97,10 +97,18 @@ class ProcessingService {
     });
   }
 
-  private markAsVoid(uid: string): Promise<any> {
-    return admin.firestore().collection(COL.TRANSACTION).doc(uid).update({
+  private async markAsVoid(transaction: Transaction): Promise<void> {
+    await admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid).update({
       void: true
     });
+
+    // We need to unlock NFT.
+    if (transaction.payload.nft) {
+      await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft).update({
+        locked: false,
+        lockedBy: null
+      });
+    }
   }
 
   private async createPayment(order: Transaction, tran: TransactionMatch): Promise<Transaction> {
@@ -295,6 +303,15 @@ class ProcessingService {
     }
   }
 
+  private async setNftOwner(payment: Transaction): Promise<void> {
+    if (payment.member) {
+      await admin.firestore().collection(COL.NFT).doc(payment.payload.nft).update({
+        owner: payment.member,
+        availableFrom: null
+      });
+    }
+  }
+
   public async processOrders(): Promise<void> {
     if (!this.actionNotRequired()) {
       return;
@@ -304,7 +321,7 @@ class ProcessingService {
     for (const pendingTran of pendingTrans.docs) {
       // This happens here on purpose instead of cron to reduce $$$
       if (dayjs(pendingTran.data().createdOn.toDate()).isAfter(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'))) {
-        await this.markAsVoid(pendingTran.data().uid);
+        await this.markAsVoid(pendingTran.data());
         continue;
       }
 
@@ -315,7 +332,7 @@ class ProcessingService {
         if (pendingTran.data().payload.type === TransactionOrderType.NFT_PURCHASE) {
           await this.createBillPayment(pendingTran.data(), match);
           await this.createBillPayment(pendingTran.data(), match);
-          // TODO Set new owner of the NFT and remove availableFrom.
+          await this.setNftOwner(payment);
         } else if (pendingTran.data().payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
           const credit = await this.createCredit(pendingTran.data(), payment, match);
           if (credit) {
@@ -341,7 +358,7 @@ class ProcessingService {
     return;
   }
 
-  public async processBillPayments(): Promise<void> {
+  public async reconcileBillPayments(): Promise<void> {
     if (!this.actionNotRequired()) {
       return;
     }
@@ -356,7 +373,7 @@ class ProcessingService {
     return;
   }
 
-  public async processCredits(): Promise<void> {
+  public async reconcileCredits(): Promise<void> {
     if (!this.actionNotRequired()) {
       return;
     }
