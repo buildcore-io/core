@@ -52,7 +52,9 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   // Extra check to make sure owner address is defined.
   if (docNft.data().owner && !docNft.data().ownerAddress) {
-    throw throwInvalidArgument(WenError.owner_does_not_have_verified_address);
+    throw throwInvalidArgument(WenError.member_must_have_validated_address);
+  } else if (!docMember.data().validatedAddress) {
+    throw throwInvalidArgument(WenError.space_must_have_validated_address);
   }
 
   if (!docNft.data().availableFrom || dayjs(docNft.data().availableFrom.toDate()).isAfter(dayjs())) {

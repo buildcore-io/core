@@ -62,7 +62,7 @@ describe('Ordering flows', () => {
       name: 'NFT Rocks!',
       description: 'babba',
       collection: collection.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
+      availableFrom: dayjs().toDate(),
       price: 10 * 1000 * 1000
     });
     const wrapped2: any = testEnv.wrap(createNft);

@@ -54,8 +54,10 @@ export const WenError = {
   royalty_payout_must_be_above_1_mi: { code: 2046, key: 'Royalty payout must be above 1 Mi.' },
   owner_does_not_have_verified_address: { code: 2047, key: 'Owner must have verified address to be paid.' },
   nft_not_available_for_sale: { code: 2048, key: 'NFT is not available for sale.' },
-  space_already_have_validated_address: { code: 2048, key: 'Space already have validated address.' },
-  member_already_have_validated_address: { code: 2048, key: 'Member already have validated address.' },
-  nft_locked_for_sale: { code: 2048, key: 'NFT is currently locked.' },
+  space_already_have_validated_address: { code: 2049, key: 'Space already have validated address.' },
+  member_already_have_validated_address: { code: 2050, key: 'Member already have validated address.' },
+  nft_locked_for_sale: { code: 2051, key: 'NFT is currently locked.' },
+  space_must_have_validated_address: { code: 2052, key: 'Space must have validated address.' },
+  member_must_have_validated_address: { code: 2053, key: 'Member must have validated address.' },
 }
 

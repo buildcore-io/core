@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
@@ -25,7 +26,7 @@ function defaultJoiUpdateCreateSchema(): any {
     image: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    availableFrom: Joi.date().greater(Date.now()).required(),
+    availableFrom: Joi.date().greater(dayjs().subtract(1, 'hour').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(10 * 1000 * 1000).max(1000 * 1000 * 1000 * 1000).required(),
     url: Joi.string().allow(null, '').uri({
