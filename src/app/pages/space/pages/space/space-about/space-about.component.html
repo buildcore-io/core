@@ -46,8 +46,7 @@
             <div class="text-lg font-bold">Connections</div>
             <div class="relative flex items-center justify-center ml-2">
                 <wen-icon-question-circle class="alliances-question cursor-help"></wen-icon-question-circle>
-                <div class="absolute z-10 hidden p-6 text-sm font-medium transform translate-x-16 translate-y-2 bg-white lg:translate-x-0
-                    alliances-tooltip shadow-modal rounded-3xl text-app-gra-text w-96 top-full" i18n>
+                <div class="absolute z-10 hidden p-6 text-sm font-medium transform translate-x-16 translate-y-2 bg-white lg:translate-x-0 alliances-tooltip shadow-modal rounded-3xl text-app-gra-text w-96 top-full" i18n>
                   Connections between spaces enables members of one space to recognize members of another space's experience points. Established connection turns into alliances.
                 </div>
             </div>
@@ -65,31 +64,12 @@
     </div>
 
     <div class="mt-6">
-        <div *ngFor="let ally of getSortedAlliances(data.space$ | async); let i = index; let last = last" class="mt-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                  <nz-avatar
-                    [nzSrc]="avatarService.getAvatarSize(ally._record.avatarUrl)"
-                    class="mr-3 bg-white border-gray-400 min-w-8 min-h-8"
-                    nzShape="circle"
-                    [nzSize]="32"
-                    >
-                    </nz-avatar>
-                    <div class="ml-3 text-sm font-bold">{{ ally._record.name }}</div>
-                </div>
-
-                <div *ngIf="ally.established === true" class="flex items-center text-sm font-medium text-green-success">
-                    <span i18n>Alliance</span>
-                    <wen-icon-check class="ml-3"></wen-icon-check>
-                </div>
-                <div *ngIf="ally.established === false" class="flex items-center text-sm font-medium text-app-gray-400">
-                    <span i18n>Connected</span>
-                    <wen-icon-eye class="ml-3"></wen-icon-eye>
-                </div>
-            </div>
-
-            <div *ngIf="last" class="w-full h-px mt-3 bg-app-gray-separator-light"></div>
-        </div>
+        <wen-space-alliances-table
+            [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
+            [alliances]="getSortedAlliances(data.space$ | async)"
+            size="small"
+            (onAllianceEdit)="onAllianceEdit($event)">
+        </wen-space-alliances-table>
     </div>
 
     <button *ngIf="(data.isGuardianWithinSpace$ | async)"
@@ -109,6 +89,7 @@
       [nzContent]="alliancesListModalContent"
       [nzFooter]="null"
       [nzBodyStyle]="{ padding: '28px 24px 0px 24px' }"
+      [nzWidth]="600"
     >
         <ng-template #alliancesListModalContent>
             <div class="flex items-center justify-between">
@@ -121,8 +102,9 @@
             </div>
 
             <div class="overflow-y-auto h-96 mt-7">
-                <wen-space-alliances-table
+                <wen-space-alliances-table [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
                     [alliances]="getSortedAlliances(data.space$ | async)"
+                    size="large"
                     (onAllianceEdit)="onAllianceEdit($event)">
                 </wen-space-alliances-table>
             </div>
@@ -139,11 +121,13 @@
                 {{ (data.space$ | async)?.name }} connections</div>
 
             <wen-space-alliances-table
+                [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
                 class="block mt-2 overflow-y-auto"
                 [ngStyle]="{
                     'max-height': 'calc(100% - ' +
                         ((spaceAlliancesTitle?.offsetHeight || 0) + (spaceAlliancesActions?.offsetHeight || 0) - 20) + 'px)'
                 }"
+                size="large"
                 [alliances]="getSortedAlliances(data.space$ | async)"
                 (onAllianceEdit)="onAllianceEdit($event)">
             </wen-space-alliances-table>

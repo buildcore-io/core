@@ -25,7 +25,7 @@ export class SpaceAboutComponent implements OnDestroy {
   public isNewAllianceOpen = false;
   public isNewAlliance = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
-  public reputationWeightControl: FormControl = new FormControl(null, Validators.required);
+  public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
   private spacesSubscription?: Subscription;
   constructor(
     public deviceService: DeviceService,
@@ -55,7 +55,7 @@ export class SpaceAboutComponent implements OnDestroy {
     this.spaceAllianceControl.setValue('');
     this.spaceAllianceControl.reset();
     this.spaceAllianceControl.markAsPristine();
-    this.reputationWeightControl.setValue('');
+    this.reputationWeightControl.setValue(1);
     this.reputationWeightControl.reset();
     this.reputationWeightControl.markAsPristine();
     this.isNewAllianceOpen = false;

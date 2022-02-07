@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { SelectSpaceOption } from '@components/select-space/select-space.component';
 import { AvatarService } from '@core/services/avatar';
+import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/space/services/data.service';
 import { Space } from 'functions/interfaces/models';
 
@@ -27,17 +28,23 @@ export class SpaceNewAllianceComponent {
         }));
   }
   @Input() spaceAllianceControl: FormControl = new FormControl('');
-  @Input() reputationWeightControl: FormControl = new FormControl(null);
+  @Input() reputationWeightControl: FormControl = new FormControl(1);
 
   public get spaces(): Space[] {
     return this._spaces;
   }
 
   public spaceOptions: SelectSpaceOption[] = [];
+  public weightOptions = [
+    { label: 'Equal', value: 1 },
+    { label: 'Half', value: 0.5 },
+    { label: 'Double', value: 2 }
+  ];
   private _spaces: Space[] = [];
 
   constructor(
     public avatarService: AvatarService,
+    public deviceService: DeviceService,
     private data: DataService
   ) {}
   

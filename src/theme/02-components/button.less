@@ -40,13 +40,19 @@ a.ant-btn {
 
   &:active,
   &:focus {
-    @apply bg-orange border-orange;
+    @apply bg-orange border-orange text-white;
 
     path {
       stroke: white;
     }
   }
+
+  &.selected {
+    @apply bg-orange border-orange text-white;
+  }
 }
+
+
 
 // sort by button
 .wen-sort-button {
@@ -67,7 +73,7 @@ a.ant-btn {
 
 .ant-select-dropdown {
   .cdk-virtual-scroll-viewport {
-    min-height: 84px;
+    min-height: 100px;
   }
 }
 

@@ -11,10 +11,16 @@ import { DeviceService } from '@core/services/device';
 })
 export class SpaceAlliancesTableComponent {
   @Input() alliances: AllianceExtended[] = []
+  @Input() size: 'small' | 'large' = 'large';
+  @Input() isGuardian = false;
   @Output() onAllianceEdit = new EventEmitter<AllianceExtended>();
 
   constructor(
     public deviceService: DeviceService,
     public avatarService: AvatarService
   ) { }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
 }

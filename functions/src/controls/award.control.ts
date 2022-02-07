@@ -428,8 +428,11 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
       const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
       const totalReputation = (sfDoc.data().totalReputation || 0) + xp;
       const finalObj: any = {
-        awardsCompleted: awardsCompleted,
-        totalReputation: totalReputation
+        ...sfDoc.data(),
+        ...{
+          awardsCompleted: awardsCompleted,
+          totalReputation: totalReputation
+        }
       };
 
       // Calculate for space.

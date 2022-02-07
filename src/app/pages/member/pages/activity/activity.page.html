@@ -76,9 +76,15 @@
     </nz-card>
 
     <nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="(data.badges$ | async)?.length">
-      <div *ngFor="let t of (data.badges$ | async) | slice:0:(showAllBadges ? (data.badges$ | async)?.length : 3); trackBy: trackByUid"
+      <div *ngFor="let t of (data.badges$ | async) | slice:0:(showAllBadges ? (data.badges$ | async)?.length : 3);
+        let i = index; trackBy: trackByUid"
         class="relative flex items-center mt-3">
-          <div class="absolute w-0.5 h-96 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"></div>
+          <div *ngIf="i !== 0" #timelineLine
+            class="absolute w-0.5 h-full bg-app-gray-100 left-3 transform -translate-x-1/2 -translate-y-1/2"></div>
+
+          <div *ngIf="i < ((data.badges$ | async)?.length || 0) - 1" #timelineLine
+            class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"
+            [ngClass]="!showAllBadges && ((data.badges$ | async)?.length || 0) > 3 && i === 2 ? 'h-96' : 'h-1/2'"></div>
 
           <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
             <wen-icon-check></wen-icon-check>
@@ -106,7 +112,7 @@
       </div>
 
       <button nz-button nzType="primary" class="self-center block w-48 mx-auto mt-6"
-        *ngIf="(data.badges$ | async) && ((data.badges$ | async)?.length || 0) > 3"
+        *ngIf="((data.badges$ | async)?.length || 0) > 3"
         (click)="showAllBadges = !showAllBadges">{{ showAllBadges ? 'Show less' : 'Show more' }}</button>
     </nz-card>
   </div>
