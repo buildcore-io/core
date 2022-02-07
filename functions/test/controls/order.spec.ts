@@ -71,7 +71,7 @@ describe('Ordering flows', () => {
     expect(nft?.updatedOn).toBeDefined();
   });
 
-  it('Order NFT, pay and be an owner', async () => {
+  it.skip('Order NFT, pay and be an owner', async () => {
     // We made purchase for an NFT.
     mocker({
       nft: nft.uid
