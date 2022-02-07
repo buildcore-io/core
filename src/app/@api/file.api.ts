@@ -5,6 +5,8 @@ import { NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { finalize, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
 
+export type FileType = 'space_avatar' | 'space_banner' | 'collection_banner';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,11 +21,11 @@ export class FileApi {
     // none.
   }
 
-  public static getUrl(org: string, type: 'space_avatar'|'space_banner', size: FILE_SIZES): string {
+  public static getUrl(org: string, type: FileType, size: FILE_SIZES): string {
     return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
   }
 
-  public upload(memberId: string, item: NzUploadXHRArgs, type: 'space_avatar'|'space_banner'|'collection_banner'): Subscription {
+  public upload(memberId: string, item: NzUploadXHRArgs, type: FileType): Subscription {
     const file: NzUploadFile = item.file;
     const uid: string = file.uid;
     const filePath: string = memberId + '/' + uid + '/' + type;
