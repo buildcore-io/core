@@ -40,13 +40,19 @@ a.ant-btn {
 
   &:active,
   &:focus {
-    @apply bg-orange border-orange;
+    @apply bg-orange border-orange text-white;
 
     path {
       stroke: white;
     }
   }
+
+  &.selected {
+    @apply bg-orange border-orange text-white;
+  }
 }
+
+
 
 // sort by button
 .wen-sort-button {
