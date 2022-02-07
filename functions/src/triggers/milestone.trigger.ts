@@ -5,13 +5,11 @@ import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { Transaction, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
-import { MnemonicService } from "../services/wallet/mnemonic";
 import { serverTime } from "../utils/dateTime.utils";
 import { getRandomEthAddress } from "../utils/wallet.utils";
-import { EthAddress } from './../../interfaces/models/base';
+import { EthAddress, IotaAddress } from './../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from './../../interfaces/models/milestone';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
-import { WalletService } from './../services/wallet/wallet';
 
 interface TransactionMatch {
   msgId: string;
@@ -26,7 +24,7 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
 }).firestore.document(COL.MILESTONE + '/{milestoneId}').onWrite(async (change) => {
   const newValue: any = change.after.data();
   const previousValue: any = change.before.data();
-  if ((!previousValue || previousValue.complete === false) && previousValue?.processed !== true && newValue.complete === true) {
+  if ((!previousValue || previousValue.completed === false) && previousValue?.processed !== true && newValue.completed === true) {
     // We need to scan ALL transactions with certain type.
     if (newValue.transactions) {
       const service: ProcessingService = new ProcessingService(newValue.transactions);
@@ -34,8 +32,9 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
       await service.reconcileBillPayments();
       await service.reconcileCredits();
 
-      // Wait for all wallet operations to finish.
-      await Promise.all(service.walletOperations);
+      // Now process all invalid orders.
+      // Wrong amount, Double payments & Expired orders.
+      await service.processInvalidOrders();
     }
 
     // Mark milestone as processed.
@@ -49,8 +48,6 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
 });
 
 class ProcessingService {
-  public walletOperations: Promise<any>[] = [];
-  private walletService: WalletService;
   private trans: {
     [propName: string]: MilestoneTransaction;
   };
@@ -58,22 +55,22 @@ class ProcessingService {
     [propName: string]: MilestoneTransaction;
   }) {
     this.trans = trans;
-    this.walletService = new WalletService();
   }
 
   private getTransactions(type: TransactionType): any {
-    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', type).where('reconciled', '==', false).where('void', '!=', true);
+    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', type).where('reconciled', '==', false).where('void', '!=', true).get();
   }
 
-  private findMatch(toAddress: string, amount: number, exact = true): TransactionMatch | undefined {
+  private findAllOrdersWithAddress(address: IotaAddress): any {
+    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.ORDER).where('payload.targetAddress', '==', address).get();
+  }
+
+  private findMatch(toAddress: string, amount: number): TransactionMatch | undefined {
     let found: TransactionMatch | undefined;
     for (const [msgId, t] of Object.entries(this.trans)) {
       const fromAddress: MilestoneTransactionEntry = t.inputs[0];
       for (const o of t.outputs) {
-        if (
-          (o.address === toAddress && amount === amount && exact == true) ||
-          (o.address === toAddress && exact === false)
-        ) {
+        if (o.address === toAddress && amount === amount) {
           found = {
             msgId: msgId,
             from: fromAddress,
@@ -174,7 +171,7 @@ class ProcessingService {
         space: order.payload.royaltiesSpace,
         createdOn: serverTime(),
         payload: {
-          amount: order.payload.amount,
+          amount: royaltyAmt,
           sourceAddress: tran.to.address,
           targetAddress: order.payload.royaltiesSpaceAddress,
           sourceTransaction: order.uid,
@@ -186,14 +183,6 @@ class ProcessingService {
       transOut.push(await refTran.set(data));
 
       linkedTransactions.push(tranId);
-
-      // Non blocking!!
-      this.walletOperations.push(this.walletService.sendFromGenesis(
-        await this.walletService.getIotaAddressDetails(await MnemonicService.get(tran.to.address)),
-        order.payload.royaltiesSpaceAddress,
-        order.payload.amount,
-        JSON.stringify(data)
-      ));
     }
 
     if (finalAmt > 0) {
@@ -206,7 +195,7 @@ class ProcessingService {
         member: order.member,
         createdOn: serverTime(),
         payload: {
-          amount: order.payload.amount,
+          amount: finalAmt,
           sourceAddress: tran.to.address,
           targetAddress: order.payload.beneficiaryAddress,
           sourceTransaction: order.uid,
@@ -218,14 +207,6 @@ class ProcessingService {
       transOut.push(await refTran.set(data));
 
       linkedTransactions.push(tranId);
-
-      // Non blocking!!
-      this.walletOperations.push(this.walletService.sendFromGenesis(
-        await this.walletService.getIotaAddressDetails(await MnemonicService.get(tran.to.address)),
-        order.payload.beneficiaryAddress,
-        order.payload.amount,
-        JSON.stringify(data)
-      ));
     }
 
     // Update links on the order.
@@ -274,19 +255,11 @@ class ProcessingService {
 
       linkedTransactions.push(tranId);
 
-      // Non blocking!!
-      this.walletOperations.push(this.walletService.sendFromGenesis(
-        await this.walletService.getIotaAddressDetails(await MnemonicService.get(tran.to.address)),
-        tran.from.address,
-        order.payload.amount,
-        JSON.stringify(data)
-      ));
+      // Update links on the order.
+      await refSource.update({
+        linkedTransactions: linkedTransactions
+      });
     }
-
-    // Update links on the order.
-    await refSource.update({
-      linkedTransactions: linkedTransactions
-    });
 
     return transOut;
   }
@@ -317,7 +290,7 @@ class ProcessingService {
       return;
     }
 
-    const pendingTrans: any = this.getTransactions(TransactionType.ORDER);
+    const pendingTrans: any = await this.getTransactions(TransactionType.ORDER);
     for (const pendingTran of pendingTrans.docs) {
       // This happens here on purpose instead of cron to reduce $$$
       if (dayjs(pendingTran.data().createdOn.toDate()).isAfter(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'))) {
@@ -347,15 +320,42 @@ class ProcessingService {
 
         await this.markAsReconciled(pendingTran.data().uid, match.msgId);
       }
-
-      const wrongTran: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount, false);
-      if (wrongTran) {
-        // Found wrong transaction - refund credit
-        const payment = await this.createPayment(pendingTran.data(), wrongTran);
-        await this.createCredit(pendingTran.data(), payment, wrongTran);
-      }
     }
     return;
+  }
+
+  public async processInvalidOrders(): Promise<void> {
+    if (!this.actionNotRequired()) {
+      return;
+    }
+
+    // We have to check each output address if there is an order for it.
+    for (const [msgId, t] of Object.entries(this.trans)) {
+      if (t.outputs.length) {
+        for (const o of t.outputs) {
+          const orders: any = await this.findAllOrdersWithAddress(o.address);
+          if (orders.size > 0) {
+            for (const order of orders.doc) {
+              const fromAddress: MilestoneTransactionEntry = t.inputs[0];
+              // if invalid proceed with credit.
+              if (
+                order.data().reconciled === true ||
+                order.data().void === true ||
+                order.data().amount !== o.amount
+              ) {
+                const wrongTransaction: TransactionMatch = {
+                  msgId: msgId,
+                  from: fromAddress,
+                  to: o
+                };
+                const payment = await this.createPayment(order.data(), wrongTransaction);
+                await this.createCredit(order.data(), payment, wrongTransaction);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   public async reconcileBillPayments(): Promise<void> {
@@ -363,7 +363,7 @@ class ProcessingService {
       return;
     }
 
-    const pendingTrans: any =  this.getTransactions(TransactionType.BILL_PAYMENT);
+    const pendingTrans: any = await this.getTransactions(TransactionType.BILL_PAYMENT);
     for (const pendingTran of pendingTrans.docs) {
       const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
       if (match) {
@@ -378,7 +378,7 @@ class ProcessingService {
       return;
     }
 
-    const pendingTrans: any =  this.getTransactions(TransactionType.CREDIT);
+    const pendingTrans: any =  await this.getTransactions(TransactionType.CREDIT);
     for (const pendingTran of pendingTrans.docs) {
       const match: TransactionMatch | undefined = this.findMatch(pendingTran.payload.targetAddress, pendingTran.payload.amount);
       if (match) {

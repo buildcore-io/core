@@ -9,6 +9,7 @@ import { approveProposal, createProposal, rejectProposal, voteOnProposal } from 
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { markAwardsAsComplete } from "./cron";
 import { milestoneWrite } from './triggers/milestone.trigger';
+import { transactionWrite } from './triggers/transaction.trigger';
 admin.initializeApp();
 
 // List all various functions supported by Firebase functions.
@@ -61,3 +62,4 @@ exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;
 
 // TRIGGER Tasks
 exports['trigger_milestoneWrite'] = milestoneWrite;
+exports['trigger_transactionWrite'] = transactionWrite;

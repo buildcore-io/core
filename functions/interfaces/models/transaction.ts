@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress, FileMetedata, IotaAddress } from './base';
+import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
 export const TRANSACTION_AUTO_EXPIRY_MS = 2 * 60 * 1000;
 export enum TransactionType {
   BADGE = "BADGE",
@@ -19,6 +19,12 @@ export enum TransactionOrderType {
 export interface VoteTransaction {
   proposalId: string;
   votes: string[];
+}
+
+export interface WalletResult {
+  createdOn: Timestamp;
+  chainReference?: string;
+  error?: any;
 }
 
 export interface BadgeTransaction {
@@ -51,6 +57,7 @@ export interface PaymentTransaction {
   targetAddress: IotaAddress;
   reconciled: boolean;
   chainReference: string;
+  walletReference: WalletResult;
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
   collection?: EthAddress;
@@ -62,6 +69,7 @@ export interface BillPaymentTransaction {
   targetAddress: IotaAddress;
   reconciled: boolean;
   chainReference: string;
+  walletReference: WalletResult;
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
   collection?: EthAddress;
@@ -73,6 +81,7 @@ export interface CreditPaymentTransaction {
   targetAddress: IotaAddress;
   reconciled: boolean;
   chainReference: string;
+  walletReference: WalletResult;
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
   collection?: EthAddress;
