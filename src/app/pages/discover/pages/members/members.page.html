@@ -25,7 +25,7 @@
     </div>
 
     <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
+      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
         [formControl]="sortControl" nz-tooltip>
         <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
         <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
