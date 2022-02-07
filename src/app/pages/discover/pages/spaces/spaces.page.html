@@ -15,7 +15,7 @@
   </div>
 
   <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-    <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" 
+    <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
       [formControl]="sortControl" nz-tooltip>
       <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
       <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
@@ -38,7 +38,7 @@
   </ng-template>
 </div>
 
-<div class="lg:grid mt-10 place-items-start">
+<div class="mt-10 lg:grid place-items-start">
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(spaces$ | async)">
     {{ ((spaces$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} spaces
   </p>
@@ -56,7 +56,7 @@
       </div>
     </nz-card>
 
-    <wen-space-card class="outline-none w-full lg:w-auto" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s">
+    <wen-space-card class="w-full outline-none lg:w-auto" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s">
     </wen-space-card>
   </div>
 </div>
