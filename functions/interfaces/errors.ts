@@ -51,5 +51,13 @@ export const WenError = {
   award_is_not_approved: { code: 2044, key: 'Award is not approved.' },
   award_is_rejected: { code: 2045, key: 'Award is rejected.' },
   collection_does_not_exists: { code: 2046, key: 'Collection does not exists.' },
+  royalty_payout_must_be_above_1_mi: { code: 2046, key: 'Royalty payout must be above 1 Mi.' },
+  owner_does_not_have_verified_address: { code: 2047, key: 'Owner must have verified address to be paid.' },
+  nft_not_available_for_sale: { code: 2048, key: 'NFT is not available for sale.' },
+  space_already_have_validated_address: { code: 2049, key: 'Space already have validated address.' },
+  member_already_have_validated_address: { code: 2050, key: 'Member already have validated address.' },
+  nft_locked_for_sale: { code: 2051, key: 'NFT is currently locked.' },
+  space_must_have_validated_address: { code: 2052, key: 'Space must have validated address.' },
+  member_must_have_validated_address: { code: 2053, key: 'Member must have validated address.' },
 }
 

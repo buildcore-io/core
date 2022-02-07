@@ -39,6 +39,9 @@ export const enum WEN_FUNC {
   // NFT functions.
   cNft = "cNft",
 
+  // ORDER functions.
+  orderNft = "orderNft",
+  validateAddress = "validateAddress",
 }
 
 export interface cMemberNotExists {

@@ -1,9 +1,44 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2021, 11, 20);
+    match /avatars/{document=**} {
+      allow get: if true;
+      allow list: if request.query.limit <= 1;
     }
+
+    match /award/{document=**} {
+      allow read;
+    }
+
+    match /badges/{document=**} {
+      allow get: if true;
+      allow list: if request.query.limit <= 1;
+    }
+
+    match /member/{document=**} {
+      allow read;
+    }
+
+    match /milestone/{document=**} {
+      allow read;
+    }
+
+    match /proposal/{document=**} {
+      allow read;
+    }
+
+    match /space/{document=**} {
+      allow read;
+    }
+
+    match /transaction/{transactionId} {
+      // Anyone can ready anything.
+      allow get: if true;
+
+      // Orders can't be searched, user must know the exact order.
+      allow list: if resource.data.type != 'ORDER';
+    }
+
   }
 }
+
