@@ -38,7 +38,7 @@
                 </div>
             </td>
             <td>
-                <wen-icon-edit class="cursor-pointer" (click)="onAllianceEdit.emit(ally)"></wen-icon-edit>
+                <wen-icon-edit *ngIf="isGuardian" class="cursor-pointer" (click)="onAllianceEdit.emit(ally)"></wen-icon-edit>
             </td>
         </tr>
     </tbody>

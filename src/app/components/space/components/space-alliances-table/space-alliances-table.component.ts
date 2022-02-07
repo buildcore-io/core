@@ -12,6 +12,7 @@ import { DeviceService } from '@core/services/device';
 export class SpaceAlliancesTableComponent {
   @Input() alliances: AllianceExtended[] = []
   @Input() size: 'small' | 'large' = 'large';
+  @Input() isGuardian = false;
   @Output() onAllianceEdit = new EventEmitter<AllianceExtended>();
 
   constructor(
