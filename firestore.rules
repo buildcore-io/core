@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /awatars/{document=**} {
+    match /avatars/{document=**} {
       allow get: if true;
       allow list: if request.query.limit <= 1;
     }

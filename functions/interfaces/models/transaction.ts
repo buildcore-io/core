@@ -39,8 +39,8 @@ export interface OrderTransaction {
   amount: number;
   targetAddress: IotaAddress;
   type: TransactionOrderType;
-  linkedTransactions: EthAddress[];
   reconciled: boolean;
+  void: boolean;
   nft?: EthAddress;
   beneficiary?: 'space' | 'member',
   beneficiaryUid?: EthAddress,
@@ -56,6 +56,7 @@ export interface PaymentTransaction {
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
+  void: boolean;
   chainReference: string;
   walletReference: WalletResult;
   sourceTransaction: OrderTransaction;
@@ -68,6 +69,7 @@ export interface BillPaymentTransaction {
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
+  void: boolean;
   chainReference: string;
   walletReference: WalletResult;
   sourceTransaction: OrderTransaction;
@@ -80,6 +82,7 @@ export interface CreditPaymentTransaction {
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
   reconciled: boolean;
+  void: boolean;
   chainReference: string;
   walletReference: WalletResult;
   sourceTransaction: OrderTransaction;
@@ -91,6 +94,6 @@ export interface Transaction extends BaseRecord {
   type: TransactionType;
   member?: EthAddress;
   space?: EthAddress;
-  void?: true;
+  linkedTransactions: EthAddress[];
   payload: any; // VoteTransaction|BadgeTransaction|OrderTransaction|PaymentTransaction|BillPaymentTransaction|CreditPaymentTransaction;
 }

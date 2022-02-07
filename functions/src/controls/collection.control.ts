@@ -63,10 +63,13 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   // Validate space exists.
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
   await SpaceValidator.spaceExists(refSpace);
+  await SpaceValidator.hasValidAddress(refSpace);
 
   // Validate royalty space exists
   const refSpaceRoyalty: any = admin.firestore().collection(COL.SPACE).doc(params.body.royaltiesSpace);
   await SpaceValidator.spaceExists(refSpaceRoyalty);
+  await SpaceValidator.hasValidAddress(refSpaceRoyalty);
+
 
   const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(collectionAddress);
   let docCollection: any = await refCollection.get();

@@ -14,4 +14,11 @@ export class SpaceValidator {
       throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
     }
   }
+
+  public static async hasValidAddress(refSpace: any): Promise<void> {
+    const docSpace: any = await refSpace.get();
+    if (!(await refSpace.get()).exists || !docSpace.data().validatedAddress) {
+      throw throwInvalidArgument(WenError.space_must_have_validated_address);
+    }
+  }
 }

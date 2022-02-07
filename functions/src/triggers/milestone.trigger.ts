@@ -26,8 +26,15 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
   const previousValue: any = change.before.data();
   if ((!previousValue || previousValue.completed === false) && previousValue?.processed !== true && newValue.completed === true) {
     // We need to scan ALL transactions with certain type.
-    if (newValue.transactions) {
-      const service: ProcessingService = new ProcessingService(newValue.transactions);
+    const transactions: any = await change.after.ref.collection('transactions').get();
+    const tranOut: {
+      [propName: string]: MilestoneTransaction;
+    } = {};
+    for (const tran of transactions.docs) {
+      tranOut[tran.id] = tran.data();
+    }
+    if (transactions.size > 0) {
+      const service: ProcessingService = new ProcessingService(tranOut);
       await service.processOrders();
       await service.reconcileBillPayments();
       await service.reconcileCredits();
@@ -51,6 +58,7 @@ class ProcessingService {
   private trans: {
     [propName: string]: MilestoneTransaction;
   };
+  private processedTrans: string[] = [];
   constructor(trans: {
     [propName: string]: MilestoneTransaction;
   }) {
@@ -58,7 +66,7 @@ class ProcessingService {
   }
 
   private getTransactions(type: TransactionType): any {
-    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', type).where('reconciled', '==', false).where('void', '!=', true).get();
+    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', type).where('payload.reconciled', '==', false).where('payload.void', '==', false).get();
   }
 
   private findAllOrdersWithAddress(address: IotaAddress): any {
@@ -87,17 +95,15 @@ class ProcessingService {
     return Object.keys(this.trans).length === 0;
   }
 
-  private markAsReconciled(uid: string, chainRef: string): Promise<any> {
-    return admin.firestore().collection(COL.TRANSACTION).doc(uid).update({
-      reconciled: true,
-      chainReference: chainRef
-    });
+  private markAsReconciled(transaction: Transaction, chainRef: string): Promise<any> {
+    transaction.payload.reconciled = true;
+    transaction.payload.chainReference = chainRef;
+    return admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid).update(transaction);
   }
 
   private async markAsVoid(transaction: Transaction): Promise<void> {
-    await admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid).update({
-      void: true
-    });
+    transaction.payload.void = true;
+    await admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid).update(transaction);
 
     // We need to unlock NFT.
     if (transaction.payload.nft) {
@@ -126,10 +132,11 @@ class ProcessingService {
         sourceAddress: tran.from.address,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
+        void: false,
         sourceTransaction: order.uid,
         chainReference: tran.msgId,
-        nft: order.payload.nft,
-        collection: order.payload.collection
+        nft: order.payload.nft || null,
+        collection: order.payload.collection || null
       }
     });
 
@@ -142,7 +149,7 @@ class ProcessingService {
       linkedTransactions: linkedTransactions
     });
 
-    return refTran.get().data();
+    return (await refTran.get()).data();
   }
 
   private async createBillPayment(order: Transaction, tran: TransactionMatch): Promise<Transaction[]> {
@@ -176,12 +183,13 @@ class ProcessingService {
           targetAddress: order.payload.royaltiesSpaceAddress,
           sourceTransaction: order.uid,
           reconciled: false,
-          nft: order.payload.nft,
-          collection: order.payload.collection
+          void: false,
+          nft: order.payload.nft || null,
+          collection: order.payload.collection || null
         }
       };
-      transOut.push(await refTran.set(data));
-
+      await refTran.set(data);
+      transOut.push((await refTran.get()).data());
       linkedTransactions.push(tranId);
     }
 
@@ -199,13 +207,14 @@ class ProcessingService {
           sourceAddress: tran.to.address,
           targetAddress: order.payload.beneficiaryAddress,
           sourceTransaction: order.uid,
-          nft: order.payload.nft,
+          nft: order.payload.nft || null,
           reconciled: false,
-          collection: order.payload.collection
+          void: false,
+          collection: order.payload.collection || null
         }
       };
-      transOut.push(await refTran.set(data));
-
+      await refTran.set(data);
+      transOut.push((await refTran.get()).data());
       linkedTransactions.push(tranId);
     }
 
@@ -246,12 +255,14 @@ class ProcessingService {
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
           sourceTransaction: payment.uid,
-          nft: order.payload.nft,
+          nft: order.payload.nft || null,
           reconciled: false,
-          collection: order.payload.collection
+          void: false,
+          collection: order.payload.collection || null
         }
       };
-      transOut = await refTran.set(data);
+      await refTran.set(data);
+      transOut = (await refTran.get()).data();
 
       linkedTransactions.push(tranId);
 
@@ -286,7 +297,8 @@ class ProcessingService {
   }
 
   public async processOrders(): Promise<void> {
-    if (!this.actionNotRequired()) {
+    console.log('Processing Orders...');
+    if (this.actionNotRequired()) {
       return;
     }
 
@@ -300,10 +312,10 @@ class ProcessingService {
 
       const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
       if (match) {
+        this.processedTrans.push(match.to.address);
         // Found transaction, create payment / ( bill payments | credit)
         const payment = await this.createPayment(pendingTran.data(), match);
         if (pendingTran.data().payload.type === TransactionOrderType.NFT_PURCHASE) {
-          await this.createBillPayment(pendingTran.data(), match);
           await this.createBillPayment(pendingTran.data(), match);
           await this.setNftOwner(payment);
         } else if (pendingTran.data().payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
@@ -318,14 +330,14 @@ class ProcessingService {
           }
         }
 
-        await this.markAsReconciled(pendingTran.data().uid, match.msgId);
+        await this.markAsReconciled(pendingTran.data(), match.msgId);
       }
     }
     return;
   }
 
   public async processInvalidOrders(): Promise<void> {
-    if (!this.actionNotRequired()) {
+    if (this.actionNotRequired()) {
       return;
     }
 
@@ -333,15 +345,20 @@ class ProcessingService {
     for (const [msgId, t] of Object.entries(this.trans)) {
       if (t.outputs.length) {
         for (const o of t.outputs) {
+          // Already processed.
+          if (this.processedTrans.indexOf(o.address) > -1) {
+            return;
+          }
+
           const orders: any = await this.findAllOrdersWithAddress(o.address);
           if (orders.size > 0) {
-            for (const order of orders.doc) {
+            for (const order of orders.docs) {
               const fromAddress: MilestoneTransactionEntry = t.inputs[0];
               // if invalid proceed with credit.
               if (
-                order.data().reconciled === true ||
-                order.data().void === true ||
-                order.data().amount !== o.amount
+                order.data().payload.reconciled === true ||
+                order.data().payload.void === true ||
+                order.data().payload.amount !== o.amount
               ) {
                 const wrongTransaction: TransactionMatch = {
                   msgId: msgId,
@@ -359,7 +376,7 @@ class ProcessingService {
   }
 
   public async reconcileBillPayments(): Promise<void> {
-    if (!this.actionNotRequired()) {
+    if (this.actionNotRequired()) {
       return;
     }
 
@@ -367,22 +384,24 @@ class ProcessingService {
     for (const pendingTran of pendingTrans.docs) {
       const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
       if (match) {
-        await this.markAsReconciled(pendingTran.data().uid, match.msgId);
+        this.processedTrans.push(match.to.address);
+        await this.markAsReconciled(pendingTran.data(), match.msgId);
       }
     }
     return;
   }
 
   public async reconcileCredits(): Promise<void> {
-    if (!this.actionNotRequired()) {
+    if (this.actionNotRequired()) {
       return;
     }
 
     const pendingTrans: any =  await this.getTransactions(TransactionType.CREDIT);
     for (const pendingTran of pendingTrans.docs) {
-      const match: TransactionMatch | undefined = this.findMatch(pendingTran.payload.targetAddress, pendingTran.payload.amount);
+      const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
       if (match) {
-        await this.markAsReconciled(pendingTran.uid, match.msgId);
+        this.processedTrans.push(match.to.address);
+        await this.markAsReconciled(pendingTran.data(), match.msgId);
       }
     }
     return;

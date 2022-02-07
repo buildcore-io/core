@@ -49,11 +49,13 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(docNft.data().collection);
   const docCollection: any = await refCollection.get();
   const docCollectionData: Collection = docCollection.data();
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
+  const docSpace: any = await refSpace.get();
 
   // Extra check to make sure owner address is defined.
   if (docNft.data().owner && !docNft.data().ownerAddress) {
     throw throwInvalidArgument(WenError.member_must_have_validated_address);
-  } else if (!docMember.data().validatedAddress) {
+  } else if (!docSpace.data().validatedAddress) {
     throw throwInvalidArgument(WenError.space_must_have_validated_address);
   }
 
@@ -68,10 +70,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
-  const docSpace: any = await refSpace.get();
-
   const refRoyaltySpace: any = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
   const docRoyaltySpace: any = await refRoyaltySpace.get();
 
@@ -96,6 +94,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       royaltiesSpace: docCollectionData.royaltiesSpace,
       royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,
       reconciled: false,
+      void: false,
       chainReference: null,
       nft: docNftData.uid,
       collection: docCollectionData.uid
@@ -138,7 +137,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   if (isSpaceValidation) {
     const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
     await SpaceValidator.spaceExists(refSpace);
-    docSpace = refSpace.get();
+    docSpace = await refSpace.get();
   }
 
   if (isSpaceValidation && docSpace.data().validatedAddress) {
@@ -168,6 +167,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
       beneficiary: isSpaceValidation ? 'space' : 'member',
       beneficiaryUid: isSpaceValidation ? params.body.space : owner,
       reconciled: false,
+      void: false,
       chainReference: null
     }
   });

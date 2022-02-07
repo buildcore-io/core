@@ -13,7 +13,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
   memory: "8GB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const newValue: Transaction = <Transaction>change.after.data();
-  if (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT) {
+  if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
     return;
   }
 
@@ -34,7 +34,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
         })
       );
     } catch (e: any) {
-      walletResponse.error = e;
+      walletResponse.error = e.toString();
     }
 
     // Set wallet reference.
