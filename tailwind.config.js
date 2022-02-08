@@ -68,6 +68,9 @@ module.exports = {
         alerts: {
           error: '#D94B08'
         },
+        foregrounds: {
+          secondary: '#959388'
+        },
         brown: '#A66300',
         pink: '#F20CDF',
       },
@@ -80,28 +83,35 @@ module.exports = {
         8: '2rem',
         10: '2.5rem',
         32: '8rem',
+        76: '19rem',
         100: '25rem',
         120: '30rem'
       },
       maxWidth: {
         fit: 'fit-content',
+        24: '6rem',
         128: '32rem',
         160: '40rem'
       },
       width: {
         header: '500px',
+        76: '19rem'  
       },
       minHeight: {
         6: '1.5rem',
         8: '2rem',
         10: '2.5rem',
         24: '6rem',
+        76: '19rem',
         180: '45rem'
       },
       maxHeight: {
         56: '14rem',
         80: '20rem',
         128: '32rem'
+      },
+      height: {
+        76: '19rem'  
       },
       borderRadius: {
         9: '2.25rem',

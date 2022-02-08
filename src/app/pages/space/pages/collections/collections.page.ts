@@ -2,9 +2,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionFilter } from '@api/collection.api';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { DataService } from '@pages/space/services/data.service';
-import { Subscription } from 'rxjs';
+import { Collection } from 'functions/interfaces/models';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'wen-collections',
@@ -15,10 +17,16 @@ import { Subscription } from 'rxjs';
 export class CollectionsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(CollectionFilter.ALL);
+  public hotTags: { value: CollectionFilter; label: string}[] = [
+    { value: CollectionFilter.ALL, label: 'All' },
+    { value: CollectionFilter.PENDING, label: 'Pending' },
+    { value: CollectionFilter.AVAILABLE, label: 'Available' }
+  ];
   private subscriptions$: Subscription[] = [];
 
   constructor(
     public data: DataService,
+    public deviceService: DeviceService,
     private cd: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
@@ -53,10 +61,24 @@ export class CollectionsPage implements OnInit, OnDestroy {
     ]);
   }
 
+  public getList(): BehaviorSubject<Collection[]|undefined> {
+    if (this.selectedListControl.value === this.filterOptions.ALL) {
+      return this.data.allCollections$;
+    } else if (this.selectedListControl.value === this.filterOptions.AVAILABLE) {
+      return this.data.availableCollections$;
+    } else {
+      return this.data.pendingCollections$;
+    }
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 
   public ngOnDestroy(): void {
