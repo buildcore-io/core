@@ -66,7 +66,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
       return this.data.allCollections$;
     } else if (this.selectedListControl.value === this.filterOptions.AVAILABLE) {
       return this.data.availableCollections$;
-    } else if (this.selectedListControl.value === this.filterOptions.PENDING) {
+    } else {
       return this.data.pendingCollections$;
     }
   }
