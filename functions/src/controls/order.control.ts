@@ -146,34 +146,56 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     throw throwInvalidArgument(WenError.member_already_have_validated_address);
   }
 
-  // Get new target address.
-  const newWallet: WalletService = new WalletService();
-  const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-  const randomAmount: number = Math.floor(Math.random() * ((MIN_AMOUNT_TO_TRANSFER * 1.5) - MIN_AMOUNT_TO_TRANSFER + 1) + MIN_AMOUNT_TO_TRANSFER);
-  // Document does not exists.
-  const tranId: string = getRandomEthAddress();
-  const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
-  await refTran.set(<Transaction>{
-    type: TransactionType.ORDER,
-    uid: tranId,
-    member: owner,
-    space: isSpaceValidation ? params.body.space : null,
-    createdOn: serverTime(),
-    payload: {
-      type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
-      amount: randomAmount,
-      targetAddress: targetAddress.bech32,
-      beneficiary: isSpaceValidation ? 'space' : 'member',
-      beneficiaryUid: isSpaceValidation ? params.body.space : owner,
-      reconciled: false,
-      void: false,
-      chainReference: null
-    }
-  });
+  // Already existing transaction.
+  let docTrans: any|undefined;
+  if (isSpaceValidation && docSpace.data().addressValidationTransaction) {
+    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(docSpace.data().addressValidationTransaction);
+    docTrans = await refTran.get();
+  } else if (docMember.data().addressValidationTransaction) {
+    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(docMember.data().addressValidationTransaction);
+    docTrans = await refTran.get();
+  }
 
-  // Load latest
-  const docTrans = await refTran.get();
+  if (!docTrans) {
+    // Get new target address.
+    const newWallet: WalletService = new WalletService();
+    const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
+    const randomAmount: number = Math.floor(Math.random() * ((MIN_AMOUNT_TO_TRANSFER * 1.5) - MIN_AMOUNT_TO_TRANSFER + 1) + MIN_AMOUNT_TO_TRANSFER);
+    // Document does not exists.
+    const tranId: string = getRandomEthAddress();
+    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+    await refTran.set(<Transaction>{
+      type: TransactionType.ORDER,
+      uid: tranId,
+      member: owner,
+      space: isSpaceValidation ? params.body.space : null,
+      createdOn: serverTime(),
+      payload: {
+        type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
+        amount: randomAmount,
+        targetAddress: targetAddress.bech32,
+        beneficiary: isSpaceValidation ? 'space' : 'member',
+        beneficiaryUid: isSpaceValidation ? params.body.space : owner,
+        reconciled: false,
+        void: false,
+        chainReference: null
+      }
+    });
+
+    if (isSpaceValidation) {
+      await admin.firestore().collection(COL.SPACE).doc(params.body.space).update({
+        addressValidationTransaction: tranId
+      });
+    } else {
+      await admin.firestore().collection(COL.MEMBER).doc(owner).update({
+        addressValidationTransaction: tranId
+      });
+    }
+
+    // Load latest
+    docTrans = await refTran.get();
+  }
 
   // Return member.
   return <Transaction>docTrans.data();

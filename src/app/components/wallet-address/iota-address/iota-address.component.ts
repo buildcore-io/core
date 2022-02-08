@@ -61,6 +61,10 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
       this.cd.markForCheck();
     });
+
+    if (this.entity?.addressValidationTransaction) {
+      this.transSubscription = this.orderApi.listen(this.entity.addressValidationTransaction).subscribe(<any>this.transaction$);
+    }
   }
 
   public copyAddress() {

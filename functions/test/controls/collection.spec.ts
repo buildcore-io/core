@@ -167,9 +167,6 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: '123',
       royaltiesFee: 0.6,
-      category: Categories.ART,
-      type: CollectionType.CLASSIC,
-      space: space.uid,
       royaltiesSpace: space.uid
     });
     const wrapped2: any = testEnv.wrap(updateCollection);
