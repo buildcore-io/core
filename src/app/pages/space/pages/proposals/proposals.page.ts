@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -18,13 +19,20 @@ import { DataService } from "./../../services/data.service";
 export class ProposalsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(ProposalFilter.ACTIVE);
+  public hotTags: { value: ProposalFilter; label: string}[] = [
+    { value: ProposalFilter.DRAFT, label: 'Pending' },
+    { value: ProposalFilter.ACTIVE, label: 'Active' },
+    { value: ProposalFilter.COMPLETED, label: 'Completed' },
+    { value: ProposalFilter.REJECTED, label: 'Rejected' }
+  ];
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private router: Router,
     private cd: ChangeDetectorRef,
     private route: ActivatedRoute,
-    public data: DataService
+    public data: DataService,
+    public deviceService: DeviceService
   ) {}
 
   public ngOnInit(): void {
