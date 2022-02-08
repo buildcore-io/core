@@ -34,7 +34,7 @@ function defaultJoiUpdateCreateSchema(): any {
     discounts: Joi.array().items(Joi.object().keys({
       xp: Joi.string().required(),
       amount: Joi.number().min(0.01).max(1).required()
-    })).min(1).max(5).optional(),
+    })).min(0).max(5).optional(),
     discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
     url: Joi.string().allow(null, '').uri({
       scheme: ['https', 'http']
@@ -100,7 +100,12 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const member = params.address.toLowerCase();
-  const schema: ObjectSchema<Collection> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {
+  // Disallow change on below.
+  const defaultSchema = defaultJoiUpdateCreateSchema();
+  delete defaultSchema.type;
+  delete defaultSchema.space;
+  delete defaultSchema.category;
+  const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {
     uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
@@ -110,22 +115,20 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  // Validate space exists.
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
-  await SpaceValidator.spaceExists(refSpace);
-  await SpaceValidator.isGuardian(refSpace, member);
-
   const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
   let docCollection: any = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
+  // Validate space exists.
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
+  await SpaceValidator.isGuardian(refSpace, member);
+
   // Document does not exists.
   await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update(keywords(uOn(pSchema(
     schema,
-    params.body,
-    ['type', 'royaltiesFee', 'royaltiesSpace', 'space']
+    params.body
   ))));
 
 

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NavigationService } from '@core/services/navigation/navigation.service';
 import { NotificationService } from '@core/services/notification';
@@ -11,13 +12,15 @@ import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DISCORD_REGEXP, TWITTER_REGEXP, URL_REGEXP } from 'functions/interfaces/config';
-import { Categories, CollectionType } from 'functions/interfaces/models';
+import { Categories, CollectionType, Space } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { DiscountLine } from './../../../../../../functions/interfaces/models/collection';
+import { SelectSpaceOption } from './../../../../components/select-space/select-space.component';
 
-const MAX_DISCOUNT_COUNT = 5;
+const MAX_DISCOUNT_COUNT = 3;
 
 @UntilDestroy()
 @Component({
@@ -35,18 +38,23 @@ export class UpsertPage implements OnInit {
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public bannerUrlControl: FormControl = new FormControl('');
   public categoryControl: FormControl = new FormControl('', Validators.required);
-  public typeControl: FormControl = new FormControl(CollectionType.CLASSIC);
+  public spaceControl: FormControl = new FormControl('', Validators.required);
+  public royaltiesSpaceControl: FormControl = new FormControl('', Validators.required);
+  public royaltiesSpaceDifferentControl: FormControl = new FormControl(false, Validators.required);
+  public typeControl: FormControl = new FormControl(CollectionType.CLASSIC, Validators.required);
   public discounts: FormArray;
   public collectionForm: FormGroup;
   public editMode = false;
   public collectionId?: number;
   public collectionTypes = enumToArray(CollectionType);
   public collectionCategories = enumToArray(Categories);
+  public formatterPercent = (value: number): string => `${value} %`;
+  public parserPercent = (value: string): string => value.replace(' %', '');
 
-  
   constructor(
     public deviceService: DeviceService,
     public nav: NavigationService,
+    public cache: CacheService,
     private route: ActivatedRoute,
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
@@ -63,7 +71,11 @@ export class UpsertPage implements OnInit {
     this.collectionForm = new FormGroup({
       name: this.nameControl,
       description: this.descriptionControl,
+      space: this.spaceControl,
+      type: this.typeControl,
       royaltiesFee: this.royaltiesFeeControl,
+      royaltiesSpace: this.royaltiesSpaceControl,
+      royaltiesSpaceDifferent: this.royaltiesSpaceDifferentControl,
       url: this.urlControl,
       twitter: this.twitterControl,
       discord: this.discordControl,
@@ -74,6 +86,13 @@ export class UpsertPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.route.params.pipe(untilDestroyed(this)).subscribe((p) => {
+      if (p.space) {
+        this.spaceControl.setValue(p.space);
+        this.royaltiesSpaceControl.setValue(p.space);
+      }
+    });
+
     this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.collectionId) {
         this.editMode = true;
@@ -84,18 +103,43 @@ export class UpsertPage implements OnInit {
           } else {
             this.nameControl.setValue(o.name);
             this.descriptionControl.setValue(o.description);
+            this.spaceControl.setValue(o.space);
+            this.descriptionControl.setValue(o.description);
+            this.typeControl.setValue(o.type);
             this.royaltiesFeeControl.setValue(o.royaltiesFee);
-            this.bannerUrlControl.setValue(o.bannerUrl); 
-            // this.urlControl.setValue(o.url);
-            // this.twitterControl.setValue(o.twitter);
-            // this.discordControl.setValue(o.discordControl);
-            // this.categoryControl.setValue(o.category);
-            // this.discountControl.setValue(o.discount);
+            this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
+            this.royaltiesSpaceDifferentControl.setValue(o.royaltiesSpace !== o.space);
+            this.bannerUrlControl.setValue(o.bannerUrl);
+            this.twitterControl.setValue(o.twitter);
+            this.discordControl.setValue(o.discord);
+            this.bannerUrlControl.setValue(o.bannerUrl);
+            this.categoryControl.setValue(o.category);
+            this.discounts.removeAt(0);
+            o.discounts.forEach((v) => {
+              this.addDiscount(v.xp ? v.xp.toString() : '', v.amount ? v.amount.toString() : '');
+            });
+
+            // Disable fields that are not editable.
+            this.spaceControl.disable();
+            this.typeControl.disable();
+            this.categoryControl.disable();
+
             this.cd.markForCheck();
           }
         });
       }
     });
+
+    // Listen to main space and make sure we always set it as royalty spce.
+    this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (this.royaltiesSpaceDifferentControl.value === false) {
+        this.royaltiesSpaceControl.setValue(val);
+      }
+    });
+  }
+
+  public get maxDiscountCount(): number {
+    return MAX_DISCOUNT_COUNT;
   }
 
   public uploadFile(item: NzUploadXHRArgs): Subscription {
@@ -122,6 +166,14 @@ export class UpsertPage implements OnInit {
     return of(file.response);
   };
 
+  public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
+    return (list || []).map((o) => ({
+        label: o.name || o.uid,
+        value: o.uid,
+        img: o.avatarUrl
+    }));
+  }
+
   private validateForm(): boolean {
     this.collectionForm.updateValueAndValidity();
     if (!this.collectionForm.valid) {
@@ -138,11 +190,35 @@ export class UpsertPage implements OnInit {
     return true;
   }
 
+  public formatSubmitData(data: any, mode: 'create'|'edit' = 'create'): any {
+    delete data.royaltiesSpaceDifferent;
+    const discounts: DiscountLine[] = [];
+    data.discounts.forEach((v: DiscountLine) => {
+      if (v.amount > 0 && v.xp > 0) {
+        discounts.push(v);
+      }
+    });
+    data.discounts = discounts;
+
+    // Convert royaltiesFee
+    if (data.royaltiesFee > 0) {
+      data.royaltiesFee = data.royaltiesFee / 100;
+    }
+
+    if (mode === 'edit') {
+      delete data.spaceControl;
+      delete data.typeControl;
+      delete data.categoryControl;
+    }
+
+    return data;
+  }
+
   public async create(): Promise<void> {
     if (!this.validateForm()) {
       return;
     }
-    await this.auth.sign(this.collectionForm.value, (sc, finish) => {
+    await this.auth.sign(this.formatSubmitData({...this.collectionForm.value}), (sc, finish) => {
       this.notification.processRequest(this.collectionApi.create(sc), 'Created.', finish).subscribe((val: any) => {
         this.router.navigate([ROUTER_UTILS.config.collection.root, val?.uid]);
       });
@@ -154,15 +230,14 @@ export class UpsertPage implements OnInit {
       return;
     }
     await this.auth.sign({
-      ...this.collectionForm.value,
+      ...this.formatSubmitData({...this.collectionForm.value}, 'edit'),
       ...{
         uid: this.collectionId
       }
     }, (sc, finish) => {
-      // "save" function not implemented
-      // this.notification.processRequest(this.collectionApi.save(sc), 'Saved.', finish).subscribe((val: any) => {
-      //   this.router.navigate([ROUTER_UTILS.config.collection.root, val?.uid]);
-      // });
+      this.notification.processRequest(this.collectionApi.update(sc), 'Saved.', finish).subscribe((val: any) => {
+        this.router.navigate([ROUTER_UTILS.config.collection.root, val?.uid]);
+      });
     });
   }
 
@@ -170,22 +245,23 @@ export class UpsertPage implements OnInit {
     return item.value;
   }
 
-  private getDiscountForm(): FormGroup {
+  // TODO implement validation.
+  private getDiscountForm(xp = '', amount = ''): FormGroup {
     return new FormGroup({
-      xp: new FormControl('', Validators.required),
-      amount: new FormControl('', Validators.required)
+      xp: new FormControl(xp),
+      amount: new FormControl(amount)
     });
   }
 
-  public addDiscount(): void {
+  public addDiscount(xp = '', amount = ''): void {
     if (this.discounts.controls.length < MAX_DISCOUNT_COUNT){
-      this.discounts.push(this.getDiscountForm());
+      this.discounts.push(this.getDiscountForm(xp, amount));
     }
   }
 
-  public removeDiscount(questionIndex: number): void {
+  public removeDiscount(index: number): void {
     if (this.discounts.controls.length > 1) {
-      this.discounts.removeAt(questionIndex);
+      this.discounts.removeAt(index);
     }
   }
 

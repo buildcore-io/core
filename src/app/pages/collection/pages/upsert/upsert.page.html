@@ -1,7 +1,7 @@
 <wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
     <h1 class="mt-7" *ngIf="!editMode" i18>Create new collection</h1>
     <h1 class="mt-7" *ngIf="editMode" i18>Edit collection</h1>
-  
+
     <form nz-form nzLayout="vertical" [formGroup]="collectionForm">
         <div class="py-4" nz-row [nzGutter]="24">
             <div
@@ -37,17 +37,22 @@
                         </nz-form-item>
                         <nz-form-item>
                             <nz-form-control>
-                                <textarea
-                                nz-input
+                                <nz-input-number
+                                class="w-full"
+                                [nzMin]="1"
+                                [nzMax]="100"
+                                [nzStep]="1"
+                                [nzFormatter]="formatterPercent"
+                                [nzParser]="parserPercent"
                                 placeholder="Royalties - Percentage fee"
                                 nzSize="large"
                                 [formControl]="royaltiesFeeControl"
-                                ></textarea>
+                                ></nz-input-number>
                             </nz-form-control>
                         </nz-form-item>
                     </div>
                 </nz-card>
-        
+
                 <nz-card [nzBordered]="false" nzTitle="Links">
                     <div class="space-y-4">
                         <nz-form-item>
@@ -65,7 +70,7 @@
                                 </nz-input-group>
                             </nz-form-control>
                         </nz-form-item>
-            
+
                         <nz-form-item>
                             <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Twitter username.">
                                 <nz-input-group nzSize="large" [nzPrefix]="prefixTwitter">
@@ -81,7 +86,7 @@
                                 </nz-input-group>
                             </nz-form-control>
                         </nz-form-item>
-            
+
                         <nz-form-item>
                             <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Discord username.">
                                 <nz-input-group nzSize="large" [nzPrefix]="prefixDiscord">
@@ -102,6 +107,16 @@
             </div>
 
             <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
+              <nz-card [nzBordered]="false" nzTitle="Space Info">
+                <nz-form-item>
+                  <wen-select-space
+                    class="block w-full"
+                    [formControl]="spaceControl"
+                    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+                    size="large">
+                  </wen-select-space>
+                </nz-form-item>
+              </nz-card>
                 <nz-card [nzBordered]="false" nzTitle="Space Type">
                     <nz-form-item>
                         <nz-form-control>
@@ -122,7 +137,7 @@
                         [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Set a display name. This does not change your username.'"
                     >
                     </nz-card-meta>
-            
+
                     <div class="mt-6">
                         <nz-form-item>
                             <nz-form-control>
@@ -151,7 +166,7 @@
 
                 <nz-card [nzBordered]="false" nzTitle="Category">
                     <nz-form-item>
-                        <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
+                        <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
                             <nz-select
                                 class="w-full"
                                 nzSize="large"
@@ -182,28 +197,30 @@
                         <div class="flex items-center justify-between mt-4"
                             *ngFor="let discount of discounts.controls; let i = index">
                                 <nz-input-group nzAddOnBefore="XP >">
-                                    <input 
-                                        type="text"
-                                        nz-input
-                                        nzSize="large"
-                                        [formControl]="gForm(discount, 'xp')" 
-                                    />
-                                </nz-input-group>
-            
-                                <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
-            
-                                <nz-input-group nzPrefix="%">
                                     <input
                                         type="text"
                                         nz-input
                                         nzSize="large"
-                                        [formControl]="gForm(discount, 'amount')"
+                                        [formControl]="gForm(discount, 'xp')"
                                     />
                                 </nz-input-group>
+
+                                <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
+
+                                <nz-input-number
+                                    class="w-full"
+                                    [nzMin]="1"
+                                    [nzMax]="100"
+                                    [nzStep]="1"
+                                    [nzFormatter]="formatterPercent"
+                                    [nzParser]="parserPercent"
+                                    nzSize="large"
+                                    [formControl]="gForm(discount, 'amount')"
+                                ></nz-input-number>
                         </div>
                     </div>
 
-                    <button nz-button nzType="link" class="flex items-center pl-0 mt-3" (click)="addDiscount()">
+                    <button nz-button *ngIf="discounts.controls.length < maxDiscountCount" nzType="link" class="flex items-center pl-0 mt-3" (click)="addDiscount()">
                         <wen-icon-plus class="mr-0.5"></wen-icon-plus>
                         <span i18n>Add discount level</span>
                     </button>
@@ -238,4 +255,3 @@
         Save collection
     </button>
 </wen-content>
-  

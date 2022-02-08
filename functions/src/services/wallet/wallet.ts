@@ -30,8 +30,8 @@ export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const KEY_NAME_TANGLE = 'Soonaverse';
 
 export class WalletService {
-  // private API_ENDPOINT = "https://chrysalis-nodes.iota.org"; // Mainnet
-  private API_ENDPOINT = 'https://api.lb-0.h.chrysalis-devnet.iota.cafe';   // DEV NET
+  private API_ENDPOINT = "https://chrysalis-nodes.iota.org"; // Mainnet
+  // private API_ENDPOINT = 'https://api.lb-0.h.chrysalis-devnet.iota.cafe';   // DEV NET
   private client: SingleNodeClient;
 
   constructor() {
