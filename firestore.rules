@@ -39,6 +39,32 @@ service cloud.firestore {
       allow read;
     }
 
+    // Sub-collections.
+    match /{path=**}/owners/{doc} {
+      allow read;
+    }
+
+    match /{path=**}/participants/{doc} {
+      allow read;
+    }
+
+    match /{path=**}/members/{doc} {
+      allow read;
+    }
+
+    match /{path=**}/guardians/{doc} {
+      allow read;
+    }
+
+    match /{path=**}/blockedMembers/{doc} {
+      allow read;
+    }
+
+    match /{path=**}/knockingMembers/{doc} {
+      allow read;
+    }
+
+    // Specific transactions can't be listed.
     match /transaction/{transactionId} {
       // Anyone can ready anything.
       allow get: if true;
