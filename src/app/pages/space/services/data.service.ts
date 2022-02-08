@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { CollectionApi } from '@api/collection.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Award } from 'functions/interfaces/models';
+import { Award, Collection } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
@@ -34,6 +35,9 @@ export class DataService implements OnDestroy {
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public pendingMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
+  public allCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
+  public pendingCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
+  public availableCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -50,7 +54,8 @@ export class DataService implements OnDestroy {
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,
-    private proposalApi: ProposalApi
+    private proposalApi: ProposalApi,
+    private collectionApi: CollectionApi
   ) {
     // none.
   }

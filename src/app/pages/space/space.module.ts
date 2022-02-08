@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
+import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { FixedCreateButtonModule } from '@components/fixed-create-button/fixed-create-button.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -34,6 +35,7 @@ import { MarkDownModule } from './../../@core/pipes/markdown/markdown.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardsPage } from './pages/awards/awards.page';
+import { CollectionsPage } from './pages/collections/collections.page';
 import { MembersPage } from './pages/members/members.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
@@ -42,7 +44,6 @@ import { TreasuryPage } from './pages/treasury/treasury.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from "./services/data.service";
 import { SpaceRoutingModule } from './space-routing.module';
-import { CollectionsPage } from './pages/collections/collections.page';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,9 @@ import { CollectionsPage } from './pages/collections/collections.page';
     DrawerToggleModule,
     NzDrawerModule,
     SpaceAboutModule,
-    FixedCreateButtonModule
+    FixedCreateButtonModule,
+    FormsModule,
+    CollectionCardModule
   ]
 })
 export class SpaceModule { }

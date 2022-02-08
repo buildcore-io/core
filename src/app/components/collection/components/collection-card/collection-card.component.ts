@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FileApi } from '@api/file.api';
 import { CacheService } from '@core/services/cache/cache.service';
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
@@ -14,9 +15,13 @@ import { Collection } from 'functions/interfaces/models/collection';
 })
 export class CollectionCardComponent {
   @Input() public collection?: Collection;
+  @Input() fullWidth?: boolean;
   public path = ROUTER_UTILS.config.collection.root;
 
-  constructor(private cache: CacheService) {
+  constructor(
+    private cache: CacheService,
+    public deviceService: DeviceService
+  ) {
     // none.
   }
 
@@ -41,5 +46,10 @@ export class CollectionCardComponent {
     }
 
     return undefined;
+  }
+
+  // Needs to be implemented
+  public getStatus(): string {
+    return 'Pending approval';
   }
 }
