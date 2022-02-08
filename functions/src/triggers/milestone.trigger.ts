@@ -128,7 +128,8 @@ class ProcessingService {
       space: order.space,
       createdOn: serverTime(),
       payload: {
-        amount: order.payload.amount,
+        // This must be the amount they send. As we're handing both correct amount from order or invalid one.
+        amount: tran.to.amount,
         sourceAddress: tran.from.address,
         targetAddress: order.payload.targetAddress,
         reconciled: true,
@@ -251,7 +252,7 @@ class ProcessingService {
         member: order.member,
         createdOn: serverTime(),
         payload: {
-          amount: order.payload.amount,
+          amount: payment.payload.amount,
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
           sourceTransaction: payment.uid,

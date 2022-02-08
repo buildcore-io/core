@@ -14,7 +14,7 @@ export const WEN_NAME = 'Soonaverse';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
 export const DISCORD_REGEXP = /^.{3,32}#[0-9]{4}$/i;
 export const TWITTER_REGEXP = /^@?(\w){1,15}$/i;
-export const URL_REGEXP = /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/i;
+export const URL_REGEXP = /[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/i;
 export const NFT_CONTRACT_ADDRESS = '';
 export const METAMASK_CHAIN_ID = '0x432';
 export const GLOBAL_DEBOUNCE_TIME = 500;

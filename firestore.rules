@@ -10,6 +10,14 @@ service cloud.firestore {
       allow read;
     }
 
+    match /nft/{document=**} {
+      allow read;
+    }
+
+    match /collection/{document=**} {
+      allow read;
+    }
+
     match /badges/{document=**} {
       allow get: if true;
       allow list: if request.query.limit <= 1;
@@ -41,4 +49,3 @@ service cloud.firestore {
 
   }
 }
-

@@ -37,6 +37,11 @@
     </a>
   </div>
 
+  <nz-card nzTitle="Wallet details" class="lg:mt-4">
+    <wen-wallet-address [entityType]="walletAddressEntities.MEMBER" [entity]="(data.member$ | async)" [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+    </wen-wallet-address>
+  </nz-card>
+
   <div class="mt-10 text-left">
     <h3 class="flex items-center justify-between">
       Recently joined spaces

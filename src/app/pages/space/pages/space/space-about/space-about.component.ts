@@ -10,6 +10,7 @@ import { NotificationService } from '../../../../../@core/services/notification/
 import { AuthService } from '../../../../../components/auth/services/auth.service';
 import { AllianceExtended, SpaceWithAlliances } from './../../../../../@api/space.api';
 import { CacheService } from './../../../../../@core/services/cache/cache.service';
+import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
 @Component({
   selector: 'wen-space-about',
@@ -40,6 +41,11 @@ export class SpaceAboutComponent implements OnDestroy {
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
+
+  public get walletAddressEntities(): typeof EntityType {
+    return EntityType;
+  }
+
 
   public trackByUid(index: number, item: any): number {
     return item.uid;

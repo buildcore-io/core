@@ -97,3 +97,15 @@ export interface Transaction extends BaseRecord {
   linkedTransactions: EthAddress[];
   payload: any; // VoteTransaction|BadgeTransaction|OrderTransaction|PaymentTransaction|BillPaymentTransaction|CreditPaymentTransaction;
 }
+
+export interface TransactionOrder extends Transaction {
+  payload: OrderTransaction;
+}
+
+export interface TransactionCredit extends Transaction {
+  payload: CreditPaymentTransaction;
+}
+
+export interface TransactionPayment extends Transaction {
+  payload: PaymentTransaction;
+}

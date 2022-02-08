@@ -5,6 +5,7 @@ import { DataService } from '@pages/member/services/data.service';
 import { BehaviorSubject } from 'rxjs';
 import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 import { Member } from './../../../../../../functions/interfaces/models/member';
+import { EntityType } from './../../../wallet-address/wallet-address.component';
 
 @Component({
   selector: 'wen-member-about',
@@ -26,6 +27,10 @@ export class MemberAboutComponent {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+
+  public get walletAddressEntities(): typeof EntityType {
+    return EntityType;
   }
 
   public openDrawer(): void {

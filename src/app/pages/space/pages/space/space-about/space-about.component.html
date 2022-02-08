@@ -220,8 +220,8 @@
   </nz-drawer>
 </nz-card>
 
-<nz-card nzTitle="Your wallet" class="lg:mt-4">
-    <wen-wallet-address></wen-wallet-address>
+<nz-card nzTitle="Wallet details" class="lg:mt-4">
+    <wen-wallet-address [entityType]="walletAddressEntities.SPACE" [entity]="(data.space$ | async)" [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"></wen-wallet-address>
 </nz-card>
 
 <nz-card nzTitle="Related Links" class="lg:mt-4"
