@@ -2,7 +2,6 @@
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle label="About space" (click)="isAboutSpaceVisible = true">
     </wen-drawer-toggle>
-    <wen-fixed-create-button [route]="routerService.urlToNewSpace"></wen-fixed-create-button>
   </ng-container>
 
 

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from "@core/utils/router.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from "rxjs";
@@ -32,6 +33,10 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
   public filterControl: FormControl = new FormControl(undefined);
   public overTenRecords = false;
+  public hotTags: { value: FilterOptions; label: string}[] = [
+    { value: FilterOptions.PENDING, label: 'Pending' },
+    { value: FilterOptions.ISSUED, label: 'Issued' }
+  ];
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
   private subscriptions$: Subscription[] = [];
   private dataStorePending: AwardParticipantWithMember[][] = [];
@@ -44,7 +49,8 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
-    public data: DataService
+    public data: DataService,
+    public deviceService: DeviceService
   ) {
     // none.
   }
