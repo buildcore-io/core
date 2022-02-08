@@ -1,6 +1,6 @@
 <article class="w-full bg-white lg:w-75 lg:h-75 rounded-2xl wen-card" *ngIf="collection">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
-        <div class="w-full h-44 overflow-hidden rounded-2xl relative">
+        <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
             alt=""
             [src]="bannerUrl || '/assets/mocks/no_banner.jpg'"
@@ -15,16 +15,15 @@
                     nzShape="circle"
                 ></nz-avatar>
                 <div class="text-sm font-medium ml-2.5">
-                    IOTABOTS
+                    {{this.space?.name || this.space?.uid}}
                 </div>
             </div>
         </div>
-    
-        <div class="relative flex flex-col w-full p-5 lg:p-4 lg:h-44">    
+
+        <div class="relative flex flex-col w-full p-5 lg:p-4 lg:h-44">
             <h3 class="mt-4 mb-0 text-lg font-bold truncate lg:mt-2">{{ collection.name }}</h3>
-    
+
             <p class="flex-grow flex-shrink min-h-0 py-3 overflow-hidden text-sm font-medium lg:py-2">{{ collection.description | stripMarkdown | truncate:[110]}}</p>
         </div>
     </a>
 </article>
-  

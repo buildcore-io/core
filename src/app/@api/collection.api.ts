@@ -5,7 +5,7 @@ import { Collection } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
-import { BaseApi } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum CollectionFilter {
     ALL = 'all',
@@ -20,6 +20,18 @@ export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
+  }
+
+  public lastWithinSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space);
+    });
+  }
+
+  public topWithinSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space);
+    });
   }
 
   public create(req: WenRequest): Observable<Collection|undefined> {
