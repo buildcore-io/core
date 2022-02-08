@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardFilter } from "@api/award.api";
+import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -18,13 +19,20 @@ import { DataService } from "./../../services/data.service";
 export class AwardsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(AwardFilter.ACTIVE);
+  public hotTags: { value: AwardFilter; label: string}[] = [
+    { value: AwardFilter.DRAFT, label: 'Pending' },
+    { value: AwardFilter.ACTIVE, label: 'Active' },
+    { value: AwardFilter.COMPLETED, label: 'Completed' },
+    { value: AwardFilter.REJECTED, label: 'Rejected' }
+  ];
   private subscriptions$: Subscription[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
-    public data: DataService
+    public data: DataService,
+    public deviceService: DeviceService
   ) {}
 
   public ngOnInit(): void {

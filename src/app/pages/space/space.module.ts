@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
-import { FixedCreateButtonModule } from '@components/fixed-create-button/fixed-create-button.module';
 import { IconModule } from '@components/icon/icon.module';
+import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -91,7 +91,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     DrawerToggleModule,
     NzDrawerModule,
     SpaceAboutModule,
-    FixedCreateButtonModule
+    FormsModule,
+    MobileSearchModule
   ]
 })
 export class SpaceModule { }

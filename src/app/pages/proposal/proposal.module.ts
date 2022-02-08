@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BadgeModule } from "@components/badge/badge.module";
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
+import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from "@components/tabs/tabs.module";
@@ -99,7 +100,9 @@ import { DataService } from './services/data.service';
     RadioModule,
     DrawerToggleModule,
     NzDrawerModule,
-    ProposalAnswerModule
+    ProposalAnswerModule,
+    MobileSearchModule,
+    FormsModule
   ]
 })
 export class ProposalModule { }

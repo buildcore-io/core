@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from "rxjs";
 import { DataService } from "../../services/data.service";
@@ -30,6 +31,10 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   public selectedListControl: FormControl = new FormControl(ParticipantFilterOptions.PENDING);
   public membersPending$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
   public membersVoted$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
+  public hotTags: { value: ParticipantFilterOptions; label: string}[] = [
+    { value: ParticipantFilterOptions.PENDING, label: 'Pending Vote' },
+    { value: ParticipantFilterOptions.VOTED, label: 'Voted' }
+  ];
   private dataStorePendingMembers: ProposalParticipantWithMember[][] = [];
   private dataStoreVotedMembers: ProposalParticipantWithMember[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -41,7 +46,8 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private memberApi: MemberApi,
     private proposalApi: ProposalApi,
-    public data: DataService
+    public data: DataService,
+    public deviceService: DeviceService
   ) {
     // none.
   }
