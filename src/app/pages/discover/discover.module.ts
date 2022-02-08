@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
@@ -71,7 +72,8 @@ import { FilterService } from './services/filter.service';
     IconModule,
     NzCheckboxModule,
     MobileSearchModule,
-    SelectSpaceModule
+    SelectSpaceModule,
+    CollectionCardModule
   ]
 })
 export class DiscoverModule { }

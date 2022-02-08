@@ -1,1 +1,30 @@
-<p>collection-card works!</p>
+<article class="w-full bg-white lg:w-75 lg:h-75 rounded-2xl wen-card" *ngIf="collection">
+    <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
+        <div class="w-full h-44 overflow-hidden rounded-2xl relative">
+            <img
+            alt=""
+            [src]="bannerUrl || '/assets/mocks/no_banner.jpg'"
+            class="object-cover w-full h-full"
+            />
+
+            <div class="absolute top-4 left-4 z-10 rounded-lg bg-white flex items-center justify-between px-2.5 py-1.5">
+                <nz-avatar
+                    class="border-app-gray-100 min-w-6 min-h-6"
+                    [nzSrc]="spaceAvatarUrl"
+                    [nzSize]="24"
+                    nzShape="circle"
+                ></nz-avatar>
+                <div class="text-sm font-medium ml-2.5">
+                    IOTABOTS
+                </div>
+            </div>
+        </div>
+    
+        <div class="relative flex flex-col w-full p-5 lg:p-4 lg:h-44">    
+            <h3 class="mt-4 mb-0 text-lg font-bold truncate lg:mt-2">{{ collection.name }}</h3>
+    
+            <p class="flex-grow flex-shrink min-h-0 py-3 overflow-hidden text-sm font-medium lg:py-2">{{ collection.description | stripMarkdown | truncate:[110]}}</p>
+        </div>
+    </a>
+</article>
+  
