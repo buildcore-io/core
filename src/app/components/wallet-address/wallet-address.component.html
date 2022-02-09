@@ -9,15 +9,19 @@
     <button nz-button nzType="primary" nzSize="small" (click)="isVerifyAddressOpen = true" *ngIf="enableVerification" i18n>Verify wallet</button>
 </div>
 
-<div class="flex items-center justify-between" *ngIf="address">
-  <div class="flex items-center">
-      <wen-icon-wallet class="mr-3 text-app-gray-400"></wen-icon-wallet>
-      <span class="text-xs font-medium text-alerts-error">{{address}}</span>
-      <div class="flex items-center justify-center w-4 h-4 ml-2 rounded-full bg-alerts-error">
-          <wen-icon-close class="text-white" [size]="12"></wen-icon-close>
-      </div>
-  </div>
-  <button nz-button nzType="primary" nzSize="small" (click)="copyAddress()" i18n>{{ isCopied ? 'Copied' : 'Copy' }}</button>
+<div class="flex items-center justify-between verified-wrapper h-10" *ngIf="address">
+    <div class="flex items-center">
+        <wen-icon-wallet class="mr-3 text-app-gray-400"></wen-icon-wallet>
+        <div class="text-xs font-medium text-black truncate w-44">{{address}}</div>
+    </div>
+    <div class="hidden lg:flex items-center hidden verified-info">
+        <div class="text-xs font-medium text-green-success" i18n>Verified</div>
+        <div class="flex items-center justify-center w-4 h-4 rounded-full bg-green-success ml-2">
+            <wen-icon-check class="text-white" [size]="8"></wen-icon-check>
+        </div>
+    </div>
+    <button class="lg:hidden verified-copy-btn" nz-button nzType="primary" nzSize="small" (click)="copyAddress()" i18n>
+        {{ isCopied ? 'Copied' : 'Copy' }}</button>
 </div>
 
 <nz-modal *ngIf="deviceService.isDesktop$ | async"
@@ -31,6 +35,7 @@
     [nzFooter]="null"
     [nzWidth]="getModalWidth()"
     [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
+    [nzWidth]="760"
 >
     <ng-template #verifyAddressModalContent>
         <div class="flex items-start justify-between">
