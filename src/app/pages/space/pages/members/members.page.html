@@ -2,8 +2,8 @@
   <div class="space-y-4" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
     <div class="inline-flex justify-between w-full">
-      <div class="space-y-4">
-        <ng-container *ngIf="data.isGuardianWithinSpace$ | async">
+      <div *ngIf="data.isGuardianWithinSpace$ | async">
+        <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
           <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
             (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
             Active
@@ -18,13 +18,31 @@
             Blocked
           </nz-tag>
         </ng-container>
+
+        <ng-template #hotTagsMobileBlock>
+          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl?.value" (ngModelChange)="handleFilterChange($event)">
+            <nz-option [nzLabel]="'Active'" [nzValue]="filterOptions.ACTIVE"></nz-option>
+            <nz-option *ngIf="!(data.space$ | async)?.open" 
+              [nzLabel]="'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')" 
+              [nzValue]="filterOptions.PENDING"></nz-option>
+            <nz-option [nzLabel]="'Blocked'" [nzValue]="filterOptions.BLOCKED"></nz-option>
+          </nz-select>
+        </ng-template>
       </div>
-      <nz-input-group [nzSize]="(deviceService.isDesktop$ | async) ? 'large' : 'small'" [nzPrefix]="prefixIconSearch"
+
+      <nz-input-group *ngIf="(data.isGuardianWithinSpace$ | async) === false || (deviceService.isDesktop$ | async); else mobileSearch" 
+        [nzSize]="(deviceService.isDesktop$ | async) ? 'large' : 'small'" [nzPrefix]="prefixIconSearch"
         class="w-full ml-0 border-none shadow-none lg:ml-8 outline-0 lg:w-72" nzSearch>
         <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base" [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
+      </ng-template>
+
+      <ng-template #mobileSearch>
+        <wen-mobile-search *ngIf="deviceService.isMobile$ | async" [formControl]="filterControl"
+          class="ml-auto" placeholder="Find Member">
+        </wen-mobile-search>
       </ng-template>
     </div>
 

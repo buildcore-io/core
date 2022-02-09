@@ -1,29 +1,25 @@
 <div class="space-y-12">
   <div class="space-y-4">
     <div class="inline-flex justify-between w-full">
-      <div class="space-y-4">
-        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.DRAFT"
-                (nzCheckedChange)="handleFilterChange(filterOptions.DRAFT)">
-          Pending
-        </nz-tag>
-        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.ACTIVE"
-                (nzCheckedChange)="handleFilterChange(filterOptions.ACTIVE)">
-          Active
-        </nz-tag>
-        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.COMPLETED"
-                (nzCheckedChange)="handleFilterChange(filterOptions.COMPLETED)">
-          Completed
-        </nz-tag>
-        <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.REJECTED"
-                (nzCheckedChange)="handleFilterChange(filterOptions.REJECTED)">
-          Rejected
-        </nz-tag>
+      <div class="flex items-center">
+        <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
+          <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedListControl?.value === tag.value"
+            (nzCheckedChange)="handleFilterChange(tag.value)" i18n>
+            {{ tag.label }}
+          </nz-tag>
+        </ng-container>
+    
+        <ng-template #hotTagsMobileBlock>
+          <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl?.value" (ngModelChange)="handleFilterChange($event)">
+            <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag.label" [nzValue]="tag.value"></nz-option>
+          </nz-select>
+        </ng-template>
       </div>
 
       <button nz-button class="bg-blue-dark2 border-blue-dark2 hover:bg-blue-hover hover:border-blue-hover"
         nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async"
         i18n>
-        <i nz-icon nzType="plus" nzTheme="outline"></i>New award
+        <i nz-icon nzType="plus" nzTheme="outline"></i>New {{ (deviceService.isDesktop$ | async) ? 'award' :'' }}
       </button>
     </div>
 

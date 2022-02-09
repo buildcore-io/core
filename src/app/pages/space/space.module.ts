@@ -4,8 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
-import { FixedCreateButtonModule } from '@components/fixed-create-button/fixed-create-button.module';
 import { IconModule } from '@components/icon/icon.module';
+import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -33,6 +33,7 @@ import { ProposalCardModule } from '../../components/proposal/components/proposa
 import { IpfsAvatarModule } from './../../@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from './../../@core/pipes/markdown/markdown.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
+import { FixedCreateButtonModule } from './../../components/fixed-create-button/fixed-create-button.module';
 import { TabsModule } from './../../components/tabs/tabs.module';
 import { AwardsPage } from './pages/awards/awards.page';
 import { CollectionsPage } from './pages/collections/collections.page';
@@ -96,7 +97,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     SpaceAboutModule,
     FixedCreateButtonModule,
     FormsModule,
-    CollectionCardModule
+    CollectionCardModule,
+    MobileSearchModule
   ]
 })
 export class SpaceModule { }
