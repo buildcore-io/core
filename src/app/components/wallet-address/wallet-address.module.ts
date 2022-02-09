@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
+import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzModalModule } from 'ng-zorro-antd/modal';
@@ -21,7 +22,8 @@ import { WalletAddressComponent } from './wallet-address.component';
     NzModalModule,
     IconModule,
     RelativeTimeModule,
-    NzButtonModule
+    NzButtonModule,
+    TruncateModule
   ],
   exports: [
     WalletAddressComponent

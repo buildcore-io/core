@@ -1,10 +1,10 @@
 <div class="w-full pb-4 overflow-x-auto lg:pb-0">
     <div class="relative flex items-start justify-between mt-10 min-w-120">
         <div class="flex flex-col items-center ml-6">
-            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
+            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
                 [ngClass]="{
-                    'text-white bg-orange': currentStep === stepType.GENERATE,
-                    'text-white bg-tag-black': currentStep === stepType.TRANSACTION ||
+                    'bg-orange': currentStep === stepType.GENERATE,
+                    'bg-tag-black': currentStep === stepType.TRANSACTION ||
                         currentStep === stepType.WAIT || currentStep === stepType.CONFIRMED
                 }">
                 1
@@ -15,15 +15,15 @@
         <div class="bg-app-gray-separator-dark h-0.5 absolute top-3"
             [ngStyle]="{
                 'left' : (generateCheckbox.offsetLeft + generateCheckbox.offsetWidth + 8) + 'px',
-                'width' : (transactionCheckbox.offsetLeft - generateCheckbox.offsetLeft - 40) + 'px'
+                'width' : (transactionCheckbox.offsetLeft - generateCheckbox.offsetLeft - generateCheckbox.offsetWidth - 16) + 'px'
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE }"></div>
 
         <div class="flex flex-col items-center">
-            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
+            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
                 [ngClass]="{
                     'text-app-gray-text opacity-50 border border-app-gray-200': currentStep === stepType.GENERATE,
-                    'text-white bg-orange': currentStep === stepType.TRANSACTION,
-                    'text-white bg-tag-black': currentStep === stepType.WAIT || currentStep === stepType.CONFIRMED
+                    'bg-orange': currentStep === stepType.TRANSACTION,
+                    'bg-tag-black': currentStep === stepType.WAIT || currentStep === stepType.CONFIRMED
                 }">
                 2
             </div>
@@ -36,16 +36,16 @@
         <div class="bg-app-gray-separator-dark h-0.5 absolute top-3"
             [ngStyle]="{
                 'left' : (transactionCheckbox.offsetLeft + transactionCheckbox.offsetWidth + 8) + 'px',
-                'width' : (waitCheckbox.offsetLeft - transactionCheckbox.offsetLeft - 40) + 'px'
+                'width' : (waitCheckbox.offsetLeft - transactionCheckbox.offsetLeft - transactionCheckbox.offsetWidth - 16) + 'px'
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION }"></div>
 
         <div class="flex flex-col items-center">
-            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
+            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
                 [ngClass]="{
                     'text-app-gray-text opacity-50 border border-app-gray-200':
                         currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION,
-                    'text-white bg-orange': currentStep === stepType.WAIT,
-                    'text-white bg-tag-black': currentStep === stepType.CONFIRMED
+                    'bg-orange': currentStep === stepType.WAIT,
+                    'bg-tag-black': currentStep === stepType.CONFIRMED
                 }">
                 3
             </div>
@@ -58,16 +58,16 @@
         <div class="bg-app-gray-separator-dark opacity-50 h-0.5 absolute top-3"
             [ngStyle]="{
                 'left' : (waitCheckbox.offsetLeft + waitCheckbox.offsetWidth + 8) + 'px',
-                'width' : (confirmedCheckbox.offsetLeft - waitCheckbox.offsetLeft - 40) + 'px'
+                'width' : (confirmedCheckbox.offsetLeft - waitCheckbox.offsetLeft - waitCheckbox.offsetWidth - 16) + 'px'
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE ||
                 currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT}"></div>
 
         <div class="flex flex-col items-center mr-6">
-            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full"
+            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
                 [ngClass]="{
                     'text-app-gray-text opacity-50 border border-app-gray-200': currentStep === stepType.GENERATE ||
                         currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT,
-                    'text-white bg-green-success': currentStep === stepType.CONFIRMED
+                    'bg-green-success': currentStep === stepType.CONFIRMED
                 }">
                 <wen-icon-check></wen-icon-check>
             </div>
@@ -123,7 +123,7 @@
 
             <div class="flex flex-wrap items-center justify-between mt-2">
                 <div class="text-base font-medium break-all">
-                    {{ (transaction$ | async)?.payload?.targetAddress }}
+                    {{ (transaction$ | async)?.payload?.targetAddress | truncate:[70] }}
                 </div>
 
                 <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()" i18n>
@@ -134,14 +134,16 @@
 
         <div class="flex flex-col items-center justify-center mt-10 lg:flex-row">
             <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-                class="flex items-center justify-center w-64 mb-6 lg:mb-0 lg:mr-4 lg:w-auto border-app-gray-200">
-                <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                <div class="text-app-gray-text" i18n>
-                    Firefly
+                class="deep-link">
+                <div class="flex items-center">
+                    <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
+                    <div class="text-app-gray-text" i18n>
+                        Firefly
+                    </div>
                 </div>
               </a>
             <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-                class="flex items-center justify-center w-64 mb-6 lg:mb-0 lg:mr-4 lg:w-auto text-app-gray-text border-app-gray-200">
+                class="deep-link">
                 <img src="/assets/logos/tanglepay.svg" alt="Firefly logo" class="mr-2">
                 <div class="text-app-gray-text" i18n>
                     Tanglepay
@@ -161,7 +163,7 @@
         </div>
 
         <button nz-button nzSize="large" class="flex items-center mt-24 border-app-gray-200">
-            <wen-icon-refresh class="mr-3 text-app-gray-400"></wen-icon-refresh>
+            <wen-icon-refresh class="mr-3 text-app-gray-400 animate-spin"></wen-icon-refresh>
             <div class="text-app-gray-text" i18n>
                 {{ true ? 'Validating your transaction' : 'Sending back your transaction' }}
             </div>

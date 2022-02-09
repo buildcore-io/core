@@ -73,6 +73,7 @@ module.exports = {
         },
         brown: '#A66300',
         pink: '#F20CDF',
+        black: '#000000'
       },
       spacing: {
         18: '4.5rem',
