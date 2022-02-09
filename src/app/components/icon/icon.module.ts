@@ -5,6 +5,7 @@ import { AngleDownIconComponent } from './angle-down/angle-down.component';
 import { AngleLeftIconComponent } from './angle-left/angle-left.component';
 import { AngleRightIconComponent } from './angle-right/angle-right.component';
 import { AngleUpIconComponent } from './angle-up/angle-up.component';
+import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
@@ -38,10 +39,10 @@ import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
 import { SunIconComponent } from './sun/sun.component';
 import { TerminatedIconComponent } from './terminated/terminated.component';
+import { TrashIconComponent } from './trash/trash.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 import { WalletIconComponent } from './wallet/wallet.component';
-import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
 
 @NgModule({
   declarations: [
@@ -86,7 +87,8 @@ import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
     WalletIconComponent,
     LinkIconComponent,
     RefreshIconComponent,
-    ArrowRightIconComponent
+    ArrowRightIconComponent,
+    TrashIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -130,7 +132,8 @@ import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
     WalletIconComponent,
     LinkIconComponent,
     RefreshIconComponent,
-    ArrowRightIconComponent
+    ArrowRightIconComponent,
+    TrashIconComponent
   ],
   imports: [
     CommonModule

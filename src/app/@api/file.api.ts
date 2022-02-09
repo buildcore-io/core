@@ -5,7 +5,7 @@ import { NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { finalize, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
 
-export type FileType = 'space_avatar' | 'space_banner' | 'collection_banner';
+export type FileType = 'space_avatar' | 'space_banner' | 'collection_banner' | 'nft_media';
 
 @Injectable({
   providedIn: 'root',
