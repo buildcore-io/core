@@ -6,9 +6,10 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import * as dayjs from 'dayjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
-import { TransactionOrder, TransactionType } from './../../../../../functions/interfaces/models/transaction';
+import { TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
 import { EntityType } from './../wallet-address.component';
 
 export enum StepType {
@@ -33,6 +34,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   public stepType = StepType;
   public isCopied = false;
   public transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   private transSubscription?: Subscription;
 
   constructor(
@@ -48,12 +50,16 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER && val.linkedTransactions?.length > 0) {
+        const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+        this.expiryTicker$.next(expiresOn);
         this.currentStep = StepType.WAIT;
         // Listen to other transactions.
         for (const tranId of val.linkedTransactions) {
           this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
         }
       } else if (val && val.type === TransactionType.ORDER && !val.linkedTransactions) {
+        const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+        this.expiryTicker$.next(expiresOn);
         this.currentStep = StepType.TRANSACTION;
       } else if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true) {
         this.currentStep = StepType.CONFIRMED;
@@ -65,6 +71,20 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     if (this.entity?.addressValidationTransaction) {
       this.transSubscription = this.orderApi.listen(this.entity.addressValidationTransaction).subscribe(<any>this.transaction$);
     }
+
+    // Run ticker.
+    const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
+      this.expiryTicker$.next(this.expiryTicker$.value);
+
+      // If it's in the past.
+      if (this.expiryTicker$.value) {
+        const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+        if (expiresOn.isBefore(dayjs())) {
+          this.expiryTicker$.next(null);
+          int.unsubscribe();
+        }
+      }
+    });
   }
 
   public copyAddress() {

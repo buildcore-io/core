@@ -118,7 +118,7 @@
 
         <div class="w-full px-4 py-3 mt-14 lg:mt-4 bg-bg-background rounded-2xl">
             <div class="text-xs font-medium text-app-gray-400" i18n>
-                Send {{(transaction$ | async)?.payload?.amount }} IOTA to following address
+                Send {{(transaction$ | async)?.payload?.amount }} IOTA to following address. Expires {{(expiryTicker$ | async) | relativeTime}}
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2">
