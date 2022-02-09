@@ -69,7 +69,9 @@ module.exports = {
           error: '#D94B08'
         },
         foregrounds: {
-          secondary: '#959388'
+          secondary: '#959388',
+          separator: '#F0EEE6',
+          tertiary: '#BCB9A9'
         },
         brown: '#A66300',
         pink: '#F20CDF',

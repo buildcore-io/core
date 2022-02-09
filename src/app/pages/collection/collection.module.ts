@@ -9,6 +9,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from "ng-zorro-antd/input-number";
 import { NzRadioModule } from 'ng-zorro-antd/radio';
@@ -16,7 +17,6 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { CollectionRoutingModule } from './collection-routing.module';
 import { CollectionPage } from './pages/collection/collection.page';
-import { NewPage } from './pages/new/new.page';
 import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 
@@ -25,7 +25,6 @@ import { DataService } from './services/data.service';
 @NgModule({
   declarations: [
     CollectionPage,
-    NewPage,
     UpsertPage
   ],
   imports: [
@@ -45,7 +44,8 @@ import { DataService } from './services/data.service';
     NzUploadModule,
     NzSelectModule,
     RadioModule,
-    NzRadioModule
+    NzRadioModule,
+    NzIconModule
   ],
   providers: [
     DataService
