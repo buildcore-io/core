@@ -148,15 +148,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
 
   // Already existing transaction.
   let docTrans: any|undefined;
-  if (isSpaceValidation && docSpace.data().addressValidationTransaction) {
-    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(docSpace.data().addressValidationTransaction);
-    docTrans = await refTran.get();
-  } else if (docMember.data().addressValidationTransaction) {
-    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(docMember.data().addressValidationTransaction);
-    docTrans = await refTran.get();
-  }
-
-  if (!docTrans) {
+  if (!docTrans.exists) {
     // Get new target address.
     const newWallet: WalletService = new WalletService();
     const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
@@ -182,16 +174,6 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
         chainReference: null
       }
     });
-
-    if (isSpaceValidation) {
-      await admin.firestore().collection(COL.SPACE).doc(params.body.space).update({
-        addressValidationTransaction: tranId
-      });
-    } else {
-      await admin.firestore().collection(COL.MEMBER).doc(owner).update({
-        addressValidationTransaction: tranId
-      });
-    }
 
     // Load latest
     docTrans = await refTran.get();

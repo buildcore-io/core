@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { OrderApi } from "@api/order.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
@@ -30,6 +31,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.GENERATE;
   @Input() entityType?: EntityType;
   @Input() entity?: Space|Member|null;
+  @Output() onClose = new EventEmitter<void>();
 
   public stepType = StepType;
   public isCopied = false;
@@ -49,27 +51,36 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
-      if (val && val.type === TransactionType.ORDER && val.linkedTransactions?.length > 0) {
+      if (val && val.type === TransactionType.ORDER) {
         const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-        this.expiryTicker$.next(expiresOn);
-        this.currentStep = StepType.WAIT;
-        // Listen to other transactions.
-        for (const tranId of val.linkedTransactions) {
-          this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
+        if (expiresOn.isBefore(dayjs())) {
+          // It's expired.
+          removeItem(StorageItem.VerificationTransaction);
+          return;
         }
-      } else if (val && val.type === TransactionType.ORDER && !val.linkedTransactions) {
-        const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-        this.expiryTicker$.next(expiresOn);
-        this.currentStep = StepType.TRANSACTION;
-      } else if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true) {
+
+        if (val.linkedTransactions?.length > 0) {
+
+          this.currentStep = StepType.WAIT;
+          // Listen to other transactions.
+          for (const tranId of val.linkedTransactions) {
+            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
+          }
+        } else if (!val.linkedTransactions) {
+          this.currentStep = StepType.TRANSACTION;
+        }
+      }
+
+      // Credit
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true) {
         this.currentStep = StepType.CONFIRMED;
       }
 
       this.cd.markForCheck();
     });
 
-    if (this.entity?.addressValidationTransaction) {
-      this.transSubscription = this.orderApi.listen(this.entity.addressValidationTransaction).subscribe(<any>this.transaction$);
+    if (getItem(StorageItem.VerificationTransaction)) {
+      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.VerificationTransaction)).subscribe(<any>this.transaction$);
     }
 
     // Run ticker.
@@ -81,6 +92,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
         const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
+          removeItem(StorageItem.VerificationTransaction);
           int.unsubscribe();
         }
       }
@@ -92,6 +104,10 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       copyToClipboard(this.transaction$.value?.payload.targetAddress)
       this.isCopied = true;
     }
+  }
+
+  public close(): void {
+    this.onClose.next();
   }
 
   public fireflyDeepLink(): SafeUrl {
@@ -124,6 +140,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.orderApi.validateAddress(sc), 'Validation requested.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
+        setItem(StorageItem.VerificationTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
       });
     });

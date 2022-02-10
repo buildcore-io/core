@@ -44,14 +44,14 @@
         </div>
 
         <ng-container [ngSwitch]="type">
-            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType"></wen-iota-address>
+            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (onClose)="close()"></wen-iota-address>
         </ng-container>
     </ng-template>
 </nz-modal>
 
 <nz-drawer *ngIf="deviceService.isMobile$ | async"
     [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-    [nzWidth]="'100vw'"
+    [nzWidth]="'100vw'" #drawer
     [nzClosable]="false"
     [nzVisible]="isVerifyAddressOpen">
     <div *nzDrawerContent class="relative h-full">
