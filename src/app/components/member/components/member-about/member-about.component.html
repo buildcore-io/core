@@ -36,10 +36,10 @@
       <wen-icon-discord class="text-app-gray-text hover:text-blue-hover"></wen-icon-discord>
     </a>
   </div>
-  
+
   <div class="mt-10 text-left">
     <h3>Wallet details</h3>
-    <wen-wallet-address [entityType]="walletAddressEntities.MEMBER" [entity]="(data.member$ | async)" [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+    <wen-wallet-address class="block p-3 rounded-2xl bg-bg-background" [entityType]="walletAddressEntities.MEMBER" [entity]="(data.member$ | async)" [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
     </wen-wallet-address>
   </div>
 
