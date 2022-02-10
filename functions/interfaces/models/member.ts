@@ -20,5 +20,4 @@ export interface Member extends BaseRecord {
   awardsCompleted?: number;
   totalReputation?: number;
   validatedAddress?: string;
-  addressValidationTransaction?: string;
 }
