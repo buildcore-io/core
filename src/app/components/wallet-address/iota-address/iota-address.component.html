@@ -1,7 +1,7 @@
 <div class="w-full pb-4 overflow-x-auto lg:pb-0">
     <div class="relative flex items-start justify-between mt-10 min-w-120">
         <div class="flex flex-col items-center ml-6">
-            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
+            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
                 [ngClass]="{
                     'bg-orange': currentStep === stepType.GENERATE,
                     'bg-tag-black': currentStep === stepType.TRANSACTION ||
@@ -19,7 +19,7 @@
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE }"></div>
 
         <div class="flex flex-col items-center">
-            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
+            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
                 [ngClass]="{
                     'text-app-gray-text opacity-50 border border-app-gray-200': currentStep === stepType.GENERATE,
                     'bg-orange': currentStep === stepType.TRANSACTION,
@@ -40,7 +40,7 @@
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION }"></div>
 
         <div class="flex flex-col items-center">
-            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
+            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
                 [ngClass]="{
                     'text-app-gray-text opacity-50 border border-app-gray-200':
                         currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION,
@@ -63,7 +63,7 @@
                 currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT}"></div>
 
         <div class="flex flex-col items-center mr-6">
-            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full text-white"
+            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
                 [ngClass]="{
                     'text-app-gray-text opacity-50 border border-app-gray-200': currentStep === stepType.GENERATE ||
                         currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT,
@@ -163,7 +163,7 @@
         </div>
 
         <button nz-button nzSize="large" class="flex items-center mt-24 border-app-gray-200">
-            <wen-icon-refresh class="mr-3 text-app-gray-400 animate-spin"></wen-icon-refresh>
+            <wen-icon-refresh class="mr-3 text-app-gray-400 animate-spin" ></wen-icon-refresh>
             <div class="text-app-gray-text" i18n>
                 {{ true ? 'Validating your transaction' : 'Sending back your transaction' }}
             </div>
