@@ -1,9 +1,13 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
+import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
 import { enumToArray } from '@core/utils/manipulations.utils';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import { URL_REGEXP } from 'functions/interfaces/config';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
@@ -42,11 +46,14 @@ export class NewPage {
   public stats: FormArray;
   public nftForm: FormGroup;
   public nftTypes = enumToArray(NFTType);
-  
+
   constructor(
     public deviceService: DeviceService,
     private nzNotification: NzNotificationService,
+    private notification: NotificationService,
+    private nftApi: NftApi,
     private auth: AuthService,
+    private router: Router,
     private fileApi: FileApi
   ) {
     this.properties = new FormArray([
@@ -123,7 +130,7 @@ export class NewPage {
 
     return true;
   }
-  
+
   private getPropertyForm(): FormGroup {
     return new FormGroup({
       property: new FormControl('', Validators.required),
@@ -140,7 +147,7 @@ export class NewPage {
   public removeProperty(index: number): void {
     this.properties.removeAt(index);
   }
-  
+
   public getStatForm(): FormGroup {
     return new FormGroup({
       name: new FormControl('', Validators.required),
@@ -162,16 +169,21 @@ export class NewPage {
     return f.get(value);
   }
 
+  public formatSubmitData(data: any): any {
+    return data;
+  }
+
+
   public async create(): Promise<void> {
     if (!this.validateForm()) {
       return;
     }
-    // Needs to be implemented
-    // await this.auth.sign(this.formatSubmitData({...this.collectionForm.value}), (sc, finish) => {
-    //   this.notification.processRequest(this.collectionApi.create(sc), 'Created.', finish).subscribe((val: any) => {
-    //     this.router.navigate([ROUTER_UTILS.config.collection.root, val?.uid]);
-    //   });
-    // });
+
+    await this.auth.sign(this.formatSubmitData({...this.nftForm.value}), (sc, finish) => {
+      this.notification.processRequest(this.nftApi.create(sc), 'Created.', finish).subscribe((val: any) => {
+        this.router.navigate([ROUTER_UTILS.config.collection.root, val?.uid]);
+      });
+    });
   }
 
   public disabledStartDate(startValue: Date): boolean {

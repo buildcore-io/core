@@ -10,7 +10,7 @@ import { BaseApi } from './base.api';
 @Injectable({
   providedIn: 'root',
 })
-export class CollectionApi extends BaseApi<Nft> {
+export class NftApi extends BaseApi<Nft> {
   public collection = COL.NFT;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
