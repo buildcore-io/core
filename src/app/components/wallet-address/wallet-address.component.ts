@@ -44,6 +44,10 @@ export class WalletAddressComponent {
     }
   }
 
+  public close(): void {
+    // TODO
+  }
+
   public getModalWidth(): string {
     switch (this.type) {
       case AddressType.IOTA:

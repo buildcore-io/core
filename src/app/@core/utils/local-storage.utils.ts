@@ -2,6 +2,7 @@ export enum StorageItem {
   Auth = 'App/auth',
   AuthAddress = 'App/authAddress',
   Theme = 'App/theme',
+  VerificationTransaction = 'App/verificationTransaction',
 }
 
 export const getItem = (itemName: StorageItem): unknown | null => {

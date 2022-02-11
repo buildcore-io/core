@@ -112,20 +112,6 @@ class ProcessingService {
         lockedBy: null
       });
     }
-
-    // In case it's space/member validation we have to unset transaction.
-    if (transaction.payload.type === TransactionOrderType.MEMBER_ADDRESS_VALIDATION && transaction.member) {
-      await admin.firestore().collection(COL.MEMBER).doc(transaction.member).update({
-        addressValidationTransaction: null
-      });
-    }
-
-    if (transaction.payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION && transaction.space) {
-      await admin.firestore().collection(COL.SPACE).doc(transaction.space).update({
-        addressValidationTransaction: null
-      });
-    }
-
   }
 
   private async createPayment(order: Transaction, tran: TransactionMatch): Promise<Transaction> {
