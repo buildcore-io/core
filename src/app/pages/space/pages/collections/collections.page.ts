@@ -4,10 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionFilter } from '@api/collection.api';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/space/services/data.service';
 import { Collection } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-collections',
   templateUrl: './collections.page.html',
@@ -16,11 +18,11 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 })
 export class CollectionsPage implements OnInit, OnDestroy {
   public spaceId?: string;
-  public selectedListControl: FormControl = new FormControl(CollectionFilter.ALL);
+  public selectedListControl: FormControl = new FormControl(CollectionFilter.AVAILABLE);
   public hotTags: { value: CollectionFilter; label: string}[] = [
-    { value: CollectionFilter.ALL, label: 'All' },
     { value: CollectionFilter.PENDING, label: 'Pending' },
-    { value: CollectionFilter.AVAILABLE, label: 'Available' }
+    { value: CollectionFilter.AVAILABLE, label: 'Available' },
+    { value: CollectionFilter.REJECTED, label: 'Rejected' },
   ];
   private subscriptions$: Subscription[] = [];
 
@@ -33,17 +35,29 @@ export class CollectionsPage implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
+    this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (this.spaceId && val === CollectionFilter.REJECTED) {
+        this.data.listenToRejectedCollections(this.spaceId);
+      } else  if (this.spaceId && val === CollectionFilter.AVAILABLE) {
+        this.data.listenToAvailableCollections(this.spaceId);
+      } else  if (this.spaceId && val === CollectionFilter.PENDING) {
+        this.data.listenToPendingCollections(this.spaceId);
+      }
+      this.cd.markForCheck();
+    });
+
     this.route.parent?.params.subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
+        this.selectedListControl.setValue(CollectionFilter.AVAILABLE);
       } else {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }
     });
   }
-  
+
   public handleFilterChange(filter: CollectionFilter): void {
     this.selectedListControl.setValue(filter);
     this.cd.markForCheck();
@@ -62,8 +76,8 @@ export class CollectionsPage implements OnInit, OnDestroy {
   }
 
   public getList(): BehaviorSubject<Collection[]|undefined> {
-    if (this.selectedListControl.value === this.filterOptions.ALL) {
-      return this.data.allCollections$;
+    if (this.selectedListControl.value === this.filterOptions.REJECTED) {
+      return this.data.rejectedCollections$;
     } else if (this.selectedListControl.value === this.filterOptions.AVAILABLE) {
       return this.data.availableCollections$;
     } else {

@@ -35,7 +35,7 @@ export class DataService implements OnDestroy {
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public pendingMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public allCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
+  public rejectedCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   public pendingCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   public availableCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
@@ -46,6 +46,9 @@ export class DataService implements OnDestroy {
   private completedAwardsOn = false;
   private rejectedAwardsOn = false;
   private draftAwardsOn = false;
+  private availableCollectionOn = false;
+  private rejectedCollectionOn = false;
+  private pendingCollectionOn = false;
   private dataStoreMembers: Member[][] = [];
   private dataStorePendingMembers: Member[][] = [];
   private dataStoreBlockedMembers: Member[][] = [];
@@ -164,6 +167,34 @@ export class DataService implements OnDestroy {
 
     this.draftAwardsOn = true;
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.DRAFT).subscribe(this.awardsDraft$));
+  }
+
+  public listenToPendingCollections(spaceId: string): void {
+    if (this.pendingCollectionOn === true) {
+      return;
+    }
+
+    this.pendingCollectionOn = true;
+    this.subscriptions$.push(this.collectionApi.allPendingSpace(spaceId).subscribe(this.pendingCollections$));
+  }
+
+  public listenToAvailableCollections(spaceId: string): void {
+    if (this.availableCollectionOn === true) {
+      return;
+    }
+
+    this.availableCollectionOn = true;
+    console.log('ssa');
+    this.subscriptions$.push(this.collectionApi.allAvailableSpace(spaceId).subscribe(this.availableCollections$));
+  }
+
+  public listenToRejectedCollections(spaceId: string): void {
+    if (this.rejectedCollectionOn === true) {
+      return;
+    }
+
+    this.rejectedCollectionOn = true;
+    this.subscriptions$.push(this.collectionApi.allRejectedSpace(spaceId).subscribe(this.rejectedCollections$));
   }
 
   public isLoading(arr: any): boolean {

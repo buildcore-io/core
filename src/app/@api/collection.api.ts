@@ -10,6 +10,7 @@ import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 export enum CollectionFilter {
     ALL = 'all',
     PENDING = 'pending',
+    REJECTED = 'rejected',
     AVAILABLE = 'available'
 }
 
@@ -31,6 +32,30 @@ export class CollectionApi extends BaseApi<Collection> {
   public topWithinSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('space', '==', space);
+    });
+  }
+
+  public allPendingSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space).where('approved', '==', false).where('rejected', '==', false);
+    });
+  }
+
+  public allSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space);
+    });
+  }
+
+  public allAvailableSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space).where('approved', '==', true);
+    });
+  }
+
+  public allRejectedSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space).where('rejected', '==', true);
     });
   }
 
