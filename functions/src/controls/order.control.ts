@@ -142,7 +142,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
 
   if (isSpaceValidation && docSpace.data().validatedAddress) {
     throw throwInvalidArgument(WenError.space_already_have_validated_address);
-  } else if (docMember.data().validatedAddress) {
+  } else if (!isSpaceValidation && docMember.data().validatedAddress) {
     throw throwInvalidArgument(WenError.member_already_have_validated_address);
   }
 
