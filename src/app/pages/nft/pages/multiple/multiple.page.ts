@@ -61,7 +61,7 @@ export class MultiplePage {
       label: 'end_date',
       validate: (value: string) => !!value && !isNaN(Date.parse(value))
     },
-    prop: {
+    property: {
       label: 'prop',
       validate: () => true,
       isArray: true,
@@ -126,7 +126,16 @@ export class MultiplePage {
                 .every((field) => field.isArray ?
                   Object.keys(nft)
                     .filter((key: string) => key.startsWith(field.label))
-                    .every((key: string) => field.validate(nft[key])) : field.validate(nft[field.label])));
+                    .every((key: string) => field.validate(nft[key])) : field.validate(nft[field.label])))
+            .map((nft: any) => 
+              Object.keys(nft)
+                .reduce((acc: any, key: string) => {
+                  const fieldKey =  Object.keys(this.nftObject).find((k) => key.startsWith(this.nftObject[k].label)) || '';
+                  return this.nftObject[fieldKey]?.isArray ?
+                    { ...acc, [fieldKey]: [...(acc[fieldKey] || []), { [key]: nft[key] }] } :
+                    { ...acc, [fieldKey]: nft[key] };
+                }, {}));
+        console.log(nfts);
       }
     })
     return false;
