@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TabSection } from '@pages/discover/pages/discover/discover.page';
+
+export interface TabSection {
+  label: string;
+  route: string | string[];
+}
 
 @Component({
   selector: 'wen-tabs',

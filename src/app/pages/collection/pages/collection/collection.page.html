@@ -1,1 +1,52 @@
-<p>collection works!</p>
+<wen-content [showBackButton]="true">
+    <ng-container *ngIf="deviceService.isMobile$ | async">
+        <wen-drawer-toggle label="About collection" (click)="isAboutCollectionVisible = true">
+        </wen-drawer-toggle>
+    </ng-container>
+
+    <div class="relative w-auto overflow-hidden h-48 lg:h-96 rounded-2xl mt-8 lg:mt-16">
+        <img alt="" [src]="'https://firebasestorage.googleapis.com/v0/b/soonaverse.appspot.com/o/0x93ea11254d2b27682f28211d2880cfdbb683f90a%2Fp6vzq40hge%2Fspace_banner_1600x1600?alt=media&token=5c0a9deb-adbf-4e24-8d2c-6396e1ffc541' || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
+        
+        <div class="absolute top-5 left-5 z-10 rounded-lg bg-white flex items-center p-2"
+            *ngIf="deviceService.isDesktop$ | async">
+            <nz-avatar
+                class="border-app-gray-100 min-w-8 min-h-8"
+                [nzSrc]="'https://firebasestorage.googleapis.com/v0/b/soonaverse.appspot.com/o/0x93ea11254d2b27682f28211d2880cfdbb683f90a%2F1gvl68iiwo4%2Fspace_avatar_200x200?alt=media&token=c521c45d-4330-44a0-8754-80149014a886'"
+                [nzSize]="32"
+                nzShape="circle"
+            ></nz-avatar>
+            <div class="text-sm font-medium ml-3 max-w-24 truncate">
+                {{ 'IOTABOTS' }}
+            </div>
+        </div>
+    </div>
+        
+    <div class="relative w-full mt-6" nz-row [nzGutter]="40" *ngIf="true">
+        <div class="flex-auto p-0 mx-5 my-0 lg:mx-0 lg:px-5" [ngStyle]="{
+            'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+            }">
+            <h1 class="mb-8 lg:mb-10" i18n>{{ 'asdasd' }}</h1>
+        
+        </div>
+            
+        <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;" *ngIf="deviceService.isDesktop$ | async">
+            <button nz-button nzType="primary" (click)="approve()" nzBlock nzSize="large" i18n>
+                Approve Collection
+            </button>
+            
+            <wen-collection-about></wen-collection-about>
+        </div>
+    </div>
+    
+    <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }" [nzWidth]="'100vw'" [nzClosable]="false"
+        [nzVisible]="isAboutCollectionVisible">
+        <div *nzDrawerContent class="relative h-full">
+            <button class="absolute z-10 -top-0 right-5" (click)="isAboutCollectionVisible = false">
+                <wen-icon-close></wen-icon-close>
+            </button>
+        
+            <wen-collection-about></wen-collection-about>
+        </div>
+    </nz-drawer>
+
+</wen-content>

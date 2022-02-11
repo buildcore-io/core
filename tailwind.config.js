@@ -66,7 +66,8 @@ module.exports = {
           footer: '#ECE8DE',
         },
         alerts: {
-          error: '#D94B08'
+          error: '#D94B08',
+          warning: '#FAE312'
         },
         foregrounds: {
           secondary: '#959388',

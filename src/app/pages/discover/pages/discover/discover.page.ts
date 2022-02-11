@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { NavigationEnd, Router } from '@angular/router';
+import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -9,10 +10,6 @@ import { debounceTime } from "rxjs";
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FilterService } from './../../services/filter.service';
 
-export interface TabSection {
-  label: string;
-  route: string | string[];
-}
 @UntilDestroy()
 @Component({
   selector: 'wen-discover',

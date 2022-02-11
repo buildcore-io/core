@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { NavigationEnd, Router } from '@angular/router';
+import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { TabSection } from '@pages/discover/pages/discover/discover.page';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 
 @UntilDestroy()

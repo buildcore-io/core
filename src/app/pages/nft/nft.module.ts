@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { TabsModule } from '@components/tabs/tabs.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -18,13 +19,17 @@ import { NftRoutingModule } from './nft-routing.module';
 import { NewPage } from './pages/new/new.page';
 import { NFTPage } from './pages/nft/nft.page';
 import { DataService } from './services/data.service';
+import { SinglePage } from './pages/single/single.page';
+import { MultiplePage } from './pages/multiple/multiple.page';
 
 
 
 @NgModule({
   declarations: [
     NFTPage,
-    NewPage
+    NewPage,
+    SinglePage,
+    MultiplePage
   ],
   imports: [
     CommonModule,
@@ -43,7 +48,8 @@ import { DataService } from './services/data.service';
     NzIconModule,
     NzInputModule,
     NzRadioModule,
-    NzSelectModule
+    NzSelectModule,
+    TabsModule
   ],
   providers: [
     DataService

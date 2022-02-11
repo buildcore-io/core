@@ -67,7 +67,9 @@ export const ROUTER_UTILS = {
     },
     nft: {
       root: 'nft',
-      newNft: 'new'
+      newNft: 'new',
+      single: 'single',
+      multiple: 'multiple'
     },
     errorResponse: {
       notFound: '404',
