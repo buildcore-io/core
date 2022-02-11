@@ -11,6 +11,7 @@ import * as dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
 import { TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
+import { UnitsHelper } from './../../../@core/utils/units-helper';
 import { EntityType } from './../wallet-address.component';
 
 export enum StepType {
@@ -37,6 +38,9 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   public isCopied = false;
   public transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public receivedTransactions = false;
+  public sendingMoneyBack = false;
+
   private transSubscription?: Subscription;
 
   constructor(
@@ -50,6 +54,8 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.receivedTransactions = false;
+    this.sendingMoneyBack = false;
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
@@ -69,6 +75,16 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
         } else if (!val.linkedTransactions) {
           this.currentStep = StepType.TRANSACTION;
         }
+
+        this.expiryTicker$.next(expiresOn);
+      }
+
+      if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
+        this.receivedTransactions = true;
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === false) {
+        this.sendingMoneyBack = true;
       }
 
       // Credit
@@ -94,6 +110,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
           this.expiryTicker$.next(null);
           removeItem(StorageItem.VerificationTransaction);
           int.unsubscribe();
+          this.reset();
         }
       }
     });
@@ -106,8 +123,23 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     }
   }
 
+  public reset(): void {
+    this.receivedTransactions = false;
+    this.sendingMoneyBack = false;
+    this.currentStep = StepType.GENERATE;
+  }
+
   public close(): void {
+    this.reset();
     this.onClose.next();
+  }
+
+  public formatBest(amount: number|undefined): string {
+    if (!amount) {
+      return '';
+    }
+
+    return UnitsHelper.formatBest(amount, 4);
   }
 
   public fireflyDeepLink(): SafeUrl {
@@ -116,7 +148,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     }
 
     return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.transaction$.value?.payload.targetAddress +
-           '?amount=' + this.transaction$.value?.payload.amount + '&unit=i');
+           '?amount=' + (this.transaction$.value?.payload.amount / 1000 / 1000) + '&unit=Mi');
   }
 
   public tanglePayDeepLink(): string {

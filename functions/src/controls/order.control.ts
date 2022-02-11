@@ -146,38 +146,35 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     throw throwInvalidArgument(WenError.member_already_have_validated_address);
   }
 
-  // Already existing transaction.
-  let docTrans: any|undefined;
-  if (!docTrans.exists) {
-    // Get new target address.
-    const newWallet: WalletService = new WalletService();
-    const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-    const randomAmount: number = Math.floor(Math.random() * ((MIN_AMOUNT_TO_TRANSFER * 1.5) - MIN_AMOUNT_TO_TRANSFER + 1) + MIN_AMOUNT_TO_TRANSFER);
-    // Document does not exists.
-    const tranId: string = getRandomEthAddress();
-    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
-    await refTran.set(<Transaction>{
-      type: TransactionType.ORDER,
-      uid: tranId,
-      member: owner,
-      space: isSpaceValidation ? params.body.space : null,
-      createdOn: serverTime(),
-      payload: {
-        type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
-        amount: randomAmount,
-        targetAddress: targetAddress.bech32,
-        beneficiary: isSpaceValidation ? 'space' : 'member',
-        beneficiaryUid: isSpaceValidation ? params.body.space : owner,
-        reconciled: false,
-        void: false,
-        chainReference: null
-      }
-    });
+  // Get new target address.
+  const newWallet: WalletService = new WalletService();
+  const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
+  const min = (MIN_AMOUNT_TO_TRANSFER / 100); // Reduce number of decimals.
+  const randomAmount: number = (Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 100);
+  // Document does not exists.
+  const tranId: string = getRandomEthAddress();
+  const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+  await refTran.set(<Transaction>{
+    type: TransactionType.ORDER,
+    uid: tranId,
+    member: owner,
+    space: isSpaceValidation ? params.body.space : null,
+    createdOn: serverTime(),
+    payload: {
+      type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
+      amount: randomAmount,
+      targetAddress: targetAddress.bech32,
+      beneficiary: isSpaceValidation ? 'space' : 'member',
+      beneficiaryUid: isSpaceValidation ? params.body.space : owner,
+      reconciled: false,
+      void: false,
+      chainReference: null
+    }
+  });
 
-    // Load latest
-    docTrans = await refTran.get();
-  }
+  // Load latest
+  const docTrans: any = await refTran.get();
 
   // Return member.
   return <Transaction>docTrans.data();

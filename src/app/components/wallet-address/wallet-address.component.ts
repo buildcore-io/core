@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { Member } from 'functions/interfaces/models';
@@ -30,7 +30,8 @@ export class WalletAddressComponent {
   public isCopied = false;
 
   constructor(
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    private cd: ChangeDetectorRef
   ) {}
 
   public get address(): string|undefined {
@@ -45,7 +46,8 @@ export class WalletAddressComponent {
   }
 
   public close(): void {
-    // TODO
+    this.isVerifyAddressOpen = false;
+    this.cd.markForCheck();
   }
 
   public getModalWidth(): string {
