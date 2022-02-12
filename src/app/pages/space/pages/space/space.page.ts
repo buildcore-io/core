@@ -30,7 +30,7 @@ export class SpacePage implements OnInit, OnDestroy {
     { route: 'overview', label: 'Overview' },
     { route: 'proposals', label: 'Proposals' },
     { route: 'awards', label: 'Awards' },
-    { route: 'treasury', label: 'Treasury' },
+    // { route: 'treasury', label: 'Treasury' },
     { route: 'collections', label: 'Collections' },
     { route: 'members', label: 'Members' }
   ];

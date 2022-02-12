@@ -18,6 +18,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { MarkDownModule } from '../../../../../@core/pipes/markdown/markdown.module';
 import { SpaceAboutComponent } from './space-about.component';
 
@@ -41,6 +42,7 @@ import { SpaceAboutComponent } from './space-about.component';
     NzModalModule,
     NzFormModule,
     NzSelectModule,
+    NzToolTipModule,
     FormsModule,
     ReactiveFormsModule,
     NzInputNumberModule,
