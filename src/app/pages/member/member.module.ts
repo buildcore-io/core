@@ -8,6 +8,7 @@ import { MemberSpaceRowModule } from '@components/member/components/member-space
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { SelectSpaceModule } from '@components/select-space/select-space.module';
+import { TimelineModule } from '@components/timeline/timeline.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -34,9 +35,9 @@ import { ActivityPage } from './pages/activity/activity.page';
 import { AwardsPage } from './pages/awards/awards.page';
 import { BadgesPage } from './pages/badges/badges.page';
 import { MemberPage } from './pages/member/member.page';
+import { NFTsPage } from './pages/nfts/nfts.page';
 import { MemberSpacesComponent } from './pages/spaces/member-spaces.component';
 import { DataService } from './services/data.service';
-import { NFTsPage } from './pages/nfts/nfts.page';
 
 @NgModule({
   declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, MemberSpacesComponent, NFTsPage],
@@ -73,7 +74,8 @@ import { NFTsPage } from './pages/nfts/nfts.page';
     MemberAlliancesTableModule,
     MobileSearchModule,
     IpfsBadgeModule,
-    SelectSpaceModule
+    SelectSpaceModule,
+    TimelineModule
   ],
 })
 export class MemberModule {

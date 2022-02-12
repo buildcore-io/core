@@ -75,45 +75,6 @@
 
     </nz-card>
 
-    <nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="(data.badges$ | async)?.length">
-      <div *ngFor="let t of (data.badges$ | async) | slice:0:(showAllBadges ? (data.badges$ | async)?.length : 3);
-        let i = index; trackBy: trackByUid"
-        class="relative flex items-center mt-3">
-          <div *ngIf="i !== 0" #timelineLine
-            class="absolute w-0.5 h-full bg-app-gray-100 left-3 transform -translate-x-1/2 -translate-y-1/2"></div>
-
-          <div *ngIf="i < ((data.badges$ | async)?.length || 0) - 1" #timelineLine
-            class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"
-            [ngClass]="!showAllBadges && ((data.badges$ | async)?.length || 0) > 3 && i === 2 ? 'h-96' : 'h-1/2'"></div>
-
-          <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
-            <wen-icon-check></wen-icon-check>
-          </div>
-
-          <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
-            <div class="flex items-center">
-              <nz-avatar
-                [nzSrc]="t?.payload.image | ipfsBadge:filesizes.small"
-                class="bg-white border-gray-400 min-w-10 min-h-10"
-                nzShape="circle"
-              >
-              </nz-avatar>
-
-              <div class="ml-6">
-                <div class="text-xs font-medium text-gray-400">
-                  {{ t.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
-                <div class="text-base font-medium mt-0.5">
-                  <span i18n>Earned Badge</span> {{t.payload.name}} <span i18n>with</span> {{t.payload.xp}}XP</div>
-              </div>
-            </div>
-
-            <wen-icon-angle-right *ngIf="deviceService.isDesktop$ | async"></wen-icon-angle-right>
-          </div>
-      </div>
-
-      <button nz-button nzType="primary" class="self-center block w-48 mx-auto mt-6"
-        *ngIf="((data.badges$ | async)?.length || 0) > 3"
-        (click)="showAllBadges = !showAllBadges">{{ showAllBadges ? 'Show less' : 'Show more' }}</button>
-    </nz-card>
+    <wen-timeline class="block" [badges]="data.badges$ | async"></wen-timeline>
   </div>
 </div>

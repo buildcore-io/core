@@ -7,7 +7,6 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import { FILE_SIZES } from 'functions/interfaces/models/base';
 import {
   ApexAxisChartSeries,
   ApexChart, ApexDataLabels, ApexFill, ApexMarkers, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
@@ -45,7 +44,6 @@ export class ActivityPage implements OnInit {
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public defaultSpace = DEFAULT_SPACE;
-  public showAllBadges = false;
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -202,9 +200,5 @@ export class ActivityPage implements OnInit {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public get filesizes(): typeof FILE_SIZES {
-    return FILE_SIZES;
   }
 }

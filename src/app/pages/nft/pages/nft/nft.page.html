@@ -1,1 +1,200 @@
-<p>nft works!</p>
+<wen-content [showBackButton]="true">
+    <div class="flex flex-col lg:flex-row mt-12 lg:mt-10">
+        <div class="flex-grow w-full lg:w-1/2 lg:mr-10 mt-10">
+            <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">NFT</nz-tag>
+            <nz-tag class="wen-status-tag bg-tag-green border-tag-green">Available</nz-tag>
+
+            <h1 class="mt-2" i18n>{{ 'BOT#12323' }}</h1>
+
+            <div class="w-full h-12 p-4 bg-white rounded-xl flex justify-between items-center">
+                <div class="flex items-center mr-8"
+                    [ngClass]="{ 'text-alerts-error': false }">
+                        <wen-icon-time></wen-icon-time>
+                        <div class="ml-2.5 font-bold" i18n>{{ true ? 'Sale ends' : 'Sale ended' }}</div>
+                </div>
+                <div class="font-medium">
+                    January 29th, 2022 at 6:53am AEDT
+                </div>
+            </div>
+                
+            <div class="flex items-center flex-wrap mt-5">
+                <div class="flex-grow w-3/10 h-20 px-4 py-3 bg-white rounded-xl mr-3">
+                    <div class="text-foregrounds-secondary text-xs font-medium" i18n>Current price</div>
+                    <div class="flex items-center mt-2">
+                        <div class="text-lg font-bold truncate">100 Mi</div>
+                        <div class="text-xs font-medium text-foregrounds-secondary truncate ml-2">100 $</div>
+                    </div>
+                </div>
+
+                <div class="flex-grow w-3/10 h-20 px-4 py-3 bg-white rounded-xl mr-3">
+                    <div class="text-foregrounds-secondary text-xs font-medium" i18n>Author</div>
+                    <div class="flex items-center mt-2">
+                        <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                            [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
+                        </nz-avatar>
+                        
+                        <div class="ml-3 mr-8 max-w-24 text-base font-medium truncate">{{ '@Phylo' }}</div>
+                    </div>
+                </div>
+
+                <div class="flex-grow w-3/10 h-20 px-4 py-3 bg-white rounded-xl">
+                    <div class="text-foregrounds-secondary text-xs font-medium" i18n>Space</div>
+                    <div class="flex items-center mt-2">
+                        <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                            [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
+                        </nz-avatar>
+                        
+                        <div class="ml-3 mr-8 max-w-24 text-base font-medium truncate">{{ 'IOTABOTS' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <button nz-button nzType="primary" (click)="buy()" *ngIf="true"
+                nzBlock nzSize="large" class="mt-12" i18n>
+                    Buy now
+            </button>
+
+            <!-- Use this if sale has ended -->
+            <div *ngIf="false" class="w-full px-5 py-4 text-white bg-light-brown rounded-xl flex items-center mt-12">
+                <wen-icon-sad></wen-icon-sad>
+                <div class="font-medium ml-3.5">
+                    Sale ended
+                </div>
+            </div>
+
+            <div class="font-medium mt-12">
+                This IOTABOT is special because it looks like Keanu. This IOTABOT is special because it looks like Keanu. This IOTABOT is special because it looks like Keanu. This IOTABOT is special because it looks like Keanu. This IOTABOT is special because it looks like Keanu. 
+            </div>
+            
+            <!-- This should be used for timeline -->
+            <!-- <wen-timeline class="block mt-12" [badges]="data.badges$ | async"></wen-timeline> -->
+        </div>
+
+        <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
+            <div class="relative w-full overflow-hidden rounded-2xl">
+                <img
+                alt="NFT image"
+                [src]="'https://i.guim.co.uk/img/media/ef8492feb3715ed4de705727d9f513c168a8b196/37_0_1125_675/master/1125.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=d456a2af571d980d8b2985472c262b31' || '/assets/mocks/no_banner.jpg'"
+                class="object-cover w-full h-full"
+                />
+            </div>
+
+            <div class="flex items-center flex-col lg:flex-row mt-8">                
+                <button nz-button nzType="default" (click)="null" nzBlock nzSize="default"
+                    class="text-black flex items-center justify-center flex-grow lg:mr-4 w-full lg:w-1/2">
+                        <wen-icon-twitter></wen-icon-twitter>
+                        <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
+                </button>
+                <button nz-button nzType="default" (click)="null" nzBlock nzSize="default"
+                    class="text-black flex items-center justify-center flex-grow w-full lg:w-1/2">
+                        <wen-icon-copy></wen-icon-copy>
+                        <div class="ml-2.5 text-xs font-medium" (click)="copy()" i18n>Copy to clipboard</div>
+                </button>
+            </div>
+
+            <nz-card nzTitle="System info" class="mt-8">
+                <div class="wen-description-item bg-bg-background">
+                    <span nz-typography class="text-app-gray-400" i18n>Address</span>
+                    <p nz-typography class="flex items-center">
+                        Migrate to IOTA ... SOON
+                        
+                        <wen-icon-question-circle
+                            class="ml-2.5 text-app-gray-400"
+                            nz-tooltip
+                            i18n-nzTooltipTitle
+                            nzTooltipTitle="Some description idk"
+                        ></wen-icon-question-circle>
+                    </p>
+                </div>
+                
+                <div class="wen-description-item bg-bg-background">
+                    <span nz-typography class="text-app-gray-400" i18n>IPFS CID</span>
+                    <p nz-typography>
+                        12392832
+                    </p>
+                </div>
+            </nz-card>
+
+            <nz-card nzTitle="Properties" class="mt-4">
+                <div class="wen-description-item bg-bg-background"
+                    *ngFor="let prop of [{key:'Background',value:'Blue'},{key:'Clothes',value:'Fancy'},{key:'Hat',value:'Helmet'}]">
+                        <span nz-typography class="text-app-gray-400">{{ prop.key }}</span>
+                        <p nz-typography>{{ prop.value }}</p>
+                </div>
+            </nz-card>
+
+            <nz-card nzTitle="Stats" class="mt-4">
+                <div class="wen-description-item bg-bg-background"
+                    *ngFor="let stat of [{key:'Speed',value:'2 of 5'},{key:'Inteligence',value:'1 of 10'}]">
+                        <span nz-typography class="text-app-gray-400">{{ stat.key }}</span>
+                        <p nz-typography>{{ stat.value }}</p>
+                </div>
+            </nz-card>
+        </div>
+    </div>
+    
+    <div class="bg-app-gray-separator-dark h-px w-screen mt-16 lg:mt-12 -ml-10"></div>
+
+    <nz-card class="block w-full mt-16 relative" nzTitle="About the collection">
+        <a nz-button nzType="link" class="flex items-center absolute right-6 top-6" nzSize="small">
+            <span i18n>Show collection</span>
+            <wen-icon-angle-right></wen-icon-angle-right>
+        </a>
+
+        <div class="flex justify-between">
+            <div class="w-max">
+                <h1 class="mb-2">{{ 'IOTABOTS vol.2' }}</h1>
+                <div class="flex items-center">
+                    <div class="text-xs font-medium mr-3" i18n>by</div>
+
+                    <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                        style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                        [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
+                    </nz-avatar>
+                    
+                    <div class="ml-3 max-w-24 text-base font-medium truncate">{{ '@Phylo' }}</div>
+
+                    <div class="text-xs font-medium mx-3">/</div>
+                    
+                    <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                        style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                        [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
+                    </nz-avatar>
+                    
+                    <div class="ml-3 max-w-24 text-base font-medium truncate">{{ 'IOTABOTS' }}</div>
+                </div>
+            </div>
+
+            
+            <div class="font-medium text-xs ml-20">
+                The Royal Bots is an exciting new collection of 8888 iotabots NFTs, Each individual piece of digital art consists of a realistic three-dimensional graphic with more than 200 unique traits and options. Public Mint is now Live - https://www.iotabots.com/
+            </div>
+        </div>
+
+        <div class="mt-10 lg:grid place-items-start">
+            <div class="flex flex-wrap gap-6 mb-10">
+                <nz-skeleton *ngIf="isLoading([])" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+                    [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+            
+                <nz-card class="w-76" *ngIf="isEmpty(['asd'])">
+                    <div class="flex flex-col justify-center text-center h-36">
+                        <span class="leading-7 text-app-gray-400" i18n>
+                            No NFTs
+                        </span>
+                    </div>
+                </nz-card>
+            
+                <wen-nft-card class="wen-nft-card"
+                    *ngFor="let nft of nft$ | async; trackBy: trackByUid"
+                    [nft]="nft">
+                </wen-nft-card>
+                
+                <!-- Needs to be removed -->
+                <wen-nft-card *ngFor="let item of [1,1,1,1]" class="wen-nft-card">
+                </wen-nft-card>
+            </div>
+        </div>
+    </nz-card>
+</wen-content>

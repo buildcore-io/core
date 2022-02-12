@@ -28,7 +28,7 @@
             <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Award</nz-tag>
             <nz-tag class="wen-status-tag bg-tag-green border-tag-green">Available</nz-tag>
 
-            <h1 class="mt-3 lg:mt-2" i18n>{{ 'IOTABOTS vol.2' }}</h1>
+            <h1 class="mt-3 lg:mt-2">{{ 'IOTABOTS vol.2' }}</h1>
 
             <div class="flex items-center flex-wrap">
                 <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
@@ -50,17 +50,17 @@
             </div>
         
             <div class="flex items-center flex-wrap mt-8">
-                <div class="flex-grow lg:flex-grow-0 lg:w-32 h-20 px-4 py-3 bg-white rounded-xl mr-3">
+                <div class="flex-grow lg:flex-grow-0 lg:w-32 h-16 px-4 py-3 bg-white rounded-xl mr-3">
                     <div class="text-foregrounds-secondary text-xs font-medium" i18n>Items</div>
                     <div class="text-lg font-bold truncate">100</div>
                 </div>
 
-                <div class="flex-grow lg:flex-grow-0 lg:w-32 h-20 px-4 py-3 bg-white rounded-xl lg:mr-3">
+                <div class="flex-grow lg:flex-grow-0 lg:w-32 h-16 px-4 py-3 bg-white rounded-xl lg:mr-3">
                     <div class="text-foregrounds-secondary text-xs font-medium" i18n>Available</div>
                     <div class="text-lg font-bold truncate">20</div>
                 </div>
 
-                <div class="w-full lg:w-32 h-20 px-4 py-3 bg-white rounded-xl mt-5 lg:mt-0">
+                <div class="w-full lg:w-32 h-16 px-4 py-3 bg-white rounded-xl mt-5 lg:mt-0">
                     <div class="text-foregrounds-secondary text-xs font-medium" i18n>Price starts at</div>
                     <div class="text-lg font-bold truncate">100 Mi</div>
                 </div>
@@ -154,8 +154,8 @@
         
             <nz-card class="w-76" *ngIf="isEmpty(['asd'])">
                 <div class="flex flex-col justify-center text-center h-36">
-                    <span class="leading-7 text-app-gray-400">
-                        No Collections
+                    <span class="leading-7 text-app-gray-400" i18n>
+                        No NFTs
                     </span>
                 </div>
             </nz-card>

@@ -1,13 +1,14 @@
-<div class="flex items-center flex-col lg:flex-row mt-8">
-    <div class="rounded-3xl text-black bg-white py-2.5 flex items-center justify-center flex-grow lg:mr-4 w-full lg:w-1/2">
-        <wen-icon-github></wen-icon-github>
-        <div class="ml-2.5" i18n>Visit website</div>
-    </div>
-
-    <div class="rounded-3xl text-black bg-white py-2.5 flex items-center justify-center flex-grow w-full lg:w-1/2">
-        <wen-icon-share></wen-icon-share>
-        <div class="ml-2.5" i18n>Share</div>
-    </div>
+<div class="flex items-center flex-col lg:flex-row mt-8 pt-10 lg:pt-0">
+    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default"
+        class="text-black flex items-center justify-center flex-grow lg:mr-4 w-full lg:w-1/2">
+            <wen-icon-github></wen-icon-github>
+            <div class="ml-2.5 text-xs font-medium" i18n>Visit website</div>
+    </button>
+    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default"
+        class="text-black flex items-center justify-center flex-grow w-full lg:w-1/2">
+            <wen-icon-share></wen-icon-share>
+            <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
+    </button>
 </div>
 
 <nz-card nzTitle="Resources" class="mt-8">
