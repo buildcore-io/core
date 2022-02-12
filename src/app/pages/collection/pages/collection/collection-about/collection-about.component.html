@@ -1,0 +1,31 @@
+<div class="flex items-center flex-col lg:flex-row mt-8">
+    <div class="rounded-3xl text-black bg-white py-2.5 flex items-center justify-center flex-grow lg:mr-4 w-full lg:w-1/2">
+        <wen-icon-github></wen-icon-github>
+        <div class="ml-2.5" i18n>Visit website</div>
+    </div>
+
+    <div class="rounded-3xl text-black bg-white py-2.5 flex items-center justify-center flex-grow w-full lg:w-1/2">
+        <wen-icon-share></wen-icon-share>
+        <div class="ml-2.5" i18n>Share</div>
+    </div>
+</div>
+
+<nz-card nzTitle="Resources" class="mt-8">
+    <div class="space-y-5">
+        <div *ngFor="let item of ['iotatreasury.web', 'iotatreasury.web', 'iotatreasury.web']"
+            class="flex items-center">
+            <wen-icon-link class="text-app-gray-400 mr-3"></wen-icon-link>
+            <div class="text-xs font-medium">{{ item }}</div>
+        </div>
+    </div>
+</nz-card>
+
+<nz-card nzTitle="Member discounts" class="mt-8">
+    <div class="space-y-5">
+        <div *ngFor="let item of [{ percentage: 10, xp: 50}, { percentage: 50, xp: 500}, { percentage: 100, xp: 1000}]"
+            class="flex items-center">
+            <wen-icon-percentage class="text-app-gray-400 mr-3"></wen-icon-percentage>
+            <div class="text-xs font-medium">{{ item.percentage }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
+        </div>
+    </div>
+</nz-card>

@@ -6,7 +6,7 @@ import { UpsertPage } from './pages/upsert/upsert.page';
 
 const routes: Routes = [
   {
-    path: ROUTER_UTILS.config.collection.root,
+    path: '',
     component: CollectionPage
   },
   {

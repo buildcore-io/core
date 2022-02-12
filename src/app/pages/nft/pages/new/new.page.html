@@ -1,7 +1,10 @@
 <wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
   <h1 class="mt-7" i18>Create NFT</h1>
+  <wen-tabs class="block w-screen mt-12 -ml-5 lg:w-max lg:ml-0" [tabs]="sections"></wen-tabs>
 
-  <form nz-form nzLayout="vertical" [formGroup]="nftForm">
+  <router-outlet></router-outlet>
+
+  <!-- <form nz-form nzLayout="vertical" [formGroup]="nftForm">
       <div class="py-4" nz-row [nzGutter]="24">
           <div
               class="space-y-4"
@@ -11,7 +14,7 @@
                   'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
               }"
           >
-            <ng-container *ngIf="typeControl.value === nftTypes[0].value">
+            <ng-container *ngIf="currentSection?.label === nftTypes.SINGLE">
                 <nz-card [nzBordered]="false" nzTitle="Token">
                     <div class="space-y-4">
                         <nz-form-item>
@@ -273,13 +276,7 @@
               </nz-card>
             </ng-container>
 
-            <nz-card [nzBordered]="false" *ngIf="typeControl.value === nftTypes[1].value">
-                  <nz-card-meta
-                      nzTitle="Upload multiple images"
-                      [nzDescription]="0 + ' / 500'"
-                  >
-                  </nz-card-meta>
-
+            <nz-card [nzBordered]="false" *ngIf="currentSection?.label === nftTypes.MULTIPLE" nzTitle="Upload more images">
                   <div class="mt-6">
                       <nz-form-item>
                           <nz-form-control>
@@ -287,15 +284,12 @@
                                 class="wen-banner"
                                 nzName="banner"
                                 nzType="drag"
-                                nzListType="picture-card"
                                 [nzDirectory]="false"
                                 [nzLimit]="1"
-                                [nzCustomRequest]="uploadFile.bind(this)"
-                                (nzChange)="uploadChange($event)"
-                                nzFileType="image/png,image/jpeg"
-                                [nzPreviewFile]="previewFile"
-                                [nzShowUploadList]="true"
-                                [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
+                                [nzMultiple]="true"
+                                [nzCustomRequest]="uploadMultipleFiles.bind(this)"
+                                (nzChange)="uploadMultipleChange($event)"
+                                nzFileType="text/csv,application/vnd.ms-excel"
                               >
                                   <ng-container>
                                       <i class="upload-icon" nz-icon nzType="upload"></i>
@@ -308,20 +302,6 @@
           </div>
 
           <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
-              <nz-card [nzBordered]="false" nzTitle="NFT Type">
-                  <nz-form-item>
-                      <nz-form-control>
-                          <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
-                              <wen-radio *ngFor="let type of nftTypes; trackBy: trackByValue" [value]="type.value">
-                                  <span class="inline-flex" i18n>
-                                      {{ type.key }}
-                                  </span>
-                              </wen-radio>
-                          </nz-radio-group>
-                      </nz-form-control>
-                  </nz-form-item>
-              </nz-card>
-
               <nz-card [nzBordered]="false">
                   <nz-card-meta
                       nzTitle="Img, Video, Audio, Model"
@@ -339,8 +319,8 @@
                                 nzListType="picture-card"
                                 [nzDirectory]="false"
                                 [nzLimit]="1"
-                                [nzCustomRequest]="uploadFile.bind(this)"
-                                (nzChange)="uploadChange($event)"
+                                [nzCustomRequest]="uploadMediaFile.bind(this)"
+                                (nzChange)="uploadMediaChange($event)"
                                 nzFileType="image/png,image/jpeg"
                                 [nzPreviewFile]="previewFile"
                                 [nzShowUploadList]="true"
@@ -383,6 +363,7 @@
       (click)="create()"
       i18n
   >
-    {{ typeControl.value === nftTypes[0].value ? 'Create NFT' : 'Generate CSV' }}
-  </button>
+    {{ currentSection?.label === nftTypes.SINGLE ? 'Create NFT' :
+        currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs' }}
+  </button> -->
 </wen-content>

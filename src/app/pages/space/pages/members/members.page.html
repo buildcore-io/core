@@ -32,7 +32,7 @@
 
       <nz-input-group *ngIf="(data.isGuardianWithinSpace$ | async) === false || (deviceService.isDesktop$ | async); else mobileSearch" 
         [nzSize]="(deviceService.isDesktop$ | async) ? 'large' : 'small'" [nzPrefix]="prefixIconSearch"
-        class="w-full ml-0 border-none shadow-none lg:ml-8 outline-0 lg:w-72" nzSearch>
+        class="w-full ml-0 border-none shadow-none outline-0 lg:w-72" nzSearch>
         <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base" [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
