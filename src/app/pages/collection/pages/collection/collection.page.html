@@ -22,11 +22,53 @@
     </div>
         
     <div class="relative w-full mt-6" nz-row [nzGutter]="40" *ngIf="true">
-        <div class="flex-auto p-0 mx-5 my-0 lg:mx-0 lg:px-5" [ngStyle]="{
+        <div class="flex-auto p-0 ml-5 -mr-5 my-0 lg:mx-0 lg:px-5" [ngStyle]="{
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
             }">
-            <h1 class="mb-8 lg:mb-10" i18n>{{ 'asdasd' }}</h1>
+            <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">Award</nz-tag>
+            <nz-tag class="wen-status-tag bg-tag-green border-tag-green">Available</nz-tag>
+
+            <h1 class="mt-3 lg:mt-2" i18n>{{ 'IOTABOTS vol.2' }}</h1>
+
+            <div class="flex items-center flex-wrap">
+                <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                    style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                    [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
+                </nz-avatar>
+                
+                <div class="ml-3 mr-8 max-w-24 text-base font-medium truncate">{{ '@Phylo' }}</div>
+
+                <div class="flex items-center mr-8">
+                    <wen-icon-time></wen-icon-time>
+                    <div class="ml-2.5 font-medium">2 days ago</div>
+                </div>
+                
+                <div class="flex items-center mt-4 lg:mt-0">
+                    <wen-icon-tag></wen-icon-tag>
+                    <div class="ml-2.5 font-medium">Category name</div>
+                </div>
+            </div>
         
+            <div class="flex items-center flex-wrap mt-8">
+                <div class="flex-grow lg:flex-grow-0 lg:w-32 h-20 px-4 py-3 bg-white rounded-xl mr-3">
+                    <div class="text-foregrounds-secondary text-xs font-medium" i18n>Items</div>
+                    <div class="text-lg font-bold truncate">100</div>
+                </div>
+
+                <div class="flex-grow lg:flex-grow-0 lg:w-32 h-20 px-4 py-3 bg-white rounded-xl lg:mr-3">
+                    <div class="text-foregrounds-secondary text-xs font-medium" i18n>Available</div>
+                    <div class="text-lg font-bold truncate">20</div>
+                </div>
+
+                <div class="w-full lg:w-32 h-20 px-4 py-3 bg-white rounded-xl mt-5 lg:mt-0">
+                    <div class="text-foregrounds-secondary text-xs font-medium" i18n>Price starts at</div>
+                    <div class="text-lg font-bold truncate">100 Mi</div>
+                </div>
+            </div>
+
+            <div class="font-medium mt-10 lg:mt-6">
+                The Royal Bots is an exciting new collection of 8888 iotabots NFTs, Each individual piece of digital art consists of a realistic three-dimensional graphic with more than 200 unique traits and options. Public Mint is now Live - https://www.iotabots.com/
+            </div>
         </div>
             
         <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;" *ngIf="deviceService.isDesktop$ | async">
@@ -49,4 +91,83 @@
         </div>
     </nz-drawer>
 
+    <div class="bg-app-gray-separator-dark h-px w-screen mt-16 lg:mt-12 -ml-10"></div>
+
+    <nz-input-group
+        nzSize="small" [nzPrefix]="prefixIconSearch"
+        class="w-full mt-12 border-none shadow-none outline-0 lg:w-96" nzSearch>
+        <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
+    </nz-input-group>
+    <ng-template #prefixIconSearch>
+      <i nz-icon nzType="search" class="text-xl"></i>
+    </ng-template>
+
+    <div class="flex items-end justify-between">
+        <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
+            <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
+                <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
+                    (nzCheckedChange)="handleChange(tag)">
+                    {{ tag }}
+                </nz-tag>
+            </ng-container>
+    
+            <ng-template #hotTagsMobileBlock>
+                <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
+                    <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+                </nz-select>
+            </ng-template>
+        </div>
+    
+        <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
+            <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate" 
+                [formControl]="sortControl" nz-tooltip>
+                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.LOW"></nz-option>
+                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.HIGH"></nz-option>
+            </nz-select>
+            <ng-template #defaultTemplate let-selected>
+                <span nz-typography nzType="secondary" class="text-xs">Price</span>
+                {{ selected.nzLabel }}
+            </ng-template>
+        </ng-container>
+        <ng-template #sortMobileBlock>
+            <div class="relative">
+                <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
+                    <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.LOW"></nz-option>
+                    <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.HIGH"></nz-option>
+                </nz-select>
+                <ng-template #mobileSuffixIcon>
+                    <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
+                </ng-template>
+            </div>
+        </ng-template>
+    </div>
+
+    <div class="mt-10 lg:grid place-items-start">
+        <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading([])">
+          {{ 100 }} items
+        </p>
+        <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+            (scrolled)="onScroll()">
+        
+            <nz-skeleton *ngIf="isLoading([])" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+                [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+        
+            <nz-card class="w-76" *ngIf="isEmpty(['asd'])">
+                <div class="flex flex-col justify-center text-center h-36">
+                    <span class="leading-7 text-app-gray-400">
+                        No Collections
+                    </span>
+                </div>
+            </nz-card>
+        
+            <wen-nft-card class="wen-nft-card"
+                *ngFor="let nft of nft$ | async; trackBy: trackByUid"
+                [nft]="nft">
+            </wen-nft-card>
+            
+            <!-- Needs to be removed -->
+            <wen-nft-card *ngFor="let item of [1,1,1,1,1,1,1,1,1]" class="wen-nft-card">
+            </wen-nft-card>
+        </div>
+    </div>
 </wen-content>
