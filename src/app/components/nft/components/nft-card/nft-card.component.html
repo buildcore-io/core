@@ -7,6 +7,12 @@
             [src]="'https://i.guim.co.uk/img/media/ef8492feb3715ed4de705727d9f513c168a8b196/37_0_1125_675/master/1125.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=d456a2af571d980d8b2985472c262b31' || '/assets/mocks/no_banner.jpg'"
             class="object-cover w-full h-full"
             />
+            
+            <div class="absolute left-3 bottom-3 bg-bg-background rounded-lg flex items-center px-2.5 py-2"
+                *ngIf="true && (deviceService.isMobile$ | async)">
+                    <wen-icon-time class="text-app-gray-400 mr-3"></wen-icon-time>
+                    <div class="text-xs font-medium">2 hours left</div>
+            </div>
         </div>
 
         <div class="relative flex flex-col w-full px-4 py-3 lg:py-4">
@@ -24,7 +30,7 @@
                     class="ml-auto" i18n>Buy now</button>
             </div>
             
-            <div class="flex items-center mt-2" *ngIf="true">
+            <div class="flex items-center mt-2" *ngIf="true && (deviceService.isDesktop$ | async)">
                 <wen-icon-time class="text-app-gray-400 mr-3"></wen-icon-time>
                 <div class="text-xs font-medium">2 hours left</div>
             </div>
