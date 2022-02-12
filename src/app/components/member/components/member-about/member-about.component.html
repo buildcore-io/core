@@ -12,7 +12,8 @@
         class="ml-4 text-center text-current">
         <i nz-icon class="text-white" nzType="edit"></i>
       </a>
-      <wen-member-edit-drawer [isDesktop]="(deviceService.isDesktop$ | async) === true" *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">
+      <wen-member-edit-drawer [isDesktop]="(deviceService.isDesktop$ | async) === true"
+        *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">
       </wen-member-edit-drawer>
     </div>
   </div>
@@ -38,8 +39,14 @@
   </div>
 
   <div class="mt-10 text-left">
-    <h3>Wallet details</h3>
-    <wen-wallet-address class="block p-3 rounded-2xl bg-bg-background" [entityType]="walletAddressEntities.MEMBER" [entity]="(data.member$ | async)" [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
+    <h3>Wallet details
+      <wen-icon-question-circle class="inline-block ml-1 cursor-help" nz-tooltip nzTooltipPlacement="right"
+        i18n-nzTooltipTitle nzTooltipTitle="Wallet to hold funds for the User.">
+      </wen-icon-question-circle>
+    </h3>
+    <wen-wallet-address class="block p-3 rounded-2xl bg-bg-background" [entityType]="walletAddressEntities.MEMBER"
+      [entity]="(data.member$ | async)"
+      [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
     </wen-wallet-address>
   </div>
 
@@ -48,21 +55,20 @@
       Recently joined spaces
       <a i18n class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
         [routerLink]="">
-          All
-          <wen-icon-angle-right></wen-icon-angle-right>
+        All
+        <wen-icon-angle-right></wen-icon-angle-right>
       </a>
     </h3>
     <div class="flex flex-wrap gap-2">
       <article *ngFor="let s of (data.space$ | async) | slice:0:4; trackBy: trackByUid"
         class="flex flex-col items-center justify-center w-full p-3 lg:h-16 bg-bg-background rounded-2xl">
         <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
-          <nz-avatar [nzSrc]="avatarService.getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10" nzShape="circle">
-            </nz-avatar>
-          <span class="flex-grow pl-2"
-          [ngClass]="{
+          <nz-avatar [nzSrc]="avatarService.getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10"
+            nzShape="circle">
+          </nz-avatar>
+          <span class="flex-grow pl-2" [ngClass]="{
             'truncate': deviceService.isDesktop$ | async
-          }"
-          >{{ s.name }}</span>
+          }">{{ s.name }}</span>
           <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
         </a>
       </article>
