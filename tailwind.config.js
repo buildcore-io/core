@@ -76,7 +76,8 @@ module.exports = {
         },
         brown: '#A66300',
         pink: '#F20CDF',
-        black: '#000000'
+        black: '#000000',
+        'light-brown': '#C6BF9F'
       },
       spacing: {
         18: '4.5rem',
@@ -101,7 +102,8 @@ module.exports = {
       },
       width: {
         header: '500px',
-        76: '19rem'  
+        76: '19rem',
+        '3/10': '30%'
       },
       minHeight: {
         6: '1.5rem',

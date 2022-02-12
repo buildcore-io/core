@@ -11,6 +11,7 @@ import { BellIconComponent } from './bell/bell.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
+import { CopyIconComponent } from './copy/copy.component';
 import { DefaultSpaceIconComponent } from './default-space/default-space.component';
 import { DiscordIconComponent } from './discord/discord.component';
 import { DollarIconComponent } from './dollar/dollar.component';
@@ -48,6 +49,7 @@ import { TrashIconComponent } from './trash/trash.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 import { WalletIconComponent } from './wallet/wallet.component';
+import { SadIconComponent } from './sad/sad.component';
 
 @NgModule({
   declarations: [
@@ -98,7 +100,9 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TimeIconComponent,
     ShareIconComponent,
     PercentageIconComponent,
-    DollarIconComponent
+    DollarIconComponent,
+    CopyIconComponent,
+    SadIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -148,7 +152,9 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TimeIconComponent,
     ShareIconComponent,
     PercentageIconComponent,
-    DollarIconComponent
+    DollarIconComponent,
+    CopyIconComponent,
+    SadIconComponent
   ],
   imports: [
     CommonModule

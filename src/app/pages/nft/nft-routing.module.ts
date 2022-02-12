@@ -8,7 +8,7 @@ import { SinglePage } from './pages/single/single.page';
 
 const routes: Routes = [
   {
-    path: ROUTER_UTILS.config.nft.root,
+    path: '',
     component: NFTPage
   },
   {
