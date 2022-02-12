@@ -78,7 +78,7 @@ export class MultiplePage {
       validate: (value: string) => !!value
     },
   }
-  
+
   constructor(
     public deviceService: DeviceService,
     private nzNotification: NzNotificationService,
@@ -112,22 +112,22 @@ export class MultiplePage {
 
   public beforeCSVUpload(file: NzUploadFile) : boolean | Observable<boolean> {
     if (!file) return false;
-    
+
     Papa.parse(file as unknown as File, {
       complete: (results: any) => {
         // Use this nfts for multiple upload
         const nfts =
           results.data
             .slice(1)
-            .map((row: string[]) => 
+            .map((row: string[]) =>
               row.reduce((acc: any, cur: string, index: number) => ({ ...acc, [results.data[0][index]]: cur }), {}))
-            .filter((nft: any) => 
+            .filter((nft: any) =>
               Object.values(this.nftObject)
                 .every((field) => field.isArray ?
                   Object.keys(nft)
                     .filter((key: string) => key.startsWith(field.label))
                     .every((key: string) => field.validate(nft[key])) : field.validate(nft[field.label])))
-            .map((nft: any) => 
+            .map((nft: any) =>
               Object.keys(nft)
                 .reduce((acc: any, key: string) => {
                   const fieldKey =  Object.keys(this.nftObject).find((k) => key.startsWith(this.nftObject[k].label)) || '';
@@ -166,12 +166,12 @@ export class MultiplePage {
   }
 
   public generate(): void {
-    const fields = 
+    const fields =
       ['', ...Object.values(this.nftObject)
         .map(item => item.isArray ? [...Array(10).keys()].map((num: number) => `${item.label}.example${num+1}`) : [item.label])
         .reduce((acc: string[], cur: string[]) => [...acc, ...cur], [] as string[])];
-        
-    const data = 
+
+    const data =
       this.uploadedFiles
         .map((file: NzUploadFile) => [...new Array(fields.length - 2).fill(''), file.response])
 

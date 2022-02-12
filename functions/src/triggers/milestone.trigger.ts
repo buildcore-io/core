@@ -24,6 +24,7 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
 }).firestore.document(COL.MILESTONE + '/{milestoneId}').onWrite(async (change) => {
   const newValue: any = change.after.data();
   const previousValue: any = change.before.data();
+  console.log('Milestone triggered');
   if ((!previousValue || previousValue.completed === false) && previousValue?.processed !== true && newValue.completed === true) {
     // We need to scan ALL transactions with certain type.
     const transactions: any = await change.after.ref.collection('transactions').get();
