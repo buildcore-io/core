@@ -31,16 +31,19 @@
             <h1 class="mt-3 lg:mt-2">{{ (data.collection$ | async)?.name }}</h1>
 
             <div class="flex flex-wrap items-center">
-                <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                    style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                    [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
-                </nz-avatar>
-
-                <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">{{ '@Phylo' }}</div>
+                <a [routerLink]="['/member', (data.creator$ | async)?.uid]">
+                  <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                    class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                    style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                  </nz-avatar>
+                  <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
+                    @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
+                  </div>
+                </a>
 
                 <div class="flex items-center mr-8">
                     <wen-icon-time></wen-icon-time>
-                    <div class="ml-2.5 font-medium">2 days ago</div>
+                    <div class="ml-2.5 font-medium">{{(data.collection$ | async)?.createdOn?.toDate() | date:'short'}}</div>
                 </div>
 
                 <div class="flex items-center mt-4 lg:mt-0">
@@ -52,17 +55,17 @@
             <div class="flex flex-wrap items-center mt-8">
                 <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
-                    <div class="text-lg font-bold truncate">100</div>
+                    <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
                 </div>
 
                 <div class="flex-grow h-16 px-4 py-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl lg:mr-3">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available</div>
-                    <div class="text-lg font-bold truncate">20</div>
+                    <div class="text-lg font-bold truncate">{{(data.collection$ | async)?.sold || 0}}</div>
                 </div>
 
-                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:w-32 rounded-xl lg:mt-0">
+                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:w-32 rounded-xl lg:mt-0" *ngIf="data.cheapestNft$ | async">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
-                    <div class="text-lg font-bold truncate">100 Mi</div>
+                    <div class="text-lg font-bold truncate">{{formatBest((data.cheapestNft$ | async)?.price)}}</div>
                 </div>
             </div>
 
@@ -70,13 +73,14 @@
             </div>
         </div>
 
-        <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;" *ngIf="deviceService.isDesktop$ | async">
-            <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async)" nzBlock nzSize="large" i18n>
+        <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;"
+            *ngIf="(deviceService.isDesktop$ | async)">
+            <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
                 Approve Collection
             </button>
 
-            <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async)"nzBlock nzSize="large" i18n>
-              Reject Collection
+            <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                Reject Collection
             </button>
 
             <wen-collection-about></wen-collection-about>
@@ -96,14 +100,15 @@
 
     <div class="w-screen h-px mt-16 -ml-10 bg-app-gray-separator-dark lg:mt-12"></div>
 
-    <nz-input-group
+    <!-- Park search. -->
+    <!-- <nz-input-group
         nzSize="small" [nzPrefix]="prefixIconSearch"
         class="w-full mt-12 border-none shadow-none outline-0 lg:w-96" nzSearch>
         <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
     </nz-input-group>
     <ng-template #prefixIconSearch>
       <i nz-icon nzType="search" class="text-xl"></i>
-    </ng-template>
+    </ng-template> -->
 
     <div class="flex items-end justify-between">
         <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
@@ -112,6 +117,9 @@
                     (nzCheckedChange)="handleChange(tag)">
                     {{ tag }}
                 </nz-tag>
+                <button nz-button nzType="primary" nzBlock nzSize="small" (click)="createNft()" i18n *ngIf="!(data.collection$ | async)?.rejected">
+                  New NFT
+                </button>
             </ng-container>
 
             <ng-template #hotTagsMobileBlock>
@@ -141,22 +149,18 @@
                 <ng-template #mobileSuffixIcon>
                     <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
                 </ng-template>
-
-                <button nz-button nzType="primary" nzBlock nzSize="large" i18n>
-                  New NFT
-              </button>
             </div>
         </ng-template>
     </div>
 
     <div class="mt-10 lg:grid place-items-start">
-        <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading([])">
-          {{ 100 }} items
+        <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(data.nft$ | async)">
+          {{ (data.collection$ | async)?.total || 0}} items
         </p>
         <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             (scrolled)="onScroll()">
 
-            <nz-skeleton *ngIf="isLoading([])" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+            <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
                 [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
             <nz-card class="w-76" *ngIf="isEmpty(['asd'])">
@@ -168,12 +172,8 @@
             </nz-card>
 
             <wen-nft-card class="wen-nft-card"
-                *ngFor="let nft of nft$ | async; trackBy: trackByUid"
+                *ngFor="let nft of data.nft$ | async; trackBy: trackByUid"
                 [nft]="nft">
-            </wen-nft-card>
-
-            <!-- Needs to be removed -->
-            <wen-nft-card *ngFor="let item of [1,1,1,1,1,1,1,1,1]" class="wen-nft-card">
             </wen-nft-card>
         </div>
     </div>

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Nft } from './../../../functions/interfaces/models/nft';
-import { BaseApi } from './base.api';
+import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 @Injectable({
   providedIn: 'root',
@@ -18,5 +18,17 @@ export class NftApi extends BaseApi<Nft> {
 
   public create(req: WenRequest): Observable<Nft|undefined> {
     return this.request(WEN_FUNC.cNft, req);
+  }
+
+  public highToLowInCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('collection', '==', collection);
+    });
+  }
+
+  public lowToHighInCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('collection', '==', collection);
+    });
   }
 }

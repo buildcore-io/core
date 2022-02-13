@@ -6,7 +6,6 @@ import { FILE_SIZES } from 'functions/interfaces/models/base';
   providedIn: 'root'
 })
 export class AvatarService {
-
   public getAvatarSize(url?: string|null): string|undefined {
     if (!url) {
       return undefined;

@@ -1,32 +1,49 @@
-<div class="flex items-center flex-col lg:flex-row mt-8 pt-10 lg:pt-0">
-    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default"
-        class="text-black flex items-center justify-center flex-grow lg:mr-4 w-full lg:w-1/2">
+<div class="flex flex-col items-center pt-10 mt-8 lg:flex-row lg:pt-0">
+    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new"
+        *ngIf="(data.collection$ | async)?.url" [href]="(data.collection$ | async)?.url"
+        class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
             <wen-icon-github></wen-icon-github>
             <div class="ml-2.5 text-xs font-medium" i18n>Visit website</div>
-    </button>
-    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default"
-        class="text-black flex items-center justify-center flex-grow w-full lg:w-1/2">
+    </a>
+    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new"
+        [href]="getShareUrl()"
+        class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
             <wen-icon-share></wen-icon-share>
             <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
-    </button>
+    </a>
 </div>
 
-<nz-card nzTitle="Resources" class="mt-8">
+<nz-card nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
     <div class="space-y-5">
-        <div *ngFor="let item of ['iotatreasury.web', 'iotatreasury.web', 'iotatreasury.web']"
+        <a *ngIf="(data.collection$ | async)?.url" target="_new"
+            [href]="(data.collection$ | async)?.url"
             class="flex items-center">
-            <wen-icon-link class="text-app-gray-400 mr-3"></wen-icon-link>
-            <div class="text-xs font-medium">{{ item }}</div>
-        </div>
+            <wen-icon-link class="mr-3 text-app-gray-400"></wen-icon-link>
+            <div class="text-xs font-medium">{{ (data.collection$ | async)?.url }}</div>
+        </a>
+
+        <a *ngIf="(data.collection$ | async)?.twitter" target="_new"
+            [href]="'https://twitter.com/' + (data.collection$ | async)?.twitter"
+            class="flex items-center">
+            <wen-icon-twitter class="mr-3 text-app-gray-400"></wen-icon-twitter>
+            <div class="text-xs font-medium">{{ (data.collection$ | async)?.twitter }}</div>
+        </a>
+
+        <a *ngIf="(data.collection$ | async)?.discord" target="_new"
+            [href]="'https://discord.gg/' + (data.collection$ | async)?.discord"
+            class="flex items-center">
+            <wen-icon-discord class="mr-3 text-app-gray-400"></wen-icon-discord>
+            <div class="text-xs font-medium">{{ (data.collection$ | async)?.discord }}</div>
+        </a>
     </div>
 </nz-card>
 
-<nz-card nzTitle="Member discounts" class="mt-8">
+<nz-card nzTitle="Member discounts" class="mt-8" *ngIf="(data.collection$ | async)?.discounts?.length">
     <div class="space-y-5">
-        <div *ngFor="let item of [{ percentage: 10, xp: 50}, { percentage: 50, xp: 500}, { percentage: 100, xp: 1000}]"
+        <div *ngFor="let item of (data.collection$ | async)?.discounts"
             class="flex items-center">
-            <wen-icon-percentage class="text-app-gray-400 mr-3"></wen-icon-percentage>
-            <div class="text-xs font-medium">{{ item.percentage }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
+            <wen-icon-percentage class="mr-3 text-app-gray-400"></wen-icon-percentage>
+            <div class="text-xs font-medium">{{ (item.amount * 100) }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
         </div>
     </div>
 </nz-card>

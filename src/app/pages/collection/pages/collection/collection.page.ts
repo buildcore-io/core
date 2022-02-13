@@ -4,19 +4,23 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
+import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { WEN_NAME } from 'functions/interfaces/config';
 import { Collection } from 'functions/interfaces/models';
+import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
-import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, map, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
+import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 @UntilDestroy()
 @Component({
@@ -26,7 +30,6 @@ import { DataService } from '../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionPage implements OnInit, OnDestroy {
-  public nft$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   public isAboutCollectionVisible = false;
   public sortControl: FormControl;
   public filterControl: FormControl;
@@ -41,9 +44,11 @@ export class CollectionPage implements OnInit, OnDestroy {
     public data: DataService,
     public avatarService: AvatarService,
     private auth: AuthService,
+    private notification: NotificationService,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,
     private collectionApi: CollectionApi,
+    private nftApi: NftApi,
     private titleService: Title,
     private route: ActivatedRoute,
     private router: Router
@@ -92,6 +97,14 @@ export class CollectionPage implements OnInit, OnDestroy {
     });
   }
 
+  public createNft(): void {
+    this.router.navigate([
+      ('/' + ROUTER_UTILS.config.nft.root),
+      ROUTER_UTILS.config.nft.newNft,
+      { collection: this.data.collectionId }
+    ]);
+  }
+
   private notFound(): void {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }
@@ -100,18 +113,56 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.data.collectionId = id;
     this.cancelSubscriptions();
     this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
+    this.subscriptions$.push(this.nftApi.lowToHighInCollection(id).pipe(untilDestroyed(this)).subscribe(this.data.nft$));
+    this.subscriptions$.push(
+      this.nftApi.lowToHighInCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+        return obj[0];
+      })).subscribe(this.data.cheapestNft$)
+    );
+  }
+
+  public formatBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return UnitsHelper.formatBest(amount, 4);
   }
 
   public handleChange(tag: string): void {
     this.selectedTags$.next([tag]);
   }
 
-  public approve(): void {
-    // Needs to be implemented
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 
-  public reject(): void {
-    // Needs to be implemented
+  public async approve(): Promise<void> {
+    if (!this.data.collection$.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign({
+        uid: this.data.collection$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.collectionApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
+  }
+
+  public async reject(): Promise<void> {
+    if (!this.data.collection$.value?.uid) {
+      return;
+    }
+
+    await this.auth.sign({
+      uid: this.data.collection$.value.uid
+    }, (sc, finish) => {
+      this.notification.processRequest(this.collectionApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+        // none.
+      });
+    });
   }
 
   public onScroll(): void {

@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
-import { createCollection, updateCollection } from './controls/collection.control';
+import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { createNft } from './controls/nft.control';
 import { orderNft, validateAddress } from './controls/order.control';
@@ -47,8 +47,8 @@ exports[WEN_FUNC.voteOnProposal] = voteOnProposal;
 // Collection functions
 exports[WEN_FUNC.cCollection] = createCollection;
 exports[WEN_FUNC.uCollection] = updateCollection;
-exports[WEN_FUNC.approveCollection] = updateCollection;
-exports[WEN_FUNC.rejectCollection] = updateCollection;
+exports[WEN_FUNC.approveCollection] = approveCollection;
+exports[WEN_FUNC.rejectCollection] = rejectCollection;
 
 // NFT Functions
 exports[WEN_FUNC.cNft] = createNft;

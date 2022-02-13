@@ -8,10 +8,6 @@ import { SinglePage } from './pages/single/single.page';
 
 const routes: Routes = [
   {
-    path: ROUTER_UTILS.config.nft.nft,
-    component: NFTPage
-  },
-  {
     path: ROUTER_UTILS.config.nft.newNft,
     component: NewPage,
     children: [
@@ -19,7 +15,11 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.nft.single, component: SinglePage, },
       { path: ROUTER_UTILS.config.nft.multiple, component: MultiplePage, }
     ]
-  }
+  },
+  {
+    path: ROUTER_UTILS.config.nft.nft,
+    component: NFTPage
+  },
 ];
 
 @NgModule({

@@ -7,6 +7,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { SelectSpaceModule } from '@components/select-space/select-space.module';
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { FilterService } from '@pages/market/services/filter.service';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -43,6 +44,7 @@ import { DataService } from './services/data.service';
     CommonModule,
     CollectionRoutingModule,
     LayoutModule,
+    IpfsAvatarModule,
     CollectionStatusModule,
     NzButtonModule,
     FormsModule,
