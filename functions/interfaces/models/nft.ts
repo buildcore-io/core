@@ -2,6 +2,9 @@ import { IotaAddress, Timestamp } from '../../interfaces/models/base';
 import { BaseRecord, EthAddress } from "./base";
 import { CollectionType } from './collection';
 
+export const MAX_PROPERTIES_COUNT = 25;
+export const MAX_STATS_COUNT = 25;
+
 export interface Nft extends BaseRecord {
   name: string;
   description: string;

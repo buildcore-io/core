@@ -8,8 +8,6 @@ export enum StepType {
   GENERATE = 'Generate',
   PUBLISH = 'Publish'
 }
-export const MAX_PROPERTIES_COUNT = 5;
-export const MAX_STATS_COUNT = 5;
 
 @Component({
   selector: 'wen-new',
