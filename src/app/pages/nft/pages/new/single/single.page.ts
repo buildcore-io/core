@@ -15,7 +15,7 @@ import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT } from 'functions/interfaces/mode
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { Observable, of, Subscription } from 'rxjs';
-import { PRICE_UNITS } from '../new/new.page';
+import { PRICE_UNITS } from '../new.page';
 
 interface SelectOption {
   label: string;

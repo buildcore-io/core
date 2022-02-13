@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CollectionStatusModule } from '@components/collection/collection-status/collection-status.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -22,10 +25,10 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NftRoutingModule } from './nft-routing.module';
-import { MultiplePage } from './pages/multiple/multiple.page';
+import { MultiplePage } from './pages/new/multiple/multiple.page';
 import { NewPage } from './pages/new/new.page';
+import { SinglePage } from './pages/new/single/single.page';
 import { NFTPage } from './pages/nft/nft.page';
-import { SinglePage } from './pages/single/single.page';
 import { DataService } from './services/data.service';
 
 
@@ -42,6 +45,7 @@ import { DataService } from './services/data.service';
     NftRoutingModule,
     LayoutModule,
     NzButtonModule,
+    CollectionStatusModule,
     FormsModule,
     ReactiveFormsModule,
     NzCardModule,
@@ -49,6 +53,8 @@ import { DataService } from './services/data.service';
     NzInputNumberModule,
     IconModule,
     NzUploadModule,
+    MarkDownModule,
+    IpfsAvatarModule,
     NzDatePickerModule,
     RadioModule,
     NzIconModule,

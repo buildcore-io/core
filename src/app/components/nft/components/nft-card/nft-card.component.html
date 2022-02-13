@@ -1,6 +1,6 @@
 <article class="w-full bg-white rounded-2xl wen-card"
     [ngClass]="fullWidth ? 'w-auto' : 'min-w-40 lg:min-w-60 w-40 lg:w-60'" *ngIf="true">
-    <a class="text-current hover:text-current" [routerLink]="['/', this.path, '123']">
+    <a class="text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
             alt="NFT image"

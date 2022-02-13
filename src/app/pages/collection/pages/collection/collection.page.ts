@@ -86,7 +86,6 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
     });
 
-    // Once we get proposal get space.
     this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
@@ -126,7 +125,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 4);
+    return UnitsHelper.formatBest(amount, 2);
   }
 
   public handleChange(tag: string): void {

@@ -9,7 +9,7 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
 import { Observable, of, Subscription } from 'rxjs';
-import { StepType } from '../new/new.page';
+import { StepType } from '../new.page';
 
 export interface NFTObject {
   [key: string]: {
