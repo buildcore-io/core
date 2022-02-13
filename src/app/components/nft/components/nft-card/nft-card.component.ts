@@ -12,10 +12,18 @@ import { Nft } from 'functions/interfaces/models/nft';
 export class NftCardComponent {
   @Input() fullWidth?: boolean;
   @Input() nft?: Nft;
+  @Input() isOwned = false;
   
+  public isCheckoutOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
 
   constructor(
     public deviceService: DeviceService
   ) {}
+
+  public onBuy(event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.isCheckoutOpen = true;
+  }
 }

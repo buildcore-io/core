@@ -37,5 +37,29 @@
         </div>
     </ng-template>
 </div>
+
+<div class="mt-10 lg:grid place-items-start">
+    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(collection$ | async)">
+        {{ 100 }} collections
+    </p>
+    <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        (scrolled)="onScroll()">
+    
+        <nz-skeleton *ngIf="isLoading(collection$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+            [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+    
+        <nz-card class="w-76" *ngIf="isEmpty(collection$ | async)">
+            <div class="flex flex-col justify-center text-center h-36">
+                <span class="leading-7 text-app-gray-400">
+                    No collections
+                </span>
+            </div>
+        </nz-card>
+    
+        <wen-collection-card class="w-full outline-none lg:w-auto" 
+            *ngFor="let collection of collection$ | async; trackBy: trackByUid" [collection]="collection">
+        </wen-collection-card>
+    </div>
+</div>
   
   

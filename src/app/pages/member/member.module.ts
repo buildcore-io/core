@@ -7,6 +7,7 @@ import { MemberAlliancesTableModule } from '@components/member/components/member
 import { MemberSpaceRowModule } from '@components/member/components/member-space-row/member-space-row.module';
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
+import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { SelectSpaceModule } from '@components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
@@ -21,10 +22,13 @@ import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AwardCardModule } from '../../components/award/components/award-card/award-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
 import { BadgeModule } from './../../components/badge/badge.module';
@@ -75,7 +79,11 @@ import { DataService } from './services/data.service';
     MobileSearchModule,
     IpfsBadgeModule,
     SelectSpaceModule,
-    TimelineModule
+    TimelineModule,
+    NftCardModule,
+    NzSkeletonModule,
+    InfiniteScrollModule,
+    NzSelectModule
   ],
 })
 export class MemberModule {
