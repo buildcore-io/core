@@ -19,11 +19,11 @@ export class MarketPage implements OnInit, OnDestroy {
   public filterControl: FormControl = new FormControl(undefined);
   public sections: TabSection[] = [
     { route: ROUTER_UTILS.config.market.collections, label: 'Collections' },
-    { route: ROUTER_UTILS.config.market.nfts, label: 'NFT`s' }
+    { route: ROUTER_UTILS.config.market.nfts, label: 'NFT\'s' }
   ];
   public selectedSection?: TabSection;
   public isSearchInputFocused = false;
-  
+
   constructor(
     private titleService: Title,
     public deviceService: DeviceService,
@@ -46,8 +46,8 @@ export class MarketPage implements OnInit, OnDestroy {
   }
 
   private setSelectedSection() {
-    this.selectedSection = 
-      this.sections.find((r: TabSection) => 
+    this.selectedSection =
+      this.sections.find((r: TabSection) =>
         this.router.url.includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
   }
 

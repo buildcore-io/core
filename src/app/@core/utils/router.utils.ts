@@ -62,12 +62,14 @@ export const ROUTER_UTILS = {
     },
     collection: {
       root: 'collection',
+      collection: ':collectionId',
       new: 'new',
       edit: 'edit'
     },
     nft: {
       root: 'nft',
       newNft: 'new',
+      nft: ':nftId',
       single: 'single',
       multiple: 'multiple'
     },

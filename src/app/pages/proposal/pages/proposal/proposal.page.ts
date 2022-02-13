@@ -252,8 +252,6 @@ export class ProposalPage implements OnInit, OnDestroy {
     this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
     this.proposalData.resetSubjects();
-    if (this.guardiansSubscription$) {
-      this.guardiansSubscription$.unsubscribe();
-    }
+    this.guardiansSubscription$?.unsubscribe();
   }
 }

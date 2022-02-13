@@ -65,8 +65,32 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     });
     await db.collection(COL.MILESTONE).doc(nextMilestone).set({ completed: true });
 
-    // Space address should be validated by above.
-    await new Promise((r) => setTimeout(r, 2000));
+    const milestoneProcessed: any = async () => {
+      let processed: any = false;
+      for (let attempt = 0; attempt < 20; ++attempt) {
+          if (attempt > 0) {
+            await new Promise((r) => setTimeout(r, 500));
+          }
+          try {
+            const unsub: any = await db.collection(COL.MILESTONE).doc(nextMilestone).onSnapshot(async (snap: any) => {
+              if (snap.data().processed === true) {
+                processed = true;
+              }
+              unsub();
+            });
+            if (!processed) {
+              throw new Error();
+            }
+            return; // It worked
+          } catch {
+            // none.
+          }
+      }
+      // Out of retries
+      throw new Error("Milestone was not processed.");
+    }
+
+    await milestoneProcessed();
   });
 
   const cSpaceHelper = (params: any) => {
@@ -135,9 +159,6 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: 'babba',
       royaltiesFee: 0.6,
-      type: CollectionType.CLASSIC,
-      category: Categories.ART,
-      space: space.uid,
       royaltiesSpace: space.uid
     });
     const wrapped: any = testEnv.wrap(updateCollection);

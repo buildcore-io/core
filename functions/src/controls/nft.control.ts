@@ -9,7 +9,7 @@ import { COL, WenRequest } from '../../interfaces/models/base';
 import { Member } from '../../interfaces/models/member';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
-import { cOn } from "../utils/dateTime.utils";
+import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
@@ -65,6 +65,10 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
   const calculatedRoyalty = docCollection.data().royaltiesFee * params.body.price;
   if (calculatedRoyalty < MIN_AMOUNT_TO_TRANSFER) {
     throw throwInvalidArgument(WenError.royalty_payout_must_be_above_1_mi);
+  }
+
+  if (params.body.availableFrom) {
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
   }
 
   const refNft: any = admin.firestore().collection(COL.NFT).doc(nftAddress);

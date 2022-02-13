@@ -1,0 +1,5 @@
+<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!collection?.approved && !collection?.rejected">Pending
+</nz-tag>
+<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="collection?.rejected">Rejected
+</nz-tag>
+<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="collection?.approved">Available</nz-tag>

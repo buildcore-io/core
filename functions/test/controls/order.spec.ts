@@ -1,114 +1,158 @@
-import dayjs from "dayjs";
-import * as admin from 'firebase-admin';
-import { COL } from '../../interfaces/models/base';
-import { Categories, CollectionType } from "../../interfaces/models/collection";
-import { createCollection } from '../../src/controls/collection.control';
-import { createMember } from '../../src/controls/member.control';
-import { createNft } from '../../src/controls/nft.control';
-import { createSpace } from '../../src/controls/space.control';
-import { serverTime } from "../../src/utils/dateTime.utils";
-import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
-import { TransactionType } from './../../interfaces/models/transaction';
-import { orderNft } from './../../src/controls/order.control';
-const db = admin.firestore();
+// import * as admin from 'firebase-admin';
+// import { TransactionOrderType, TransactionType } from 'functions/interfaces/models';
+// import { COL } from 'functions/interfaces/models/base';
+// import { createSpace } from 'functions/src/controls/space.control';
+// import * as wallet from '../../src/utils/wallet.utils';
+// import { testEnv } from '../set-up';
+// import { createMember } from './../../src/controls/member.control';
+// import { validateAddress } from './../../src/controls/order.control';
+// const db = admin.firestore();
 
-describe('Ordering flows', () => {
-  let walletSpy: any;
-  let dummyAddress: any;
-  let space: any;
-  let collection: any;
-  let nft: any;
-  let member: any;
+// describe('Ordering flows', () => {
+//   let walletSpy: any;
 
-  const mocker = (params: any) => {
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: params
-    }));
-  }
+//   const milestoneProcessed: any = async (nextMilestone: string) => {
+//     let processed: any = false;
+//     for (let attempt = 0; attempt < 20; ++attempt) {
+//         if (attempt > 0) {
+//           await new Promise((r) => setTimeout(r, 500));
+//         }
+//         try {
+//           const unsub: any = await db.collection(COL.MILESTONE).doc(nextMilestone).onSnapshot(async (snap: any) => {
+//             if (snap.data().processed === true) {
+//               processed = true;
+//             }
+//             unsub();
+//           });
+//           if (!processed) {
+//             throw new Error();
+//           }
+//           return; // It worked
+//         } catch {
+//           // none.
+//         }
+//     }
+//     // Out of retries
+//     throw new Error("Milestone was not processed.");
+//   }
 
-  beforeEach(async () => {
-    dummyAddress = wallet.getRandomEthAddress();
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: {}
-    }));
+//   const mocker = (adr: string, params: any) => {
+//     walletSpy.mockReturnValue(Promise.resolve({
+//       address: adr,
+//       body: params
+//     }));
+//   }
 
-    const wCreate: any = testEnv.wrap(createMember);
-    member = await wCreate(dummyAddress);
-    expect(member?.uid).toEqual(dummyAddress.toLowerCase());
+//   const createMemberFunc = async () => {
+//     const dummyAddress: string = wallet.getRandomEthAddress();
+//     mocker(dummyAddress, {});
+//     const wCreate: any = testEnv.wrap(createMember);
+//     const member: any = await wCreate(dummyAddress);
+//     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
+//     return member;
+//   }
 
-    const wrappedSpace: any = testEnv.wrap(createSpace);
-    space = await wrappedSpace();
-    expect(space?.uid).toBeDefined();
+//   const createSpaceFunc = async (adr: string, params: any) => {
+//     mocker(adr, params);
+//     const wrappedSpace: any = testEnv.wrap(createSpace);
+//     const space: any = await wrappedSpace();
+//     expect(space?.uid).toBeDefined();
+//     return space;
+//   }
 
-    mocker({
-      name: 'Collection A',
-      description: 'babba',
-      type: CollectionType.CLASSIC,
-      royaltiesFee: 0.6,
-      category: Categories.ART,
-      space: space.uid,
-      royaltiesSpace: space.uid
-    });
+//   const validateSpaceAddressFunc = async (adr: string, params: any) => {
+//     mocker(adr, params);
+//     const wrappedOrder: any = testEnv.wrap(validateAddress);
+//     const order: any = await wrappedOrder();
+//     expect(order?.type).toBe(TransactionType.ORDER);
+//     expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
+//     return order;
+//   }
 
-    const wrapped: any = testEnv.wrap(createCollection);
-    collection = await wrapped();
-    expect(collection?.uid).toBeDefined();
+//   const validateMemberAddressFunc = async (adr: string, params: any) => {
+//     mocker(adr, params);
+//     const wrappedOrder: any = testEnv.wrap(validateAddress);
+//     const order: any = await wrappedOrder();
+//     expect(order?.type).toBe(TransactionType.ORDER);
+//     expect(order?.payload.type).toBe(TransactionOrderType.MEMBER_ADDRESS_VALIDATION);
+//     return order;
+//   }
 
-    mocker({
-      name: 'NFT Rocks!',
-      description: 'babba',
-      collection: collection.uid,
-      availableFrom: dayjs().toDate(),
-      price: 10 * 1000 * 1000
-    });
-    const wrapped2: any = testEnv.wrap(createNft);
-    nft = await wrapped2();
-    expect(nft?.createdOn).toBeDefined();
-    expect(nft?.updatedOn).toBeDefined();
-  });
+//   const createCollectionFunc = async (adr: string, params: any) => {
 
-  it.skip('Order NFT, pay and be an owner', async () => {
-    // We made purchase for an NFT.
-    mocker({
-      nft: nft.uid
-    });
-    const wrapped2: any = testEnv.wrap(orderNft);
-    const nftFunc = await wrapped2();
-    expect(nftFunc.space).toBe(space.uid);
-    expect(nftFunc.member).toBe(member.uid);
-    expect(nftFunc.type).toBe(TransactionType.ORDER);
-    expect(nftFunc.payload.collection).toBe(collection.uid);
-    expect(nftFunc.payload.collection).toBe(collection.uid);
-    expect(nftFunc.payload.nft).toBe(nft.uid);
-    expect(nftFunc.payload.reconciled).toBe(false);
-    expect(nftFunc.payload.amount).toBe(nft.price);
+//   }
 
-    // Post milestone to confirm payment.
-    const allMil = await db.collection(COL.MILESTONE).get();
-    const nextMilestone = (allMil.size + 1).toString();
-    await db.collection(COL.MILESTONE).doc(nextMilestone)
-            .collection('transactions').doc('9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b251')
-      .set({
-        createdOn: serverTime(),
-        inputs: [{
-          address: 'iota1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz',
-          amount: 123
-        }],
-        outputs: [{
-          address: nftFunc.payload.targetAddress,
-          amount: nftFunc.payload.amount
-        }]
-    });
+//   const createNftFunc = async (adr: string, params: any) => {
 
-    // Mark milestone as complete.
-    await db.collection(COL.MILESTONE).doc(nextMilestone).set({ complete: true });
+//   }
 
-    await new Promise((r) => setTimeout(r, 2000));
-    // const aa = await db.collection(COL.NFT).doc(nft.uid).get();
-    // console.log(aa.data());
-  });
-});
+//   const submitMilestoneFunc = async (adr: string, amount: number) => {
+//       // Create milestone to process my validation.
+//       const allMil = await db.collection(COL.MILESTONE).get();
+//       const nextMilestone = (allMil.size + 1).toString();
+//       await db.collection(COL.MILESTONE).doc(nextMilestone)
+//       .collection('transactions').doc('9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b251')
+//       .set({
+//         createdOn: serverTime(),
+//         inputs: [{
+//           address: '1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz',
+//           amount: 123
+//         }],
+//         outputs: [{
+//           address: adr,
+//           amount: amount
+//         }]
+//       });
+//       await db.collection(COL.MILESTONE).doc(nextMilestone).set({ completed: true });
+//   }
+
+//   const submitOrderFunc = async (params: any) => {
+
+//   }
+
+
+
+//   beforeEach(async () => {
+//     dummyAddress = wallet.getRandomEthAddress();
+//     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+
+//   });
+
+//   it('One collection, one classic NFT, one purchase', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, one classic NFT, failed multiple purchase of same', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, one classic NFT, failed to pay (expires)', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, one classic NFT, failed to pay (expires) + someone else try to buy', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, one classic NFT, failed to pay (expires) + someone else purchases', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, one classic NFT, wrong amount', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, generated NFT, one purchase', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, generated NFT, one purchase trying multiple times', async () => {
+//     // To do.
+//   });
+
+//   it('One collection, generated NFT (large), one purchase by multiple parties at once', async () => {
+//     // To do.
+//   });
+
+
+// });

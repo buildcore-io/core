@@ -167,7 +167,9 @@ export class UpsertPage implements OnInit {
   };
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
-    return (list || []).map((o) => ({
+    return (list || []).filter((o) => {
+      return !!o.validatedAddress;
+    }).map((o) => ({
         label: o.name || o.uid,
         value: o.uid,
         img: o.avatarUrl
@@ -195,7 +197,10 @@ export class UpsertPage implements OnInit {
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0 && v.xp > 0) {
-        discounts.push(v);
+        discounts.push({
+          xp: v.xp,
+          amount: v.amount / 100
+        });
       }
     });
     data.discounts = discounts;

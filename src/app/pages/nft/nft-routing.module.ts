@@ -1,16 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { MultiplePage } from './pages/multiple/multiple.page';
+import { MultiplePage } from './pages/new/multiple/multiple.page';
 import { NewPage } from './pages/new/new.page';
+import { SinglePage } from './pages/new/single/single.page';
 import { NFTPage } from './pages/nft/nft.page';
-import { SinglePage } from './pages/single/single.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: NFTPage
-  },
   {
     path: ROUTER_UTILS.config.nft.newNft,
     component: NewPage,
@@ -19,7 +15,11 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.nft.single, component: SinglePage, },
       { path: ROUTER_UTILS.config.nft.multiple, component: MultiplePage, }
     ]
-  }
+  },
+  {
+    path: ROUTER_UTILS.config.nft.nft,
+    component: NFTPage
+  },
 ];
 
 @NgModule({
