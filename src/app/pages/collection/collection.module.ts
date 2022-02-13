@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CollectionStatusModule } from '@components/collection/collection-status/collection-status.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { SelectSpaceModule } from '@components/select-space/select-space.module';
+import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { FilterService } from '@pages/market/services/filter.service';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -41,12 +43,14 @@ import { DataService } from './services/data.service';
     CommonModule,
     CollectionRoutingModule,
     LayoutModule,
+    CollectionStatusModule,
     NzButtonModule,
     FormsModule,
     NzInputNumberModule,
     SelectSpaceModule,
     ReactiveFormsModule,
     NzCardModule,
+    MarkDownModule,
     NzFormModule,
     NzGridModule,
     NzInputModule,
