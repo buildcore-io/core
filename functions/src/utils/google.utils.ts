@@ -1,7 +1,5 @@
 import * as functions from 'firebase-functions';
 import { AppCheck } from './../../interfaces/config';
-import { WenError } from './../../interfaces/errors';
-import { throwArgument } from "./error.utils";
 
 export function appCheck(func: string, context: any) {
   if (context.app === undefined && AppCheck.enabled) {
@@ -9,7 +7,7 @@ export function appCheck(func: string, context: any) {
       func: func
     });
 
-    throw throwArgument('invalid-argument', WenError.unapproved_site);
+    // throw throwArgument('invalid-argument', WenError.unapproved_site);
   }
 }
 

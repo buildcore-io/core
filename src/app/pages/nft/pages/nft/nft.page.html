@@ -44,29 +44,28 @@
 
                 <div class="flex-grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
-                    <div class="flex items-center mt-2">
+                    <a class="flex items-center mt-2">
                         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                             style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                            [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
+                            [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                         </nz-avatar>
 
-                        <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">{{ 'IOTABOTS' }}</div>
-                    </div>
+                        <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
+                    </a>
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy()" *ngIf="true"
-                nzBlock nzSize="large" class="mt-12" i18n>
-                    Buy now
+            <button nz-button nzType="primary" (click)="buy()" *ngIf="true" nzBlock nzSize="large" class="mt-12" i18n>
+                Buy now
             </button>
 
             <!-- Use this if sale has ended -->
-            <div *ngIf="false" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
+            <!-- <div *ngIf="false" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
                     Sale ended
                 </div>
-            </div>
+            </div> -->
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
@@ -79,7 +78,7 @@
             <div class="relative w-full overflow-hidden rounded-2xl">
                 <img
                 alt="NFT Image"
-                [src]="(data.nft$ | async)?.image || '/assets/mocks/no_banner.jpg'"
+                [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full"
                 />
             </div>
@@ -107,7 +106,7 @@
                             class="ml-2.5 text-app-gray-400"
                             nz-tooltip
                             i18n-nzTooltipTitle
-                            nzTooltipTitle="Some description idk"
+                            nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
                         ></wen-icon-question-circle>
                     </p>
                 </div>
@@ -115,23 +114,23 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>IPFS CID</span>
                     <p nz-typography>
-                        12392832
+                        {{ (data.nft$ | async)?.ipfsMedia || 'Preparing...'}}
                     </p>
                 </div>
             </nz-card>
 
             <nz-card nzTitle="Properties" class="mt-4">
                 <div class="wen-description-item bg-bg-background"
-                    *ngFor="let prop of [{key:'Background',value:'Blue'},{key:'Clothes',value:'Fancy'},{key:'Hat',value:'Helmet'}]">
-                        <span nz-typography class="text-app-gray-400">{{ prop.key }}</span>
+                    *ngFor="let prop of getPropStats((data.nft$ | async)?.properties)">
+                        <span nz-typography class="text-app-gray-400">{{ prop.label }}</span>
                         <p nz-typography>{{ prop.value }}</p>
                 </div>
             </nz-card>
 
             <nz-card nzTitle="Stats" class="mt-4">
                 <div class="wen-description-item bg-bg-background"
-                    *ngFor="let stat of [{key:'Speed',value:'2 of 5'},{key:'Inteligence',value:'1 of 10'}]">
-                        <span nz-typography class="text-app-gray-400">{{ stat.key }}</span>
+                    *ngFor="let stat of getPropStats((data.nft$ | async)?.stats)">
+                        <span nz-typography class="text-app-gray-400">{{ stat.label }}</span>
                         <p nz-typography>{{ stat.value }}</p>
                 </div>
             </nz-card>
@@ -141,39 +140,57 @@
     <div class="w-screen h-px mt-16 -ml-10 bg-app-gray-separator-dark lg:mt-12"></div>
 
     <nz-card class="relative block w-full mt-16" nzTitle="About the collection">
-        <a nz-button nzType="link" class="absolute flex items-center right-6 top-6" nzSize="small">
+        <a nz-button nzType="link" class="absolute flex items-center right-6 top-6" [routerLink]="['/', collectionPath, (data.collection$ | async)?.uid]" nzSize="small">
             <span i18n>Show collection</span>
             <wen-icon-angle-right></wen-icon-angle-right>
         </a>
 
         <div class="flex justify-between">
             <div class="w-max">
-                <h1 class="mb-2">{{ 'IOTABOTS vol.2' }}</h1>
+                <h1 class="mb-2">{{ (data.collection$ | async)?.name || (data.collection$ | async)?.uid }}</h1>
                 <div class="flex items-center">
                     <div class="mr-3 text-xs font-medium" i18n>by</div>
 
-                    <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                    <ng-container *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace">
+                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                          style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                          [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                      </nz-avatar>
+
+                      <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
+
+                      <div class="mx-3 text-xs font-medium">/</div>
+
+                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                         style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                        [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
-                    </nz-avatar>
+                        [nzSrc]="avatarService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)">
+                      </nz-avatar>
 
-                    <div class="ml-3 text-base font-medium truncate max-w-24">{{ '@Phylo' }}</div>
+                      <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}</div>
+                    </ng-container>
 
-                    <div class="mx-3 text-xs font-medium">/</div>
-
-                    <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                    <ng-container *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace">
+                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                         style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                        [nzSrc]="'https://ipfs.soonaverse.com/ipfs/bafybeiep4fgd3wkuxhqbaozgpvj6slmgawwwrqzewizgjjpdjud3lwgjyi/1044.png'">
-                    </nz-avatar>
+                        [nzSrc]="(data.collectionCreator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small">
+                      </nz-avatar>
 
-                    <div class="ml-3 text-base font-medium truncate max-w-24">{{ 'IOTABOTS' }}</div>
+                      <div class="ml-3 text-base font-medium truncate max-w-24">@{{ (data.collectionCreator$ | async)?.name }}</div>
+
+                      <div class="mx-3 text-xs font-medium">/</div>
+
+                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                          style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                          [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                      </nz-avatar>
+
+                      <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
+                    </ng-container>
                 </div>
             </div>
 
 
-            <div class="ml-20 text-xs font-medium">
-                The Royal Bots is an exciting new collection of 8888 iotabots NFTs, Each individual piece of digital art consists of a realistic three-dimensional graphic with more than 200 unique traits and options. Public Mint is now Live - https://www.iotabots.com/
-            </div>
+            <div class="ml-20 text-xs font-medium" [innerHtml]="(data.collection$ | async)?.description | markdown"></div>
         </div>
 
         <div class="mt-10 lg:grid place-items-start">

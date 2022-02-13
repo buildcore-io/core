@@ -11,7 +11,8 @@ export interface Nft extends BaseRecord {
   collection: EthAddress;
   owner?: EthAddress,
   ownerAddress?: IotaAddress;
-  image: string;
+  media: string;
+  ipfsMedia: string;
   availableFrom: Timestamp,
   type: CollectionType,
   space: string;

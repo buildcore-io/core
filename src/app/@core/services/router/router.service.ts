@@ -16,6 +16,7 @@ export class RouterService {
   public urlToNewProposal = '/' + ROUTER_UTILS.config.proposal.root + '/new';
   public urlToNewAward = '/' + ROUTER_UTILS.config.award.root + '/new';
   public urlToNewCollection = '/' + ROUTER_UTILS.config.collection.root + '/new';
+  public urlToNewNft = '/' + ROUTER_UTILS.config.nft.root + '/new';
 
   constructor(
     private router: Router

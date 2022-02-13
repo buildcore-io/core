@@ -23,7 +23,7 @@ function defaultJoiUpdateCreateSchema(): any {
     name: Joi.string().allow(null, '').required(),
     description: Joi.string().allow(null, '').required(),
     collection: CommonJoi.uidCheck(),
-    image: Joi.string().allow(null, '').uri({
+    media: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
     availableFrom: Joi.date().greater(dayjs().subtract(1, 'hour').toDate()).required(),
@@ -79,6 +79,7 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
       uid: nftAddress,
       locked: false,
       lockedBy: null,
+      ipfsMedia: null,
       space: docCollection.data().space,
       type: docCollection.data().type,
       hidden: (CollectionType.CLASSIC !== docCollection.data().type),

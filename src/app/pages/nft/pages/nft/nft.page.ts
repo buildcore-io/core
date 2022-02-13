@@ -5,6 +5,7 @@ import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
+import { AvatarService } from '@core/services/avatar';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
@@ -24,9 +25,11 @@ import { DataService } from '../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NFTPage implements OnInit, OnDestroy {
+  public collectionPath: string = ROUTER_UTILS.config.collection.root;
   private subscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
+    public avatarService: AvatarService,
     private titleService: Title,
     private route: ActivatedRoute,
     private spaceApi: SpaceApi,
@@ -60,8 +63,18 @@ export class NFTPage implements OnInit, OnDestroy {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.subscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
+        this.subscriptions$.push(this.nftApi.recentlyChangedCollection(p.collection, undefined, undefined, 10).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
         if (p.createdBy) {
           this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
+        }
+      }
+    });
+
+    this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {
+      if (p) {
+        this.subscriptions$.push(this.spaceApi.listen(p.royaltiesSpace).pipe(untilDestroyed(this)).subscribe(this.data.royaltySpace$));
+        if (p.createdBy) {
+          this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.collectionCreator$));
         }
       }
     });
@@ -74,7 +87,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public buy(): void {
-    // Needs to be implemented
+    console.log('test flow');
   }
 
   public copy(): void {
@@ -97,6 +110,19 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public getPropStats(obj: any): any[] {
+    if (!obj) {
+      return [];
+    }
+
+    const final: any[] = [];
+    for (const v of Object.values(obj)) {
+      final.push(v);
+    }
+
+    return final;
   }
 
   public formatBest(amount?: number|null): string {
