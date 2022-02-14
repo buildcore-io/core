@@ -9,6 +9,7 @@ import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
+import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -54,6 +55,7 @@ import { DataService } from './services/data.service';
     IconModule,
     NzUploadModule,
     MarkDownModule,
+    StripMarkDownModule,
     IpfsAvatarModule,
     NzDatePickerModule,
     RadioModule,

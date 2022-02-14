@@ -59,5 +59,7 @@ export const WenError = {
   nft_locked_for_sale: { code: 2051, key: 'NFT is currently locked.' },
   space_must_have_validated_address: { code: 2052, key: 'Space must have validated address.' },
   member_must_have_validated_address: { code: 2053, key: 'Member must have validated address.' },
+  generated_spf_nft_must_be_sold_first: { code: 2055, key: 'To buy directly Generated NFT/SFT it must be sold first.' },
+  no_more_nft_available_for_sale: { code: 2055, key: 'No more NFT available for sale.' }
 }
 

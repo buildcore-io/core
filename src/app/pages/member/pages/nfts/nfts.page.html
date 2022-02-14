@@ -1,5 +1,5 @@
 <div class="flex flex-col items-center justify-between lg:flex-row">
-    <nz-select class="w-full lg:w-60 wen-sort-button" nzPlaceHolder="filter by Collection" [nzCustomTemplate]="defaultTemplate" 
+    <nz-select class="w-full lg:w-60 wen-sort-button" nzPlaceHolder="filter by Collection" [nzCustomTemplate]="defaultTemplate"
         [formControl]="collectionControl" nz-tooltip>
         <nz-option nzLabel="collection 1" [nzValue]="'0x123123'"></nz-option>
     </nz-select>
@@ -10,7 +10,7 @@
 
     <nz-input-group
         nzSize="small" [nzPrefix]="prefixIconSearch"
-        class="border-none shadow-none outline-0 w-full lg:w-60 mt-4 lg:mt-0" nzSearch>
+        class="w-full mt-4 border-none shadow-none outline-0 lg:w-60 lg:mt-0" nzSearch>
         <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
     </nz-input-group>
     <ng-template #prefixIconSearch>
@@ -24,10 +24,10 @@
     </p>
     <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
-    
+
         <!-- <nz-skeleton *ngIf="isLoading(nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
             [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-    
+
         <nz-card class="w-76" *ngIf="isEmpty(nft$ | async)">
             <div class="flex flex-col justify-center text-center h-36">
                 <span class="leading-7 text-app-gray-400">
@@ -35,15 +35,9 @@
                 </span>
             </div>
         </nz-card> -->
-    
+
         <wen-nft-card class="w-full outline-none lg:w-auto" [isOwned]="true"
             *ngFor="let nft of nft$ | async; trackBy: trackByUid" [nft]="nft">
-        </wen-nft-card>
-        
-
-        <!-- Needs to be deleted -->
-        <wen-nft-card class="wen-nft-card" [isOwned]="true"
-            *ngFor="let nft of [1,1,1,1]; trackBy: trackByUid">
         </wen-nft-card>
     </div>
 </div>

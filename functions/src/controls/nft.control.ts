@@ -78,13 +78,21 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
     await refNft.set(keywords(cOn(merge(cleanParams(params.body), {
       uid: nftAddress,
       locked: false,
+      position: docCollection.data().total + 1,
       lockedBy: null,
       ipfsMedia: null,
+      sold: false,
+      owner: null,
       space: docCollection.data().space,
       type: docCollection.data().type,
       hidden: (CollectionType.CLASSIC !== docCollection.data().type),
       createdBy: creator
     }))));
+
+    // Update collection.
+    await refCollection.update({
+      total: admin.firestore.FieldValue.increment(1)
+    });
 
     // Load latest
     docNft = await refNft.get();

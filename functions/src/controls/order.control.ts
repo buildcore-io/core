@@ -14,7 +14,7 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Collection } from './../../interfaces/models/collection';
+import { Collection, CollectionType } from './../../interfaces/models/collection';
 import { Nft } from './../../interfaces/models/nft';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
@@ -31,7 +31,8 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<any> = Joi.object(merge(getDefaultParams(), {
-    nft: CommonJoi.uidCheck()
+    collection: CommonJoi.uidCheck(),
+    nft: Joi.string().length(ethAddressLength).lowercase().optional()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -40,17 +41,54 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refNft: any = admin.firestore().collection(COL.NFT).doc(params.body.nft);
-  const docNft: any = await refNft.get();
-  if (!docNft.exists) {
-    throw throwInvalidArgument(WenError.nft_does_not_exists);
-  }
-  const docNftData: Nft = docNft.data();
-  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(docNft.data().collection);
+  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
   const docCollection: any = await refCollection.get();
   const docCollectionData: Collection = docCollection.data();
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
   const docSpace: any = await refSpace.get();
+
+  // Let's determine if NFT can be indicated or we need to randomly select one.
+  let refNft: any;
+  let mustBeSold = false;
+  if (docCollectionData.type === CollectionType.CLASSIC) {
+    if (!params.body.nft) {
+      throw throwInvalidArgument(WenError.nft_does_not_exists);
+    }
+
+    refNft = admin.firestore().collection(COL.NFT).doc(params.body.nft);
+  } else {
+    if (!params.body.nft) {
+      // We need to go find the NFT for purchase.
+      const randNumber: number = Math.floor(Math.random() * docCollectionData.total);
+      // Above / below
+      const nftAbove: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT).where('sold', '==', 'true')
+                            .where('position', '>=', randNumber).orderBy('position', 'asc').limit(1).get();
+      const nftBelow: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT).where('sold', '==', 'true')
+                            .where('position', '<=', randNumber).orderBy('position', 'desc').limit(1).get();
+
+
+      if (nftAbove.size > 0) {
+        refNft = admin.firestore().collection(COL.NFT).doc(nftAbove.docs[0].data().uid);
+      } else if (nftBelow.size > 0) {
+        refNft = admin.firestore().collection(COL.NFT).doc(nftBelow.docs[0].data().uid);
+      } else {
+        throw throwInvalidArgument(WenError.no_more_nft_available_for_sale);
+      }
+    } else {
+      mustBeSold = true;
+    }
+  }
+
+  const docNft: any = await refNft.get();
+  if (!docNft.exists) {
+    throw throwInvalidArgument(WenError.nft_does_not_exists);
+  }
+  // Set data object.
+  const docNftData: Nft = docNft.data();
+
+  if (mustBeSold && !docNftData.owner) {
+    throw throwInvalidArgument(WenError.generated_spf_nft_must_be_sold_first);
+  }
 
   // Extra check to make sure owner address is defined.
   if (docNft.data().owner && !docNft.data().ownerAddress) {

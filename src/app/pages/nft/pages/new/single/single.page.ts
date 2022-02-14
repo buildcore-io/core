@@ -10,6 +10,7 @@ import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
 import { Collection } from 'functions/interfaces/models';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -35,7 +36,7 @@ export class SinglePage implements OnInit {
   public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
   public unitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
-  public imageControl: FormControl = new FormControl('');
+  public mediaControl: FormControl = new FormControl('');
   public collectionControl: FormControl = new FormControl('');
   public properties: FormArray;
   public stats: FormArray;
@@ -66,7 +67,7 @@ export class SinglePage implements OnInit {
       price: this.priceControl,
       unit: this.unitControl,
       availableFrom: this.availableFromControl,
-      image: this.imageControl,
+      media: this.mediaControl,
       collection: this.collectionControl,
       properties: this.properties,
       stats: this.stats
@@ -109,7 +110,7 @@ export class SinglePage implements OnInit {
 
   public uploadMediaChange(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
-      this.imageControl.setValue(event.file.response);
+      this.mediaControl.setValue(event.file.response);
     }
   }
 
@@ -142,7 +143,7 @@ export class SinglePage implements OnInit {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < Date.now()) {
+    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
       return true;
     }
 
@@ -206,7 +207,11 @@ export class SinglePage implements OnInit {
         };
       }
     });
-    data.stats = stats;
+    if (Object.keys(stats).length) {
+      data.stats = stats;
+    } else {
+      delete data.stats;
+    }
 
     const properties: any = {};
     data.properties.forEach((v: any) => {
@@ -218,7 +223,11 @@ export class SinglePage implements OnInit {
         };
       }
     });
-    data.properties = properties;
+    if (Object.keys(properties).length) {
+      data.properties = properties;
+    } else {
+      delete data.properties;
+    }
 
     delete data.unit;
     return data;

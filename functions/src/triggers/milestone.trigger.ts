@@ -169,32 +169,6 @@ class ProcessingService {
     const refData: any = await refSource.get();
     const linkedTransactions: EthAddress[] = refData.data().linkedTransactions || [];
 
-    // Pay roaylties.
-    if (royaltyAmt > 0) {
-      const tranId: string = getRandomEthAddress();
-      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-      const data: any = <Transaction>{
-        type: TransactionType.BILL_PAYMENT,
-        uid: tranId,
-        member: order.member,
-        space: order.payload.royaltiesSpace,
-        createdOn: serverTime(),
-        payload: {
-          amount: royaltyAmt,
-          sourceAddress: tran.to.address,
-          targetAddress: order.payload.royaltiesSpaceAddress,
-          sourceTransaction: order.uid,
-          reconciled: false,
-          void: false,
-          nft: order.payload.nft || null,
-          collection: order.payload.collection || null
-        }
-      };
-      await refTran.set(data);
-      transOut.push((await refTran.get()).data());
-      linkedTransactions.push(tranId);
-    }
-
     if (finalAmt > 0) {
       const tranId: string = getRandomEthAddress();
       const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
@@ -212,6 +186,34 @@ class ProcessingService {
           nft: order.payload.nft || null,
           reconciled: false,
           void: false,
+          collection: order.payload.collection || null
+        }
+      };
+      await refTran.set(data);
+      transOut.push((await refTran.get()).data());
+      linkedTransactions.push(tranId);
+    }
+
+    // Pay roaylties.
+    if (royaltyAmt > 0) {
+      const tranId: string = getRandomEthAddress();
+      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+      const data: any = <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: tranId,
+        member: order.member,
+        space: order.payload.royaltiesSpace,
+        createdOn: serverTime(),
+        payload: {
+          amount: royaltyAmt,
+          sourceAddress: tran.to.address,
+          targetAddress: order.payload.royaltiesSpaceAddress,
+          sourceTransaction: order.uid,
+          reconciled: false,
+          void: false,
+          // TODO: Let's give 30s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
+          delay: 30000,
+          nft: order.payload.nft || null,
           collection: order.payload.collection || null
         }
       };
@@ -294,6 +296,9 @@ class ProcessingService {
       await admin.firestore().collection(COL.NFT).doc(payment.payload.nft).update({
         owner: payment.member,
         availableFrom: null
+      });
+      await admin.firestore().collection(COL.COLLECTION).doc(payment.payload.collection).update({
+        sold: admin.firestore.FieldValue.increment(1)
       });
     }
   }

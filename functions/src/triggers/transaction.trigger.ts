@@ -22,6 +22,12 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
     const walletResponse: WalletResult = {
       createdOn: serverTime()
     };
+
+    // Delay required.
+    if (newValue.payload.delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, newValue.payload.delay));
+    }
+
     try {
       walletResponse.chainReference = await walletService.sendFromGenesis(
         await walletService.getIotaAddressDetails(await MnemonicService.get(newValue.payload.sourceAddress)),

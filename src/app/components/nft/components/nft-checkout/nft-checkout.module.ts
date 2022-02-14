@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
+import { RelativeTimeModule } from '@core/pipes/relative-time/relative-time.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -23,6 +24,7 @@ import { NftCheckoutComponent } from './nft-checkout.component';
     NzToolTipModule,
     NzCheckboxModule,
     NzButtonModule,
+    RelativeTimeModule,
     TruncateModule
   ],
   exports: [

@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy()" *ngIf="true" nzBlock nzSize="large" class="mt-12" i18n>
+            <button nz-button nzType="primary" (click)="buy()" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-12" i18n>
                 Buy now
             </button>
 
@@ -190,7 +190,7 @@
             </div>
 
 
-            <div class="ml-20 text-xs font-medium" [innerHtml]="(data.collection$ | async)?.description | markdown"></div>
+            <div class="ml-20 text-xs font-medium" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
         </div>
 
         <div class="mt-10 lg:grid place-items-start">
@@ -208,7 +208,7 @@
 
                 <wen-nft-card class="wen-nft-card"
                     *ngFor="let nft of data.topNftWithinCollection$ | async; trackBy: trackByUid"
-                    [nft]="nft">
+                    [nft]="nft" [collection]="(data.collection$ | async)">
                 </wen-nft-card>
             </div>
         </div>
