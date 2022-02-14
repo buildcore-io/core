@@ -1,31 +1,55 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
+import { NftApi } from '@api/nft.api';
 import { DeviceService } from '@core/services/device';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Nft } from 'functions/interfaces/models/nft';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
+import { DataService } from '../../services/data.service';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-nfts',
   templateUrl: './nfts.page.html',
   styleUrls: ['./nfts.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NFTsPage {
+export class NFTsPage implements OnInit, OnDestroy {
   public collectionControl: FormControl;
   public filterControl: FormControl;
   public nft$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   private dataStore: Nft[][] = [];
+  private subscriptions$: Subscription[] = [];
 
   constructor(
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    private data: DataService,
+    private nftApi: NftApi
   ) {
     this.collectionControl = new FormControl('');
     this.filterControl = new FormControl('');
   }
 
-  public trackByUid(index: number, item: any): number {
-    return item.uid;
+  public ngOnInit(): void {
+    this.filterControl.valueChanges.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
+      if (val && val.length > 0) {
+        this.listen(val);
+      } else {
+        this.listen();
+      }
+    });
+
+    this.data.member$.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj) {
+        this.listen();
+      }
+    })
+  }
+
+  private listen(search?: string): void {
+    this.cancelSubscriptions();
+    this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
   public isLoading(arr: any): boolean {
@@ -34,6 +58,10 @@ export class NFTsPage {
 
   public isEmpty(arr: any): boolean {
     return (Array.isArray(arr) && arr.length === 0);
+  }
+
+  public getHandler(last?: any, search?: string): Observable<Nft[]> {
+    return this.nftApi.topMember(this.data.member$.value!.uid,last, search);
   }
 
   public onScroll(): void {
@@ -47,6 +75,45 @@ export class NFTsPage {
       return;
     }
 
-    // Needs to be impelemented.
+    // Def order field.
+    const lastValue = this.nft$.value[this.nft$.value.length - 1].createdOn;
+    this.subscriptions$.push(this.getHandler(lastValue).subscribe(this.store.bind(this, this.dataStore.length)));
+  }
+
+  protected store(page: number, a: any): void {
+    if (this.dataStore[page]) {
+      this.dataStore[page] = a;
+    } else {
+      this.dataStore.push(a);
+    }
+
+    // Merge arrays.
+    this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
+  }
+
+  public get maxRecords$(): BehaviorSubject<boolean> {
+    return <BehaviorSubject<boolean>>this.nft$.pipe(map(() => {
+      if (!this.dataStore[this.dataStore.length - 1]) {
+        return true;
+      }
+
+      return (!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
+    }));
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+
+    this.dataStore = [];
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSubscriptions();
   }
 }

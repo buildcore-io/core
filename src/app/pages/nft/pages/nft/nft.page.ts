@@ -94,9 +94,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public copy(): void {
-    // Needs to be changed
-    const text = '0x0';
-    copyToClipboard(text);
+    copyToClipboard(window.location.href);
   }
 
   public isLoading(arr: any): boolean {
@@ -105,6 +103,10 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public isEmpty(arr: any): boolean {
     return (Array.isArray(arr) && arr.length === 0);
+  }
+
+  public getShareUrl(): string {
+    return 'http://twitter.com/share?text=Check out collection&url=' + window.location.href + '&hashtags=soonaverse';
   }
 
   private notFound(): void {
