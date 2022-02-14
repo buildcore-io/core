@@ -8,9 +8,10 @@ import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
+import { SortOptions } from '@pages/market/services/sort-options.interface';
 import { Space } from 'functions/interfaces/models';
 import { Nft } from 'functions/interfaces/models/nft';
-import { BehaviorSubject, map, Observable, of, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -28,7 +29,7 @@ export enum HOT_TAGS {
 export class NFTsPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaceControl: FormControl;
-  public nft$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
+  public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.SOLD];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Nft[][] = [];
@@ -44,7 +45,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue());
   }
-  
+
   public handleChange(tag: string): void {
     this.selectedTags$.next([tag]);
   }
@@ -86,13 +87,16 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Nft[]> {
-    // Needs to be implemented
-    return of([]);
+    if (this.filter.selectedSort$.value === SortOptions.LOW) {
+      return this.nftApi.lowToHigh(last, search);
+    } else {
+      return this.nftApi.highToLow(last, search);
+    }
   }
 
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.
-    if (!this.nft$.value) {
+    if (!this.nfts$.value) {
       return;
     }
 
@@ -101,7 +105,7 @@ export class NFTsPage implements OnInit, OnDestroy {
       return;
     }
 
-    // Needs to be impelemented.
+    this.subscriptions$.push(this.getHandler(this.nfts$.value[this.nfts$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public trackByUid(index: number, item: any): number {
@@ -122,13 +126,13 @@ export class NFTsPage implements OnInit, OnDestroy {
     } else {
       this.dataStore.push(a);
     }
-    
+
     // Merge arrays.
-    this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
+    this.nfts$.next(Array.prototype.concat.apply([], this.dataStore));
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.nft$.pipe(map(() => {
+    return <BehaviorSubject<boolean>>this.nfts$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }
@@ -147,6 +151,6 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
-    this.nft$.next(undefined);
+    this.nfts$.next(undefined);
   }
 }
