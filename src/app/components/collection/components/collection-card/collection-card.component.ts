@@ -26,7 +26,6 @@ export class CollectionCardComponent {
   }
 
   public get bannerUrl(): string|undefined {
-    console.log(this.collection);
     return this.collection?.bannerUrl ? FileApi.getUrl(this.collection.bannerUrl, 'collection_banner', FILE_SIZES.medium) : undefined;
   }
 
