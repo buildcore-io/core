@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CollectionStatusModule } from '@components/collection/collection-status/collection-status.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
+import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
@@ -55,6 +56,7 @@ import { DataService } from './services/data.service';
     IconModule,
     NzUploadModule,
     MarkDownModule,
+    NftCheckoutModule,
     StripMarkDownModule,
     IpfsAvatarModule,
     NzDatePickerModule,

@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy()" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-12" i18n>
+            <button nz-button nzType="primary" (click)="buy($event)" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-12" i18n>
                 Buy now
             </button>
 
@@ -214,3 +214,5 @@
         </div>
     </nz-card>
 </wen-content>
+
+<wen-nft-checkout [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>

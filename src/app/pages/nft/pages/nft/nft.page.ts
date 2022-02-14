@@ -26,6 +26,7 @@ import { DataService } from '../../services/data.service';
 })
 export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
+  public isCheckoutOpen = false;
   private subscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
@@ -86,8 +87,10 @@ export class NFTPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.nftApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.nft$));
   }
 
-  public buy(): void {
-    console.log('test flow');
+  public buy(event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.isCheckoutOpen = true;
   }
 
   public copy(): void {
