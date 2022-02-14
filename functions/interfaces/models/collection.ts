@@ -1,4 +1,4 @@
-import { BaseRecord, EthAddress } from "./base";
+import { BaseRecord, EthAddress, Timestamp } from "./base";
 
 export enum CollectionType {
   CLASSIC = 0,
@@ -37,6 +37,8 @@ export interface Collection extends BaseRecord {
   discounts: DiscountLine[];
   total: number;
   sold: number;
+  availableFrom: Timestamp;
+  price: number;
   discord: string;
   url: string;
   twitter: string;

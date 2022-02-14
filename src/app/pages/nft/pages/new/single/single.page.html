@@ -85,7 +85,7 @@
 
                 <div class="pt-8">
                     <ng-container *ngIf="deviceService.isDesktop$ | async">
-                    <div class="flex items-center text-xs font-medium text-foregrounds-secondary">
+                    <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="properties.controls.length > 0">
                         <div class="w-1/2" i18n>Property name</div>
                         <div class="w-1/2" i18n>Value</div>
                     </div>
@@ -168,9 +168,9 @@
 
                 <div class="pt-8">
                 <ng-container *ngIf="deviceService.isDesktop$ | async">
-                    <div class="flex items-center text-xs font-medium text-foregrounds-secondary">
-                    <div class="w-1/2" i18n>Start name</div>
-                    <div class="w-1/2 transform translate-x-2" i18n>Value</div>
+                    <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="stats.controls.length > 0">
+                      <div class="w-1/2" i18n>Start name</div>
+                      <div class="w-1/2 transform translate-x-2" i18n>Value</div>
                     </div>
 
                     <div class="my-2 separator"></div>

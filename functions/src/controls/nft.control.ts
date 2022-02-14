@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
@@ -26,7 +25,7 @@ function defaultJoiUpdateCreateSchema(): any {
     media: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    availableFrom: Joi.date().greater(dayjs().subtract(1, 'hour').toDate()).required(),
+    availableFrom: Joi.date().required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(10 * 1000 * 1000).max(1000 * 1000 * 1000 * 1000).required(),
     url: Joi.string().allow(null, '').uri({
@@ -69,6 +68,11 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+  }
+
+  if (docCollection.data().type === CollectionType.GENERATED || docCollection.data().type === CollectionType.SFT) {
+    params.body.price = docCollection.data().price || 0;
+    params.body.availableFrom = docCollection.data().availableFrom || docCollection.data().createdOn;
   }
 
   const refNft: any = admin.firestore().collection(COL.NFT).doc(nftAddress);

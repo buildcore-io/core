@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
@@ -6,7 +7,7 @@ import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
-import { cOn, uOn } from "../utils/dateTime.utils";
+import { cOn, dateToTimestamp, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
@@ -26,6 +27,9 @@ function defaultJoiUpdateCreateSchema(): any {
     bannerUrl: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
+    availableFrom: Joi.date().greater(dayjs().subtract(1, 'hour').toDate()).required(),
+    // Minimum 10Mi price required and max 1Ti
+    price: Joi.number().min(10 * 1000 * 1000).max(1000 * 1000 * 1000 * 1000).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0).max(1).required(),
@@ -70,6 +74,9 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   await SpaceValidator.spaceExists(refSpaceRoyalty);
   await SpaceValidator.hasValidAddress(refSpaceRoyalty);
 
+  if (params.body.availableFrom) {
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+  }
 
   const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(collectionAddress);
   let docCollection: any = await refCollection.get();

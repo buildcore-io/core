@@ -11,12 +11,11 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { Collection } from 'functions/interfaces/models';
-import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT } from 'functions/interfaces/models/nft';
+import { Collection, CollectionType } from 'functions/interfaces/models';
+import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { Observable, of, Subscription } from 'rxjs';
-import { PRICE_UNITS } from '../new.page';
 
 interface SelectOption {
   label: string;
@@ -53,13 +52,8 @@ export class SinglePage implements OnInit {
     private router: Router,
     private fileApi: FileApi
   ) {
-    this.properties = new FormArray([
-      this.getPropertyForm()
-    ]);
-
-    this.stats = new FormArray([
-      this.getStatForm()
-    ]);
+    this.properties = new FormArray([]);
+    this.stats = new FormArray([]);
 
     this.nftForm = new FormGroup({
       name: this.nameControl,
@@ -87,12 +81,28 @@ export class SinglePage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.collectionControl.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
+      const finObj: Collection|undefined = this.cache.allCollections$.value.find((subO: any) => {
+        return subO.uid === o;
+      });
+      if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.CLASSIC)) {
+        this.priceControl.disable();
+        this.priceControl.setValue((finObj.price || 0) / 1000 / 1000);
+        this.unitControl.disable();
+        this.availableFromControl.disable();
+        this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+      } else {
+        this.priceControl.enable();
+        this.unitControl.enable();
+        this.availableFromControl.enable();
+      }
+    });
+
     this.route.parent?.params.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.collection) {
         this.collectionControl.setValue(p.collection);
       }
     });
-
   }
 
   public uploadMediaFile(item: NzUploadXHRArgs): Subscription {
@@ -192,9 +202,9 @@ export class SinglePage implements OnInit {
 
   public formatSubmitData(data: any): any {
     if (<Units>data.unit === 'Gi') {
-      data.price = data.price * 1000 * 1000 * 1000;
+      data.price = this.priceControl.value * 1000 * 1000 * 1000;
     } else {
-      data.price = data.price * 1000 * 1000;
+      data.price = this.priceControl.value * 1000 * 1000;
     }
 
     const stats: any = {};
@@ -229,6 +239,7 @@ export class SinglePage implements OnInit {
       delete data.properties;
     }
 
+    data.availableFrom = this.availableFromControl.value;
     delete data.unit;
     return data;
   }

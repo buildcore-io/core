@@ -10,9 +10,12 @@ import { NavigationService } from '@core/services/navigation/navigation.service'
 import { NotificationService } from '@core/services/notification';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Units } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
 import { DISCORD_REGEXP, TWITTER_REGEXP, URL_REGEXP } from 'functions/interfaces/config';
 import { Categories, CollectionType, Space } from 'functions/interfaces/models';
+import { PRICE_UNITS } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { Observable, of, Subscription } from 'rxjs';
@@ -42,6 +45,9 @@ export class UpsertPage implements OnInit {
   public royaltiesSpaceControl: FormControl = new FormControl('', Validators.required);
   public royaltiesSpaceDifferentControl: FormControl = new FormControl(false, Validators.required);
   public typeControl: FormControl = new FormControl(CollectionType.CLASSIC, Validators.required);
+  public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
+  public unitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
+  public availableFromControl: FormControl = new FormControl('', Validators.required);
   public discounts: FormArray;
   public collectionForm: FormGroup;
   public editMode = false;
@@ -73,6 +79,9 @@ export class UpsertPage implements OnInit {
       description: this.descriptionControl,
       space: this.spaceControl,
       type: this.typeControl,
+      price: this.priceControl,
+      unit: this.unitControl,
+      availableFrom: this.availableFromControl,
       royaltiesFee: this.royaltiesFeeControl,
       royaltiesSpace: this.royaltiesSpaceControl,
       royaltiesSpaceDifferent: this.royaltiesSpaceDifferentControl,
@@ -192,7 +201,25 @@ export class UpsertPage implements OnInit {
     return true;
   }
 
+  public get priceUnits(): Units[] {
+    return PRICE_UNITS;
+  }
+
+  public disabledStartDate(startValue: Date): boolean {
+    // Disable past dates & today + 1day startValue
+    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
+      return true;
+    }
+
+    return false;
+  };
+
   public formatSubmitData(data: any, mode: 'create'|'edit' = 'create'): any {
+    if (<Units>data.unit === 'Gi') {
+      data.price = data.price * 1000 * 1000 * 1000;
+    } else {
+      data.price = data.price * 1000 * 1000;
+    }
     delete data.royaltiesSpaceDifferent;
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
@@ -216,6 +243,7 @@ export class UpsertPage implements OnInit {
       delete data.categoryControl;
     }
 
+    delete data.unit;
     return data;
   }
 

@@ -53,6 +53,48 @@
                     </div>
                 </nz-card>
 
+                <nz-card [nzBordered]="false" nzTitle="Trade info">
+                  <div class="space-y-4">
+                      <nz-form-item>
+                          <nz-form-control>
+                              <nz-input-group nzSize="large" class="relative">
+                                  <nz-input-number
+                                      nzPlaceHolder="Price"
+                                      nzSize="large"
+                                      class="w-full"
+                                      [nzMin]="0"
+                                      [formControl]="priceControl"
+                                  ></nz-input-number>
+                                  <div class="absolute transform -translate-y-1/2 right-6 top-1/2">
+                                      <button *ngFor="let unit of priceUnits"
+                                      nz-button nzShape="circle" nzSize="small"
+                                      class="wen-secondary"
+                                      [ngClass]="{ 'selected': unit === unitControl.value }"
+                                      (click)="unitControl.setValue(unit)">
+                                      {{ unit }}
+                                      </button>
+                                  </div>
+                              </nz-input-group>
+                          </nz-form-control>
+                      </nz-form-item>
+
+                      <nz-form-item>
+                          <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
+                            <nz-date-picker
+                              class="flex flex-grow"
+                              [nzDisabledDate]="disabledStartDate.bind(this)"
+                              nzSize="large"
+                              [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                              nzFormat="yyyy-MM-dd HH:mm"
+                              [formControl]="availableFromControl"
+                              nzPlaceHolder="Available on"
+                            >
+                            </nz-date-picker>
+                          </nz-form-control>
+                      </nz-form-item>
+                  </div>
+                </nz-card>
+
                 <nz-card [nzBordered]="false" nzTitle="Links">
                     <div class="space-y-4">
                         <nz-form-item>
