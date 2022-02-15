@@ -22,4 +22,5 @@ export interface Nft extends BaseRecord {
   url: string;
   properties: any;
   stats: any;
+  placeholderNft: boolean;
 }

@@ -39,6 +39,7 @@ export class UpsertPage implements OnInit {
   public urlControl: FormControl = new FormControl('', Validators.pattern(URL_REGEXP));
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
+  public placeholderUrlControl: FormControl = new FormControl('');
   public bannerUrlControl: FormControl = new FormControl('');
   public categoryControl: FormControl = new FormControl('', Validators.required);
   public spaceControl: FormControl = new FormControl('', Validators.required);
@@ -89,6 +90,7 @@ export class UpsertPage implements OnInit {
       twitter: this.twitterControl,
       discord: this.discordControl,
       bannerUrl: this.bannerUrlControl,
+      placeholderUrl: this.placeholderUrlControl,
       category: this.categoryControl,
       discounts: this.discounts
     });
@@ -118,10 +120,10 @@ export class UpsertPage implements OnInit {
             this.royaltiesFeeControl.setValue(o.royaltiesFee);
             this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
             this.royaltiesSpaceDifferentControl.setValue(o.royaltiesSpace !== o.space);
+            this.placeholderUrlControl.setValue(o.bannerUrl);
             this.bannerUrlControl.setValue(o.bannerUrl);
             this.twitterControl.setValue(o.twitter);
             this.discordControl.setValue(o.discord);
-            this.bannerUrlControl.setValue(o.bannerUrl);
             this.categoryControl.setValue(o.category);
             this.discounts.removeAt(0);
             o.discounts.forEach((v) => {
@@ -151,24 +153,46 @@ export class UpsertPage implements OnInit {
     return MAX_DISCOUNT_COUNT;
   }
 
-  public uploadFile(item: NzUploadXHRArgs): Subscription {
-    if (!this.auth.member$.value) {
-      const err = 'Member seems to log out during the file upload request.';
-      this.nzNotification.error(err, '');
-      if (item.onError) {
-        item.onError(err, item.file);
-      }
+  private memberIsLoggedOut(item: NzUploadXHRArgs): Subscription {
+    const err = 'Member seems to log out during the file upload request.';
+    this.nzNotification.error(err, '');
+    if (item.onError) {
+      item.onError(err, item.file);
+    }
 
-      return of().subscribe();
+    return of().subscribe();
+  }
+
+  public uploadFilePlaceholder(item: NzUploadXHRArgs): Subscription {
+    if (!this.auth.member$.value) {
+      return this.memberIsLoggedOut(item);
+    }
+
+    return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_placeholder');
+  }
+
+  public uploadFileBanner(item: NzUploadXHRArgs): Subscription {
+    if (!this.auth.member$.value) {
+      return this.memberIsLoggedOut(item);
     }
 
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'collection_banner');
+  }
+
+  public uploadChangePlaceholder(event: NzUploadChangeParam): void {
+    if (event.type === 'success') {
+      this.placeholderUrlControl.setValue(event.file.response);
+    }
   }
 
   public uploadChange(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       this.bannerUrlControl.setValue(event.file.response);
     }
+  }
+
+  public showPlaceholder(): boolean {
+    return this.typeControl.value !== CollectionType.CLASSIC;
   }
 
   public previewFile(file: NzUploadFile): Observable<string> {

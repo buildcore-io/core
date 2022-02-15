@@ -295,11 +295,23 @@ class ProcessingService {
     if (payment.member) {
       await admin.firestore().collection(COL.NFT).doc(payment.payload.nft).update({
         owner: payment.member,
+        hidden: false,
         availableFrom: null
       });
+
       await admin.firestore().collection(COL.COLLECTION).doc(payment.payload.collection).update({
         sold: admin.firestore.FieldValue.increment(1)
       });
+
+      const col: any = await admin.firestore().collection(COL.COLLECTION).doc(payment.payload.collection).get();
+
+      // Let's validate if collection has pending item to sell.
+      if (col.data().placeholderNft && col.data().total === col.data().sold) {
+        await admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft).update({
+          sold: true,
+          hidden: true
+        });
+      }
     }
   }
 

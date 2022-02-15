@@ -119,7 +119,7 @@
                 </div>
             </nz-card>
 
-            <nz-card nzTitle="Properties" class="mt-4">
+            <nz-card nzTitle="Properties" class="mt-4" *ngIf="getPropStats((data.nft$ | async)?.properties).length">
                 <div class="wen-description-item bg-bg-background"
                     *ngFor="let prop of getPropStats((data.nft$ | async)?.properties)">
                         <span nz-typography class="text-app-gray-400">{{ prop.label }}</span>
@@ -127,7 +127,7 @@
                 </div>
             </nz-card>
 
-            <nz-card nzTitle="Stats" class="mt-4">
+            <nz-card nzTitle="Stats" class="mt-4" *ngIf="getPropStats((data.nft$ | async)?.stats).length">
                 <div class="wen-description-item bg-bg-background"
                     *ngFor="let stat of getPropStats((data.nft$ | async)?.stats)">
                         <span nz-typography class="text-app-gray-400">{{ stat.label }}</span>

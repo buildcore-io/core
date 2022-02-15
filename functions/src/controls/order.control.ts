@@ -61,9 +61,11 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       // We need to go find the NFT for purchase.
       const randNumber: number = Math.floor(Math.random() * docCollectionData.total);
       // Above / below
-      const nftAbove: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT).where('sold', '==', 'true')
+      const nftAbove: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT)
+                            .where('sold', '==', 'false').where('placeholderNft', '==', false).where('collection', '==', docCollectionData.uid)
                             .where('position', '>=', randNumber).orderBy('position', 'asc').limit(1).get();
-      const nftBelow: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT).where('sold', '==', 'true')
+      const nftBelow: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT)
+                            .where('sold', '==', 'false').where('placeholderNft', '==', false).where('collection', '==', docCollectionData.uid)
                             .where('position', '<=', randNumber).orderBy('position', 'desc').limit(1).get();
 
 
@@ -103,6 +105,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   if (docNft.data().locked) {
     throw throwInvalidArgument(WenError.nft_locked_for_sale);
+  }
+
+  if (docNft.data().placeholderNft) {
+    throw throwInvalidArgument(WenError.nft_placeholder_cant_be_purchased);
   }
 
   // Get new target address.

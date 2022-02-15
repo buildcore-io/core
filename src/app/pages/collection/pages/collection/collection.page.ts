@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
@@ -18,7 +19,7 @@ import { WEN_NAME } from 'functions/interfaces/config';
 import { Collection } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
-import { BehaviorSubject, first, map, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, map, Observable, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
@@ -112,7 +113,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.data.collectionId = id;
     this.cancelSubscriptions();
     this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-    this.subscriptions$.push(this.nftApi.lowToHighInCollection(id).pipe(untilDestroyed(this)).subscribe(this.data.nft$));
+    this.subscriptions$.push(this.getHandler(id).subscribe(this.data.nft$));
     this.subscriptions$.push(
       this.nftApi.lowToHighInCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
@@ -164,8 +165,43 @@ export class CollectionPage implements OnInit, OnDestroy {
     });
   }
 
+  public getHandler(collectionId: string, last?: any, search?: string): Observable<Nft[]> {
+    return this.nftApi.lowToHighInCollection(collectionId, last, search).pipe(untilDestroyed(this));
+  }
+
+  protected store(page: number, a: any): void {
+    if (this.data.dataStore[page]) {
+      this.data.dataStore[page] = a;
+    } else {
+      this.data.dataStore.push(a);
+    }
+
+    // Merge arrays.
+    this.data.nft$.next(Array.prototype.concat.apply([], this.data.dataStore));
+  }
+
   public onScroll(): void {
-    // Needs to be implemented
+    // In this case there is no value, no need to infinite scroll.
+    if (!this.data.nft$.value || !this.data.collection$.value) {
+      return;
+    }
+
+    // We reached maximum.
+    if ((!this.data.dataStore[this.data.dataStore.length - 1] || this.data.dataStore[this.data.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE)) {
+      return;
+    }
+
+    this.subscriptions$.push(this.getHandler(this.data.collection$.value.uid, this.data.nft$.value[this.data.nft$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.data.dataStore.length)));
+  }
+
+  public get maxRecords$(): BehaviorSubject<boolean> {
+    return <BehaviorSubject<boolean>>this.data.nft$.pipe(map(() => {
+      if (!this.data.dataStore[this.data.dataStore.length - 1]) {
+        return true;
+      }
+
+      return (!this.data.dataStore[this.data.dataStore.length - 1] || this.data.dataStore[this.data.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
+    }));
   }
 
   public isLoading(arr: any): boolean {

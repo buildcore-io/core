@@ -90,13 +90,22 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
       space: docCollection.data().space,
       type: docCollection.data().type,
       hidden: (CollectionType.CLASSIC !== docCollection.data().type),
-      createdBy: creator
+      createdBy: creator,
+      placeholderNft: false
     }))));
 
     // Update collection.
     await refCollection.update({
       total: admin.firestore.FieldValue.increment(1)
     });
+
+    // Let's validate if collection has pending item to sell.
+    if (docCollection.data().placeholderNft) {
+      await admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft).update({
+        sold: false,
+        hidden: false
+      });
+    }
 
     // Load latest
     docNft = await refNft.get();

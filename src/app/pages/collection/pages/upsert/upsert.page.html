@@ -173,6 +173,39 @@
                     </nz-form-item>
                 </nz-card>
 
+                <nz-card [nzBordered]="false" *ngIf="showPlaceholder()">
+                  <nz-card-meta
+                      nzTitle="Placeholder"
+                      [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Set a display name. This does not change your username.'"
+                  >
+                  </nz-card-meta>
+
+                  <div class="mt-6">
+                      <nz-form-item>
+                          <nz-form-control>
+                              <nz-upload
+                              class="wen-banner"
+                              nzName="banner"
+                              nzType="drag"
+                              nzListType="picture-card"
+                              [nzDirectory]="false"
+                              [nzLimit]="1"
+                              [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
+                              (nzChange)="uploadChangePlaceholder($event)"
+                              nzFileType="image/png,image/jpeg"
+                              [nzPreviewFile]="previewFile"
+                              [nzShowUploadList]="true"
+                              [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
+                              >
+                                  <ng-container>
+                                      <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
+                                  </ng-container>
+                              </nz-upload>
+                          </nz-form-control>
+                      </nz-form-item>
+                  </div>
+                </nz-card>
+
                 <nz-card [nzBordered]="false">
                     <nz-card-meta
                         nzTitle="Banner"
@@ -190,7 +223,7 @@
                                 nzListType="picture-card"
                                 [nzDirectory]="false"
                                 [nzLimit]="1"
-                                [nzCustomRequest]="uploadFile.bind(this)"
+                                [nzCustomRequest]="uploadFileBanner.bind(this)"
                                 (nzChange)="uploadChange($event)"
                                 nzFileType="image/png,image/jpeg"
                                 [nzPreviewFile]="previewFile"

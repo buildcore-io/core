@@ -24,6 +24,9 @@ function defaultJoiUpdateCreateSchema(): any {
     name: Joi.string().allow(null, '').required(),
     description: Joi.string().allow(null, '').required(),
     space: CommonJoi.uidCheck(),
+    placeholderUrl: Joi.string().allow(null, '').uri({
+      scheme: ['https']
+    }).optional(),
     bannerUrl: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
@@ -81,6 +84,33 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(collectionAddress);
   let docCollection: any = await refCollection.get();
   if (!docCollection.exists) {
+    // We must generate placeholder NFT.
+    let placeholderNft: string|undefined;
+    if (params.body.type !== CollectionType.CLASSIC) {
+      placeholderNft = getRandomEthAddress();
+      const nftPlaceholder: any = admin.firestore().collection(COL.NFT).doc(placeholderNft);
+      await nftPlaceholder.set(keywords(cOn({
+        uid: placeholderNft,
+        name: params.body.name,
+        description: params.body.description,
+        locked: false,
+        media: params.body.placeholderUrl,
+        availableFrom: params.body.availableFrom,
+        price: params.body.price,
+        collection: collectionAddress,
+        position: 0,
+        lockedBy: null,
+        ipfsMedia: null,
+        sold: true,
+        owner: null,
+        space: params.body.space,
+        type: params.body.type,
+        hidden: true,
+        placeholderNft: true,
+        createdBy: creator
+      })));
+    }
+
     // Document does not exists.
     await refCollection.set(keywords(cOn(merge(cleanParams(params.body), {
       uid: collectionAddress,
@@ -88,7 +118,8 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
       sold: 0,
       createdBy: creator,
       approved: false,
-      rejected: false
+      rejected: false,
+      placeholderNft: placeholderNft || null
     }))));
 
     // Load latest
@@ -132,12 +163,23 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
   await SpaceValidator.isGuardian(refSpace, member);
 
-  // Document does not exists.
   await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update(keywords(uOn(pSchema(
     schema,
     params.body
   ))));
 
+  if (docCollection.data().placeholderNft) {
+    const nftPlaceholder: any = admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft);
+    await nftPlaceholder.set(keywords(uOn({
+      name: params.body.name,
+      description: params.body.description,
+      media: params.body.placeholderUrl,
+      availableFrom: params.body.availableFrom,
+      price: params.body.price,
+      space: docCollection.data().space,
+      type: docCollection.data().type
+    })));
+  }
 
   // Load latest
   docCollection = await refCollection.get();

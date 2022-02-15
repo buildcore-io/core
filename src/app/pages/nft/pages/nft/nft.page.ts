@@ -43,7 +43,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.titleService.setTitle(WEN_NAME + ' - ' + 'Collection');
+    this.titleService.setTitle(WEN_NAME + ' - ' + 'NFT');
     this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.nft.nft.replace(':', '')];
       if (id) {

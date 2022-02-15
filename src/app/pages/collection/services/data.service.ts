@@ -12,7 +12,7 @@ export class DataService {
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-
+  public dataStore: Nft[][] = [];
   public isPending(collection?: Collection|null): boolean {
     return collection?.approved !== true && collection?.rejected !== true;
   }

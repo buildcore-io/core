@@ -44,4 +44,5 @@ export interface Collection extends BaseRecord {
   twitter: string;
   approved: boolean;
   rejected: boolean;
+  placeholderNft?: EthAddress;
 }
