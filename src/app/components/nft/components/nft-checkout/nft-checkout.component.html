@@ -42,7 +42,7 @@
         <div class="relative w-full lg:w-72 lg:w-overflow-hidden">
             <img
                 alt="NFT image"
-                [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
+                [src]="getRecord()?.media || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full rounded-2xl"
             />
         </div>
@@ -208,7 +208,7 @@
                 Close checkout
             </button>
 
-            <button nz-button [nzType]="(deviceService.isMobile$ | async) ? 'primary' : 'link'"
+            <button nz-button [nzType]="(deviceService.isMobile$ | async) ? 'primary' : 'link'" (click)="goToNft()"
                 [nzSize]="(deviceService.isMobile$ | async) ? 'large' : 'small'" class="w-full mb-6 lg:mb-0" i18n (click)="null">
                 Show my NFT
             </button>

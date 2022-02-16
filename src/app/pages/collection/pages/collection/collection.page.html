@@ -172,7 +172,7 @@
             </nz-card>
 
             <wen-nft-card class="wen-nft-card"
-                *ngFor="let nft of data.nft$ | async; trackBy: trackByUid"
+                *ngFor="let nft of data.nft$ | async; trackBy: trackByUid" [collection]="(data.collection$ | async)"
                 [nft]="nft">
             </wen-nft-card>
         </div>

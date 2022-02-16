@@ -213,8 +213,8 @@ class ProcessingService {
           reconciled: false,
           royalty: true,
           void: false,
-          // TODO: Let's give 30s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
-          delay: 30000,
+          // TODO: Let's give 60s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
+          delay: 60000,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null
         }

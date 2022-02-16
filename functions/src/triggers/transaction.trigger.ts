@@ -9,7 +9,7 @@ import { serverTime } from "../utils/dateTime.utils";
 
 // Listen for changes in all documents in the 'users' collection
 export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
-  timeoutSeconds: 300,
+  timeoutSeconds: 540,
   memory: "8GB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const newValue: Transaction = <Transaction>change.after.data();

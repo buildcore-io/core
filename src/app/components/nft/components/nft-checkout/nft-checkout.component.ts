@@ -1,16 +1,19 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Collection, CollectionType, TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Nft } from 'functions/interfaces/models/nft';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -30,6 +33,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
   @Input() isOpen = false;
   @Input() nft?: Nft|null;
+  @Input() purchasedNft?: Nft|null;
   @Input() collection?: Collection|null;
   @Output() onClose = new EventEmitter<void>();
 
@@ -41,14 +45,16 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
 
   private transSubscription?: Subscription;
-
+  public path = ROUTER_UTILS.config.nft.root;
   constructor(
     public deviceService: DeviceService,
     private auth: AuthService,
+    private router: Router,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
-    private orderApi: OrderApi
+    private orderApi: OrderApi,
+    private nftApi: NftApi
   ) {
   }
 
@@ -79,6 +85,14 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
         this.receivedTransactions = true;
         this.currentStep = StepType.COMPLETE;
+        if (val.payload.nft) {
+          firstValueFrom(this.nftApi.listen(val.payload.nft)).then((obj) => {
+            if (obj) {
+              this.purchasedNft = obj;
+              this.cd.markForCheck();
+            }
+          });
+        }
       }
 
       this.cd.markForCheck();
@@ -115,6 +129,13 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     this.receivedTransactions = false;
     this.isOpen = false;
     this.currentStep = StepType.CONFIRM;
+    this.purchasedNft = undefined;
+  }
+
+  public goToNft(): void {
+    this.reset();
+    this.router.navigate(['/', this.path, this.purchasedNft?.uid]);
+    this.onClose.next();
   }
 
   public close(): void {
@@ -128,6 +149,10 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     }
 
     return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public getRecord(): Nft|null|undefined {
+    return this.purchasedNft || this.nft;
   }
 
   public fireflyDeepLink(): SafeUrl {
