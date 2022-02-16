@@ -76,7 +76,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     await db.collection(COL.MILESTONE).doc(nextMilestone).set({ completed: true });
 
     // Space address should be validated by above.
-    await new Promise((r) => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 20000));
 
     mocker({
       name: 'Collection A',
