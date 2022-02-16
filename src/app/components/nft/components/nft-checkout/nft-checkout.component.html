@@ -48,7 +48,7 @@
         </div>
         <div class="mt-8 lg:ml-8 lg:mt-0 ">
             <div class="relative flex flex-col w-full h-full">
-                <h3 class="mb-1 text-2xl font-bold truncate">{{ nft?.name }}</h3>
+                <h3 class="mb-1 text-2xl font-bold truncate">{{ getRecord()?.name }}</h3>
 
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
 
@@ -72,7 +72,7 @@
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Total price</div>
                     <div class="flex items-center mt-2 text-lg">
                         <!-- <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ '100 Mi' }}</div> -->
-                        <div class="mr-2 font-bold truncate">{{ formatBest(nft?.price || 0) }}</div>
+                        <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.price || 0) }}</div>
                         <!-- <div class="font-medium truncate text-foregrounds-secondary">({{ '$72' }})</div> -->
                     </div>
                 </div>
