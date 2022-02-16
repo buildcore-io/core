@@ -79,7 +79,7 @@ class ProcessingService {
     for (const [msgId, t] of Object.entries(this.trans)) {
       const fromAddress: MilestoneTransactionEntry = t.inputs[0];
       for (const o of t.outputs) {
-        if (o.address === toAddress && amount === amount) {
+        if (o.address === toAddress && o.amount === amount) {
           found = {
             msgId: msgId,
             from: fromAddress,
@@ -327,7 +327,8 @@ class ProcessingService {
     const pendingTrans: any = await this.getTransactions(TransactionType.ORDER);
     for (const pendingTran of pendingTrans.docs) {
       // This happens here on purpose instead of cron to reduce $$$
-      if (dayjs(pendingTran.data().createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms').isAfter(dayjs())) {
+      const expireDate = dayjs(pendingTran.data().createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+      if (expireDate.isBefore(dayjs(), 'ms')) {
         await this.markAsVoid(pendingTran.data());
         continue;
       }
