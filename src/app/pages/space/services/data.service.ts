@@ -184,7 +184,6 @@ export class DataService implements OnDestroy {
     }
 
     this.availableCollectionOn = true;
-    console.log('ssa');
     this.subscriptions$.push(this.collectionApi.allAvailableSpace(spaceId).subscribe(this.availableCollections$));
   }
 

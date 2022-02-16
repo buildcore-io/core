@@ -50,6 +50,12 @@ export class CollectionCardComponent {
 
   // Needs to be implemented
   public getStatus(): string {
-    return 'Pending approval';
+    if (this.collection?.approved !== true && this.collection?.rejected !== true) {
+      return 'Pending approval';
+    } else if (this.collection?.approved) {
+      return 'Available';
+    } else {
+      return 'Rejected';
+    }
   }
 }
