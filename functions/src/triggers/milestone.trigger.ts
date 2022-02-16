@@ -161,7 +161,7 @@ class ProcessingService {
 
     // Calculate royalties.
     const transOut: Transaction[] = [];
-    const royaltyAmt: number = order.payload.royaltiesSpaceAddress ? (order.payload.amount * order.payload.royaltiesFee) : 0;
+    const royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(order.payload.amount * order.payload.royaltiesFee) : 0;
     const finalAmt: number = order.payload.amount - royaltyAmt;
 
     // Update reference on order.
@@ -327,7 +327,7 @@ class ProcessingService {
     const pendingTrans: any = await this.getTransactions(TransactionType.ORDER);
     for (const pendingTran of pendingTrans.docs) {
       // This happens here on purpose instead of cron to reduce $$$
-      if (dayjs(pendingTran.data().createdOn.toDate()).isAfter(dayjs().add(TRANSACTION_AUTO_EXPIRY_MS, 'ms'))) {
+      if (dayjs(pendingTran.data().createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms').isAfter(dayjs())) {
         await this.markAsVoid(pendingTran.data());
         continue;
       }

@@ -127,7 +127,7 @@
         <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex">
             <wen-icon-stopwatch class="mr-2 lg:mr-3"></wen-icon-stopwatch>
             <div class="text-base font-medium">
-                <span>{{(expiryTicker$ | async) | relativeTime}}</span>
+                <span>{{(expiryTicker$ | async) | countdownTime}}</span>
                 <span class="text-alerts-error" i18n> remaining to make the transfer</span>
             </div>
         </div>

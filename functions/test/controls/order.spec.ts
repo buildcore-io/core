@@ -21,6 +21,7 @@ const db = admin.firestore();
 
 describe('Ordering flows', () => {
   let walletSpy: any;
+  const defaultFromAddress = '1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz';
   jest.setTimeout(180000);
   const mocker = (adr: string, params: any) => {
     walletSpy.mockReturnValue(Promise.resolve({
@@ -106,7 +107,7 @@ describe('Ordering flows', () => {
     .set({
       createdOn: serverTime(),
       inputs: [{
-        address: '1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz',
+        address: defaultFromAddress,
         amount: 123
       }],
       outputs: outputs
@@ -527,12 +528,99 @@ describe('Ordering flows', () => {
     expect(err).toEqual(WenError.generated_spf_nft_must_be_sold_first.code);
   });
 
-  it.skip('One collection, generated NFT, validate unlocking of transactions and void + credit if paid after', async () => {
-    // To do.
+  it.only('One collection, generated NFT, over pay + credit should go back', async () => {
+    const member: Member = await createMemberFunc();
+    const space: Space = await createSpaceFunc(member.uid, dummySpace());
+
+    // Validate space address.
+    const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
+    const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
+    await milestoneProcessed(nextMilestone);
+
+    // Validate member address
+    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
+    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
+    await milestoneProcessed(nextMilestone2);
+
+    // Create collection.
+    const price = 100;
+    const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.GENERATED, 0.5, price));
+
+    // It's randomly picked.
+    await createNftFunc(member.uid, dummyNft(collection, price));
+    await createNftFunc(member.uid, dummyNft(collection, price));
+
+    const order = await submitOrderFunc(member.uid, {
+      collection: collection.uid
+    });
+
+    // Confirm payment.
+    const wrongAmount = order.payload.amount * 1.5;
+    const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, wrongAmount);
+    await milestoneProcessed(nextMilestone3);
+
+    const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
+    expect(nftDbRec.sold).toBe(false);
+
+    const tran: any = await db.collection(COL.TRANSACTION).doc(order.uid).get();
+    expect(tran.linkedTransactions.length).toBe(2);
+
+    for (const t of tran.linkedTransactions) {
+      const tr: any = await db.collection(COL.TRANSACTION).doc(t.uid).get();
+      if (tr.data().type === TransactionType.CREDIT) {
+        expect(tr.payload.targetAddress).toBe(defaultFromAddress);
+        expect(tr.payload.amount).toBe(wrongAmount);
+      }
+
+      if (tr.data().type === TransactionType.PAYMENT) {
+        expect(tr.payload.targetAddress).toBe(validationOrderMember.payload.targetAddress);
+        expect(tr.payload.amount).toBe(wrongAmount);
+      }
+    }
   });
 
-  it.skip('One collection, generated NFT (large), one purchase by multiple parties at once', async () => {
-    // To do.
+  it.only('One collection, generated NFT, pay + validate bill / royalty', async () => {
+    const member: Member = await createMemberFunc();
+    const space: Space = await createSpaceFunc(member.uid, dummySpace());
+
+    // Validate space address.
+    const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
+    const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
+    await milestoneProcessed(nextMilestone);
+
+    // Validate member address
+    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
+    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
+    await milestoneProcessed(nextMilestone2);
+
+    // Create collection.
+    const price = 100;
+    const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.GENERATED, 0.5, price));
+
+    // It's randomly picked.
+    await createNftFunc(member.uid, dummyNft(collection, price));
+    await createNftFunc(member.uid, dummyNft(collection, price));
+
+    const order = await submitOrderFunc(member.uid, {
+      collection: collection.uid
+    });
+
+    // Confirm payment.
+    const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(nextMilestone3);
+
+    const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
+    expect(nftDbRec.sold).toBe(false);
+
+    const tran: any = await db.collection(COL.TRANSACTION).doc(order.uid).get();
+    expect(tran.linkedTransactions.length).toBe(3);
+
+    for (const t of tran.linkedTransactions) {
+      const tr: any = await db.collection(COL.TRANSACTION).doc(t.uid).get();
+      if (tr.data().type === TransactionType.BILL_PAYMENT) {
+        expect(tr.payload.amount).toBe(price/2);
+      }
+    }
   });
 
 
