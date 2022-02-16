@@ -85,7 +85,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       category: Categories.ART,
       space: space.uid,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
 
     const wrapped: any = testEnv.wrap(createCollection);
@@ -134,20 +136,6 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     const wrapped: any = testEnv.wrap(createNft);
     (<any>expect(wrapped())).rejects.toThrowError(WenError.collection_does_not_exists.key);
-    walletSpy.mockRestore();
-  });
-
-  it('successfully create NFT to past date', async () => {
-    mocker({
-      name: 'Collection A',
-      description: 'babba',
-      collection: collection.uid,
-      availableFrom: dayjs().subtract(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
-    });
-
-    const wrapped: any = testEnv.wrap(createNft);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
     walletSpy.mockRestore();
   });
 

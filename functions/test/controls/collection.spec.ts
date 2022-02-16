@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import * as admin from 'firebase-admin';
 import { WEN_FUNC } from "../../interfaces/functions";
 import { TransactionOrderType, TransactionType } from "../../interfaces/models";
@@ -107,7 +108,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       category: Categories.ART,
       royaltiesFee: 0.6,
       space: space.uid,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
 
     const wrapped: any = testEnv.wrap(createCollection);
@@ -130,7 +133,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       space: space.uid,
       type: CollectionType.CLASSIC,
       category: Categories.ART,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
     const wrapped: any = testEnv.wrap(createCollection);
     (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
@@ -145,7 +150,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.1,
       type: CollectionType.CLASSIC,
       category: Categories.ART,
-      space: space.uid
+      space: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
     const wrapped: any = testEnv.wrap(createCollection);
     (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
@@ -159,7 +166,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: 'babba',
       royaltiesFee: 0.6,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
     const wrapped: any = testEnv.wrap(updateCollection);
     (<any>expect(wrapped())).rejects.toThrowError(WenError.collection_does_not_exists.key);
@@ -175,7 +184,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       type: CollectionType.CLASSIC,
       category: Categories.ART,
       space: space.uid,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
 
     const wrapped: any = testEnv.wrap(createCollection);
@@ -188,7 +199,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: '123',
       royaltiesFee: 0.6,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
     const wrapped2: any = testEnv.wrap(updateCollection);
     const returns2 = await wrapped2();
@@ -205,7 +218,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
       space: space.uid,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
 
     const wrapped: any = testEnv.wrap(createCollection);
@@ -232,7 +247,9 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
       space: space.uid,
-      royaltiesSpace: space.uid
+      royaltiesSpace: space.uid,
+      availableFrom: dayjs().add(1, 'hour').toDate(),
+      price: 10 * 1000 * 1000
     });
 
     const wrapped: any = testEnv.wrap(createCollection);

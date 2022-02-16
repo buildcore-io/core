@@ -62,13 +62,17 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       const randNumber: number = Math.floor(Math.random() * docCollectionData.total);
       // Above / below
       const nftAbove: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT)
-                            .where('sold', '==', 'false').where('placeholderNft', '==', false).where('collection', '==', docCollectionData.uid)
+                            .where('sold', '==', false)
+                            .where('locked', '==', false)
+                            .where('placeholderNft', '==', false)
+                            .where('collection', '==', docCollectionData.uid)
                             .where('position', '>=', randNumber).orderBy('position', 'asc').limit(1).get();
       const nftBelow: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT)
-                            .where('sold', '==', 'false').where('placeholderNft', '==', false).where('collection', '==', docCollectionData.uid)
+                            .where('sold', '==', false)
+                            .where('locked', '==', false)
+                            .where('placeholderNft', '==', false)
+                            .where('collection', '==', docCollectionData.uid)
                             .where('position', '<=', randNumber).orderBy('position', 'desc').limit(1).get();
-
-
       if (nftAbove.size > 0) {
         refNft = admin.firestore().collection(COL.NFT).doc(nftAbove.docs[0].data().uid);
       } else if (nftBelow.size > 0) {
@@ -77,6 +81,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
         throw throwInvalidArgument(WenError.no_more_nft_available_for_sale);
       }
     } else {
+      refNft = admin.firestore().collection(COL.NFT).doc(params.body.nft);
       mustBeSold = true;
     }
   }
@@ -92,13 +97,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     throw throwInvalidArgument(WenError.generated_spf_nft_must_be_sold_first);
   }
 
-  // Extra check to make sure owner address is defined.
-  if (docNft.data().owner && !docNft.data().ownerAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address);
-  } else if (!docSpace.data().validatedAddress) {
-    throw throwInvalidArgument(WenError.space_must_have_validated_address);
-  }
-
   if (!docNft.data().availableFrom || dayjs(docNft.data().availableFrom.toDate()).isAfter(dayjs())) {
     throw throwInvalidArgument(WenError.nft_not_available_for_sale);
   }
@@ -111,6 +109,13 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     throw throwInvalidArgument(WenError.nft_placeholder_cant_be_purchased);
   }
 
+  // Extra check to make sure owner address is defined.
+  if (docNft.data().owner && !docNft.data().ownerAddress) {
+    throw throwInvalidArgument(WenError.member_must_have_validated_address);
+  } else if (!docSpace.data().validatedAddress) {
+    throw throwInvalidArgument(WenError.space_must_have_validated_address);
+  }
+
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
@@ -120,6 +125,13 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
   const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  // Lock NFT
+  await admin.firestore().runTransaction(async (transaction) => {
+    transaction.update(refNft, {
+      locked: true,
+      lockedBy: tranId
+    });
+  });
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await refTran.set(<Transaction>{
     type: TransactionType.ORDER,
@@ -143,12 +155,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       nft: docNftData.uid,
       collection: docCollectionData.uid
     }
-  });
-
-  // Lock NFT.
-  await refNft.update({
-    locked: true,
-    lockedBy: tranId
   });
 
   // Load latest

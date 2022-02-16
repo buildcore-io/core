@@ -60,7 +60,7 @@ export const WenError = {
   space_must_have_validated_address: { code: 2052, key: 'Space must have validated address.' },
   member_must_have_validated_address: { code: 2053, key: 'Member must have validated address.' },
   generated_spf_nft_must_be_sold_first: { code: 2055, key: 'To buy directly Generated NFT/SFT it must be sold first.' },
-  no_more_nft_available_for_sale: { code: 2055, key: 'No more NFT available for sale.' },
+  no_more_nft_available_for_sale: { code: 2057, key: 'No more NFT available for sale.' },
   nft_placeholder_cant_be_purchased: { code: 2056, key: 'Can\'t buy placeholder NFT.' }
 }
 

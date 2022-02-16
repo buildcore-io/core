@@ -295,6 +295,9 @@ class ProcessingService {
     if (payment.member) {
       await admin.firestore().collection(COL.NFT).doc(payment.payload.nft).update({
         owner: payment.member,
+        sold: true,
+        locked: false,
+        lockedBy: null,
         hidden: false,
         availableFrom: null
       });
