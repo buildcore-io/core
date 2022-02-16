@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import * as admin from 'firebase-admin';
 import { TransactionOrderType, TransactionType } from '../../../functions/interfaces/models';
 import { COL } from '../../../functions/interfaces/models/base';
-import { createCollection } from '../../../functions/src/controls/collection.control';
+import { approveCollection, createCollection } from '../../../functions/src/controls/collection.control';
 import { createNft } from '../../../functions/src/controls/nft.control';
 import { createSpace } from '../../../functions/src/controls/space.control';
 import { WenError } from "../../interfaces/errors";
@@ -121,6 +121,14 @@ describe('Ordering flows', () => {
     const wrapped: any = testEnv.wrap(createCollection);
     const returns = await wrapped();
     expect(returns?.uid).toBeDefined();
+
+    mocker(adr, {
+      uid: returns.uid
+    });
+    const wrapped2: any = testEnv.wrap(approveCollection);
+    const returns2 = await wrapped2();
+    expect(returns2?.uid).toBeDefined();
+
     return returns;
   }
 

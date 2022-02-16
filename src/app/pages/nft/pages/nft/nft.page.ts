@@ -64,7 +64,7 @@ export class NFTPage implements OnInit, OnDestroy {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.subscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-        this.subscriptions$.push(this.nftApi.recentlyChangedCollection(p.collection, undefined, undefined, 10).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
+        this.subscriptions$.push(this.nftApi.lowToHighInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
         if (p.createdBy) {
           this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }

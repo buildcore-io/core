@@ -47,6 +47,11 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
   const docSpace: any = await refSpace.get();
 
+  // Collection must be approved.
+  if (!docCollectionData.approved) {
+    throw throwInvalidArgument(WenError.collection_must_be_approved);
+  }
+
   // Let's determine if NFT can be indicated or we need to randomly select one.
   let refNft: any;
   let mustBeSold = false;

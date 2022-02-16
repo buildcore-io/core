@@ -27,7 +27,7 @@
                     <wen-icon-dollar class="mr-3 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(nft?.price)}}</div>
 
-                    <button *ngIf="true && (deviceService.isDesktop$ | async)" nz-button nzType="primary"
+                    <button *ngIf="true && (deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
                         (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
                 </div>
 
@@ -36,7 +36,7 @@
                     <div class="text-xs font-medium">2 hours left</div>
                 </div> -->
 
-                <button *ngIf="!nft?.owner && (deviceService.isMobile$ | async)" nz-button nzType="primary"
+                <button *ngIf="!nft?.owner && (deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
                     (click)="onBuy($event)" class="w-4/5 mt-2" i18n>Buy now</button>
             </ng-container>
         </div>

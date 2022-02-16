@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy($event)" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-12" i18n>
+            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-12" i18n>
                 Buy now
             </button>
 
