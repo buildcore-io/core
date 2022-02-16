@@ -10,8 +10,8 @@ import { Categories, Collection, CollectionType } from '../../interfaces/models/
 import { Member } from '../../interfaces/models/member';
 import { Nft } from '../../interfaces/models/nft';
 import { Space } from '../../interfaces/models/space';
-import { TransactionOrder } from '../../interfaces/models/transaction';
-import { serverTime } from '../../src/utils/dateTime.utils';
+import { TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models/transaction';
+import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember } from './../../src/controls/member.control';
@@ -239,11 +239,6 @@ describe('Ordering flows', () => {
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
 
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
-
     // Create collection.
     const price = 100;
     const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.CLASSIC, 0.5, price));
@@ -270,11 +265,6 @@ describe('Ordering flows', () => {
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
-
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
 
     // Create collection.
     const price = 100;
@@ -333,11 +323,6 @@ describe('Ordering flows', () => {
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
 
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
-
     // Create collection.
     const price = 100;
     const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.GENERATED, 0.5, price));
@@ -366,11 +351,6 @@ describe('Ordering flows', () => {
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
-
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
 
     // Create collection.
     const price = 100;
@@ -413,11 +393,6 @@ describe('Ordering flows', () => {
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
 
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
-
     // Create collection.
     const price = 100;
     const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.GENERATED, 0.5, price));
@@ -456,11 +431,6 @@ describe('Ordering flows', () => {
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
-
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
 
     // Create collection.
     const price = 100;
@@ -503,11 +473,6 @@ describe('Ordering flows', () => {
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
 
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
-
     // Create collection.
     const price = 100;
     const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.GENERATED, 0.5, price));
@@ -528,7 +493,7 @@ describe('Ordering flows', () => {
     expect(err).toEqual(WenError.generated_spf_nft_must_be_sold_first.code);
   });
 
-  it.only('One collection, generated NFT, over pay + credit should go back', async () => {
+  it('One collection, generated NFT, over pay + credit should go back', async () => {
     const member: Member = await createMemberFunc();
     const space: Space = await createSpaceFunc(member.uid, dummySpace());
 
@@ -536,11 +501,6 @@ describe('Ordering flows', () => {
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
-
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
 
     // Create collection.
     const price = 100;
@@ -560,26 +520,31 @@ describe('Ordering flows', () => {
     await milestoneProcessed(nextMilestone3);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
-    expect(nftDbRec.sold).toBe(false);
+    expect(nftDbRec.data().sold).toBe(false);
 
     const tran: any = await db.collection(COL.TRANSACTION).doc(order.uid).get();
-    expect(tran.linkedTransactions.length).toBe(2);
+    expect(tran.data().linkedTransactions.length).toBe(2);
 
-    for (const t of tran.linkedTransactions) {
-      const tr: any = await db.collection(COL.TRANSACTION).doc(t.uid).get();
+    let c = 0;
+    for (const t of tran.data().linkedTransactions) {
+      const tr: any = await db.collection(COL.TRANSACTION).doc(t).get();
       if (tr.data().type === TransactionType.CREDIT) {
-        expect(tr.payload.targetAddress).toBe(defaultFromAddress);
-        expect(tr.payload.amount).toBe(wrongAmount);
+        c++;
+        expect(tr.data().payload.targetAddress).toBe(defaultFromAddress);
+        expect(tr.data().payload.amount).toBe(wrongAmount);
       }
 
       if (tr.data().type === TransactionType.PAYMENT) {
-        expect(tr.payload.targetAddress).toBe(validationOrderMember.payload.targetAddress);
-        expect(tr.payload.amount).toBe(wrongAmount);
+        c++;
+        expect(tr.data().payload.targetAddress).toBe(order.payload.targetAddress);
+        expect(tr.data().payload.amount).toBe(wrongAmount);
       }
     }
+
+    expect(c).toBe(2);
   });
 
-  it.only('One collection, generated NFT, pay + validate bill / royalty', async () => {
+  it('One collection, generated NFT, pay + validate bill / royalty', async () => {
     const member: Member = await createMemberFunc();
     const space: Space = await createSpaceFunc(member.uid, dummySpace());
 
@@ -587,11 +552,6 @@ describe('Ordering flows', () => {
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone);
-
-    // Validate member address
-    const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
-    const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
 
     // Create collection.
     const price = 100;
@@ -610,18 +570,54 @@ describe('Ordering flows', () => {
     await milestoneProcessed(nextMilestone3);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
-    expect(nftDbRec.sold).toBe(false);
+    expect(nftDbRec.data().sold).toBe(true);
 
     const tran: any = await db.collection(COL.TRANSACTION).doc(order.uid).get();
-    expect(tran.linkedTransactions.length).toBe(3);
+    expect(tran.data().linkedTransactions.length).toBe(3);
 
-    for (const t of tran.linkedTransactions) {
-      const tr: any = await db.collection(COL.TRANSACTION).doc(t.uid).get();
+    let c = 0;
+    for (const t of tran.data().linkedTransactions) {
+      const tr: any = await db.collection(COL.TRANSACTION).doc(t).get();
       if (tr.data().type === TransactionType.BILL_PAYMENT) {
-        expect(tr.payload.amount).toBe(price/2);
+        c++;
+        expect(tr.data().payload.amount).toBe(price/2 * 1000 * 1000);
       }
     }
+    expect(c).toBe(2);
   });
 
+  it('One collection, generated NFT, order and expect transaction to be voided.', async () => {
+    const member: Member = await createMemberFunc();
+    const space: Space = await createSpaceFunc(member.uid, dummySpace());
+
+    // Validate space address.
+    const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
+    const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
+    await milestoneProcessed(nextMilestone);
+
+    // Create collection.
+    const price = 100;
+    const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.GENERATED, 0.5, price));
+
+    // It's randomly picked.
+    await createNftFunc(member.uid, dummyNft(collection, price));
+    await createNftFunc(member.uid, dummyNft(collection, price));
+
+    const order = await submitOrderFunc(member.uid, {
+      collection: collection.uid
+    });
+
+    // Set pass date.
+    await db.collection(COL.TRANSACTION).doc(order.uid).update({
+      createdOn: dateToTimestamp(dayjs().subtract(TRANSACTION_AUTO_EXPIRY_MS + 1, 'ms').toDate())
+    });
+
+    // Let's let it expire.
+    const nextMilestone2 = await submitMilestoneFunc('abc', 13);
+    await milestoneProcessed(nextMilestone2);
+
+    const latestOrder: any = await db.collection(COL.TRANSACTION).doc(order.uid).get();
+    expect(latestOrder.data().payload.void).toBe(true);
+  });
 
 });
