@@ -8,7 +8,6 @@ import { SpaceApi } from '@api/space.api';
 import { AvatarService } from '@core/services/avatar';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
@@ -115,27 +114,6 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public getPropStats(obj: any): any[] {
-    if (!obj) {
-      return [];
-    }
-
-    const final: any[] = [];
-    for (const v of Object.values(obj)) {
-      final.push(v);
-    }
-
-    return final;
-  }
-
-  public formatBest(amount?: number|null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(amount, 2);
   }
 
   public get filesizes(): typeof FILE_SIZES {

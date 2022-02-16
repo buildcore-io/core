@@ -25,6 +25,7 @@
                                     [nzLimit]="500"
                                     [nzMultiple]="true"
                                     [nzCustomRequest]="uploadMultipleFiles.bind(this)"
+                                    [nzPreview]="onPreview.bind(this)"
                                     (nzChange)="uploadMultipleChange($event)"
                                     nzFileType="image/png,image/jpeg"
                                 >
@@ -38,8 +39,8 @@
                 </nz-card>
             </div>
     
-            <div class="mt-4 space-y-4 lg:mt-0" nz-col nzFlex="450px">
-                <nz-card class="mt-6" [nzBordered]="false" nzTitle="Collection">
+            <div class="space-y-4" nz-col nzFlex="450px">
+                <nz-card [nzBordered]="false" nzTitle="Collection">
                     <nz-form-item>
                         <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
                             <nz-select
@@ -100,7 +101,7 @@
     <button
         nz-button
         nzType="primary"
-        class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
+        class="w-auto mb-6"
         nzSize="large"
         type="button"
         (click)="buttonClick()"
@@ -108,6 +109,8 @@
     >
         {{ currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs'}}
     </button>
+
+    <wen-nft-preview [previewFile]="previewFile" (onClose)="previewFile = null"></wen-nft-preview>
 </ng-container>
 
 <div *ngIf="deviceService.isMobile$ | async" class="flex mt-6 p-4 rounded-2xl bg-white text-foregrounds-secondary">
