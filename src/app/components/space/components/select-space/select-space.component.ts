@@ -30,7 +30,6 @@ export const DEFAULT_SPACE: SelectSpaceOption = {
   ]
 })
 export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
-
   @Input() size: 'small' | 'large' = 'small';
   @Input() 
   set spaces(value: SelectSpaceOption[]) {

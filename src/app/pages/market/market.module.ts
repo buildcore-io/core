@@ -7,7 +7,7 @@ import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.modu
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
-import { SelectSpaceModule } from '@components/select-space/select-space.module';
+import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzCardModule } from 'ng-zorro-antd/card';

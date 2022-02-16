@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { DEFAULT_SPACE, SelectSpaceOption } from '@components/select-space/select-space.component';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';

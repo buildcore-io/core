@@ -120,35 +120,38 @@
                     </ng-container>
 
                     <ng-container *ngIf="deviceService.isMobile$ | async">
-                    <div class="mt-8" *ngFor="let property of properties.controls; let i = index">
-                        <div class="text-xs font-bold">
-                        <span i18n>Property</span> #0{{ i + 1 }}
+                        <div class="mt-8" *ngFor="let property of properties.controls; let i = index">
+                            <div class="flex items-center justify-between">
+                                <div class="text-xs font-bold">
+                                    <span i18n>Property</span> #0{{ i + 1 }}
+                                </div>
+                                <wen-icon-trash class="cursor-pointer" (click)="removeProperty(i)"></wen-icon-trash>
+                            </div>
+
+                            <div class="mt-2 mb-5 separator"></div>
+
+                            <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Property name</div>
+
+                            <input
+                            type="text"
+                            nz-input
+                            nzSize="default"
+                            placeholder="Property name"
+                            class="w-full mt-2 mb-5"
+                            [formControl]="gForm(property, 'name')"
+                            />
+
+                            <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Value</div>
+
+                            <input
+                            type="text"
+                            nz-input
+                            nzSize="default"
+                            placeholder="Value"
+                            class="w-full mt-2 mb-5"
+                            [formControl]="gForm(property, 'value')"
+                            />
                         </div>
-
-                        <div class="mt-2 mb-5 separator"></div>
-
-                        <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Property name</div>
-
-                        <input
-                        type="text"
-                        nz-input
-                        nzSize="default"
-                        placeholder="Property name"
-                        class="w-full mt-2 mb-5"
-                        [formControl]="gForm(property, 'name')"
-                        />
-
-                        <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Value</div>
-
-                        <input
-                        type="text"
-                        nz-input
-                        nzSize="default"
-                        placeholder="Value"
-                        class="w-full mt-2 mb-5"
-                        [formControl]="gForm(property, 'value')"
-                        />
-                    </div>
                     </ng-container>
                 </div>
 
@@ -203,32 +206,35 @@
 
                 <ng-container *ngIf="deviceService.isMobile$ | async">
                     <div class="mt-8" *ngFor="let stat of stats.controls; let i = index">
-                    <div class="text-xs font-bold">
-                        <span i18n>Stat</span> #0{{ i + 1 }}
-                    </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs font-bold">
+                                <span i18n>Stat</span> #0{{ i + 1 }}
+                            </div>
+                            <wen-icon-trash class="cursor-pointer" (click)="removeStat(i)"></wen-icon-trash>
+                        </div>
 
-                    <div class="mt-2 mb-5 separator"></div>
+                        <div class="mt-2 mb-5 separator"></div>
 
-                    <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Stat name</div>
+                        <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Stat name</div>
 
-                    <input
-                        type="text"
-                        nz-input
-                        nzSize="default"
-                        placeholder="Stat name"
-                        class="w-full mt-2 mb-5"
-                        [formControl]="gForm(stat, 'name')"
-                    />
+                        <input
+                            type="text"
+                            nz-input
+                            nzSize="default"
+                            placeholder="Stat name"
+                            class="w-full mt-2 mb-5"
+                            [formControl]="gForm(stat, 'name')"
+                        />
 
-                    <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Value</div>
+                        <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Value</div>
 
-                    <nz-input-number
-                        nzSize="default"
-                        nzPlaceHolder="Value"
-                        class="w-full mt-2 mb-5"
-                        [nzMin]="0"
-                        [formControl]="gForm(stat, 'value')"
-                    ></nz-input-number>
+                        <nz-input-number
+                            nzSize="default"
+                            nzPlaceHolder="Value"
+                            class="w-full mt-2 mb-5"
+                            [nzMin]="0"
+                            [formControl]="gForm(stat, 'value')"
+                        ></nz-input-number>
                     </div>
                 </ng-container>
                 </div>

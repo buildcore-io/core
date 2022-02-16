@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CollectionStatusModule } from '@components/collection/collection-status/collection-status.module';
+import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';

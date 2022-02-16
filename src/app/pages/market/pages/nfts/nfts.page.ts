@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { NftApi } from '@api/nft.api';
-import { SelectSpaceOption } from '@components/select-space/select-space.component';
+import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { SelectSpaceOption } from '@components/select-space/select-space.component';
+import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/space/services/data.service';
