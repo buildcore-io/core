@@ -1,5 +1,5 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
-import { DateTagModule } from '../../date-tag/date-tag.module';
+import { DateTagModule } from '../../../date-tag/date-tag.module';
 import { CollectionStatusComponent } from './collection-status.component';
 
 describe('CollectionStatusComponent', () => {

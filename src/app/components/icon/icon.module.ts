@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AirBlowIconComponent } from './air-blow/air-blow.component';
+import { AlertOctagonIconComponent } from './alert-octagon/alert-octagon.component';
 import { AngleDownIconComponent } from './angle-down/angle-down.component';
 import { AngleLeftIconComponent } from './angle-left/angle-left.component';
 import { AngleRightIconComponent } from './angle-right/angle-right.component';
@@ -13,7 +14,7 @@ import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
 import { CopyIconComponent } from './copy/copy.component';
 import { CrownIconComponent } from './crown/crown.component';
-import { DefaultSpaceIconComponent } from './default-space/default-space.component';
+import { DefaultSelectIconComponent } from './default-select/default-select.component';
 import { DiscordIconComponent } from './discord/discord.component';
 import { DollarIconComponent } from './dollar/dollar.component';
 import { EditIconComponent } from './edit/edit.component';
@@ -22,6 +23,7 @@ import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
+import { InfoCircleIconComponent } from './info-circle/info-circle.component';
 import { InfoIconComponent } from './info/info.component';
 import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
@@ -86,7 +88,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SoonlabsIconComponent,
     SortIconComponent,
     CheckIconComponent,
-    DefaultSpaceIconComponent,
+    DefaultSelectIconComponent,
     SearchIconComponent,
     EraseIconComponent,
     EditIconComponent,
@@ -106,7 +108,9 @@ import { WalletIconComponent } from './wallet/wallet.component';
     CopyIconComponent,
     SadIconComponent,
     CrownIconComponent,
-    StopwatchIconComponent
+    StopwatchIconComponent,
+    AlertOctagonIconComponent,
+    InfoCircleIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -140,7 +144,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SoonlabsIconComponent,
     SortIconComponent,
     CheckIconComponent,
-    DefaultSpaceIconComponent,
+    DefaultSelectIconComponent,
     SearchIconComponent,
     EraseIconComponent,
     EditIconComponent,
@@ -160,7 +164,9 @@ import { WalletIconComponent } from './wallet/wallet.component';
     CopyIconComponent,
     SadIconComponent,
     CrownIconComponent,
-    StopwatchIconComponent
+    StopwatchIconComponent,
+    AlertOctagonIconComponent,
+    InfoCircleIconComponent
   ],
   imports: [
     CommonModule

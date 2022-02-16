@@ -22,7 +22,7 @@
                 [ngClass]="{ 'text-foregrounds-secondary': fullWidth }">
                 {{ nft?.description | stripMarkdown | truncate:[16]}}</p>
 
-            <ng-container *ngIf="!nft?.owner">
+            <ng-container *ngIf="!nft?.owner || true">
                 <div class="flex items-center">
                     <wen-icon-dollar class="mr-3 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(nft?.price)}}</div>

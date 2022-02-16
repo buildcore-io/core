@@ -1,9 +1,8 @@
-import { DEFAULT_SPACE } from './../../../../components/select-space/select-space.component';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
-import { SelectSpaceOption } from '@components/select-space/select-space.component';
+import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
@@ -12,6 +11,7 @@ import { FilterService } from '@pages/discover/services/filter.service';
 import { Space } from 'functions/interfaces/models';
 import { Collection } from 'functions/interfaces/models/collection';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
+import { DEFAULT_SPACE } from '../../../../components/space/components/select-space/select-space.component';
 import { SortOptions } from './../../services/sort-options.interface';
 
 export enum HOT_TAGS {

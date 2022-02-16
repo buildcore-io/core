@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SelectCollectionModule } from '@components/collection/components/select-collection/select-collection.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { MemberAboutModule } from '@components/member/components/member-about/member-about.module';
 import { MemberAlliancesTableModule } from '@components/member/components/member-alliances-table/member-alliances-table.module';
@@ -8,7 +9,7 @@ import { MemberSpaceRowModule } from '@components/member/components/member-space
 import { MemberTileModule } from '@components/member/components/tile/member-tile.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
-import { SelectSpaceModule } from '@components/select-space/select-space.module';
+import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
@@ -83,7 +84,8 @@ import { DataService } from './services/data.service';
     NftCardModule,
     NzSkeletonModule,
     InfiniteScrollModule,
-    NzSelectModule
+    NzSelectModule,
+    SelectCollectionModule
   ],
 })
 export class MemberModule {

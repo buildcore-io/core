@@ -1,12 +1,9 @@
 <div class="flex flex-col items-center justify-between lg:flex-row">
-    <nz-select class="w-full lg:w-60 wen-sort-button" nzPlaceHolder="filter by Collection" [nzCustomTemplate]="defaultTemplate"
-        [formControl]="collectionControl" nz-tooltip>
-        <nz-option nzLabel="collection 1" [nzValue]="'0x123123'"></nz-option>
-    </nz-select>
-    <ng-template #defaultTemplate let-selected>
-        <span nz-typography nzType="secondary" class="text-xs"></span>
-        {{ selected.nzLabel }}
-    </ng-template>
+    <wen-select-collection
+        [formControl]="collectionControl"
+        [collections]="getCollectionListOptions(cache.allCollections$ | async)"
+        size="small">
+    </wen-select-collection>
 
     <nz-input-group
         nzSize="small" [nzPrefix]="prefixIconSearch"

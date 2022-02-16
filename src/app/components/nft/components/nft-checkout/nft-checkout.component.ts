@@ -30,7 +30,7 @@ export enum StepType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NftCheckoutComponent implements OnInit, OnDestroy {
-  @Input() currentStep = StepType.CONFIRM;
+  @Input() currentStep = StepType.COMPLETE;
   @Input() isOpen = false;
   @Input() nft?: Nft|null;
   @Input() purchasedNft?: Nft|null;

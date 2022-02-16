@@ -29,7 +29,7 @@ export enum StepType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IOTAAddressComponent implements OnInit, OnDestroy {
-  @Input() currentStep = StepType.GENERATE;
+  @Input() currentStep = StepType.WAIT;
   @Input() entityType?: EntityType;
   @Input() entity?: Space|Member|null;
   @Output() onClose = new EventEmitter<void>();

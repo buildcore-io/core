@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -16,11 +17,6 @@ import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from 'functions/in
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { Observable, of, Subscription } from 'rxjs';
-
-interface SelectOption {
-  label: string;
-  value: string;
-}
 
 @UntilDestroy()
 @Component({
@@ -183,13 +179,13 @@ export class SinglePage implements OnInit {
     }
   }
 
-  public getCollectionListOptions(list?: Collection[] | null): SelectOption[] {
-    return (list || []).filter((o) => {
-      return o.rejected !== true;
-    }).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid
-    }));
+  public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {
+    return (list || [])
+      .filter((o) => o.rejected !== true)
+      .map((o) => ({
+          label: o.name || o.uid,
+          value: o.uid
+      }));
   }
 
   public removeStat(index: number): void {

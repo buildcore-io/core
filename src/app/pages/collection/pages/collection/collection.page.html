@@ -31,7 +31,7 @@
             <h1 class="mt-3 lg:mt-2">{{ (data.collection$ | async)?.name }}</h1>
 
             <div class="flex flex-wrap items-center">
-                <a [routerLink]="['/member', (data.creator$ | async)?.uid]">
+                <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center">
                   <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                     class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                     style="max-width: 32px; min-width: 32px;" [nzSize]="32">
@@ -71,6 +71,16 @@
 
             <div class="mt-10 font-medium lg:mt-6" [innerHtml]="(data.collection$ | async)?.description | markdown">
             </div>
+
+            <!-- Needs to be implemented -->
+            <div class="mt-8 p-5 rounded-xl bg-yellow flex items-center">
+                <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+                <div class="text-lg font-bold">
+                    <span i18n>Sale in progress</span>
+                    <span> - {{ 130 }} </span>
+                    <span i18n>remaining</span>
+                </div>
+            </div>
         </div>
 
         <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;"
@@ -81,6 +91,10 @@
 
             <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
                 Reject Collection
+            </button>
+
+            <button nz-button nzType="default" (click)="edit()" *ngIf="true || !data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                Edit Collection
             </button>
 
             <wen-collection-about></wen-collection-about>
@@ -98,7 +112,7 @@
         </div>
     </nz-drawer>
 
-    <div class="w-screen h-px mt-16 -ml-10 bg-app-gray-separator-dark lg:mt-12"></div>
+    <div class="w-screen h-px mt-16 -ml-20 bg-app-gray-separator-dark lg:mt-12 mb-8"></div>
 
     <!-- Park search. -->
     <!-- <nz-input-group
@@ -110,6 +124,19 @@
       <i nz-icon nzType="search" class="text-xl"></i>
     </ng-template> -->
 
+    <div class="flex items-center justify-between">
+        <!-- Will be replaced by search -->
+        <div></div>
+
+        <button nz-button nzType="primary" nzSize="default" class="flex items-center" (click)="createNft()" i18n *ngIf="!(data.collection$ | async)?.rejected">
+            <wen-icon-plus class="mr-2"></wen-icon-plus>
+            Create NFT
+        </button>
+    </div>
+
+    
+    <div class="w-full h-px mt-8 mb-6 bg-app-gray-700"></div>
+
     <div class="flex items-end justify-between">
         <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
             <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
@@ -117,9 +144,6 @@
                     (nzCheckedChange)="handleChange(tag)">
                     {{ tag }}
                 </nz-tag>
-                <button nz-button nzType="primary" nzBlock nzSize="small" (click)="createNft()" i18n *ngIf="!(data.collection$ | async)?.rejected">
-                  New NFT
-                </button>
             </ng-container>
 
             <ng-template #hotTagsMobileBlock>

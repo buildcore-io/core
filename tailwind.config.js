@@ -47,6 +47,7 @@ module.exports = {
           200: '#CAC8BD',
           400: '#9F9D93',
           600: '#999999',
+          700: '#E6E6E6',
           separator: {
             light: '#F5F4EF',
             dark: '#C4C4C4'
@@ -77,6 +78,7 @@ module.exports = {
         brown: '#A66300',
         pink: '#F20CDF',
         black: '#000000',
+        yellow: '#FFEF64',
         'light-brown': '#C6BF9F'
       },
       spacing: {
@@ -98,7 +100,8 @@ module.exports = {
         fit: 'fit-content',
         24: '6rem',
         128: '32rem',
-        160: '40rem'
+        160: '40rem',
+        '2/3': '66%'
       },
       width: {
         header: '500px',

@@ -20,8 +20,8 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import { DiscountLine } from './../../../../../../functions/interfaces/models/collection';
-import { SelectSpaceOption } from './../../../../components/select-space/select-space.component';
 
 const MAX_DISCOUNT_COUNT = 3;
 
@@ -105,6 +105,7 @@ export class UpsertPage implements OnInit {
     });
 
     this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
+      console.log(o);
       if (o?.collectionId) {
         this.editMode = true;
         this.collectionId = o.collectionId;

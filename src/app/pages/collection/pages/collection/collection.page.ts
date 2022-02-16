@@ -165,6 +165,16 @@ export class CollectionPage implements OnInit, OnDestroy {
     });
   }
 
+  public edit(): void {
+    if (!this.data.space$.value?.uid) {
+      return;
+    }
+
+    this.router.navigate([ROUTER_UTILS.config.collection.root, ROUTER_UTILS.config.collection.edit, {
+      collectionId: this.data.collection$.value?.uid
+    }]);
+  }
+
   public getHandler(collectionId: string, last?: any, search?: string): Observable<Nft[]> {
     return this.nftApi.lowToHighInCollection(collectionId, last, search).pipe(untilDestroyed(this));
   }

@@ -1,0 +1,107 @@
+<nz-form-item class="m-0 w-full lg:w-auto">
+    <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
+        <nz-select
+            class="w-full"
+            [nzSize]="size"
+            [nzShowSearch]="deviceService.isDesktop$ | async"
+            [nzCustomTemplate]="selectTpl"
+            [formControl]="spaceControl"
+            [nzDropdownClassName]="(deviceService.isMobile$ | async) ? 'hidden' : ''"
+            [nzDropdownStyle]="{ 'min-width': '400px', 'max-width': '100%' }"
+            (nzOpenChange)="onSelectClick()">
+            <nz-option
+                *ngFor="let s of spaces; trackBy: trackByValue"
+                nzCustomContent
+                [nzLabel]="s.label"
+                [nzValue]="s.value"
+                >
+                <nz-avatar
+                    *ngIf="s?.img"
+                    [nzSrc]="avatarService.getAvatarSize(s.img)"
+                    [nzSize]="24"
+                    class="mr-3 border-2 border-app-gray-100"
+                    nzShape="circle"
+                >
+                </nz-avatar>
+                <wen-icon-default-select *ngIf="!s?.img" class="inline-block align-middle mr-3"></wen-icon-default-select>
+                {{ s.label }}
+            </nz-option>
+        </nz-select>
+        <ng-template #selectTpl let-s>
+            <div class="flex items-center overflow-x-hidden">
+                <div class="mr-3">
+                    <nz-avatar *ngIf="getSpace(s.nzValue)?.img; else defaultAvatar"
+                        [nzSrc]="avatarService.getAvatarSize(getSpace(s.nzValue)?.img)"
+                        [nzSize]="24"
+                        class="border-2 border-app-gray-100 min-w-6 min-h-6"
+                        nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <ng-template #defaultAvatar>
+                        <wen-icon-default-select></wen-icon-default-select>
+                    </ng-template>
+                </div>
+                <span class="inline-block text-base" 
+                    [ngClass]="size === 'small' ? 'truncate font-medium' : 'line-clamp-2 break-all whitespace-normal leading-5 font-bold'">
+                    {{ s.nzLabel }}</span>
+            </div>
+        </ng-template>
+    </nz-form-control>
+</nz-form-item>
+
+<nz-drawer *ngIf="deviceService.isMobile$ | async"
+    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+    [nzWidth]="'100vw'"
+    [nzClosable]="false"
+    [nzVisible]="isDrawerOpen"
+    >
+    <div *nzDrawerContent class="relative h-full">
+        <button class="absolute z-10 top-0 right-0" (click)="isDrawerOpen = false; isSelectOpen = false">
+            <wen-icon-close></wen-icon-close>
+        </button>
+        <div class="text-3xl font-bold">Select a space</div>
+
+        <div class="absolute rounded-2xl bg-white pt-1 pb-5 z-20 w-full">
+            <div class="flex items-center mt-3">
+                <wen-icon-search></wen-icon-search>
+                <input class="w-full px-3 py-2 text-sm text-gray-600 outline-0"
+                    [formControl]="searchControl"
+                    placeholder="Search"
+                    nz-input
+                    nzSize="large"
+                    [nzBorderless]="true">
+                <wen-icon-erase *ngIf="searchControl.value" (click)="searchControl.setValue('')" class="cursor-pointer"></wen-icon-erase>
+            </div>
+            
+            <div class="h-px w-full bg-app-gray-100 mt-2 mb-2"></div>
+
+            <div *ngIf="shownSpaces.length === 0 && spaces.length > 0"
+                class="flex justify-center items-center min-h-24 text-app-gray-400 text-xs font-medium">
+                No results for "{{ searchControl.value }}"
+            </div>
+            
+            <div class="lg:max-h-56 overflow-x-hidden overflow-y-hidden" style="max-height: calc(100% - 40)">
+                <div *ngFor="let opt of shownSpaces; trackBy: trackByValue"
+                    class="mt-4 lg:mt-5 flex items-center cursor-pointer hover:text-orange whitespace-nowrap"
+                    (click)="spaceControl.setValue(opt.value)"
+                    [ngClass]="{
+                        'text-orange': opt.value === spaceControl.value
+                    }">
+                        <div class="mr-2">
+                            <nz-avatar *ngIf="opt?.img"
+                                [nzSrc]="avatarService.getAvatarSize(opt.img)"
+                                [nzSize]="24"
+                                class="mr-3 border-2 border-app-gray-100"
+                                nzShape="circle"
+                            >
+                            </nz-avatar>
+                            
+                            <wen-icon-default-select *ngIf="!(opt?.img)" class="block mr-3"></wen-icon-default-select>
+                        </div>
+                        <span class="inline-block truncate">{{ opt.label }}</span>
+                        <wen-icon-check *ngIf="opt.value === spaceControl.value" class="ml-3"></wen-icon-check>
+                </div>
+            </div>
+        </div>
+    </div>
+</nz-drawer>
