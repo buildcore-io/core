@@ -25,7 +25,7 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
   const newValue: any = change.after.data();
   const previousValue: any = change.before.data();
   console.log('Milestone triggered');
-  if ((!previousValue || previousValue.completed === false) && previousValue?.processed !== true && newValue.completed === true) {
+  if (previousValue?.processed !== true && newValue.completed === true && newValue?.processed !== true) {
     // We need to scan ALL transactions with certain type.
     const transactions: any = await change.after.ref.collection('transactions').get();
     const tranOut: {
@@ -185,6 +185,7 @@ class ProcessingService {
           sourceTransaction: order.uid,
           nft: order.payload.nft || null,
           reconciled: false,
+          royalty: false,
           void: false,
           collection: order.payload.collection || null
         }
@@ -210,6 +211,7 @@ class ProcessingService {
           targetAddress: order.payload.royaltiesSpaceAddress,
           sourceTransaction: order.uid,
           reconciled: false,
+          royalty: true,
           void: false,
           // TODO: Let's give 30s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
           delay: 30000,

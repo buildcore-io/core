@@ -28,6 +28,35 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
       await new Promise(resolve => setTimeout(resolve, newValue.payload.delay));
     }
 
+    const details: any = {};
+    details.type = newValue.type;
+    if (newValue.type === TransactionType.BILL_PAYMENT) {
+      details.payment = true;
+      if (newValue.member) {
+        details.member = newValue.member;
+      }
+      if (newValue.space) {
+        details.space = newValue.space;
+      }
+      if (newValue.payload.royalty) {
+        details.royalty = newValue.payload.royalty;
+      }
+      if (newValue.payload.collection) {
+        details.collection = newValue.payload.collection;
+      }
+      if (newValue.payload.nft) {
+        details.nft = newValue.payload.nft;
+      }
+    }
+
+    if (newValue.type === TransactionType.CREDIT) {
+      details.refund = true;
+      if (newValue.member) {
+        details.member = newValue.member;
+      } else if (newValue.space) {
+        details.space = newValue.space;
+      }
+    }
     try {
       walletResponse.chainReference = await walletService.sendFromGenesis(
         await walletService.getIotaAddressDetails(await MnemonicService.get(newValue.payload.sourceAddress)),
@@ -35,9 +64,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
         newValue.payload.amount,
 
         // TODO What we want to add to tangle.
-        JSON.stringify({
-          amazing: 'soon'
-        })
+        JSON.stringify(details)
       );
     } catch (e: any) {
       walletResponse.error = e.toString();
