@@ -1,3 +1,15 @@
+const fs = require('fs');
+const lessToJs = require('less-vars-to-js');
+const { kebabCase, mapKeys } = require('lodash');
+
+const lightThemeLess = fs.readFileSync('src/theme/light.less').toString();
+const lightTheme = lessToJs(lightThemeLess, {
+  resolveVariables: true,
+  stripPrefix: true,
+});
+
+const normalizeNames = (theme) => mapKeys(theme, (_, name) => kebabCase(name));
+
 module.exports = {
   prefix: '',
   purge: {
@@ -17,6 +29,10 @@ module.exports = {
     extend: {
       colors: {
         inherit: 'inherit',
+        // Modern definition - shared with less variables used in ng-zorro
+        ...normalizeNames(lightTheme),
+
+        // Obsolete definition - will be removed once we migrate all
         orange: {
           lightest: '#F2C50C',
           light: '#FFA319',
@@ -39,7 +55,7 @@ module.exports = {
         green: {
           dark: '#11A696',
           neon: '#58F218',
-          success: '#8FE46C'
+          success: '#8FE46C',
         },
         'app-gray': {
           text: '#333333',
@@ -59,7 +75,7 @@ module.exports = {
           red: '#F9DED2',
           orange: '#FFC670',
           default: '#F6F5F0',
-          black: '#333333'
+          black: '#333333',
         },
         bg: {
           white: '#FFFFFF',
@@ -94,7 +110,7 @@ module.exports = {
         60: '15rem',
         76: '19rem',
         100: '25rem',
-        120: '30rem'
+        120: '30rem',
       },
       maxWidth: {
         fit: 'fit-content',
@@ -121,7 +137,7 @@ module.exports = {
       maxHeight: {
         56: '14rem',
         80: '20rem',
-        128: '32rem'
+        128: '32rem',
       },
       height: {
         76: '19rem',
@@ -131,10 +147,10 @@ module.exports = {
         9: '2.25rem',
         10: '2.5rem',
         large: '3rem',
-        40: '10rem'
+        40: '10rem',
       },
       dropShadow: {
-        card: '0px 0px 12px rgba(0, 0, 0, 0.08)'
+        card: '0px 0px 12px rgba(0, 0, 0, 0.08)',
       },
       boxShadow: {
         header: '0px 2px 3px #E6E5DE',
@@ -146,7 +162,5 @@ module.exports = {
     },
   },
   variants: {},
-  plugins: [
-    require('@tailwindcss/line-clamp')
-  ],
+  plugins: [require('@tailwindcss/line-clamp')],
 };
