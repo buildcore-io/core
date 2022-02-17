@@ -1,0 +1,32 @@
+<wen-select-space
+    [formControl]="spaceAllianceControl"
+    [spaces]="spaceOptions"
+    size="large">
+</wen-select-space>
+
+<nz-form-item class="mt-6">
+    <nz-form-control i18n-nzErrorTip nzErrorTip="Value range is 0-1000" class="relative">
+        <nz-input-number
+            class="w-full"
+            nzSize="large"
+            [nzStep]="0.01"
+            [nzMin]="0"
+            [nzMax]="1000"
+            [nzPlaceHolder]="(deviceService.isDesktop$ | async) ? 'Reputation weight' : 'Weight'"
+            [formControl]="reputationWeightControl"
+        ></nz-input-number>
+
+        <div class="flex items-center space-x-1 absolute right-6 top-1/2 transform -translate-y-1/2">
+            <button nz-button nzSize="small" type="button"
+                *ngFor="let opt of weightOptions"
+                (click)="reputationWeightControl.setValue(opt.value)"
+                class="flex items-center px-3 py-1 wen-secondary" i18n
+                [ngClass]="{ 'selected': opt.value === reputationWeightControl.value }">
+                {{ opt.label }}
+            </button>
+
+            <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400" nz-tooltip 
+                nzTooltipTitle="Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000"></i>
+        </div>
+    </nz-form-control>
+</nz-form-item>

@@ -1,4 +1,4 @@
-<wen-content [showBackButton]="(deviceService.isDesktop$ | async) || (deviceService.isMobile$ | async) === true">
+<wen-content [showBackButton]="true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle
       label="Award info"
@@ -14,7 +14,7 @@
       <div class="mb-8 space-x-3">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]">
           <nz-avatar
-            [nzSrc]="getAvatarSize((data.space$ | async)?.avatarUrl)"
+            [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)"
             class="mr-3 bg-white border-gray-400"
             nzShape="circle"
           >
@@ -44,10 +44,10 @@
           >
         </div>
       </div>
-      
-      <wen-tabs class="block mt-12 w-screen lg:w-auto -ml-5 lg:ml-0" [tabs]="sections"></wen-tabs>
 
-      <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
+      <wen-tabs class="block w-screen mt-12 -ml-5 lg:w-max lg:ml-0" [tabs]="sections"></wen-tabs>
+
+      <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-app-gray-100"></div>
 
       <div class="w-full py-12">
         <router-outlet></router-outlet>
@@ -76,13 +76,11 @@
         </button>
       </span>
 
-      <wen-award-awards
-        *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
-        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
+      <wen-award-awards class="block"
+        *ngIf="deviceService.isDesktop$ | async">
       </wen-award-awards>
 
-      <nz-card
+      <nz-card class="block"
         nzTitle="Approve Award"
         *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
       >
@@ -109,10 +107,8 @@
         </div>
       </nz-card>
 
-      <wen-award-info
-        *ngIf="deviceService.isDesktop$ | async"
-        [data]="data"
-        [trackByUid]="trackByUid">
+      <wen-award-info class="block space-y-4"
+        *ngIf="deviceService.isDesktop$ | async">
       </wen-award-info>
     </div>
   </div>
@@ -163,15 +159,9 @@
 
       <h1 i18n class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
 
-      <wen-award-awards
-        [data]="data"
-        [getExperiencePointsPerBadge]="getExperiencePointsPerBadge">
-      </wen-award-awards>
+      <wen-award-awards></wen-award-awards>
 
-      <wen-award-info
-        [data]="data"
-        [trackByUid]="trackByUid">
-      </wen-award-info>
+      <wen-award-info></wen-award-info>
     </div>
   </nz-drawer>
 </wen-content>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
   selector: 'wen-icon-question-circle',
@@ -6,4 +6,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./question-circle.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class QuestionCircleIconComponent { }
+export class QuestionCircleIconComponent {
+  @Input() size = 24;
+}

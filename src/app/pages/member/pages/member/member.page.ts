@@ -9,6 +9,7 @@ import { BehaviorSubject, skip, Subscription } from 'rxjs';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FILE_SIZES } from "./../../../../../../functions/interfaces/models/base";
 import { Member } from './../../../../../../functions/interfaces/models/member';
+import { FULL_LIST } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { DataService } from './../../services/data.service';
@@ -25,7 +26,8 @@ export class MemberPage implements OnInit, OnDestroy {
     { route: 'activity', label: 'Activity' },
     { route: 'awards', label: 'Awards' },
     { route: 'badges', label: 'Badges' },
-    { route: 'yield', label: 'Yield' }
+    { route: 'spaces', label: 'Spaces' },
+    { route: 'nfts', label: 'NFTs' }
   ]
   public isAboutMemberVisible = false;
   public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -68,10 +70,6 @@ export class MemberPage implements OnInit, OnDestroy {
     this.height$.next(this.sidebar?.nativeElement.scrollHeight || 0);
   }
 
-  public trackByUid(index: number, item: any): number {
-    return item.uid;
-  }
-
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
@@ -83,9 +81,12 @@ export class MemberPage implements OnInit, OnDestroy {
   public listenMember(memberId: string): void {
     this.subscriptions$.push(this.memberApi.topAwardsCompleted(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsCompleted$));
     this.subscriptions$.push(this.memberApi.topAwardsPending(memberId).pipe(untilDestroyed(this)).subscribe(this.data.awardsPending$));
-    this.subscriptions$.push(this.memberApi.topBadges(memberId).pipe(untilDestroyed(this)).subscribe(this.data.badges$));
-    this.subscriptions$.push(this.memberApi.topSpaces(memberId).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+    // TODO Implement search. This is parked since we will be implementing new search here.
+    this.subscriptions$.push(this.memberApi.topSpaces(memberId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.data.space$));
     this.subscriptions$.push(this.memberApi.listen(memberId).pipe(untilDestroyed(this)).subscribe(this.data.member$));
+
+    // Badges.
+    this.data.refreshBadges(undefined, false);
   }
 
   public get loggedInMember$(): BehaviorSubject<Member|undefined> {

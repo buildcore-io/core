@@ -62,4 +62,7 @@ export class MenuComponent implements AfterViewChecked {
     return this.themeService.isDarkTheme()
   }
 
+  public trackByTitle(index: number, item: MenuItem): string {
+    return item.title;
+  }
 }

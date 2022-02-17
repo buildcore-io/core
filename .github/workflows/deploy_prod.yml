@@ -1,4 +1,4 @@
-name: Firebase Functions - DEPLOY Production
+name: Firebase Hosting - DEPLOY Production
 
 on:
   release:

@@ -37,7 +37,8 @@ export function assertValidation(r: ValidationResult): void {
     functions.logger.warn('invalid-argument', "Invalid argument", {
       func: r.error
     });
-    throw throwArgument('invalid-argument', WenError.invalid_params, r.error.details?.[0]?.type);
+
+    throw throwArgument('invalid-argument', WenError.invalid_params, JSON.stringify(r.error.details));
   }
 }
 

@@ -4,6 +4,6 @@
   </nz-card>
 
   <nz-card *ngIf="(data.award$ | async)?.badge" [nzTitle]="(data.award$ | async)?.badge?.name + ' Badge Description'">
-    <p class="whitespace-pre-line" [innerHtml]="(data.award$ | async)?.badge?.description | markdown"></p>
+    <p class="whitespace-pre-line" [innerHtml]="(data.award$ | async)?.badge?.description"></p>
   </nz-card>
 </div>

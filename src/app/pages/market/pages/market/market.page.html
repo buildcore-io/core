@@ -1,11 +1,29 @@
 <wen-content>
-  <h1 i18n class="mt-12">Marketplace</h1>
+  <h1 i18n class="mt-0 lg:mt-12">Marketplace</h1>
 
-  <div class="w-full overflow-hidden h-96 rounded-2xl">
-    <img
-      alt=""
-      src="/assets/mocks/soon_placeholder.jpg"
-      class="object-cover w-full h-full"
-    />
+  <div class="flex items-center">
+    <nz-input-group *ngIf="deviceService.isDesktop$ | async" nzSize="large" [nzPrefix]="prefixIconSearch"
+      class="mr-8 border-none shadow-none outline-0" nzSearch>
+      <input type="text" nz-input i18n-placeholder placeholder="Spaces, awards, proposals or members..." class="text-base" [formControl]="filterControl"/>
+    </nz-input-group>
+
+    <ng-template #prefixIconSearch>
+      <i nz-icon nzType="search" class="text-xl"></i>
+    </ng-template>
+
+    <wen-tabs *ngIf="deviceService.isDesktop$ | async" [tabs]="sections"></wen-tabs>
+    
+    <wen-dropdown-tabs
+      *ngIf="(deviceService.isMobile$ | async) && !isSearchInputFocused"
+      [tabs]="sections"
+      [selectedTab]="selectedSection">
+    </wen-dropdown-tabs>
+
+    <wen-mobile-search *ngIf="deviceService.isMobile$ | async" [formControl]="filterControl" class="ml-auto" placeholder="Search">
+    </wen-mobile-search>
   </div>
+
+  <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-app-gray-100 mt-6"></div>
+
+  <router-outlet></router-outlet>
 </wen-content>

@@ -1,0 +1,50 @@
+<div class="flex items-start justify-between w-full px-6 py-5 bg-white lg:items-center rounded-2xl">
+    <div>
+      <div class="flex items-center justify-between">
+          <nz-avatar
+            [nzSrc]="avatarService.getAvatarSize(space?.avatarUrl)"
+            [nzSize]="32"
+            class="mr-3 border-2 border-app-gray-100"
+            nzShape="circle"
+          >
+          </nz-avatar>
+          <div class="ml-4 text-lg font-bold">{{ space?.name }}</div>
+      </div>
+
+      <nz-tag *ngIf="deviceService.isMobile$ | async"
+        class="flex items-center mt-4 wen-xp-tag w-max">
+        {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
+        <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-app-gray-400"
+          *ngIf="includeAlliances"
+          (click)="isReputationVisible = true"></i>
+      </nz-tag>
+    </div>
+    <div class="flex items-center mt-1 lg:mt-0">
+        <nz-tag *ngIf="deviceService.isDesktop$ | async"
+          class="flex items-center wen-xp-tag w-max">
+          {{ member?.spaces?.[space!.uid]?.totalReputation || 0 }} <span i18n>XP</span>
+          <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-app-gray-400"
+            *ngIf="includeAlliances"
+            (click)="isReputationVisible = true"></i>
+        </nz-tag>
+
+        <wen-icon-angle-right class="ml-4 cursor-pointer"
+          [routerLink]="getSpaceRoute()"></wen-icon-angle-right>
+
+        <wen-member-reputation-modal
+          *ngIf="(deviceService.isDesktop$ | async) && !!space && includeAlliances"
+          [isOpen]="isReputationVisible"
+          [selectedSpace]="space"
+          [member]="member"
+          (onClose)="isReputationVisible = false">
+        </wen-member-reputation-modal>
+        
+        <wen-member-reputation-drawer
+          *ngIf="(deviceService.isMobile$ | async) && !!space && includeAlliances"
+          [isOpen]="isReputationVisible"
+          [selectedSpace]="space"
+          [member]="member"
+          (onClose)="isReputationVisible = false">
+        </wen-member-reputation-drawer>
+    </div>
+</div>

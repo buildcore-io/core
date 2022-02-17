@@ -1,0 +1,46 @@
+<article class="w-full bg-white rounded-2xl wen-card"
+    [ngClass]="fullWidth ? 'w-auto' : 'min-w-40 lg:min-w-60 w-40 lg:w-60'">
+    <a class="text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
+        <div class="relative w-full overflow-hidden h-44 rounded-2xl">
+            <img
+            alt="NFT image"
+            [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
+            class="object-cover w-full h-full"
+            />
+
+            <!-- <div class="absolute left-3 bottom-3 bg-bg-background rounded-lg flex items-center px-2.5 py-2"
+                *ngIf="true && (deviceService.isMobile$ | async)">
+                    <wen-icon-time class="mr-3 text-app-gray-400"></wen-icon-time>
+                    <div class="text-xs font-medium">2 hours left</div>
+            </div> -->
+        </div>
+
+        <div class="relative flex flex-col w-full px-4 py-3 lg:py-4">
+            <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
+
+            <p class="flex-grow flex-shrink min-h-0 mt-1 mb-6 overflow-hidden text-xs font-medium lg:text-base"
+                [ngClass]="{ 'text-foregrounds-secondary': fullWidth }">
+                {{ nft?.description | stripMarkdown | truncate:[16]}}</p>
+
+            <ng-container *ngIf="!nft?.owner">
+                <div class="flex items-center">
+                    <wen-icon-dollar class="mr-3 text-app-gray-400"></wen-icon-dollar>
+                    <div class="text-xs font-medium">{{formatBest(nft?.price)}}</div>
+
+                    <button *ngIf="(deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
+                        (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
+                </div>
+
+                <!-- <div class="flex items-center mt-2" *ngIf="true && (deviceService.isDesktop$ | async)">
+                    <wen-icon-time class="mr-3 text-app-gray-400"></wen-icon-time>
+                    <div class="text-xs font-medium">2 hours left</div>
+                </div> -->
+
+                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
+                    (click)="onBuy($event)" class="w-4/5 mt-2" i18n>Buy now</button>
+            </ng-container>
+        </div>
+    </a>
+</article>
+
+<wen-nft-checkout [isOpen]="isCheckoutOpen" [nft]="nft" [collection]="collection" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>

@@ -10,6 +10,7 @@ import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } fro
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
 import { Member } from './../../../../../../functions/interfaces/models/member';
 import { SpaceApi } from './../../../../@api/space.api';
+import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 import { DataService, MemberFilterOptions } from "./../../services/data.service";
 
@@ -38,6 +39,7 @@ export class MembersPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private cd: ChangeDetectorRef,
+    public cache: CacheService,
     public data: DataService,
     public deviceService: DeviceService
   ) {

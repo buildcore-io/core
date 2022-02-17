@@ -1,0 +1,119 @@
+<ng-container *ngIf="deviceService.isDesktop$ | async">
+    <form nz-form nzLayout="vertical" [formGroup]="nftForm">
+        <div class="py-4" nz-row [nzGutter]="24">
+            <div
+                class="space-y-4"
+                nz-col
+                nzFlex="auto"
+                style="max-width: calc(100% - 450px)"
+            >
+                <nz-card [nzBordered]="false">
+                    <nz-card-meta
+                        [nzTitle]="currentStep === stepType.GENERATE ? 'Upload multiple images' : 'Upload more images'"
+                        [nzDescription]="uploadedFiles.length + '/500'"
+                        >
+                    </nz-card-meta>
+    
+                    <div class="mt-6">
+                        <nz-form-item>
+                            <nz-form-control>
+                                <nz-upload
+                                    class="wen-banner"
+                                    nzName="banner"
+                                    nzType="drag"
+                                    [nzDirectory]="false"
+                                    [nzLimit]="500"
+                                    [nzMultiple]="true"
+                                    [nzCustomRequest]="uploadMultipleFiles.bind(this)"
+                                    [nzPreview]="onPreview.bind(this)"
+                                    (nzChange)="uploadMultipleChange($event)"
+                                    nzFileType="image/png,image/jpeg"
+                                >
+                                    <ng-container>
+                                        <i class="upload-icon" nz-icon nzType="upload"></i>
+                                    </ng-container>
+                                </nz-upload>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+                </nz-card>
+            </div>
+    
+            <div class="space-y-4" nz-col nzFlex="450px">
+                <nz-card [nzBordered]="false" nzTitle="Collection">
+                    <nz-form-item>
+                        <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
+                            <nz-select
+                                class="w-full"
+                                nzSize="large"
+                                nzShowSearch
+                                nzAllowClear
+                                nzPlaceHolder="Select collection"
+                                [formControl]="collectionControl"
+                                >
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </nz-card>
+    
+                <div class="mt-6 relative">
+                    <nz-card [nzBordered]="false" [ngClass]="{ 'opacity-50': uploadedFiles.length === 0 }">
+                        <nz-card-meta
+                            nzTitle="Upload existing CSV"
+                            nzDescription="Upload back once you generate bellow"
+                            >
+                        </nz-card-meta>
+        
+                        <div class="mt-6">
+                            <nz-form-item>
+                                <nz-form-control>
+                                    <nz-upload
+                                        class="wen-banner"
+                                        nzName="banner"
+                                        nzType="drag"
+                                        nzListType="picture-card"
+                                        [nzDisabled]="uploadedFiles.length === 0"
+                                        [nzDirectory]="false"
+                                        [nzBeforeUpload]="beforeCSVUpload.bind(this)"
+                                        nzFileType="text/csv,application/vnd.ms-excel"
+                                    >
+                                        <ng-container>
+                                            <i class="upload-icon" nz-icon nzType="upload"></i>
+                                        </ng-container>
+                                    </nz-upload>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </nz-card>
+        
+                    <div class="absolute left-0 top-0 h-full w-full" *ngIf="uploadedFiles.length === 0">
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-5 py-3
+                            bg-alerts-warning rounded-lg z-10 text-app-gra-text text-base font-medium
+                            flex justify-center items-center whitespace-nowrap" i18n>
+                                You have to upload images first.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <button
+        nz-button
+        nzType="primary"
+        class="w-auto mb-6"
+        nzSize="large"
+        type="button"
+        (click)="buttonClick()"
+        i18n
+    >
+        {{ currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs'}}
+    </button>
+
+    <wen-nft-preview [previewFile]="previewFile" (onClose)="previewFile = null"></wen-nft-preview>
+</ng-container>
+
+<div *ngIf="deviceService.isMobile$ | async" class="flex mt-6 p-4 rounded-2xl bg-white text-foregrounds-secondary">
+    <wen-icon-info-circle></wen-icon-info-circle>
+    <div class="ml-3" i18n>To create multiple classic NFTs, you have to use the web version of Soonaverse.</div>
+</div>

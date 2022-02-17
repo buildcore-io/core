@@ -1,18 +1,19 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { SelectBoxOption } from '@components/select-box/select-box.component';
+import { FormControl, FormGroup } from '@angular/forms';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
+import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { SortOptions } from "../../services/sort-options.interface";
+import { cyrb53 } from "./../../../../../../functions/interfaces/hash.utils";
 import { Member } from './../../../../../../functions/interfaces/models/member';
+import { Space } from './../../../../../../functions/interfaces/models/space';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { MemberApi } from './../../../../@api/member.api';
+import { CacheService } from './../../../../@core/services/cache/cache.service';
+import { AuthService } from './../../../../components/auth/services/auth.service';
 import { FilterService } from './../../services/filter.service';
-
-export enum HOT_TAGS {
-  ALL = 'All'
-}
 
 @UntilDestroy()
 @Component({
@@ -22,22 +23,31 @@ export enum HOT_TAGS {
 })
 export class MembersPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
+  public spaceForm: FormGroup;
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public hotTags: string[] = [HOT_TAGS.ALL];
-  public hotTagsFormatted: SelectBoxOption[] = [];
-  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
+  public defaultSpace = DEFAULT_SPACE;
   private dataStore: Member[][] = [];
   private subscriptions$: Subscription[] = [];
+  private spaceControl: FormControl;
+  private includeAlliancesControl: FormControl;
   constructor(
-    private memberApi: MemberApi, 
     public filter: FilterService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public cache: CacheService,
+    private memberApi: MemberApi,
+    private auth: AuthService,
+    private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
+    this.spaceControl = new FormControl(storageService.selectedSpace.getValue());
+    this.includeAlliancesControl = new FormControl(storageService.isIncludeAlliancesChecked.getValue());
+    this.spaceForm = new FormGroup({
+      space: this.spaceControl,
+      includeAlliances: this.includeAlliancesControl
+    });
   }
 
   public ngOnInit(): void {
-    this.hotTagsFormatted = this.hotTags.map((tag: string) => ({ value: tag, label: tag }));
     this.listen();
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       this.listen();
@@ -54,10 +64,30 @@ export class MembersPage implements OnInit, OnDestroy {
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val: any) => {
       this.filter.selectedSort$.next(val);
     });
+
+    this.spaceForm.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((o) => {
+        if (o.space === DEFAULT_SPACE.value && o.includeAlliances) {
+          this.spaceForm.controls.includeAlliances.setValue(false);
+          return;
+        }
+        this.storageService.selectedSpace.next(o.space);
+        this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
+        this.listen();
+    });
   }
 
-  public handleChange(tag: string): void {
-    this.selectedTags$.next([tag]);
+  public get isLoggedIn$(): BehaviorSubject<boolean> {
+    return this.auth.isLoggedIn$;
+  }
+
+  public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
+    return (list || []).map((o) => ({
+        label: o.name || o.uid,
+        value: o.uid,
+        img: o.avatarUrl
+    }));
   }
 
   private listen(search?: string): void {
@@ -65,11 +95,46 @@ export class MembersPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
+  private getAlliancesKeys(alliances?: any): string[] {
+    if (!alliances) {
+      return [];
+    }
+
+    const out: string[] = [];
+    for ( const [key, space] of Object.entries(alliances)) {
+      if ((<any>space).enabled) {
+        out.push(key);
+      }
+    }
+
+    return out;
+  }
+
   public getHandler(last?: any, search?: string): Observable<Member[]> {
-    if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-      return this.memberApi.last(last, search);
+    if (this.spaceControl.value === DEFAULT_SPACE.value) {
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.memberApi.last(last, search);
+      } else {
+        return this.memberApi.top(last, search);
+      }
     } else {
-      return this.memberApi.top(last, search);
+      const space: Space | undefined = this.cache.allSpaces$.value.find((s) => {
+        return s.uid === this.spaceControl.value;
+      });
+      let linkedEntity = -1;
+      if (space) {
+        if (this.includeAlliancesControl.value) {
+          linkedEntity = cyrb53([space.uid, ...this.getAlliancesKeys(space.alliances)].join(''));
+        } else {
+          linkedEntity = cyrb53(space.uid);
+        }
+      }
+
+      if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
+        return this.memberApi.last(last, search, DEFAULT_LIST_SIZE, linkedEntity);
+      } else {
+        return this.memberApi.top(last, search, DEFAULT_LIST_SIZE, linkedEntity);
+      }
     }
   }
 

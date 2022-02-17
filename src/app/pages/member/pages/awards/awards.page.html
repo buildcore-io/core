@@ -13,7 +13,7 @@
     <wen-award-card class="block" [fullWidth]="true"
       *ngFor="let award of getList() | async; trackBy: trackByUid" [award]="award">
     </wen-award-card>
-    <nz-card *ngIf="(getList() | async)?.length === 0">
+    <nz-card *ngIf="!(getList() | async)?.length">
       <div class="flex flex-col justify-center text-center h-36">
         <span class="mb-3 leading-7 text-app-gray-400">
           No Awards

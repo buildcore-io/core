@@ -21,6 +21,8 @@ export interface WenRequest {
 export const enum COL {
   MEMBER = 'member',
   AWARD = 'award',
+  COLLECTION = 'collection',
+  NFT = 'nft',
   SPACE = 'space',
   PROPOSAL = 'proposal',
   MILESTONE = 'milestone',
@@ -43,6 +45,7 @@ export const enum AWARD_COL {
 }
 
 export type EthAddress = string;
+export type IotaAddress = string;
 export type IpfsCid = string;
 
 export interface Base {

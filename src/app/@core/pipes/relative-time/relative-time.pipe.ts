@@ -28,7 +28,7 @@ dayjs.updateLocale('en', {
   name: 'relativeTime',
 })
 export class RelativeTime implements PipeTransform {
-  transform(date: Timestamp|null): string {
+  transform(date: dayjs.Dayjs|Timestamp|null): string {
     if (!date) {
       return '';
     }

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileApi } from '@api/file.api';
+import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -35,12 +35,12 @@ export class NewPage implements OnInit, OnDestroy {
   public badgeNameControl: FormControl = new FormControl('', Validators.required);
   public badgeXpControl: FormControl = new FormControl('', [
     Validators.min(0),
-    Validators.max(1000),
+    Validators.max(10000),
     Validators.required
   ]);
   public badgeCountControl: FormControl = new FormControl('', [
     Validators.min(0),
-    Validators.max(1000),
+    Validators.max(10000),
     Validators.required
   ]);
 
@@ -60,7 +60,8 @@ export class NewPage implements OnInit, OnDestroy {
     private mintApi: MintApi,
     private cd: ChangeDetectorRef,
     public nav: NavigationService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public avatarService: AvatarService
   ) {
     this.awardForm = new FormGroup({
       space: this.spaceControl,
@@ -132,14 +133,6 @@ export class NewPage implements OnInit, OnDestroy {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
-  }
-
-  public getAvatarSize(url?: string|null): string|undefined {
-    if (!url) {
-      return undefined;
-    }
-
-    return FileApi.getUrl(url, 'space_avatar', FILE_SIZES.small);
   }
 
   public async create(): Promise<void> {

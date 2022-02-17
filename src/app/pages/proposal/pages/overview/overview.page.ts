@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Timestamp } from "functions/interfaces/models/base";
@@ -25,7 +26,8 @@ export class OverviewPage implements OnInit {
     private notification: NotificationService,
     private nzNotification: NzNotificationService,
     private proposalApi: ProposalApi,
-    public data: DataService
+    public data: DataService,
+    public deviceService: DeviceService
   ) {
     // Init start date.
     this.startDateTicker$ = new BehaviorSubject<Timestamp>(this.data.proposal$.value?.settings?.startDate);
@@ -46,7 +48,7 @@ export class OverviewPage implements OnInit {
     });
 
     // Run ticker.
-    const int: Subscription = interval(1000).subscribe(() => {
+    const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.startDateTicker$.next(this.startDateTicker$.value);
 
       // If it's in the past.

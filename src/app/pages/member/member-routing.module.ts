@@ -5,7 +5,8 @@ import { ActivityPage } from './pages/activity/activity.page';
 import { AwardsPage } from './pages/awards/awards.page';
 import { BadgesPage } from './pages/badges/badges.page';
 import { MemberPage } from './pages/member/member.page';
-import { YieldPage } from './pages/yield/yield.page';
+import { NFTsPage } from './pages/nfts/nfts.page';
+import { MemberSpacesComponent } from './pages/spaces/member-spaces.component';
 
 const routes: Routes = [
   {
@@ -19,7 +20,8 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.member.activity, component: ActivityPage },
       { path: ROUTER_UTILS.config.member.awards, component: AwardsPage },
       { path: ROUTER_UTILS.config.member.badges, component: BadgesPage },
-      { path: ROUTER_UTILS.config.member.yield, component: YieldPage }
+      { path: ROUTER_UTILS.config.member.spaces, component: MemberSpacesComponent },
+      { path: ROUTER_UTILS.config.member.nfts, component: NFTsPage }
     ]
   },
   {

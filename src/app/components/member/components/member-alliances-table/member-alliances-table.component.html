@@ -1,0 +1,32 @@
+<nz-table class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0 lg:max-h-56" [ngClass]="tableClasses"
+    [nzData]="getAlliances()" [nzShowPagination]="false">
+    <thead>
+        <tr>
+            <th #alliancesHeader i18n class="alliance-header">Connections</th>
+            <th #awardsHeader i18n class="awards-header">Awards</th>
+            <th #XPHeader i18n class="xp-header">XP</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of getAlliances(); trackBy: trackByUid" class="wrapper-row">
+            <td class="alliance-data flex items-center" [class.font-bold]="memberWithinSpace[item.uid]">
+                <nz-avatar
+                    [nzSrc]="avatarService.getAvatarSize(item.avatar)"
+                    [nzSize]="32"
+                    class="mr-3 border-2 border-app-gray-100"
+                    nzShape="circle"
+                >
+                </nz-avatar>
+                {{ item.name | truncate:[32] }}
+            </td>
+            <td class="awards-data text-right">{{ item.totalAwards }}</td>
+            <td class="xp-data text-right">{{ item.totalXp }}</td>
+        </tr>
+    </tbody>
+</nz-table>
+
+<div class="flex items-center px-5 py-3 text-sm font-bold">
+    <div [style.width]="'calc(100% - ' + (awardsHeader.offsetWidth + XPHeader.offsetWidth) + 'px'">Total reputation</div>
+    <div class="text-right" [style.width]="awardsHeader.offsetWidth + 'px'">{{ getTotal('awardsCompleted') }}</div>
+    <div class="text-right" [style.width]="XPHeader.offsetWidth + 'px'">{{ getTotal('totalReputation') }}</div>
+</div>

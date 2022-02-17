@@ -20,6 +20,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.unblockMemberSpace] = low;
   scaleSettings[WEN_FUNC.acceptMemberSpace] = medium;
   scaleSettings[WEN_FUNC.declineMemberSpace] = low;
+  scaleSettings[WEN_FUNC.setAlliance] = low;
 
   // Award Functions
   scaleSettings[WEN_FUNC.cAward] = low;
@@ -32,6 +33,17 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.aProposal] = low;
   scaleSettings[WEN_FUNC.rProposal] = low;
   scaleSettings[WEN_FUNC.voteOnProposal] = medium;
+
+  // Collections
+  scaleSettings[WEN_FUNC.cCollection] = medium;
+  scaleSettings[WEN_FUNC.uCollection] = medium;
+  scaleSettings[WEN_FUNC.approveCollection] = low;
+  scaleSettings[WEN_FUNC.rejectCollection] = low;
+
+  scaleSettings[WEN_FUNC.cNft] = medium;
+
+  scaleSettings[WEN_FUNC.orderNft] = pump;
+  scaleSettings[WEN_FUNC.validateAddress] = medium;
 
   return scaleSettings[func] || low;
 }

@@ -8,6 +8,16 @@ export interface Member extends BaseRecord {
   discord?: string;
   twitter?: string;
   github?: string;
+  spaces?: {
+    [propName: string]: {
+      uid: string;
+      badges: string[],
+      awardsCompleted?: number;
+      totalReputation?: number;
+    }
+  }
+  alliances?: string[];
   awardsCompleted?: number;
   totalReputation?: number;
+  validatedAddress?: string;
 }

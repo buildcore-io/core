@@ -1,0 +1,40 @@
+<div class="flex flex-col items-center justify-between lg:flex-row">
+    <wen-select-collection
+        [formControl]="collectionControl"
+        [collections]="getCollectionListOptions(cache.allCollections$ | async)"
+        size="small">
+    </wen-select-collection>
+
+    <nz-input-group
+        nzSize="small" [nzPrefix]="prefixIconSearch"
+        class="w-full mt-4 border-none shadow-none outline-0 lg:w-60 lg:mt-0" nzSearch>
+        <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
+    </nz-input-group>
+    <ng-template #prefixIconSearch>
+        <i nz-icon nzType="search" class="text-xl"></i>
+    </ng-template>
+</div>
+
+<div class="mt-10 lg:grid place-items-start">
+    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(nft$ | async)">
+      {{ ((nft$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
+    </p>
+    <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        (scrolled)="onScroll()">
+
+        <nz-skeleton *ngIf="isLoading(nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+            [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+
+        <nz-card class="w-76" *ngIf="isEmpty(nft$ | async)">
+            <div class="flex flex-col justify-center text-center h-36">
+                <span class="leading-7 text-app-gray-400" i18n>
+                    No NFTs
+                </span>
+            </div>
+        </nz-card>
+
+        <wen-nft-card class="w-full outline-none lg:w-auto" [isOwned]="true"
+            *ngFor="let nft of nft$ | async; trackBy: trackByUid" [nft]="nft">
+        </wen-nft-card>
+    </div>
+</div>

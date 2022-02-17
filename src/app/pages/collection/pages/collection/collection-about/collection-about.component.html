@@ -1,0 +1,49 @@
+<div class="flex flex-col items-center pt-10 mt-8 lg:flex-row lg:pt-0">
+    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new"
+        *ngIf="(data.collection$ | async)?.url" [href]="(data.collection$ | async)?.url"
+        class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
+            <wen-icon-github></wen-icon-github>
+            <div class="ml-2.5 text-xs font-medium" i18n>Visit website</div>
+    </a>
+    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new"
+        [href]="getShareUrl()"
+        class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
+            <wen-icon-share></wen-icon-share>
+            <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
+    </a>
+</div>
+
+<nz-card nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
+    <div class="space-y-5">
+        <a *ngIf="(data.collection$ | async)?.url" target="_new"
+            [href]="(data.collection$ | async)?.url"
+            class="flex items-center">
+            <wen-icon-link class="mr-3 text-app-gray-400"></wen-icon-link>
+            <div class="text-xs font-medium">{{ (data.collection$ | async)?.url }}</div>
+        </a>
+
+        <a *ngIf="(data.collection$ | async)?.twitter" target="_new"
+            [href]="'https://twitter.com/' + (data.collection$ | async)?.twitter"
+            class="flex items-center">
+            <wen-icon-twitter class="mr-3 text-app-gray-400"></wen-icon-twitter>
+            <div class="text-xs font-medium">{{ (data.collection$ | async)?.twitter }}</div>
+        </a>
+
+        <a *ngIf="(data.collection$ | async)?.discord" target="_new"
+            [href]="'https://discord.gg/' + (data.collection$ | async)?.discord"
+            class="flex items-center">
+            <wen-icon-discord class="mr-3 text-app-gray-400"></wen-icon-discord>
+            <div class="text-xs font-medium">{{ (data.collection$ | async)?.discord }}</div>
+        </a>
+    </div>
+</nz-card>
+
+<nz-card nzTitle="Member discounts" class="mt-8" *ngIf="(data.collection$ | async)?.discounts?.length">
+    <div class="space-y-5">
+        <div *ngFor="let item of (data.collection$ | async)?.discounts"
+            class="flex items-center">
+            <wen-icon-percentage class="mr-3 text-app-gray-400"></wen-icon-percentage>
+            <div class="text-xs font-medium">{{ (item.amount * 100) }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
+        </div>
+    </div>
+</nz-card>

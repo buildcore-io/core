@@ -69,7 +69,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.uMember),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
   appCheck(WEN_FUNC.uMember, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const address = params.address.toLowerCase();
   const schema: ObjectSchema<Member> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {

@@ -1,0 +1,210 @@
+<div class="w-full pb-4 overflow-x-auto lg:pb-0">
+    <div class="relative flex items-start justify-between mt-10 min-w-120">
+        <div class="flex flex-col items-center ml-6">
+            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+                [ngClass]="{
+                    'bg-orange': currentStep === stepType.GENERATE,
+                    'bg-tag-black': currentStep === stepType.TRANSACTION ||
+                        currentStep === stepType.WAIT || currentStep === stepType.CONFIRMED
+                }">
+                1
+            </div>
+            <div class="mt-1 text-sm font-bold text-center" i18n>Generate address</div>
+        </div>
+
+        <div class="bg-app-gray-separator-dark h-0.5 absolute top-3"
+            [ngStyle]="{
+                'left' : (generateCheckbox.offsetLeft + generateCheckbox.offsetWidth + 8) + 'px',
+                'width' : (transactionCheckbox.offsetLeft - generateCheckbox.offsetLeft - generateCheckbox.offsetWidth - 16) + 'px'
+            }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE }"></div>
+
+        <div class="flex flex-col items-center">
+            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+                [ngClass]="{
+                    'text-app-gray-text opacity-50 border border-app-gray-200': currentStep === stepType.GENERATE,
+                    'bg-orange': currentStep === stepType.TRANSACTION,
+                    'bg-tag-black': currentStep === stepType.WAIT || currentStep === stepType.CONFIRMED
+                }">
+                2
+            </div>
+            <div class="mt-1 text-sm font-bold text-center" i18n
+                [ngClass]="{
+                    'opacity-50': currentStep === stepType.GENERATE
+                }">Make transaction</div>
+        </div>
+
+        <div class="bg-app-gray-separator-dark h-0.5 absolute top-3"
+            [ngStyle]="{
+                'left' : (transactionCheckbox.offsetLeft + transactionCheckbox.offsetWidth + 8) + 'px',
+                'width' : (waitCheckbox.offsetLeft - transactionCheckbox.offsetLeft - transactionCheckbox.offsetWidth - 16) + 'px'
+            }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION }"></div>
+
+        <div class="flex flex-col items-center">
+            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+                [ngClass]="{
+                    'text-app-gray-text opacity-50 border border-app-gray-200':
+                        currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION,
+                    'bg-orange': currentStep === stepType.WAIT,
+                    'bg-tag-black': currentStep === stepType.CONFIRMED
+                }">
+                3
+            </div>
+            <div class="mt-1 text-sm font-bold text-center" i18n
+                [ngClass]="{
+                    'opacity-50': currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION
+                }">Wait for confirmation</div>
+        </div>
+
+        <div class="bg-app-gray-separator-dark opacity-50 h-0.5 absolute top-3"
+            [ngStyle]="{
+                'left' : (waitCheckbox.offsetLeft + waitCheckbox.offsetWidth + 8) + 'px',
+                'width' : (confirmedCheckbox.offsetLeft - waitCheckbox.offsetLeft - waitCheckbox.offsetWidth - 16) + 'px'
+            }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE ||
+                currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT}"></div>
+
+        <div class="flex flex-col items-center mr-6">
+            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+                [ngClass]="{
+                    'text-app-gray-text opacity-50 border border-app-gray-200': currentStep === stepType.GENERATE ||
+                        currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT,
+                    'bg-green-success': currentStep === stepType.CONFIRMED
+                }">
+                <wen-icon-check></wen-icon-check>
+            </div>
+            <div class="mt-1 text-sm font-bold text-center" i18n
+                [ngClass]="{
+                    'opacity-50': currentStep === stepType.GENERATE ||
+                        currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT
+                }">Confirmed</div>
+        </div>
+    </div>
+</div>
+
+<div [ngSwitch]="currentStep" class="absolute bottom-0 w-full top-56 lg:static">
+    <ng-container *ngSwitchCase="stepType.GENERATE">
+        <ng-container *ngTemplateOutlet="generateTemplate"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="stepType.TRANSACTION">
+        <ng-container *ngTemplateOutlet="transactionTemplate"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="stepType.WAIT">
+        <ng-container *ngTemplateOutlet="waitTemplate"></ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="stepType.CONFIRMED">
+        <ng-container *ngTemplateOutlet="confirmedTemplate"></ng-container>
+    </ng-container>
+</div>
+
+<ng-template #generateTemplate>
+    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+        <div class="mx-4 my-auto text-lg font-medium lg:mt-24 text-app-gray-400" i18n>
+            You will be asked to send funds to the new IOTA address for the verification process. The address you send funds from will be linked to your space for future transactions.
+        </div>
+
+        <button nz-button nzType="primary" nzSize="large" class="lg:mt-24" i18n (click)="initVerification()">
+            Generate new address
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #transactionTemplate>
+    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+        <div class="max-w-md mt-10 text-lg font-medium text-center text-app-gray-400" i18n>
+            Send a small {{formatBest((transaction$ | async)?.payload?.amount) }} IOTA amount to validate your address. This expires {{(expiryTicker$ | async) | countdownTime}}.
+        </div>
+
+        <div class="w-full px-4 py-3 mt-14 lg:mt-4 bg-bg-background rounded-2xl">
+            <div class="text-xs font-medium text-app-gray-400" i18n>
+                Send {{formatBest((transaction$ | async)?.payload?.amount) }} IOTA to following address:
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between mt-2">
+                <div class="text-base font-medium break-all">
+                    {{ (transaction$ | async)?.payload?.targetAddress | truncate:[70] }}
+                </div>
+
+                <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()" i18n>
+                    {{ isCopied ? 'Copied' : 'Copy' }}
+                </button>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center justify-center mt-10 lg:flex-row">
+            <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
+                class="deep-link">
+                <div class="flex items-center">
+                    <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
+                    <div class="text-app-gray-text" i18n>
+                        Firefly
+                    </div>
+                </div>
+              </a>
+            <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
+                class="deep-link">
+                <div class="flex items-center">
+                    <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
+                    <div class="text-app-gray-text" i18n>
+                        Tanglepay
+                    </div>
+                </div>
+              </a>
+            <!-- <button nz-button nzType="link" nzSize="large" i18n class="w-64 lg:w-auto">
+                Refresh
+            </button> -->
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #waitTemplate>
+    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+
+        <div class="mb-8 mt-16 text-lg font-medium text-center text-app-gray-400" i18n>
+            Wait for transaction to be validated. We will send back your transaction once completed
+        </div>
+
+        <div class="border border-app-gray-200 rounded-2xl w-full">
+            <div class="px-5 pt-3 pb-2 text-sm font-bold border-b border-b" i18n>
+                Transaction history
+            </div>
+
+            <div class="px-5 pt-4 pb-2 h-32">
+                <div *ngFor="let t of [{date:'11:32:00',label:'Transaction confirmed'},{date:'11:31:00',label:'Confirming transaction'},{date:'11:30:20',label:'Transaction received'},{date:'11:30:00',label:'Waiting for transaction'}]; let first=first"
+                    class="flex items-center my-1 relative">
+                        <div class="text-sm font-medium text-foregrounds-secondary mr-2">{{ t.date }}</div>
+                        <div class="text-sm font-medium absolute left-16" [ngClass]="{ 'text-blue-light1 underline': first }">{{ t.label }}</div>
+                </div>
+            </div>
+        </div>
+
+        <button nz-button nzSize="large" class="flex items-center mt-10 border-app-gray-200">
+            <wen-icon-refresh class="mr-3 text-app-gray-400 animate-spin" ></wen-icon-refresh>
+            <div class="text-app-gray-text" i18n *ngIf="!receivedTransactions && !sendingMoneyBack" i18n>
+              {{ 'Waiting for your payment...' }}
+            </div>
+            <div class="text-app-gray-text" i18n *ngIf="receivedTransactions && !sendingMoneyBack" i18n>
+              {{ 'Validating your transaction...' }}
+            </div>
+            <div class="text-app-gray-text" i18n *ngIf="sendingMoneyBack" i18n>
+                {{ 'Money received, refunding your payment...' }}
+            </div>
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #confirmedTemplate>
+    <div class="flex flex-col items-center justify-between h-full lg:justify-start">
+        <div class="flex items-center my-auto lg:mt-24">
+            <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-success">
+                <wen-icon-check class="text-white"></wen-icon-check>
+            </div>
+            <div class="ml-4 text-lg font-medium text-app-gray-400" i18n>Now you can deal with NFT`s</div>
+        </div>
+
+        <button nz-button nzType="primary" nzSize="large" class="mt-24" i18n (click)="close()">
+            Finish Verification
+        </button>
+    </div>
+</ng-template>
