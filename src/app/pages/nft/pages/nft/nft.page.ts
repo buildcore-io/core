@@ -64,7 +64,7 @@ export class NFTPage implements OnInit, OnDestroy {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.subscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-        this.subscriptions$.push(this.nftApi.lowToHighInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
+        this.subscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
         if (p.createdBy) {
           this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }
@@ -153,6 +153,14 @@ export class NFTPage implements OnInit, OnDestroy {
     } else {
       return nft.name;
     }
+  }
+
+  public generatedNft(nft?: Nft|null): boolean {
+    if (!nft) {
+      return false;
+    }
+
+    return (!nft.owner && (nft.type === CollectionType.GENERATED || nft.type === CollectionType.SFT));
   }
 
   private cancelSubscriptions(): void {

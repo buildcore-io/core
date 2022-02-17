@@ -106,7 +106,7 @@
                 </button>
             </div>
 
-            <wen-collapse class="mt-8" title="System info">
+            <wen-collapse class="mt-8" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Address</span>
                     <p nz-typography class="flex items-center">
@@ -124,7 +124,7 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                     <p nz-typography>
-                        {{ (data.nft$ | async)?.ipfsMedia || 'Preparing...'}}
+                        {{ (data.nft$ | async)?.ipfsMedia || 'Generating...'}}
                     </p>
                 </div>
             </wen-collapse>

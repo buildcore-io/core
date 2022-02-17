@@ -177,7 +177,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public getHandler(collectionId: string, last?: any, search?: string): Observable<Nft[]> {
-    return this.nftApi.lowToHighInCollection(collectionId, last, search).pipe(untilDestroyed(this));
+    return this.nftApi.positionInCollection(collectionId, last, search).pipe(untilDestroyed(this));
   }
 
   protected store(page: number, a: any): void {
