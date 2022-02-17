@@ -149,6 +149,9 @@ module.exports = {
         large: '3rem',
         40: '10rem',
       },
+      borderWidth: {
+        3: '3px',
+      },
       dropShadow: {
         card: '0px 0px 12px rgba(0, 0, 0, 0.08)',
       },
