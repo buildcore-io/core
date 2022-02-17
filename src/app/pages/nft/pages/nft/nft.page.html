@@ -36,7 +36,7 @@
                           class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                         </nz-avatar>
-                        <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
+                        <div class="ml-3 text-base font-medium truncate">
                           @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
                         </div>
                       </a>
@@ -51,7 +51,7 @@
                             [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                         </nz-avatar>
 
-                        <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
+                        <div class="ml-3 text-base font-medium truncate">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
                     </a>
                 </div>
             </div>
@@ -106,7 +106,7 @@
                 </button>
             </div>
 
-            <nz-card nzTitle="System info" class="mt-8">
+            <wen-collapse class="mt-8" title="System info">
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Address</span>
                     <p nz-typography class="flex items-center">
@@ -127,23 +127,23 @@
                         {{ (data.nft$ | async)?.ipfsMedia || 'Preparing...'}}
                     </p>
                 </div>
-            </nz-card>
+            </wen-collapse>
 
-            <nz-card nzTitle="Properties" class="mt-4" *ngIf="data.getPropStats((data.nft$ | async)?.properties).length">
+            <wen-collapse class="mt-4" title="Properties" *ngIf="data.getPropStats((data.nft$ | async)?.properties).length">
                 <div class="wen-description-item bg-bg-background"
                     *ngFor="let prop of data.getPropStats((data.nft$ | async)?.properties)">
                         <span nz-typography class="text-app-gray-400">{{ prop.label }}</span>
                         <p nz-typography>{{ prop.value }}</p>
                 </div>
-            </nz-card>
+            </wen-collapse>
 
-            <nz-card nzTitle="Stats" class="mt-4" *ngIf="data.getPropStats((data.nft$ | async)?.stats).length">
+            <wen-collapse class="mt-4" title="Stats" *ngIf="data.getPropStats((data.nft$ | async)?.stats).length">
                 <div class="wen-description-item bg-bg-background"
                     *ngFor="let stat of data.getPropStats((data.nft$ | async)?.stats)">
                         <span nz-typography class="text-app-gray-400">{{ stat.label }}</span>
                         <p nz-typography>{{ stat.value }}</p>
                 </div>
-            </nz-card>
+            </wen-collapse>
         </div>
     </div>
 
