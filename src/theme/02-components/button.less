@@ -2,6 +2,10 @@ a.ant-btn {
   -webkit-appearance: none;
 }
 
+.ant-btn:disabled {
+  opacity: 0.5;
+}
+
 .ant-dropdown-trigger > .anticon.anticon-down,
 .ant-dropdown-link > .anticon.anticon-down,
 .ant-dropdown-button > .anticon.anticon-down {
@@ -19,8 +23,8 @@ a.ant-btn {
 }
 
 .ant-btn-primary:focus {
-  background-color: @btn-pressed-bg;
-  border-color: @btn-pressed-bg;
+  background-color: @buttonsPrimaryPressed;
+  border-color: @buttonsPrimaryPressed;
 }
 
 .ant-btn {
