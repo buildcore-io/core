@@ -2,16 +2,23 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
+import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
-import { Collection } from 'functions/interfaces/models';
+import { Collection, Space } from 'functions/interfaces/models';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum HOT_TAGS {
   ALL = 'All',
-  TRENDING = 'Trending',
-  TOP = 'Top'
+  OPEN_SALE_ONLY = 'Open Sale Only',
+  MEMBERS_ONLY = 'Members Only'
+}
+
+export enum Category {
+  ALL = 'All'
 }
 
 @UntilDestroy()
@@ -23,8 +30,11 @@ export enum HOT_TAGS {
 })
 export class CollectionsPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
+  public spaceControl: FormControl;
+  public categoryControl: FormControl;
   public collections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
-  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.TRENDING, HOT_TAGS.TOP];
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN_SALE_ONLY, HOT_TAGS.MEMBERS_ONLY];
+  public categories: string[] = [Category.ALL];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Collection[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -32,9 +42,13 @@ export class CollectionsPage implements OnInit, OnDestroy {
   constructor(
     public filter: FilterService,
     public collectionApi: CollectionApi,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public cache: CacheService,
+    private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
+    this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue());
+    this.categoryControl = new FormControl(Category.ALL);
   }
 
   public ngOnInit(): void {
@@ -74,6 +88,13 @@ export class CollectionsPage implements OnInit, OnDestroy {
     this.selectedTags$.next([tag]);
   }
 
+  public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
+    return (list || []).map((o) => ({
+        label: o.name || o.uid,
+        value: o.uid,
+        img: o.avatarUrl
+    }));
+  }
 
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.

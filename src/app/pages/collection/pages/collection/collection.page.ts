@@ -35,7 +35,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
   public sortControl: FormControl;
   public filterControl: FormControl;
-  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.SOLD];
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.OWNED];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private guardiansSubscription$?: Subscription;
   private subscriptions$: Subscription[] = [];

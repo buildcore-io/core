@@ -16,7 +16,7 @@ import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 export enum HOT_TAGS {
   ALL = 'All',
   AVAILABLE = 'Available',
-  SOLD = 'Sold'
+  OWNED = 'Owned'
 }
 
 @UntilDestroy()
@@ -30,7 +30,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaceControl: FormControl;
   public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
-  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.SOLD];
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.OWNED];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];

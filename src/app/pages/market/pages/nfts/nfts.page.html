@@ -74,7 +74,7 @@
             </div>
         </nz-card>
 
-        <wen-nft-card class="w-full outline-none lg:w-auto"
+        <wen-nft-card class="max-w-1/2 flex-grow outline-none lg:w-auto"
             *ngFor="let nft of nfts$ | async; trackBy: trackByUid" [nft]="nft">
         </wen-nft-card>
     </div>
