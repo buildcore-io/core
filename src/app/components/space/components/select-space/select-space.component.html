@@ -23,7 +23,7 @@
                     nzShape="circle"
                 >
                 </nz-avatar>
-                <wen-icon-default-select *ngIf="!s?.img" class="inline-block align-middle mr-3"></wen-icon-default-select>
+                <wen-icon-default-space *ngIf="!s?.img" class="inline-block align-middle mr-3"></wen-icon-default-space>
                 {{ s.label }}
             </nz-option>
         </nz-select>
@@ -38,7 +38,7 @@
                     >
                     </nz-avatar>
                     <ng-template #defaultAvatar>
-                        <wen-icon-default-select></wen-icon-default-select>
+                        <wen-icon-default-space></wen-icon-default-space>
                     </ng-template>
                 </div>
                 <span class="inline-block text-base" 
@@ -96,7 +96,7 @@
                             >
                             </nz-avatar>
                             
-                            <wen-icon-default-select *ngIf="!(opt?.img)" class="block mr-3"></wen-icon-default-select>
+                            <wen-icon-default-space *ngIf="!(opt?.img)" class="block mr-3"></wen-icon-default-space>
                         </div>
                         <span class="inline-block truncate">{{ opt.label }}</span>
                         <wen-icon-check *ngIf="opt.value === spaceControl.value" class="ml-3"></wen-icon-check>

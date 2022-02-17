@@ -14,7 +14,7 @@ import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
 import { CopyIconComponent } from './copy/copy.component';
 import { CrownIconComponent } from './crown/crown.component';
-import { DefaultSelectIconComponent } from './default-select/default-select.component';
+import { DefaultSpaceIconComponent } from './default-space/default-space.component';
 import { DiscordIconComponent } from './discord/discord.component';
 import { DollarIconComponent } from './dollar/dollar.component';
 import { EditIconComponent } from './edit/edit.component';
@@ -55,6 +55,7 @@ import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 import { UserPlusIconComponent } from './user-plus/user-plus.component';
 import { WalletIconComponent } from './wallet/wallet.component';
+import { CollectionIconComponent } from './collection/collection.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +90,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SoonlabsIconComponent,
     SortIconComponent,
     CheckIconComponent,
-    DefaultSelectIconComponent,
+    DefaultSpaceIconComponent,
     SearchIconComponent,
     EraseIconComponent,
     EditIconComponent,
@@ -112,7 +113,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     StopwatchIconComponent,
     AlertOctagonIconComponent,
     InfoCircleIconComponent,
-    UserPlusIconComponent
+    UserPlusIconComponent,
+    CollectionIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -146,7 +148,7 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SoonlabsIconComponent,
     SortIconComponent,
     CheckIconComponent,
-    DefaultSelectIconComponent,
+    DefaultSpaceIconComponent,
     SearchIconComponent,
     EraseIconComponent,
     EditIconComponent,
@@ -169,7 +171,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     StopwatchIconComponent,
     AlertOctagonIconComponent,
     InfoCircleIconComponent,
-    UserPlusIconComponent
+    UserPlusIconComponent,
+    CollectionIconComponent
   ],
   imports: [
     CommonModule
