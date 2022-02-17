@@ -12,7 +12,7 @@
             *ngFor="let item of tabs; let i = index; trackBy: trackByLabel"
             [routerLink]="item.route"
             (click)="isVisible = false"
-            class="flex items-center w-32 gap-2 px-5 py-2 wen-secondary" i18n
+            class="flex items-center w-36 gap-2 px-5 py-2 wen-secondary" i18n
             [ngClass]="{ 'selected': item === selectedTab }">
             {{ item.label }}
         </button>
