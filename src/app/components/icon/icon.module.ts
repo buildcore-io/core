@@ -53,6 +53,7 @@ import { TimeIconComponent } from './time/time.component';
 import { TrashIconComponent } from './trash/trash.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
+import { UserPlusIconComponent } from './user-plus/user-plus.component';
 import { WalletIconComponent } from './wallet/wallet.component';
 
 @NgModule({
@@ -110,7 +111,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     CrownIconComponent,
     StopwatchIconComponent,
     AlertOctagonIconComponent,
-    InfoCircleIconComponent
+    InfoCircleIconComponent,
+    UserPlusIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -166,7 +168,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     CrownIconComponent,
     StopwatchIconComponent,
     AlertOctagonIconComponent,
-    InfoCircleIconComponent
+    InfoCircleIconComponent,
+    UserPlusIconComponent
   ],
   imports: [
     CommonModule
