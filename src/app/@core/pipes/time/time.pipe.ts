@@ -8,8 +8,8 @@ import { Timestamp } from "functions/interfaces/models/base";
 })
 export class Time implements PipeTransform {
   transform(date: dayjs.Dayjs|Timestamp|null): string {
-    if (!date) {
-      return '';
+    if (!date || !date.toDate) {
+      return '--:--:--';
     }
 
     return dayjs(date.toDate()).format('HH:mm:ss');

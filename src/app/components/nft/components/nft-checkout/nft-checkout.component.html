@@ -46,8 +46,7 @@
         </div>
         <div class="mt-8 lg:ml-8 lg:mt-0 ">
             <div class="relative flex flex-col w-full h-full">
-                <h3 class="mb-1 text-2xl font-bold truncate">{{ getRecord()?.name }}</h3>
-
+                <h3 class="mb-1 text-2xl font-bold truncate">{{ getTitle() }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
 
                 <!-- <div class="flex items-center mt-6">
@@ -179,10 +178,10 @@
             <div class="h-32 px-5 pt-4 pb-2">
                 <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
-                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">00:00:00</div>
+                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
                         <a class="absolute text-sm font-medium underline left-16 text-blue-light1" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
                         >{{ t.label }}</a>
-                        <a class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</a>
+                        <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
                 </div>
             </div>
         </div>
@@ -206,10 +205,10 @@
             <div class="h-32 px-5 pt-4 pb-2">
                 <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
-                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">00:00:00</div>
+                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
                         <a class="absolute text-sm font-medium underline left-16 text-blue-light1" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
                         >{{ t.label }}</a>
-                        <a class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</a>
+                        <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
                 </div>
             </div>
         </div>

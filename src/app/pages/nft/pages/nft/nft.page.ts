@@ -11,7 +11,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
-import { Collection } from 'functions/interfaces/models';
+import { Collection, CollectionType } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { first, skip, Subscription } from 'rxjs';
@@ -87,12 +87,12 @@ export class NFTPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.nftApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.nft$));
   }
 
-  public isAvailableForSale(col?: Collection|null): boolean {
+  public isAvailableForSale(nft?: Nft|null, col?: Collection|null): boolean {
     if (!col) {
       return false;
     }
 
-    return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
+    return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs()) && !nft?.owner;
   }
 
   public buy(event: MouseEvent): void {
@@ -136,6 +136,25 @@ export class NFTPage implements OnInit, OnDestroy {
 
     return dayjs(date.toDate()).isBefore(dayjs());
   }
+
+  public getTitle(nft?: Nft|null): any {
+    if (!nft) {
+      return '';
+    }
+
+    if (!nft.owner) {
+      if (nft.type === CollectionType.CLASSIC) {
+        return nft.name;
+      } else if (nft.type === CollectionType.GENERATED) {
+        return 'Generated NFT';
+      } else if (nft.type === CollectionType.SFT) {
+        return 'SFT';
+      }
+    } else {
+      return nft.name;
+    }
+  }
+
   private cancelSubscriptions(): void {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();

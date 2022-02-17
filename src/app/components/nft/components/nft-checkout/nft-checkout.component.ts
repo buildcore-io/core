@@ -92,18 +92,17 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        console.log(val);
         this.pushToHistory(val.uid + '_payment_received', val.createdOn, 'Payment received.', (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', val.createdOn, 'Confirming transaction.');
+          this.pushToHistory(val.uid + '_confirming_trans', dayjs(), 'Confirming transaction.');
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', val.createdOn, 'Transaction confirmed.');
+          this.pushToHistory(val.uid + '_confirmed_trans', dayjs(), 'Transaction confirmed.');
           this.receivedTransactions = true;
           this.currentStep = StepType.COMPLETE;
           this.cd.markForCheck();
@@ -125,7 +124,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_true', val.createdOn, 'Invalid transaction refunded.', (<any>val).payload?.chainReference);
+        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid transaction refunded.', (<any>val).payload?.chainReference);
       }
 
       this.cd.markForCheck();
@@ -246,9 +245,27 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       this.notification.processRequest(this.orderApi.orderNft(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
-        this.pushToHistory(val.uid, val.createdOn, 'Waiting for transaction...');
+        this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
     });
+  }
+
+  public getTitle(): any {
+    if (!this.nft) {
+      return '';
+    }
+
+    if (!this.purchasedNft) {
+      if (this.nft.type === CollectionType.CLASSIC) {
+        return this.nft.name;
+      } else if (this.nft.type === CollectionType.GENERATED) {
+        return 'Generated NFT';
+      } else if (this.nft.type === CollectionType.SFT) {
+        return 'SFT';
+      }
+    } else {
+      return this.purchasedNft.name;
+    }
   }
 
   public ngOnDestroy(): void {
