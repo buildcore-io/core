@@ -23,7 +23,7 @@ export class WenComponent implements OnInit {
     private cacheService: CacheService
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.runGlobalServices();
     this.navigation.watchPathHistory();
