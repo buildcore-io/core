@@ -20,7 +20,7 @@
         </ng-container>
       </div>
       <nz-input-group [nzSize]="(deviceService.isDesktop$ | async) ? 'large' : 'small'" [nzPrefix]="prefixIconSearch" 
-        class="ml-0 lg:ml-8 border-none shadow-none outline-0 w-full lg:w-72" nzSearch>
+        class="w-full ml-0 border-none shadow-none lg:ml-8 outline-0 lg:w-72" nzSearch>
         <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base" [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
@@ -45,7 +45,7 @@
     <wen-member-card class="block" [fullWidth]="true"
       [role]="memberIsGuardian(member.uid) && isActiveList() ? 'Guardian' : 'Member'"
       *ngFor="let member of getList() | async; trackBy: trackByUid" [member]="member">
-      <a class="w-full" [routerLink]="['/', member.uid]" *ngIf="(data.isGuardianWithinSpace$ | async) === false">
+      <a class="w-full" [routerLink]="['/', this.memberPath, member.uid]" *ngIf="(data.isGuardianWithinSpace$ | async) === false">
         <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
       </a>
       <!-- TODO show button only when there is any option available -->
