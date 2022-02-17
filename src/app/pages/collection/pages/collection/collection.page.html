@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="relative w-full mt-6" nz-row [nzGutter]="40" *ngIf="true">
+    <div class="relative w-full mt-6" nz-row [nzGutter]="40">
         <div class="flex-auto p-0 my-0 ml-5 -mr-5 lg:mx-0 lg:px-5" [ngStyle]="{
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
             }">
@@ -72,12 +72,11 @@
             <div class="mt-10 font-medium lg:mt-6" [innerHtml]="(data.collection$ | async)?.description | markdown">
             </div>
 
-            <!-- Needs to be implemented -->
-            <div class="mt-8 p-5 rounded-xl bg-yellow flex items-center">
+            <div class="flex items-center p-5 mt-8 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-lg font-bold">
                     <span i18n>Sale in progress</span>
-                    <span> - {{ 130 }} </span>
+                    <span> - {{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}} </span>
                     <span i18n>remaining</span>
                 </div>
             </div>
@@ -112,7 +111,7 @@
         </div>
     </nz-drawer>
 
-    <div class="w-screen h-px mt-16 -ml-20 bg-app-gray-separator-dark lg:mt-12 mb-8"></div>
+    <div class="w-screen h-px mt-16 mb-8 -ml-20 bg-app-gray-separator-dark lg:mt-12"></div>
 
     <!-- Park search. -->
     <!-- <nz-input-group
@@ -134,7 +133,7 @@
         </button>
     </div>
 
-    
+
     <div class="w-full h-px mt-8 mb-6 bg-app-gray-700"></div>
 
     <div class="flex items-end justify-between">

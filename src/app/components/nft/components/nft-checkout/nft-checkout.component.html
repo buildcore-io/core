@@ -171,16 +171,16 @@
 
 <ng-template #waitTemplate>
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-        <div class="my-8 border border-app-gray-200 rounded-2xl w-full">
-            <div class="px-5 pt-3 pb-2 text-sm font-bold border-b border-b" i18n>
+        <div class="w-full my-8 border border-app-gray-200 rounded-2xl">
+            <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
                 Transaction history
             </div>
 
-            <div class="px-5 pt-4 pb-2 h-32">
+            <div class="h-32 px-5 pt-4 pb-2">
                 <div *ngFor="let t of [{date:'11:32:00',label:'Transaction confirmed'},{date:'11:31:00',label:'Confirming transaction'},{date:'11:30:20',label:'Transaction received'},{date:'11:30:00',label:'Waiting for transaction'}]; let first=first"
-                    class="flex items-center my-1 relative">
-                        <div class="text-sm font-medium text-foregrounds-secondary mr-2">{{ t.date }}</div>
-                        <div class="text-sm font-medium absolute left-16" [ngClass]="{ 'text-blue-light1 underline': first }">{{ t.label }}</div>
+                    class="relative flex items-center my-1">
+                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date }}</div>
+                        <div class="absolute text-sm font-medium left-16" [ngClass]="{ 'text-blue-light1 underline': first }">{{ t.label }}</div>
                 </div>
             </div>
         </div>
@@ -190,7 +190,7 @@
             <!-- <div class="text-app-gray-text" i18n *ngIf="!receivedTransactions && !sendingMoneyBack" i18n>
               {{ 'Waiting for your payment...' }}
             </div> -->
-            <div class="text-app-gray-text" i18n *ngIf="true" i18n>
+            <div class="text-app-gray-text" i18n i18n>
               {{ 'Validating your transaction...' }}
             </div>
             <!-- <div class="text-app-gray-text" i18n *ngIf="sendingMoneyBack" i18n>
@@ -202,16 +202,16 @@
 
 <ng-template #completeTemplate>
     <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
-        <div class="my-8 border border-app-gray-200 rounded-2xl w-full">
-            <div class="px-5 pt-3 pb-2 text-sm font-bold border-b border-b" i18n>
+        <div class="w-full my-8 border border-app-gray-200 rounded-2xl">
+            <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
                 Transaction history
             </div>
 
-            <div class="px-5 pt-4 pb-2 h-32">
+            <div class="h-32 px-5 pt-4 pb-2">
                 <div *ngFor="let t of [{date:'11:32:00',label:'Transaction confirmed'},{date:'11:31:00',label:'Confirming transaction'},{date:'11:30:20',label:'Transaction received'},{date:'11:30:00',label:'Waiting for transaction'}]; let first=first"
-                    class="flex items-center my-1 relative">
-                        <div class="text-sm font-medium text-foregrounds-secondary mr-2">{{ t.date }}</div>
-                        <div class="text-sm font-medium absolute left-16" [ngClass]="{ 'text-blue-light1 underline': first }">{{ t.label }}</div>
+                    class="relative flex items-center my-1">
+                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date }}</div>
+                        <div class="absolute text-sm font-medium left-16" [ngClass]="{ 'text-blue-light1 underline': first }">{{ t.label }}</div>
                 </div>
             </div>
         </div>

@@ -174,7 +174,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
   if (docCollection.data().placeholderNft) {
     const nftPlaceholder: any = admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft);
-    await nftPlaceholder.set(keywords(uOn({
+    await nftPlaceholder.update(keywords(uOn({
       name: params.body.name,
       description: params.body.description,
       media: params.body.placeholderUrl,

@@ -20,10 +20,10 @@ export class DiscoverPage implements OnInit, OnDestroy {
   public filterControl: FormControl = new FormControl(undefined);
   public sections: TabSection[] = [
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
+    { route: [ ROUTER_UTILS.config.discover.collections], label: 'Collections' },
     { route: [ ROUTER_UTILS.config.discover.awards], label: 'Awards' },
     { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
-    { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' },
-    { route: [ ROUTER_UTILS.config.discover.collections], label: 'Collections' }
+    { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
   ];
   public selectedSection?: TabSection;
   public isSearchInputFocused = false;
@@ -54,8 +54,8 @@ export class DiscoverPage implements OnInit, OnDestroy {
   }
 
   private setSelectedSection() {
-    this.selectedSection = 
-      this.sections.find((r: TabSection) => 
+    this.selectedSection =
+      this.sections.find((r: TabSection) =>
         this.router.url.includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
   }
 

@@ -55,12 +55,11 @@
                 </div>
             </div>
 
-            
-            <!-- Needs to be implemented -->
-            <div class="mt-6 p-5 rounded-xl bg-yellow flex items-center">
+
+            <div class="flex items-center p-5 mt-6 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-base font-bold">
-                    <span>{{ 10 }} </span>
+                    <span>{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}} </span>
                     <span i18n>remaining</span>
                 </div>
             </div>

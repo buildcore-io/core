@@ -15,6 +15,7 @@ import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
+import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
 import { Collection } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
@@ -188,6 +189,14 @@ export class CollectionPage implements OnInit, OnDestroy {
 
     // Merge arrays.
     this.data.nft$.next(Array.prototype.concat.apply([], this.data.dataStore));
+  }
+
+  public isAvailableForSale(col?: Collection|null): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
   }
 
   public onScroll(): void {

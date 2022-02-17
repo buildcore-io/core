@@ -1,5 +1,5 @@
 <article class="w-full bg-white rounded-2xl wen-card"
-    [ngClass]="fullWidth ? 'w-auto' : 'min-w-40 lg:min-w-60 w-40 lg:w-60'" *ngIf="true">
+    [ngClass]="fullWidth ? 'w-auto' : 'min-w-40 lg:min-w-60 w-40 lg:w-60'">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
@@ -22,12 +22,12 @@
                 [ngClass]="{ 'text-foregrounds-secondary': fullWidth }">
                 {{ nft?.description | stripMarkdown | truncate:[16]}}</p>
 
-            <ng-container *ngIf="!nft?.owner || true">
+            <ng-container *ngIf="!nft?.owner">
                 <div class="flex items-center">
                     <wen-icon-dollar class="mr-3 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(nft?.price)}}</div>
 
-                    <button *ngIf="true && (deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
+                    <button *ngIf="(deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
                         (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
                 </div>
 
@@ -36,7 +36,7 @@
                     <div class="text-xs font-medium">2 hours left</div>
                 </div> -->
 
-                <button *ngIf="!nft?.owner && (deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
+                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
                     (click)="onBuy($event)" class="w-4/5 mt-2" i18n>Buy now</button>
             </ng-container>
         </div>

@@ -11,6 +11,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
+import { Collection } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { first, skip, Subscription } from 'rxjs';
@@ -84,6 +85,14 @@ export class NFTPage implements OnInit, OnDestroy {
     this.data.nftId = id;
     this.cancelSubscriptions();
     this.subscriptions$.push(this.nftApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.nft$));
+  }
+
+  public isAvailableForSale(col?: Collection|null): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
   }
 
   public buy(event: MouseEvent): void {
