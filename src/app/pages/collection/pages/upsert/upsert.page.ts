@@ -105,7 +105,6 @@ export class UpsertPage implements OnInit {
     });
 
     this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
-      console.log(o);
       if (o?.collectionId) {
         this.editMode = true;
         this.collectionId = o.collectionId;

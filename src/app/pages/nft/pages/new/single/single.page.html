@@ -189,13 +189,14 @@
                             [formControl]="gForm(stat, 'name')"
                         />
 
-                        <nz-input-number
+                        <input
+                            type="text"
+                            nz-input
                             nzSize="default"
                             nzPlaceHolder="Value"
                             class="w-1/2 mr-3 grow"
-                            [nzMin]="0"
                             [formControl]="gForm(stat, 'value')"
-                        ></nz-input-number>
+                        />
 
                         <wen-icon-trash class="cursor-pointer grow" (click)="removeStat(i)"></wen-icon-trash>
                     </div>

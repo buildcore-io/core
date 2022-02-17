@@ -112,7 +112,6 @@ export class MultiplePage {
   }
 
   public onPreview(file: NzUploadFile): void {
-    console.log(file);
     this.previewFile = file;
   }
 

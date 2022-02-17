@@ -153,6 +153,10 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
+  if (params.body.availableFrom) {
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+  }
+
   const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
   let docCollection: any = await refCollection.get();
   if (!docCollection.exists) {
