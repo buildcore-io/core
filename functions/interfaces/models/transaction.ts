@@ -62,6 +62,7 @@ export interface PaymentTransaction {
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
   collection?: EthAddress;
+  invalidPayment: boolean;
 }
 
 export interface BillPaymentTransaction {
@@ -70,6 +71,8 @@ export interface BillPaymentTransaction {
   targetAddress: IotaAddress;
   reconciled: boolean;
   void: boolean;
+  previusOwnerEntity?: 'space' | 'member',
+  previusOwner?: EthAddress,
   chainReference: string;
   walletReference: WalletResult;
   sourceTransaction: OrderTransaction;

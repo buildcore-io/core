@@ -115,7 +115,7 @@ class ProcessingService {
     }
   }
 
-  private async createPayment(order: Transaction, tran: TransactionMatch): Promise<Transaction> {
+  private async createPayment(order: Transaction, tran: TransactionMatch, invalidPayment = false): Promise<Transaction> {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
@@ -138,7 +138,8 @@ class ProcessingService {
         sourceTransaction: order.uid,
         chainReference: tran.msgId,
         nft: order.payload.nft || null,
-        collection: order.payload.collection || null
+        collection: order.payload.collection || null,
+        invalidPayment: invalidPayment
       }
     });
 
@@ -181,6 +182,8 @@ class ProcessingService {
         payload: {
           amount: finalAmt,
           sourceAddress: tran.to.address,
+          previusOwnerEntity: order.payload.beneficiary,
+          previusOwner: order.payload.beneficiaryUid,
           targetAddress: order.payload.beneficiaryAddress,
           sourceTransaction: order.uid,
           nft: order.payload.nft || null,
@@ -210,6 +213,8 @@ class ProcessingService {
           sourceAddress: tran.to.address,
           targetAddress: order.payload.royaltiesSpaceAddress,
           sourceTransaction: order.uid,
+          previusOwnerEntity: order.payload.beneficiary,
+          previusOwner: order.payload.beneficiaryUid,
           reconciled: false,
           royalty: true,
           void: false,

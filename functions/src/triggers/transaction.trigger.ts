@@ -29,14 +29,16 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
     }
 
     const details: any = {};
-    details.type = newValue.type;
+    details.tranId = newValue.uid;
     if (newValue.type === TransactionType.BILL_PAYMENT) {
       details.payment = true;
+
+      // Once space can own NFT this will be expanded.
       if (newValue.member) {
-        details.member = newValue.member;
-      }
-      if (newValue.space) {
-        details.space = newValue.space;
+        details.previousOwner = newValue.payload.previusOwner;
+        details.previousOnwerEntity = newValue.payload.previusOwnerEntity;
+        details.onwer = newValue.member;
+        details.ownerEntity = 'member';
       }
       if (newValue.payload.royalty) {
         details.royalty = newValue.payload.royalty;

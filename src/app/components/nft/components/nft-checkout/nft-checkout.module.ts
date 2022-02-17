@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
+import { TimeModule } from '@core/pipes/time/time.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -23,6 +24,7 @@ import { NftCheckoutComponent } from './nft-checkout.component';
     NzDrawerModule,
     NzModalModule,
     IconModule,
+    TimeModule,
     NzToolTipModule,
     NzCheckboxModule,
     NzButtonModule,

@@ -177,25 +177,21 @@
             </div>
 
             <div class="h-32 px-5 pt-4 pb-2">
-                <div *ngFor="let t of [{date:'11:32:00',label:'Transaction confirmed'},{date:'11:31:00',label:'Confirming transaction'},{date:'11:30:20',label:'Transaction received'},{date:'11:30:00',label:'Waiting for transaction'}]; let first=first"
+                <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
-                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date }}</div>
-                        <div class="absolute text-sm font-medium left-16" [ngClass]="{ 'text-blue-light1 underline': first }">{{ t.label }}</div>
+                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">00:00:00</div>
+                        <a class="absolute text-sm font-medium underline left-16 text-blue-light1" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                        >{{ t.label }}</a>
+                        <a class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</a>
                 </div>
             </div>
         </div>
 
         <button nz-button nzSize="large" class="flex items-center border-app-gray-200">
             <wen-icon-refresh class="mr-3 text-app-gray-400 animate-spin" ></wen-icon-refresh>
-            <!-- <div class="text-app-gray-text" i18n *ngIf="!receivedTransactions && !sendingMoneyBack" i18n>
-              {{ 'Waiting for your payment...' }}
-            </div> -->
             <div class="text-app-gray-text" i18n i18n>
               {{ 'Validating your transaction...' }}
             </div>
-            <!-- <div class="text-app-gray-text" i18n *ngIf="sendingMoneyBack" i18n>
-                {{ 'Money received, refunding your payment...' }}
-            </div> -->
         </button>
     </div>
 </ng-template>
@@ -208,10 +204,12 @@
             </div>
 
             <div class="h-32 px-5 pt-4 pb-2">
-                <div *ngFor="let t of [{date:'11:32:00',label:'Transaction confirmed'},{date:'11:31:00',label:'Confirming transaction'},{date:'11:30:20',label:'Transaction received'},{date:'11:30:00',label:'Waiting for transaction'}]; let first=first"
+                <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
-                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date }}</div>
-                        <div class="absolute text-sm font-medium left-16" [ngClass]="{ 'text-blue-light1 underline': first }">{{ t.label }}</div>
+                        <div class="mr-2 text-sm font-medium text-foregrounds-secondary">00:00:00</div>
+                        <a class="absolute text-sm font-medium underline left-16 text-blue-light1" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                        >{{ t.label }}</a>
+                        <a class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</a>
                 </div>
             </div>
         </div>

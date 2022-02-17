@@ -12,6 +12,7 @@ import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Collection, CollectionType, TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
+import { Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 
@@ -22,6 +23,13 @@ export enum StepType {
   COMPLETE = 'Complete'
 }
 
+interface HistoryItem {
+  uniqueId: string;
+  date: dayjs.Dayjs|Timestamp|null;
+  label: string;
+  link?: string;
+}
+
 @UntilDestroy()
 @Component({
   selector: 'wen-nft-checkout',
@@ -30,7 +38,7 @@ export enum StepType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NftCheckoutComponent implements OnInit, OnDestroy {
-  @Input() currentStep = StepType.COMPLETE;
+  @Input() currentStep = StepType.CONFIRM;
   @Input() isOpen = false;
   @Input() nft?: Nft|null;
   @Input() purchasedNft?: Nft|null;
@@ -43,6 +51,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
+  public history: HistoryItem[] = [];
 
   private transSubscription?: Subscription;
   public path = ROUTER_UTILS.config.nft.root;
@@ -83,8 +92,24 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.receivedTransactions = true;
-        this.currentStep = StepType.COMPLETE;
+        console.log(val);
+        this.pushToHistory(val.uid + '_payment_received', val.createdOn, 'Payment received.', (<any>val).payload?.chainReference);
+      }
+
+      if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
+        // Let's add delay to achive nice effect.
+        setTimeout(() => {
+          this.pushToHistory(val.uid + '_confirming_trans', val.createdOn, 'Confirming transaction.');
+        }, 1000);
+
+        setTimeout(() => {
+          this.pushToHistory(val.uid + '_confirmed_trans', val.createdOn, 'Transaction confirmed.');
+          this.receivedTransactions = true;
+          this.currentStep = StepType.COMPLETE;
+          this.cd.markForCheck();
+        }, 2000);
+
+        // Load purchased NFT.
         if (val.payload.nft) {
           firstValueFrom(this.nftApi.listen(val.payload.nft)).then((obj) => {
             if (obj) {
@@ -93,6 +118,14 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
             }
           });
         }
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === false) {
+        this.pushToHistory(val.uid + '_false', val.createdOn, 'Invalid amount received. Refunding transaction.');
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true) {
+        this.pushToHistory(val.uid + '_true', val.createdOn, 'Invalid transaction refunded.', (<any>val).payload?.chainReference);
       }
 
       this.cd.markForCheck();
@@ -114,8 +147,27 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
+  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+      return;
+    }
+
+    if (date && text) {
+      this.history.unshift({
+        uniqueId: uniqueId,
+        date: date,
+        label: text,
+        link: link
+      });
+    }
+  }
+
   public get lockTime(): number {
     return TRANSACTION_AUTO_EXPIRY_MS / 1000 / 60;
+  }
+
+  public getExplorerLink(link: string): string {
+    return 'https://explorer.iota.org/mainnet/search/' + link;
   }
 
   public copyAddress() {
@@ -133,8 +185,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public goToNft(): void {
-    this.reset();
     this.router.navigate(['/', this.path, this.purchasedNft?.uid]);
+    this.reset();
     this.onClose.next();
   }
 
@@ -194,6 +246,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       this.notification.processRequest(this.orderApi.orderNft(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+        this.pushToHistory(val.uid, val.createdOn, 'Waiting for transaction...');
       });
     });
   }
