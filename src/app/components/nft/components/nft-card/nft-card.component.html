@@ -1,5 +1,5 @@
-<article class="w-full bg-white rounded-2xl wen-card"
-    [ngClass]="fullWidth ? 'w-auto' : 'min-w-40 lg:min-w-60 w-40 lg:w-60'">
+<article class="bg-white rounded-2xl wen-card"
+    [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60'">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
@@ -7,6 +7,17 @@
             [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
             class="object-cover w-full h-full"
             />
+
+            <!-- NFT amount logic has to be added -->
+            <div class="absolute top-4 left-4 z-10 rounded-lg bg-white flex items-center justify-center px-3 py-1.5 text-sm font-medium"
+                *ngIf="!fullWidth"
+                [ngClass]="{
+                    'bg-tag-green': true,
+                    'bg-tag-red': false,
+                    'bg-tag-default': false
+                }">
+                {{ 'New NFT' }}
+            </div>
 
             <!-- <div class="absolute left-3 bottom-3 bg-bg-background rounded-lg flex items-center px-2.5 py-2"
                 *ngIf="true && (deviceService.isMobile$ | async)">

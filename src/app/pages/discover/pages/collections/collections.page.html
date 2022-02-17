@@ -74,9 +74,10 @@
             </div>
         </nz-card>
     
-        <wen-collection-card class="w-full outline-none lg:w-auto"
+        <wen-collection-card class="outline-none"
             *ngFor="let c of collections$ | async; trackBy: trackByUid"
-            [collection]="c">
+            [collection]="c"
+            [fullWidth]="(deviceService.isMobile$ | async) || false">
         </wen-collection-card>
     </div>
 </div>

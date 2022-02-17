@@ -1,5 +1,5 @@
-<article class="w-full bg-white h-76 rounded-2xl wen-card"
-    [ngClass]="fullWidth ? 'w-auto' : 'min-w-full lg:min-w-76 w-76 lg:h-76'" *ngIf="collection">
+<article class="bg-white h-76 rounded-2xl wen-card"
+    [ngClass]="fullWidth ? 'w-full' : 'w-76'" *ngIf="collection">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
@@ -43,7 +43,7 @@
 
             <p class="flex-grow flex-shrink min-h-0 py-3 overflow-hidden text-sm font-medium lg:py-2"
                 [ngClass]="{ 'text-foregrounds-secondary': fullWidth }">
-                {{ collection.description | stripMarkdown | truncate:[(deviceService.isMobile$ | async) ? 80 : (fullWidth ? 1000 : 110)]}}</p>
+                {{ collection.description | stripMarkdown | truncate:[(deviceService.isMobile$ | async) || !fullWidth ? 95 : 1000]}}</p>
         </div>
     </a>
 </article>
