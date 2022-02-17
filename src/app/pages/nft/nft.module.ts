@@ -5,6 +5,7 @@ import { CollectionStatusModule } from '@components/collection/components/collec
 import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
+import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineModule } from '@components/timeline/timeline.module';
@@ -71,7 +72,8 @@ import { DataService } from './services/data.service';
     TimelineModule,
     NzToolTipModule,
     NzSkeletonModule,
-    NftCardModule
+    NftCardModule,
+    NftPreviewModule
   ],
   providers: [
     DataService

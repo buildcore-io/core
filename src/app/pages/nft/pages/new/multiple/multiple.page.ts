@@ -31,6 +31,7 @@ export class MultiplePage {
   public nftForm: FormGroup;
   public stepType = StepType;
   public currentStep = StepType.GENERATE;
+  public previewFile?: NzUploadFile | null;
   public uploadedFiles: NzUploadFile[] = [];
   public nftObject:  NFTObject = {
     name: {
@@ -108,6 +109,11 @@ export class MultiplePage {
     if (event.type === 'success') {
       this.uploadedFiles.push(event.file);
     }
+  }
+
+  public onPreview(file: NzUploadFile): void {
+    console.log(file);
+    this.previewFile = file;
   }
 
   public beforeCSVUpload(file: NzUploadFile) : boolean | Observable<boolean> {

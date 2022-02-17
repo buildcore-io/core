@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { UnitsHelper } from "@core/utils/units-helper";
 import { Collection, Member, Space } from "functions/interfaces/models";
 import { Nft } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
@@ -13,4 +14,25 @@ export class DataService {
   public royaltySpace$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public collectionCreator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  
+  public getPropStats(obj: any): any[] {
+    if (!obj) {
+      return [];
+    }
+
+    const final: any[] = [];
+    for (const v of Object.values(obj)) {
+      final.push(v);
+    }
+
+    return final;
+  }
+
+  public formatBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return UnitsHelper.formatBest(amount, 2);
+  }
 }
