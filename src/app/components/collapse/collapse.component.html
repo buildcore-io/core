@@ -1,0 +1,10 @@
+<nz-card [nzTitle]="title" class="relative" [nzBodyStyle]="{ padding: '10px' }">
+    <wen-icon-angle-down 
+        class="absolute top-7 right-7 cursor-pointer transform transition"
+        [ngClass]="{ 'rotate-180': !isCollapsed }"
+        (click)="isCollapsed = !isCollapsed">
+    </wen-icon-angle-down>
+    <div class="overflow-hidden transition-all" [ngClass]="isCollapsed ? 'max-h-0' : 'max-h-96'">
+        <ng-content></ng-content>
+    </div>
+</nz-card>

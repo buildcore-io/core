@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
@@ -73,7 +74,8 @@ import { DataService } from './services/data.service';
     NzToolTipModule,
     NzSkeletonModule,
     NftCardModule,
-    NftPreviewModule
+    NftPreviewModule,
+    CollapseModule
   ],
   providers: [
     DataService
