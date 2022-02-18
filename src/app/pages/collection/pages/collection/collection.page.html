@@ -92,7 +92,7 @@
                 Reject Collection
             </button>
 
-            <button nz-button nzType="default" (click)="edit()" *ngIf="true || !data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+            <button nz-button nzType="default" (click)="edit()" *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
                 Edit Collection
             </button>
 

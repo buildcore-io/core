@@ -142,6 +142,8 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   const defaultSchema = defaultJoiUpdateCreateSchema();
   delete defaultSchema.type;
   delete defaultSchema.space;
+  delete defaultSchema.price;
+  delete defaultSchema.availableFrom;
   delete defaultSchema.category;
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {
     uid: CommonJoi.uidCheck()

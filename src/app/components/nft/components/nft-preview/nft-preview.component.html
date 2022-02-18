@@ -11,12 +11,12 @@
     [nzWidth]="1000"
     >
     <ng-template #nftPreviewModalContent>
-        <div class="h-full w-full p-6 bg-bg-background rounded-2xl">
+        <div class="w-full h-full p-6 bg-bg-background rounded-2xl">
             <div class="flex items-start justify-between">
                 <div class="text-2xl font-bold" i18n>Preview</div>
                 <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
             </div>
-    
+
             <ng-container *ngTemplateOutlet="content"></ng-container>
         </div>
     </ng-template>
@@ -101,12 +101,12 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                     <p nz-typography>
-                        {{ '12392832' || (data.nft$ | async)?.ipfsMedia || 'Preparing...'}}
+                        {{ (data.nft$ | async)?.ipfsMedia || 'Preparing...'}}
                     </p>
                 </div>
             </wen-collapse>
 
-            <wen-collapse title="Properties" class="mt-4" *ngIf="true || data.getPropStats((data.nft$ | async)?.properties).length">
+            <wen-collapse title="Properties" class="mt-4" *ngIf="data.getPropStats((data.nft$ | async)?.properties).length">
                 <div class="wen-description-item bg-bg-background"
                     *ngFor="let prop of [{label:'Background',value:'Blue'},{label:'Clothes',value:'Fancy'},{label:'Hat',value:'Helmet'}] || data.getPropStats((data.nft$ | async)?.properties)">
                         <span nz-typography class="text-app-gray-400">{{ prop.label }}</span>
@@ -114,7 +114,7 @@
                 </div>
             </wen-collapse>
 
-            <wen-collapse title="Stats" class="mt-4" *ngIf="true || data.getPropStats((data.nft$ | async)?.stats).length">
+            <wen-collapse title="Stats" class="mt-4" *ngIf="data.getPropStats((data.nft$ | async)?.stats).length">
                 <div class="wen-description-item bg-bg-background"
                     *ngFor="let stat of [{label:'Speed',value:'2 of 5'},{label:'Inteligence',value:'1 of 10'}] || data.getPropStats((data.nft$ | async)?.stats)">
                         <span nz-typography class="text-app-gray-400">{{ stat.label }}</span>
