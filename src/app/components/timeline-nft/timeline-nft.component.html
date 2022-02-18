@@ -1,0 +1,63 @@
+<nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="orders?.length || listedBy">
+    <!-- Transactions -->
+    <div *ngFor="let t of (orders); let i = index; trackBy: trackByUid"
+        class="relative flex items-center mt-3">
+        <div *ngIf="i !== 0"
+            class="absolute w-0.5 h-full bg-app-gray-100 left-3 transform -translate-x-1/2 -translate-y-1/2"></div>
+
+        <div
+            class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"
+            [ngClass]="i === 0 ? 'h-24' : 'h-1/2'"></div>
+
+        <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
+            <wen-icon-check></wen-icon-check>
+        </div>
+
+        <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
+            <div class="flex items-center">
+                <nz-avatar
+                    [nzSrc]="t.newMember.currentProfileImage| ipfsBadge:filesizes.small"
+                    class="bg-white border-gray-400 min-w-10 min-h-10"
+                    nzShape="circle"
+                    >
+                </nz-avatar>
+
+                <div class="ml-6">
+                    <div class="text-xs font-medium text-gray-400">
+                        {{ t.order.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
+                    <div class="text-base font-medium mt-0.5">
+                        <span i18n>Purchased by</span> @{{t.newMember.name || t.newMember.uid}}
+                        <span i18n>for </span>{{formatBest(t.order.payload.amount)}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="relative flex items-center mt-3" *ngIf="listedBy">
+        <div *ngIf="((orders)?.length || 0) > 0" class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"></div>
+
+        <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
+            <wen-icon-check></wen-icon-check>
+        </div>
+
+        <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
+            <div class="flex items-center">
+                  <nz-avatar
+                    [nzSrc]="avatarService.getAvatarSize(listedBy.avatarUrl)"
+                    class="bg-white border-gray-400 min-w-10 min-h-10"
+                    nzShape="circle"
+                  >
+                  </nz-avatar>
+
+                <div class="ml-6">
+                    <div class="text-xs font-medium text-gray-400">
+                        {{ listedBy.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
+                    <div class="text-base font-medium mt-0.5">
+                        <span i18n>Listen by space</span> {{listedBy.name || listedBy.uid}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nz-card>

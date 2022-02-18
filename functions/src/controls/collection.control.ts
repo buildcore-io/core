@@ -35,7 +35,7 @@ function defaultJoiUpdateCreateSchema(): any {
     price: Joi.number().min(10 * 1000 * 1000).max(1000 * 1000 * 1000 * 1000).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
-    royaltiesFee: Joi.number().min(0).max(1).required(),
+    royaltiesFee: Joi.number().min(0).max(0.9).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
     // TODO Validate XP is not the same.
     discounts: Joi.array().items(Joi.object().keys({

@@ -4,13 +4,11 @@ import { IconModule } from '@components/icon/icon.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzCardModule } from 'ng-zorro-antd/card';
-import { TimelineComponent } from './timeline.component';
-
-
+import { TimelineNftComponent } from './timeline-nft.component';
 
 @NgModule({
   declarations: [
-    TimelineComponent
+    TimelineNftComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +18,7 @@ import { TimelineComponent } from './timeline.component';
     IpfsBadgeModule
   ],
   exports: [
-    TimelineComponent
+    TimelineNftComponent
   ]
 })
-export class TimelineModule { }
+export class TimelineNftModule { }

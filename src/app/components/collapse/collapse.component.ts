@@ -8,5 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class CollapseComponent {
   @Input() title?: string;
-  public isCollapsed = true;
+  public isCollapsed = false;
 }

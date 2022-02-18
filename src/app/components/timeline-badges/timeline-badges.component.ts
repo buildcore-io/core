@@ -4,14 +4,14 @@ import { Transaction } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 
 @Component({
-  selector: 'wen-timeline',
-  templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.less'],
+  selector: 'wen-timeline-badges',
+  templateUrl: './timeline-badges.component.html',
+  styleUrls: ['./timeline-badges.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TimelineComponent {
+export class TimelineBadgesComponent {
   @Input() badges?: Transaction[] | null;
-  
+
   public showAllBadges = false;
 
   constructor(

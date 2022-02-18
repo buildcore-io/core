@@ -69,19 +69,18 @@
                 Buy now
             </button>
 
-            <!-- Use this if sale has ended -->
-            <!-- <div *ngIf="false" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
+            <div *ngIf="!isAvailableForSale(data.nft$ | async, data.collection$ | async)" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
                     Sale ended
                 </div>
-            </div> -->
+            </div>
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
 
             <!-- This should be used for timeline -->
-            <!-- <wen-timeline class="block mt-12" [badges]="data.badges$ | async"></wen-timeline> -->
+            <wen-timeline-nft class="block mt-12" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
         </div>
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">

@@ -101,6 +101,10 @@ export interface Transaction extends BaseRecord {
   payload: any; // VoteTransaction|BadgeTransaction|OrderTransaction|PaymentTransaction|BillPaymentTransaction|CreditPaymentTransaction;
 }
 
+export interface TransactionBillPayment extends Transaction {
+  payload: BillPaymentTransaction;
+}
+
 export interface TransactionOrder extends Transaction {
   payload: OrderTransaction;
 }

@@ -30,18 +30,24 @@ recs.forEach((r) => {
 
 
 // Find gaps in milestones.
-db.collection('milestone').get().then(async (snapshot) => {
-  let last = 0;
-  console.log('----Finding Milestones with gab:')
-  for (const member of snapshot.docs) {
-    if ((last + 1) !== parseInt(member.id)) {
-      // Create gab
-      if ((parseInt(member.id) - 1) !== last && last !== 0) {
-        console.log('----Another Milestone gab');
-      }
-      console.log(parseInt(member.id) - 1);
-    }
+// db.collection('milestone').get().then(async (snapshot) => {
+//   let last = 0;
+//   console.log('----Finding Milestones with gab:')
+//   for (const member of snapshot.docs) {
+//     if ((last + 1) !== parseInt(member.id)) {
+//       // Create gab
+//       if ((parseInt(member.id) - 1) !== last && last !== 0) {
+//         console.log('----Another Milestone gab');
+//       }
+//       console.log(parseInt(member.id) - 1);
+//     }
 
-    last = parseInt(member.id);
+//     last = parseInt(member.id);
+//   }
+// });
+
+db.collection('transaction').where('payload.targetAddress', '==', 'iota1qqjkq5fg0mawtfrn0jsxm6ryu2fj2wamf92svl5d26uztkc33zlrgd0pyyn').get().then(async (snapshot) => {
+  for (const t of snapshot.docs) {
+    console.log(t.data());
   }
 });
