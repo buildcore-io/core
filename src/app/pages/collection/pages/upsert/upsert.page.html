@@ -391,6 +391,28 @@
                     </nz-form-control>
                   </nz-form-item>
                 </nz-card>
+                <nz-card [nzBordered]="false" nzTitle="Required Badge" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS_WITH_BADGE">
+                    <nz-form-item>
+                      <nz-form-control>
+                        <nz-select
+                          class="w-full"
+                          nzSize="large"
+                          nzShowSearch
+                          nzAllowClear
+                          [nzMaxTagCount]="9"
+                          nzMode="multiple"
+                          nzPlaceHolder="Select Badge"
+                          [formControl]="accessAwardsControl"
+                        >
+                          <nz-option
+                            *ngFor="let a of awards$ | async; trackBy: trackByUid"
+                            [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
+                            [nzValue]="a.uid"
+                          ></nz-option>
+                        </nz-select>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </nz-card>
             </div>
         </div>
     </form>

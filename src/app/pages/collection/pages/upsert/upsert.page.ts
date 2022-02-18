@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AwardApi } from '@api/award.api';
+import { FULL_LIST } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -14,11 +16,11 @@ import { Units } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { DISCORD_REGEXP, TWITTER_REGEXP, URL_REGEXP } from 'functions/interfaces/config';
-import { Categories, CollectionType, Space } from 'functions/interfaces/models';
+import { Award, Categories, CollectionType, Space } from 'functions/interfaces/models';
 import { PRICE_UNITS } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import { CollectionAccess, DiscountLine } from './../../../../../../functions/interfaces/models/collection';
@@ -40,6 +42,7 @@ export class UpsertPage implements OnInit {
   public twitterControl: FormControl = new FormControl('', Validators.pattern(TWITTER_REGEXP));
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public placeholderUrlControl: FormControl = new FormControl('');
+  public accessAwardsControl: FormControl = new FormControl([]);
   public bannerUrlControl: FormControl = new FormControl('');
   public categoryControl: FormControl = new FormControl('', Validators.required);
   public selectedAccessControl: FormControl = new FormControl(CollectionAccess.OPEN, Validators.required);
@@ -58,6 +61,7 @@ export class UpsertPage implements OnInit {
   public collectionCategories = enumToArray(Categories);
   public formatterPercent = (value: number): string => `${value} %`;
   public parserPercent = (value: string): string => value.replace(' %', '');
+  public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
 
   constructor(
     public deviceService: DeviceService,
@@ -70,7 +74,8 @@ export class UpsertPage implements OnInit {
     private auth: AuthService,
     private router: Router,
     private nzNotification: NzNotificationService,
-    private fileApi: FileApi
+    private fileApi: FileApi,
+    private awardApi: AwardApi
   ) {
     this.discounts = new FormArray([]);
     this.collectionForm = new FormGroup({
@@ -79,6 +84,7 @@ export class UpsertPage implements OnInit {
       space: this.spaceControl,
       type: this.typeControl,
       access: this.selectedAccessControl,
+      accessAwards: this.accessAwardsControl,
       price: this.priceControl,
       unit: this.unitControl,
       availableFrom: this.availableFromControl,
@@ -150,6 +156,9 @@ export class UpsertPage implements OnInit {
         this.royaltiesSpaceControl.setValue(val);
       }
     });
+
+    // Get all awards.
+    this.awardApi.top(undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
   }
 
   public get maxDiscountCount(): number {
@@ -231,6 +240,10 @@ export class UpsertPage implements OnInit {
     }
 
     return true;
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 
   public get priceUnits(): Units[] {
