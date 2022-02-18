@@ -317,9 +317,7 @@ export class UpsertPage implements OnInit {
   }
 
   public removeDiscount(index: number): void {
-    if (this.discounts.controls.length > 1) {
-      this.discounts.removeAt(index);
-    }
+    this.discounts.removeAt(index);
   }
 
   public gForm(f: any, value: string): any {
