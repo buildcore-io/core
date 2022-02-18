@@ -6,6 +6,7 @@ import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AvatarService } from '@core/services/avatar';
+import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -14,6 +15,7 @@ import { WEN_NAME } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { first, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
@@ -35,6 +37,7 @@ export class NFTPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,
+    private nzNotification: NzNotificationService,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
     private router: Router
@@ -102,6 +105,10 @@ export class NFTPage implements OnInit, OnDestroy {
   public buy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
+    if (getItem(StorageItem.CheckoutTransaction)) {
+      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
+      return;
+    }
     this.isCheckoutOpen = true;
   }
 

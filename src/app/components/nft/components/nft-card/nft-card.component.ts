@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Collection } from 'functions/interfaces/models';
 import { Nft } from 'functions/interfaces/models/nft';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'wen-nft-card',
@@ -21,12 +23,17 @@ export class NftCardComponent {
   public path = ROUTER_UTILS.config.nft.root;
 
   constructor(
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    private nzNotification: NzNotificationService
   ) {}
 
   public onBuy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
+    if (getItem(StorageItem.CheckoutTransaction)) {
+      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
+      return;
+    }
     this.isCheckoutOpen = true;
   }
 

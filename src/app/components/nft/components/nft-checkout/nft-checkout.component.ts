@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
@@ -39,7 +41,13 @@ interface HistoryItem {
 })
 export class NftCheckoutComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.CONFIRM;
-  @Input() isOpen = false;
+  @Input() set isOpen(value: boolean) {
+    this._isOpen = value;
+    this.checkoutService.modalOpen$.next(value);
+  }
+  public get isOpen(): boolean {
+    return this._isOpen;
+  }
   @Input() nft?: Nft|null;
   @Input() purchasedNft?: Nft|null;
   @Input() collection?: Collection|null;
@@ -52,11 +60,13 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
   public history: HistoryItem[] = [];
+  private _isOpen = false;
 
   private transSubscription?: Subscription;
   public path = ROUTER_UTILS.config.nft.root;
   constructor(
     public deviceService: DeviceService,
+    private checkoutService: CheckoutService,
     private auth: AuthService,
     private router: Router,
     private notification: NotificationService,
@@ -74,6 +84,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
+          removeItem(StorageItem.CheckoutTransaction);
           return;
         }
 
@@ -130,6 +141,10 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
+    if (getItem(StorageItem.CheckoutTransaction)) {
+      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.CheckoutTransaction)).subscribe(<any>this.transaction$);
+    }
+
     // Run ticker.
     const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.expiryTicker$.next(this.expiryTicker$.value);
@@ -139,6 +154,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
+          removeItem(StorageItem.CheckoutTransaction);
           int.unsubscribe();
           this.reset();
         }
@@ -181,6 +197,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     this.isOpen = false;
     this.currentStep = StepType.CONFIRM;
     this.purchasedNft = undefined;
+    this.cd.markForCheck();
   }
 
   public goToNft(): void {
@@ -244,6 +261,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.orderApi.orderNft(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
+        setItem(StorageItem.CheckoutTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
         this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
