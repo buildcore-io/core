@@ -124,12 +124,14 @@
         <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex">
             <wen-icon-stopwatch class="mr-2 lg:mr-3"></wen-icon-stopwatch>
             <div class="text-base font-medium">
-                <span>{{(expiryTicker$ | async) | countdownTime}}</span>
-                <span class="text-alerts-error" i18n> remaining to make the transfer</span>
+                <span *ngIf="!isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
+                <span class="text-alerts-error" *ngIf="!isExpired((transaction$ | async))" i18n> remaining to make the transfer</span>
+
+                <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))">Expired</span>
             </div>
         </div>
 
-        <div class="w-full px-4 py-3 mt-16bg-bg-background rounded-2xl">
+        <div class="w-full px-4 py-3 mt-16bg-bg-background rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-app-gray-400" i18n>
                 Send {{formatBest((transaction$ | async)?.payload?.amount) }} IOTA to following address:
             </div>
@@ -145,7 +147,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col items-center justify-center w-full mt-8 lg:flex-row lg:w-auto">
+        <div class="flex flex-col items-center justify-center w-full mt-8 lg:flex-row lg:w-auto" *ngIf="!isExpired((transaction$ | async))">
             <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
                 class="deep-link">
                 <div class="flex items-center">

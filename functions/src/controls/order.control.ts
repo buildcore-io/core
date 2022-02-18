@@ -5,8 +5,8 @@ import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
-import { Transaction } from '../../interfaces/models';
-import { COL, WenRequest } from '../../interfaces/models/base';
+import { Member, Transaction } from '../../interfaces/models';
+import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { serverTime } from "../utils/dateTime.utils";
@@ -14,7 +14,7 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Collection, CollectionType } from './../../interfaces/models/collection';
+import { Collection, CollectionAccess, CollectionType } from './../../interfaces/models/collection';
 import { Nft } from './../../interfaces/models/nft';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
@@ -49,6 +49,37 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Collection must be approved.
   if (!docCollectionData.approved) {
     throw throwInvalidArgument(WenError.collection_must_be_approved);
+  }
+
+  if (docCollectionData.access === CollectionAccess.MEMBERS_ONLY) {
+    if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
+      throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    }
+  }
+
+  if (docCollectionData.access === CollectionAccess.GUARDIANS_ONLY) {
+    if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
+      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+    }
+  }
+
+  if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
+    let includes = false;
+    const qry: any = await admin.firestore().collection(COL.TRANSACTION)
+               .where('type', '==', TransactionType.BADGE)
+               .where('member', '==', owner);
+    if (qry.size > 0) {
+      for (const t of qry.docs) {
+        if (docCollectionData.accessAwards.includes(t.data().payload.award)) {
+          includes = true;
+          break;
+        }
+      }
+    }
+
+    if (includes === false) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+    }
   }
 
   // Let's determine if NFT can be indicated or we need to randomly select one.
@@ -129,6 +160,20 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
   const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+
+  // Calculate discount.
+  const dataMember: Member = docMember.data();
+  let discount = 0;
+  // We must apply discount.
+  if (docCollectionData.discounts?.length && dataMember.spaces?.[docCollectionData.space]?.totalReputation) {
+    const membersXp: number = dataMember.spaces[docCollectionData.space].totalReputation || 0;
+    for (const d of docCollectionData.discounts) {
+      if (membersXp < d.xp) {
+        discount = d.amount;
+      }
+    }
+  }
+
   // Lock NFT
   await admin.firestore().runTransaction(async (transaction) => {
     transaction.update(refNft, {
@@ -145,7 +190,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     createdOn: serverTime(),
     payload: {
       type: TransactionOrderType.NFT_PURCHASE,
-      amount: docNftData.price,
+      amount: discount > 0 ? Math.ceil(discount * docNftData.price) : docNftData.price,
       targetAddress: targetAddress.bech32,
       beneficiary: docNft.data().owner ? 'member' : 'space',
       beneficiaryUid: docNft.data().owner || docCollectionData.space,

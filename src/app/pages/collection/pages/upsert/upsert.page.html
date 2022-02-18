@@ -158,7 +158,7 @@
                         <ng-container *ngIf="deviceService.isDesktop$ | async">
                             <div class="flex items-center justify-between mt-4"
                                 *ngFor="let discount of discounts.controls; let i = index">
-                                    <nz-input-group nzAddOnBefore="XP >" class="w-1/2 flex-grow">
+                                    <nz-input-group nzAddOnBefore="XP >" class="flex-grow w-1/2">
                                         <input
                                             type="text"
                                             nz-input
@@ -166,10 +166,10 @@
                                             [formControl]="gForm(discount, 'xp')"
                                         />
                                     </nz-input-group>
-    
+
                                     <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
-    
-                                    <div class="w-1/2 flex-grow flex items-center">
+
+                                    <div class="flex items-center flex-grow w-1/2">
                                         <nz-input-number
                                             class="w-full max-w-80"
                                             [nzMin]="1"
@@ -180,8 +180,8 @@
                                             nzSize="large"
                                             [formControl]="gForm(discount, 'amount')"
                                         ></nz-input-number>
-                                        
-                                        <wen-icon-trash class="cursor-pointer ml-4" (click)="removeDiscount(i)"></wen-icon-trash>
+
+                                        <wen-icon-trash class="ml-4 cursor-pointer" (click)="removeDiscount(i)"></wen-icon-trash>
                                     </div>
                             </div>
                         </ng-container>
@@ -194,11 +194,11 @@
                                     </div>
                                     <wen-icon-trash class="cursor-pointer" (click)="removeDiscount(i)"></wen-icon-trash>
                                 </div>
-    
+
                                 <div class="mt-2 mb-5 separator"></div>
-    
+
                                 <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Discount XP</div>
-    
+
                                 <nz-input-group nzAddOnBefore="XP >" class="w-full mt-2 mb-5">
                                     <input
                                         type="text"
@@ -207,9 +207,9 @@
                                         [formControl]="gForm(discount, 'xp')"
                                     />
                                 </nz-input-group>
-    
+
                                 <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Discount Amount</div>
-    
+
                                 <nz-input-number
                                     class="w-full mt-2 mb-5"
                                     [nzMin]="1"
@@ -342,6 +342,54 @@
                             </nz-select>
                         </nz-form-control>
                     </nz-form-item>
+                </nz-card>
+
+                <nz-card [nzBordered]="false" nzTitle="Collection Setup">
+                  <nz-form-item>
+                    <nz-form-control>
+                      <nz-radio-group
+                        class="wen-radio-group"
+                        [formControl]="selectedAccessControl"
+                      >
+                        <wen-radio [value]="targetAccess.OPEN"
+                          ><span i18n>Open Sale
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Everyone has access to this collection."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                        <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
+                          ><span i18n>Space Guardians Only
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Only Space Guardians can access."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                        <wen-radio [value]="targetAccess.MEMBERS_ONLY"
+                          ><span i18n>Space Members Only
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Only Space Members can access."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                        <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
+                          ><span i18n>Space Members with Badge Only
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Only Space Members with badge can access."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                      </nz-radio-group>
+                    </nz-form-control>
+                  </nz-form-item>
                 </nz-card>
             </div>
         </div>

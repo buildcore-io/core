@@ -21,7 +21,7 @@ import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-ant
 import { Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
-import { DiscountLine } from './../../../../../../functions/interfaces/models/collection';
+import { CollectionAccess, DiscountLine } from './../../../../../../functions/interfaces/models/collection';
 
 const MAX_DISCOUNT_COUNT = 3;
 
@@ -42,6 +42,7 @@ export class UpsertPage implements OnInit {
   public placeholderUrlControl: FormControl = new FormControl('');
   public bannerUrlControl: FormControl = new FormControl('');
   public categoryControl: FormControl = new FormControl('', Validators.required);
+  public selectedAccessControl: FormControl = new FormControl(CollectionAccess.OPEN, Validators.required);
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public royaltiesSpaceControl: FormControl = new FormControl('', Validators.required);
   public royaltiesSpaceDifferentControl: FormControl = new FormControl(false, Validators.required);
@@ -71,15 +72,13 @@ export class UpsertPage implements OnInit {
     private nzNotification: NzNotificationService,
     private fileApi: FileApi
   ) {
-    this.discounts = new FormArray([
-      this.getDiscountForm()
-    ]);
-
+    this.discounts = new FormArray([]);
     this.collectionForm = new FormGroup({
       name: this.nameControl,
       description: this.descriptionControl,
       space: this.spaceControl,
       type: this.typeControl,
+      access: this.selectedAccessControl,
       price: this.priceControl,
       unit: this.unitControl,
       availableFrom: this.availableFromControl,
@@ -182,6 +181,11 @@ export class UpsertPage implements OnInit {
 
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'collection_banner');
   }
+
+  public get targetAccess(): typeof CollectionAccess {
+    return CollectionAccess;
+  }
+
 
   public uploadChangePlaceholder(event: NzUploadChangeParam): void {
     if (event.type === 'success') {

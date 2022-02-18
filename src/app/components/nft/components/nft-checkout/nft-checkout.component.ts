@@ -13,7 +13,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { Collection, CollectionType, TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
+import { Collection, CollectionType, Transaction, TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
@@ -204,6 +204,15 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/', this.path, this.purchasedNft?.uid]);
     this.reset();
     this.onClose.next();
+  }
+
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
   public close(): void {

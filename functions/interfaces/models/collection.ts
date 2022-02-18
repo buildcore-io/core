@@ -6,6 +6,13 @@ export enum CollectionType {
   SFT = 2
 }
 
+export enum CollectionAccess {
+  OPEN = 0,
+  MEMBERS_ONLY = 1,
+  GUARDIANS_ONLY = 2,
+  MEMBERS_WITH_BADGE = 3
+}
+
 export interface DiscountLine {
   xp: number;
   amount: number;
@@ -31,6 +38,8 @@ export interface Collection extends BaseRecord {
   bannerUrl: string;
   category: Categories,
   type: CollectionType,
+  access: CollectionAccess,
+  accessAwards: string[],
   space: string;
   royaltiesFee: number;
   royaltiesSpace: EthAddress;

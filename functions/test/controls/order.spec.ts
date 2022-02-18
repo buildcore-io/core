@@ -6,7 +6,7 @@ import { approveCollection, createCollection } from '../../../functions/src/cont
 import { createNft } from '../../../functions/src/controls/nft.control';
 import { createSpace } from '../../../functions/src/controls/space.control';
 import { WenError } from "../../interfaces/errors";
-import { Categories, Collection, CollectionType } from '../../interfaces/models/collection';
+import { Categories, Collection, CollectionAccess, CollectionType } from '../../interfaces/models/collection';
 import { Member } from '../../interfaces/models/member';
 import { Nft } from '../../interfaces/models/nft';
 import { Space } from '../../interfaces/models/space';
@@ -160,6 +160,7 @@ describe.skip('Ordering flows', () => {
       description: 'babba',
       type: type,
       category: Categories.ART,
+      access: CollectionAccess.OPEN,
       royaltiesFee: ro,
       space: space.uid,
       royaltiesSpace: space.uid,

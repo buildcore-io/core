@@ -5,6 +5,7 @@ import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { Transaction, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
+import { MIN_AMOUNT_TO_TRANSFER } from '../services/wallet/wallet';
 import { serverTime } from "../utils/dateTime.utils";
 import { getRandomEthAddress } from "../utils/wallet.utils";
 import { EthAddress, IotaAddress } from './../../interfaces/models/base';
@@ -170,8 +171,13 @@ class ProcessingService {
 
     // Calculate royalties.
     const transOut: Transaction[] = [];
-    const royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(order.payload.amount * order.payload.royaltiesFee) : 0;
-    const finalAmt: number = order.payload.amount - royaltyAmt;
+    let royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(order.payload.amount * order.payload.royaltiesFee) : 0;
+    let finalAmt: number = order.payload.amount - royaltyAmt;
+
+    if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
+      royaltyAmt = 0;
+      finalAmt = finalAmt + royaltyAmt;
+    }
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
