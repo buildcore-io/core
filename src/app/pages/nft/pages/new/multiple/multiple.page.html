@@ -7,9 +7,9 @@
                 nzFlex="auto"
                 style="max-width: calc(100% - 450px)"
             >
-                <nz-card [nzBordered]="false">
+                <nz-card [nzBordered]="false" *ngIf="currentStep === stepType.GENERATE">
                     <nz-card-meta
-                        [nzTitle]="currentStep === stepType.GENERATE ? 'Upload multiple images' : 'Upload more images'"
+                        [nzTitle]="uploadedFiles.length === 0 ? 'Upload multiple images' : 'Upload more images'"
                         [nzDescription]="uploadedFiles.length + '/500'"
                         >
                     </nz-card-meta>
@@ -25,7 +25,6 @@
                                     [nzLimit]="500"
                                     [nzMultiple]="true"
                                     [nzCustomRequest]="uploadMultipleFiles.bind(this)"
-                                    [nzPreview]="onPreview.bind(this)"
                                     (nzChange)="uploadMultipleChange($event)"
                                     nzFileType="image/png,image/jpeg"
                                 >
@@ -36,6 +35,36 @@
                             </nz-form-control>
                         </nz-form-item>
                     </div>
+                </nz-card>
+
+                <nz-card nzTitle="Uploaded CSV" *ngIf="currentStep === stepType.PUBLISH">
+                    <nz-table class="block" nzNoResult="No NFTs"
+                        [nzData]="nfts" [nzShowPagination]="false">
+                        <thead>
+                            <tr>
+                                <th i18n>Name</th>
+                                <th i18n>Price</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let nft of nfts; let i = index; trackBy: trackByName">
+                                <td>
+                                    <div class="text-base font-medium">{{ nft.name }}</div>
+                                </td>
+                                <td>
+                                    <div class="text-base font-medium">{{ nft.price }}</div>
+                                </td>
+                                <td class="w-0">
+                                    <wen-icon-eye class="cursor-pointer text-black" (click)="previewNft = nft"></wen-icon-eye>
+                                </td>
+                                <td class="w-0">
+                                    <wen-icon-trash class="cursor-pointer text-app-gray-400" (click)="removeNft(i)"></wen-icon-trash>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
                 </nz-card>
             </div>
     
@@ -51,6 +80,7 @@
                                 nzPlaceHolder="Select collection"
                                 [formControl]="collectionControl"
                                 >
+                                <nz-option *ngFor="let o of getCollectionListOptions(cache.allCollections$ | async)" [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
                             </nz-select>
                         </nz-form-control>
                     </nz-form-item>
@@ -110,7 +140,7 @@
         {{ currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs'}}
     </button>
 
-    <wen-nft-preview [previewFile]="previewFile" (onClose)="previewFile = null"></wen-nft-preview>
+    <wen-nft-preview [nft]="previewNft" (onClose)="previewNft = null"></wen-nft-preview>
 </ng-container>
 
 <div *ngIf="deviceService.isMobile$ | async" class="flex mt-6 p-4 rounded-2xl bg-white text-foregrounds-secondary">

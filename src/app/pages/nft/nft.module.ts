@@ -25,6 +25,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
@@ -75,7 +76,8 @@ import { DataService } from './services/data.service';
     NzSkeletonModule,
     NftCardModule,
     NftPreviewModule,
-    CollapseModule
+    CollapseModule,
+    NzTableModule
   ],
   providers: [
     DataService

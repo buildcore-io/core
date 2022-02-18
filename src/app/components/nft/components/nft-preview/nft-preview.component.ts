@@ -3,8 +3,6 @@ import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
 import { DataService } from '@pages/nft/services/data.service';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
-import { NzUploadFile } from 'ng-zorro-antd/upload';
 
 @Component({
   selector: 'wen-nft-preview',
@@ -13,8 +11,7 @@ import { NzUploadFile } from 'ng-zorro-antd/upload';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NftPreviewComponent {
-  @Input() previewFile?: NzUploadFile | null;
-  @Input() nft?: Nft;
+  @Input() nft?: any | null;
   @Output() onClose = new EventEmitter<void>();
 
   constructor(
@@ -24,11 +21,15 @@ export class NftPreviewComponent {
   ) {}
 
   public close(): void {
-    this.previewFile = null;
+    this.nft = null;
     this.onClose.next();
   }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+
+  public getValues(obj: any): any[] {
+    return Object.values(obj);
   }
 }

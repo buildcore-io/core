@@ -1,25 +1,33 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+/* eslint-disable no-invalid-this */
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { download } from '@core/utils/tools.utils';
-import { URL_REGEXP } from 'functions/interfaces/config';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Collection, CollectionType } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
-import { Observable, of, Subscription } from 'rxjs';
+import { merge, Observable, of, Subscription } from 'rxjs';
 import { StepType } from '../new.page';
 
 export interface NFTObject {
   [key: string]: {
     label: string;
     validate: (value: any) => boolean;
+    value?: () => any;
+    mapper?: (value: any) => any;
     isArray?: boolean;
     defaultAmount?: number;
   }
 }
 
+@UntilDestroy()
 @Component({
   selector: 'wen-multiple',
   templateUrl: './multiple.page.html',
@@ -31,8 +39,11 @@ export class MultiplePage {
   public nftForm: FormGroup;
   public stepType = StepType;
   public currentStep = StepType.GENERATE;
-  public previewFile?: NzUploadFile | null;
+  public previewNft?: any | null;
   public uploadedFiles: NzUploadFile[] = [];
+  public price?: number | null;
+  public availableFrom?: Date | null;
+  public nfts: any[] = [];
   public nftObject:  NFTObject = {
     name: {
       label: 'name',
@@ -42,25 +53,30 @@ export class MultiplePage {
       label: 'description',
       validate: (value: string) => !!value
     },
-    link: {
-      label: 'link',
-      validate: (value: string) => !!value && URL_REGEXP.test(value)
-    },
     price: {
       label: 'price',
-      validate: (value: string) => !!value && Number(value) > 0
+      validate: (value: string) => {
+        const price = Number(value);
+        if (!value || isNaN(price)) return false;
+        if (this.price) {
+          return price === this.price;
+        }
+        return true;
+      },
+      value: () => this.price || ''
     },
-    unit: {
-      label: 'unit',
-      validate: (value: string) => !!value
-    },
-    startDate: {
-      label: 'start_date',
-      validate: (value: string) => !!value && !isNaN(Date.parse(value))
-    },
-    endDate: {
-      label: 'end_date',
-      validate: (value: string) => !!value && !isNaN(Date.parse(value))
+    availableFrom: {
+      label: 'available_from',
+      validate: (value: string) => {
+        if(!value || isNaN(Date.parse(value))) return false;
+        const d = new Date(value);
+        if (this.availableFrom) {
+          return d.getTime() === this.availableFrom.getTime();
+        }
+        return new Date().getTime() < d.getTime();
+      },
+      value: () => this.availableFrom || '',
+      mapper: (value: string) => new Date(value)
     },
     property: {
       label: 'prop',
@@ -78,17 +94,52 @@ export class MultiplePage {
       label: 'media',
       validate: (value: string) => !!value
     },
-  }
+  };
 
   constructor(
     public deviceService: DeviceService,
+    public cache: CacheService,
     private nzNotification: NzNotificationService,
     private auth: AuthService,
-    private fileApi: FileApi
+    private fileApi: FileApi,
+    private route: ActivatedRoute,
+    private cd: ChangeDetectorRef
   ) {
     this.nftForm = new FormGroup({
       collection: this.collectionControl
     });
+  }
+
+  public ngOnInit(): void {
+    merge(this.collectionControl.valueChanges, this.cache.allCollections$)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        const finObj: Collection|undefined = this.cache.allCollections$.value.find((subO: any) => {
+          return subO.uid === this.collectionControl.value;
+        });
+        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.CLASSIC)) {
+          this.price = (finObj.price || 0);
+          this.availableFrom = (finObj.availableFrom || finObj.createdOn).toDate();
+        } else {
+          this.price = null;
+          this.availableFrom = null;
+        }
+      });
+
+    this.route.parent?.params.pipe(untilDestroyed(this)).subscribe((p) => {
+      if (p.collection) {
+        this.collectionControl.setValue(p.collection);
+      }
+    });
+  }
+
+  public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {
+    return (list || [])
+      .filter((o) => o.rejected !== true)
+      .map((o) => ({
+          label: o.name || o.uid,
+          value: o.uid
+      }));
   }
 
   public uploadMultipleFiles(item: NzUploadXHRArgs): Subscription {
@@ -101,7 +152,6 @@ export class MultiplePage {
 
       return of().subscribe();
     }
-    this.currentStep = StepType.GENERATE;
     return this.fileApi.upload(this.auth.member$.value.uid, item, 'nft_media');
   }
 
@@ -111,8 +161,51 @@ export class MultiplePage {
     }
   }
 
-  public onPreview(file: NzUploadFile): void {
-    this.previewFile = file;
+  public formatSubmitData(data: any): any {
+    const propLength = 'prop.'.length;
+    const statLength = 'stat.'.length;
+
+    const stats: any = {};
+    if (data.stat) {
+      data.stat
+        .map((s: { [key: string]: string }) => ({ label: Object.keys(s)[0], value: Object.values(s)[0] }))
+        .forEach((v: any) => {
+          if (v.label && v.value) {
+            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase().substr(statLength + 1);
+            stats[formattedKey] = {
+              label: v.label.substr(statLength + 1),
+              value: v.value
+            };
+          }
+        });
+      if (Object.keys(stats).length) {
+        data.stats = stats;
+      }
+      delete data.stat;
+    }
+
+    if (data.property) {
+      const properties: any = {};
+      data.property
+        .map((p: { [key: string]: string }) => ({ label: Object.keys(p)[0], value: Object.values(p)[0] }))
+        .forEach((v: any) => {
+          if (v.label && v.value) {
+            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase().substr(propLength + 1);
+            properties[formattedKey] = {
+              label: v.label.substr(propLength + 1),
+              value: v.value
+            };
+          }
+        });
+      if (Object.keys(properties).length) {
+        data.properties = properties;
+      }
+      delete data.property;
+    }
+
+    data.price = Number(data.price);
+    data.collection = this.collectionControl.value;
+    return data;
   }
 
   public beforeCSVUpload(file: NzUploadFile) : boolean | Observable<boolean> {
@@ -136,11 +229,16 @@ export class MultiplePage {
               Object.keys(nft)
                 .reduce((acc: any, key: string) => {
                   const fieldKey =  Object.keys(this.nftObject).find((k) => key.startsWith(this.nftObject[k].label)) || '';
+                  const value = this.nftObject[fieldKey]?.mapper?.call(this, nft[key]) || nft[key];
                   return this.nftObject[fieldKey]?.isArray ?
-                    { ...acc, [fieldKey]: [...(acc[fieldKey] || []), { [key]: nft[key] }] } :
-                    { ...acc, [fieldKey]: nft[key] };
+                    { ...acc, [fieldKey]: [...(acc[fieldKey] || []), { [key]: value }] } :
+                    { ...acc, [fieldKey]: value };
                 }, {}));
-        console.log(nfts);
+        this.currentStep = StepType.PUBLISH;
+        console.log(this.nfts);
+        this.nfts = nfts.map((nft: any) => this.formatSubmitData(nft));
+        console.log(this.nfts);
+        this.cd.markForCheck();
       }
     })
     return false;
@@ -178,20 +276,33 @@ export class MultiplePage {
 
     const data =
       this.uploadedFiles
-        .map((file: NzUploadFile) => [...new Array(fields.length - 2).fill(''), file.response])
-
+        .map((file: NzUploadFile) => [
+          ...fields.slice(1, fields.length-1)
+            .map((f: string) => {
+              const obj = Object.values(this.nftObject).find((item) => f.startsWith(item.label));
+              return obj?.value ? obj?.value() : '';
+            }), 
+          file.response]);
+  
     const csv = Papa.unparse({
       fields,
       data
     });
 
     download(`data:text/csv;charset=utf-8${csv}`, 'soonaverse_NFT_list.csv');
-    this.currentStep = StepType.PUBLISH;
   }
 
   public async publish(): Promise<void> {
     if (!this.validateForm()) {
       return;
     }
+  }
+
+  public trackByName(index: number, item: any): number {
+    return item.name;
+  }
+
+  public removeNft(index: number): void  {
+    this.nfts = this.nfts.filter((nft: any, i: number) => i !== index);
   }
 }
