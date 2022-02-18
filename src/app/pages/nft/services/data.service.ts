@@ -15,6 +15,7 @@ export class DataService {
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public royaltySpace$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public collectionCreator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
 
   public getPropStats(obj: any): any[] {

@@ -69,6 +69,9 @@ export class NFTPage implements OnInit, OnDestroy {
         if (p.createdBy) {
           this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }
+        if (p.owner) {
+          this.subscriptions$.push(this.memberApi.listen(p.owner).pipe(untilDestroyed(this)).subscribe(this.data.owner$));
+        }
       }
     });
 
