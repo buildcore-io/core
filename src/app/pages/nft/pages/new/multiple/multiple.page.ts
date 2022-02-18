@@ -4,7 +4,7 @@ import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { download } from '@core/utils/tools.utils';
-import { URL_REGEXP } from 'functions/interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
@@ -35,6 +35,10 @@ export class MultiplePage {
   public previewFile?: NzUploadFile | null;
   public uploadedFiles: NzUploadFile[] = [];
   public nftObject:  NFTObject = {
+    media: {
+      label: 'media',
+      validate: (value: string) => !!value
+    },
     name: {
       label: 'name',
       validate: (value: string) => !!value
@@ -43,20 +47,13 @@ export class MultiplePage {
       label: 'description',
       validate: (value: string) => !!value
     },
-    link: {
-      label: 'link',
-      validate: (value: string) => !!value && URL_REGEXP.test(value)
-    },
     price: {
       label: 'price',
-      validate: (value: string) => !!value && Number(value) > 0
+      validate: (value: string) => !!value && Number(value) > MIN_IOTA_AMOUNT && Number(value) < MAX_IOTA_AMOUNT
     },
-    unit: {
-      label: 'unit',
-      validate: (value: string) => !!value
-    },
-    startDate: {
-      label: 'start_date',
+    // TODO only consider when CLASSIC.
+    availableFrom: {
+      label: 'availableFrom',
       validate: (value: string) => !!value && !isNaN(Date.parse(value))
     },
     propertyLabel: {
@@ -86,10 +83,6 @@ export class MultiplePage {
       validate: () => true,
       isArray: true,
       defaultAmount: 10
-    },
-    media: {
-      label: 'media',
-      validate: (value: string) => !!value
     },
   }
 
@@ -153,6 +146,8 @@ export class MultiplePage {
                     { ...acc, [fieldKey]: [...(acc[fieldKey] || []), { [key]: nft[key] }] } :
                     { ...acc, [fieldKey]: nft[key] };
                 }, {}));
+
+        // Result.
         console.log(nfts);
       }
     })
@@ -191,14 +186,14 @@ export class MultiplePage {
 
     const data =
       this.uploadedFiles
-        .map((file: NzUploadFile) => [...new Array(fields.length - 2).fill(''), file.filename])
+        .map((file: NzUploadFile) => [file.name, ...new Array(fields.length - 2).fill('')])
 
     const csv = Papa.unparse({
       fields,
       data
     });
 
-    download(`data:text/csv;charset=utf-8${csv}`, 'WEN_NFT_upload.csv');
+    download(`data:text/csv;charset=utf-8${csv}`, 'WEN-NFT-upload.csv');
     this.currentStep = StepType.PUBLISH;
   }
 

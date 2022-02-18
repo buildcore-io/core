@@ -2,6 +2,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
@@ -27,7 +28,7 @@ function defaultJoiUpdateCreateSchema(): any {
     }).optional(),
     availableFrom: Joi.date().required(),
     // Minimum 10Mi price required and max 1Ti
-    price: Joi.number().min(10 * 1000 * 1000).max(1000 * 1000 * 1000 * 1000).required(),
+    price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     url: Joi.string().allow(null, '').uri({
       scheme: ['https', 'http']
     }).optional(),
