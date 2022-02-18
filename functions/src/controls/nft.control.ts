@@ -38,48 +38,76 @@ function defaultJoiUpdateCreateSchema(): any {
 }
 
 export const createNft: functions.CloudFunction<Member> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cNft),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
   appCheck(WEN_FUNC.cNft, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const creator = params.address.toLowerCase();
-  const nftAddress: string = getRandomEthAddress();
   const schema: ObjectSchema<Member> = Joi.object(defaultJoiUpdateCreateSchema());
   assertValidation(schema.validate(params.body));
+  return processOneCreateNft(creator, params.body);
+});
 
+export const createBatchNft: functions.CloudFunction<string[]> = functions.runWith({
+  minInstances: scale(WEN_FUNC.cBatchNft),
+  timeoutSeconds: 300,
+  memory: "4GB",
+}).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
+  appCheck(WEN_FUNC.cBatchNft, context);
+
+  // Validate auth details before we continue
+  const params: DecodedToken = await decodeAuth(req);
+  const creator = params.address.toLowerCase();
+  const schema: any = Joi.array().items(Joi.object().keys(defaultJoiUpdateCreateSchema())).max(500);
+  assertValidation(schema.validate(params.body));
+
+  // Batch create.
+  const process: any = [];
+  for (const b of params.body) {
+    process.push(processOneCreateNft(creator, b));
+  }
+
+  // Wait for it complete.
+  const output: Member[] = await Promise.all(process);
+  return <any>output.map((o) => {
+    return o.uid;
+  });
+});
+
+const processOneCreateNft = async (creator: string, params: any): Promise<Member> => {
+  const nftAddress: string = getRandomEthAddress();
   const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
+  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.collection);
   const docCollection: any = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
   // Royalty from the price must not be below 1 Mi.
-  const calculatedRoyalty = docCollection.data().royaltiesFee * params.body.price;
+  const calculatedRoyalty = docCollection.data().royaltiesFee * params.price;
   if (calculatedRoyalty < MIN_AMOUNT_TO_TRANSFER) {
     throw throwInvalidArgument(WenError.royalty_payout_must_be_above_1_mi);
   }
 
-  if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+  if (params.availableFrom) {
+    params.availableFrom = dateToTimestamp(params.availableFrom);
   }
 
   if (docCollection.data().type === CollectionType.GENERATED || docCollection.data().type === CollectionType.SFT) {
-    params.body.price = docCollection.data().price || 0;
-    params.body.availableFrom = docCollection.data().availableFrom || docCollection.data().createdOn;
+    params.price = docCollection.data().price || 0;
+    params.availableFrom = docCollection.data().availableFrom || docCollection.data().createdOn;
   }
 
   const refNft: any = admin.firestore().collection(COL.NFT).doc(nftAddress);
   let docNft: any = await refNft.get();
   if (!docNft.exists) {
     // Document does not exists.
-    await refNft.set(keywords(cOn(merge(cleanParams(params.body), {
+    await refNft.set(keywords(cOn(merge(cleanParams(params), {
       uid: nftAddress,
       locked: false,
       position: docCollection.data().total + 1,
@@ -113,4 +141,4 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
 
   // Return member.
   return <Member>docNft.data();
-});
+}

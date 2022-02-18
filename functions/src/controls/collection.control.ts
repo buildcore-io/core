@@ -51,7 +51,6 @@ function defaultJoiUpdateCreateSchema(): any {
 }
 
 export const createCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
@@ -131,7 +130,6 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
 });
 
 export const updateCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.uCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
@@ -196,7 +194,6 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
 
 export const approveCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.approveCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
@@ -238,7 +235,6 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
 
 
 export const rejectCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.rejectCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);

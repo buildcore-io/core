@@ -85,7 +85,6 @@ async function updateLinkedEntityForMember(opp: 'add'|'remove', space: Space, me
 }
 
 export const createSpace: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
   appCheck(WEN_FUNC.cSpace, context);
@@ -147,7 +146,6 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
 });
 
 export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.uSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
   appCheck(WEN_FUNC.uSpace, context);
@@ -194,7 +192,6 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
 });
 
 export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.joinSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
   appCheck(WEN_FUNC.joinSpace, context);
@@ -263,7 +260,6 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
 });
 
 export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.leaveSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.leaveSpace, context);
@@ -324,7 +320,6 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 });
 
 export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.addGuardianSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addGuardianSpace, context);
@@ -377,7 +372,6 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
 });
 
 export const removeGuardian: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.removeGuardianSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.removeGuardianSpace, context);
@@ -427,7 +421,6 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
 });
 
 export const blockMember: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.blockMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.blockMemberSpace, context);
@@ -515,7 +508,6 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
 });
 
 export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.unblockMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.unblockMemberSpace, context);
@@ -549,7 +541,6 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
 });
 
 export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.acceptMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.acceptMemberSpace, context);
@@ -604,7 +595,6 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
 });
 
 export const declineMemberSpace: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.declineMemberSpace),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.declineMemberSpace, context);
@@ -636,7 +626,6 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions.runW
 });
 
 export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.setAlliance),
   timeoutSeconds: 300,
   memory: '4GB'

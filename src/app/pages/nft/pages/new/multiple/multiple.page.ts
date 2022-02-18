@@ -14,6 +14,7 @@ import { StepType } from '../new.page';
 export interface NFTObject {
   [key: string]: {
     label: string;
+    subName?: string;
     validate: (value: any) => boolean;
     isArray?: boolean;
     defaultAmount?: number;
@@ -58,18 +59,30 @@ export class MultiplePage {
       label: 'start_date',
       validate: (value: string) => !!value && !isNaN(Date.parse(value))
     },
-    endDate: {
-      label: 'end_date',
-      validate: (value: string) => !!value && !isNaN(Date.parse(value))
-    },
-    property: {
+    propertyLabel: {
       label: 'prop',
+      subName: 'label',
       validate: () => true,
       isArray: true,
       defaultAmount: 10
     },
-    stat: {
+    propertyValue: {
+      label: 'prop',
+      subName: 'value',
+      validate: () => true,
+      isArray: true,
+      defaultAmount: 10
+    },
+    statLabel: {
       label: 'stat',
+      subName: 'label',
+      validate: () => true,
+      isArray: true,
+      defaultAmount: 10
+    },
+    statValue: {
+      label: 'stat',
+      subName: 'value',
       validate: () => true,
       isArray: true,
       defaultAmount: 10
@@ -173,19 +186,19 @@ export class MultiplePage {
   public generate(): void {
     const fields =
       ['', ...Object.values(this.nftObject)
-        .map(item => item.isArray ? [...Array(10).keys()].map((num: number) => `${item.label}.example${num+1}`) : [item.label])
+        .map(item => item.isArray ? [...Array(5).keys()].map((num: number) => `${item.label}.${item.subName}${num+1}`) : [item.label])
         .reduce((acc: string[], cur: string[]) => [...acc, ...cur], [] as string[])];
 
     const data =
       this.uploadedFiles
-        .map((file: NzUploadFile) => [...new Array(fields.length - 2).fill(''), file.response])
+        .map((file: NzUploadFile) => [...new Array(fields.length - 2).fill(''), file.filename])
 
     const csv = Papa.unparse({
       fields,
       data
     });
 
-    download(`data:text/csv;charset=utf-8${csv}`, 'soonaverse_NFT_list.csv');
+    download(`data:text/csv;charset=utf-8${csv}`, 'WEN_NFT_upload.csv');
     this.currentStep = StepType.PUBLISH;
   }
 

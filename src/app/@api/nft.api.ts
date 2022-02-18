@@ -57,7 +57,7 @@ export class NftApi extends BaseApi<Nft> {
           } else if (tran.data()!.type === TransactionType.PAYMENT) {
             o.payments.push(tran.data()!);
           }
-          console.log(tran.data()!.uid, tran.data()!.type, tran.data()!.payload.amount, tran.data()!.payload.chainReference);
+          console.log(tran.data()!.uid, tran.data()!.type, tran.data()!.payload.amount, tran.data()!.payload.chainReference || tran.data()!.payload?.walletReference?.chainReference);
         }
 
         out.push(o);
