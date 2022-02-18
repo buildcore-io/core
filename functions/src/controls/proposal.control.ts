@@ -75,7 +75,6 @@ function defaultJoiUpdateCreateSchema(): any {
 }
 
 export const createProposal: functions.CloudFunction<Proposal> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cProposal),
   timeoutSeconds: 300,
   memory: "2GB",
@@ -209,7 +208,6 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
 });
 
 export const approveProposal: functions.CloudFunction<Proposal> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.aProposal),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aProposal, context);
@@ -251,7 +249,6 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
 });
 
 export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.rProposal),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rProposal, context);
@@ -297,7 +294,6 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
 });
 
 export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.voteOnProposal),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.voteOnProposal, context);

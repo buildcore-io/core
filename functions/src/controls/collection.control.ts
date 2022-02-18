@@ -13,7 +13,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { DISCORD_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
+import { DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, TWITTER_REGEXP } from './../../interfaces/config';
 import { Categories, Collection, CollectionType } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
@@ -32,10 +32,10 @@ function defaultJoiUpdateCreateSchema(): any {
     }).optional(),
     availableFrom: Joi.date().greater(dayjs().subtract(1, 'hour').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
-    price: Joi.number().min(10 * 1000 * 1000).max(1000 * 1000 * 1000 * 1000).required(),
+    price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
-    royaltiesFee: Joi.number().min(0).max(1).required(),
+    royaltiesFee: Joi.number().min(0).max(0.9).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
     // TODO Validate XP is not the same.
     discounts: Joi.array().items(Joi.object().keys({
@@ -51,7 +51,6 @@ function defaultJoiUpdateCreateSchema(): any {
 }
 
 export const createCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
@@ -131,7 +130,6 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
 });
 
 export const updateCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.uCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
@@ -142,6 +140,8 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   const defaultSchema = defaultJoiUpdateCreateSchema();
   delete defaultSchema.type;
   delete defaultSchema.space;
+  delete defaultSchema.price;
+  delete defaultSchema.availableFrom;
   delete defaultSchema.category;
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {
     uid: CommonJoi.uidCheck()
@@ -194,7 +194,6 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
 
 export const approveCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.approveCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
@@ -236,7 +235,6 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
 
 
 export const rejectCollection: functions.CloudFunction<Collection> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.rejectCollection),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);

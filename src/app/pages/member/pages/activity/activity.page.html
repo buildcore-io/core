@@ -5,7 +5,7 @@
         <div class="flex items-center justify-between">
           <wen-select-space
             [ngStyle]="{
-              width: (deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value ? 
+              width: (deviceService.isDesktop$ | async) && spaceForm.value.space !== defaultSpace.value ?
                 'calc(100% - 150px)' : '100%'
             }"
             formControlName="space"
@@ -75,6 +75,6 @@
 
     </nz-card>
 
-    <wen-timeline class="block" [badges]="data.badges$ | async"></wen-timeline>
+    <wen-timeline-badges class="block" [badges]="data.badges$ | async"></wen-timeline-badges>
   </div>
 </div>

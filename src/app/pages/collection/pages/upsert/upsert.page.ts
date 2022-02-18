@@ -117,6 +117,8 @@ export class UpsertPage implements OnInit {
             this.spaceControl.setValue(o.space);
             this.descriptionControl.setValue(o.description);
             this.typeControl.setValue(o.type);
+            this.priceControl.setValue(o.price / 1000 / 1000);
+            this.availableFromControl.setValue(o.availableFrom.toDate());
             this.royaltiesFeeControl.setValue(o.royaltiesFee);
             this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
             this.royaltiesSpaceDifferentControl.setValue(o.royaltiesSpace !== o.space);
@@ -132,6 +134,8 @@ export class UpsertPage implements OnInit {
 
             // Disable fields that are not editable.
             this.spaceControl.disable();
+            this.priceControl.disable();
+            this.availableFromControl.disable();
             this.typeControl.disable();
             this.categoryControl.disable();
 

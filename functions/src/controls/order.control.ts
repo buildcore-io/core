@@ -23,7 +23,6 @@ import { AddressDetails, MIN_AMOUNT_TO_TRANSFER, WalletService } from './../serv
 import { ethAddressLength } from './../utils/wallet.utils';
 
 export const orderNft: functions.CloudFunction<Transaction> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.orderNft),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Transaction> => {
   appCheck(WEN_FUNC.orderNft, context);
@@ -170,7 +169,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 });
 
 export const validateAddress: functions.CloudFunction<Transaction> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.validateAddress),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Transaction> => {
   appCheck(WEN_FUNC.validateAddress, context);

@@ -67,7 +67,7 @@ class ProcessingService {
   }
 
   private getTransactions(type: TransactionType): any {
-    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', type).where('payload.reconciled', '==', false).where('payload.void', '==', false).get();
+    return admin.firestore().collection(COL.TRANSACTION).where('payload.reconciled', '==', false).where('payload.void', '==', false).get();
   }
 
   private findAllOrdersWithAddress(address: IotaAddress): any {
@@ -79,6 +79,14 @@ class ProcessingService {
     for (const [msgId, t] of Object.entries(this.trans)) {
       const fromAddress: MilestoneTransactionEntry = t.inputs[0];
       for (const o of t.outputs) {
+
+        // Ignore output that contains input address. Remaining balance.
+        if (t.inputs.find((i) => {
+          return o.address === i.address;
+        })) {
+          continue;
+        }
+
         if (o.address === toAddress && o.amount === amount) {
           found = {
             msgId: msgId,

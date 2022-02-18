@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TimelineNftComponent } from './timeline-nft.component';
 
-import { TimelineComponent } from './timeline.component';
 
-describe('TimelineComponent', () => {
-  let component: TimelineComponent;
-  let fixture: ComponentFixture<TimelineComponent>;
+describe('TimelineNftComponent', () => {
+  let component: TimelineNftComponent;
+  let fixture: ComponentFixture<TimelineNftComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TimelineComponent ]
+      declarations: [ TimelineNftComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TimelineComponent);
+    fixture = TestBed.createComponent(TimelineNftComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

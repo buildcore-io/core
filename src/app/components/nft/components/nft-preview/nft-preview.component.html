@@ -11,12 +11,12 @@
     [nzWidth]="1000"
     >
     <ng-template #nftPreviewModalContent>
-        <div class="h-full w-full p-6 bg-bg-background rounded-2xl">
+        <div class="w-full h-full p-6 bg-bg-background rounded-2xl">
             <div class="flex items-start justify-between">
                 <div class="text-2xl font-bold" i18n>Preview</div>
                 <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
             </div>
-    
+
             <ng-container *ngTemplateOutlet="content"></ng-container>
         </div>
     </ng-template>
@@ -105,7 +105,7 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                     <p nz-typography>
-                        {{ '12392832' || (data.nft$ | async)?.ipfsMedia || 'Preparing...'}}
+                        {{ (data.nft$ | async)?.ipfsMedia || 'Preparing...'}}
                     </p>
                 </div>
             </wen-collapse>

@@ -1,12 +1,15 @@
 /* eslint-disable no-invalid-this */
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
+import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Collection, CollectionType } from 'functions/interfaces/models';
@@ -19,6 +22,7 @@ import { StepType } from '../new.page';
 export interface NFTObject {
   [key: string]: {
     label: string;
+    subName?: string;
     validate: (value: any) => boolean;
     value?: () => any;
     mapper?: (value: any) => any;
@@ -45,6 +49,10 @@ export class MultiplePage {
   public availableFrom?: Date | null;
   public nfts: any[] = [];
   public nftObject:  NFTObject = {
+    media: {
+      label: 'media',
+      validate: (value: string) => !!value
+    },
     name: {
       label: 'name',
       validate: (value: string) => !!value
@@ -80,30 +88,31 @@ export class MultiplePage {
     },
     property: {
       label: 'prop',
+      subName: 'label',
       validate: () => true,
       isArray: true,
       defaultAmount: 10
     },
     stat: {
       label: 'stat',
+      subName: 'label',
       validate: () => true,
       isArray: true,
       defaultAmount: 10
-    },
-    media: {
-      label: 'media',
-      validate: (value: string) => !!value
-    },
+    }
   };
 
   constructor(
     public deviceService: DeviceService,
     public cache: CacheService,
     private nzNotification: NzNotificationService,
+    private notification: NotificationService,
     private auth: AuthService,
     private fileApi: FileApi,
     private route: ActivatedRoute,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private nftApi: NftApi,
+    private router: Router
   ) {
     this.nftForm = new FormGroup({
       collection: this.collectionControl
@@ -162,18 +171,15 @@ export class MultiplePage {
   }
 
   public formatSubmitData(data: any): any {
-    const propLength = 'prop.'.length;
-    const statLength = 'stat.'.length;
-
     const stats: any = {};
     if (data.stat) {
       data.stat
         .map((s: { [key: string]: string }) => ({ label: Object.keys(s)[0], value: Object.values(s)[0] }))
         .forEach((v: any) => {
           if (v.label && v.value) {
-            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase().substr(statLength + 1);
+            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase();
             stats[formattedKey] = {
-              label: v.label.substr(statLength + 1),
+              label: v.label,
               value: v.value
             };
           }
@@ -190,9 +196,9 @@ export class MultiplePage {
         .map((p: { [key: string]: string }) => ({ label: Object.keys(p)[0], value: Object.values(p)[0] }))
         .forEach((v: any) => {
           if (v.label && v.value) {
-            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase().substr(propLength + 1);
+            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase();
             properties[formattedKey] = {
-              label: v.label.substr(propLength + 1),
+              label: v.label,
               value: v.value
             };
           }
@@ -271,7 +277,7 @@ export class MultiplePage {
   public generate(): void {
     const fields =
       ['', ...Object.values(this.nftObject)
-        .map(item => item.isArray ? [...Array(10).keys()].map((num: number) => `${item.label}.example${num+1}`) : [item.label])
+        .map(item => item.isArray ? [...Array(5).keys()].map((num: number) => `${item.label}.${item.subName}${num+1}`) : [item.label])
         .reduce((acc: string[], cur: string[]) => [...acc, ...cur], [] as string[])];
 
     const data =
@@ -293,9 +299,13 @@ export class MultiplePage {
   }
 
   public async publish(): Promise<void> {
-    if (!this.validateForm()) {
-      return;
-    }
+    if (!this.nfts?.length) return;
+    
+    await this.auth.sign(this.nfts, (sc, finish) => {
+      this.notification.processRequest(this.nftApi.batchCreate(sc), 'Created.', finish).subscribe((val: any) => {
+        this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);
+      });
+    });
   }
 
   public trackByName(index: number, item: any): number {

@@ -10,7 +10,7 @@ import { MemberTileModule } from '@components/member/components/tile/member-tile
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
-import { TimelineModule } from '@components/timeline/timeline.module';
+import { TimelineBadgesModule } from '@components/timeline-badges/timeline-badges.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -80,7 +80,7 @@ import { DataService } from './services/data.service';
     MobileSearchModule,
     IpfsBadgeModule,
     SelectSpaceModule,
-    TimelineModule,
+    TimelineBadgesModule,
     NftCardModule,
     NzSkeletonModule,
     InfiniteScrollModule,

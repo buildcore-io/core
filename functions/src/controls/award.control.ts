@@ -60,7 +60,6 @@ function defaultJoiUpdateCreateSchema(): any {
 }
 
 export const createAward: functions.CloudFunction<Award> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Award> => {
   appCheck(WEN_FUNC.cAward, context);
@@ -136,7 +135,6 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
 });
 
 export const addOwner: functions.CloudFunction<Award> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.addOwnerAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addOwnerAward, context);
@@ -180,7 +178,6 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
 });
 
 export const approveAward: functions.CloudFunction<Award> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.aAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aAward, context);
@@ -222,7 +219,6 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
 });
 
 export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.rAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rAward, context);
@@ -268,7 +264,6 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
 });
 
 export const participate: functions.CloudFunction<Award> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.participateAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.participateAward, context);
@@ -333,7 +328,6 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
 });
 
 export const approveParticipant: functions.CloudFunction<Award> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.aParticipantAward),
 }).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aParticipantAward, context);

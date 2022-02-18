@@ -11,7 +11,7 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
-import { createNft } from './../../src/controls/nft.control';
+import { createBatchNft, createNft } from './../../src/controls/nft.control';
 import { validateAddress } from './../../src/controls/order.control';
 const db = admin.firestore();
 
@@ -108,6 +108,30 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     expect(returns?.createdOn).toBeDefined();
     expect(returns?.updatedOn).toBeDefined();
+    walletSpy.mockRestore();
+  });
+
+  it('successfully batch create 2 NFT', async () => {
+    mocker([
+      {
+        name: 'Collection A',
+        description: 'babba',
+        collection: collection.uid,
+        availableFrom: dayjs().add(1, 'hour').toDate(),
+        price: 10 * 1000 * 1000
+      },
+      {
+        name: 'Collection A',
+        description: 'babbssa',
+        collection: collection.uid,
+        availableFrom: dayjs().add(1, 'hour').toDate(),
+        price: 10 * 1000 * 1000
+      }
+    ]);
+    const wrapped: any = testEnv.wrap(createBatchNft);
+    const returns = await wrapped();
+
+    expect(returns?.length).toBe(2);
     walletSpy.mockRestore();
   });
 
