@@ -49,10 +49,6 @@ export class MultiplePage {
   public availableFrom?: Date | null;
   public nfts: any[] = [];
   public nftObject:  NFTObject = {
-    media: {
-      label: 'media',
-      validate: (value: string) => !!value
-    },
     name: {
       label: 'name',
       validate: (value: string) => !!value
@@ -91,14 +87,18 @@ export class MultiplePage {
       subName: 'label',
       validate: () => true,
       isArray: true,
-      defaultAmount: 10
+      defaultAmount: 5
     },
     stat: {
       label: 'stat',
       subName: 'label',
       validate: () => true,
       isArray: true,
-      defaultAmount: 10
+      defaultAmount: 5
+    },
+    media: {
+      label: 'media',
+      validate: (value: string) => !!value
     }
   };
 
@@ -277,7 +277,7 @@ export class MultiplePage {
   public generate(): void {
     const fields =
       ['', ...Object.values(this.nftObject)
-        .map(item => item.isArray ? [...Array(5).keys()].map((num: number) => `${item.label}.${item.subName}${num+1}`) : [item.label])
+        .map(item => item.isArray ? [...Array(item.defaultAmount).keys()].map((num: number) => `${item.label}.${item.subName}${num+1}`) : [item.label])
         .reduce((acc: string[], cur: string[]) => [...acc, ...cur], [] as string[])];
 
     const data =
