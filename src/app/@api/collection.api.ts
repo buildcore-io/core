@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Collection } from "functions/interfaces/models";
+import { Collection, CollectionAccess } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -21,6 +21,50 @@ export class CollectionApi extends BaseApi<Collection> {
   public collection = COL.COLLECTION;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
+  }
+
+  public lowToHigh(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def);
+  }
+
+  public highToLow(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def);
+  }
+
+  public lowToHighAccess(access: CollectionAccess, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('access', '==', access);
+    });
+  }
+
+  public highToLowAccess(access: CollectionAccess, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('access', '==', access);
+    });
+  }
+
+  public lowToHighSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space);
+    });
+  }
+
+  public highToLowSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space);
+    });
+  }
+
+  public lowToHighCategory(category: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('category', '==', category);
+    });
+  }
+
+  public highToLowCategory(category: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('category', '==', category);
+    });
   }
 
   public lastWithinSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {

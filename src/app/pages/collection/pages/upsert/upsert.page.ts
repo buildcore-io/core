@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AwardApi } from '@api/award.api';
-import { FULL_LIST } from '@api/base.api';
+import { AwardApi, AwardFilter } from '@api/award.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -34,7 +33,7 @@ const MAX_DISCOUNT_COUNT = 3;
   styleUrls: ['./upsert.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UpsertPage implements OnInit {
+export class UpsertPage implements OnInit, OnDestroy {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public royaltiesFeeControl: FormControl = new FormControl('', Validators.required);
@@ -62,6 +61,7 @@ export class UpsertPage implements OnInit {
   public formatterPercent = (value: number): string => `${value} %`;
   public parserPercent = (value: string): string => value.replace(' %', '');
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  private awardSub?: Subscription;
 
   constructor(
     public deviceService: DeviceService,
@@ -155,10 +155,12 @@ export class UpsertPage implements OnInit {
       if (this.royaltiesSpaceDifferentControl.value === false) {
         this.royaltiesSpaceControl.setValue(val);
       }
-    });
 
-    // Get all awards.
-    this.awardApi.top(undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
+      if (val) {
+        this.awardSub?.unsubscribe();
+        this.awardSub = this.awardApi.listenSpace(val, AwardFilter.ALL).subscribe(this.awards$)
+      }
+    });
   }
 
   public get maxDiscountCount(): number {
@@ -194,7 +196,6 @@ export class UpsertPage implements OnInit {
   public get targetAccess(): typeof CollectionAccess {
     return CollectionAccess;
   }
-
 
   public uploadChangePlaceholder(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
@@ -343,5 +344,9 @@ export class UpsertPage implements OnInit {
 
   public gForm(f: any, value: string): any {
     return f.get(value);
+  }
+
+  public ngOnDestroy(): void {
+    this.awardSub?.unsubscribe();
   }
 }

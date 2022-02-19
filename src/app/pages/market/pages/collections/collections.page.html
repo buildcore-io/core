@@ -14,13 +14,13 @@
                 {{ tag }}
                 </nz-tag>
             </ng-container>
-    
+
             <ng-template #hotTagsMobileBlock>
                 <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
                     <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
                 </nz-select>
             </ng-template>
-    
+
             <wen-select-space
                 *ngIf="deviceService.isDesktop$ | async"
                 class="block w-44"
@@ -30,7 +30,7 @@
             </wen-select-space>
 
             <nz-select
-                class="w-16 ml-4"
+                class="ml-4 w-44"
                 nzSize="small"
                 nzPlaceHolder="Category"
                 [nzDropdownStyle]="{ 'min-width': '128px', 'max-width': '100%' }"
