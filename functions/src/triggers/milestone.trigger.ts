@@ -410,7 +410,7 @@ class ProcessingService {
                   from: fromAddress,
                   to: o
                 };
-                const payment = await this.createPayment(order.data(), wrongTransaction);
+                const payment = await this.createPayment(order.data(), wrongTransaction, true);
                 await this.createCredit(order.data(), payment, wrongTransaction);
               }
             }
