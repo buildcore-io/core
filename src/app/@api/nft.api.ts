@@ -89,11 +89,121 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
-  public lowToHighInCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
-    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('collection', '==', collection).where('hidden', '==', false);
+  public topAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['availableFrom', 'createdOn'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date());
     });
   }
+
+  public lowToHighAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['availableFrom', 'price'], 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date());
+    });
+  }
+
+  public highToLowAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['availableFrom', 'price'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date());
+    });
+  }
+
+  public topOwned(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['owner', 'createdOn'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('owner', '!=', null);
+    });
+  }
+
+  public lowToHighOwned(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['owner', 'price'], 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('owner', '!=', null);
+    });
+  }
+
+  public highToLowOwned(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['owner', 'price'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('owner', '!=', null);
+    });
+  }
+
+  public topSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('space', '==', space);
+    });
+  }
+
+  public lowToHighSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('space', '==', space);
+    });
+  }
+
+  public highToLowSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('space', '==', space);
+    });
+  }
+
+  // Collection
+  public lastCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('collection', '==', collection);
+    });
+  }
+
+  public topCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('collection', '==', collection);
+    });
+  }
+
+  public lowToHighCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('collection', '==', collection);
+    });
+  }
+
+  public highToLowCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('collection', '==', collection);
+    });
+  }
+
+  public topAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['availableFrom', 'createdOn'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date()).where('collection', '==', collection);
+    });
+  }
+
+  public lowToHighAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['availableFrom', 'price'], 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date()).where('collection', '==', collection);
+    });
+  }
+
+  public highToLowAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['availableFrom', 'price'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date()).where('collection', '==', collection);
+    });
+  }
+
+  public topOwnedCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['owner', 'createdOn'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('owner', '!=', null).where('collection', '==', collection);
+    });
+  }
+
+  public lowToHighOwnedCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['owner', 'price'], 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('owner', '!=', null).where('collection', '==', collection);
+    });
+  }
+
+  public highToLowOwnedCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['owner', 'price'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('owner', '!=', null).where('collection', '==', collection);
+    });
+  }
+  // COLLECTION END
 
   public positionInCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, 'position', 'asc', lastValue, search, def, (ref: any) => {

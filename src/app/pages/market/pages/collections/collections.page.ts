@@ -74,14 +74,22 @@ export class CollectionsPage implements OnInit, OnDestroy {
     });
 
     // Init listen.
-    this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.selectedTags$.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o.indexOf(HOT_TAGS.CATEGORY) === -1) {
+        this.categoryControl.setValue(AddedCategories.ALL, { emitEvent: false })
+      }
+
+      if (o.indexOf(HOT_TAGS.SPACE) === -1) {
+        this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
+      }
+
       this.listen();
     });
 
     this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj && obj !== DEFAULT_SPACE.value) {
         this.selectedTags$.next([HOT_TAGS.SPACE]);
-      } else {
+      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.ALL) === -1) {
         this.selectedTags$.next([HOT_TAGS.ALL]);
       }
     });
@@ -89,7 +97,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
     this.categoryControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj && obj !== AddedCategories.ALL) {
         this.selectedTags$.next([HOT_TAGS.CATEGORY]);
-      } else {
+      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.ALL) === -1) {
         this.selectedTags$.next([HOT_TAGS.ALL]);
       }
     });
@@ -101,7 +109,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Collection[]> {
-    if (this.filter.selectedSort$.value === SortOptions.LOW) {
+    if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
       if (this.selectedTags$.value[0] === HOT_TAGS.OPEN_SALE_ONLY) {
         return this.collectionApi.lowToHighAccess(CollectionAccess.OPEN, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.MEMBERS_ONLY) {
@@ -112,6 +120,18 @@ export class CollectionsPage implements OnInit, OnDestroy {
         return this.collectionApi.lowToHighCategory(this.categoryControl.value, last, search);
       } else {
         return this.collectionApi.lowToHigh(last, search);
+      }
+    } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.OPEN_SALE_ONLY) {
+        return this.collectionApi.topAccess(CollectionAccess.OPEN, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.MEMBERS_ONLY) {
+        return this.collectionApi.topAccess(CollectionAccess.MEMBERS_ONLY, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
+        return this.collectionApi.topSpace(this.spaceControl.value, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.CATEGORY) {
+        return this.collectionApi.topCategory(this.categoryControl.value, last, search);
+      } else {
+        return this.collectionApi.top(last, search);
       }
     } else {
       if (this.selectedTags$.value[0] === HOT_TAGS.OPEN_SALE_ONLY) {

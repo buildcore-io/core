@@ -31,6 +31,12 @@ export class CollectionApi extends BaseApi<Collection> {
     return this._query(this.collection, 'price', 'desc', lastValue, search, def);
   }
 
+  public topAccess(access: CollectionAccess, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('access', '==', access);
+    });
+  }
+
   public lowToHighAccess(access: CollectionAccess, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('access', '==', access);
@@ -43,6 +49,12 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
+  public topSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('space', '==', space);
+    });
+  }
+
   public lowToHighSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('space', '==', space);
@@ -52,6 +64,12 @@ export class CollectionApi extends BaseApi<Collection> {
   public highToLowSpace(space: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('space', '==', space);
+    });
+  }
+
+  public topCategory(category: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('category', '==', category);
     });
   }
 

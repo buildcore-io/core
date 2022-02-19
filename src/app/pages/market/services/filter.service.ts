@@ -5,7 +5,7 @@ import { SortOptions } from './sort-options.interface';
 // Needs to be implemented
 @Injectable()
 export class FilterService {
-  public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.LOW);
+  public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.PRICE_LOW);
   public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
   // public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
 

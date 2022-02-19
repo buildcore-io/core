@@ -155,19 +155,21 @@
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
             <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
-                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.LOW"></nz-option>
-                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.HIGH"></nz-option>
+                <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
             </nz-select>
             <ng-template #defaultTemplate let-selected>
-                <span nz-typography nzType="secondary" class="text-xs">Price</span>
+                <span nz-typography nzType="secondary" class="text-xs" *ngIf="selected.nzValue !== filter.sortOptions.RECENT">Price</span>
                 {{ selected.nzLabel }}
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>
             <div class="relative">
                 <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-                    <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.LOW"></nz-option>
-                    <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.HIGH"></nz-option>
+                  <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                  <nz-option nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                  <nz-option nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
                 </nz-select>
                 <ng-template #mobileSuffixIcon>
                     <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
@@ -186,7 +188,7 @@
             <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
                 [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
-            <nz-card class="w-76" *ngIf="isEmpty(data.nft$ | async)">
+            <nz-card class="w-76" *ngIf="isEmpty(data.nft$ | async) && !((data.collection$ | async)?.placeholderNft && (data.firstNft$ | async))">
                 <div class="flex flex-col justify-center text-center h-36">
                     <span class="leading-7 text-app-gray-400" i18n>
                         No NFTs
@@ -194,10 +196,17 @@
                 </div>
             </nz-card>
 
-            <wen-nft-card class="wen-nft-card"
-                *ngFor="let nft of data.nft$ | async; trackBy: trackByUid" [collection]="(data.collection$ | async)"
-                [nft]="nft">
+            <!-- Place holder NFT MUST be always first -->
+            <wen-nft-card *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNft$ | async)" [collection]="(data.collection$ | async)"
+              [nft]="(data.firstNft$ | async)">
             </wen-nft-card>
+
+            <ng-container *ngFor="let nft of data.nft$ | async; trackBy: trackByUid">
+              <wen-nft-card class="wen-nft-card" [collection]="(data.collection$ | async)"
+                  *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNft$ | async)?.uid)"
+                  [nft]="nft">
+              </wen-nft-card>
+            </ng-container>
         </div>
     </div>
 </wen-content>

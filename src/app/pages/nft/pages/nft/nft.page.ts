@@ -16,7 +16,7 @@ import { Collection, CollectionType } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { first, skip, Subscription } from 'rxjs';
+import { first, map, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -75,6 +75,11 @@ export class NFTPage implements OnInit, OnDestroy {
         if (p.owner) {
           this.subscriptions$.push(this.memberApi.listen(p.owner).pipe(untilDestroyed(this)).subscribe(this.data.owner$));
         }
+        this.subscriptions$.push(
+          this.nftApi.lastCollection(p.collection, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+            return obj[0];
+          })).subscribe(this.data.firstNftInCollection$)
+        );
       }
     });
 

@@ -69,7 +69,7 @@
                 Buy now
             </button>
 
-            <div *ngIf="!isAvailableForSale(data.nft$ | async, data.collection$ | async)" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
+            <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async)" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
                     Sale ended
@@ -215,10 +215,17 @@
                     </div>
                 </nz-card>
 
-                <wen-nft-card class="wen-nft-card"
-                    *ngFor="let nft of data.topNftWithinCollection$ | async; trackBy: trackByUid"
-                    [nft]="nft" [collection]="(data.collection$ | async)">
+                <!-- Place holder NFT MUST be always first -->
+                <wen-nft-card *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNftInCollection$ | async)" [collection]="(data.collection$ | async)"
+                  [nft]="(data.firstNftInCollection$ | async)">
                 </wen-nft-card>
+
+                <ng-container *ngFor="let nft of data.topNftWithinCollection$ | async; trackBy: trackByUid">
+                  <wen-nft-card class="wen-nft-card" [collection]="(data.collection$ | async)"
+                      *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNftInCollection$ | async)?.uid)"
+                      [nft]="nft">
+                  </wen-nft-card>
+                </ng-container>
             </div>
         </div>
     </nz-card>

@@ -15,6 +15,7 @@ import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
+import { SortOptions } from '@pages/market/services/sort-options.interface';
 import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
 import { Collection } from 'functions/interfaces/models';
@@ -96,6 +97,18 @@ export class CollectionPage implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
+      if (this.data.collectionId) {
+        this.listenToCollection(this.data.collectionId);
+      }
+    });
+
+    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+      if (this.data.collectionId) {
+        this.listenToCollection(this.data.collectionId);
+      }
+    });
   }
 
   public createNft(): void {
@@ -116,9 +129,14 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
     this.subscriptions$.push(this.getHandler(id).subscribe(this.data.nft$));
     this.subscriptions$.push(
-      this.nftApi.lowToHighInCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+      this.nftApi.lowToHighCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
       })).subscribe(this.data.cheapestNft$)
+    );
+    this.subscriptions$.push(
+      this.nftApi.lastCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+        return obj[0];
+      })).subscribe(this.data.firstNft$)
     );
   }
 
@@ -177,7 +195,31 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public getHandler(collectionId: string, last?: any, search?: string): Observable<Nft[]> {
-    return this.nftApi.positionInCollection(collectionId, last, search).pipe(untilDestroyed(this));
+    if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
+        return this.nftApi.lowToHighAvailableCollection(collectionId, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+        return this.nftApi.lowToHighOwnedCollection(collectionId, last, search);
+      } else {
+        return this.nftApi.lowToHighCollection(collectionId, last, search);
+      }
+    } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
+        return this.nftApi.topAvailableCollection(collectionId, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+        return this.nftApi.topOwnedCollection(collectionId, last, search);
+      } else {
+        return this.nftApi.topCollection(collectionId, last, search);
+      }
+    } else {
+      if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
+        return this.nftApi.highToLowAvailableCollection(collectionId, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+        return this.nftApi.highToLowOwnedCollection(collectionId, last, search);
+      } else {
+        return this.nftApi.highToLowCollection(collectionId, last, search);
+      }
+    }
   }
 
   protected store(page: number, a: any): void {
