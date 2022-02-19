@@ -2,21 +2,22 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { NftApi } from '@api/nft.api';
-import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
-import { Space } from 'functions/interfaces/models';
+import { Collection, Space } from 'functions/interfaces/models';
 import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum HOT_TAGS {
   ALL = 'All',
   AVAILABLE = 'Available',
-  OWNED = 'Owned'
+  OWNED = 'Owned',
+  SPACE = 'SPACE'
 }
 
 @UntilDestroy()
@@ -40,7 +41,8 @@ export class NFTsPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public cache: CacheService,
     public nftApi: NftApi,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private cacheService: CacheService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue());
@@ -79,6 +81,14 @@ export class NFTsPage implements OnInit, OnDestroy {
     this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
       this.listen();
     });
+
+    this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj && obj !== DEFAULT_SPACE.value) {
+        this.selectedTags$.next([HOT_TAGS.SPACE]);
+      } else {
+        this.selectedTags$.next([HOT_TAGS.ALL]);
+      }
+    });
   }
 
   private listen(search?: string): void {
@@ -87,10 +97,36 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Nft[]> {
-    if (this.filter.selectedSort$.value === SortOptions.LOW) {
-      return this.nftApi.lowToHigh(last, search);
+    if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
+        return this.nftApi.lowToHighSpace(this.spaceControl.value, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
+        return this.nftApi.lowToHighAvailable(last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+        return this.nftApi.lowToHighOwned(last, search);
+      } else {
+        return this.nftApi.lowToHigh(last, search);
+      }
+    } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
+        return this.nftApi.topSpace(this.spaceControl.value, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
+        return this.nftApi.topAvailable(last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+        return this.nftApi.topOwned(last, search);
+      } else {
+        return this.nftApi.top(last, search);
+      }
     } else {
-      return this.nftApi.highToLow(last, search);
+      if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
+        return this.nftApi.highToLowSpace(this.spaceControl.value, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
+        return this.nftApi.highToLowAvailable(last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+        return this.nftApi.highToLowOwned(last, search);
+      } else {
+        return this.nftApi.highToLow(last, search);
+      }
     }
   }
 
@@ -118,6 +154,16 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public isEmpty(arr: any): boolean {
     return (Array.isArray(arr) && arr.length === 0);
+  }
+
+  public getCollection(col?: string|null): Collection|undefined {
+    if (!col) {
+      return undefined;
+    }
+
+    return this.cacheService.allCollections$.value.find((d) => {
+      return d.uid === col;
+    });
   }
 
   protected store(page: number, a: any): void {

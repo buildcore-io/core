@@ -62,6 +62,7 @@ export const WenError = {
   generated_spf_nft_must_be_sold_first: { code: 2055, key: 'To buy directly Generated NFT/SFT it must be sold first.' },
   no_more_nft_available_for_sale: { code: 2057, key: 'No more NFT available for sale.' },
   nft_placeholder_cant_be_purchased: { code: 2056, key: 'Can\'t buy placeholder NFT.' },
-  collection_must_be_approved: { code: 2056, key: 'Collection must be approved.' }
+  collection_must_be_approved: { code: 2058, key: 'Collection must be approved.' },
+  you_dont_have_required_badge: { code: 2006, key: 'You don\'t have required badge.' },
 }
 

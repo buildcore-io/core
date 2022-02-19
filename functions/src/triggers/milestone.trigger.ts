@@ -5,6 +5,7 @@ import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { Transaction, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
+import { MIN_AMOUNT_TO_TRANSFER } from '../services/wallet/wallet';
 import { serverTime } from "../utils/dateTime.utils";
 import { getRandomEthAddress } from "../utils/wallet.utils";
 import { EthAddress, IotaAddress } from './../../interfaces/models/base';
@@ -37,8 +38,8 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
     if (transactions.size > 0) {
       const service: ProcessingService = new ProcessingService(tranOut);
       await service.processOrders();
-      await service.reconcileBillPayments();
-      await service.reconcileCredits();
+      // await service.reconcileBillPayments();
+      // await service.reconcileCredits();
 
       // Now process all invalid orders.
       // Wrong amount, Double payments & Expired orders.
@@ -67,7 +68,7 @@ class ProcessingService {
   }
 
   private getTransactions(type: TransactionType): any {
-    return admin.firestore().collection(COL.TRANSACTION).where('payload.reconciled', '==', false).where('payload.void', '==', false).get();
+    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', type).where('payload.reconciled', '==', false).where('payload.void', '==', false).get();
   }
 
   private findAllOrdersWithAddress(address: IotaAddress): any {
@@ -170,8 +171,13 @@ class ProcessingService {
 
     // Calculate royalties.
     const transOut: Transaction[] = [];
-    const royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(order.payload.amount * order.payload.royaltiesFee) : 0;
-    const finalAmt: number = order.payload.amount - royaltyAmt;
+    let royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(order.payload.amount * order.payload.royaltiesFee) : 0;
+    let finalAmt: number = order.payload.amount - royaltyAmt;
+
+    if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
+      royaltyAmt = 0;
+      finalAmt = finalAmt + royaltyAmt;
+    }
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
@@ -195,7 +201,7 @@ class ProcessingService {
           targetAddress: order.payload.beneficiaryAddress,
           sourceTransaction: order.uid,
           nft: order.payload.nft || null,
-          reconciled: false,
+          reconciled: true,
           royalty: false,
           void: false,
           collection: order.payload.collection || null
@@ -223,7 +229,7 @@ class ProcessingService {
           sourceTransaction: order.uid,
           previusOwnerEntity: order.payload.beneficiary,
           previusOwner: order.payload.beneficiaryUid,
-          reconciled: false,
+          reconciled: true,
           royalty: true,
           void: false,
           // TODO: Let's give 60s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
@@ -275,9 +281,10 @@ class ProcessingService {
           targetAddress: tran.from.address,
           sourceTransaction: payment.uid,
           nft: order.payload.nft || null,
-          reconciled: false,
+          reconciled: true,
           void: false,
-          collection: order.payload.collection || null
+          collection: order.payload.collection || null,
+          invalidPayment: payment.payload.invalidPayment
         }
       };
       await refTran.set(data);
@@ -381,7 +388,7 @@ class ProcessingService {
 
     // We have to check each output address if there is an order for it.
     for (const [msgId, t] of Object.entries(this.trans)) {
-      if (t.outputs.length) {
+      if (t.outputs?.length) {
         for (const o of t.outputs) {
           // Already processed.
           if (this.processedTrans.indexOf(o.address) > -1) {
@@ -403,7 +410,7 @@ class ProcessingService {
                   from: fromAddress,
                   to: o
                 };
-                const payment = await this.createPayment(order.data(), wrongTransaction);
+                const payment = await this.createPayment(order.data(), wrongTransaction, true);
                 await this.createCredit(order.data(), payment, wrongTransaction);
               }
             }

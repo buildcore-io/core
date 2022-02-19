@@ -5,7 +5,9 @@ import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { AvatarService } from '@core/services/avatar';
+import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -14,7 +16,8 @@ import { WEN_NAME } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
-import { first, skip, Subscription } from 'rxjs';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { first, map, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -33,8 +36,10 @@ export class NFTPage implements OnInit, OnDestroy {
     public avatarService: AvatarService,
     private titleService: Title,
     private route: ActivatedRoute,
+    private auth: AuthService,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,
+    private nzNotification: NzNotificationService,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
     private router: Router
@@ -72,6 +77,11 @@ export class NFTPage implements OnInit, OnDestroy {
         if (p.owner) {
           this.subscriptions$.push(this.memberApi.listen(p.owner).pipe(untilDestroyed(this)).subscribe(this.data.owner$));
         }
+        this.subscriptions$.push(
+          this.nftApi.lastCollection(p.collection, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+            return obj[0];
+          })).subscribe(this.data.firstNftInCollection$)
+        );
       }
     });
 
@@ -99,9 +109,35 @@ export class NFTPage implements OnInit, OnDestroy {
     return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs()) && !nft?.owner;
   }
 
+  public discount(collection?: Collection|null): number {
+    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation) {
+      return 1;
+    }
+
+    const xp: number = this.auth.member$.value.spaces[collection.space].totalReputation || 0;
+    let discount = 1;
+    if (xp > 0) {
+      for (const d of collection.discounts) {
+        if (d.xp < xp) {
+          discount = (1 - d.amount);
+        }
+      }
+    }
+
+    return discount;
+  }
+
+  public calc(amount: number | null | undefined, discount: number): number {
+    return Math.ceil((amount || 0) * discount);
+  }
+
   public buy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
+    if (getItem(StorageItem.CheckoutTransaction)) {
+      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
+      return;
+    }
     this.isCheckoutOpen = true;
   }
 

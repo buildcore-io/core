@@ -99,6 +99,7 @@ module.exports = {
       maxWidth: {
         fit: 'fit-content',
         24: '6rem',
+        80: '20rem',
         128: '32rem',
         160: '40rem',
         '2/3': '66%'

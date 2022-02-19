@@ -12,9 +12,9 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
-import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, TWITTER_REGEXP } from './../../interfaces/config';
-import { Categories, Collection, CollectionType } from './../../interfaces/models/collection';
+import { Categories, Collection, CollectionAccess, CollectionType } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -37,6 +37,11 @@ function defaultJoiUpdateCreateSchema(): any {
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0).max(0.9).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
+    access: Joi.number().equal(CollectionAccess.OPEN, CollectionAccess.MEMBERS_ONLY, CollectionAccess.GUARDIANS_ONLY, CollectionAccess.MEMBERS_WITH_BADGE).required(),
+    accessAwards: Joi.when('access', {
+      is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_BADGE),
+      then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+    }),
     // TODO Validate XP is not the same.
     discounts: Joi.array().items(Joi.object().keys({
       xp: Joi.string().required(),
@@ -141,6 +146,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   delete defaultSchema.type;
   delete defaultSchema.space;
   delete defaultSchema.price;
+  delete defaultSchema.access;
   delete defaultSchema.availableFrom;
   delete defaultSchema.category;
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {

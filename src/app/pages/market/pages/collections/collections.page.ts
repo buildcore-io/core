@@ -2,22 +2,25 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
-import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
-import { Collection, Space } from 'functions/interfaces/models';
+import { SortOptions } from '@pages/market/services/sort-options.interface';
+import { Categories, Collection, CollectionAccess, Space } from 'functions/interfaces/models';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum HOT_TAGS {
   ALL = 'All',
   OPEN_SALE_ONLY = 'Open Sale Only',
-  MEMBERS_ONLY = 'Members Only'
+  MEMBERS_ONLY = 'Members Only',
+  SPACE = 'SPACE',
+  CATEGORY = 'CATEGORY'
 }
 
-export enum Category {
+export enum AddedCategories {
   ALL = 'All'
 }
 
@@ -34,7 +37,9 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public categoryControl: FormControl;
   public collections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN_SALE_ONLY, HOT_TAGS.MEMBERS_ONLY];
-  public categories: string[] = [Category.ALL];
+  public categories: string[] = [AddedCategories.ALL, Categories.ABSTRACT, Categories.ANIMATION, Categories.ART,
+                                Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERAKTIVE, Categories.PFP,
+                                Categories.PHOTOGRAPHY, Categories.PIXELART, Categories.SINGLE, Categories.THREE_D ];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Collection[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -48,7 +53,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue());
-    this.categoryControl = new FormControl(Category.ALL);
+    this.categoryControl = new FormControl(AddedCategories.ALL);
   }
 
   public ngOnInit(): void {
@@ -69,8 +74,32 @@ export class CollectionsPage implements OnInit, OnDestroy {
     });
 
     // Init listen.
-    this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.selectedTags$.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o.indexOf(HOT_TAGS.CATEGORY) === -1) {
+        this.categoryControl.setValue(AddedCategories.ALL, { emitEvent: false })
+      }
+
+      if (o.indexOf(HOT_TAGS.SPACE) === -1) {
+        this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
+      }
+
       this.listen();
+    });
+
+    this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj && obj !== DEFAULT_SPACE.value) {
+        this.selectedTags$.next([HOT_TAGS.SPACE]);
+      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.ALL) === -1) {
+        this.selectedTags$.next([HOT_TAGS.ALL]);
+      }
+    });
+
+    this.categoryControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj && obj !== AddedCategories.ALL) {
+        this.selectedTags$.next([HOT_TAGS.CATEGORY]);
+      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.ALL) === -1) {
+        this.selectedTags$.next([HOT_TAGS.ALL]);
+      }
     });
   }
 
@@ -80,8 +109,43 @@ export class CollectionsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Collection[]> {
-    // Needs to be implemented
-    return this.collectionApi.top(last, search);
+    if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.OPEN_SALE_ONLY) {
+        return this.collectionApi.lowToHighAccess(CollectionAccess.OPEN, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.MEMBERS_ONLY) {
+        return this.collectionApi.lowToHighAccess(CollectionAccess.MEMBERS_ONLY, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
+        return this.collectionApi.lowToHighSpace(this.spaceControl.value, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.CATEGORY) {
+        return this.collectionApi.lowToHighCategory(this.categoryControl.value, last, search);
+      } else {
+        return this.collectionApi.lowToHigh(last, search);
+      }
+    } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.OPEN_SALE_ONLY) {
+        return this.collectionApi.topAccess(CollectionAccess.OPEN, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.MEMBERS_ONLY) {
+        return this.collectionApi.topAccess(CollectionAccess.MEMBERS_ONLY, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
+        return this.collectionApi.topSpace(this.spaceControl.value, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.CATEGORY) {
+        return this.collectionApi.topCategory(this.categoryControl.value, last, search);
+      } else {
+        return this.collectionApi.top(last, search);
+      }
+    } else {
+      if (this.selectedTags$.value[0] === HOT_TAGS.OPEN_SALE_ONLY) {
+        return this.collectionApi.highToLowAccess(CollectionAccess.OPEN, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.MEMBERS_ONLY) {
+        return this.collectionApi.highToLowAccess(CollectionAccess.MEMBERS_ONLY, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
+        return this.collectionApi.highToLowSpace(this.spaceControl.value, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.CATEGORY) {
+        return this.collectionApi.highToLowCategory(this.categoryControl.value, last, search);
+      } else {
+        return this.collectionApi.highToLow(last, search);
+      }
+    }
   }
 
   public handleChange(tag: string): void {

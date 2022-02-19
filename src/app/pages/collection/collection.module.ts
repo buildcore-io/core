@@ -9,6 +9,7 @@ import { RadioModule } from '@components/radio/radio.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
+import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { FilterService } from '@pages/market/services/filter.service';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -58,6 +59,7 @@ import { DataService } from './services/data.service';
     NzFormModule,
     NzGridModule,
     NzInputModule,
+    TruncateModule,
     IconModule,
     NzUploadModule,
     NzSelectModule,

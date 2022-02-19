@@ -109,3 +109,5 @@
 </header>
 
 <wen-sign-in-modal></wen-sign-in-modal>
+
+<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="currentCheckoutNft" [collection]="currentCheckoutCollection" (onClose)="closeCheckout()"></wen-nft-checkout>

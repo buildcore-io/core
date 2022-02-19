@@ -8,9 +8,10 @@ import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
+import { Timestamp } from 'functions/interfaces/models/base';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
-import { TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
+import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
 import { UnitsHelper } from './../../../@core/utils/units-helper';
 import { EntityType } from './../wallet-address.component';
 
@@ -21,6 +22,13 @@ export enum StepType {
   CONFIRMED = 'Confirmed'
 }
 
+interface HistoryItem {
+  uniqueId: string;
+  date: dayjs.Dayjs|Timestamp|null;
+  label: string;
+  link?: string;
+}
+
 @UntilDestroy()
 @Component({
   selector: 'wen-iota-address',
@@ -29,17 +37,20 @@ export enum StepType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IOTAAddressComponent implements OnInit, OnDestroy {
-  @Input() currentStep = StepType.WAIT;
+  @Input() currentStep = StepType.GENERATE;
   @Input() entityType?: EntityType;
   @Input() entity?: Space|Member|null;
   @Output() onClose = new EventEmitter<void>();
 
   public stepType = StepType;
   public isCopied = false;
-  public transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
+  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
-  public sendingMoneyBack = false;
+  public history: HistoryItem[] = [];
+  public invalidPayment = false;
+  public targetAddress?: string;
+  public targetAmount?: number;
 
   private transSubscription?: Subscription;
 
@@ -55,9 +66,11 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
-    this.sendingMoneyBack = false;
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
+      console.log(val);
       if (val && val.type === TransactionType.ORDER) {
+        this.targetAddress = val.payload.targetAddress;
+        this.targetAmount = val.payload.targetAmount;
         const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
@@ -80,15 +93,34 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
+        this.pushToHistory(val.uid + '_payment_received', val.createdOn, 'Payment received.', (<any>val).payload?.chainReference);
         this.receivedTransactions = true;
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === false) {
-        this.sendingMoneyBack = true;
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_credit_back', dayjs(), 'Refunding an invalid payment...');
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === false && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_credit_back', dayjs(), 'Refunding your payment...');
       }
 
       // Credit
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true) {
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_refund_complete', dayjs(), 'Full refund completed.');
+
+        if (val.payload.invalidPayment) {
+          setTimeout(() => {
+            this.currentStep = StepType.TRANSACTION;
+            this.invalidPayment = true;
+            this.cd.markForCheck();
+          }, 2000);
+        }
+      }
+
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === false && val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_confirmed_address', dayjs(), 'Address confirmed.');
+        removeItem(StorageItem.VerificationTransaction);
         this.currentStep = StepType.CONFIRMED;
       }
 
@@ -116,16 +148,34 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     });
   }
 
+  public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {
+    if (this.history.find((s) => { return s.uniqueId === uniqueId; })) {
+      return;
+    }
+
+    if (date && text) {
+      this.history.unshift({
+        uniqueId: uniqueId,
+        date: date,
+        label: text,
+        link: link
+      });
+    }
+  }
+
+  public getExplorerLink(link: string): string {
+    return 'https://explorer.iota.org/mainnet/search/' + link;
+  }
+
   public copyAddress() {
-    if (!this.isCopied && this.transaction$.value?.payload.targetAddress) {
-      copyToClipboard(this.transaction$.value?.payload.targetAddress);
+    if (!this.isCopied && this.targetAddress) {
+      copyToClipboard(this.targetAddress);
       this.isCopied = true;
     }
   }
 
   public reset(): void {
     this.receivedTransactions = false;
-    this.sendingMoneyBack = false;
     this.currentStep = StepType.GENERATE;
   }
 
@@ -143,20 +193,33 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   }
 
   public fireflyDeepLink(): SafeUrl {
-    if (!this.transaction$.value?.payload.targetAddress || !this.transaction$.value?.payload.amount) {
+    if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
 
-    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.transaction$.value?.payload.targetAddress +
-           '?amount=' + (this.transaction$.value?.payload.amount / 1000 / 1000) + '&unit=Mi');
+    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
+           '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
   }
 
   public tanglePayDeepLink(): string {
-    if (!this.transaction$.value?.payload.targetAddress || !this.transaction$.value?.payload.amount) {
+    if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
 
     return '';
+  }
+
+  public isSpaceVerification(): boolean {
+    return this.entityType === EntityType.SPACE;
+  }
+
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
   public async initVerification(): Promise<void> {
@@ -174,6 +237,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.VerificationTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+        this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
     });
   }

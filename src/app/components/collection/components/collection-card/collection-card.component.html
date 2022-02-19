@@ -32,8 +32,8 @@
             </div>
 
             <!-- Needs to be implemented -->
-            <div class="absolute top-5 right-5 z-10 rounded-full flex items-center justify-center text-black bg-alerts-warning p-2"
-                *ngIf="!fullWidth">
+            <div class="absolute z-10 flex items-center justify-center p-2 text-black rounded-full top-5 right-5 bg-alerts-warning"
+                *ngIf="!fullWidth && collection.access !== targetAccess.OPEN">
                     <wen-icon-user-plus></wen-icon-user-plus>
             </div>
         </div>

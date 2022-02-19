@@ -146,6 +146,89 @@
                         </nz-form-item>
                     </div>
                 </nz-card>
+
+                <nz-card [nzBordered]="false">
+                    <nz-card-meta
+                        nzTitle="Member discounts"
+                        nzDescription="Space support an ability to airdrop NFTs to their members for free or at discount."
+                    >
+                    </nz-card-meta>
+
+                    <div class="pt-4">
+                        <ng-container *ngIf="deviceService.isDesktop$ | async">
+                            <div class="flex items-center justify-between mt-4"
+                                *ngFor="let discount of discounts.controls; let i = index">
+                                    <nz-input-group nzAddOnBefore="XP >" class="flex-grow w-1/2">
+                                        <input
+                                            type="text"
+                                            nz-input
+                                            nzSize="large"
+                                            [formControl]="gForm(discount, 'xp')"
+                                        />
+                                    </nz-input-group>
+
+                                    <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
+
+                                    <div class="flex items-center flex-grow w-1/2">
+                                        <nz-input-number
+                                            class="w-full max-w-80"
+                                            [nzMin]="1"
+                                            [nzMax]="100"
+                                            [nzStep]="1"
+                                            [nzFormatter]="formatterPercent"
+                                            [nzParser]="parserPercent"
+                                            nzSize="large"
+                                            [formControl]="gForm(discount, 'amount')"
+                                        ></nz-input-number>
+
+                                        <wen-icon-trash class="ml-4 cursor-pointer" (click)="removeDiscount(i)"></wen-icon-trash>
+                                    </div>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="deviceService.isMobile$ | async">
+                            <div class="mt-8" *ngFor="let discount of discounts.controls; let i = index">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-xs font-bold">
+                                        <span i18n>Discount</span> #0{{ i + 1 }}
+                                    </div>
+                                    <wen-icon-trash class="cursor-pointer" (click)="removeDiscount(i)"></wen-icon-trash>
+                                </div>
+
+                                <div class="mt-2 mb-5 separator"></div>
+
+                                <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Discount XP</div>
+
+                                <nz-input-group nzAddOnBefore="XP >" class="w-full mt-2 mb-5">
+                                    <input
+                                        type="text"
+                                        nz-input
+                                        nzSize="default"
+                                        [formControl]="gForm(discount, 'xp')"
+                                    />
+                                </nz-input-group>
+
+                                <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Discount Amount</div>
+
+                                <nz-input-number
+                                    class="w-full mt-2 mb-5"
+                                    [nzMin]="1"
+                                    [nzMax]="100"
+                                    [nzStep]="1"
+                                    [nzFormatter]="formatterPercent"
+                                    [nzParser]="parserPercent"
+                                    nzSize="large"
+                                    [formControl]="gForm(discount, 'amount')"
+                                ></nz-input-number>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                    <button nz-button *ngIf="discounts.controls.length < maxDiscountCount" nzType="link" class="flex items-center pl-0 mt-3" (click)="addDiscount()">
+                        <wen-icon-plus class="mr-0.5"></wen-icon-plus>
+                        <span i18n>Add discount level</span>
+                    </button>
+                </nz-card>
             </div>
 
             <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
@@ -261,45 +344,75 @@
                     </nz-form-item>
                 </nz-card>
 
-                <nz-card [nzBordered]="false">
-                    <nz-card-meta
-                        nzTitle="Member discounts"
-                        nzDescription="Space support an ability to airdrop NFTs to their members for free or at discount."
-                    >
-                    </nz-card-meta>
-
-                    <div class="pt-4">
-                        <div class="flex items-center justify-between mt-4"
-                            *ngFor="let discount of discounts.controls; let i = index">
-                                <nz-input-group nzAddOnBefore="XP >">
-                                    <input
-                                        type="text"
-                                        nz-input
-                                        nzSize="large"
-                                        [formControl]="gForm(discount, 'xp')"
-                                    />
-                                </nz-input-group>
-
-                                <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
-
-                                <nz-input-number
-                                    class="w-full"
-                                    [nzMin]="1"
-                                    [nzMax]="100"
-                                    [nzStep]="1"
-                                    [nzFormatter]="formatterPercent"
-                                    [nzParser]="parserPercent"
-                                    nzSize="large"
-                                    [formControl]="gForm(discount, 'amount')"
-                                ></nz-input-number>
-                        </div>
-                    </div>
-
-                    <button nz-button *ngIf="discounts.controls.length < maxDiscountCount" nzType="link" class="flex items-center pl-0 mt-3" (click)="addDiscount()">
-                        <wen-icon-plus class="mr-0.5"></wen-icon-plus>
-                        <span i18n>Add discount level</span>
-                    </button>
+                <nz-card [nzBordered]="false" nzTitle="Collection Setup">
+                  <nz-form-item>
+                    <nz-form-control>
+                      <nz-radio-group
+                        class="wen-radio-group"
+                        [formControl]="selectedAccessControl"
+                      >
+                        <wen-radio [value]="targetAccess.OPEN"
+                          ><span i18n>Open Sale
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Everyone has access to this collection."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                        <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
+                          ><span i18n>Space Guardians Only
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Only Space Guardians can access."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                        <wen-radio [value]="targetAccess.MEMBERS_ONLY"
+                          ><span i18n>Space Members Only
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Only Space Members can access."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                        <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
+                          ><span i18n>Space Members with Badge Only
+                            <wen-icon-question-circle
+                              class="inline-block"
+                              nz-tooltip
+                              nzTooltipPlacement="right"
+                              nzTooltipTitle="Only Space Members with badge can access."
+                            ></wen-icon-question-circle> </span
+                        ></wen-radio>
+                      </nz-radio-group>
+                    </nz-form-control>
+                  </nz-form-item>
                 </nz-card>
+                <nz-card [nzBordered]="false" nzTitle="Required Badge" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS_WITH_BADGE">
+                    <nz-form-item>
+                      <nz-form-control>
+                        <nz-select
+                          class="w-full"
+                          nzSize="large"
+                          nzShowSearch
+                          nzAllowClear
+                          [nzMaxTagCount]="9"
+                          nzMode="multiple"
+                          nzPlaceHolder="Select Badge"
+                          [formControl]="accessAwardsControl"
+                        >
+                          <nz-option
+                            *ngFor="let a of awards$ | async; trackBy: trackByUid"
+                            [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
+                            [nzValue]="a.uid"
+                          ></nz-option>
+                        </nz-select>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </nz-card>
             </div>
         </div>
     </form>

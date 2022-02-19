@@ -36,7 +36,7 @@
             <ng-container *ngIf="!nft?.owner">
                 <div class="flex items-center">
                     <wen-icon-dollar class="mr-3 text-app-gray-400"></wen-icon-dollar>
-                    <div class="text-xs font-medium">{{formatBest(nft?.price)}}</div>
+                    <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div>
 
                     <button *ngIf="(deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
                         (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
@@ -54,4 +54,4 @@
     </a>
 </article>
 
-<wen-nft-checkout [isOpen]="isCheckoutOpen" [nft]="nft" [collection]="collection" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>
+<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="nft" [collection]="collection" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>

@@ -14,13 +14,13 @@
                 {{ tag }}
                 </nz-tag>
             </ng-container>
-    
+
             <ng-template #hotTagsMobileBlock>
                 <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
                     <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
                 </nz-select>
             </ng-template>
-    
+
             <wen-select-space
                 *ngIf="deviceService.isDesktop$ | async"
                 class="block w-44"
@@ -30,7 +30,7 @@
             </wen-select-space>
 
             <nz-select
-                class="w-16 ml-4"
+                class="ml-4 w-44"
                 nzSize="small"
                 nzPlaceHolder="Category"
                 [nzDropdownStyle]="{ 'min-width': '128px', 'max-width': '100%' }"
@@ -45,21 +45,23 @@
             </nz-select>
         </div>
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
+            <nz-select class="w-48 wen-sort-button" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
-                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.LOW"></nz-option>
-                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.HIGH"></nz-option>
+                <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
             </nz-select>
             <ng-template #defaultTemplate let-selected>
-                <span nz-typography nzType="secondary" class="text-xs">Price</span>
+                <span nz-typography nzType="secondary" class="text-xs" *ngIf="selected.nzValue !== filter.sortOptions.RECENT">Price</span>
                 {{ selected.nzLabel }}
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>
             <div class="relative">
                 <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-                    <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.LOW"></nz-option>
-                    <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.HIGH"></nz-option>
+                  <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                  <nz-option nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                  <nz-option nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
                 </nz-select>
                 <ng-template #mobileSuffixIcon>
                     <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>

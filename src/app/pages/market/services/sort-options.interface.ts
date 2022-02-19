@@ -1,5 +1,6 @@
 
 export enum SortOptions {
-  HIGH = 'desc',
-  LOW = 'asc'
+  RECENT = 'RECENT',
+  PRICE_LOW = 'PRICE_LOW',
+  PRICE_HIGH = 'PRICE_HIGH',
 }

@@ -85,38 +85,38 @@
 
                 <div class="pt-8">
                     <ng-container *ngIf="deviceService.isDesktop$ | async">
-                    <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="properties.controls.length > 0">
-                        <div class="w-1/2" i18n>Property name</div>
-                        <div class="w-1/2" i18n>Value</div>
-                    </div>
-
-                    <div class="my-2 separator"></div>
-
-                    <ng-container *ngFor="let property of properties.controls; let i = index">
-                        <div class="flex flex-col items-center justify-between mt-4 lg:flex-row">
-                        <input
-                            type="text"
-                            nz-input
-                            nzSize="default"
-                            placeholder="Property name"
-                            class="mr-8"
-                            [formControl]="gForm(property, 'name')"
-                        />
-
-                        <input
-                            type="text"
-                            nz-input
-                            nzSize="default"
-                            placeholder="Value"
-                            class="mr-3"
-                            [formControl]="gForm(property, 'value')"
-                        />
-
-                        <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeProperty(i)"></wen-icon-trash>
-
+                        <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="properties.controls.length > 0">
+                            <div class="w-1/2" i18n>Property name</div>
+                            <div class="w-1/2" i18n>Value</div>
                         </div>
-                        <div class="my-4 separator"></div>
-                    </ng-container>
+
+                        <div class="my-2 separator"></div>
+
+                        <ng-container *ngFor="let property of properties.controls; let i = index">
+                            <div class="flex flex-col items-center justify-between mt-4 lg:flex-row">
+                            <input
+                                type="text"
+                                nz-input
+                                nzSize="default"
+                                placeholder="Property name"
+                                class="mr-8"
+                                [formControl]="gForm(property, 'name')"
+                            />
+
+                            <input
+                                type="text"
+                                nz-input
+                                nzSize="default"
+                                placeholder="Value"
+                                class="mr-3"
+                                [formControl]="gForm(property, 'value')"
+                            />
+
+                            <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeProperty(i)"></wen-icon-trash>
+
+                            </div>
+                            <div class="my-4 separator"></div>
+                        </ng-container>
                     </ng-container>
 
                     <ng-container *ngIf="deviceService.isMobile$ | async">

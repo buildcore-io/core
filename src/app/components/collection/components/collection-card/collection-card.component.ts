@@ -5,7 +5,7 @@ import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { Collection } from 'functions/interfaces/models/collection';
+import { Collection, CollectionAccess } from 'functions/interfaces/models/collection';
 
 @Component({
   selector: 'wen-collection-card',
@@ -46,6 +46,10 @@ export class CollectionCardComponent {
     }
 
     return undefined;
+  }
+
+  public get targetAccess(): typeof CollectionAccess {
+    return CollectionAccess;
   }
 
   // Needs to be implemented

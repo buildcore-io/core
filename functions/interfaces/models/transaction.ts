@@ -77,6 +77,7 @@ export interface BillPaymentTransaction {
   walletReference: WalletResult;
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
+  royalty: boolean,
   collection?: EthAddress;
 }
 

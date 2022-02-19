@@ -8,6 +8,7 @@ export class DataService {
   public collectionId?: string;
   public collection$: BehaviorSubject<Collection|undefined> = new BehaviorSubject<Collection|undefined>(undefined);
   public cheapestNft$: BehaviorSubject<Nft|undefined> = new BehaviorSubject<Nft|undefined>(undefined);
+  public firstNft$: BehaviorSubject<Nft|undefined> = new BehaviorSubject<Nft|undefined>(undefined);
   public nft$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);

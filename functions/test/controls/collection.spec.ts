@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import { WEN_FUNC } from "../../interfaces/functions";
 import { TransactionOrderType, TransactionType } from "../../interfaces/models";
 import { COL } from "../../interfaces/models/base";
-import { Categories, CollectionType } from "../../interfaces/models/collection";
+import { Categories, CollectionAccess, CollectionType } from "../../interfaces/models/collection";
 import { serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -106,6 +106,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       description: 'babba',
       type: CollectionType.CLASSIC,
       category: Categories.ART,
+      access: CollectionAccess.OPEN,
       royaltiesFee: 0.6,
       space: space.uid,
       royaltiesSpace: space.uid,
@@ -133,6 +134,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       space: space.uid,
       type: CollectionType.CLASSIC,
       category: Categories.ART,
+      access: CollectionAccess.OPEN,
       royaltiesSpace: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),
       price: 10 * 1000 * 1000
@@ -150,6 +152,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.1,
       type: CollectionType.CLASSIC,
       category: Categories.ART,
+      access: CollectionAccess.OPEN,
       space: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),
       price: 10 * 1000 * 1000
@@ -183,6 +186,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
       category: Categories.ART,
+      access: CollectionAccess.OPEN,
       space: space.uid,
       royaltiesSpace: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),
@@ -217,6 +221,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       category: Categories.ART,
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
+      access: CollectionAccess.OPEN,
       space: space.uid,
       royaltiesSpace: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),
@@ -246,6 +251,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       category: Categories.ART,
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
+      access: CollectionAccess.OPEN,
       space: space.uid,
       royaltiesSpace: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),

@@ -1,6 +1,6 @@
 <nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="orders?.length || listedBy">
     <!-- Transactions -->
-    <div *ngFor="let t of (orders); let i = index; trackBy: trackByUid"
+    <div *ngFor="let t of orders; let i = index; trackBy: trackByUid"
         class="relative flex items-center mt-3">
         <div *ngIf="i !== 0"
             class="absolute w-0.5 h-full bg-app-gray-100 left-3 transform -translate-x-1/2 -translate-y-1/2"></div>
@@ -28,6 +28,25 @@
                     <div class="text-base font-medium mt-0.5">
                         <span i18n>Purchased by</span> @{{t.newMember.name || t.newMember.uid}}
                         <span i18n>for </span>{{formatBest(t.order.payload.amount)}}
+                        <wen-icon-question-circle
+                          class="inline-block"
+                          nz-popover nzPopoverTitle="Transactions" [nzPopoverContent]="contentTemplate" nzPopoverTrigger="click"
+                        >
+                        </wen-icon-question-circle>
+                        <ng-template #contentTemplate>
+                          <div>
+                            <ng-container *ngFor="let tt of (t.transactions || [])">
+                              <li>
+                                {{tt.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate"}}
+                                -
+                                {{getTitle(tt)}}:
+
+                                <a [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)" target="_new">{{tt.uid}}</a>
+
+                              </li>
+                            </ng-container>
+                          </div>
+                        </ng-template>
                     </div>
                 </div>
             </div>
