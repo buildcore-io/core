@@ -32,7 +32,7 @@
                         {{ ally.established ? 'Established' : 'Recognised' }}</div>
                     <ng-template #iconsBlock>
                         <wen-icon-check *ngIf="ally.established"></wen-icon-check>
-                        <wen-icon-eye *ngIf="!ally.established"></wen-icon-eye>
+                        <wen-icon-eye *ngIf="!ally.established" class="text-app-gray-400"></wen-icon-eye>
                     </ng-template>
                 </div>
             </td>
