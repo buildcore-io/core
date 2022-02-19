@@ -55,13 +55,13 @@
                 <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
                     <div class="flex items-center mt-2">
-                      <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center">
-                        <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                      <a [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
+                        <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                           class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                         </nz-avatar>
-                        <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
-                          @{{ 'Phylo' || ((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
+                        <div class="ml-3 text-base font-medium truncate max-w-20">
+                          @{{ ((auth.member$ | async)?.name || (auth.member$ | async)?.uid) }}
                         </div>
                       </a>
                     </div>
@@ -69,13 +69,13 @@
 
                 <div class="flex-grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
-                    <a class="flex items-center mt-2">
+                    <a class="flex items-center mt-2" [routerLink]="['/space', space?.uid]">
                         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                             style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                            [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                            [nzSrc]="avatarService.getAvatarSize(space?.avatarUrl)">
                         </nz-avatar>
 
-                        <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">{{ 'IOTABOTS' || (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
+                        <div class="ml-3 text-base font-medium truncate max-w-20">{{ space?.name || space?.uid }}</div>
                     </a>
                 </div>
             </div>

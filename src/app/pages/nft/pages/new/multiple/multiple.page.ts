@@ -23,11 +23,9 @@ import { StepType } from '../new.page';
 export interface NFTObject {
   [key: string]: {
     label: string;
-    subName?: string;
     validate: (value: any) => boolean;
+    fields?: string[];
     value?: () => any;
-    mapper?: (value: any) => any;
-    isArray?: boolean;
     defaultAmount?: number;
   }
 }
@@ -65,40 +63,33 @@ export class MultiplePage {
     price: {
       label: 'price',
       validate: (value: string) => {
+        if (this.price) return true;
         const price = Number(value);
         if (!value || isNaN(price) || price < MIN_IOTA_AMOUNT || price > MAX_IOTA_AMOUNT) return false;
-        if (this.price) {
-          return price === this.price;
-        }
         return true;
       },
-      value: () => this.price || ''
+      value: () => this.price
     },
     availableFrom: {
       label: 'available_from',
       validate: (value: string) => {
+        if (this.availableFrom) return true;
         if(!value || isNaN(Date.parse(value))) return false;
         const d = new Date(value);
-        if (this.availableFrom) {
-          return d.getTime() === this.availableFrom.getTime();
-        }
         return new Date().getTime() < d.getTime();
       },
-      value: () => this.availableFrom || '',
-      mapper: (value: string) => new Date(value)
+      value: () => this.availableFrom
     },
     property: {
       label: 'prop',
-      subName: 'label',
+      fields: ['label', 'value'],
       validate: () => true,
-      isArray: true,
       defaultAmount: 5
     },
     stat: {
       label: 'stat',
-      subName: 'label',
+      fields: ['label', 'value'],
       validate: () => true,
-      isArray: true,
       defaultAmount: 5
     }
   };
@@ -172,48 +163,60 @@ export class MultiplePage {
   }
 
   public formatSubmitData(data: any): any {
-    const stats: any = {};
-    if (data.stat) {
-      data.stat
-        .map((s: { [key: string]: string }) => ({ label: Object.keys(s)[0], value: Object.values(s)[0] }))
-        .forEach((v: any) => {
-          if (v.label && v.value) {
-            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase();
-            stats[formattedKey] = {
-              label: v.label,
-              value: v.value
-            };
-          }
-        });
-      if (Object.keys(stats).length) {
-        data.stats = stats;
-      }
-      delete data.stat;
+    const res: any = {};
+
+    if (data.property && data.property.length > 0) {
+      const obj = 
+        data.property
+          .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
+          .filter((s: { [key: string]: string }) => s.key && s.value)
+          .reduce((acc: any, cur: any) => {
+            const index = Number(cur.key.substr(cur.key.split('').findIndex((c: any) => !isNaN(c))));
+            const key = `prop${index}`;
+            const newObj = acc[key] || {};
+            if (cur.key.includes('label')) {
+              newObj.label = cur.value;
+            } else {
+              newObj.value = cur.value;
+            }
+            return { ...acc, [key]: newObj };
+          }, {});
+      
+      res.properties = 
+        Object.keys(obj)
+          .filter((key: string) => obj[key].label && obj[key].value)
+          .reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
     }
 
-    if (data.property) {
-      const properties: any = {};
-      data.property
-        .map((p: { [key: string]: string }) => ({ label: Object.keys(p)[0], value: Object.values(p)[0] }))
-        .forEach((v: any) => {
-          if (v.label && v.value) {
-            const formattedKey: string = v.label.replace(/\s/g, '').toLowerCase();
-            properties[formattedKey] = {
-              label: v.label,
-              value: v.value
-            };
-          }
-        });
-      if (Object.keys(properties).length) {
-        data.properties = properties;
-      }
-      delete data.property;
+    if (data.stat && data.stat.length > 0) {
+      const obj = 
+        data.stat
+          .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
+          .filter((s: { [key: string]: string }) => s.key && s.value)
+          .reduce((acc: any, cur: any) => {
+            const index = Number(cur.key.substr(cur.key.split('').findIndex((c: any) => !isNaN(c))));
+            const key = `stat${index}`;
+            const newObj = acc[key] || {};
+            if (cur.key.includes('label')) {
+              newObj.label = cur.value;
+            } else {
+              newObj.value = cur.value;
+            }
+            return { ...acc, [key]: newObj };
+          }, {});
+      
+      res.stats = 
+        Object.keys(obj)
+          .filter((key: string) => obj[key].label && obj[key].value)
+          .reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
     }
-
-    data.price = Number(data.price);
-    data.collection = this.collectionControl.value;
-    data.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
-    return data;
+    
+    res.name = data.name;
+    res.description = data.description;
+    res.price = Number(data.price);
+    res.collection = this.collectionControl.value;
+    res.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
+    return res;
   }
 
   public beforeCSVUpload(file: NzUploadFile) : boolean | Observable<boolean> {
@@ -227,9 +230,19 @@ export class MultiplePage {
             .slice(1)
             .map((row: string[]) =>
               row.reduce((acc: any, cur: string, index: number) => ({ ...acc, [results.data[0][index]]: cur }), {}))
-            .filter((nft: any) =>
+            .map((nft: any) => {
+              const newFields: any = {};
+              if (this.availableFrom) {
+                newFields.availableFrom = this.availableFrom;
+              }
+              if (this.price) {
+                newFields.price = this.price;
+              }
+              return { ...nft, ...newFields };
+            })
+            .filter((nft: any) => 
               Object.values(this.nftObject)
-                .every((field) => field.isArray ?
+                .every((field) => field.fields ?
                   Object.keys(nft)
                     .filter((key: string) => key.startsWith(field.label))
                     .every((key: string) => field.validate(nft[key])) : field.validate(nft[field.label])))
@@ -237,8 +250,8 @@ export class MultiplePage {
               Object.keys(nft)
                 .reduce((acc: any, key: string) => {
                   const fieldKey =  Object.keys(this.nftObject).find((k) => key.startsWith(this.nftObject[k].label)) || '';
-                  const value = this.nftObject[fieldKey]?.mapper?.call(this, nft[key]) || nft[key];
-                  return this.nftObject[fieldKey]?.isArray ?
+                  const value = nft[key];
+                  return this.nftObject[fieldKey]?.fields ?
                     { ...acc, [fieldKey]: [...(acc[fieldKey] || []), { [key]: value }] } :
                     { ...acc, [fieldKey]: value };
                 }, {}));
@@ -261,18 +274,19 @@ export class MultiplePage {
   public generate(): void {
     const fields =
       ['', ...Object.values(this.nftObject)
-        .map(item => item.isArray ? [...Array(item.defaultAmount).keys()].map((num: number) => `${item.label}.${item.subName}${num+1}`) : [item.label])
-        .reduce((acc: string[], cur: string[]) => [...acc, ...cur], [] as string[])];
+        .filter(item => !item.value || !item.value())
+        .map(item => item.fields ? 
+          [...Array(item.defaultAmount).keys()]
+            .map((num: number) => (item?.fields || []).map(f => `${item.label}.${f}${num+1}`)) :
+          [item.label])
+        .flat(Infinity)] as string[];
 
     const data =
       this.uploadedFiles
         .map((file: NzUploadFile) => [
           file.name,
           ...fields.slice(2, fields.length)
-            .map((f: string) => {
-              const obj = Object.values(this.nftObject).find((item) => f.startsWith(item.label));
-              return obj?.value ? obj?.value() : '';
-            })]);
+            .map(() => '')]);
   
     const csv = Papa.unparse({
       fields,
