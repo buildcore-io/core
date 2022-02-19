@@ -126,7 +126,7 @@
 
             <div class="flex flex-wrap items-center justify-between mt-2">
                 <div class="text-base font-medium break-all">
-                    {{ (transaction$ | async)?.payload?.targetAddress | truncate:[70] }}
+                  {{ targetAddress }}
                 </div>
 
                 <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()" i18n>

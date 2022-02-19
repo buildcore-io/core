@@ -61,6 +61,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
   public history: HistoryItem[] = [];
   public invalidPayment = false;
+  public targetAddress?: string;
+  public targetAmount?: number;
   private _isOpen = false;
 
   private transSubscription?: Subscription;
@@ -82,6 +84,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     this.receivedTransactions = false;
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
+        this.targetAddress = val.payload.targetAddress;
+        this.targetAmount = val.payload.targetAmount;
         const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
@@ -194,8 +198,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public copyAddress() {
-    if (!this.isCopied && this.transaction$.value?.payload.targetAddress) {
-      copyToClipboard(this.transaction$.value?.payload.targetAddress);
+    if (!this.isCopied && this.targetAddress) {
+      copyToClipboard(this.targetAddress);
       this.isCopied = true;
     }
   }
@@ -263,16 +267,16 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public fireflyDeepLink(): SafeUrl {
-    if (!this.transaction$.value?.payload.targetAddress || !this.transaction$.value?.payload.amount) {
+    if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
 
-    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.transaction$.value?.payload.targetAddress +
-           '?amount=' + (this.transaction$.value?.payload.amount / 1000 / 1000) + '&unit=Mi');
+    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
+           '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
   }
 
   public tanglePayDeepLink(): string {
-    if (!this.transaction$.value?.payload.targetAddress || !this.transaction$.value?.payload.amount) {
+    if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
 
