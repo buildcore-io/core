@@ -168,7 +168,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   if (docCollectionData.discounts?.length && dataMember.spaces?.[docCollectionData.space]?.totalReputation) {
     const membersXp: number = dataMember.spaces[docCollectionData.space].totalReputation || 0;
     for (const d of docCollectionData.discounts) {
-      if (membersXp < d.xp) {
+      if (d.xp < membersXp) {
         discount = (1 - d.amount);
       }
     }

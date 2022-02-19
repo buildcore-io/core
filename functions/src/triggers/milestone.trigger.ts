@@ -38,8 +38,8 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
     if (transactions.size > 0) {
       const service: ProcessingService = new ProcessingService(tranOut);
       await service.processOrders();
-      await service.reconcileBillPayments();
-      await service.reconcileCredits();
+      // await service.reconcileBillPayments();
+      // await service.reconcileCredits();
 
       // Now process all invalid orders.
       // Wrong amount, Double payments & Expired orders.
@@ -68,7 +68,7 @@ class ProcessingService {
   }
 
   private getTransactions(type: TransactionType): any {
-    return admin.firestore().collection(COL.TRANSACTION).where('payload.reconciled', '==', false).where('payload.void', '==', false).get();
+    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', type).where('payload.reconciled', '==', false).where('payload.void', '==', false).get();
   }
 
   private findAllOrdersWithAddress(address: IotaAddress): any {
@@ -388,7 +388,7 @@ class ProcessingService {
 
     // We have to check each output address if there is an order for it.
     for (const [msgId, t] of Object.entries(this.trans)) {
-      if (t.outputs.length) {
+      if (t.outputs?.length) {
         for (const o of t.outputs) {
           // Already processed.
           if (this.processedTrans.indexOf(o.address) > -1) {
