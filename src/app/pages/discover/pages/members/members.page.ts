@@ -149,7 +149,7 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.members$.value[this.members$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.members$.value[this.members$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public isLoading(arr: any): boolean {

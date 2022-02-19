@@ -122,7 +122,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.collections$.value[this.collections$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.collections$.value[this.collections$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public isLoading(arr: any): boolean {

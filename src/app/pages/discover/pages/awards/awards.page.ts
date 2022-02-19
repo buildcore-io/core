@@ -30,7 +30,7 @@ export class AwardsPage implements OnInit, OnDestroy {
   private dataStore: Award[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(
-    private awardApi: AwardApi, 
+    private awardApi: AwardApi,
     public filter: FilterService,
     public deviceService: DeviceService
   ) {
@@ -103,13 +103,7 @@ export class AwardsPage implements OnInit, OnDestroy {
       return;
     }
 
-    // Def order field.
-    let order: 'createdOn'|'endDate' = 'createdOn';
-    if (this.selectedTags$.value[0] === HOT_TAGS.ACTIVE) {
-      order = 'endDate';
-    }
-
-    this.subscriptions$.push(this.getHandler(this.award$.value[this.award$.value.length - 1][order]).subscribe(this.store.bind(this, this.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.award$.value[this.award$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public isLoading(arr: any): boolean {

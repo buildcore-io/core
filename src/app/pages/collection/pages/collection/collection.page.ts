@@ -252,7 +252,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.data.collection$.value.uid, this.data.nft$.value[this.data.nft$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.data.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.data.collection$.value.uid, this.data.nft$.value[this.data.nft$.value.length - 1]._doc).subscribe(this.store.bind(this, this.data.dataStore.length)));
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {

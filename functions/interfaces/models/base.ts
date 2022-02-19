@@ -61,6 +61,9 @@ export interface BaseRecord extends Base {
   createdOn?: Timestamp;
   updatedOn?: Timestamp;
   createdBy?: string;
+
+  // Doc cursor used internally.
+  _doc?: any;
 }
 
 export interface FileMetedata {

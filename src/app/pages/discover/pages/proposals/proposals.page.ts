@@ -30,7 +30,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
   private dataStore: Proposal[][] = [];
   private subscriptions$: Subscription[] = [];
   constructor(
-    private proposalApi: ProposalApi, 
+    private proposalApi: ProposalApi,
     public filter: FilterService,
     public deviceService: DeviceService
   ) {
@@ -110,13 +110,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
       return;
     }
 
-    // Def order field.
-    let lastValue = this.proposal$.value[this.proposal$.value.length - 1].createdOn;
-    if (this.selectedTags$.value[0] === HOT_TAGS.ACTIVE || this.selectedTags$.value[0] === HOT_TAGS.COMPLETED) {
-      lastValue = this.proposal$.value[this.proposal$.value.length - 1].settings.endDate;
-    }
-
-    this.subscriptions$.push(this.getHandler(lastValue).subscribe(this.store.bind(this, this.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.proposal$.value[this.proposal$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   protected store(page: number, a: any): void {

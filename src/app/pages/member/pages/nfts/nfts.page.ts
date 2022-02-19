@@ -80,7 +80,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     }
 
     // Def order field.
-    const lastValue = this.nft$.value[this.nft$.value.length - 1].createdOn;
+    const lastValue = this.nft$.value[this.nft$.value.length - 1]._doc;
     this.subscriptions$.push(this.getHandler(lastValue).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
