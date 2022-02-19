@@ -12,6 +12,7 @@ import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from '@pages/nft/services/data.service';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -49,11 +50,22 @@ export class MultiplePage {
   public availableFrom?: Date | null;
   public nfts: any[] = [];
   public nftErrors: any[] = [];
+  private usedFileNames = new Set<string>();
   public nftObject:  NFTObject = {
     media: {
       label: 'media',
       required: true,
-      validate: (value: string) => !!value
+      validate: (value: string) => {
+        if (!value)  return false;
+        if (this.usedFileNames.has(value)) {
+          return false;
+        }
+        const result = !!this.uploadedFiles.find((f: NzUploadFile) => f.name === value);
+        if (result) {
+          this.usedFileNames.add(value);
+        }
+        return result;
+      }
     },
     name: {
       label: 'name',
@@ -106,6 +118,7 @@ export class MultiplePage {
   constructor(
     public deviceService: DeviceService,
     public cache: CacheService,
+    public data: DataService,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private auth: AuthService,
@@ -124,6 +137,7 @@ export class MultiplePage {
     merge(this.collectionControl.valueChanges, this.cache.allCollections$)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
+        this.reset();
         const finObj: Collection|undefined = this.cache.allCollections$.value.find((subO: any) => {
           return subO.uid === this.collectionControl.value;
         });
@@ -239,6 +253,7 @@ export class MultiplePage {
   public beforeCSVUpload(file: NzUploadFile) : boolean | Observable<boolean> {
     if (!file) return false;
     this.nftErrors = [];
+    this.usedFileNames.clear();
 
     Papa.parse(file as unknown as File, {
       complete: (results: any) => {
@@ -351,5 +366,15 @@ export class MultiplePage {
 
   public getMediaName(mediaResponse: string): string {
     return this.uploadedFiles.find((f: NzUploadFile) => f.response === mediaResponse)?.name || '';
+  }
+
+  public reset(): void {
+    this.currentStep = StepType.GENERATE;
+    this.previewNft = null;
+    this.price = null;
+    this.availableFrom = null;
+    this.nfts = [];
+    this.nftErrors = [];
+    this.usedFileNames.clear();
   }
 }
