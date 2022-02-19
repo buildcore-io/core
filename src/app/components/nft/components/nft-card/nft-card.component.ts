@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -24,6 +25,7 @@ export class NftCardComponent {
 
   constructor(
     public deviceService: DeviceService,
+    private auth: AuthService,
     private nzNotification: NzNotificationService
   ) {}
 
@@ -35,6 +37,27 @@ export class NftCardComponent {
       return;
     }
     this.isCheckoutOpen = true;
+  }
+
+  private discount(): number {
+    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space].totalReputation) {
+      return 1;
+    }
+    const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
+    let discount = 1;
+    if (xp > 0) {
+      for (const d of this.collection.discounts) {
+        if (d.xp < xp) {
+          discount = (1 - d.amount);
+        }
+      }
+    }
+
+    return discount;
+  }
+
+  public applyDiscount(amount?: number | null): number {
+    return Math.ceil((amount || 0) * this.discount());
   }
 
   public formatBest(amount?: number|null): string {

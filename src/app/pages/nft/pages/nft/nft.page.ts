@@ -5,6 +5,7 @@ import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { AvatarService } from '@core/services/avatar';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -35,6 +36,7 @@ export class NFTPage implements OnInit, OnDestroy {
     public avatarService: AvatarService,
     private titleService: Title,
     private route: ActivatedRoute,
+    private auth: AuthService,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,
     private nzNotification: NzNotificationService,
@@ -105,6 +107,28 @@ export class NFTPage implements OnInit, OnDestroy {
     }
 
     return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs()) && !nft?.owner;
+  }
+
+  public discount(collection?: Collection|null): number {
+    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space].totalReputation) {
+      return 1;
+    }
+
+    const xp: number = this.auth.member$.value.spaces[collection.space].totalReputation || 0;
+    let discount = 1;
+    if (xp > 0) {
+      for (const d of collection.discounts) {
+        if (d.xp < xp) {
+          discount = (1 - d.amount);
+        }
+      }
+    }
+
+    return discount;
+  }
+
+  public calc(amount: number | null | undefined, discount: number): number {
+    return Math.ceil((amount || 0) * discount);
   }
 
   public buy(event: MouseEvent): void {
