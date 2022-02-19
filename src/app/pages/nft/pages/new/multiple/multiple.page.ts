@@ -12,6 +12,7 @@ import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
@@ -49,6 +50,10 @@ export class MultiplePage {
   public availableFrom?: Date | null;
   public nfts: any[] = [];
   public nftObject:  NFTObject = {
+    media: {
+      label: 'media',
+      validate: (value: string) => !!value
+    },
     name: {
       label: 'name',
       validate: (value: string) => !!value
@@ -61,7 +66,7 @@ export class MultiplePage {
       label: 'price',
       validate: (value: string) => {
         const price = Number(value);
-        if (!value || isNaN(price)) return false;
+        if (!value || isNaN(price) || price < MIN_IOTA_AMOUNT || price > MAX_IOTA_AMOUNT) return false;
         if (this.price) {
           return price === this.price;
         }
@@ -95,10 +100,6 @@ export class MultiplePage {
       validate: () => true,
       isArray: true,
       defaultAmount: 5
-    },
-    media: {
-      label: 'media',
-      validate: (value: string) => !!value
     }
   };
 
@@ -211,6 +212,7 @@ export class MultiplePage {
 
     data.price = Number(data.price);
     data.collection = this.collectionControl.value;
+    data.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
     return data;
   }
 
@@ -241,29 +243,11 @@ export class MultiplePage {
                     { ...acc, [fieldKey]: value };
                 }, {}));
         this.currentStep = StepType.PUBLISH;
-        console.log(this.nfts);
         this.nfts = nfts.map((nft: any) => this.formatSubmitData(nft));
-        console.log(this.nfts);
         this.cd.markForCheck();
       }
     })
     return false;
-  }
-
-  private validateForm(): boolean {
-    this.nftForm.updateValueAndValidity();
-    if (!this.nftForm.valid) {
-      Object.values(this.nftForm.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-
-      return false;
-    }
-
-    return true;
   }
 
   public buttonClick(): void {
@@ -283,12 +267,12 @@ export class MultiplePage {
     const data =
       this.uploadedFiles
         .map((file: NzUploadFile) => [
-          ...fields.slice(1, fields.length-1)
+          file.name,
+          ...fields.slice(2, fields.length)
             .map((f: string) => {
               const obj = Object.values(this.nftObject).find((item) => f.startsWith(item.label));
               return obj?.value ? obj?.value() : '';
-            }), 
-          file.response]);
+            })]);
   
     const csv = Papa.unparse({
       fields,
