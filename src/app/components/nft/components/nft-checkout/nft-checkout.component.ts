@@ -60,6 +60,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
   public history: HistoryItem[] = [];
+  public invalidPayment = false;
   private _isOpen = false;
 
   private transSubscription?: Subscription;
@@ -89,7 +90,6 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         }
 
         if (val.linkedTransactions?.length > 0) {
-
           this.currentStep = StepType.WAIT;
           // Listen to other transactions.
           for (const tranId of val.linkedTransactions) {
@@ -136,6 +136,14 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
         this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid transaction refunded.', val.payload?.walletReference?.chainReference);
+
+
+        // Let's go back to wait. With slight delay so they can see this.
+        setTimeout(() => {
+          this.currentStep = StepType.TRANSACTION;
+          this.invalidPayment = true;
+          this.cd.markForCheck();
+        }, 2000);
       }
 
       this.cd.markForCheck();

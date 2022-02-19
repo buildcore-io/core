@@ -48,6 +48,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
   public history: HistoryItem[] = [];
+  public invalidPayment = false;
 
   private transSubscription?: Subscription;
 
@@ -103,6 +104,14 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       // Credit
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
         this.pushToHistory(val.uid + '_refund_complete', dayjs(), 'Full refund completed.');
+
+        if (val.payload.invalidPayment) {
+          setTimeout(() => {
+            this.currentStep = StepType.TRANSACTION;
+            this.invalidPayment = true;
+            this.cd.markForCheck();
+          }, 2000);
+        }
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === false && val.payload?.walletReference?.chainReference) {
@@ -198,6 +207,15 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
   public isSpaceVerification(): boolean {
     return this.entityType === EntityType.SPACE;
+  }
+
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
   public async initVerification(): Promise<void> {
