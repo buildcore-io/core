@@ -13,7 +13,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { Collection, CollectionType, Transaction, TransactionOrder, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
+import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
@@ -56,7 +56,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public stepType = StepType;
   public isCopied = false;
   public agreeTermsConditions = false;
-  public transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
+  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
   public history: HistoryItem[] = [];
@@ -130,12 +130,12 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === false) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, 'Invalid amount received. Refunding transaction.');
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_false', val.createdOn, 'Invalid amount received. Refunding transaction...');
       }
 
-      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid transaction refunded.', (<any>val).payload?.chainReference);
+      if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
+        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid transaction refunded.', val.payload?.walletReference?.chainReference);
       }
 
       this.cd.markForCheck();

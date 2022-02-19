@@ -201,7 +201,7 @@ class ProcessingService {
           targetAddress: order.payload.beneficiaryAddress,
           sourceTransaction: order.uid,
           nft: order.payload.nft || null,
-          reconciled: false,
+          reconciled: true,
           royalty: false,
           void: false,
           collection: order.payload.collection || null
@@ -229,7 +229,7 @@ class ProcessingService {
           sourceTransaction: order.uid,
           previusOwnerEntity: order.payload.beneficiary,
           previusOwner: order.payload.beneficiaryUid,
-          reconciled: false,
+          reconciled: true,
           royalty: true,
           void: false,
           // TODO: Let's give 60s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
@@ -281,9 +281,10 @@ class ProcessingService {
           targetAddress: tran.from.address,
           sourceTransaction: payment.uid,
           nft: order.payload.nft || null,
-          reconciled: false,
+          reconciled: true,
           void: false,
-          collection: order.payload.collection || null
+          collection: order.payload.collection || null,
+          invalidPayment: payment.payload.invalidPayment
         }
       };
       await refTran.set(data);
