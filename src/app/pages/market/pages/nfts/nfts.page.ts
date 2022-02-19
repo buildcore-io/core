@@ -9,7 +9,7 @@ import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
-import { Space } from 'functions/interfaces/models';
+import { Collection, Space } from 'functions/interfaces/models';
 import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
@@ -41,7 +41,8 @@ export class NFTsPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public cache: CacheService,
     public nftApi: NftApi,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private cacheService: CacheService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue());
@@ -153,6 +154,16 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public isEmpty(arr: any): boolean {
     return (Array.isArray(arr) && arr.length === 0);
+  }
+
+  public getCollection(col?: string|null): Collection|undefined {
+    if (!col) {
+      return undefined;
+    }
+
+    return this.cacheService.allCollections$.value.find((d) => {
+      return d.uid === col;
+    });
   }
 
   protected store(page: number, a: any): void {

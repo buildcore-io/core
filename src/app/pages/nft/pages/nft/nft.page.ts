@@ -110,7 +110,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public discount(collection?: Collection|null): number {
-    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space].totalReputation) {
+    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation) {
       return 1;
     }
 

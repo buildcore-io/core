@@ -40,7 +40,7 @@ export class NftCardComponent {
   }
 
   private discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space].totalReputation) {
+    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation) {
       return 1;
     }
     const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
