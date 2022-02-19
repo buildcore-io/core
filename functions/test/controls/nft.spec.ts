@@ -96,11 +96,12 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(collection?.uid).toBeDefined();
   });
 
-  it('successfully create NFT', async () => {
+  it.only('successfully create NFT', async () => {
     mocker({
       name: 'Collection A',
       description: 'babba',
       collection: collection.uid,
+      media: 'https://firebasestorage.googleapis.com/v0/b/soonaverse-test.appspot.com/o/0x551fd2c7c7bf356bac194587dab2fcd46420054b%2Fpt7u97zf5to%2Fnft_media?alt=media&token=8d3b5fed-4f74-4961-acf2-f22fabd78d03',
       availableFrom: dayjs().add(1, 'hour').toDate(),
       price: 10 * 1000 * 1000
     });

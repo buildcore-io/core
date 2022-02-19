@@ -141,7 +141,7 @@ export class MultiplePage {
         const finObj: Collection|undefined = this.cache.allCollections$.value.find((subO: any) => {
           return subO.uid === this.collectionControl.value;
         });
-        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.CLASSIC)) {
+        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
           this.price = (finObj.price || 0);
           this.availableFrom = (finObj.availableFrom || finObj.createdOn).toDate();
         } else {
@@ -189,7 +189,7 @@ export class MultiplePage {
     const res: any = {};
 
     if (data.property && data.property.length > 0) {
-      const obj = 
+      const obj =
         data.property
           .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
           .filter((s: { [key: string]: string }) => s.key && s.value)
@@ -204,18 +204,18 @@ export class MultiplePage {
             }
             return { ...acc, [key]: newObj };
           }, {});
-      
+
         const filteredObj =
           Object.keys(obj)
             .filter((key: string) => obj[key].label && obj[key].value)
-  
+
         if (filteredObj.length > 0) {
           res.properties = filteredObj.reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
         }
     }
 
     if (data.stat && data.stat.length > 0) {
-      const obj = 
+      const obj =
         data.stat
           .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
           .filter((s: { [key: string]: string }) => s.key && s.value)
@@ -230,7 +230,7 @@ export class MultiplePage {
             }
             return { ...acc, [key]: newObj };
           }, {});
-      
+
       const filteredObj =
         Object.keys(obj)
           .filter((key: string) => obj[key].label && obj[key].value)
@@ -239,7 +239,7 @@ export class MultiplePage {
         res.stats = filteredObj.reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
       }
     }
-    
+
     res.name = data.name;
     res.description = data.description;
     res.price = Number(data.price);
@@ -278,7 +278,7 @@ export class MultiplePage {
               Object.values(this.nftObject)
                 .forEach((field) => {
                   if (field.required) {
-                    const isValid = 
+                    const isValid =
                       field.fields ?
                         Object.keys(nft)
                           .filter((key: string) => key.startsWith(field.label))
@@ -320,7 +320,7 @@ export class MultiplePage {
     const fields =
       ['', ...Object.values(this.nftObject)
         .filter(item => !item.value || !item.value())
-        .map(item => item.fields ? 
+        .map(item => item.fields ?
           [...Array(item.defaultAmount).keys()]
             .map((num: number) => (item?.fields || []).map(f => `${item.label}.${f}${num+1}`)) :
           [item.label])
@@ -332,7 +332,7 @@ export class MultiplePage {
           file.name,
           ...fields.slice(2, fields.length)
             .map(() => '')]);
-  
+
     const csv = Papa.unparse({
       fields,
       data
@@ -343,7 +343,7 @@ export class MultiplePage {
 
   public async publish(): Promise<void> {
     if (!this.nfts?.length) return;
-    
+
     await this.auth.sign(this.nfts, (sc, finish) => {
       this.notification.processRequest(this.nftApi.batchCreate(sc), 'Created.', finish).subscribe((val: any) => {
         this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);

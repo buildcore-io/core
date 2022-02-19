@@ -20,6 +20,7 @@
     "@iota/iota.js": "1.8.6",
     "@iota/util.js": "1.8.6",
     "@metamask/eth-sig-util": "4.0.0",
+    "axios": "^0.26.0",
     "bip39": "3.0.4",
     "dayjs": "1.10.7",
     "ethers": "5.5.4",
@@ -28,6 +29,7 @@
     "is-ipfs": "6.0.2",
     "joi": "17.6.0",
     "lodash": "4.17.21",
+    "nft.storage": "^6.0.0",
     "uuid": "8.3.2"
   },
   "devDependencies": {

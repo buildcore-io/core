@@ -6,6 +6,13 @@ export const MAX_PROPERTIES_COUNT = 25;
 export const MAX_STATS_COUNT = 25;
 export const PRICE_UNITS: ('Mi'|'Gi')[] = ['Mi', 'Gi'];
 
+export interface PropStats {
+  [propName: string]: {
+    label: string,
+    value: string
+  }
+}
+
 export interface Nft extends BaseRecord {
   name: string;
   description: string;
@@ -14,12 +21,13 @@ export interface Nft extends BaseRecord {
   ownerAddress?: IotaAddress;
   media: string;
   ipfsMedia: string;
+  ipfsMetadata: string;
   availableFrom: Timestamp;
   price: number;
   type: CollectionType;
   space: string;
   url: string;
-  properties: any;
-  stats: any;
+  properties: PropStats;
+  stats: PropStats;
   placeholderNft: boolean;
 }
