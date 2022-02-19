@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Member, Transaction, TransactionBillPayment, TransactionCredit, TransactionOrder, TransactionPayment, TransactionType } from 'functions/interfaces/models';
+import { Member, Transaction, TransactionOrder, TransactionType } from 'functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -11,9 +11,7 @@ import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 export interface SuccesfullOrdersWithFullHistory {
   newMember: Member;
   order: TransactionOrder;
-  billPayments: TransactionBillPayment[];
-  credits: TransactionCredit[];
-  payments: TransactionPayment[]
+  transactions: Transaction[];
 }
 
 @Injectable({
@@ -48,20 +46,11 @@ export class NftApi extends BaseApi<Nft> {
         const o: SuccesfullOrdersWithFullHistory = {
           newMember: member.data()!,
           order: order.data()!,
-          billPayments: [],
-          credits: [],
-          payments: []
+          transactions: []
         };
         for (const link of o.order.linkedTransactions) {
           const tran: DocumentSnapshot<Transaction> = <any>await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(link).get());
-          if (tran.data()!.type === TransactionType.BILL_PAYMENT) {
-            o.billPayments.push(tran.data()!);
-          } else if (tran.data()!.type === TransactionType.CREDIT) {
-            o.credits.push(tran.data()!);
-          } else if (tran.data()!.type === TransactionType.PAYMENT) {
-            o.payments.push(tran.data()!);
-          }
-          console.log(tran.data()!.uid, tran.data()!.type, tran.data()!.payload.amount, tran.data()!.payload.chainReference || tran.data()!.payload?.walletReference?.chainReference);
+          o.transactions.push(tran.data()!);
         }
 
         out.push(o);
