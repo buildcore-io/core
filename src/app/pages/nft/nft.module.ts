@@ -13,6 +13,7 @@ import { TimelineNftModule } from '@components/timeline-nft/timeline-nft.module'
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
+import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -77,7 +78,8 @@ import { DataService } from './services/data.service';
     NftCardModule,
     NftPreviewModule,
     CollapseModule,
-    NzTableModule
+    NzTableModule,
+    TruncateModule
   ],
   providers: [
     DataService

@@ -24,6 +24,7 @@ export interface NFTObject {
   [key: string]: {
     label: string;
     validate: (value: any) => boolean;
+    required: boolean;
     fields?: string[];
     value?: () => any;
     defaultAmount?: number;
@@ -47,21 +48,26 @@ export class MultiplePage {
   public price?: number | null;
   public availableFrom?: Date | null;
   public nfts: any[] = [];
+  public nftErrors: any[] = [];
   public nftObject:  NFTObject = {
     media: {
       label: 'media',
+      required: true,
       validate: (value: string) => !!value
     },
     name: {
       label: 'name',
+      required: true,
       validate: (value: string) => !!value
     },
     description: {
       label: 'description',
+      required: true,
       validate: (value: string) => !!value
     },
     price: {
       label: 'price',
+      required: true,
       validate: (value: string) => {
         if (this.price) return true;
         const price = Number(value);
@@ -72,6 +78,7 @@ export class MultiplePage {
     },
     availableFrom: {
       label: 'available_from',
+      required: true,
       validate: (value: string) => {
         if (this.availableFrom) return true;
         if(!value || isNaN(Date.parse(value))) return false;
@@ -82,12 +89,14 @@ export class MultiplePage {
     },
     property: {
       label: 'prop',
+      required: false,
       fields: ['label', 'value'],
       validate: () => true,
       defaultAmount: 5
     },
     stat: {
       label: 'stat',
+      required: false,
       fields: ['label', 'value'],
       validate: () => true,
       defaultAmount: 5
@@ -182,10 +191,13 @@ export class MultiplePage {
             return { ...acc, [key]: newObj };
           }, {});
       
-      res.properties = 
-        Object.keys(obj)
-          .filter((key: string) => obj[key].label && obj[key].value)
-          .reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
+        const filteredObj =
+          Object.keys(obj)
+            .filter((key: string) => obj[key].label && obj[key].value)
+  
+        if (filteredObj.length > 0) {
+          res.properties = filteredObj.reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
+        }
     }
 
     if (data.stat && data.stat.length > 0) {
@@ -205,10 +217,13 @@ export class MultiplePage {
             return { ...acc, [key]: newObj };
           }, {});
       
-      res.stats = 
+      const filteredObj =
         Object.keys(obj)
           .filter((key: string) => obj[key].label && obj[key].value)
-          .reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
+
+      if (filteredObj.length > 0) {
+        res.stats = filteredObj.reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
+      }
     }
     
     res.name = data.name;
@@ -216,36 +231,51 @@ export class MultiplePage {
     res.price = Number(data.price);
     res.collection = this.collectionControl.value;
     res.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
+    res.availableFrom = data.availableFrom;
+    res.price = data.price;
     return res;
   }
 
   public beforeCSVUpload(file: NzUploadFile) : boolean | Observable<boolean> {
     if (!file) return false;
+    this.nftErrors = [];
 
     Papa.parse(file as unknown as File, {
       complete: (results: any) => {
         // Use this nfts for multiple upload
         const nfts =
           results.data
-            .slice(1)
+            .slice(1, results.data.length - 1)
             .map((row: string[]) =>
               row.reduce((acc: any, cur: string, index: number) => ({ ...acc, [results.data[0][index]]: cur }), {}))
             .map((nft: any) => {
               const newFields: any = {};
               if (this.availableFrom) {
-                newFields.availableFrom = this.availableFrom;
+                newFields.available_from = this.availableFrom;
               }
               if (this.price) {
                 newFields.price = this.price;
               }
               return { ...nft, ...newFields };
             })
-            .filter((nft: any) => 
+            .map((nft: any) => {
+              const errors: string[] = [];
               Object.values(this.nftObject)
-                .every((field) => field.fields ?
-                  Object.keys(nft)
-                    .filter((key: string) => key.startsWith(field.label))
-                    .every((key: string) => field.validate(nft[key])) : field.validate(nft[field.label])))
+                .forEach((field) => {
+                  if (field.required) {
+                    const isValid = 
+                      field.fields ?
+                        Object.keys(nft)
+                          .filter((key: string) => key.startsWith(field.label))
+                          .every((key: string) => field.validate(nft[key])) : field.validate(nft[field.label]);
+                    if (!isValid) {
+                      errors.push(`Invalid ${field.label}`);
+                    }
+                  }
+                });
+              this.nftErrors.push(errors);
+              return nft;
+            })
             .map((nft: any) =>
               Object.keys(nft)
                 .reduce((acc: any, key: string) => {
@@ -312,5 +342,14 @@ export class MultiplePage {
 
   public removeNft(index: number): void  {
     this.nfts = this.nfts.filter((nft: any, i: number) => i !== index);
+    this.nftErrors = this.nftErrors.filter((nftError: any, i: number) => i !== index);
+  }
+
+  public isNftError(): boolean {
+    return this.nftErrors.some((nftErrors: string[]) => nftErrors.length);
+  }
+
+  public getMediaName(mediaResponse: string): string {
+    return this.uploadedFiles.find((f: NzUploadFile) => f.response === mediaResponse)?.name || '';
   }
 }

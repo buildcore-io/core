@@ -38,10 +38,18 @@
                 </nz-card>
 
                 <nz-card nzTitle="Uploaded CSV" *ngIf="currentStep === stepType.PUBLISH">
+                    <div class="flex items-center py-4 px-5 my-10 rounded-xl bg-alerts-error text-white" *ngIf="isNftError()">
+                        <wen-icon-alert-octagon class="mr-3.5"></wen-icon-alert-octagon>
+                        <div class="font-bold" i18n>
+                            Some of the NFTs are faulty!
+                        </div>
+                    </div>
+
                     <nz-table class="block" nzNoResult="No NFTs"
                         [nzData]="nfts" [nzShowPagination]="false">
                         <thead>
                             <tr>
+                                <th i18n>Filename</th>
                                 <th i18n>Name</th>
                                 <th i18n>Price</th>
                                 <th></th>
@@ -51,13 +59,30 @@
                         <tbody>
                             <tr *ngFor="let nft of nfts; let i = index; trackBy: trackByName">
                                 <td>
-                                    <div class="text-base font-medium">{{ nft.name }}</div>
+                                    <div class="text-base font-medium truncate">{{ getMediaName(nft.media) | truncate:[12] }}</div>
                                 </td>
                                 <td>
-                                    <div class="text-base font-medium">{{ nft.price }}</div>
+                                    <div class="text-base font-medium">{{ nft.name | truncate:[12] }}</div>
+                                </td>
+                                <td>
+                                    <div class="text-base font-medium">{{ nft.price | truncate:[12] }}</div>
                                 </td>
                                 <td class="w-0">
-                                    <wen-icon-eye class="cursor-pointer text-black" (click)="previewNft = nft"></wen-icon-eye>
+                                    <wen-icon-eye *ngIf="!nftErrors[i]?.length; else errorBlock"
+                                        class="cursor-pointer text-black" (click)="previewNft = nft"></wen-icon-eye>
+                                    <ng-template #errorBlock>
+                                        <div class="flex items-center text-alerts-error">
+                                            <div class="text-xs font-medium mr-1" i18n>Error</div>
+                                            <i nz-icon nzType="info-circle" nz-tooltip [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+                                            <ng-template #tooltip>
+                                                <div>
+                                                    <div *ngFor="let err of nftErrors[i]" class="text-sm font-medium text-alerts-error">
+                                                        - {{ err }}
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </ng-template>
                                 </td>
                                 <td class="w-0">
                                     <wen-icon-trash class="cursor-pointer text-app-gray-400" (click)="removeNft(i)"></wen-icon-trash>
@@ -133,6 +158,7 @@
         nzSize="large"
         type="button"
         (click)="buttonClick()"
+        [disabled]="isNftError()"
         i18n
     >
         {{ currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs'}}
