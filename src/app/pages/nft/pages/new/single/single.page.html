@@ -277,6 +277,9 @@
                                     <i class="upload-icon" nz-icon nzType="upload"></i>
                                 </ng-container>
                             </nz-upload>
+                            <div class="text-orange-darkest" *ngIf="mediaControl.invalid && !mediaControl.pristine" i18n>
+                                Media is required.
+                            </div>
                         </nz-form-control>
                     </nz-form-item>
                 </div>

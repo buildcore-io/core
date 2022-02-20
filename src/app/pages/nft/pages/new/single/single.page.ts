@@ -31,7 +31,7 @@ export class SinglePage implements OnInit {
   public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
   public unitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
-  public mediaControl: FormControl = new FormControl('');
+  public mediaControl: FormControl = new FormControl('', Validators.required);
   public collectionControl: FormControl = new FormControl('');
   public properties: FormArray;
   public stats: FormArray;
