@@ -27,7 +27,7 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
 });
 
 const MAX_UPLOAD_RETRY = 3;
-export const ipfsForNft: functions.CloudFunction<any> = functions.runWith({ timeoutSeconds: 540, memory: '4GB' }).pubsub.schedule('every 5 minutes').onRun(async () => {
+export const ipfsForNft: functions.CloudFunction<any> = functions.runWith({ timeoutSeconds: 540, memory: '4GB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).get();;
   if (qry.size > 0) {
     for (const doc of qry.docs) {
