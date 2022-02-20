@@ -36,20 +36,43 @@
                             </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
-                            <nz-form-control>
+                            <nz-form-control class="relative">
                                 <nz-input-number
-                                class="w-full"
-                                [nzMin]="1"
-                                [nzMax]="90"
-                                [nzStep]="1"
-                                [nzFormatter]="formatterPercent"
-                                [nzParser]="parserPercent"
-                                placeholder="Royalties - Percentage fee"
-                                nzSize="large"
-                                [formControl]="royaltiesFeeControl"
+                                    class="w-full"
+                                    [nzMin]="1"
+                                    [nzMax]="90"
+                                    [nzStep]="1"
+                                    [nzFormatter]="formatterPercent"
+                                    [nzParser]="parserPercent"
+                                    nzPlaceHolder="Royalties - Percentage fee"
+                                    nzSize="large"
+                                    [formControl]="royaltiesFeeControl"
                                 ></nz-input-number>
+                                <i nz-icon nzType="info-circle" class="absolute right-6 top-1/2 transform -translate-y-1/2
+                                    cursor-pointer text-app-gray-400" nz-tooltip nzTooltipTitle="Royalties - Percentage fee"></i>
                             </nz-form-control>
                         </nz-form-item>
+
+                        <nz-form-item>
+                            <label nz-checkbox [formControl]="royaltiesSpaceDifferentControl">
+                                <div class="flex items-center">
+                                    <div class="font-medium mr-2.5" i18n>
+                                        Royalties goes to a different space
+                                    </div>
+                                    <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400"
+                                        nz-tooltip nzTooltipTitle="Royalties goes to a different space"></i>
+                                </div>
+                            </label>
+                        </nz-form-item>
+
+                        <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
+                            <wen-select-space
+                              class="block w-full"
+                              [formControl]="royaltiesSpaceControl"
+                              [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+                              size="large">
+                            </wen-select-space>
+                          </nz-form-item>
                     </div>
                 </nz-card>
 
@@ -232,7 +255,7 @@
             </div>
 
             <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
-              <nz-card [nzBordered]="false" nzTitle="Space Info">
+              <nz-card [nzBordered]="false" nzTitle="Space">
                 <nz-form-item>
                   <wen-select-space
                     class="block w-full"
@@ -352,38 +375,34 @@
                         [formControl]="selectedAccessControl"
                       >
                         <wen-radio [value]="targetAccess.OPEN"
-                          ><span i18n>Open Sale
+                          ><span class="flex items-center" i18n>Open Sale
                             <wen-icon-question-circle
-                              class="inline-block"
+                              class="ml-1"
                               nz-tooltip
-                              nzTooltipPlacement="right"
                               nzTooltipTitle="Everyone has access to this collection."
                             ></wen-icon-question-circle> </span
                         ></wen-radio>
                         <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
-                          ><span i18n>Space Guardians Only
+                          ><span class="flex items-center" i18n>Space Guardians Only
                             <wen-icon-question-circle
-                              class="inline-block"
+                              class="ml-1"
                               nz-tooltip
-                              nzTooltipPlacement="right"
                               nzTooltipTitle="Only Space Guardians can access."
                             ></wen-icon-question-circle> </span
                         ></wen-radio>
                         <wen-radio [value]="targetAccess.MEMBERS_ONLY"
-                          ><span i18n>Space Members Only
+                          ><span class="flex items-center" i18n>Space Members Only
                             <wen-icon-question-circle
-                              class="inline-block"
+                              class="ml-1"
                               nz-tooltip
-                              nzTooltipPlacement="right"
                               nzTooltipTitle="Only Space Members can access."
                             ></wen-icon-question-circle> </span
                         ></wen-radio>
                         <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
-                          ><span i18n>Space Members with Badge Only
+                          ><span class="flex items-center" i18n>Space Members with Badge Only
                             <wen-icon-question-circle
-                              class="inline-block"
+                              class="ml-1"
                               nz-tooltip
-                              nzTooltipPlacement="right"
                               nzTooltipTitle="Only Space Members with badge can access."
                             ></wen-icon-question-circle> </span
                         ></wen-radio>
