@@ -10,6 +10,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftCheckoutComponent } from './nft-checkout.component';
 
@@ -31,7 +32,8 @@ import { NftCheckoutComponent } from './nft-checkout.component';
     NzButtonModule,
     CountdownTimeModule,
     NzAlertModule,
-    TruncateModule
+    TruncateModule,
+    NzNotificationModule 
   ],
   exports: [
     NftCheckoutComponent
