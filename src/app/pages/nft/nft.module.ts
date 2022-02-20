@@ -75,6 +75,7 @@ import { DataService } from './services/data.service';
     TimelineNftModule,
     NzToolTipModule,
     NzSkeletonModule,
+    TruncateModule,
     NftCardModule,
     NftPreviewModule,
     CollapseModule,

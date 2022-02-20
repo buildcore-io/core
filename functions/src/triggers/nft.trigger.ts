@@ -16,7 +16,10 @@ export const nftCreate: functions.CloudFunction<QueryDocumentSnapshot> = functio
     const ipfs: IpfsService = new IpfsService();
     const obj: IpfsSuccessResult|undefined = await ipfs.fileUpload(doc.data().media, <Nft>doc.data(), docCollection.data());
     if (obj) {
-      console.log(obj);
+      await admin.firestore().collection(COL.NFT).doc(doc.data().uid).update({
+        ipfsMedia: obj.image,
+        ipfsMetadata: obj.metadata
+      });
     }
   }
 });

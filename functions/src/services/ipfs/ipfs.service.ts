@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { NFTStorage } from 'nft.storage';
+import fs from 'fs';
+import { File, NFTStorage } from 'nft.storage';
 import { Collection } from '../../../interfaces/models';
 import { Nft, PropStats } from '../../../interfaces/models/nft';
 
@@ -10,12 +11,12 @@ export interface IpfsSuccessResult {
 
 const nftStorageConfig: any = {
   endpoint: 'https://api.nft.storage', // the default
-  token: ''
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkzMDE1ZWQwY2NmNDY5MDIzRUJiM2ZlNzJDZEQ2YkQwOTFlOGM4REEiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzNzk4MTMxODIyMywibmFtZSI6ImNvbnNvbGUgdGVzdCJ9.CwE1wW3hWt_ck6AKzSKVd7RmYdRgsy5S9PdD7Ew4zVA'
 }
 
 const pinataConfig: any = {
-  key: '',
-  secret: ''
+  key: '3415c6c7bb6561bf1fba',
+  secret: '3aa23f1ccad529da79d6ac6276b342e140e0b2380043a33b76dbdbcab7263c66'
 }
 
 export class IpfsService {
@@ -51,18 +52,28 @@ export class IpfsService {
     const storage = new NFTStorage({ endpoint: nftStorageConfig.endpoint, token: nftStorageConfig.token });
 
     // Let's get the file from URL and detect the type.
-    const image: Blob = await axios.get(fileUrl, { responseType: 'blob' });
+    const file: any = await fetch(fileUrl);
+    const filename: string = nft.name + (Math.random() * 1000);
+    const fileStream = fs.createWriteStream('/tmp/' + filename);
+    await new Promise((resolve, reject) => {
+      file.body.pipe(fileStream);
+      file.body.on("error", reject);
+      fileStream.on("finish", resolve);
+    });
     const finalMetadata: any = await storage.store({
       name: nft.name,
       description: nft.description,
       author: nft.createdBy,
       space: nft.space,
       royaltySpace: collection.royaltiesSpace,
-      image: image,
+      image: new File([await fs.promises.readFile('/tmp/' + filename)], nft.name, {
+        type: file.headers.get('content-type'),
+      }),
       properties: this.formatPropsStats(nft.properties),
       stats: this.formatPropsStats(nft.stats),
     });
 
+    await fs.promises.rm('/tmp/' + filename);
     // Details
     return {
       metadata: finalMetadata.embed(),

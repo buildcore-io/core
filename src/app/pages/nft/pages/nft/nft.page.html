@@ -121,11 +121,19 @@
                 </div>
 
                 <div class="wen-description-item bg-bg-background">
-                    <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
-                    <p nz-typography>
-                        {{ (data.nft$ | async)?.ipfsMedia || 'Generating...'}}
-                    </p>
+                  <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
+                  <p nz-typography>
+                      {{ (data.nft$ | async)?.ipfsMetadata | truncate: [24] || 'Preparing...'}}
+                      <a class="underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank">View</a>
+                  </p>
                 </div>
+                <div class="wen-description-item bg-bg-background">
+                  <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
+                  <p nz-typography>
+                      {{ (data.nft$ | async)?.ipfsMedia | truncate: [24] || 'Preparing...'}}
+                      <a class="underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank">View</a>
+                  </p>
+              </div>
             </wen-collapse>
 
             <wen-collapse class="mt-4" title="Properties" *ngIf="data.getPropStats((data.nft$ | async)?.properties).length">
