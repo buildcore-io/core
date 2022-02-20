@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi, AwardFilter } from '@api/award.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
+import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NavigationService } from '@core/services/navigation/navigation.service';
 import { NotificationService } from '@core/services/notification';
@@ -61,15 +61,16 @@ export class UpsertPage implements OnInit, OnDestroy {
   public formatterPercent = (value: number): string => `${value} %`;
   public parserPercent = (value: string): string => value.replace(' %', '');
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   private awardSub?: Subscription;
 
   constructor(
     public deviceService: DeviceService,
     public nav: NavigationService,
-    public cache: CacheService,
     private route: ActivatedRoute,
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
+    private memberApi: MemberApi,
     private notification: NotificationService,
     private auth: AuthService,
     private router: Router,
@@ -147,6 +148,12 @@ export class UpsertPage implements OnInit, OnDestroy {
             this.cd.markForCheck();
           }
         });
+      }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o?.uid) {
+        this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
       }
     });
 

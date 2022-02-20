@@ -5,7 +5,7 @@ import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
-import { COL, WenRequest } from '../../interfaces/models/base';
+import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
@@ -75,6 +75,10 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
   await SpaceValidator.spaceExists(refSpace);
   await SpaceValidator.hasValidAddress(refSpace);
+
+  if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(creator).get()).exists) {
+    throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+  }
 
   // Validate royalty space exists
   const refSpaceRoyalty: any = admin.firestore().collection(COL.SPACE).doc(params.body.royaltiesSpace);
