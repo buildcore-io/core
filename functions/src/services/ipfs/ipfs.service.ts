@@ -93,13 +93,15 @@ export class IpfsService {
   }
 
   public async fileUpload(fileUrl: string, nft: Nft, collection: Collection): Promise<IpfsSuccessResult|undefined> {
+    console.log('Uploading to storage: ' + fileUrl);
     const out = await this.nftUpload(fileUrl, nft, collection);
     if (out) {
       try {
+        console.log('Pinning to Pinata...');
         const metadata = await this.pinJSONToIPFS(out.metadata);
         const cid = out.image.split('/')[2];
         await this.pinByHash(cid, out.metadata);
-
+        console.log('Pinning finished.');
         return {
           metadata: metadata.data.IpfsHash,
           image: cid
