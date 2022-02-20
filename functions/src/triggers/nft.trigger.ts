@@ -7,6 +7,7 @@ import { IpfsService, IpfsSuccessResult } from '../services/ipfs/ipfs.service';
 
 export const nftCreate: functions.CloudFunction<QueryDocumentSnapshot> = functions.runWith({
   timeoutSeconds: 180,
+  maxInstances: 50,
   memory: "4GB",
 }).firestore.document(COL.NFT + '/{nftId}').onCreate(async (doc) => {
   if (doc.data().media) {
