@@ -114,6 +114,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
       position: docCollection.data().total + 1,
       lockedBy: null,
       ipfsMedia: null,
+      ipfsMetadata: null,
       sold: false,
       owner: null,
       space: docCollection.data().space,

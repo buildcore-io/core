@@ -1,6 +1,8 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL } from '../../functions/interfaces/models/base';
+import { Nft } from '../interfaces/models/nft';
+import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 
 export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
@@ -21,4 +23,26 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
 
   // Finished.
   return null;
+});
+
+export const ipfsForNft: functions.CloudFunction<any> = functions.pubsub.schedule('every 15 minutes').onRun(async (doc) => {
+  const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).get();
+  if (qry.size > 0) {
+    for (const doc of qry.docs) {
+      if (doc.data().media) {
+        const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(doc.data().collection);
+        const docCollection: any = await refCollection.get();
+
+        const ipfs: IpfsService = new IpfsService();
+        const obj: IpfsSuccessResult|undefined = await ipfs.fileUpload(doc.data().media, <Nft>doc.data(), docCollection.data());
+        if (obj) {
+          await admin.firestore().collection(COL.NFT).doc(doc.data().uid).update({
+            ipfsMedia: obj.image,
+            ipfsMetadata: obj.metadata
+          });
+        }
+      }
+    }
+  }
+
 });

@@ -7,9 +7,8 @@ import { createBatchNft, createNft } from './controls/nft.control';
 import { orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
-import { markAwardsAsComplete } from "./cron";
+import { ipfsForNft, markAwardsAsComplete } from "./cron";
 import { milestoneWrite } from './triggers/milestone.trigger';
-import { nftCreate } from './triggers/nft.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
 admin.initializeApp();
 
@@ -61,8 +60,8 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
 exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;
+exports['cron_ipfsForNft'] = ipfsForNft;
 
 // TRIGGER Tasks
 exports['trigger_milestoneWrite'] = milestoneWrite;
 exports['trigger_transactionWrite'] = transactionWrite;
-exports['trigger_nftCreate'] = nftCreate;
