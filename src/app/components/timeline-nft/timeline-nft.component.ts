@@ -17,6 +17,7 @@ export class TimelineNftComponent {
   @Input() nft?: Nft | null;
   @Input() orders?: SuccesfullOrdersWithFullHistory[] | null;
   @Input() listedBy?: Space | null;
+  public isCollapsed = false;
 
   constructor(
     public deviceService: DeviceService,
