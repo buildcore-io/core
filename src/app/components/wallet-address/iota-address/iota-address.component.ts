@@ -171,6 +171,10 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     if (!this.isCopied && this.targetAddress) {
       copyToClipboard(this.targetAddress);
       this.isCopied = true;
+      setTimeout(() => {
+        this.isCopied = false;
+        this.cd.markForCheck();
+      }, 3000);
     }
   }
 
