@@ -2,8 +2,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { DataService } from '@pages/space/services/data.service';
 import { Space } from 'functions/interfaces/models';
 
@@ -14,10 +14,10 @@ import { Space } from 'functions/interfaces/models';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SpaceNewAllianceComponent {
-  @Input() 
+  @Input()
   public set spaces(value: Space[]) {
     const currentSpaceUid = this.data.space$.getValue()?.uid;
-    
+
     this.spaceOptions =
       value
         .filter(space => space.uid !== currentSpaceUid)
@@ -43,11 +43,11 @@ export class SpaceNewAllianceComponent {
   private _spaces: Space[] = [];
 
   constructor(
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     private data: DataService
   ) {}
-  
+
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }

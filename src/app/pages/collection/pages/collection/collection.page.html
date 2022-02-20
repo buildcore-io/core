@@ -11,7 +11,7 @@
             *ngIf="deviceService.isDesktop$ | async">
             <nz-avatar
               [nzSize]="32"
-              [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+              [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
               class="border-app-gray-100 min-w-8 min-h-8"
               nzShape="circle">
             </nz-avatar>

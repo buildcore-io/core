@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { DataService } from '@pages/member/services/data.service';
 import { BehaviorSubject } from 'rxjs';
 import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
@@ -22,7 +22,7 @@ export class MemberAboutComponent {
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
-    public avatarService: AvatarService
+    public previewImageService: PreviewImageService
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {

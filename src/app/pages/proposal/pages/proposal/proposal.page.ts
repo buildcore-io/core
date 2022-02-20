@@ -3,8 +3,8 @@ import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
 import { AuthService } from '@components/auth/services/auth.service';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Proposal } from 'functions/interfaces/models';
@@ -54,7 +54,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
     public proposalData: ProposalDataService,
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     public nav: NavigationService,
     public deviceService: DeviceService
   ) {

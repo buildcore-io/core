@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FileApi } from '@api/file.api';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
@@ -20,13 +21,10 @@ export class CollectionCardComponent {
 
   constructor(
     private cache: CacheService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public previewImageService: PreviewImageService
   ) {
     // none.
-  }
-
-  public get bannerUrl(): string|undefined {
-    return this.collection?.bannerUrl ? FileApi.getUrl(this.collection.bannerUrl, 'collection_banner', FILE_SIZES.medium) : undefined;
   }
 
   public get space(): Space|undefined {

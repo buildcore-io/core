@@ -72,7 +72,7 @@
                     <a class="flex items-center mt-2" [routerLink]="['/space', space?.uid]">
                         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                             style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                            [nzSrc]="avatarService.getAvatarSize(space?.avatarUrl)">
+                            [nzSrc]="previewImageService.getAvatarSize(space?.avatarUrl)">
                         </nz-avatar>
 
                         <div class="ml-3 text-base font-medium truncate max-w-20">{{ space?.name || space?.uid }}</div>

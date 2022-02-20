@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
@@ -25,6 +26,7 @@ export class NftCardComponent {
 
   constructor(
     public deviceService: DeviceService,
+    public previewImageService: PreviewImageService,
     private auth: AuthService,
     private nzNotification: NzNotificationService
   ) {}

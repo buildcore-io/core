@@ -4,7 +4,7 @@
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
             alt="NFT image"
-            [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
+            [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
             class="object-cover w-full h-full"
             />
 

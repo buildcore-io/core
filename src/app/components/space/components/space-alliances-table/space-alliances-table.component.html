@@ -12,7 +12,7 @@
         <tr *ngFor="let ally of alliances | slice:0:(size === 'small' ? 3 : alliances.length); trackBy: trackByUid">
             <td class="flex items-center">
                 <nz-avatar
-                    [nzSrc]="avatarService.getAvatarSize(ally._record.avatarUrl)"
+                    [nzSrc]="previewImageService.getAvatarSize(ally._record.avatarUrl)"
                     class="mr-3 bg-white border-gray-400"
                     nzShape="circle"
                     [nzSize]="(deviceService.isDesktop$ | async) ? 32 : 24"

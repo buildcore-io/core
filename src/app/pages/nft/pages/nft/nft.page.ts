@@ -6,7 +6,7 @@ import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { AvatarService } from '@core/services/avatar';
+import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
@@ -34,7 +34,7 @@ export class NFTPage implements OnInit, OnDestroy {
   private subscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     private titleService: Title,
     private route: ActivatedRoute,
     private auth: AuthService,

@@ -48,7 +48,7 @@
                     <a class="flex items-center mt-2">
                         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                             style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                            [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                            [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                         </nz-avatar>
 
                         <div class="ml-3 text-base font-medium truncate">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
@@ -171,7 +171,7 @@
                     <ng-container *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace">
                       <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                          [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                          [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                       </nz-avatar>
 
                       <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
@@ -180,7 +180,7 @@
 
                       <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                         style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                        [nzSrc]="avatarService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)">
+                        [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)">
                       </nz-avatar>
 
                       <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}</div>
@@ -198,7 +198,7 @@
 
                       <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                          [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                          [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                       </nz-avatar>
 
                       <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
