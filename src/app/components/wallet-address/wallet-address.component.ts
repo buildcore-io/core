@@ -42,6 +42,10 @@ export class WalletAddressComponent {
     if (!this.isCopied && this.address) {
       copyToClipboard(this.address)
       this.isCopied = true;
+      setTimeout(() => {
+        this.isCopied = false;
+        this.cd.markForCheck();
+      }, 3000);
     }
   }
 

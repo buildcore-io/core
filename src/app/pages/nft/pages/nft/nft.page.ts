@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
@@ -30,6 +30,7 @@ import { DataService } from '../../services/data.service';
 export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
+  public isCopied = false;
   private subscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
@@ -42,7 +43,8 @@ export class NFTPage implements OnInit, OnDestroy {
     private nzNotification: NzNotificationService,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     // none
   }
@@ -142,7 +144,13 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public copy(): void {
-    copyToClipboard(window.location.href);
+    if (!this.isCopied) {
+      copyToClipboard(window.location.href);
+      setTimeout(() => {
+        this.isCopied = false;
+        this.cd.markForCheck();
+      }, 3000);
+    }
   }
 
   public isLoading(arr: any): boolean {
