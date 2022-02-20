@@ -95,6 +95,10 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     throw throwInvalidArgument(WenError.royalty_payout_must_be_above_1_mi);
   }
 
+  if (docCollection.data().createdBy !== creator) {
+    throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
+  }
+
   if (params.availableFrom) {
     params.availableFrom = dateToTimestamp(params.availableFrom);
   }

@@ -46,7 +46,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public data: DataService,
     public avatarService: AvatarService,
-    private auth: AuthService,
+    public auth: AuthService,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,

@@ -64,5 +64,6 @@ export const WenError = {
   nft_placeholder_cant_be_purchased: { code: 2056, key: 'Can\'t buy placeholder NFT.' },
   collection_must_be_approved: { code: 2058, key: 'Collection must be approved.' },
   you_dont_have_required_badge: { code: 2006, key: 'You don\'t have required badge.' },
+  you_must_be_the_creator_of_this_collection: { code: 2027, key: 'You must be the creator of this collection.' },
 }
 

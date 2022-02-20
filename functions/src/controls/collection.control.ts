@@ -169,6 +169,10 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
+  if (docCollection.data().createdBy !== member) {
+    throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
+  }
+
   // Validate space exists.
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
   await SpaceValidator.isGuardian(refSpace, member);
