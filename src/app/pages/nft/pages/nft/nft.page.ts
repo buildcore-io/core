@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi } from '@api/nft.api';
+import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -13,7 +13,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
-import { Collection, CollectionType } from 'functions/interfaces/models';
+import { Collection, CollectionType, TransactionBillPayment, TransactionType } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -95,6 +95,33 @@ export class NFTPage implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  public getExplorerLink(link: string): string {
+    return 'https://explorer.iota.org/mainnet/search/' + link;
+  }
+
+  public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[]|null): string|undefined {
+    if (!orders) {
+      return undefined;
+    }
+
+    // Get all non royalty bills.
+    let lastestBill: TransactionBillPayment|undefined = undefined;
+    for (const h of orders) {
+      for (const l of (h.transactions || [])) {
+        if (
+          l.type === TransactionType.BILL_PAYMENT &&
+          l.payload.royalty === false &&
+          l.payload.reconciled === true &&
+          (!lastestBill || dayjs(lastestBill.createdOn?.toDate()).isBefore(l.createdOn?.toDate()))
+        ) {
+          lastestBill = l;
+        }
+      }
+    }
+
+    return lastestBill?.payload?.chainReference || lastestBill?.payload?.walletReference?.chainReference || undefined;
   }
 
   private listenToNft(id: string): void {

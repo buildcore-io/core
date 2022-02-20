@@ -108,6 +108,21 @@
             <wen-collapse class="mt-8" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
 
                 <div class="wen-description-item bg-bg-background">
+                    <span nz-typography class="text-app-gray-400" i18n>On-chain record</span>
+                    <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)">Preparing...</p>
+                    <p nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center">
+                      {{ getOnChainInfo(data.orders$ | async) | truncate: [24] }}
+                      <a class="underline text-blue-light1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank">View</a>
+                      <wen-icon-question-circle
+                          class="ml-2.5 text-app-gray-400"
+                          nz-tooltip
+                          i18n-nzTooltipTitle
+                          nzTooltipTitle="View all of the transaction details of this NFT on the Tangle"
+                      ></wen-icon-question-circle>
+                    </p>
+                </div>
+
+                <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
                     <p nz-typography class="flex items-center">
                         Shimmer/Mainnet (Tokenization)...SOON.

@@ -39,7 +39,7 @@ export class TimelineNftComponent {
   public getTitle(tt: Transaction): string {
     if (tt.type === TransactionType.BILL_PAYMENT) {
       if (tt.payload.royalty === false) {
-        return 'Bill Payment (previous owner)';
+        return 'Bill Payment (prev owner)';
       } else {
         return 'Bill Payment (royalty)';
       }
