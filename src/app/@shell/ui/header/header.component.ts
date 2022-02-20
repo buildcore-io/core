@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { NftApi } from '@api/nft.api';
@@ -29,6 +29,8 @@ const IS_SCROLLED_HEIGHT = 20;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit {
+  @ViewChild('notCompletedNotification', { static: false }) notCompletedNotification!: TemplateRef<any>;
+
   public path = ROUTER_UTILS.config.base;
   public enableCreateAwardProposal = false;
   public spaceSubscription$?: Subscription;
@@ -110,28 +112,7 @@ export class HeaderComponent implements OnInit {
 
       if (expired === false && o?.payload.void === false && o?.payload.reconciled === false) {
         if (!this.notificationRef) {
-          this.notificationRef = this.nzNotification.warning('Purchase have not been completed.', 'Finish your transaction, click to open checkout.', {
-            nzDuration: 0
-          });
-
-          let gotClick = false;
-          this.notificationRef.onClick.pipe(untilDestroyed(this)).subscribe(async () => {
-            if (gotClick || !o.payload.nft || !o.payload.collection) {
-              return;
-            }
-
-            gotClick = true;
-            const nft: Nft | undefined = await firstValueFrom(this.nftApi.listen(o.payload.nft));
-            const collection: Collection | undefined = await firstValueFrom(this.collectionApi.listen(o.payload.collection));
-            if (nft && collection) {
-              this.currentCheckoutCollection = collection;
-              this.currentCheckoutNft = nft;
-              this.isCheckoutOpen = true;
-              this.cd.markForCheck();
-            }
-
-            gotClick = false;
-          })
+          this.notificationRef = this.nzNotification.template(this.notCompletedNotification);
         }
       } else {
         if (this.notificationRef) {
@@ -165,6 +146,22 @@ export class HeaderComponent implements OnInit {
         }
       }
     });
+  }
+
+  public async onOpenCheckout(): Promise<void> {
+    const t = this.transaction$.getValue();
+    if (!t?.payload.nft || !t?.payload.collection) {
+      return;
+    }
+
+    const nft: Nft | undefined = await firstValueFrom(this.nftApi.listen(t?.payload.nft));
+    const collection: Collection | undefined = await firstValueFrom(this.collectionApi.listen(t?.payload.collection));
+    if (nft && collection) {
+      this.currentCheckoutCollection = collection;
+      this.currentCheckoutNft = nft;
+      this.isCheckoutOpen = true;
+      this.cd.markForCheck();
+    }
   }
 
   public get filesizes(): typeof FILE_SIZES {

@@ -41,8 +41,6 @@ interface HistoryItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NftCheckoutComponent implements OnInit, OnDestroy {
-  @ViewChild('notCompletedNotification', { static: true }) notCompletedNotification!: TemplateRef<any>;
-
   @Input() currentStep = StepType.CONFIRM;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
@@ -85,7 +83,6 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.notificationService.template(this.notCompletedNotification);
     this.receivedTransactions = false;
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
