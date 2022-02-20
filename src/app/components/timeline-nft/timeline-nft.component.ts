@@ -5,6 +5,7 @@ import { DeviceService } from '@core/services/device';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
+import { Nft } from 'functions/interfaces/models/nft';
 
 @Component({
   selector: 'wen-timeline-nft',
@@ -13,6 +14,7 @@ import { FILE_SIZES } from 'functions/interfaces/models/base';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimelineNftComponent {
+  @Input() nft?: Nft | null;
   @Input() orders?: SuccesfullOrdersWithFullHistory[] | null;
   @Input() listedBy?: Space | null;
 

@@ -72,7 +72,7 @@
 
                 <div class="ml-6">
                     <div class="text-xs font-medium text-gray-400">
-                        {{ listedBy.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
+                        {{ nft?.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
                     <div class="text-base font-medium mt-0.5">
                         <span i18n>Listen by space</span> {{listedBy.name || listedBy.uid}}</div>
                 </div>

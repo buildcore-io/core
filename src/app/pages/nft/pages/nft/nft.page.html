@@ -80,7 +80,7 @@
             </div>
 
             <!-- This should be used for timeline -->
-            <wen-timeline-nft class="block mt-12" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
+            <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
         </div>
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
@@ -123,14 +123,14 @@
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                   <p nz-typography>
-                      {{ (data.nft$ | async)?.ipfsMetadata | truncate: [24] || 'Preparing...'}}
+                      {{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...')  | truncate: [24] }}
                       <a class="underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank">View</a>
                   </p>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
                   <p nz-typography>
-                      {{ (data.nft$ | async)?.ipfsMedia | truncate: [24] || 'Preparing...'}}
+                      {{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...')| truncate: [24] }}
                       <a class="underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank">View</a>
                   </p>
               </div>
