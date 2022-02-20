@@ -5,6 +5,7 @@ import { AuthModule } from '@components/auth/auth.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MenuModule } from '@components/menu/menu.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
+import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -35,6 +36,7 @@ import { HeaderComponent } from './header.component';
     NzAvatarModule,
     NzNotificationModule,
     IconModule,
+    CountdownTimeModule,
     NzDropDownModule,
     MenuModule,
     NftCheckoutModule,

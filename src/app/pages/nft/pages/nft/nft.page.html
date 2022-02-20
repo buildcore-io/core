@@ -239,4 +239,4 @@
     </nz-card>
 </wen-content>
 
-<wen-nft-checkout  *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>
+<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>

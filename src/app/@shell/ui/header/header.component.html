@@ -111,3 +111,16 @@
 <wen-sign-in-modal></wen-sign-in-modal>
 
 <wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="currentCheckoutNft" [collection]="currentCheckoutCollection" (onClose)="closeCheckout()"></wen-nft-checkout>
+
+<ng-template #notCompletedNotification>
+  <div class="flex">
+      <wen-icon-alert-octagon class="text-alerts-warning mr-3.5" [size]="20"></wen-icon-alert-octagon>
+      <div>
+          <div class="w-4/5 font-bold" i18n>Purchase has not been completed</div>
+          <div class="mt-2 text-xs font-medium text-foregrounds-secondary">
+              You have <span class="text-alerts-error">{{(expiryTicker$ | async) | countdownTime}} minutes</span> to finish your transaction
+          </div>
+          <button nz-button nzType="primary" nzSize="small" class="mt-5" (click)="onOpenCheckout()" i18n>Open Checkout</button>
+      </div>
+  </div>
+</ng-template>

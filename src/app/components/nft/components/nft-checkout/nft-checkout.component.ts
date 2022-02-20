@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NftApi } from '@api/nft.api';
@@ -16,6 +16,7 @@ import * as dayjs from 'dayjs';
 import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 
 export enum StepType {
@@ -76,7 +77,8 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     private orderApi: OrderApi,
-    private nftApi: NftApi
+    private nftApi: NftApi,
+    private notificationService: NzNotificationService
   ) {
   }
 
