@@ -43,6 +43,7 @@ export class HeaderComponent implements OnInit {
   public currentCheckoutNft?: Nft;
   public currentCheckoutCollection?: Collection;
   private notificationRef?: NzNotificationRef;
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   private transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
   private subscriptionTransaction$?: Subscription;
   constructor(
@@ -105,6 +106,7 @@ export class HeaderComponent implements OnInit {
       let expired = false;
       if (o) {
         const expiresOn: dayjs.Dayjs = dayjs(o.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+        this.expiryTicker$.next(expiresOn);
         if (expiresOn.isBefore(dayjs())) {
           expired = true;
         }
@@ -112,7 +114,9 @@ export class HeaderComponent implements OnInit {
 
       if (expired === false && o?.payload.void === false && o?.payload.reconciled === false) {
         if (!this.notificationRef) {
-          this.notificationRef = this.nzNotification.template(this.notCompletedNotification);
+          this.notificationRef = this.nzNotification.template(this.notCompletedNotification, {
+            nzDuration: 0
+          });
         }
       } else {
         if (this.notificationRef) {
@@ -144,6 +148,16 @@ export class HeaderComponent implements OnInit {
         if (getItem(StorageItem.CheckoutTransaction) && (!this.subscriptionTransaction$ || this.subscriptionTransaction$.closed)) {
           this.subscriptionTransaction$ = this.orderApi.listen(<any>getItem(StorageItem.CheckoutTransaction)).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
         }
+      }
+    });
+
+    const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
+      this.expiryTicker$.next(this.expiryTicker$.value);
+
+      // If it's in the past.
+      if (this.expiryTicker$.value && this.expiryTicker$.value.isBefore(dayjs())) {
+        this.expiryTicker$.next(null);
+        int.unsubscribe();
       }
     });
   }

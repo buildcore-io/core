@@ -25,11 +25,12 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
   return null;
 });
 
-export const ipfsForNft: functions.CloudFunction<any> = functions.pubsub.schedule('every 15 minutes').onRun(async (doc) => {
-  const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).get();
+const MAX_UPLOAD_RETRY = 3;
+export const ipfsForNft: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+  const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).get();;
   if (qry.size > 0) {
     for (const doc of qry.docs) {
-      if (doc.data().media) {
+      if (doc.data().media && doc.data().ipfsRetries <= MAX_UPLOAD_RETRY) {
         const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(doc.data().collection);
         const docCollection: any = await refCollection.get();
 
@@ -40,9 +41,12 @@ export const ipfsForNft: functions.CloudFunction<any> = functions.pubsub.schedul
             ipfsMedia: obj.image,
             ipfsMetadata: obj.metadata
           });
+        } else {
+          await admin.firestore().collection(COL.NFT).doc(doc.data().uid).update({
+            ipfsRetries: admin.firestore.FieldValue.increment(1)
+          });
         }
       }
     }
   }
-
 });
