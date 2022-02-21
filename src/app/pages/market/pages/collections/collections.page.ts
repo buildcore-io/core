@@ -38,7 +38,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public collections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN_SALE_ONLY, HOT_TAGS.MEMBERS_ONLY];
   public categories: string[] = [AddedCategories.ALL, Categories.ABSTRACT, Categories.ANIMATION, Categories.ART,
-                                Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERAKTIVE, Categories.PFP,
+                                Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERACTIVE, Categories.PFP,
                                 Categories.PHOTOGRAPHY, Categories.PIXELART, Categories.SINGLE, Categories.THREE_D ];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Collection[][] = [];
