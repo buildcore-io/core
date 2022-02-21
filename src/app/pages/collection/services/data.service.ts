@@ -17,4 +17,16 @@ export class DataService {
   public isPending(collection?: Collection|null): boolean {
     return collection?.approved !== true && collection?.rejected !== true;
   }
+
+  public reset(): void {
+    this.collectionId = undefined;
+    this.collection$.next(undefined);
+    this.cheapestNft$.next(undefined);
+    this.firstNft$.next(undefined);
+    this.nft$.next(undefined);
+    this.isGuardianWithinSpace$.next(false);
+    this.space$.next(undefined);
+    this.creator$.next(undefined);
+    this.dataStore = [];
+  }
 }

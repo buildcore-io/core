@@ -18,7 +18,7 @@ import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
-import { Collection } from 'functions/interfaces/models';
+import { Collection, CollectionType } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, first, map, Observable, skip, Subscription } from 'rxjs';
@@ -74,7 +74,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
     this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Collection|undefined) => {
       if (!obj) {
-        this.notFound();
+        // this.notFound();
         return;
       }
 
@@ -124,8 +124,8 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   private listenToCollection(id: string): void {
-    this.data.collectionId = id;
     this.cancelSubscriptions();
+    this.data.collectionId = id;
     this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
     this.subscriptions$.push(this.getHandler(id).subscribe(this.store.bind(this, this.data.dataStore.length)));
     this.subscriptions$.push(
@@ -265,6 +265,24 @@ export class CollectionPage implements OnInit, OnDestroy {
     }));
   }
 
+  public getTotalNfts(nft?: Nft[]|null, collection?: Collection|null): number {
+    // ((data.nft$ | async)?.length || 0)
+    if (!collection || !nft) {
+      return 0;
+    }
+
+    if (collection.type === CollectionType.CLASSIC) {
+      return nft.length;
+    } else {
+      let total: number = nft.length + (collection.total - collection.sold);
+      if (total > 0) {
+        total = total - 1;
+      }
+
+      return total;
+    }
+  }
+
   public isLoading(arr: any): boolean {
     return arr === undefined;
   }
@@ -282,7 +300,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       s.unsubscribe();
     });
 
-    this.data.dataStore = [];
+    this.data.reset();
   }
 
   public ngOnDestroy(): void {
