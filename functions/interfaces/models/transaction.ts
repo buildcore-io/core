@@ -59,6 +59,7 @@ export interface PaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
+  walletRetryCount: number;
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
   collection?: EthAddress;
@@ -75,6 +76,7 @@ export interface BillPaymentTransaction {
   previusOwner?: EthAddress,
   chainReference: string;
   walletReference: WalletResult;
+  walletRetryCount: number;
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
   royalty: boolean,
@@ -89,6 +91,7 @@ export interface CreditPaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
+  walletRetryCount: number;
   sourceTransaction: OrderTransaction;
   nft?: EthAddress;
   collection?: EthAddress;

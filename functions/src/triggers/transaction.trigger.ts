@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
@@ -70,6 +71,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
       );
     } catch (e: any) {
       walletResponse.error = e.toString();
+      newValue.payload.walletRetryCount = admin.firestore.FieldValue.increment(1);
     }
 
     // Set wallet reference.

@@ -219,7 +219,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return dayjs(date.toDate()).isBefore(dayjs());
+    return dayjs(date.toDate()).isAfter(dayjs());
   }
 
   public getTitle(nft?: Nft|null): any {

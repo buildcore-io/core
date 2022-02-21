@@ -80,19 +80,19 @@ export class NftApi extends BaseApi<Nft> {
 
   public topAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'createdOn'], 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date());
+      return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date());
     });
   }
 
   public lowToHighAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'price'], 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date());
+      return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date());
     });
   }
 
   public highToLowAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'price'], 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date());
+      return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date());
     });
   }
 

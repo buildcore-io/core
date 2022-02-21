@@ -38,8 +38,6 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
     if (transactions.size > 0) {
       const service: ProcessingService = new ProcessingService(tranOut);
       await service.processOrders();
-      // await service.reconcileBillPayments();
-      // await service.reconcileCredits();
 
       // Now process all invalid orders.
       // Wrong amount, Double payments & Expired orders.
@@ -232,7 +230,7 @@ class ProcessingService {
           reconciled: true,
           royalty: true,
           void: false,
-          // TODO: Let's give 60s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
+          // We delay royalty.
           delay: 60000,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null
@@ -397,6 +395,13 @@ class ProcessingService {
             return;
           }
 
+          // Ignore output that contains input address. Remaining balance.
+          if (t.inputs.find((i) => {
+            return o.address === i.address;
+          })) {
+            continue;
+          }
+
           const orders: any = await this.findAllOrdersWithAddress(o.address);
           if (orders.size > 0) {
             for (const order of orders.docs) {
@@ -421,37 +426,4 @@ class ProcessingService {
       }
     }
   }
-
-  public async reconcileBillPayments(): Promise<void> {
-    if (this.actionNotRequired()) {
-      return;
-    }
-
-    const pendingTrans: any = await this.getTransactions(TransactionType.BILL_PAYMENT);
-    for (const pendingTran of pendingTrans.docs) {
-      const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
-      if (match) {
-        this.processedTrans.push(match.to.address);
-        await this.markAsReconciled(pendingTran.data(), match.msgId);
-      }
-    }
-    return;
-  }
-
-  public async reconcileCredits(): Promise<void> {
-    if (this.actionNotRequired()) {
-      return;
-    }
-
-    const pendingTrans: any =  await this.getTransactions(TransactionType.CREDIT);
-    for (const pendingTran of pendingTrans.docs) {
-      const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
-      if (match) {
-        this.processedTrans.push(match.to.address);
-        await this.markAsReconciled(pendingTran.data(), match.msgId);
-      }
-    }
-    return;
-  }
-
 }
