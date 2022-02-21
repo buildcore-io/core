@@ -1,6 +1,9 @@
-<nz-card [nzTitle]="title" class="relative" [nzBodyStyle]="{ padding: '10px' }">
-    <wen-icon-angle-down 
-        class="absolute top-7 right-7 cursor-pointer transform transition"
+<nz-card [nzTitle]="titleTpl" class="relative" [nzBodyStyle]="{ padding: '10px' }">
+  <ng-template #titleTpl>
+    <span class="cursor-pointer"  (click)="isCollapsed = !isCollapsed">{{title}}</span>
+  </ng-template>
+    <wen-icon-angle-down
+        class="absolute transition transform cursor-pointer top-7 right-7"
         [ngClass]="{ 'rotate-180': !isCollapsed }"
         (click)="isCollapsed = !isCollapsed">
     </wen-icon-angle-down>
