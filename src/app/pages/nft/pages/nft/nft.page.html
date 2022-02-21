@@ -15,16 +15,16 @@
                     class="object-cover w-full h-full"
                     />
                 </div>
-    
+
                 <div class="flex items-center mt-5 mb-8">
-                    <div class="text-xs font-medium text-foregrounds-secondary mr-4" i18n>Share</div>
+                    <div class="mr-4 text-xs font-medium text-foregrounds-secondary" i18n>Share</div>
                     <!-- Used style because ant-design overwrites tailwind's padding -->
                     <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
-                        class="flex items-center justify-center py-3 px-4 text-black mr-3 w-max" style="padding-top: 0.75rem !important">
+                        class="flex items-center justify-center px-4 py-3 mr-3 text-black w-max" style="padding-top: 0.75rem !important">
                             <wen-icon-twitter></wen-icon-twitter>
                     </a>
                     <button nz-button nzType="default" (click)="null" nzBlock nzSize="default" (click)="copy()"
-                        class="flex items-center justify-center py-3 px-4 text-black w-max">
+                        class="flex items-center justify-center px-4 py-3 text-black w-max">
                             <wen-icon-link></wen-icon-link>
                     </button>
                 </div>
@@ -117,7 +117,7 @@
                     class="object-cover w-full h-full"
                     />
                 </div>
-    
+
                 <div class="flex flex-col items-center mt-8 lg:flex-row">
                     <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
                         class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
@@ -146,7 +146,7 @@
 
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
                 <div class="wen-description-item bg-bg-background">
-                    <span nz-typography class="text-app-gray-400" i18n>On-chain record</span>
+                    <span nz-typography class="text-app-gray-400" i18n>On-Chain Record</span>
                     <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)">Preparing...</p>
                     <p nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center">
                       {{ getOnChainInfo(data.orders$ | async) | truncate: [24] }}
@@ -260,7 +260,7 @@
                 </div>
             </div>
 
-            <div class="mt-10 lg:mt-2 lg:ml-10 text-sm font-medium" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
+            <div class="mt-10 text-sm font-medium lg:mt-2 lg:ml-10" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
         </div>
 
         <div class="mt-10 lg:grid place-items-start">

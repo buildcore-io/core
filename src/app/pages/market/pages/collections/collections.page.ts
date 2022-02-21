@@ -75,11 +75,11 @@ export class CollectionsPage implements OnInit, OnDestroy {
 
     // Init listen.
     this.selectedTags$.pipe(untilDestroyed(this)).subscribe((o) => {
-      if (o.indexOf(HOT_TAGS.CATEGORY) === -1) {
+      if (o.indexOf(HOT_TAGS.CATEGORY) === -1 && this.categoryControl.value !== AddedCategories.ALL) {
         this.categoryControl.setValue(AddedCategories.ALL, { emitEvent: false })
       }
 
-      if (o.indexOf(HOT_TAGS.SPACE) === -1) {
+      if (o.indexOf(HOT_TAGS.SPACE) === -1 && this.spaceControl.value !== DEFAULT_SPACE.value) {
         this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
       }
 
@@ -87,17 +87,17 @@ export class CollectionsPage implements OnInit, OnDestroy {
     });
 
     this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
-      if (obj && obj !== DEFAULT_SPACE.value) {
+      if (obj && obj !== DEFAULT_SPACE.value && this.selectedTags$.value.indexOf(HOT_TAGS.SPACE)) {
         this.selectedTags$.next([HOT_TAGS.SPACE]);
-      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.ALL) === -1) {
+      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.SPACE) === -1) {
         this.selectedTags$.next([HOT_TAGS.ALL]);
       }
     });
 
     this.categoryControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
-      if (obj && obj !== AddedCategories.ALL) {
+      if (obj && obj !== AddedCategories.ALL && this.selectedTags$.value.indexOf(HOT_TAGS.CATEGORY)) {
         this.selectedTags$.next([HOT_TAGS.CATEGORY]);
-      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.ALL) === -1) {
+      } else if (this.selectedTags$.value.indexOf(HOT_TAGS.CATEGORY) === -1) {
         this.selectedTags$.next([HOT_TAGS.ALL]);
       }
     });
