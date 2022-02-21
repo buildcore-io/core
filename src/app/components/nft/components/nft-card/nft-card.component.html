@@ -11,12 +11,8 @@
             <!-- NFT amount logic has to be added -->
             <div class="absolute top-4 left-4 z-10 rounded-lg bg-white flex items-center justify-center px-3 py-1.5 text-sm font-medium"
                 *ngIf="!fullWidth"
-                [ngClass]="{
-                    'bg-tag-green': true,
-                    'bg-tag-red': false,
-                    'bg-tag-default': false
-                }">
-                {{ 'New NFT' }}
+                [ngClass]="getBadgeProperties().className" i18n>
+                {{ getBadgeProperties().label }}
             </div>
 
             <!-- <div class="absolute left-3 bottom-3 bg-bg-background rounded-lg flex items-center px-2.5 py-2"
