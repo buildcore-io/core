@@ -48,11 +48,12 @@
                                 ></nz-input-number>
                                 <div class="absolute transform -translate-y-1/2 right-6 top-1/2">
                                     <button *ngFor="let unit of priceUnits"
-                                    nz-button nzShape="circle" nzSize="small"
-                                    class="wen-secondary"
-                                    [ngClass]="{ 'selected': unit === unitControl.value }"
-                                    (click)="unitControl.setValue(unit)">
-                                    {{ unit }}
+                                        nz-button nzShape="circle" nzSize="small"
+                                        class="wen-secondary mr-1"
+                                        [ngClass]="{ 'selected': unit === unitControl.value }"
+                                        [disabled]="unitControl.disabled"
+                                        (click)="unitControl.setValue(unit)">
+                                        {{ unit }}
                                     </button>
                                 </div>
                             </nz-input-group>
@@ -293,7 +294,7 @@
                             nzPlaceHolder="Select collection"
                             [formControl]="collectionControl"
                             >
-                            <nz-option *ngFor="let o of getCollectionListOptions(cache.allCollections$ | async)" [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
+                            <nz-option *ngFor="let o of getCollectionListOptions(cache.allCollections$ | async); trackBy: trackByValue" [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
                         </nz-select>
                     </nz-form-control>
                 </nz-form-item>

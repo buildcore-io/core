@@ -107,8 +107,9 @@
                       nz-button
                       nzShape="circle"
                       nzSize="small"
-                      class="wen-secondary"
+                      class="wen-secondary mr-1"
                       [ngClass]="{ 'selected': unit === unitControl.value }"
+                      [disabled]="unitControl.disabled"
                       (click)="unitControl.setValue(unit)"
                     >
                       {{ unit }}
