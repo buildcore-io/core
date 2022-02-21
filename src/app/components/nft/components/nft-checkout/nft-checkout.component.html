@@ -182,7 +182,7 @@
                 Transaction history
             </div>
 
-            <div class="h-32 px-5 pt-4 pb-2">
+            <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
                 <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
                         <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
@@ -209,7 +209,7 @@
                 Transaction history
             </div>
 
-            <div class="h-32 px-5 pt-4 pb-2">
+            <div class="h-auto px-5 pt-4 pb-2">
                 <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
                         <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
