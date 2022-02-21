@@ -1,7 +1,7 @@
 <article class="bg-white rounded-2xl wen-card"
     [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60'">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
-        <div class="relative w-full overflow-hidden h-44 rounded-2xl">
+        <div class="relative w-full overflow-hidden h-40 lg:h-60 rounded-2xl">
             <img
             alt="NFT image"
             [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
@@ -29,9 +29,9 @@
         <div class="relative flex flex-col w-full px-4 py-3 lg:py-4">
             <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
 
-            <p class="flex-grow flex-shrink min-h-0 mt-1 mb-6 overflow-hidden text-xs font-medium lg:text-base"
-                [ngClass]="{ 'text-foregrounds-secondary': fullWidth }">
-                {{ nft?.description | stripMarkdown | truncate:[16]}}</p>
+            <div class="mt-1 mb-3 text-sm font-medium break-all line-clamp-2">
+                {{ 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }}
+            </div>
 
             <ng-container *ngIf="!nft?.owner">
                 <div class="flex items-center">
@@ -47,7 +47,7 @@
                     <div class="text-xs font-medium">2 hours left</div>
                 </div> -->
 
-                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
+                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
                     (click)="onBuy($event)" class="w-4/5 mt-2" i18n>Buy now</button>
             </ng-container>
         </div>
