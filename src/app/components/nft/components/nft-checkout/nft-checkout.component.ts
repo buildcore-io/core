@@ -84,6 +84,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
+    const listeningToTransaction: string[] = [];
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
@@ -99,6 +100,11 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
           this.currentStep = StepType.WAIT;
           // Listen to other transactions.
           for (const tranId of val.linkedTransactions) {
+            if (listeningToTransaction.indexOf(tranId) > -1) {
+              continue;
+            }
+
+            listeningToTransaction.push(tranId);
             this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
           }
         } else if (!val.linkedTransactions) {
@@ -141,7 +147,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid transaction refunded.', val.payload?.walletReference?.chainReference);
+        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid payment refunded.', val.payload?.walletReference?.chainReference);
 
 
         // Let's go back to wait. With slight delay so they can see this.

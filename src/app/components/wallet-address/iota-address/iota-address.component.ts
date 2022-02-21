@@ -66,6 +66,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
+    const listeningToTransaction: string[] = [];
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       console.log(val);
       if (val && val.type === TransactionType.ORDER) {
@@ -83,6 +84,11 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
           this.currentStep = StepType.WAIT;
           // Listen to other transactions.
           for (const tranId of val.linkedTransactions) {
+            if (listeningToTransaction.indexOf(tranId) > -1) {
+              continue;
+            }
+
+            listeningToTransaction.push(tranId);
             this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
           }
         } else if (!val.linkedTransactions) {
@@ -98,7 +104,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_credit_back', dayjs(), 'Refunding an invalid payment...');
+        this.pushToHistory(val.uid + '_credit_back', dayjs(), 'Invalid amount received. Refunding transaction...');
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload.invalidPayment === false && !val.payload?.walletReference?.chainReference) {
@@ -107,7 +113,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
       // Credit
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_refund_complete', dayjs(), 'Full refund completed.');
+        this.pushToHistory(val.uid + '_refund_complete', dayjs(), 'Payment refunded.');
 
         if (val.payload.invalidPayment) {
           setTimeout(() => {

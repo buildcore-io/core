@@ -152,11 +152,16 @@ class ProcessingService {
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
-    const refData: any = await refSource.get();
-    const linkedTransactions: EthAddress[] = refData.data().linkedTransactions || [];
-    linkedTransactions.push(tranId);
-    await refSource.update({
-      linkedTransactions: linkedTransactions
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSource);
+      if (sfDoc.data()) {
+        const linkedTransactions: EthAddress[] = sfDoc.data().linkedTransactions || [];
+        linkedTransactions.push(tranId);
+        // Update.
+        transaction.update(refSource, {
+          linkedTransactions: linkedTransactions
+        });
+      }
     });
 
     return (await refTran.get()).data();
@@ -179,8 +184,7 @@ class ProcessingService {
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
-    const refData: any = await refSource.get();
-    const linkedTransactions: EthAddress[] = refData.data().linkedTransactions || [];
+    const linkedTransactions: EthAddress[] = [];
 
     if (finalAmt > 0) {
       const tranId: string = getRandomEthAddress();
@@ -241,9 +245,14 @@ class ProcessingService {
       linkedTransactions.push(tranId);
     }
 
-    // Update links on the order.
-    await refSource.update({
-      linkedTransactions: linkedTransactions
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSource);
+      if (sfDoc.data()) {
+        // Update.
+        transaction.update(refSource, {
+          linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...linkedTransactions]
+        });
+      }
     });
 
     return transOut;
@@ -261,8 +270,7 @@ class ProcessingService {
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
-    const refData: any = await refSource.get();
-    const linkedTransactions: EthAddress[] = refData.data().linkedTransactions || [];
+    const linkedTransactions: EthAddress[] = [];
 
     if (payment.payload.amount > 0) {
       const tranId: string = getRandomEthAddress();
@@ -290,9 +298,14 @@ class ProcessingService {
 
       linkedTransactions.push(tranId);
 
-      // Update links on the order.
-      await refSource.update({
-        linkedTransactions: linkedTransactions
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc: any = await transaction.get(refSource);
+        if (sfDoc.data()) {
+          // Update.
+          transaction.update(refSource, {
+            linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...linkedTransactions]
+          });
+        }
       });
     }
 

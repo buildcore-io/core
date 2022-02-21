@@ -36,6 +36,8 @@
 
                   <a class="absolute text-sm font-medium underline left-32 text-blue-light1" target="_new"
                     [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)">{{getTitle(tt)}}</a>
+
+                  <span class="absolute text-sm font-medium text-red-500 left-56" *ngIf="tt.payload.invalidPayment">Invalid Amount</span>
                 </div>
 
               </nz-collapse-panel>
