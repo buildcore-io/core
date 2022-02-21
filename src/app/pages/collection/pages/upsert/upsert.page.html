@@ -39,8 +39,8 @@
               <nz-form-control class="relative">
                 <nz-input-number
                   class="w-full"
-                  [nzMin]="1"
-                  [nzMax]="90"
+                  [nzMin]="0"
+                  [nzMax]="100"
                   [nzStep]="1"
                   [nzFormatter]="formatterPercent"
                   [nzParser]="parserPercent"
@@ -53,7 +53,7 @@
                   nzType="info-circle"
                   class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
                   nz-tooltip
-                  nzTooltipTitle="Royalties - Percentage fee"
+                  nzTooltipTitle="Creator must keep a minimum of 1Mi in their wallet address or royalties will not be paid."
                 ></i>
               </nz-form-control>
             </nz-form-item>
@@ -403,11 +403,11 @@
                         [nzLimit]="1"
                         [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
                         (nzChange)="uploadChangePlaceholder($event)"
-                        nzFileType="image/png,image/jpeg"
+                        nzFileType="image/png,image/jpeg,image/webp"
                         [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
                       >
                           <ng-container>
-                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
+                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png/webp</span>
                           </ng-container>
                       </nz-upload>
                   </nz-form-control>

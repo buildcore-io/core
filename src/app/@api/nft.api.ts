@@ -39,7 +39,6 @@ export class NftApi extends BaseApi<Nft> {
         return ref.where('payload.nft', '==', nftId).where('type', '==', TransactionType.BILL_PAYMENT).where('payload.royalty', '==', false)
       }
     ).valueChanges().pipe(switchMap(async (obj: any[]) => {
-      console.log(obj);
       const out: SuccesfullOrdersWithFullHistory[] = [];
       for (const b of obj) {
         const order: DocumentSnapshot<TransactionOrder> = <any>await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());

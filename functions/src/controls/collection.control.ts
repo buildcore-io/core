@@ -35,7 +35,7 @@ function defaultJoiUpdateCreateSchema(): any {
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
-    royaltiesFee: Joi.number().min(0).max(0.9).required(),
+    royaltiesFee: Joi.number().min(0).max(1).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
     access: Joi.number().equal(CollectionAccess.OPEN, CollectionAccess.MEMBERS_ONLY, CollectionAccess.GUARDIANS_ONLY, CollectionAccess.MEMBERS_WITH_BADGE).required(),
     accessAwards: Joi.when('access', {

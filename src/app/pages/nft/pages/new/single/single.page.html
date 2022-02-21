@@ -268,7 +268,7 @@
                                 [nzLimit]="1"
                                 [nzCustomRequest]="uploadMediaFile.bind(this)"
                                 (nzChange)="uploadMediaChange($event)"
-                                nzFileType="image/png,image/jpeg"
+                                nzFileType="image/png,image/jpeg,image/webp"
                                 [nzFileList]="uploadedFile ? [uploadedFile] : []"
                             >
                                 <ng-container>

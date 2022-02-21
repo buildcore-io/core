@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_AMOUNT_TO_TRANSFER, MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
@@ -86,12 +86,6 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
   const docCollection: any = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
-  }
-
-  // Royalty from the price must not be below 1 Mi.
-  const calculatedRoyalty = docCollection.data().royaltiesFee * params.price;
-  if (calculatedRoyalty < MIN_AMOUNT_TO_TRANSFER) {
-    throw throwInvalidArgument(WenError.royalty_payout_must_be_above_1_mi);
   }
 
   if (docCollection.data().createdBy !== creator) {

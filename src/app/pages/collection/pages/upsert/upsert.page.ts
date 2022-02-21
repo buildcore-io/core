@@ -396,6 +396,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     // Convert royaltiesFee
     if (data.royaltiesFee > 0) {
       data.royaltiesFee = data.royaltiesFee / 100;
+    } else {
+      data.royaltiesFee = 0;
     }
 
     if (mode === 'edit') {

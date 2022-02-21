@@ -1,7 +1,7 @@
 <article class="bg-white rounded-2xl wen-card"
     [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60 h-72 lg:h-99'">
-    <a class="text-current hover:text-current h-full flex flex-col" [routerLink]="['/', this.path, nft?.uid]">
-        <div class="relative w-full overflow-hidden h-40 lg:h-60 rounded-2xl">
+    <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
+        <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
             <img
             alt="NFT image"
             [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
@@ -23,7 +23,7 @@
             </div> -->
         </div>
 
-        <div class="relative flex flex-col w-full px-4 py-3 lg:py-4 flex-grow">
+        <div class="relative flex flex-col flex-grow w-full px-4 py-3 lg:py-4">
             <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
 
             <div class="mt-1 mb-3 text-sm font-medium break-all line-clamp-2">
@@ -54,8 +54,8 @@
                         class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                         style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                     </nz-avatar>
-                    <div class="ml-2 w-0 flex-grow">
-                        <div class="text-xxs font-medium text-foregrounds-secondary" i18n>Owned by</div>
+                    <div class="flex-grow w-0 ml-2">
+                        <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
                         <div class="text-sm font-medium truncate">
                             @{{((owner$ | async)?.name || (owner$ | async)?.uid) }}
                         </div>
