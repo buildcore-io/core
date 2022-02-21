@@ -138,6 +138,9 @@ module.exports = {
       boxShadow: {
         header: '0px 2px 3px #E6E5DE',
         modal: '0px 2px 32px rgba(0, 0, 0, 0.16)'
+      },
+      fontSize: {
+        xxs: '0.625rem'
       }
     },
   },

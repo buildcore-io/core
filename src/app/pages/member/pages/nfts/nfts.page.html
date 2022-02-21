@@ -33,7 +33,7 @@
             </div>
         </nz-card>
 
-        <wen-nft-card class="w-full outline-none lg:w-auto" [isOwned]="true"
+        <wen-nft-card class="w-full outline-none lg:w-auto"
             *ngFor="let nft of nft$ | async; trackBy: trackByUid" [nft]="nft">
         </wen-nft-card>
     </div>
