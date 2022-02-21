@@ -33,7 +33,7 @@
                 [ngClass]="{ 'text-foregrounds-secondary': fullWidth }">
                 {{ nft?.description | stripMarkdown | truncate:[16]}}</p>
 
-            <ng-container *ngIf="!nft?.owner">
+            <ng-container *ngIf="!nft?.owner; else ownerBlock">
                 <div class="flex items-center">
                     <wen-icon-dollar class="mr-1 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div>
@@ -50,6 +50,21 @@
                 <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
                     (click)="onBuy($event)" class="w-4/5 mt-2" i18n>Buy now</button>
             </ng-container>
+
+            <ng-template #ownerBlock>
+                <a [routerLink]="['/member', (owner$ | async)?.uid]" class="flex items-center" (click)="$event.stopPropagation()">
+                    <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                        class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                        style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                    </nz-avatar>
+                    <div class="ml-2">
+                        <div class="text-xxs font-medium text-foregrounds-secondary" i18n>Owned by</div>
+                        <div class="text-sm font-medium truncate">
+                            @{{((owner$ | async)?.name || (owner$ | async)?.uid) }}
+                        </div>
+                    </div>
+                </a>
+            </ng-template>
         </div>
     </a>
 </article>
