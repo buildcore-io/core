@@ -116,7 +116,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public collectionCategories = enumToArray(Categories);
   public formatterPercent = (value: number): string => `${value} %`;
   public parserPercent = (value: string): string => value.replace(' %', '');
-  public uploadedBanner?: NzUploadFile | null; 
+  public uploadedBanner?: NzUploadFile | null;
   public uploadedPlaceholder?: NzUploadFile | null;
   public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<
     Award[] | undefined
@@ -309,7 +309,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public showPlaceholder(): boolean {
-    return true;
     return this.typeControl.value !== CollectionType.CLASSIC;
   }
 
