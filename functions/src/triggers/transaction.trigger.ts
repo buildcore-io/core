@@ -38,7 +38,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
       if (newValue.member) {
         details.previousOwner = newValue.payload.previusOwner;
         details.previousOnwerEntity = newValue.payload.previusOwnerEntity;
-        details.onwer = newValue.member;
+        details.owner = newValue.member;
         details.ownerEntity = 'member';
       }
       if (newValue.payload.royalty) {

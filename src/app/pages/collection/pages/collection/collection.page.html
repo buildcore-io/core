@@ -5,7 +5,7 @@
     </ng-container>
 
     <div class="relative w-auto h-48 mt-8 overflow-hidden lg:h-96 rounded-2xl lg:mt-16">
-        <img [src]="(data.collection$ | async)?.bannerUrl" class="object-cover w-full h-full" />
+        <img [src]="(data.collection$ | async)?.bannerUrl || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
 
         <div class="absolute z-10 flex items-center p-2 bg-white rounded-lg top-5 left-5"
             *ngIf="deviceService.isDesktop$ | async">
@@ -28,7 +28,7 @@
             <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>Collection</nz-tag>
             <wen-collection-status [collection]="data.collection$ | async"></wen-collection-status>
 
-            <h1 class="mt-3 lg:mt-2 mb-0">{{ (data.collection$ | async)?.name }}</h1>
+            <h1 class="mt-3 mb-0 lg:mt-2">{{ (data.collection$ | async)?.name }}</h1>
 
             <div class="w-full mt-10 mb-4 space-y-4" *ngIf="(deviceService.isMobile$ | async)">
                 <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
@@ -55,7 +55,7 @@
                   </div>
                 </a>
 
-                <div class="flex items-center mr-8 mt-4 lg:mt-2">
+                <div class="flex items-center mt-4 mr-8 lg:mt-2">
                     <wen-icon-time></wen-icon-time>
                     <div class="ml-2.5 font-medium">{{(data.collection$ | async)?.createdOn?.toDate() | date:'short'}}</div>
                 </div>
