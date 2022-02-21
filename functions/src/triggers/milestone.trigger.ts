@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
-import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
+import { DEFAULT_TRANSACTION_DELAY, MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { Transaction, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { serverTime } from "../utils/dateTime.utils";
@@ -104,20 +104,40 @@ class ProcessingService {
   }
 
   private markAsReconciled(transaction: Transaction, chainRef: string): Promise<any> {
-    transaction.payload.reconciled = true;
-    transaction.payload.chainReference = chainRef;
-    return admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid).update(transaction);
+    const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
+    return admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSource);
+      if (sfDoc.data()) {
+        const data: any = sfDoc.data();
+        data.payload.reconciled = true;
+        data.payload.chainReference = chainRef;
+        transaction.update(refSource, data);
+      }
+    });
   }
 
   private async markAsVoid(transaction: TransactionOrder): Promise<void> {
-    transaction.payload.void = true;
-    await admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid).update(transaction);
+    const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSource);
+      if (sfDoc.data()) {
+        const data: any = sfDoc.data();
+        data.payload.void = true;
+        transaction.update(refSource, data);
+      }
+    });
 
     // We need to unlock NFT.
     if (transaction.payload.nft) {
-      await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft).update({
-        locked: false,
-        lockedBy: null
+      const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc: any = await transaction.get(refNft);
+        if (sfDoc.data()) {
+          transaction.update(refNft, {
+            locked: false,
+            lockedBy: null
+          });
+        }
       });
     }
   }
@@ -235,7 +255,7 @@ class ProcessingService {
           royalty: true,
           void: false,
           // We delay royalty.
-          delay: 60000,
+          delay: DEFAULT_TRANSACTION_DELAY,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null
         }
@@ -314,25 +334,46 @@ class ProcessingService {
 
   private async setValidatedAddress(credit: Transaction, type: 'member'|'space'): Promise<void> {
     if (type === 'member' && credit.member) {
-      await admin.firestore().collection(COL.MEMBER).doc(credit.member).update({
-        validatedAddress: credit.payload.targetAddress
+      const refSource: any = admin.firestore().collection(COL.MEMBER).doc(credit.member);
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc: any = await transaction.get(refSource);
+        if (sfDoc.data()) {
+          // Update.
+          transaction.update(refSource, {
+            validatedAddress: credit.payload.targetAddress
+          });
+        }
       });
     } else if (type === 'space' && credit.space) {
-      await admin.firestore().collection(COL.SPACE).doc(credit.space).update({
-        validatedAddress: credit.payload.targetAddress
+      const refSource: any = admin.firestore().collection(COL.SPACE).doc(credit.space);
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc: any = await transaction.get(refSource);
+        if (sfDoc.data()) {
+          // Update.
+          transaction.update(refSource, {
+            validatedAddress: credit.payload.targetAddress
+          });
+        }
       });
     }
   }
 
   private async setNftOwner(payment: Transaction): Promise<void> {
     if (payment.member) {
-      await admin.firestore().collection(COL.NFT).doc(payment.payload.nft).update({
-        owner: payment.member,
-        sold: true,
-        locked: false,
-        lockedBy: null,
-        hidden: false,
-        availableFrom: null
+      const refSource: any = admin.firestore().collection(COL.NFT).doc(payment.payload.nft);
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc: any = await transaction.get(refSource);
+        if (sfDoc.data()) {
+          // Update.
+          transaction.update(refSource, {
+            owner: payment.member,
+            sold: true,
+            locked: false,
+            lockedBy: null,
+            hidden: false,
+            availableFrom: null
+          });
+        }
       });
 
       await admin.firestore().collection(COL.COLLECTION).doc(payment.payload.collection).update({
@@ -343,11 +384,18 @@ class ProcessingService {
 
       // Let's validate if collection has pending item to sell.
       if (col.data().placeholderNft && col.data().total === col.data().sold) {
-        await admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft).update({
-          sold: true,
-          owner: null,
-          availableFrom: null,
-          hidden: false
+        const refSource: any = admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft);
+        await admin.firestore().runTransaction(async (transaction) => {
+          const sfDoc: any = await transaction.get(refSource);
+          if (sfDoc.data()) {
+            // Update.
+            transaction.update(refSource, {
+              sold: true,
+              owner: null,
+              availableFrom: null,
+              hidden: false
+            });
+          }
         });
       }
     }

@@ -83,6 +83,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzCardModule,
     NzInputModule,
     NzSelectModule,
+    NzToolTipModule,
     NzIconModule,
     NzTagModule,
     NzAlertModule,

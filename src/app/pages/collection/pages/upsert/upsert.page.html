@@ -78,6 +78,7 @@
             <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
               <wen-select-space
                 class="block w-full"
+                [includeDefaultSpace]="false"
                 [formControl]="royaltiesSpaceControl"
                 [spaces]="getSpaceListOptions(spaces$ | async)"
                 size="large"
@@ -107,7 +108,7 @@
                       nz-button
                       nzShape="circle"
                       nzSize="small"
-                      class="wen-secondary mr-1"
+                      class="mr-1 wen-secondary"
                       [ngClass]="{ 'selected': unit === unitControl.value }"
                       [disabled]="unitControl.disabled"
                       (click)="unitControl.setValue(unit)"
@@ -316,6 +317,7 @@
           <nz-form-item class="mt-6">
             <wen-select-space
               class="block w-full"
+              [includeDefaultSpace]="false"
               [formControl]="spaceControl"
               [spaces]="getSpaceListOptions(spaces$ | async)"
               size="large"

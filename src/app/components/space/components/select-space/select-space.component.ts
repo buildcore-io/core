@@ -31,9 +31,14 @@ export const DEFAULT_SPACE: SelectSpaceOption = {
 })
 export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
   @Input() size: 'small' | 'large' = 'small';
+  @Input() includeDefaultSpace = true;
   @Input()
   set spaces(value: SelectSpaceOption[]) {
-    this._spaces = [DEFAULT_SPACE, ...value];
+    if (this.includeDefaultSpace) {
+      this._spaces = [DEFAULT_SPACE, ...value];
+    } else {
+      this._spaces = [...value];
+    }
     this.setShownSpaces();
   }
   public get spaces(): SelectSpaceOption[] {

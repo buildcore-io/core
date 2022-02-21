@@ -1,7 +1,7 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
+import { DEFAULT_TRANSACTION_DELAY, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { MnemonicService } from "../services/wallet/mnemonic";
@@ -18,14 +18,21 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
     return;
   }
 
-  if (!newValue.payload.walletReference) {
+  if (!newValue.payload.walletReference || (newValue.payload.walletReference.error && newValue.payload.walletReference.count <= MAX_WALLET_RETRY)) {
     const walletService: WalletService = new WalletService();
-    const walletResponse: WalletResult = {
-      createdOn: serverTime()
+    const walletResponse: WalletResult = newValue.payload.walletReference || {
+      createdOn: serverTime(),
+      count: 0
     };
 
-    // Delay required.
-    if (newValue.payload.delay > 0) {
+    // Reset defaults.
+    walletResponse.error = null;
+    walletResponse.chainReference = null;
+
+    // Delay because it's retry.
+    if (walletResponse.count > 0) {
+      await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY * MAX_WALLET_RETRY)));
+    } else if (newValue.payload.delay > 0) { // Standard Delay required.
       await new Promise(resolve => setTimeout(resolve, newValue.payload.delay));
     }
 
@@ -71,10 +78,10 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
       );
     } catch (e: any) {
       walletResponse.error = e.toString();
-      newValue.payload.walletRetryCount = admin.firestore.FieldValue.increment(1);
     }
 
     // Set wallet reference.
+    walletResponse.count = walletResponse.count + 1;
     newValue.payload.walletReference = walletResponse;
     return change.after.ref.set(newValue, {merge: true});
   } else {
