@@ -28,15 +28,16 @@
                 <ng-template #lineTpl>
                   <span i18n>Purchased by</span> @{{t.newMember.name || t.newMember.uid}}
                   <span i18n>for </span>{{formatBest(t.order.payload.amount)}}
-                  <a i18n class="inline underline text-blue-light1"> ({{isCollapsed ? 'hide' : 'see'}} transaction)</a>
+                  <a i18n class="inline text-sm underline text-blue-light1">{{isCollapsed ? 'hide' : 'see'}} details</a>
                 </ng-template>
 
                 <div *ngFor="let tt of (t.transactions || [])" class="relative flex items-center my-1">
-                  <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{tt.createdOn?.toDate() | date:
-                    (deviceService.isDesktop$ | async) ? "medium" : "mediumDate"}}</div>
+                  <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{tt.createdOn?.toDate() | date: "short"}}</div>
 
-                  <a class="absolute text-sm font-medium underline left-44 text-blue-light1" target="_new"
+                  <a class="absolute text-sm font-medium underline left-32 text-blue-light1" target="_new"
                     [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)">{{getTitle(tt)}}</a>
+
+                  <span class="absolute text-sm font-medium text-red-500 left-56" *ngIf="tt.payload.invalidPayment">Invalid Amount</span>
                 </div>
 
               </nz-collapse-panel>
@@ -58,7 +59,7 @@
 
     <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
       <div class="flex items-center">
-        <nz-avatar [nzSrc]="avatarService.getAvatarSize(listedBy.avatarUrl)"
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(listedBy.avatarUrl)"
           class="bg-white border-gray-400 min-w-10 min-h-10" nzShape="circle">
         </nz-avatar>
 

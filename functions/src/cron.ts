@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL } from '../../functions/interfaces/models/base';
+import { Collection } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 
@@ -25,24 +26,31 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
   return null;
 });
 
-export const ipfsForNft: functions.CloudFunction<any> = functions.pubsub.schedule('every 15 minutes').onRun(async (doc) => {
-  const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).get();
+const MAX_UPLOAD_RETRY = 3;
+export const ipfsForNft: functions.CloudFunction<any> = functions.runWith({ timeoutSeconds: 540, memory: '4GB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
+  const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).get();;
   if (qry.size > 0) {
     for (const doc of qry.docs) {
-      if (doc.data().media) {
+      console.log('Processing NFT: ', doc.data().uid, ', media: ', doc.data().media, doc.data().ipfsRetries);
+      if (doc.data().media && (doc.data().ipfsRetries || 0) <= MAX_UPLOAD_RETRY) {
         const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(doc.data().collection);
         const docCollection: any = await refCollection.get();
 
         const ipfs: IpfsService = new IpfsService();
-        const obj: IpfsSuccessResult|undefined = await ipfs.fileUpload(doc.data().media, <Nft>doc.data(), docCollection.data());
+        console.log('Init upload...');
+        const obj: IpfsSuccessResult|undefined = await ipfs.fileUpload(doc.data().media, <Nft>doc.data(), <Collection>docCollection.data());
         if (obj) {
+          console.log('Setting nft ' + doc.data().uid, ' ', obj.image, obj.metadata);
           await admin.firestore().collection(COL.NFT).doc(doc.data().uid).update({
             ipfsMedia: obj.image,
             ipfsMetadata: obj.metadata
+          });
+        } else {
+          await admin.firestore().collection(COL.NFT).doc(doc.data().uid).update({
+            ipfsRetries: admin.firestore.FieldValue.increment(1)
           });
         }
       }
     }
   }
-
 });

@@ -48,7 +48,7 @@
                     <a class="flex items-center mt-2">
                         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                             style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                            [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                            [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                         </nz-avatar>
 
                         <div class="ml-3 text-base font-medium truncate">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
@@ -57,7 +57,7 @@
             </div>
 
 
-            <div class="flex items-center p-5 mt-6 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.nft$ | async, data.collection$ | async)">
+            <div class="flex items-center p-5 mt-6 rounded-xl bg-yellow" *ngIf="(data.nft$ | async)?.placeholderNft && isAvailableForSale(data.nft$ | async, data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-base font-bold">
                     <span>{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}} </span>
@@ -65,16 +65,18 @@
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-10" i18n>
-                Buy now
-            </button>
-
-            <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async)" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
+            <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
                     Sale ended
                 </div>
             </div>
+
+            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || isDateInFuture((data.nft$ | async)?.availableFrom)"
+                    *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-10" i18n>
+                Buy now
+            </button>
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
@@ -101,15 +103,31 @@
                 <button nz-button nzType="default" (click)="null" nzBlock nzSize="default" (click)="copy()"
                     class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
                         <wen-icon-copy></wen-icon-copy>
-                        <div class="ml-2.5 text-xs font-medium" (click)="copy()" i18n>Copy to clipboard</div>
+                        <div class="ml-2.5 text-xs font-medium" i18n>{{ isCopied ? 'Copied' : 'Copy to clipboard' }}</div>
                 </button>
             </div>
 
             <wen-collapse class="mt-8" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
+
                 <div class="wen-description-item bg-bg-background">
-                    <span nz-typography class="text-app-gray-400" i18n>Address</span>
+                    <span nz-typography class="text-app-gray-400" i18n>On-chain record</span>
+                    <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)">Preparing...</p>
+                    <p nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center">
+                      {{ getOnChainInfo(data.orders$ | async) | truncate: [24] }}
+                      <a class="underline text-blue-light1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank">View</a>
+                      <wen-icon-question-circle
+                          class="ml-2.5 text-app-gray-400"
+                          nz-tooltip
+                          i18n-nzTooltipTitle
+                          nzTooltipTitle="View all of the transaction details of this NFT on the Tangle"
+                      ></wen-icon-question-circle>
+                    </p>
+                </div>
+
+                <div class="wen-description-item bg-bg-background">
+                    <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
                     <p nz-typography class="flex items-center">
-                        Migrate to IOTA ... SOON
+                        Shimmer/Mainnet (Tokenization)...SOON.
 
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
@@ -171,7 +189,7 @@
                     <ng-container *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace">
                       <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                          [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                          [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                       </nz-avatar>
 
                       <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
@@ -180,7 +198,7 @@
 
                       <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                         style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                        [nzSrc]="avatarService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)">
+                        [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)">
                       </nz-avatar>
 
                       <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}</div>
@@ -198,7 +216,7 @@
 
                       <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                          [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                          [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
                       </nz-avatar>
 
                       <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
@@ -239,4 +257,4 @@
     </nz-card>
 </wen-content>
 
-<wen-nft-checkout  *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>
+<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>

@@ -3,9 +3,9 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
+import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { Transaction, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
-import { MIN_AMOUNT_TO_TRANSFER } from '../services/wallet/wallet';
 import { serverTime } from "../utils/dateTime.utils";
 import { getRandomEthAddress } from "../utils/wallet.utils";
 import { EthAddress, IotaAddress } from './../../interfaces/models/base';
@@ -38,8 +38,6 @@ export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> =
     if (transactions.size > 0) {
       const service: ProcessingService = new ProcessingService(tranOut);
       await service.processOrders();
-      // await service.reconcileBillPayments();
-      // await service.reconcileCredits();
 
       // Now process all invalid orders.
       // Wrong amount, Double payments & Expired orders.
@@ -154,11 +152,16 @@ class ProcessingService {
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
-    const refData: any = await refSource.get();
-    const linkedTransactions: EthAddress[] = refData.data().linkedTransactions || [];
-    linkedTransactions.push(tranId);
-    await refSource.update({
-      linkedTransactions: linkedTransactions
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSource);
+      if (sfDoc.data()) {
+        const linkedTransactions: EthAddress[] = sfDoc.data().linkedTransactions || [];
+        linkedTransactions.push(tranId);
+        // Update.
+        transaction.update(refSource, {
+          linkedTransactions: linkedTransactions
+        });
+      }
     });
 
     return (await refTran.get()).data();
@@ -181,8 +184,7 @@ class ProcessingService {
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
-    const refData: any = await refSource.get();
-    const linkedTransactions: EthAddress[] = refData.data().linkedTransactions || [];
+    const linkedTransactions: EthAddress[] = [];
 
     if (finalAmt > 0) {
       const tranId: string = getRandomEthAddress();
@@ -232,7 +234,7 @@ class ProcessingService {
           reconciled: true,
           royalty: true,
           void: false,
-          // TODO: Let's give 60s+ to finish above. Maybe we can change it so it wait for fist bill to be reconcile with maximum timeout.
+          // We delay royalty.
           delay: 60000,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null
@@ -243,9 +245,14 @@ class ProcessingService {
       linkedTransactions.push(tranId);
     }
 
-    // Update links on the order.
-    await refSource.update({
-      linkedTransactions: linkedTransactions
+    await admin.firestore().runTransaction(async (transaction) => {
+      const sfDoc: any = await transaction.get(refSource);
+      if (sfDoc.data()) {
+        // Update.
+        transaction.update(refSource, {
+          linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...linkedTransactions]
+        });
+      }
     });
 
     return transOut;
@@ -263,8 +270,7 @@ class ProcessingService {
 
     // Update reference on order.
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.uid);
-    const refData: any = await refSource.get();
-    const linkedTransactions: EthAddress[] = refData.data().linkedTransactions || [];
+    const linkedTransactions: EthAddress[] = [];
 
     if (payment.payload.amount > 0) {
       const tranId: string = getRandomEthAddress();
@@ -292,9 +298,14 @@ class ProcessingService {
 
       linkedTransactions.push(tranId);
 
-      // Update links on the order.
-      await refSource.update({
-        linkedTransactions: linkedTransactions
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc: any = await transaction.get(refSource);
+        if (sfDoc.data()) {
+          // Update.
+          transaction.update(refSource, {
+            linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...linkedTransactions]
+          });
+        }
       });
     }
 
@@ -334,7 +345,9 @@ class ProcessingService {
       if (col.data().placeholderNft && col.data().total === col.data().sold) {
         await admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft).update({
           sold: true,
-          hidden: true
+          owner: null,
+          availableFrom: null,
+          hidden: false
         });
       }
     }
@@ -395,6 +408,13 @@ class ProcessingService {
             return;
           }
 
+          // Ignore output that contains input address. Remaining balance.
+          if (t.inputs.find((i) => {
+            return o.address === i.address;
+          })) {
+            continue;
+          }
+
           const orders: any = await this.findAllOrdersWithAddress(o.address);
           if (orders.size > 0) {
             for (const order of orders.docs) {
@@ -419,37 +439,4 @@ class ProcessingService {
       }
     }
   }
-
-  public async reconcileBillPayments(): Promise<void> {
-    if (this.actionNotRequired()) {
-      return;
-    }
-
-    const pendingTrans: any = await this.getTransactions(TransactionType.BILL_PAYMENT);
-    for (const pendingTran of pendingTrans.docs) {
-      const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
-      if (match) {
-        this.processedTrans.push(match.to.address);
-        await this.markAsReconciled(pendingTran.data(), match.msgId);
-      }
-    }
-    return;
-  }
-
-  public async reconcileCredits(): Promise<void> {
-    if (this.actionNotRequired()) {
-      return;
-    }
-
-    const pendingTrans: any =  await this.getTransactions(TransactionType.CREDIT);
-    for (const pendingTran of pendingTrans.docs) {
-      const match: TransactionMatch | undefined = this.findMatch(pendingTran.data().payload.targetAddress, pendingTran.data().payload.amount);
-      if (match) {
-        this.processedTrans.push(match.to.address);
-        await this.markAsReconciled(pendingTran.data(), match.msgId);
-      }
-    }
-    return;
-  }
-
 }

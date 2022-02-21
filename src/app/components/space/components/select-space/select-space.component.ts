@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export interface SelectSpaceOption {
@@ -31,7 +31,7 @@ export const DEFAULT_SPACE: SelectSpaceOption = {
 })
 export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
   @Input() size: 'small' | 'large' = 'small';
-  @Input() 
+  @Input()
   set spaces(value: SelectSpaceOption[]) {
     this._spaces = [DEFAULT_SPACE, ...value];
     this.setShownSpaces();
@@ -51,7 +51,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
 
   constructor(
     private cd: ChangeDetectorRef,
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     public deviceService: DeviceService
   ) {}
 
@@ -93,7 +93,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
   public trackByValue(index: number, item: any): number {
     return item.value;
   }
-  
+
   public onSelectClick(): void {
     this.isSelectOpen = this.deviceService.isDesktop$.getValue();
     this.isDrawerOpen = this.deviceService.isMobile$.getValue();

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
@@ -21,7 +21,7 @@ export class TimelineNftComponent {
 
   constructor(
     public deviceService: DeviceService,
-    public avatarService: AvatarService
+    public previewImageService: PreviewImageService
   ) {}
 
   public get filesizes(): typeof FILE_SIZES {
@@ -39,9 +39,9 @@ export class TimelineNftComponent {
   public getTitle(tt: Transaction): string {
     if (tt.type === TransactionType.BILL_PAYMENT) {
       if (tt.payload.royalty === false) {
-        return 'Bill Payment (previous owner)';
+        return 'Bill (owner)';
       } else {
-        return 'Bill Payment (royalty)';
+        return 'Bill (royalty)';
       }
     } else if (tt.type === TransactionType.CREDIT) {
       return 'Credit';

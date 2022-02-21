@@ -8,8 +8,8 @@ import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -45,8 +45,8 @@ export class CollectionPage implements OnInit, OnDestroy {
     public filter: FilterService,
     public deviceService: DeviceService,
     public data: DataService,
-    public avatarService: AvatarService,
-    private auth: AuthService,
+    public previewImageService: PreviewImageService,
+    public auth: AuthService,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,

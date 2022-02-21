@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormControl, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 export interface SelectCollectionOption {
@@ -31,7 +31,7 @@ export const DEFAULT_COLLECTION: SelectCollectionOption = {
 })
 export class SelectCollectionComponent implements OnInit {
   @Input() size: 'small' | 'large' = 'small';
-  @Input() 
+  @Input()
   set collections(value: SelectCollectionOption[]) {
     this._collections = [DEFAULT_COLLECTION, ...value];
     this.setShownCollections();
@@ -51,7 +51,7 @@ export class SelectCollectionComponent implements OnInit {
 
   constructor(
     private cd: ChangeDetectorRef,
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     public deviceService: DeviceService
   ) {}
 
@@ -93,7 +93,7 @@ export class SelectCollectionComponent implements OnInit {
   public trackByValue(index: number, item: any): number {
     return item.value;
   }
-  
+
   public onSelectClick(): void {
     this.isSelectOpen = this.deviceService.isDesktop$.getValue();
     this.isDrawerOpen = this.deviceService.isMobile$.getValue();

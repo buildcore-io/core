@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_AMOUNT_TO_TRANSFER, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
@@ -16,7 +16,6 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { CollectionType } from './../../interfaces/models/collection';
-import { MIN_AMOUNT_TO_TRANSFER } from './../services/wallet/wallet';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -95,6 +94,10 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     throw throwInvalidArgument(WenError.royalty_payout_must_be_above_1_mi);
   }
 
+  if (docCollection.data().createdBy !== creator) {
+    throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
+  }
+
   if (params.availableFrom) {
     params.availableFrom = dateToTimestamp(params.availableFrom);
   }
@@ -117,6 +120,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
       ipfsMetadata: null,
       sold: false,
       owner: null,
+      ipfsRetries: 0,
       space: docCollection.data().space,
       type: docCollection.data().type,
       hidden: (CollectionType.CLASSIC !== docCollection.data().type),
@@ -133,6 +137,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     if (docCollection.data().placeholderNft) {
       await admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft).update({
         sold: false,
+        availableFrom: params.availableFrom,
         hidden: false
       });
     }

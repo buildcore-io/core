@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { DataService } from '@pages/space/services/data.service';
 import { Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
@@ -31,7 +31,7 @@ export class SpaceAboutComponent implements OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     public cache: CacheService,
     private notification: NotificationService,
     private auth: AuthService,

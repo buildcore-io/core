@@ -1,19 +1,19 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi } from '@api/nft.api';
+import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { AvatarService } from '@core/services/avatar';
+import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { WEN_NAME } from 'functions/interfaces/config';
-import { Collection, CollectionType } from 'functions/interfaces/models';
+import { Collection, CollectionType, TransactionBillPayment, TransactionType } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -30,10 +30,11 @@ import { DataService } from '../../services/data.service';
 export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
+  public isCopied = false;
   private subscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     private titleService: Title,
     private route: ActivatedRoute,
     private auth: AuthService,
@@ -42,7 +43,8 @@ export class NFTPage implements OnInit, OnDestroy {
     private nzNotification: NzNotificationService,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     // none
   }
@@ -95,6 +97,42 @@ export class NFTPage implements OnInit, OnDestroy {
     });
   }
 
+  public getExplorerLink(link: string): string {
+    return 'https://explorer.iota.org/mainnet/search/' + link;
+  }
+
+  public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[]|null): string|undefined {
+    if (!orders) {
+      return undefined;
+    }
+
+    const lastestBill: TransactionBillPayment|undefined = this.getLatestBill(orders);
+    return lastestBill?.payload?.chainReference || lastestBill?.payload?.walletReference?.chainReference || undefined;
+  }
+
+  public getLatestBill(orders?: SuccesfullOrdersWithFullHistory[]|null): TransactionBillPayment|undefined {
+    if (!orders) {
+      return undefined;
+    }
+
+    // Get all non royalty bills.
+    let lastestBill: TransactionBillPayment|undefined = undefined;
+    for (const h of orders) {
+      for (const l of (h.transactions || [])) {
+        if (
+          l.type === TransactionType.BILL_PAYMENT &&
+          l.payload.royalty === false &&
+          l.payload.reconciled === true &&
+          (!lastestBill || dayjs(lastestBill.createdOn?.toDate()).isBefore(l.createdOn?.toDate()))
+        ) {
+          lastestBill = l;
+        }
+      }
+    }
+
+    return lastestBill;
+  }
+
   private listenToNft(id: string): void {
     this.data.nftId = id;
     this.cancelSubscriptions();
@@ -142,7 +180,14 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public copy(): void {
-    copyToClipboard(window.location.href);
+    if (!this.isCopied) {
+      copyToClipboard(window.location.href);
+      this.isCopied = true;
+      setTimeout(() => {
+        this.isCopied = false;
+        this.cd.markForCheck();
+      }, 3000);
+    }
   }
 
   public isLoading(arr: any): boolean {
@@ -174,7 +219,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return dayjs(date.toDate()).isBefore(dayjs());
+    return dayjs(date.toDate()).isAfter(dayjs());
   }
 
   public getTitle(nft?: Nft|null): any {

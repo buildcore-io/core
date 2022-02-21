@@ -4,7 +4,7 @@
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
             alt="NFT image"
-            [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
+            [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
             class="object-cover w-full h-full"
             />
 
@@ -38,7 +38,7 @@
                     <wen-icon-dollar class="mr-1 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div>
 
-                    <button *ngIf="(deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
+                    <button *ngIf="(deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
                         (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
                 </div>
 
@@ -47,7 +47,7 @@
                     <div class="text-xs font-medium">2 hours left</div>
                 </div> -->
 
-                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved"
+                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
                     (click)="onBuy($event)" class="w-4/5 mt-2" i18n>Buy now</button>
             </ng-container>
         </div>

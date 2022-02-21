@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi, AwardFilter } from '@api/award.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
+import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NavigationService } from '@core/services/navigation/navigation.service';
 import { NotificationService } from '@core/services/notification';
@@ -63,15 +63,16 @@ export class UpsertPage implements OnInit, OnDestroy {
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public uploadedBanner?: NzUploadFile | null; 
   public uploadedPlaceholder?: NzUploadFile | null;
+  public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   private awardSub?: Subscription;
 
   constructor(
     public deviceService: DeviceService,
     public nav: NavigationService,
-    public cache: CacheService,
     private route: ActivatedRoute,
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
+    private memberApi: MemberApi,
     private notification: NotificationService,
     private auth: AuthService,
     private router: Router,
@@ -126,7 +127,7 @@ export class UpsertPage implements OnInit, OnDestroy {
             this.typeControl.setValue(o.type);
             this.priceControl.setValue(o.price / 1000 / 1000);
             this.availableFromControl.setValue(o.availableFrom.toDate());
-            this.royaltiesFeeControl.setValue(o.royaltiesFee);
+            this.royaltiesFeeControl.setValue(o.royaltiesFee * 100);
             this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
             this.royaltiesSpaceDifferentControl.setValue(o.royaltiesSpace !== o.space);
             this.placeholderUrlControl.setValue(o.bannerUrl);
@@ -136,11 +137,13 @@ export class UpsertPage implements OnInit, OnDestroy {
             this.categoryControl.setValue(o.category);
             this.discounts.removeAt(0);
             o.discounts.forEach((v) => {
-              this.addDiscount(v.xp ? v.xp.toString() : '', v.amount ? v.amount.toString() : '');
+              this.addDiscount(v.xp ? v.xp.toString() : '', v.amount ? (v.amount * 100).toString() : '');
             });
 
             // Disable fields that are not editable.
             this.spaceControl.disable();
+            this.selectedAccessControl.disable();
+            this.accessAwardsControl.disable();
             this.priceControl.disable();
             this.availableFromControl.disable();
             this.typeControl.disable();
@@ -149,6 +152,12 @@ export class UpsertPage implements OnInit, OnDestroy {
             this.cd.markForCheck();
           }
         });
+      }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o?.uid) {
+        this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
       }
     });
 
@@ -269,12 +278,13 @@ export class UpsertPage implements OnInit, OnDestroy {
   };
 
   public formatSubmitData(data: any, mode: 'create'|'edit' = 'create'): any {
-    if (<Units>data.unit === 'Gi') {
-      data.price = data.price * 1000 * 1000 * 1000;
-    } else {
-      data.price = data.price * 1000 * 1000;
+    if (data.price) {
+      if (<Units>data.unit === 'Gi') {
+        data.price = data.price * 1000 * 1000 * 1000;
+      } else {
+        data.price = data.price * 1000 * 1000;
+      }
     }
-    delete data.royaltiesSpaceDifferent;
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0 && v.xp > 0) {
@@ -295,8 +305,10 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.spaceControl;
       delete data.typeControl;
       delete data.categoryControl;
+      delete data.access;
     }
 
+    delete data.royaltiesSpaceDifferent;
     delete data.unit;
     return data;
   }
@@ -316,6 +328,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     if (!this.validateForm()) {
       return;
     }
+    console.log(this.formatSubmitData({...this.collectionForm.value}, 'edit'));
     await this.auth.sign({
       ...this.formatSubmitData({...this.collectionForm.value}, 'edit'),
       ...{

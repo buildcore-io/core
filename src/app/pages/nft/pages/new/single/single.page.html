@@ -172,7 +172,7 @@
                 <div class="pt-8">
                 <ng-container *ngIf="deviceService.isDesktop$ | async">
                     <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="stats.controls.length > 0">
-                      <div class="w-1/2" i18n>Start name</div>
+                      <div class="w-1/2" i18n>Stats name</div>
                       <div class="w-1/2 transform translate-x-2" i18n>Value</div>
                     </div>
 
@@ -251,8 +251,8 @@
         <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
             <nz-card [nzBordered]="false">
                 <nz-card-meta
-                    nzTitle="Img, Video"
-                    nzDescription="Set a display name. This does not change your username."
+                    nzTitle="Img, Video (SOON)"
+                    nzDescription="Upload image of your NFT."
                 >
                 </nz-card-meta>
 

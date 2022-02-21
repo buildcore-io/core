@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { AvatarService } from '@core/services/avatar';
+import { PreviewImageService } from '@core/services/preview-image';
 import { Member, Space } from "functions/interfaces/models";
 import { first } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
@@ -27,7 +27,7 @@ export class MemberAlliancesTableComponent implements OnInit {
     [propName: string]: boolean
   } = {};
   constructor(
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef,
     private cache: CacheService

@@ -14,7 +14,7 @@
       <div class="mb-8 space-x-3">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]">
           <nz-avatar
-            [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+            [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
             class="mr-3 bg-white border-gray-400"
             nzShape="circle"
           >

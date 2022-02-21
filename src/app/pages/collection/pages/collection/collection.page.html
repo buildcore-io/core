@@ -11,7 +11,7 @@
             *ngIf="deviceService.isDesktop$ | async">
             <nz-avatar
               [nzSize]="32"
-              [nzSrc]="avatarService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+              [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
               class="border-app-gray-100 min-w-8 min-h-8"
               nzShape="circle">
             </nz-avatar>
@@ -29,6 +29,20 @@
             <wen-collection-status [collection]="data.collection$ | async"></wen-collection-status>
 
             <h1 class="mt-3 lg:mt-2">{{ (data.collection$ | async)?.name }}</h1>
+
+            <div class="w-full mb-4 space-y-4" *ngIf="(deviceService.isMobile$ | async)">
+                <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                    Approve Collection
+                </button>
+
+                <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                    Reject Collection
+                </button>
+
+                <button nz-button nzType="default" (click)="edit()" *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                    Edit Collection
+                </button>
+            </div>
 
             <div class="flex flex-wrap items-center">
                 <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center">
@@ -127,7 +141,8 @@
         <!-- Will be replaced by search -->
         <div></div>
 
-        <button nz-button nzType="primary" nzSize="default" class="flex items-center" (click)="createNft()" i18n *ngIf="!(data.collection$ | async)?.rejected">
+        <button nz-button nzType="primary" nzSize="default" class="flex items-center" (click)="createNft()" i18n
+                *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid">
             <wen-icon-plus class="mr-2"></wen-icon-plus>
             Create NFT
         </button>

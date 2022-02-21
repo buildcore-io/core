@@ -48,8 +48,7 @@
                                     nzSize="large"
                                     [formControl]="royaltiesFeeControl"
                                 ></nz-input-number>
-                                <i nz-icon nzType="info-circle" class="absolute right-6 top-1/2 transform -translate-y-1/2
-                                    cursor-pointer text-app-gray-400" nz-tooltip nzTooltipTitle="Royalties - Percentage fee"></i>
+                                <i nz-icon nzType="info-circle" class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400" nz-tooltip nzTooltipTitle="Royalties - Percentage fee"></i>
                             </nz-form-control>
                         </nz-form-item>
 
@@ -69,7 +68,7 @@
                             <wen-select-space
                               class="block w-full"
                               [formControl]="royaltiesSpaceControl"
-                              [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+                              [spaces]="getSpaceListOptions(spaces$ | async)"
                               size="large">
                             </wen-select-space>
                           </nz-form-item>
@@ -260,7 +259,7 @@
                   <wen-select-space
                     class="block w-full"
                     [formControl]="spaceControl"
-                    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+                    [spaces]="getSpaceListOptions(spaces$ | async)"
                     size="large">
                   </wen-select-space>
                 </nz-form-item>

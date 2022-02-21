@@ -17,7 +17,7 @@
                 >
                 <nz-avatar
                     *ngIf="s?.img"
-                    [nzSrc]="avatarService.getAvatarSize(s.img)"
+                    [nzSrc]="previewImageService.getAvatarSize(s.img)"
                     [nzSize]="24"
                     class="mr-3 border-2 border-app-gray-100"
                     nzShape="circle"
@@ -31,7 +31,7 @@
             <div class="flex items-center overflow-x-hidden">
                 <div class="mr-3">
                     <nz-avatar *ngIf="getSpace(s.nzValue)?.img; else defaultAvatar"
-                        [nzSrc]="avatarService.getAvatarSize(getSpace(s.nzValue)?.img)"
+                        [nzSrc]="previewImageService.getAvatarSize(getSpace(s.nzValue)?.img)"
                         [nzSize]="24"
                         class="border-2 border-app-gray-100 min-w-6 min-h-6"
                         nzShape="circle"
@@ -41,7 +41,7 @@
                         <wen-icon-default-space></wen-icon-default-space>
                     </ng-template>
                 </div>
-                <span class="inline-block text-base" 
+                <span class="inline-block text-base"
                     [ngClass]="size === 'small' ? 'truncate font-medium' : 'line-clamp-2 break-all whitespace-normal leading-5 font-bold'">
                     {{ s.nzLabel }}</span>
             </div>
@@ -72,14 +72,14 @@
                     [nzBorderless]="true">
                 <wen-icon-erase *ngIf="searchControl.value" (click)="searchControl.setValue('')" class="cursor-pointer"></wen-icon-erase>
             </div>
-            
+
             <div class="h-px w-full bg-app-gray-100 mt-2 mb-2"></div>
 
             <div *ngIf="shownSpaces.length === 0 && spaces.length > 0"
                 class="flex justify-center items-center min-h-24 text-app-gray-400 text-xs font-medium">
                 No results for "{{ searchControl.value }}"
             </div>
-            
+
             <div class="lg:max-h-56 overflow-x-hidden overflow-y-hidden" style="max-height: calc(100% - 40)">
                 <div *ngFor="let opt of shownSpaces; trackBy: trackByValue"
                     class="mt-4 lg:mt-5 flex items-center cursor-pointer hover:text-orange whitespace-nowrap"
@@ -89,13 +89,13 @@
                     }">
                         <div class="mr-2">
                             <nz-avatar *ngIf="opt?.img"
-                                [nzSrc]="avatarService.getAvatarSize(opt.img)"
+                                [nzSrc]="previewImageService.getAvatarSize(opt.img)"
                                 [nzSize]="24"
                                 class="mr-3 border-2 border-app-gray-100"
                                 nzShape="circle"
                             >
                             </nz-avatar>
-                            
+
                             <wen-icon-default-space *ngIf="!(opt?.img)" class="block mr-3"></wen-icon-default-space>
                         </div>
                         <span class="inline-block truncate">{{ opt.label }}</span>

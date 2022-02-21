@@ -16,6 +16,7 @@ import * as dayjs from 'dayjs';
 import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 
 export enum StepType {
@@ -76,16 +77,18 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     private orderApi: OrderApi,
-    private nftApi: NftApi
+    private nftApi: NftApi,
+    private notificationService: NzNotificationService
   ) {
   }
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
+    const listeningToTransaction: string[] = [];
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
-        this.targetAmount = val.payload.targetAmount;
+        this.targetAmount = val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
@@ -97,6 +100,11 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
           this.currentStep = StepType.WAIT;
           // Listen to other transactions.
           for (const tranId of val.linkedTransactions) {
+            if (listeningToTransaction.indexOf(tranId) > -1) {
+              continue;
+            }
+
+            listeningToTransaction.push(tranId);
             this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
           }
         } else if (!val.linkedTransactions) {
@@ -139,7 +147,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid transaction refunded.', val.payload?.walletReference?.chainReference);
+        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid payment refunded.', val.payload?.walletReference?.chainReference);
 
 
         // Let's go back to wait. With slight delay so they can see this.
@@ -201,6 +209,10 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     if (!this.isCopied && this.targetAddress) {
       copyToClipboard(this.targetAddress);
       this.isCopied = true;
+      setTimeout(() => {
+        this.isCopied = false;
+        this.cd.markForCheck();
+      }, 3000);
     }
   }
 
