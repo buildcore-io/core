@@ -125,7 +125,7 @@ export class UpsertPage implements OnInit, OnDestroy {
             this.typeControl.setValue(o.type);
             this.priceControl.setValue(o.price / 1000 / 1000);
             this.availableFromControl.setValue(o.availableFrom.toDate());
-            this.royaltiesFeeControl.setValue(o.royaltiesFee);
+            this.royaltiesFeeControl.setValue(o.royaltiesFee * 100);
             this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
             this.royaltiesSpaceDifferentControl.setValue(o.royaltiesSpace !== o.space);
             this.placeholderUrlControl.setValue(o.bannerUrl);
@@ -135,11 +135,13 @@ export class UpsertPage implements OnInit, OnDestroy {
             this.categoryControl.setValue(o.category);
             this.discounts.removeAt(0);
             o.discounts.forEach((v) => {
-              this.addDiscount(v.xp ? v.xp.toString() : '', v.amount ? v.amount.toString() : '');
+              this.addDiscount(v.xp ? v.xp.toString() : '', v.amount ? (v.amount * 100).toString() : '');
             });
 
             // Disable fields that are not editable.
             this.spaceControl.disable();
+            this.selectedAccessControl.disable();
+            this.accessAwardsControl.disable();
             this.priceControl.disable();
             this.availableFromControl.disable();
             this.typeControl.disable();
@@ -268,12 +270,13 @@ export class UpsertPage implements OnInit, OnDestroy {
   };
 
   public formatSubmitData(data: any, mode: 'create'|'edit' = 'create'): any {
-    if (<Units>data.unit === 'Gi') {
-      data.price = data.price * 1000 * 1000 * 1000;
-    } else {
-      data.price = data.price * 1000 * 1000;
+    if (data.price) {
+      if (<Units>data.unit === 'Gi') {
+        data.price = data.price * 1000 * 1000 * 1000;
+      } else {
+        data.price = data.price * 1000 * 1000;
+      }
     }
-    delete data.royaltiesSpaceDifferent;
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0 && v.xp > 0) {
@@ -296,6 +299,8 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.categoryControl;
     }
 
+    delete data.access;
+    delete data.royaltiesSpaceDifferent;
     delete data.unit;
     return data;
   }
@@ -315,6 +320,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     if (!this.validateForm()) {
       return;
     }
+    console.log(this.formatSubmitData({...this.collectionForm.value}, 'edit'));
     await this.auth.sign({
       ...this.formatSubmitData({...this.collectionForm.value}, 'edit'),
       ...{
