@@ -8,7 +8,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { Collection, Member } from 'functions/interfaces/models';
+import { Collection, CollectionType, Member } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -103,5 +103,20 @@ export class NftCardComponent {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+
+  public getBadgeProperties(): { label: string; className: string} {
+    if (this.nft?.type === CollectionType.CLASSIC) {
+      return {
+        label: 'New NFT',
+        className: 'bg-tag-green'
+      };
+    } else {
+      const remaining = ((this.collection?.total || 0) - (this.collection?.sold || 0));
+      return {
+        label: `${remaining} remaining`,
+        className: remaining >= 100 ? 'bg-tag-blue' : 'bg-tag-red'
+      };
+    }
   }
 }
