@@ -57,7 +57,7 @@
                         class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                         style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                     </nz-avatar>
-                    <div class="ml-2">
+                    <div class="ml-2 w-0 flex-grow">
                         <div class="text-xxs font-medium text-foregrounds-secondary" i18n>Owned by</div>
                         <div class="text-sm font-medium truncate">
                             @{{((owner$ | async)?.name || (owner$ | async)?.uid) }}
