@@ -20,13 +20,13 @@ export class DataService {
 
   public reset(): void {
     this.collectionId = undefined;
-    this.collection$.next(undefined);
-    this.cheapestNft$.next(undefined);
-    this.firstNft$.next(undefined);
-    this.nft$.next(undefined);
-    this.isGuardianWithinSpace$.next(false);
-    this.space$.next(undefined);
-    this.creator$.next(undefined);
+    // this.collection$.next(undefined);
+    // this.cheapestNft$.next(undefined);
+    // this.firstNft$.next(undefined);
+    // this.nft$.next(undefined);
+    // this.isGuardianWithinSpace$.next(false);
+    // this.space$.next(undefined);
+    // this.creator$.next(undefined);
     this.dataStore = [];
   }
 }

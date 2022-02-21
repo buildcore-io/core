@@ -294,7 +294,7 @@
                             nzPlaceHolder="Select collection"
                             [formControl]="collectionControl"
                             >
-                            <nz-option *ngFor="let o of getCollectionListOptions(cache.allCollections$ | async); trackBy: trackByValue" [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
+                            <nz-option *ngFor="let o of data.getCollectionListOptions(cache.allCollections$ | async); trackBy: trackByValue" [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
                         </nz-select>
                     </nz-form-control>
                 </nz-form-item>

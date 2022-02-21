@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -155,15 +154,10 @@ export class MultiplePage {
         this.collectionControl.setValue(p.collection);
       }
     });
-  }
 
-  public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {
-    return (list || [])
-      .filter((o) => o.rejected !== true)
-      .map((o) => ({
-          label: o.name || o.uid,
-          value: o.uid
-      }));
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+      this.cd.markForCheck();
+    });
   }
 
   public uploadMultipleFiles(item: NzUploadXHRArgs): Subscription {

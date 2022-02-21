@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from '@pages/nft/services/data.service';
 import * as dayjs from 'dayjs';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from 'functions/interfaces/models/nft';
@@ -41,6 +41,8 @@ export class SinglePage implements OnInit {
   constructor(
     public deviceService: DeviceService,
     public cache: CacheService,
+    public data: DataService,
+    private cd: ChangeDetectorRef,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private nftApi: NftApi,
@@ -99,6 +101,10 @@ export class SinglePage implements OnInit {
       if (p.collection) {
         this.collectionControl.setValue(p.collection);
       }
+    });
+
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+      this.cd.markForCheck();
     });
   }
 
@@ -177,15 +183,6 @@ export class SinglePage implements OnInit {
     if (this.stats.controls.length < MAX_STATS_COUNT){
       this.stats.push(this.getStatForm());
     }
-  }
-
-  public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {
-    return (list || [])
-      .filter((o) => o.rejected !== true)
-      .map((o) => ({
-          label: o.name || o.uid,
-          value: o.uid
-      }));
   }
 
   public removeStat(index: number): void {

@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 import { SuccesfullOrdersWithFullHistory } from "@api/nft.api";
+import { AuthService } from "@components/auth/services/auth.service";
+import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
 import { UnitsHelper } from "@core/utils/units-helper";
 import { Collection, Member, Space } from "functions/interfaces/models";
 import { Nft } from "functions/interfaces/models/nft";
@@ -19,18 +21,38 @@ export class DataService {
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public collectionCreator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
 
+  public constructor(private auth: AuthService) {
+    // none.
+  }
+
   public reset(): void {
     this.nftId = undefined;
-    this.nft$.next(undefined);
-    this.collection$.next(undefined);
-    this.topNftWithinCollection$.next(undefined);
-    this.firstNftInCollection$.next(undefined);
-    this.orders$.next(undefined);
-    this.space$.next(undefined);
-    this.royaltySpace$.next(undefined);
-    this.creator$.next(undefined);
-    this.owner$.next(undefined);
-    this.collectionCreator$.next(undefined);
+    // this.nft$.next(undefined);
+    // this.collection$.next(undefined);
+    // this.topNftWithinCollection$.next(undefined);
+    // this.firstNftInCollection$.next(undefined);
+    // this.orders$.next(undefined);
+    // this.space$.next(undefined);
+    // this.royaltySpace$.next(undefined);
+    // this.creator$.next(undefined);
+    // this.owner$.next(undefined);
+    // this.collectionCreator$.next(undefined);
+  }
+
+
+  public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {
+    return (list || [])
+      .filter((o) => {
+        if (!this.auth.member$.value) {
+          return false;
+        }
+
+        return o.rejected !== true && o.createdBy === this.auth.member$.value.uid;
+      })
+      .map((o) => ({
+          label: o.name || o.uid,
+          value: o.uid
+      }));
   }
 
   public getPropStats(obj: any): any[] {
