@@ -198,8 +198,8 @@ class ProcessingService {
     let finalAmt: number = order.payload.amount - royaltyAmt;
 
     if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
-      royaltyAmt = 0;
       finalAmt = finalAmt + royaltyAmt;
+      royaltyAmt = 0;
     }
 
     // Update reference on order.

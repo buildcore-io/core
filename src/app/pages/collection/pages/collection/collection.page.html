@@ -195,7 +195,7 @@
 
     <div class="mt-10 lg:grid place-items-start" *ngIf="(data.collection$ | async)?.uid">
         <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(data.nft$ | async)">
-          {{ ((data.nft$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
+          {{ getTotalNfts(data.nft$ | async, data.collection$ | async) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
         </p>
         <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             (scrolled)="onScroll()">
