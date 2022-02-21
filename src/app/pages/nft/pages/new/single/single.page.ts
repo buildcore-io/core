@@ -16,7 +16,7 @@ import { Collection, CollectionType } from 'functions/interfaces/models';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { Observable, of, Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -36,6 +36,7 @@ export class SinglePage implements OnInit {
   public properties: FormArray;
   public stats: FormArray;
   public nftForm: FormGroup;
+  public uploadedFile?: NzUploadFile | null;
 
   constructor(
     public deviceService: DeviceService,
@@ -117,12 +118,11 @@ export class SinglePage implements OnInit {
   public uploadMediaChange(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       this.mediaControl.setValue(event.file.response);
+      this.uploadedFile = event.file;
+    } else {
+      this.mediaControl.setValue('')
     }
   }
-
-  public previewFile(file: NzUploadFile): Observable<string> {
-    return of(file.response);
-  };
 
   private validateForm(): boolean {
     this.nftForm.updateValueAndValidity();

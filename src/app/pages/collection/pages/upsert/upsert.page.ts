@@ -79,15 +79,9 @@ export class UpsertPage implements OnInit, OnDestroy {
   );
   public placeholderUrlControl: FormControl = new FormControl('');
   public accessAwardsControl: FormControl = new FormControl([]);
-  public bannerUrlControl: FormControl = new FormControl('');
-  public categoryControl: FormControl = new FormControl(
-    '',
-    Validators.required,
-  );
-  public selectedAccessControl: FormControl = new FormControl(
-    CollectionAccess.OPEN,
-    Validators.required,
-  );
+  public bannerUrlControl: FormControl = new FormControl('', Validators.required);
+  public categoryControl: FormControl = new FormControl('', Validators.required);
+  public selectedAccessControl: FormControl = new FormControl(CollectionAccess.OPEN, Validators.required);
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public royaltiesSpaceControl: FormControl = new FormControl(
     '',
@@ -122,6 +116,8 @@ export class UpsertPage implements OnInit, OnDestroy {
   public collectionCategories = enumToArray(Categories);
   public formatterPercent = (value: number): string => `${value} %`;
   public parserPercent = (value: string): string => value.replace(' %', '');
+  public uploadedBanner?: NzUploadFile | null; 
+  public uploadedPlaceholder?: NzUploadFile | null;
   public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<
     Award[] | undefined
   >(undefined);
@@ -296,16 +292,23 @@ export class UpsertPage implements OnInit, OnDestroy {
   public uploadChangePlaceholder(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       this.placeholderUrlControl.setValue(event.file.response);
+      this.uploadedPlaceholder = event.file;
+    } else {
+      this.placeholderUrlControl.setValue('');
     }
   }
 
-  public uploadChange(event: NzUploadChangeParam): void {
+  public uploadChangeBanner(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       this.bannerUrlControl.setValue(event.file.response);
+      this.uploadedBanner = event.file;
+    } else {
+      this.bannerUrlControl.setValue('');
     }
   }
 
   public showPlaceholder(): boolean {
+    return true;
     return this.typeControl.value !== CollectionType.CLASSIC;
   }
 

@@ -264,14 +264,11 @@
                                 nzName="banner"
                                 nzType="drag"
                                 nzListType="picture-card"
-                                [nzDirectory]="false"
                                 [nzLimit]="1"
                                 [nzCustomRequest]="uploadMediaFile.bind(this)"
                                 (nzChange)="uploadMediaChange($event)"
                                 nzFileType="image/png,image/jpeg"
-                                [nzPreviewFile]="previewFile"
-                                [nzShowUploadList]="true"
-                                [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
+                                [nzFileList]="uploadedFile ? [uploadedFile] : []"
                             >
                                 <ng-container>
                                     <i class="upload-icon" nz-icon nzType="upload"></i>
