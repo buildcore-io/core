@@ -297,9 +297,9 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.spaceControl;
       delete data.typeControl;
       delete data.categoryControl;
+      delete data.access;
     }
 
-    delete data.access;
     delete data.royaltiesSpaceDifferent;
     delete data.unit;
     return data;
