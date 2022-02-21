@@ -34,8 +34,14 @@
                 </div>
             </nz-card>
 
-            <nz-card [nzBordered]="false" nzTitle="Trade info">
-                <div class="space-y-4">
+            <nz-card [nzBordered]="false">
+              <nz-card-meta
+              nzTitle="Trade info"
+                    nzDescription="All times are reflected in PST timezone."
+                >
+                </nz-card-meta>
+
+                <div class="mt-4 space-y-4">
                     <nz-form-item>
                         <nz-form-control>
                             <nz-input-group nzSize="large" class="relative">
