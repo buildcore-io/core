@@ -5,7 +5,30 @@
             <wen-collection-status [collection]="data.collection$ | async"></wen-collection-status>
 
             <h1 class="mt-2 mb-1" i18n>{{ getTitle(data.nft$ | async) }}</h1>
-            <div class="mb-10 text-xl font-medium">{{ (data.nft$ | async)?.name }}</div>
+            <div class="mb-10 text-xl font-medium" *ngIf="deviceService.isDesktop$ | async">{{ (data.nft$ | async)?.name }}</div>
+
+            <ng-container *ngIf="deviceService.isMobile$ | async">
+                <div class="relative w-full overflow-hidden rounded-2xl">
+                    <img
+                    alt="NFT Image"
+                    [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
+                    class="object-cover w-full h-full"
+                    />
+                </div>
+    
+                <div class="flex items-center mt-5 mb-8">
+                    <div class="text-xs font-medium text-foregrounds-secondary mr-4" i18n>Share</div>
+                    <!-- Used style because ant-design overwrites tailwind's padding -->
+                    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
+                        class="flex items-center justify-center py-3 px-4 text-black mr-3 w-max" style="padding-top: 0.75rem !important">
+                            <wen-icon-twitter></wen-icon-twitter>
+                    </a>
+                    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default" (click)="copy()"
+                        class="flex items-center justify-center py-3 px-4 text-black w-max">
+                            <wen-icon-link></wen-icon-link>
+                    </button>
+                </div>
+            </ng-container>
 
             <div class="flex items-center justify-between w-full h-12 p-4 bg-white rounded-xl" *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom)">
                 <div class="flex items-center mr-8"
@@ -31,7 +54,7 @@
                 <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
                     <div class="flex items-center mt-2">
-                      <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center">
+                      <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center w-full">
                         <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                           class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32">
@@ -86,26 +109,28 @@
         </div>
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
-            <div class="relative w-full overflow-hidden rounded-2xl">
-                <img
-                alt="NFT Image"
-                [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
-                class="object-cover w-full h-full"
-                />
-            </div>
-
-            <div class="flex flex-col items-center mt-8 lg:flex-row">
-                <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
-                    class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
-                        <wen-icon-twitter></wen-icon-twitter>
-                        <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
-                </a>
-                <button nz-button nzType="default" (click)="null" nzBlock nzSize="default" (click)="copy()"
-                    class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
-                        <wen-icon-copy></wen-icon-copy>
-                        <div class="ml-2.5 text-xs font-medium" i18n>{{ isCopied ? 'Copied' : 'Copy to clipboard' }}</div>
-                </button>
-            </div>
+            <ng-container *ngIf="deviceService.isDesktop$ | async">
+                <div class="relative w-full overflow-hidden rounded-2xl">
+                    <img
+                    alt="NFT Image"
+                    [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
+                    class="object-cover w-full h-full"
+                    />
+                </div>
+    
+                <div class="flex flex-col items-center mt-8 lg:flex-row">
+                    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
+                        class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
+                            <wen-icon-twitter></wen-icon-twitter>
+                            <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
+                    </a>
+                    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default" (click)="copy()"
+                        class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
+                            <wen-icon-copy></wen-icon-copy>
+                            <div class="ml-2.5 text-xs font-medium" i18n>{{ isCopied ? 'Copied' : 'Copy to clipboard' }}</div>
+                    </button>
+                </div>
+            </ng-container>
 
             <wen-collapse class="mt-8" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
 
@@ -176,13 +201,13 @@
 
     <nz-card class="relative block w-full mt-16" nzTitle="About the collection">
         <a nz-button nzType="link" class="absolute flex items-center right-6 top-6" [routerLink]="['/', collectionPath, (data.collection$ | async)?.uid]" nzSize="small">
-            <span i18n>Show collection</span>
+            <span i18n>Show {{ (deviceService.isDesktop$ | async) ? 'collection' : '' }}</span>
             <wen-icon-angle-right></wen-icon-angle-right>
         </a>
 
-        <div class="flex justify-between">
-            <div class="w-max">
-                <h1 class="mb-2">{{ (data.collection$ | async)?.name || (data.collection$ | async)?.uid }}</h1>
+        <div class="flex flex-col lg:flex-row">
+            <div class="w-full lg:w-max">
+                <h1 class="mb-2 break-all">{{ (data.collection$ | async)?.name || (data.collection$ | async)?.uid }}</h1>
                 <div class="flex items-center">
                     <div class="mr-3 text-xs font-medium" i18n>by</div>
 
@@ -224,8 +249,7 @@
                 </div>
             </div>
 
-
-            <div class="ml-20 text-xs font-medium" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
+            <div class="mt-10 lg:mt-2 lg:ml-10 text-sm font-medium" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
         </div>
 
         <div class="mt-10 lg:grid place-items-start">
