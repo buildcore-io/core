@@ -68,7 +68,6 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     this.receivedTransactions = false;
     const listeningToTransaction: string[] = [];
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
-      console.log(val);
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
