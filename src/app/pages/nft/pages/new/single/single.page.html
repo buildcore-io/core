@@ -49,7 +49,7 @@
                                 <div class="absolute transform -translate-y-1/2 right-6 top-1/2">
                                     <button *ngFor="let unit of priceUnits"
                                         nz-button nzShape="circle" nzSize="small"
-                                        class="wen-secondary mr-1"
+                                        class="mr-1 wen-secondary"
                                         [ngClass]="{ 'selected': unit === unitControl.value }"
                                         [disabled]="unitControl.disabled"
                                         (click)="unitControl.setValue(unit)">
@@ -252,7 +252,7 @@
         <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
             <nz-card [nzBordered]="false">
                 <nz-card-meta
-                    nzTitle="Img, Video (SOON)"
+                    nzTitle="Img"
                     nzDescription="Upload image of your NFT."
                 >
                 </nz-card-meta>
