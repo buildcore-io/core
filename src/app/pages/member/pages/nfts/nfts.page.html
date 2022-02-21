@@ -1,8 +1,9 @@
 <div class="flex flex-col items-center justify-between lg:flex-row">
     <wen-select-collection
+        class="block w-full lg:w-auto"
         [formControl]="collectionControl"
         [collections]="getCollectionListOptions(cache.allCollections$ | async)"
-        size="small">
+        [size]="(deviceService.isDesktop$ | async) ? 'small' : 'large'">
     </wen-select-collection>
 
     <nz-input-group
