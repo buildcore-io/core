@@ -107,8 +107,19 @@
                 </button>
             </div>
 
-            <wen-collapse class="mt-8" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
+            <nz-card nzTitle="Owned by" class="mt-8" *ngIf="data.owner$ | async">
+                <a [routerLink]="['/member', (data.owner$ | async)?.uid]" class="flex items-center">
+                    <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                        class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                        style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                    </nz-avatar>
+                    <div class="ml-3 text-base font-medium truncate">
+                        @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) }}
+                    </div>
+                </a>
+            </nz-card>
 
+            <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>On-chain record</span>
                     <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)">Preparing...</p>
@@ -225,7 +236,7 @@
             </div>
 
 
-            <div class="ml-20 text-xs font-medium" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
+            <div class="ml-10 text-xs font-medium" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
         </div>
 
         <div class="mt-10 lg:grid place-items-start">

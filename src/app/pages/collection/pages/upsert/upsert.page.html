@@ -1,460 +1,541 @@
 <wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
-    <h1 class="mt-7" *ngIf="!editMode" i18>Create new collection</h1>
-    <h1 class="mt-7" *ngIf="editMode" i18>Edit collection</h1>
+  <h1 class="mt-7" *ngIf="!editMode" i18>Create new collection</h1>
+  <h1 class="mt-7" *ngIf="editMode" i18>Edit collection</h1>
 
-    <form nz-form nzLayout="vertical" [formGroup]="collectionForm">
-        <div class="py-4" nz-row [nzGutter]="24">
-            <div
-                class="space-y-4"
-                nz-col
-                nzFlex="auto"
-                [ngStyle]="{
+  <form nz-form nzLayout="vertical" [formGroup]="collectionForm">
+    <div class="py-4" nz-row [nzGutter]="24">
+      <div
+        class="space-y-4"
+        nz-col
+        nzFlex="auto"
+        [ngStyle]="{
                     'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
                 }"
-            >
-                <nz-card [nzBordered]="false" nzTitle="Collection Info">
-                    <div class="space-y-4">
-                        <nz-form-item>
-                            <nz-form-control>
-                                <input
-                                nz-input
-                                placeholder="Name"
-                                nzSize="large"
-                                [formControl]="nameControl"
-                                />
-                            </nz-form-control>
-                        </nz-form-item>
-                        <nz-form-item>
-                            <nz-form-control>
-                                <textarea
-                                nz-input
-                                placeholder="Collection description"
-                                nzSize="large"
-                                rows="4"
-                                [formControl]="descriptionControl"
-                                ></textarea>
-                            </nz-form-control>
-                        </nz-form-item>
-                        <nz-form-item>
-                            <nz-form-control class="relative">
-                                <nz-input-number
-                                    class="w-full"
-                                    [nzMin]="1"
-                                    [nzMax]="90"
-                                    [nzStep]="1"
-                                    [nzFormatter]="formatterPercent"
-                                    [nzParser]="parserPercent"
-                                    nzPlaceHolder="Royalties - Percentage fee"
-                                    nzSize="large"
-                                    [formControl]="royaltiesFeeControl"
-                                ></nz-input-number>
-                                <i nz-icon nzType="info-circle" class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400" nz-tooltip nzTooltipTitle="Royalties - Percentage fee"></i>
-                            </nz-form-control>
-                        </nz-form-item>
+      >
+        <nz-card [nzBordered]="false" nzTitle="Collection Info">
+          <div class="space-y-4">
+            <nz-form-item>
+              <nz-form-control>
+                <input
+                  nz-input
+                  placeholder="Name"
+                  nzSize="large"
+                  [formControl]="nameControl"
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <textarea
+                  nz-input
+                  placeholder="Collection description"
+                  nzSize="large"
+                  rows="4"
+                  [formControl]="descriptionControl"
+                ></textarea>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control class="relative">
+                <nz-input-number
+                  class="w-full"
+                  [nzMin]="1"
+                  [nzMax]="90"
+                  [nzStep]="1"
+                  [nzFormatter]="formatterPercent"
+                  [nzParser]="parserPercent"
+                  nzPlaceHolder="Royalties - Percentage fee"
+                  nzSize="large"
+                  [formControl]="royaltiesFeeControl"
+                ></nz-input-number>
+                <i
+                  nz-icon
+                  nzType="info-circle"
+                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                  nz-tooltip
+                  nzTooltipTitle="Royalties - Percentage fee"
+                ></i>
+              </nz-form-control>
+            </nz-form-item>
 
-                        <nz-form-item>
-                            <label nz-checkbox [formControl]="royaltiesSpaceDifferentControl">
-                                <div class="flex items-center">
-                                    <div class="font-medium mr-2.5" i18n>
-                                        Royalties goes to a different space
-                                    </div>
-                                    <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400"
-                                        nz-tooltip nzTooltipTitle="Royalties goes to a different space"></i>
-                                </div>
-                            </label>
-                        </nz-form-item>
-
-                        <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
-                            <wen-select-space
-                              class="block w-full"
-                              [formControl]="royaltiesSpaceControl"
-                              [spaces]="getSpaceListOptions(spaces$ | async)"
-                              size="large">
-                            </wen-select-space>
-                          </nz-form-item>
-                    </div>
-                </nz-card>
-
-                <nz-card [nzBordered]="false" nzTitle="Trade info">
-                  <div class="space-y-4">
-                      <nz-form-item>
-                          <nz-form-control>
-                              <nz-input-group nzSize="large" class="relative">
-                                  <nz-input-number
-                                      nzPlaceHolder="Price"
-                                      nzSize="large"
-                                      class="w-full"
-                                      [nzMin]="0"
-                                      [formControl]="priceControl"
-                                  ></nz-input-number>
-                                  <div class="absolute transform -translate-y-1/2 right-6 top-1/2">
-                                      <button *ngFor="let unit of priceUnits"
-                                      nz-button nzShape="circle" nzSize="small"
-                                      class="wen-secondary"
-                                      [ngClass]="{ 'selected': unit === unitControl.value }"
-                                      (click)="unitControl.setValue(unit)">
-                                      {{ unit }}
-                                      </button>
-                                  </div>
-                              </nz-input-group>
-                          </nz-form-control>
-                      </nz-form-item>
-
-                      <nz-form-item>
-                          <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
-                            <nz-date-picker
-                              class="flex flex-grow"
-                              [nzDisabledDate]="disabledStartDate.bind(this)"
-                              nzSize="large"
-                              [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
-                              nzFormat="yyyy-MM-dd HH:mm"
-                              [formControl]="availableFromControl"
-                              nzPlaceHolder="Available on"
-                            >
-                            </nz-date-picker>
-                          </nz-form-control>
-                      </nz-form-item>
+            <nz-form-item>
+              <label nz-checkbox [formControl]="royaltiesSpaceDifferentControl">
+                <div class="flex items-center">
+                  <div class="font-medium mr-2.5" i18n>
+                    Royalties goes to a different space
                   </div>
-                </nz-card>
+                  <i
+                    nz-icon
+                    nzType="info-circle"
+                    class="cursor-pointer text-app-gray-400"
+                    nz-tooltip
+                    nzTooltipTitle="Royalties goes to a different space"
+                  ></i>
+                </div>
+              </label>
+            </nz-form-item>
 
-                <nz-card [nzBordered]="false" nzTitle="Links">
-                    <div class="space-y-4">
-                        <nz-form-item>
-                            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid URL.">
-                                <nz-input-group nzSize="large" [nzPrefix]="prefixURL">
-                                    <input
-                                        type="text"
-                                        nz-input
-                                        placeholder="URL"
-                                        [formControl]="urlControl"
-                                    />
-                                    <ng-template #prefixURL>
-                                        <wen-icon-link></wen-icon-link>
-                                    </ng-template>
-                                </nz-input-group>
-                            </nz-form-control>
-                        </nz-form-item>
+            <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
+              <wen-select-space
+                class="block w-full"
+                [formControl]="royaltiesSpaceControl"
+                [spaces]="getSpaceListOptions(spaces$ | async)"
+                size="large"
+              >
+              </wen-select-space>
+            </nz-form-item>
+          </div>
+        </nz-card>
 
-                        <nz-form-item>
-                            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Twitter username.">
-                                <nz-input-group nzSize="large" [nzPrefix]="prefixTwitter">
-                                    <input
-                                        type="text"
-                                        nz-input
-                                        placeholder="Link to your Twitter account"
-                                        [formControl]="twitterControl"
-                                    />
-                                    <ng-template #prefixTwitter>
-                                        <wen-icon-twitter></wen-icon-twitter>
-                                    </ng-template>
-                                </nz-input-group>
-                            </nz-form-control>
-                        </nz-form-item>
-
-                        <nz-form-item>
-                            <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Discord username.">
-                                <nz-input-group nzSize="large" [nzPrefix]="prefixDiscord">
-                                    <input
-                                        type="text"
-                                        nz-input
-                                        placeholder="Link to your Discord account"
-                                        [formControl]="discordControl"
-                                    />
-                                    <ng-template #prefixDiscord>
-                                        <wen-icon-discord></wen-icon-discord>
-                                    </ng-template>
-                                </nz-input-group>
-                            </nz-form-control>
-                        </nz-form-item>
-                    </div>
-                </nz-card>
-
-                <nz-card [nzBordered]="false">
-                    <nz-card-meta
-                        nzTitle="Member discounts"
-                        nzDescription="Space support an ability to airdrop NFTs to their members for free or at discount."
-                    >
-                    </nz-card-meta>
-
-                    <div class="pt-4">
-                        <ng-container *ngIf="deviceService.isDesktop$ | async">
-                            <div class="flex items-center justify-between mt-4"
-                                *ngFor="let discount of discounts.controls; let i = index">
-                                    <nz-input-group nzAddOnBefore="XP >" class="flex-grow w-1/2">
-                                        <input
-                                            type="text"
-                                            nz-input
-                                            nzSize="large"
-                                            [formControl]="gForm(discount, 'xp')"
-                                        />
-                                    </nz-input-group>
-
-                                    <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
-
-                                    <div class="flex items-center flex-grow w-1/2">
-                                        <nz-input-number
-                                            class="w-full max-w-80"
-                                            [nzMin]="1"
-                                            [nzMax]="100"
-                                            [nzStep]="1"
-                                            [nzFormatter]="formatterPercent"
-                                            [nzParser]="parserPercent"
-                                            nzSize="large"
-                                            [formControl]="gForm(discount, 'amount')"
-                                        ></nz-input-number>
-
-                                        <wen-icon-trash class="ml-4 cursor-pointer" (click)="removeDiscount(i)"></wen-icon-trash>
-                                    </div>
-                            </div>
-                        </ng-container>
-
-                        <ng-container *ngIf="deviceService.isMobile$ | async">
-                            <div class="mt-8" *ngFor="let discount of discounts.controls; let i = index">
-                                <div class="flex items-center justify-between">
-                                    <div class="text-xs font-bold">
-                                        <span i18n>Discount</span> #0{{ i + 1 }}
-                                    </div>
-                                    <wen-icon-trash class="cursor-pointer" (click)="removeDiscount(i)"></wen-icon-trash>
-                                </div>
-
-                                <div class="mt-2 mb-5 separator"></div>
-
-                                <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Discount XP</div>
-
-                                <nz-input-group nzAddOnBefore="XP >" class="w-full mt-2 mb-5">
-                                    <input
-                                        type="text"
-                                        nz-input
-                                        nzSize="default"
-                                        [formControl]="gForm(discount, 'xp')"
-                                    />
-                                </nz-input-group>
-
-                                <div class="text-xs font-medium text-foregrounds-tertiary" i18n>Discount Amount</div>
-
-                                <nz-input-number
-                                    class="w-full mt-2 mb-5"
-                                    [nzMin]="1"
-                                    [nzMax]="100"
-                                    [nzStep]="1"
-                                    [nzFormatter]="formatterPercent"
-                                    [nzParser]="parserPercent"
-                                    nzSize="large"
-                                    [formControl]="gForm(discount, 'amount')"
-                                ></nz-input-number>
-                            </div>
-                        </ng-container>
-                    </div>
-
-                    <button nz-button *ngIf="discounts.controls.length < maxDiscountCount" nzType="link" class="flex items-center pl-0 mt-3" (click)="addDiscount()">
-                        <wen-icon-plus class="mr-0.5"></wen-icon-plus>
-                        <span i18n>Add discount level</span>
-                    </button>
-                </nz-card>
-            </div>
-
-            <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
-              <nz-card [nzBordered]="false" nzTitle="Space">
-                <nz-form-item>
-                  <wen-select-space
-                    class="block w-full"
-                    [formControl]="spaceControl"
-                    [spaces]="getSpaceListOptions(spaces$ | async)"
-                    size="large">
-                  </wen-select-space>
-                </nz-form-item>
-              </nz-card>
-                <nz-card [nzBordered]="false" nzTitle="Space Type">
-                    <nz-form-item>
-                        <nz-form-control>
-                            <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
-                                <wen-radio *ngFor="let type of collectionTypes; trackBy: trackByValue" [value]="type.value">
-                                    <span class="inline-flex" i18n>
-                                        {{ type.key }}
-                                    </span>
-                                </wen-radio>
-                            </nz-radio-group>
-                        </nz-form-control>
-                    </nz-form-item>
-                </nz-card>
-
-                <nz-card [nzBordered]="false" *ngIf="showPlaceholder()">
-                  <nz-card-meta
-                      nzTitle="Placeholder"
-                      [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Set a display name. This does not change your username.'"
+        <nz-card [nzBordered]="false" nzTitle="Trade info">
+          <div class="space-y-4">
+            <nz-form-item>
+              <nz-form-control>
+                <nz-input-group nzSize="large" class="relative">
+                  <nz-input-number
+                    nzPlaceHolder="Price"
+                    nzSize="large"
+                    class="w-full"
+                    [nzMin]="0"
+                    [formControl]="priceControl"
+                  ></nz-input-number>
+                  <div
+                    class="absolute transform -translate-y-1/2 right-6 top-1/2"
                   >
-                  </nz-card-meta>
-
-                  <div class="mt-6">
-                      <nz-form-item>
-                          <nz-form-control>
-                              <nz-upload
-                              class="wen-banner"
-                              nzName="banner"
-                              nzType="drag"
-                              nzListType="picture-card"
-                              [nzLimit]="1"
-                              [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
-                              (nzChange)="uploadChangePlaceholder($event)"
-                              nzFileType="image/png,image/jpeg"
-                              [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
-                              >
-                                  <ng-container>
-                                      <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
-                                  </ng-container>
-                              </nz-upload>
-                          </nz-form-control>
-                      </nz-form-item>
-                  </div>
-                </nz-card>
-
-                <nz-card [nzBordered]="false">
-                    <nz-card-meta
-                        nzTitle="Banner"
-                        [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Set a display name. This does not change your username.'"
+                    <button
+                      *ngFor="let unit of priceUnits"
+                      nz-button
+                      nzShape="circle"
+                      nzSize="small"
+                      class="wen-secondary"
+                      [ngClass]="{ 'selected': unit === unitControl.value }"
+                      (click)="unitControl.setValue(unit)"
                     >
-                    </nz-card-meta>
+                      {{ unit }}
+                    </button>
+                  </div>
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
 
-                    <div class="mt-6">
-                        <nz-form-item>
-                            <nz-form-control>
-                                <nz-upload
-                                class="wen-banner"
-                                nzName="banner"
-                                nzType="drag"
-                                nzListType="picture-card"
-                                [nzLimit]="1"
-                                [nzCustomRequest]="uploadFileBanner.bind(this)"
-                                (nzChange)="uploadChange($event)"
-                                nzFileType="image/png,image/jpeg"
-                                [nzFileList]="uploadedBanner ? [uploadedBanner] : []"
-                                >
-                                    <ng-container>
-                                        <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
-                                    </ng-container>
-                                </nz-upload>
-                                <div class="text-orange-darkest" *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine" i18n>
-                                    Banner is required.
-                                </div>
-                            </nz-form-control>
-                        </nz-form-item>
-                    </div>
-                </nz-card>
+            <nz-form-item>
+              <nz-form-control
+                i18n-nzErrorTip
+                nzErrorTip="Available On is required."
+              >
+                <nz-date-picker
+                  class="flex flex-grow"
+                  [nzDisabledDate]="disabledStartDate.bind(this)"
+                  nzSize="large"
+                  [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                  nzFormat="yyyy-MM-dd HH:mm"
+                  [formControl]="availableFromControl"
+                  nzPlaceHolder="Available on"
+                >
+                </nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </nz-card>
 
-                <nz-card [nzBordered]="false" nzTitle="Category">
-                    <nz-form-item>
-                        <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
-                            <nz-select
-                                class="w-full"
-                                nzSize="large"
-                                nzShowSearch
-                                nzAllowClear
-                                nzPlaceHolder="Title"
-                                [formControl]="categoryControl"
-                                >
-                                <nz-option
-                                    *ngFor="let cc of collectionCategories"
-                                    [nzLabel]="cc.key"
-                                    [nzValue]="cc.value"
-                                >
-                                </nz-option>
-                            </nz-select>
-                        </nz-form-control>
-                    </nz-form-item>
-                </nz-card>
+        <nz-card [nzBordered]="false" nzTitle="Links">
+          <div class="space-y-4">
+            <nz-form-item>
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid URL.">
+                <nz-input-group nzSize="large" [nzPrefix]="prefixURL">
+                  <input
+                    type="text"
+                    nz-input
+                    placeholder="URL"
+                    [formControl]="urlControl"
+                  />
+                  <ng-template #prefixURL>
+                    <wen-icon-link></wen-icon-link>
+                  </ng-template>
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
 
-                <nz-card [nzBordered]="false" nzTitle="Collection Setup">
-                  <nz-form-item>
-                    <nz-form-control>
-                      <nz-radio-group
-                        class="wen-radio-group"
-                        [formControl]="selectedAccessControl"
+            <nz-form-item>
+              <nz-form-control
+                i18n-nzErrorTip
+                nzErrorTip="Invalid Twitter username."
+              >
+                <nz-input-group nzSize="large" [nzPrefix]="prefixTwitter">
+                  <input
+                    type="text"
+                    nz-input
+                    placeholder="Link to your Twitter account"
+                    [formControl]="twitterControl"
+                  />
+                  <ng-template #prefixTwitter>
+                    <wen-icon-twitter></wen-icon-twitter>
+                  </ng-template>
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-control
+                i18n-nzErrorTip
+                nzErrorTip="Invalid Discord username."
+              >
+                <nz-input-group nzSize="large" [nzPrefix]="prefixDiscord">
+                  <input
+                    type="text"
+                    nz-input
+                    placeholder="Link to your Discord account"
+                    [formControl]="discordControl"
+                  />
+                  <ng-template #prefixDiscord>
+                    <wen-icon-discord></wen-icon-discord>
+                  </ng-template>
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </nz-card>
+
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+            nzTitle="Member discounts"
+            nzDescription="Space support an ability to airdrop NFTs to their members for free or at discount."
+          >
+          </nz-card-meta>
+
+          <div class="pt-4">
+            <ng-container *ngIf="deviceService.isDesktop$ | async">
+              <div
+                class="flex items-center justify-between mt-4"
+                *ngFor="let discount of discounts.controls; let i = index"
+              >
+                <nz-input-group nzAddOnBefore="XP >" class="flex-grow w-1/2">
+                  <input
+                    type="text"
+                    nz-input
+                    nzSize="large"
+                    [formControl]="gForm(discount, 'xp')"
+                  />
+                </nz-input-group>
+
+                <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
+
+                <div class="flex items-center flex-grow w-1/2">
+                  <nz-input-number
+                    class="w-full max-w-80"
+                    [nzMin]="1"
+                    [nzMax]="100"
+                    [nzStep]="1"
+                    [nzFormatter]="formatterPercent"
+                    [nzParser]="parserPercent"
+                    nzSize="large"
+                    [formControl]="gForm(discount, 'amount')"
+                  ></nz-input-number>
+
+                  <wen-icon-trash
+                    class="ml-4 cursor-pointer"
+                    (click)="removeDiscount(i)"
+                  ></wen-icon-trash>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="deviceService.isMobile$ | async">
+              <div
+                class="mt-8"
+                *ngFor="let discount of discounts.controls; let i = index"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="text-xs font-bold">
+                    <span i18n>Discount</span> #0{{ i + 1 }}
+                  </div>
+                  <wen-icon-trash
+                    class="cursor-pointer"
+                    (click)="removeDiscount(i)"
+                  ></wen-icon-trash>
+                </div>
+
+                <div class="mt-2 mb-5 separator"></div>
+
+                <div class="text-xs font-medium text-foregrounds-tertiary" i18n>
+                  Discount XP
+                </div>
+
+                <nz-input-group nzAddOnBefore="XP >" class="w-full mt-2 mb-5">
+                  <input
+                    type="text"
+                    nz-input
+                    nzSize="default"
+                    [formControl]="gForm(discount, 'xp')"
+                  />
+                </nz-input-group>
+
+                <div class="text-xs font-medium text-foregrounds-tertiary" i18n>
+                  Discount Amount
+                </div>
+
+                <nz-input-number
+                  class="w-full mt-2 mb-5"
+                  [nzMin]="1"
+                  [nzMax]="100"
+                  [nzStep]="1"
+                  [nzFormatter]="formatterPercent"
+                  [nzParser]="parserPercent"
+                  nzSize="large"
+                  [formControl]="gForm(discount, 'amount')"
+                ></nz-input-number>
+              </div>
+            </ng-container>
+          </div>
+
+          <button
+            nz-button
+            *ngIf="discounts.controls.length < maxDiscountCount"
+            nzType="link"
+            class="flex items-center pl-0 mt-3"
+            (click)="addDiscount()"
+          >
+            <wen-icon-plus class="mr-0.5"></wen-icon-plus>
+            <span i18n>Add discount level</span>
+          </button>
+        </nz-card>
+      </div>
+
+      <div
+        class="mt-4 space-y-4 lg:mt-0"
+        nz-col
+        [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+      >
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+            nzTitle="Space Info"
+            nzDescription="This is the space that will be minting the NFT collection. Only spaces with verified wallets show up in the dropdown list. Please make sure you choose the correct space because all funds from the NFT sale will go to this space's verified wallet."
+          >
+          </nz-card-meta>
+          <nz-form-item class="mt-6">
+            <wen-select-space
+              class="block w-full"
+              [formControl]="spaceControl"
+              [spaces]="getSpaceListOptions(spaces$ | async)"
+              size="large"
+            >
+            </wen-select-space>
+          </nz-form-item>
+        </nz-card>
+
+        <nz-card [nzBordered]="false" nzTitle="Collection Type">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-radio-group
+                class="wen-radio-group"
+                [formControl]="typeControl"
+              >
+                <wen-radio
+                  *ngFor="let type of collectionTypes; trackBy: trackByValue"
+                  [value]="type.value"
+                >
+                  <span class="flex items-center" i18n>
+                    {{ type.key }}
+                    <wen-icon-question-circle
+                      class="ml-1"
+                      nz-tooltip
+                      [nzTooltipTitle]="getTooltip(type.value, '')">
+                    </wen-icon-question-circle>
+                  </span>
+                </wen-radio>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+
+        <nz-card [nzBordered]="false" *ngIf="showPlaceholder()">
+          <nz-card-meta
+            nzTitle="Banner"
+            [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Upload image.'"
+          >
+          </nz-card-meta>
+
+          <div class="mt-6">
+            <nz-form-item>
+              <nz-form-control>
+                <nz-upload
+                  class="wen-banner"
+                  nzName="banner"
+                  nzType="drag"
+                  nzListType="picture-card"
+                  [nzLimit]="1"
+                  [nzCustomRequest]="uploadFileBanner.bind(this)"
+                  (nzChange)="uploadChangeBanner($event)"
+                  nzFileType="image/png,image/jpeg"
+                  [nzFileList]="uploadedBanner ? [uploadedBanner] : []"
+                >
+                  <ng-container>
+                    <i class="upload-icon" nz-icon nzType="upload"></i>
+                    <span class="pl-2 text-xs">jpeg/png</span>
+                  </ng-container>
+                </nz-upload>
+                <div class="text-orange-darkest" *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine" i18n>
+                  Banner is required.
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </nz-card>
+
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+            nzTitle="Placeholder"
+            [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Upload image. Will be used as an NFT placeholder.'"
+          >
+          </nz-card-meta>
+
+          <div class="mt-6">
+              <nz-form-item>
+                  <nz-form-control>
+                      <nz-upload
+                        class="wen-banner"
+                        nzName="banner"
+                        nzType="drag"
+                        nzListType="picture-card"
+                        [nzLimit]="1"
+                        [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
+                        (nzChange)="uploadChangePlaceholder($event)"
+                        nzFileType="image/png,image/jpeg"
+                        [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
                       >
-                        <wen-radio [value]="targetAccess.OPEN"
-                          ><span class="flex items-center" i18n>Open Sale
-                            <wen-icon-question-circle
-                              class="ml-1"
-                              nz-tooltip
-                              nzTooltipTitle="Everyone has access to this collection."
-                            ></wen-icon-question-circle> </span
-                        ></wen-radio>
-                        <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
-                          ><span class="flex items-center" i18n>Space Guardians Only
-                            <wen-icon-question-circle
-                              class="ml-1"
-                              nz-tooltip
-                              nzTooltipTitle="Only Space Guardians can access."
-                            ></wen-icon-question-circle> </span
-                        ></wen-radio>
-                        <wen-radio [value]="targetAccess.MEMBERS_ONLY"
-                          ><span class="flex items-center" i18n>Space Members Only
-                            <wen-icon-question-circle
-                              class="ml-1"
-                              nz-tooltip
-                              nzTooltipTitle="Only Space Members can access."
-                            ></wen-icon-question-circle> </span
-                        ></wen-radio>
-                        <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
-                          ><span class="flex items-center" i18n>Space Members with Badge Only
-                            <wen-icon-question-circle
-                              class="ml-1"
-                              nz-tooltip
-                              nzTooltipTitle="Only Space Members with badge can access."
-                            ></wen-icon-question-circle> </span
-                        ></wen-radio>
-                      </nz-radio-group>
-                    </nz-form-control>
-                  </nz-form-item>
-                </nz-card>
-                <nz-card [nzBordered]="false" nzTitle="Required Badge" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS_WITH_BADGE">
-                    <nz-form-item>
-                      <nz-form-control>
-                        <nz-select
-                          class="w-full"
-                          nzSize="large"
-                          nzShowSearch
-                          nzAllowClear
-                          [nzMaxTagCount]="9"
-                          nzMode="multiple"
-                          nzPlaceHolder="Select Badge"
-                          [formControl]="accessAwardsControl"
-                        >
-                          <nz-option
-                            *ngFor="let a of awards$ | async; trackBy: trackByUid"
-                            [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
-                            [nzValue]="a.uid"
-                          ></nz-option>
-                        </nz-select>
-                      </nz-form-control>
-                    </nz-form-item>
-                  </nz-card>
-            </div>
-        </div>
-    </form>
+                          <ng-container>
+                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
+                          </ng-container>
+                      </nz-upload>
+                  </nz-form-control>
+              </nz-form-item>
+          </div>
+        </nz-card>
 
-    <button
-        nz-button
-        nzType="primary"
-        class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
-        nzSize="large"
-        type="button"
-        (click)="create()"
-        *ngIf="!editMode"
-        i18n
-    >
-        Create collection
-    </button>
+        <nz-card [nzBordered]="false" nzTitle="Category">
+          <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
+              <nz-select
+                class="w-full"
+                nzSize="large"
+                nzShowSearch
+                nzAllowClear
+                nzPlaceHolder="Title"
+                [formControl]="categoryControl"
+              >
+                <nz-option
+                  *ngFor="let cc of collectionCategories"
+                  [nzLabel]="cc.key"
+                  [nzValue]="cc.value"
+                >
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
 
-    <button
-        nz-button
-        nzType="primary"
-        class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
-        nzSize="large"
-        type="button"
-        (click)="save()"
-        *ngIf="editMode"
-        i18n
-    >
-        Save collection
-    </button>
+        <nz-card [nzBordered]="false" nzTitle="Collection Setup">
+          <nz-form-item>
+            <nz-form-control>
+              <nz-radio-group
+                class="wen-radio-group"
+                [formControl]="selectedAccessControl"
+              >
+                <wen-radio [value]="targetAccess.OPEN"
+                  ><span class="flex items-center" i18n
+                    >Open Sale
+                    <wen-icon-question-circle
+                      class="ml-1"
+                      nz-tooltip
+                      nzTooltipTitle="Everyone has access to this collection."
+                    ></wen-icon-question-circle> </span
+                ></wen-radio>
+                <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
+                  ><span class="flex items-center" i18n
+                    >Space Guardians Only
+                    <wen-icon-question-circle
+                      class="ml-1"
+                      nz-tooltip
+                      nzTooltipTitle="Only Space Guardians can access."
+                    >
+                    </wen-icon-question-circle> </span
+                ></wen-radio>
+                <wen-radio [value]="targetAccess.MEMBERS_ONLY"
+                  ><span class="flex items-center" i18n
+                    >Space Members Only
+                    <wen-icon-question-circle
+                      class="ml-1"
+                      nz-tooltip
+                      nzTooltipTitle="Only Space Members can access."
+                    >
+                    </wen-icon-question-circle> </span
+                ></wen-radio>
+                <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
+                  ><span class="flex items-center" i18n
+                    >Space Members with Badge Only
+                    <wen-icon-question-circle
+                      class="ml-1"
+                      nz-tooltip
+                      nzTooltipTitle="Only Space Members with badge can access."
+                    ></wen-icon-question-circle> </span
+                ></wen-radio>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+        <nz-card
+          [nzBordered]="false"
+          nzTitle="Required Badge"
+          *ngIf="selectedAccessControl.value === targetAccess.MEMBERS_WITH_BADGE"
+        >
+          <nz-form-item>
+            <nz-form-control>
+              <nz-select
+                class="w-full"
+                nzSize="large"
+                nzShowSearch
+                nzAllowClear
+                [nzMaxTagCount]="9"
+                nzMode="multiple"
+                nzPlaceHolder="Select Badge"
+                [formControl]="accessAwardsControl"
+              >
+                <nz-option
+                  *ngFor="let a of awards$ | async; trackBy: trackByUid"
+                  [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
+                  [nzValue]="a.uid"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-card>
+      </div>
+    </div>
+  </form>
+
+  <button
+    nz-button
+    nzType="primary"
+    class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
+    nzSize="large"
+    type="button"
+    (click)="create()"
+    *ngIf="!editMode"
+    i18n
+  >
+    Create collection
+  </button>
+
+  <button
+    nz-button
+    nzType="primary"
+    class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-0"
+    nzSize="large"
+    type="button"
+    (click)="save()"
+    *ngIf="editMode"
+    i18n
+  >
+    Save collection
+  </button>
 </wen-content>
