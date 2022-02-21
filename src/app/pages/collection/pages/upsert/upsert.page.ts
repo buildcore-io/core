@@ -435,9 +435,6 @@ export class UpsertPage implements OnInit, OnDestroy {
     if (!this.validateForm()) {
       return;
     }
-    console.log(
-      this.formatSubmitData({ ...this.collectionForm.value }, 'edit'),
-    );
     await this.auth.sign(
       {
         ...this.formatSubmitData({ ...this.collectionForm.value }, 'edit'),
