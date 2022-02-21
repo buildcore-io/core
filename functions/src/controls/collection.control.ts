@@ -192,7 +192,6 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
       name: params.body.name,
       description: params.body.description,
       media: params.body.placeholderUrl,
-      availableFrom: params.body.availableFrom,
       price: params.body.price,
       space: docCollection.data().space,
       type: docCollection.data().type

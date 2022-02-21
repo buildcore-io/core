@@ -57,7 +57,7 @@
             </div>
 
 
-            <div class="flex items-center p-5 mt-6 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.nft$ | async, data.collection$ | async)">
+            <div class="flex items-center p-5 mt-6 rounded-xl bg-yellow" *ngIf="(data.nft$ | async)?.placeholderNft && isAvailableForSale(data.nft$ | async, data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-base font-bold">
                     <span>{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}} </span>
@@ -65,16 +65,17 @@
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-10" i18n>
-                Buy now
-            </button>
-
-            <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async)" class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
+            <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
                     Sale ended
                 </div>
             </div>
+
+            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved" *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-10" i18n>
+                Buy now
+            </button>
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>

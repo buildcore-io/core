@@ -334,7 +334,9 @@ class ProcessingService {
       if (col.data().placeholderNft && col.data().total === col.data().sold) {
         await admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft).update({
           sold: true,
-          hidden: true
+          owner: null,
+          availableFrom: null,
+          hidden: false
         });
       }
     }

@@ -106,6 +106,15 @@ export class NFTPage implements OnInit, OnDestroy {
       return undefined;
     }
 
+    const lastestBill: TransactionBillPayment|undefined = this.getLatestBill(orders);
+    return lastestBill?.payload?.chainReference || lastestBill?.payload?.walletReference?.chainReference || undefined;
+  }
+
+  public getLatestBill(orders?: SuccesfullOrdersWithFullHistory[]|null): TransactionBillPayment|undefined {
+    if (!orders) {
+      return undefined;
+    }
+
     // Get all non royalty bills.
     let lastestBill: TransactionBillPayment|undefined = undefined;
     for (const h of orders) {
@@ -121,7 +130,7 @@ export class NFTPage implements OnInit, OnDestroy {
       }
     }
 
-    return lastestBill?.payload?.chainReference || lastestBill?.payload?.walletReference?.chainReference || undefined;
+    return lastestBill;
   }
 
   private listenToNft(id: string): void {

@@ -137,6 +137,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     if (docCollection.data().placeholderNft) {
       await admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft).update({
         sold: false,
+        availableFrom: params.availableFrom,
         hidden: false
       });
     }
