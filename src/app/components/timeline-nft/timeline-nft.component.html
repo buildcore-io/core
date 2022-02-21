@@ -12,18 +12,19 @@
     </div>
 
     <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
-      <div class="flex items-center">
+      <div class="flex items-center w-full">
         <nz-avatar [nzSrc]="t.newMember.currentProfileImage| ipfsBadge:filesizes.small"
           class="bg-white border-gray-400 min-w-10 min-h-10" nzShape="circle">
         </nz-avatar>
 
-        <div class="ml-6">
+        <div class="w-full ml-6">
           <div class="text-xs font-medium text-gray-400">
             {{ t.order.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
           <div class="text-base font-medium mt-0.5">
 
             <nz-collapse nzGhost>
-              <nz-collapse-panel [nzHeader]="lineTpl" [nzActive]="false" [nzShowArrow]="false" (nzActiveChange)="isCollapsed = !isCollapsed">
+              <nz-collapse-panel [nzHeader]="lineTpl" [nzActive]="false" [nzShowArrow]="false"
+                (nzActiveChange)="isCollapsed = !isCollapsed">
 
                 <ng-template #lineTpl>
                   <span i18n>Purchased by</span> @{{t.newMember.name || t.newMember.uid}}
@@ -31,13 +32,17 @@
                   <a i18n class="inline text-sm underline text-blue-light1">{{isCollapsed ? 'hide' : 'see'}} details</a>
                 </ng-template>
 
-                <div *ngFor="let tt of (t.transactions || [])" class="relative flex items-center my-1">
-                  <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{tt.createdOn?.toDate() | date: "short"}}</div>
+                <div class="overflow-y-auto max-h-24">
+                  <div *ngFor="let tt of (t.transactions || [])" class="relative flex items-center my-1">
+                    <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{tt.createdOn?.toDate() | date:
+                      "short"}}</div>
 
-                  <a class="absolute text-sm font-medium underline left-32 text-blue-light1" target="_new"
-                    [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)">{{getTitle(tt)}}</a>
+                    <a class="absolute text-sm font-medium underline left-32 text-blue-light1" target="_new"
+                      [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)">{{getTitle(tt)}}</a>
 
-                  <span class="absolute text-sm font-medium text-red-500 left-56" *ngIf="tt.payload.invalidPayment">Invalid</span>
+                    <span class="absolute text-sm font-medium text-red-500 left-56"
+                      *ngIf="tt.payload.invalidPayment">Invalid</span>
+                  </div>
                 </div>
 
               </nz-collapse-panel>

@@ -170,7 +170,7 @@
                 Transaction history
             </div>
 
-            <div class="h-32 px-5 pt-4 pb-2">
+            <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
                 <div *ngFor="let t of history; let first=first"
                     class="relative flex items-center my-1">
                         <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date | Time }}</div>
@@ -192,12 +192,12 @@
 
 <ng-template #confirmedTemplate>
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-        <div class="w-full border border-app-gray-200 rounded-2xl">
+        <div class="w-full border lg:mt-8 border-app-gray-200 rounded-2xl">
           <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
               Transaction history
           </div>
 
-          <div class="h-32 px-5 pt-4 pb-2">
+          <div class="h-auto px-5 pt-4 pb-2">
               <div *ngFor="let t of history; let first=first"
                   class="relative flex items-center my-1">
                       <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{ t.date | Time }}</div>
@@ -207,7 +207,7 @@
               </div>
           </div>
         </div>
-        <div class="flex items-center my-auto lg:mt-24">
+        <div class="flex items-center my-auto lg:mt-16">
             <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-success">
                 <wen-icon-check class="text-white"></wen-icon-check>
             </div>
