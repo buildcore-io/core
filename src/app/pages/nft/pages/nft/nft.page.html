@@ -282,7 +282,7 @@
                 </wen-nft-card>
 
                 <ng-container *ngFor="let nft of data.topNftWithinCollection$ | async; trackBy: trackByUid">
-                  <wen-nft-card class="wen-nft-card" [collection]="(data.collection$ | async)"
+                  <wen-nft-card [collection]="(data.collection$ | async)"
                       *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNftInCollection$ | async)?.uid)"
                       [nft]="nft">
                   </wen-nft-card>
