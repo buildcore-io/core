@@ -1,13 +1,13 @@
 <div class="flex flex-col items-center pt-10 mt-8 lg:flex-row lg:pt-0">
     <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new"
         *ngIf="(data.collection$ | async)?.url" [href]="(data.collection$ | async)?.url"
-        class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
+        class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2 wen-link-padding">
             <wen-icon-github></wen-icon-github>
             <div class="ml-2.5 text-xs font-medium" i18n>Visit website</div>
     </a>
     <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new"
         [href]="getShareUrl()"
-        class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
+        class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2 wen-link-padding">
             <wen-icon-share></wen-icon-share>
             <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
     </a>
