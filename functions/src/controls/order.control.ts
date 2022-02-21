@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
+import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Transaction } from '../../interfaces/models';
@@ -19,7 +20,7 @@ import { Nft } from './../../interfaces/models/nft';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
 import { MnemonicService } from './../services/wallet/mnemonic';
-import { AddressDetails, MIN_AMOUNT_TO_TRANSFER, WalletService } from './../services/wallet/wallet';
+import { AddressDetails, WalletService } from './../services/wallet/wallet';
 import { ethAddressLength } from './../utils/wallet.utils';
 
 export const orderNft: functions.CloudFunction<Transaction> = functions.runWith({

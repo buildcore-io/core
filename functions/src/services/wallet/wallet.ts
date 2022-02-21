@@ -7,6 +7,7 @@ import {
 } from "@iota/iota.js";
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
+import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 
 export interface AddressDetails {
   bech32: string;
@@ -25,9 +26,6 @@ interface Output {
   addressType: number;
   amount: number;
 }
-
-export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
-export const KEY_NAME_TANGLE = 'Soonaverse';
 
 export class WalletService {
   private API_ENDPOINT = "https://chrysalis-nodes.iota.org"; // Mainnet

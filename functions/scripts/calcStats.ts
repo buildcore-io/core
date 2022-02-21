@@ -46,8 +46,8 @@ recs.forEach((r) => {
 //   }
 // });
 
-db.collection('transaction').where('payload.targetAddress', '==', 'iota1qq2mr052eq3pw5qqgl4c4h05f8eanpnjm8uwew6gccz80hex0djd58ya8yn').get().then(async (snapshot) => {
+db.collection('transaction').where('type', '==', 'ORDER').orderBy('createdOn').get().then(async (snapshot) => {
   for (const t of snapshot.docs) {
-    console.log(t.data().uid, t.data().type, t.data().payload.targetAddress, t.data().createdOn.toDate());
+    console.log(t.data().uid, t.data().type, t.data().createdOn.toDate());
   }
 });
