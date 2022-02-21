@@ -24,11 +24,8 @@
             <!-- Needs to be implemented: ngClass -->
             <div class="absolute top-5 right-5 lg:top-6 lg:right-6 z-10 rounded-lg flex items-center px-2.5 py-1.5 text-sm font-medium"
                 *ngIf="fullWidth"
-                [ngClass]="{
-                    'bg-tag-blue': false,
-                    'bg-tag-green': true
-                }">
-                {{ getStatus() }}
+                [ngClass]="getStatusProperties().className">
+                {{ getStatusProperties().label }}
             </div>
 
             <!-- Needs to be implemented -->
