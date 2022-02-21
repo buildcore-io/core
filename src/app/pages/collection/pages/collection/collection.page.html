@@ -137,19 +137,18 @@
       <i nz-icon nzType="search" class="text-xl"></i>
     </ng-template> -->
 
-    <div class="flex items-center justify-between">
-        <!-- Will be replaced by search -->
+    <div class="flex items-center justify-between" *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid">
+        <!-- Will be replaced by search - TODO move the condition above to the button once search added -->
         <div></div>
 
-        <button nz-button nzType="primary" nzSize="default" class="flex items-center" (click)="createNft()" i18n
-                *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid">
+        <button nz-button nzType="primary" nzSize="default" class="flex items-center" (click)="createNft()" i18n>
             <wen-icon-plus class="mr-2"></wen-icon-plus>
             Create NFT
         </button>
     </div>
 
 
-    <div class="w-full h-px mt-8 mb-6 bg-app-gray-700"></div>
+    <div class="w-full h-px mt-8 mb-6 bg-app-gray-700" *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"></div>
 
     <div class="flex items-end justify-between">
         <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
