@@ -294,14 +294,11 @@
                               nzName="banner"
                               nzType="drag"
                               nzListType="picture-card"
-                              [nzDirectory]="false"
                               [nzLimit]="1"
                               [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
                               (nzChange)="uploadChangePlaceholder($event)"
                               nzFileType="image/png,image/jpeg"
-                              [nzPreviewFile]="previewFile"
-                              [nzShowUploadList]="true"
-                              [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
+                              [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
                               >
                                   <ng-container>
                                       <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
@@ -327,19 +324,19 @@
                                 nzName="banner"
                                 nzType="drag"
                                 nzListType="picture-card"
-                                [nzDirectory]="false"
                                 [nzLimit]="1"
                                 [nzCustomRequest]="uploadFileBanner.bind(this)"
                                 (nzChange)="uploadChange($event)"
                                 nzFileType="image/png,image/jpeg"
-                                [nzPreviewFile]="previewFile"
-                                [nzShowUploadList]="true"
-                                [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
+                                [nzFileList]="uploadedBanner ? [uploadedBanner] : []"
                                 >
                                     <ng-container>
                                         <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
                                     </ng-container>
                                 </nz-upload>
+                                <div class="text-orange-darkest" *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine" i18n>
+                                    Banner is required.
+                                </div>
                             </nz-form-control>
                         </nz-form-item>
                     </div>

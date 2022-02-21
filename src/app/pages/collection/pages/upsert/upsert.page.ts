@@ -42,7 +42,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public discordControl: FormControl = new FormControl('', Validators.pattern(DISCORD_REGEXP));
   public placeholderUrlControl: FormControl = new FormControl('');
   public accessAwardsControl: FormControl = new FormControl([]);
-  public bannerUrlControl: FormControl = new FormControl('');
+  public bannerUrlControl: FormControl = new FormControl('', Validators.required);
   public categoryControl: FormControl = new FormControl('', Validators.required);
   public selectedAccessControl: FormControl = new FormControl(CollectionAccess.OPEN, Validators.required);
   public spaceControl: FormControl = new FormControl('', Validators.required);
@@ -61,6 +61,8 @@ export class UpsertPage implements OnInit, OnDestroy {
   public formatterPercent = (value: number): string => `${value} %`;
   public parserPercent = (value: string): string => value.replace(' %', '');
   public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
+  public uploadedBanner?: NzUploadFile | null; 
+  public uploadedPlaceholder?: NzUploadFile | null;
   private awardSub?: Subscription;
 
   constructor(
@@ -200,12 +202,18 @@ export class UpsertPage implements OnInit, OnDestroy {
   public uploadChangePlaceholder(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       this.placeholderUrlControl.setValue(event.file.response);
+      this.uploadedPlaceholder = event.file;
+    } else {
+      this.placeholderUrlControl.setValue('');
     }
   }
 
   public uploadChange(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       this.bannerUrlControl.setValue(event.file.response);
+      this.uploadedBanner = event.file;
+    } else {
+      this.bannerUrlControl.setValue('');
     }
   }
 
