@@ -127,7 +127,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.data.collectionId = id;
     this.cancelSubscriptions();
     this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-    this.subscriptions$.push(this.getHandler(id).subscribe(this.data.nft$));
+    this.subscriptions$.push(this.getHandler(id).subscribe(this.store.bind(this, this.data.dataStore.length)));
     this.subscriptions$.push(
       this.nftApi.lowToHighCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
@@ -281,6 +281,8 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+
+    this.data.dataStore = [];
   }
 
   public ngOnDestroy(): void {
