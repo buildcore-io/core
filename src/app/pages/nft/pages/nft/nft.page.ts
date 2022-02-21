@@ -80,6 +80,8 @@ export class NFTPage implements OnInit, OnDestroy {
         }
         if (p.owner) {
           this.subscriptions$.push(this.memberApi.listen(p.owner).pipe(untilDestroyed(this)).subscribe(this.data.owner$));
+        } else {
+          this.data.owner$.next(undefined);
         }
         this.subscriptions$.push(
           this.nftApi.lastCollection(p.collection, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {

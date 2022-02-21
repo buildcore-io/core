@@ -1,16 +1,20 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { Collection } from 'functions/interfaces/models';
-import { Timestamp } from 'functions/interfaces/models/base';
+import { Collection, Member } from 'functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-nft-card',
   templateUrl: './nft-card.component.html',
@@ -19,18 +23,35 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 })
 export class NftCardComponent {
   @Input() fullWidth?: boolean;
-  @Input() nft?: Nft|null;
+  @Input() 
+  set nft(value: Nft|null|undefined) {
+    if (this.memberApiSubscription) {
+      this.memberApiSubscription.unsubscribe();
+    }
+    this._nft = value;
+    if (this.nft?.owner) {
+      this.memberApiSubscription = this.memberApi.listen(this.nft.owner).pipe(untilDestroyed(this)).subscribe(this.owner$);
+    } else {
+      this.owner$.next(undefined);
+    }
+  }
+  get nft(): Nft|null|undefined {
+    return this._nft;
+  }
   @Input() collection?: Collection|null;
-  @Input() isOwned = false;
 
   public isCheckoutOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
+  public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  private memberApiSubscription?: Subscription;
+  private _nft?: Nft|null;
 
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     private auth: AuthService,
-    private nzNotification: NzNotificationService
+    private nzNotification: NzNotificationService,
+    private memberApi: MemberApi
   ) {}
 
   public onBuy(event: MouseEvent): void {
@@ -78,5 +99,9 @@ export class NftCardComponent {
     }
 
     return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 }

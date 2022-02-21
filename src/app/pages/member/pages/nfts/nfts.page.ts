@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { NftApi } from '@api/nft.api';
-import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
+import { DEFAULT_COLLECTION, SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -31,7 +31,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     private data: DataService,
     private nftApi: NftApi
   ) {
-    this.collectionControl = new FormControl('');
+    this.collectionControl = new FormControl(DEFAULT_COLLECTION.value);
     this.filterControl = new FormControl('');
   }
 
