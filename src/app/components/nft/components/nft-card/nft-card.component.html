@@ -1,6 +1,6 @@
 <article class="bg-white rounded-2xl wen-card"
-    [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60'">
-    <a class="text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
+    [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60 h-72 lg:h-99'">
+    <a class="text-current hover:text-current h-full flex flex-col" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full overflow-hidden h-40 lg:h-60 rounded-2xl">
             <img
             alt="NFT image"
@@ -26,19 +26,19 @@
             </div> -->
         </div>
 
-        <div class="relative flex flex-col w-full px-4 py-3 lg:py-4">
+        <div class="relative flex flex-col w-full px-4 py-3 lg:py-4 flex-grow">
             <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
 
             <div class="mt-1 mb-3 text-sm font-medium break-all line-clamp-2">
-                {{ 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }}
+                {{ collection?.name || '' }}
             </div>
 
             <ng-container *ngIf="!nft?.owner; else ownerBlock">
-                <div class="flex items-center">
+                <div class="flex items-center mt-auto" *ngIf="(deviceService.isDesktop$ | async)">
                     <wen-icon-dollar class="mr-1 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div>
 
-                    <button *ngIf="(deviceService.isDesktop$ | async)" nz-button nzType="primary" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
+                    <button nz-button nzType="primary" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
                         (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
                 </div>
 
@@ -48,11 +48,11 @@
                 </div> -->
 
                 <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
-                    (click)="onBuy($event)" class="w-4/5 mt-2" i18n>Buy now</button>
+                    (click)="onBuy($event)" class="w-4/5 mt-2 ml-auto" i18n>Buy now</button>
             </ng-container>
 
             <ng-template #ownerBlock>
-                <a [routerLink]="['/member', (owner$ | async)?.uid]" class="flex items-center" (click)="$event.stopPropagation()">
+                <a [routerLink]="['/member', (owner$ | async)?.uid]" class="flex items-center mt-auto" (click)="$event.stopPropagation()">
                     <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                         class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                         style="max-width: 32px; min-width: 32px;" [nzSize]="32">
