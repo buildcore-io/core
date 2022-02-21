@@ -19,6 +19,20 @@ export class DataService {
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public collectionCreator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
 
+  public reset(): void {
+    this.nftId = undefined;
+    this.nft$.next(undefined);
+    this.collection$.next(undefined);
+    this.topNftWithinCollection$.next(undefined);
+    this.firstNftInCollection$.next(undefined);
+    this.orders$.next(undefined);
+    this.space$.next(undefined);
+    this.royaltySpace$.next(undefined);
+    this.creator$.next(undefined);
+    this.owner$.next(undefined);
+    this.collectionCreator$.next(undefined);
+  }
+
   public getPropStats(obj: any): any[] {
     if (!obj) {
       return [];

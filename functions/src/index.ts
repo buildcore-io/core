@@ -8,6 +8,7 @@ import { orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { ipfsForNft, markAwardsAsComplete } from "./cron";
+import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneWrite } from './triggers/milestone.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
 admin.initializeApp();
@@ -65,3 +66,4 @@ exports['cron_ipfsForNft'] = ipfsForNft;
 // TRIGGER Tasks
 exports['trigger_milestoneWrite'] = milestoneWrite;
 exports['trigger_transactionWrite'] = transactionWrite;
+exports['trigger_collectionWrite'] = collectionWrite;

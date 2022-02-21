@@ -64,7 +64,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Nft|undefined) => {
       if (!obj) {
-        this.notFound();
+        // this.notFound();
         return;
       }
     });
@@ -138,8 +138,8 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   private listenToNft(id: string): void {
-    this.data.nftId = id;
     this.cancelSubscriptions();
+    this.data.nftId = id;
     this.subscriptions$.push(this.nftApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.nft$));
   }
 
@@ -256,6 +256,8 @@ export class NFTPage implements OnInit, OnDestroy {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+
+    this.data.reset();
   }
 
   public ngOnDestroy(): void {
