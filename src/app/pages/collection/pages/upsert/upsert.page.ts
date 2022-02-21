@@ -215,6 +215,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.selectedAccessControl.disable();
               this.accessAwardsControl.disable();
               this.priceControl.disable();
+              this.unitControl.disable();
               this.availableFromControl.disable();
               this.typeControl.disable();
               this.categoryControl.disable();
