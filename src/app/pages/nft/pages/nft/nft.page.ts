@@ -18,7 +18,7 @@ import { Collection, CollectionType, TransactionBillPayment, TransactionType } f
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { first, map, skip, Subscription } from 'rxjs';
+import { map, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -34,6 +34,8 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCopied = false;
   public isNftPreviewOpen = false;
   private subscriptions$: Subscription[] = [];
+  private nftSubscriptions$: Subscription[] = [];
+  private collectionSubscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
     public previewImageService: PreviewImageService,
@@ -65,26 +67,29 @@ export class NFTPage implements OnInit, OnDestroy {
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Nft|undefined) => {
       if (!obj) {
-        // this.notFound();
+        this.notFound();
         return;
       }
     });
 
-    this.data.nft$.pipe(skip(1), first()).subscribe(async (p) => {
+    this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
       if (p) {
-        this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
-        this.subscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-        this.subscriptions$.push(this.nftApi.successfullOrders(p.uid).pipe(untilDestroyed(this)).subscribe(this.data.orders$));
-        this.subscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
+        this.nftSubscriptions$.forEach((s) => {
+          s.unsubscribe();
+        });
+        this.nftSubscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+        this.nftSubscriptions$.push(this.collectionApi.listen(p.collection).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
+        this.nftSubscriptions$.push(this.nftApi.successfullOrders(p.uid).pipe(untilDestroyed(this)).subscribe(this.data.orders$));
+        this.nftSubscriptions$.push(this.nftApi.positionInCollection(p.collection, undefined, undefined, 5).pipe(untilDestroyed(this)).subscribe(this.data.topNftWithinCollection$));
         if (p.createdBy) {
-          this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
+          this.nftSubscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }
         if (p.owner) {
-          this.subscriptions$.push(this.memberApi.listen(p.owner).pipe(untilDestroyed(this)).subscribe(this.data.owner$));
+          this.nftSubscriptions$.push(this.memberApi.listen(p.owner).pipe(untilDestroyed(this)).subscribe(this.data.owner$));
         } else {
           this.data.owner$.next(undefined);
         }
-        this.subscriptions$.push(
+        this.nftSubscriptions$.push(
           this.nftApi.lastCollection(p.collection, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
@@ -92,11 +97,14 @@ export class NFTPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {
+    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
       if (p) {
-        this.subscriptions$.push(this.spaceApi.listen(p.royaltiesSpace).pipe(untilDestroyed(this)).subscribe(this.data.royaltySpace$));
+        this.collectionSubscriptions$.forEach((s) => {
+          s.unsubscribe();
+        });
+        this.collectionSubscriptions$.push(this.spaceApi.listen(p.royaltiesSpace).pipe(untilDestroyed(this)).subscribe(this.data.royaltySpace$));
         if (p.createdBy) {
-          this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.collectionCreator$));
+          this.collectionSubscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.collectionCreator$));
         }
       }
     });
@@ -264,5 +272,11 @@ export class NFTPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.titleService.setTitle(WEN_NAME);
     this.cancelSubscriptions();
+    this.nftSubscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+    this.collectionSubscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
   }
 }

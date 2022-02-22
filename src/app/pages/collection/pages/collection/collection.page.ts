@@ -74,7 +74,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
     this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Collection|undefined) => {
       if (!obj) {
-        // this.notFound();
+        this.notFound();
         return;
       }
 
