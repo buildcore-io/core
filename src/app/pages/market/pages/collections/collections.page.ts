@@ -131,7 +131,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
       } else if (this.selectedTags$.value[0] === HOT_TAGS.CATEGORY) {
         return this.collectionApi.topCategory(this.categoryControl.value, last, search);
       } else {
-        return this.collectionApi.top(last, search);
+        return this.collectionApi.topApproved(last, search);
       }
     } else {
       if (this.selectedTags$.value[0] === HOT_TAGS.OPEN_SALE_ONLY) {

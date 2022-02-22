@@ -85,12 +85,16 @@ export class SinglePage implements OnInit {
       const finObj: Collection|undefined = this.cache.allCollections$.value.find((subO: any) => {
         return subO.uid === o;
       });
+
+      if (finObj) {
+        this.priceControl.setValue((finObj.price || 0) / 1000 / 1000);
+        this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+      }
+
       if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
         this.priceControl.disable();
-        this.priceControl.setValue((finObj.price || 0) / 1000 / 1000);
         this.unitControl.disable();
         this.availableFromControl.disable();
-        this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
       } else {
         this.priceControl.enable();
         this.unitControl.enable();

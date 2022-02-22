@@ -23,6 +23,12 @@ export class CollectionApi extends BaseApi<Collection> {
     super(afs, fns);
   }
 
+  public topApproved(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('approved', '==', true);
+    });
+  }
+
   public lowToHigh(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('approved', '==', true);
