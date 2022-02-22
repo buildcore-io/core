@@ -15,7 +15,7 @@
         <nz-card [nzBordered]="false">
           <nz-card-meta
               nzTitle="Collection info"
-                    nzDescription="Name and description will be included on the Collection. The Royalty is sent to the original creator of an asset when they are sold every time."
+                    nzDescription="Name and description will be included on the Collection."
                 >
                 </nz-card-meta>
           <div class="mt-4 space-y-4">
@@ -41,6 +41,12 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
+              <nz-form-label class="text-sm font-medium text-app-gray-600"
+                >Royalty</nz-form-label
+              >
+              <span class="ant-card-meta-description">
+                This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol.
+              </span><br />
               <nz-form-control class="relative">
                 <nz-input-number
                   class="w-full"
@@ -58,7 +64,7 @@
                   nzType="info-circle"
                   class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
                   nz-tooltip
-                  nzTooltipTitle="Creator must keep a minimum of 1Mi in their wallet address or royalties will not be paid."
+                  nzTooltipTitle="Example: 10 % , 20 % , etc.."
                 ></i>
               </nz-form-control>
             </nz-form-item>
