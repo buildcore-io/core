@@ -164,19 +164,19 @@ export class NftApi extends BaseApi<Nft> {
 
   public topAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'createdOn'], 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date()).where('collection', '==', collection);
+      return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date()).where('collection', '==', collection);
     });
   }
 
   public lowToHighAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'price'], 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date()).where('collection', '==', collection);
+      return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date()).where('collection', '==', collection);
     });
   }
 
   public highToLowAvailableCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'price'], 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('hidden', '==', false).where('availableFrom', '>=', new Date()).where('collection', '==', collection);
+      return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date()).where('collection', '==', collection);
     });
   }
 
