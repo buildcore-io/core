@@ -53,6 +53,11 @@ export class NftApi extends BaseApi<Nft> {
           o.transactions.push(tran.data()!);
         }
 
+        // Order transactions by date.
+        o.transactions = o.transactions.sort((c) => {
+          return c.createdOn!.toMillis() * -1;
+        });
+
         out.push(o);
       }
 
