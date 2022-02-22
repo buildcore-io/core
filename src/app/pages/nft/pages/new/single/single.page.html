@@ -34,8 +34,14 @@
                 </div>
             </nz-card>
 
-            <nz-card [nzBordered]="false" nzTitle="Sales info">
-                <div class="space-y-4">
+            <nz-card [nzBordered]="false">
+              <nz-card-meta
+              nzTitle="Sales info"
+                    nzDescription="All times are reflected in user's timezone."
+                >
+                </nz-card-meta>
+
+                <div class="mt-4 space-y-4">
                     <nz-form-item>
                         <nz-form-control>
                             <nz-input-group nzSize="large" class="relative">
@@ -80,15 +86,15 @@
             <nz-card [nzBordered]="false">
                 <nz-card-meta
                     nzTitle="Properties"
-                    nzDescription="Properties show up underneath your item, are clickable, and can be filtered in your collection's sidebar."
+                    nzDescription="Properties show up underneath your item."
                 >
                 </nz-card-meta>
 
                 <div class="pt-8">
                     <ng-container *ngIf="deviceService.isDesktop$ | async">
                         <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="properties.controls.length > 0">
-                            <div class="w-1/2" i18n>Property name</div>
-                            <div class="w-1/2" i18n>Value</div>
+                            <div class="w-1/2" i18n>Property name (E.g. Character)</div>
+                            <div class="w-1/2" i18n>Value (E.g. Soonanaut)</div>
                         </div>
 
                         <div class="my-2 separator"></div>
@@ -166,15 +172,15 @@
             <nz-card [nzBordered]="false">
                 <nz-card-meta
                     nzTitle="Stats"
-                    nzDescription="Stats show up underneath your item, are clickable, and can be filtered in your collection's sidebar."
+                    nzDescription="Stats show up underneath your item."
                 >
                 </nz-card-meta>
 
                 <div class="pt-8">
                 <ng-container *ngIf="deviceService.isDesktop$ | async">
                     <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="stats.controls.length > 0">
-                      <div class="w-1/2" i18n>Stats name</div>
-                      <div class="w-1/2 transform translate-x-2" i18n>Value</div>
+                      <div class="w-1/2" i18n>Stats name (E.g. Stamina)</div>
+                      <div class="w-1/2 transform translate-x-2" i18n>Value (E.g. 10, 1/10 , etc.)</div>
                     </div>
 
                     <div class="my-2 separator"></div>
