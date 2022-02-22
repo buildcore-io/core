@@ -16,7 +16,7 @@
                 </nz-card-meta>
                 <div class="mt-4 space-y-4">
                     <nz-form-item>
-                        <nz-form-control>
+                        <nz-form-control i18n-nzErrorTip nzErrorTip="Name is required.">
                             <input
                             nz-input
                             placeholder="Name"
@@ -26,7 +26,7 @@
                         </nz-form-control>
                     </nz-form-item>
                     <nz-form-item>
-                        <nz-form-control>
+                        <nz-form-control i18n-nzErrorTip nzErrorTip="Description is required.">
                             <textarea
                             nz-input
                             placeholder="Description"
@@ -48,7 +48,7 @@
 
                 <div class="mt-4 space-y-4">
                     <nz-form-item>
-                        <nz-form-control>
+                        <nz-form-control i18n-nzErrorTip nzErrorTip="Price is required.">
                             <nz-input-group nzSize="large" class="relative">
                                 <nz-input-number
                                     nzPlaceHolder="Price"
@@ -303,7 +303,7 @@
                 >
                 </nz-card-meta>
                 <nz-form-item class="mt-4">
-                    <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
+                    <nz-form-control i18n-nzErrorTip nzErrorTip="Collection is required.">
                         <nz-select
                             class="w-full"
                             nzSize="large"
