@@ -32,6 +32,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
   public isCopied = false;
+  public isNftPreviewOpen = false;
   private subscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
