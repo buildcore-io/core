@@ -119,31 +119,14 @@ export class HeaderComponent implements OnInit {
           });
         }
       } else {
-        if (this.notificationRef) {
-          this.nzNotification.remove(this.notificationRef.messageId);
-          this.notificationRef = undefined;
-        }
-
-        this.subscriptionTransaction$?.unsubscribe();
-        this.currentCheckoutNft = undefined;
-        this.currentCheckoutCollection = undefined;
-        removeItem(StorageItem.CheckoutTransaction);
+        this.removeCheckoutNotification();
       }
     });
 
     // Check periodically if there is something in the checkout.
     interval(500).pipe(untilDestroyed(this)).subscribe(() => {
       if (this.checkoutService.modalOpen$.value) {
-        if (this.notificationRef) {
-          this.nzNotification.remove(this.notificationRef.messageId);
-          this.notificationRef = undefined;
-        }
-
-        this.subscriptionTransaction$?.unsubscribe();
-        if (!this.isCheckoutOpen) {
-          this.currentCheckoutNft = undefined;
-          this.currentCheckoutCollection = undefined;
-        }
+        this.removeCheckoutNotification(false);
       } else {
         if (getItem(StorageItem.CheckoutTransaction) && (!this.subscriptionTransaction$ || this.subscriptionTransaction$.closed)) {
           this.subscriptionTransaction$ = this.orderApi.listen(<any>getItem(StorageItem.CheckoutTransaction)).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
@@ -158,6 +141,7 @@ export class HeaderComponent implements OnInit {
       if (this.expiryTicker$.value && this.expiryTicker$.value.isBefore(dayjs())) {
         this.expiryTicker$.next(null);
         int.unsubscribe();
+        this.removeCheckoutNotification();
       }
     });
   }
@@ -207,6 +191,20 @@ export class HeaderComponent implements OnInit {
   private onScroll(): void {
     this.isScrolled = window.scrollY > IS_SCROLLED_HEIGHT;
     this.cd.markForCheck();
+  }
+
+  private removeCheckoutNotification(removeFromStorage = true): void {
+    if (this.notificationRef) {
+      this.nzNotification.remove(this.notificationRef.messageId);
+      this.notificationRef = undefined;
+    }
+
+    this.subscriptionTransaction$?.unsubscribe();
+    if (removeFromStorage) {
+      this.currentCheckoutNft = undefined;
+      this.currentCheckoutCollection = undefined;
+      removeItem(StorageItem.CheckoutTransaction);
+    }
   }
 
   public ngOnDestroy(): void {
