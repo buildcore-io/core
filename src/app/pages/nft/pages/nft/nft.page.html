@@ -8,7 +8,7 @@
             <div class="mb-10 text-xl font-medium" *ngIf="deviceService.isDesktop$ | async">{{ (data.nft$ | async)?.name }}</div>
 
             <ng-container *ngIf="deviceService.isMobile$ | async">
-                <div class="relative w-full overflow-hidden rounded-2xl">
+                <div class="relative w-full overflow-hidden rounded-2xl cursor-pointer" (click)="isNftPreviewOpen = true">
                     <img
                     alt="NFT Image"
                     [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
@@ -110,7 +110,7 @@
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
             <ng-container *ngIf="deviceService.isDesktop$ | async">
-                <div class="relative w-full overflow-hidden rounded-2xl">
+                <div class="relative w-full overflow-hidden rounded-2xl cursor-pointer" (click)="isNftPreviewOpen = true">
                     <img
                     alt="NFT Image"
                     [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
@@ -293,3 +293,15 @@
 </wen-content>
 
 <wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>
+
+<nz-modal
+    [nzVisible]="isNftPreviewOpen"
+    (nzOnCancel)="isNftPreviewOpen = false"
+    [nzContent]="prevewNftModalContent"
+    [nzFooter]="null"
+    [nzBodyStyle]="{ padding: '4px' }"
+>
+    <ng-template #prevewNftModalContent>
+        <img [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="rounded-3xl w-full" />
+    </ng-template>
+</nz-modal>
