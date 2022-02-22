@@ -9,7 +9,7 @@ import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Collection, CollectionType, Member } from 'functions/interfaces/models';
-import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
+import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -23,7 +23,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 })
 export class NftCardComponent {
   @Input() fullWidth?: boolean;
-  @Input() 
+  @Input()
   set nft(value: Nft|null|undefined) {
     if (this.memberApiSubscription) {
       this.memberApiSubscription.unsubscribe();
@@ -64,12 +64,13 @@ export class NftCardComponent {
     this.isCheckoutOpen = true;
   }
 
-  public isDateInFuture(date?: Timestamp|null): boolean {
-    if (!date) {
+  public isAvailableForSale(): boolean {
+    if (!this.collection) {
       return false;
     }
 
-    return dayjs(date.toDate()).isAfter(dayjs());
+    return ((this.collection.total - this.collection.sold) > 0) && this.collection.approved === true &&
+            this.collection.availableFrom && dayjs(this.collection.availableFrom.toDate()).isBefore(dayjs()) && !this.nft?.owner;
   }
 
   private discount(): number {

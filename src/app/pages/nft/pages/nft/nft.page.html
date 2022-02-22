@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || isDateInFuture((data.nft$ | async)?.availableFrom)"
+            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
                     *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-10" i18n>
                 Buy now
             </button>

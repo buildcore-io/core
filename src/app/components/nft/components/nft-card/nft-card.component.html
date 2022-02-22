@@ -9,7 +9,7 @@
             />
 
             <!-- NFT amount logic has to be added -->
-            <div *ngIf="!fullWidth && collection?.approved && !isDateInFuture(nft?.availableFrom) && !nft?.owner"
+            <div *ngIf="!fullWidth && collection?.approved && isAvailableForSale()"
                 class="absolute top-4 left-4 z-10 rounded-lg bg-white
                     flex items-center justify-center px-3 py-1.5 text-sm font-medium"
                 [ngClass]="getBadgeProperties().className" i18n>
@@ -35,7 +35,7 @@
                     <wen-icon-dollar class="mr-1 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div>
 
-                    <button nz-button nzType="primary" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
+                    <button nz-button nzType="primary" [disabled]="!collection?.approved || !isAvailableForSale()"
                         (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
                 </div>
 
@@ -44,7 +44,7 @@
                     <div class="text-xs font-medium">2 hours left</div>
                 </div> -->
 
-                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || isDateInFuture(nft?.availableFrom)"
+                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || !isAvailableForSale()"
                     (click)="onBuy($event)" class="w-4/5 mt-2 ml-auto" i18n>Buy now</button>
             </ng-container>
 
