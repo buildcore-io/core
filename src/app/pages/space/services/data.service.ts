@@ -282,6 +282,9 @@ export class DataService implements OnDestroy {
     this.awardsRejected$.next(undefined);
     this.awardsDraft$.next(undefined);
     this.awardsCompleted$.next(undefined);
+    this.rejectedCollections$.next(undefined);
+    this.pendingCollections$.next(undefined);
+    this.availableCollections$.next(undefined);
     this.resetMembersSubjects();
   }
 
