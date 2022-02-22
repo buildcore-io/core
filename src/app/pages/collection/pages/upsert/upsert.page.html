@@ -12,8 +12,13 @@
                     'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
                 }"
       >
-        <nz-card [nzBordered]="false" nzTitle="Collection Info">
-          <div class="space-y-4">
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+              nzTitle="Collection info"
+                    nzDescription="Name and description will be included on the Collection. The Royalty is sent to the original creator of an asset when they are sold every time."
+                >
+                </nz-card-meta>
+          <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control>
                 <input
@@ -28,7 +33,7 @@
               <nz-form-control>
                 <textarea
                   nz-input
-                  placeholder="Collection description"
+                  placeholder="Description"
                   nzSize="large"
                   rows="4"
                   [formControl]="descriptionControl"
@@ -88,8 +93,13 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Sales info">
-          <div class="space-y-4">
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+              nzTitle="Sales info"
+                    nzDescription="All times are reflected in user's timezone. For generated NFT and SFT the price is set here and cannot be changed on the NFT."
+                >
+                </nz-card-meta>
+          <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control>
                 <nz-input-group nzSize="large" class="relative">
@@ -140,8 +150,13 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Links">
-          <div class="space-y-4">
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+              nzTitle="Links"
+                    nzDescription="Links will be included on the NFT detail. Use account usernames for Twitter and Discord (name#id)."
+                >
+                </nz-card-meta>
+          <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid URL.">
                 <nz-input-group nzSize="large" [nzPrefix]="prefixURL">
@@ -326,8 +341,13 @@
           </nz-form-item>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Collection Type">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Collection Type"
+          nzDescription="Each type has different characteristics. This cannot be changed after creation."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group
                 class="wen-radio-group"
@@ -354,7 +374,7 @@
         <nz-card [nzBordered]="false">
           <nz-card-meta
             nzTitle="Banner"
-            [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Upload image.'"
+            [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Upload banner image for you Collection.'"
           >
           </nz-card-meta>
 
@@ -417,8 +437,13 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Category">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Category"
+          nzDescription="Category is used when filtering content."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Category.">
               <nz-select
                 class="w-full"
@@ -439,8 +464,13 @@
           </nz-form-item>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Collection Setup">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Collection Setup"
+          nzDescription="Who has access to a given collection."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group
                 class="wen-radio-group"
