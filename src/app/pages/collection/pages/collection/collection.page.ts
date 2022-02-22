@@ -241,6 +241,10 @@ export class CollectionPage implements OnInit, OnDestroy {
     return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
   }
 
+  public isOwnedTab(): boolean {
+    return this.hotTags.indexOf(HOT_TAGS.OWNED) > -1;
+  }
+
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.
     if (!this.data.nft$.value || !this.data.collection$.value) {
