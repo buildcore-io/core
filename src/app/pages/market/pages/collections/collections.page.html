@@ -6,43 +6,51 @@
       [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
       size="large">
     </wen-select-space>
-    <div class="flex items-center justify-between w-full lg:mt-12">
-        <div class="flex items-center">
-            <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-                <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-                (nzCheckedChange)="handleChange(tag)">
-                {{ tag }}
-                </nz-tag>
-            </ng-container>
+    <div class="flex items-start lg:items-center justify-between w-full lg:mt-12">
+        <div class="flex items-start flex-col lg:flex-row lg:items-center">
+            <div>
+                <div class="text-xs font-medium text-foregrounds-secondary mb-2" i18n>NFTs</div>
+                <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
+                    <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
+                    (nzCheckedChange)="handleChange(tag)">
+                    {{ tag }}
+                    </nz-tag>
+                </ng-container>
+    
+                <ng-template #hotTagsMobileBlock>
+                    <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
+                        <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+                    </nz-select>
+                </ng-template>
+            </div>
 
-            <ng-template #hotTagsMobileBlock>
-                <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-                    <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+            <div *ngIf="deviceService.isDesktop$ | async">
+                <div class="text-xs font-medium text-foregrounds-secondary mb-2" i18n>Space</div>
+                <wen-select-space
+                    class="block w-44"
+                    [formControl]="spaceControl"
+                    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+                    size="small">
+                </wen-select-space>
+            </div>
+
+            <div class="mt-4 lg:mt-0 lg:ml-4">
+                <div class="text-xs font-medium text-foregrounds-secondary mb-2" i18n>Category</div>
+                <nz-select
+                    class="w-44"
+                    nzSize="small"
+                    nzPlaceHolder="Category"
+                    [nzDropdownStyle]="{ 'min-width': '128px', 'max-width': '100%' }"
+                    [formControl]="categoryControl"
+                    >
+                    <nz-option
+                        *ngFor="let cc of categories"
+                        [nzLabel]="cc"
+                        [nzValue]="cc"
+                    >
+                    </nz-option>
                 </nz-select>
-            </ng-template>
-
-            <wen-select-space
-                *ngIf="deviceService.isDesktop$ | async"
-                class="block w-44"
-                [formControl]="spaceControl"
-                [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-                size="small">
-            </wen-select-space>
-
-            <nz-select
-                class="ml-4 w-44"
-                nzSize="small"
-                nzPlaceHolder="Category"
-                [nzDropdownStyle]="{ 'min-width': '128px', 'max-width': '100%' }"
-                [formControl]="categoryControl"
-                >
-                <nz-option
-                    *ngFor="let cc of categories"
-                    [nzLabel]="cc"
-                    [nzValue]="cc"
-                >
-                </nz-option>
-            </nz-select>
+            </div>
         </div>
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
             <nz-select class="w-48 wen-sort-button" [nzCustomTemplate]="defaultTemplate"
@@ -57,7 +65,7 @@
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>
-            <div class="relative">
+            <div class="relative mt-6">
                 <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
                   <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                   <nz-option nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>

@@ -50,14 +50,22 @@ export class CollectionCardComponent {
     return CollectionAccess;
   }
 
-  // Needs to be implemented
-  public getStatus(): string {
+  public getStatusProperties(): { label: string; className: string} {
     if (this.collection?.approved !== true && this.collection?.rejected !== true) {
-      return 'Pending approval';
+      return {
+        label: 'Pending approval',
+        className: 'bg-tag-blue'
+      };
     } else if (this.collection?.approved) {
-      return 'Available';
+      return {
+        label: 'Available',
+        className: 'bg-tag-green'
+      };
     } else {
-      return 'Rejected';
+      return {
+        label: 'Rejected',
+        className: 'bg-tag-red'
+      };
     }
   }
 }

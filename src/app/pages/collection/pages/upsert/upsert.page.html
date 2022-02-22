@@ -88,7 +88,7 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Trade info">
+        <nz-card [nzBordered]="false" nzTitle="Sales info">
           <div class="space-y-4">
             <nz-form-item>
               <nz-form-control>
@@ -371,6 +371,7 @@
                   (nzChange)="uploadChangeBanner($event)"
                   nzFileType="image/png,image/jpeg"
                   [nzFileList]="uploadedBanner ? [uploadedBanner] : []"
+                  [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                 >
                   <ng-container>
                     <i class="upload-icon" nz-icon nzType="upload"></i>
@@ -405,6 +406,7 @@
                         (nzChange)="uploadChangePlaceholder($event)"
                         nzFileType="image/png,image/jpeg,image/webp"
                         [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
+                        [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                       >
                           <ng-container>
                               <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png/webp</span>

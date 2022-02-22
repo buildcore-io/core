@@ -36,7 +36,7 @@
 
             <nz-card [nzBordered]="false">
               <nz-card-meta
-              nzTitle="Trade info"
+              nzTitle="Sales info"
                     nzDescription="All times are reflected in PST timezone."
                 >
                 </nz-card-meta>
@@ -276,6 +276,7 @@
                                 (nzChange)="uploadMediaChange($event)"
                                 nzFileType="image/png,image/jpeg,image/webp"
                                 [nzFileList]="uploadedFile ? [uploadedFile] : []"
+                                [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                             >
                                 <ng-container>
                                     <i class="upload-icon" nz-icon nzType="upload"></i>
