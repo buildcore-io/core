@@ -79,7 +79,11 @@ export class NFTsPage implements OnInit, OnDestroy {
 
     // Init listen.
     this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {

@@ -50,7 +50,11 @@ export class MembersPage implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.listen();
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
@@ -74,7 +78,8 @@ export class MembersPage implements OnInit, OnDestroy {
         }
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
-        this.listen();
+        // We use search to trigger as combination not allowed.
+        this.filter.search$.next('');
     });
   }
 

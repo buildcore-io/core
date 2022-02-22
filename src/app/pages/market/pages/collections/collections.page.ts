@@ -83,7 +83,11 @@ export class CollectionsPage implements OnInit, OnDestroy {
         this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
       }
 
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
