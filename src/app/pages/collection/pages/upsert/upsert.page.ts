@@ -401,10 +401,12 @@ export class UpsertPage implements OnInit, OnDestroy {
     }
 
     if (mode === 'edit') {
-      delete data.spaceControl;
-      delete data.typeControl;
-      delete data.categoryControl;
+      delete data.space;
+      delete data.type;
+      delete data.category;
       delete data.access;
+      delete data.price;
+      delete data.availableFrom;
     }
 
     delete data.royaltiesSpaceDifferent;
