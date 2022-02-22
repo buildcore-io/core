@@ -6,7 +6,9 @@ import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { WEN_NAME } from './../../../../../../functions/interfaces/config';
+import { debounceTime } from 'rxjs';
+import { FilterService } from '../../services/filter.service';
+import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from './../../../../../../functions/interfaces/config';
 
 @UntilDestroy()
 @Component({
@@ -25,6 +27,7 @@ export class MarketPage implements OnInit, OnDestroy {
   public isSearchInputFocused = false;
 
   constructor(
+    public filter: FilterService,
     private titleService: Title,
     public deviceService: DeviceService,
     private router: Router
@@ -34,7 +37,10 @@ export class MarketPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Marketplace');
-
+    this.filterControl.setValue(this.filter.search$.value);
+    this.filterControl.valueChanges.pipe(
+      debounceTime(GLOBAL_DEBOUNCE_TIME)
+    ).subscribe(this.filter.search$);
     this.setSelectedSection();
     this.router.events
       .pipe(untilDestroyed(this))
