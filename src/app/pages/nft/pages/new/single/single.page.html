@@ -8,8 +8,13 @@
                 'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
             }"
         >
-            <nz-card [nzBordered]="false" nzTitle="Name">
-                <div class="space-y-4">
+            <nz-card [nzBordered]="false">
+              <nz-card-meta
+              nzTitle="NFT info"
+                    nzDescription="Name and description will be included on the NFT."
+                >
+                </nz-card-meta>
+                <div class="mt-4 space-y-4">
                     <nz-form-item>
                         <nz-form-control>
                             <input
@@ -37,7 +42,7 @@
             <nz-card [nzBordered]="false">
               <nz-card-meta
               nzTitle="Sales info"
-                    nzDescription="All times are reflected in user's timezone."
+                    nzDescription="All times are reflected in user's timezone. For generated NFT and SFT the price is set per collection and cannot be changed here."
                 >
                 </nz-card-meta>
 
@@ -255,11 +260,12 @@
             </nz-card>
         </div>
 
-        <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
+        <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+        [style.max-width]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
             <nz-card [nzBordered]="false">
                 <nz-card-meta
-                    nzTitle="Img"
-                    nzDescription="Upload image of your NFT."
+                    nzTitle="NFT Image"
+                    nzDescription="Upload image of your NFT. File types supported: PNG, JPEG, WEBP. Max size: 20 MB."
                 >
                 </nz-card-meta>
 
@@ -290,8 +296,13 @@
                 </div>
             </nz-card>
 
-            <nz-card [nzBordered]="false" nzTitle="Collection">
-                <nz-form-item>
+            <nz-card [nzBordered]="false">
+              <nz-card-meta
+              nzTitle="Collection"
+                    nzDescription="Select one of your collections to display this NFT."
+                >
+                </nz-card-meta>
+                <nz-form-item class="mt-4">
                     <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
                         <nz-select
                             class="w-full"
