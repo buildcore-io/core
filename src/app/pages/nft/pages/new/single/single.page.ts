@@ -37,6 +37,7 @@ export class SinglePage implements OnInit {
   public stats: FormArray;
   public nftForm: FormGroup;
   public uploadedFile?: NzUploadFile | null;
+  public previewNft = null;
 
   constructor(
     public deviceService: DeviceService,
@@ -247,6 +248,14 @@ export class SinglePage implements OnInit {
         this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);
       });
     });
+  }
+
+  public preview(): void {
+    if (!this.validateForm()) {
+      return;
+    }
+
+    this.previewNft = this.formatSubmitData({...this.nftForm.value});
   }
 
   public trackByValue(index: number, item: any): number {
