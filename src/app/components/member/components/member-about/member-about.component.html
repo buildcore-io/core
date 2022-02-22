@@ -54,7 +54,7 @@
     <h3 class="flex items-center justify-between">
       Recently joined spaces
       <a i18n class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
-        [routerLink]="">
+        [routerLink]="['/member', (data.member$ | async)?.uid, 'spaces']">
         All
         <wen-icon-angle-right></wen-icon-angle-right>
       </a>
