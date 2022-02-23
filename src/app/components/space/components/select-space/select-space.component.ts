@@ -110,6 +110,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
   }
 
   private setShownSpaces(): void {
-    this.shownSpaces = this.spaces.filter(space => space.label.toLowerCase().includes(this.searchControl.value.toLowerCase()));
+    this.shownSpaces = this.spaces.filter(space =>
+      space.label.toLowerCase().includes(this.searchControl.value.toLowerCase()));
   }
 }
