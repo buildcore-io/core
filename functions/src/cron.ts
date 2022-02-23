@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL } from '../../functions/interfaces/models/base';
@@ -19,6 +20,27 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
         await admin.firestore().collection(COL.AWARD).doc(t.data().uid).update({
           completed: true
         });
+    }
+  }
+
+  // Finished.
+  return null;
+});
+
+export const hidePlaceholderAfterSoldOut: functions.CloudFunction<any> = functions.pubsub.schedule('every 5 minutes').onRun(async () => {
+  const qry: any = await admin.firestore().collection(COL.NFT)
+                    .where('sold', '==', true)
+                    .where('placeholderNft', '==', true)
+                    .where('availableFrom', '==', null)
+                    .where('hidden', '==', false)
+                    .where('owner', '==', null).get();
+  if (qry.size > 0) {
+    for (const t of qry.docs) {
+      if (t.data().soldOn && t.data().soldOn.toDate() && dayjs(t.data().soldOn.toDate()).isAfter(dayjs().add(24, 'hours'))) {
+        await admin.firestore().collection(COL.NFT).doc(t.data().uid).update({
+          hidden: true
+        });
+      }
     }
   }
 

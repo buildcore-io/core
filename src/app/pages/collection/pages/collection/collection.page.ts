@@ -104,10 +104,14 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
     });
 
-    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+    this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       if (this.data.collectionId) {
         this.listenToCollection(this.data.collectionId);
       }
+    });
+
+    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
+      this.filter.selectedSort$.next(o);
     });
   }
 

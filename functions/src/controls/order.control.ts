@@ -186,10 +186,18 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   // Lock NFT
   await admin.firestore().runTransaction(async (transaction) => {
-    transaction.update(refNft, {
-      locked: true,
-      lockedBy: tranId
-    });
+    const sfDoc: any = await transaction.get(refNft);
+    if (sfDoc.data()) {
+      // Was locked by another transaction.
+      if (sfDoc.data().locked) {
+        throw throwInvalidArgument(WenError.nft_locked_for_sale);
+      }
+
+      transaction.update(refNft, {
+        locked: true,
+        lockedBy: tranId
+      });
+    }
   });
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await refTran.set(<Transaction>{

@@ -371,6 +371,7 @@ class ProcessingService {
             locked: false,
             lockedBy: null,
             hidden: false,
+            soldOn: admin.firestore.Timestamp.now(),
             availableFrom: null
           });
         }
@@ -393,6 +394,7 @@ class ProcessingService {
               sold: true,
               owner: null,
               availableFrom: null,
+              soldOn: admin.firestore.Timestamp.now(),
               hidden: false
             });
           }

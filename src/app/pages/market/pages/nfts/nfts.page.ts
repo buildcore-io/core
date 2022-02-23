@@ -119,7 +119,7 @@ export class NFTsPage implements OnInit, OnDestroy {
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.topOwned(last, search);
       } else {
-        return this.nftApi.top(last, search);
+        return this.nftApi.topApproved(last, search);
       }
     } else {
       if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {

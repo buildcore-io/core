@@ -65,6 +65,12 @@ export class NftApi extends BaseApi<Nft> {
     }));
   }
 
+  public topApproved(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('approved', '==', true);
+    });
+  }
+
   public highToLowInCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('collection', '==', collection).where('hidden', '==', false);

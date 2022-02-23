@@ -9,7 +9,7 @@
             />
 
             <!-- NFT amount logic has to be added -->
-            <div *ngIf="!fullWidth && collection?.approved && isAvailableForSale()"
+            <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || nft?.placeholderNft)"
                 class="absolute top-4 left-4 z-10 rounded-lg bg-white
                     flex items-center justify-center px-3 py-1.5 text-sm font-medium"
                 [ngClass]="getBadgeProperties().className" i18n>
