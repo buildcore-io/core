@@ -22,6 +22,8 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import {
   DISCORD_REGEXP,
+  MAX_IOTA_AMOUNT,
+  MIN_IOTA_AMOUNT,
   TWITTER_REGEXP,
   URL_REGEXP
 } from 'functions/interfaces/config';
@@ -38,7 +40,7 @@ import {
   NzUploadFile,
   NzUploadXHRArgs
 } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import {
@@ -96,10 +98,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     Validators.required,
   );
   public priceControl: FormControl = new FormControl('', [
-    Validators.required,
-    Validators.min(0),
-    Validators.max(1000),
-  ]);
+    Validators.required
+  ]);;
   public unitControl: FormControl = new FormControl(
     PRICE_UNITS[0],
     Validators.required,
@@ -122,6 +122,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     Award[] | undefined
   >(undefined);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
+  public minimumPrice = MIN_IOTA_AMOUNT;
+  public maximumPrice = MAX_IOTA_AMOUNT;
   private awardSub?: Subscription;
 
   constructor(
@@ -245,6 +247,14 @@ export class UpsertPage implements OnInit, OnDestroy {
             .listenSpace(val, AwardFilter.ALL)
             .subscribe(this.awards$);
         }
+      });
+    
+    merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        const value = Number(this.priceControl.value) * (<Units>this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
+        this.priceControl.setErrors(errors);
       });
   }
 

@@ -12,11 +12,12 @@ import { Units } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import * as dayjs from 'dayjs';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { of, Subscription } from 'rxjs';
+import { merge, of, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -38,6 +39,8 @@ export class SinglePage implements OnInit {
   public nftForm: FormGroup;
   public uploadedFile?: NzUploadFile | null;
   public previewNft = null;
+  public minimumPrice = MIN_IOTA_AMOUNT;
+  public maximumPrice = MAX_IOTA_AMOUNT;
 
   constructor(
     public deviceService: DeviceService,
@@ -111,6 +114,14 @@ export class SinglePage implements OnInit {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
+
+    merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        const value = Number(this.priceControl.value) * (<Units>this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
+        this.priceControl.setErrors(errors);
+      });
   }
 
   public uploadMediaFile(item: NzUploadXHRArgs): Subscription {
