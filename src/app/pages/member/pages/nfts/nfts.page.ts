@@ -6,9 +6,10 @@ import { DEFAULT_COLLECTION, SelectCollectionOption } from '@components/collecti
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ParticipantsPage } from '@pages/proposal/pages/participants/participants.page';
 import { Collection } from 'functions/interfaces/models';
 import { Nft } from 'functions/interfaces/models/nft';
-import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, map, Observable, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -36,12 +37,16 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.filterControl.valueChanges.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
+    this.filterControl.valueChanges.pipe(untilDestroyed(this), debounceTime(ParticipantsPage.DEBOUNCE_TIME)).subscribe((val: any) => {
       if (val && val.length > 0) {
         this.listen(val);
       } else {
         this.listen();
       }
+    });
+
+    this.collectionControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+      this.filterControl.setValue(this.filterControl.value);
     });
 
     this.data.member$.pipe(untilDestroyed(this)).subscribe((obj) => {
@@ -65,7 +70,11 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Nft[]> {
-    return this.nftApi.topMember(this.data.member$.value!.uid,last, search);
+    if (this.collectionControl.value !== DEFAULT_COLLECTION.value) {
+      return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value!.uid, last, search);
+    } else {
+      return this.nftApi.topMember(this.data.member$.value!.uid, last, search);
+    }
   }
 
   public onScroll(): void {
