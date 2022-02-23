@@ -12,10 +12,10 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
+import { ALPHANUMERIC_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
+import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
 import { merge, Observable, of, Subscription } from 'rxjs';
 import { StepType } from '../new.page';
@@ -49,6 +49,8 @@ export class MultiplePage {
   public availableFrom?: Date | null;
   public nfts: any[] = [];
   public nftErrors: any[] = [];
+  public allowedFileFormats = 'jpg/jpeg/png/webp';
+  public uploadFilter: UploadFilter[] = [];
   private usedFileNames = new Set<string>();
   public nftObject:  NFTObject = {
     media: {
@@ -158,6 +160,15 @@ export class MultiplePage {
     this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
+
+    this.uploadFilter = [
+      {
+        name: 'filenameFilter',
+        fn: (fileList: NzUploadFile[]): NzUploadFile[] | Observable<NzUploadFile[]> => {
+          return fileList.filter((file: NzUploadFile) => this.isAlphaNumericFilename(file.name));
+        }
+      }
+    ];
   }
 
   public uploadMultipleFiles(item: NzUploadXHRArgs): Subscription {
@@ -176,6 +187,8 @@ export class MultiplePage {
   public uploadMultipleChange(event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       this.uploadedFiles.push(event.file);
+    } else if (event.type === 'removed') {
+      this.uploadedFiles = this.uploadedFiles.filter((f: NzUploadFile) => f.name !== event.file.name);
     }
   }
 
@@ -372,5 +385,12 @@ export class MultiplePage {
     this.nfts = [];
     this.nftErrors = [];
     this.usedFileNames.clear();
+  }
+
+  private isAlphaNumericFilename(str: string): boolean {
+    const dotIndex = str.indexOf('.');
+    return dotIndex > -1 &&
+      ALPHANUMERIC_REGEXP.test(str.substring(0, dotIndex)) &&
+      this.allowedFileFormats.split('/').includes(str.substring(dotIndex + 1));
   }
 }
