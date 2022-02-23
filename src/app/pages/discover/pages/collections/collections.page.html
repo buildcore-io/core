@@ -8,7 +8,7 @@
     </wen-select-space>
 
     <div class="flex justify-between items-center lg:mt-12 w-full">
-        <div class="flex items-center w-full">
+        <div class="flex items-center w-full lg:w-max">
             <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
                 <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
                     (nzCheckedChange)="handleChange(tag)">
@@ -32,7 +32,7 @@
         </div>
       
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate" 
+            <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate" 
                 [formControl]="sortControl" nz-tooltip>
                 <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                 <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
