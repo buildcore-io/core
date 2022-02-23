@@ -242,7 +242,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public isOwnedTab(): boolean {
-    return this.hotTags.indexOf(HOT_TAGS.OWNED) > -1;
+    return this.selectedTags$.value.indexOf(HOT_TAGS.OWNED) > -1;
   }
 
   public onScroll(): void {
