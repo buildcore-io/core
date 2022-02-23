@@ -39,7 +39,7 @@ export class MembersPage implements OnInit, OnDestroy {
     private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
-    this.spaceControl = new FormControl(storageService.selectedSpace.getValue());
+    this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.includeAlliancesControl = new FormControl(storageService.isIncludeAlliancesChecked.getValue());
     this.spaceForm = new FormGroup({
       space: this.spaceControl,
@@ -59,6 +59,7 @@ export class MembersPage implements OnInit, OnDestroy {
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
       if (val && val.length > 0) {
+        this.spaceControl.setValue(DEFAULT_SPACE.value);
         this.listen(val);
       } else {
         this.listen();
@@ -78,8 +79,9 @@ export class MembersPage implements OnInit, OnDestroy {
         }
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
-        // We use search to trigger as combination not allowed.
-        this.filter.search$.next('');
+        if (o.space !== DEFAULT_SPACE.value) {
+          this.filter.filterControl.setValue('');
+        }
     });
   }
 

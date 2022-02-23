@@ -55,7 +55,7 @@ export class ActivityPage implements OnInit {
     // Init empty.
     this.initChart([]);
     this.spaceForm = new FormGroup({
-      space: new FormControl(storageService.selectedSpace.getValue()),
+      space: new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value),
       includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
   }

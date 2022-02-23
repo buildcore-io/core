@@ -45,7 +45,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     private cacheService: CacheService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
-    this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue());
+    this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
   }
 
   public handleChange(tag: string): void {

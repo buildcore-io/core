@@ -52,7 +52,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
     private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
-    this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue());
+    this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.categoryControl = new FormControl(AddedCategories.ALL);
   }
 
