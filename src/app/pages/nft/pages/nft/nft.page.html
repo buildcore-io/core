@@ -97,12 +97,27 @@
                 </div>
             </div>
 
-            <span class="mt-10" nz-tooltip [nzTooltipTitle]="(!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)) ? 'Not Available for Sale.' : undefined">
-              <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+            <!-- TODO missing logic for this banner -->
+            <div *ngIf="!isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
+                <wen-icon-sad></wen-icon-sad>
+                <div class="font-medium ml-3.5">
+                    Sale hasn't started yet
+                </div>
+            </div>
+
+            <div *ngIf="!(data.collection$ | async)?.approved"
+                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
+                <wen-icon-sad></wen-icon-sad>
+                <div class="font-medium ml-3.5">
+                    Collection pending approval
+                </div>
+            </div>
+
+              <button class="mt-10" nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
                       *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" i18n>
                   Buy now
               </button>
-            </span>
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
