@@ -1,15 +1,19 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router, RoutesRecognized } from '@angular/router';
 import { ROUTER_UTILS } from "@core/utils/router.utils";
-import { filter, pairwise, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, pairwise, Subscription } from 'rxjs';
+
+export interface NavigationObject {
+  text: string;
+  url: string[];
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class NavigationService implements OnDestroy {
   private subsRouter$?: Subscription;
-  private returnUrl: string[][] = [['/discover']];
-  private returnText: string[] = ['Discover'];
+  private navigationState = new BehaviorSubject<NavigationObject[]>([]);
 
   constructor(
     private router: Router
@@ -25,8 +29,12 @@ export class NavigationService implements OnDestroy {
       const targetUrl = events[1].urlAfterRedirects;
       this.returnableUrl().forEach((o) => {
         if (prevUrl.startsWith('/' + o.url) && !targetUrl.startsWith('/' + o.url)) {
-          this.returnUrl.push(prevUrl.split('/'));
-          this.returnText.push(o.text);
+          this.pushState({ text: o.text, url: prevUrl.split('/') });
+        }
+      });
+      this.forwardableUrl().forEach((o) => {
+        if (!prevUrl.startsWith('/' + o.url) && targetUrl.startsWith('/' + o.url)) {
+          this.pushState({ text: o.text, url: prevUrl.split('/') });
         }
       });
     });
@@ -44,19 +52,55 @@ export class NavigationService implements OnDestroy {
     ];
   }
 
-  public getLastUrl(): string[] {
-    return this.returnUrl[this.returnUrl.length - 1];
+  private forwardableUrl(): {url: string, text: string}[] {
+    return [
+      { url: `${ROUTER_UTILS.config.collection.root}/${ROUTER_UTILS.config.collection.edit}`, text: 'Collection' },
+    ]
   }
 
-  public getTitle(): string {
-    return 'Back ' + (this.returnText[this.returnText.length - 1] || '');
+  public getLastUrl(): string[] {
+    const value = this.navigationState.getValue();
+    return value[value.length - 1]?.url || [''];
+  }
+
+  public getTitle(): Observable<string> {
+    return this.navigationState
+      .pipe(
+        map(state => `Back ${state.length > 0 ? state[state.length - 1].text : ''}`)
+      );
   }
 
   public goBack(): void {
+    const prevUrl = this.router.url;
     const url = [...this.getLastUrl()];
-    this.returnUrl.splice(this.returnUrl.length - 1);
-    this.returnText.splice(this.returnText.length - 1);
+    this.popState();
     this.router.navigate(url);
+    setTimeout(() => {
+      if (this.getLastUrl().join('/') === prevUrl) {
+        this.popState();
+      }
+    }, 0);
+  }
+
+  private pushState(nav: NavigationObject): void {
+    this.navigationState.next([...this.navigationState.getValue(), nav]);
+  }
+
+  private popState(): NavigationObject | null {
+    const value = this.navigationState.getValue();
+    if (value.length > 0) {
+      this.navigationState.next(value.slice(0, value.length - 1));
+      return value[value.length - 1];
+    }
+    return null;
+  }
+
+  private lastState(): NavigationObject | null {
+    const value = this.navigationState.getValue();
+    if (value.length > 0) {
+      return value[value.length - 1];
+    }
+    return null;
   }
 
   public ngOnDestroy(): void {

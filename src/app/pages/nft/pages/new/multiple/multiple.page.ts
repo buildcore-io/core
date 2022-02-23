@@ -201,10 +201,11 @@ export class MultiplePage {
 
         const filteredObj =
           Object.keys(obj)
-            .filter((key: string) => obj[key].label && obj[key].value)
+            .filter((key: string) => obj[key].label && obj[key].value);
 
         if (filteredObj.length > 0) {
-          res.properties = filteredObj.reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
+          res.properties = filteredObj.reduce((acc: any, key: string) =>
+            ({ ...acc, [obj[key].label.replace(/\s/g, '').toLowerCase()]: obj[key] }), {});
         }
     }
 
@@ -230,7 +231,8 @@ export class MultiplePage {
           .filter((key: string) => obj[key].label && obj[key].value)
 
       if (filteredObj.length > 0) {
-        res.stats = filteredObj.reduce((acc: any, key: string) => ({ ...acc, [key]: obj[key] }), {});
+        res.stats = filteredObj.reduce((acc: any, key: string) =>
+          ({ ...acc, [obj[key].label.replace(/\s/g, '').toLowerCase()]: obj[key] }), {});
       }
     }
 
