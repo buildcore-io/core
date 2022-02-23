@@ -152,8 +152,11 @@ export class HeaderComponent implements OnInit {
       return;
     }
 
-    const nft: Nft | undefined = await firstValueFrom(this.nftApi.listen(t?.payload.nft));
+    let nft: Nft | undefined = await firstValueFrom(this.nftApi.listen(t?.payload.nft));
     const collection: Collection | undefined = await firstValueFrom(this.collectionApi.listen(t?.payload.collection));
+    if (collection?.placeholderNft) {
+      nft = await firstValueFrom(this.nftApi.listen(collection.placeholderNft));
+    }
     if (nft && collection) {
       this.currentCheckoutCollection = collection;
       this.currentCheckoutNft = nft;

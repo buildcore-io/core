@@ -152,6 +152,15 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     throw throwInvalidArgument(WenError.space_must_have_validated_address);
   }
 
+  // Validate there isn't any order in progress.
+  const orderInProgress: any = await admin.firestore().collection(COL.TRANSACTION).where('reconciled', '==', false)
+                              .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+                              .where('type', '==', TransactionType.ORDER).where('void', '==', false).get();
+
+  if (orderInProgress.size > 0) {
+    throw throwInvalidArgument(WenError.you_have_currently_another_order_in_progress);
+  }
+
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
