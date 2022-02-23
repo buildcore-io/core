@@ -35,17 +35,16 @@
                     <wen-icon-dollar class="mr-1 text-app-gray-400"></wen-icon-dollar>
                     <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div>
 
-                    <button nz-button nzType="primary" [disabled]="!collection?.approved || !isAvailableForSale()"
-                        (click)="onBuy($event)" class="ml-auto" i18n>Buy now</button>
+                    <span class="ml-auto" nz-tooltip [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
+                      <button nz-button nzType="primary" [disabled]="!collection?.approved || !isAvailableForSale()"
+                          (click)="onBuy($event)" i18n>Buy now</button>
+                    </span>
                 </div>
 
-                <!-- <div class="flex items-center mt-2" *ngIf="true && (deviceService.isDesktop$ | async)">
-                    <wen-icon-time class="mr-3 text-app-gray-400"></wen-icon-time>
-                    <div class="text-xs font-medium">2 hours left</div>
-                </div> -->
-
-                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || !isAvailableForSale()"
-                    (click)="onBuy($event)" class="w-4/5 mt-2 ml-auto" i18n>Buy now</button>
+                <span class="w-4/5 mt-2 ml-auto" nz-tooltip [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
+                  <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || !isAvailableForSale()"
+                      (click)="onBuy($event)" i18n>Buy now</button>
+                </span>
             </ng-container>
 
             <ng-template #ownerBlock>

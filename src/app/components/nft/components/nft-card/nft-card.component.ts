@@ -70,7 +70,7 @@ export class NftCardComponent {
     }
 
     return ((this.collection.total - this.collection.sold) > 0) && this.collection.approved === true &&
-            this.collection.availableFrom && dayjs(this.collection.availableFrom.toDate()).isBefore(dayjs()) && !this.nft?.owner;
+            !!this.nft?.availableFrom && dayjs(this.nft.availableFrom.toDate()).isBefore(dayjs()) && !this.nft?.owner;
   }
 
   private discount(): number {

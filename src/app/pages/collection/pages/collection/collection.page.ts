@@ -135,7 +135,13 @@ export class CollectionPage implements OnInit, OnDestroy {
     );
     this.subscriptions$.push(
       this.nftApi.lastCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
-        return obj[0];
+        if (obj[0] && this.isAvailableTab() && (obj[0]?.availableFrom === null || !dayjs(obj[0].availableFrom.toDate()).isBefore(dayjs()) || obj[0].owner)) {
+          return undefined;
+        } else if (this.isOwnedTab()) {
+          return undefined;
+        } else {
+          return obj[0];
+        }
       })).subscribe(this.data.firstNft$)
     );
   }
@@ -241,6 +247,10 @@ export class CollectionPage implements OnInit, OnDestroy {
     return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
   }
 
+  public isAvailableTab(): boolean {
+    return this.selectedTags$.value.indexOf(HOT_TAGS.AVAILABLE) > -1;
+  }
+
   public isOwnedTab(): boolean {
     return this.selectedTags$.value.indexOf(HOT_TAGS.OWNED) > -1;
   }
@@ -275,11 +285,11 @@ export class CollectionPage implements OnInit, OnDestroy {
       return 0;
     }
 
-    if (collection.type === CollectionType.CLASSIC) {
+    if (collection.type === CollectionType.CLASSIC || this.isOwnedTab()) {
       return nft.length;
     } else {
       let total: number = nft.length + (collection.total - collection.sold);
-      if (total > 0) {
+      if (this.data.firstNft$.value && (collection.total - collection.sold) > 0) {
         total = total - 1;
       }
 

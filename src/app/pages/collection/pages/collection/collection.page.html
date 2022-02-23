@@ -212,7 +212,7 @@
 
             <!-- Place holder NFT MUST be always first -->
             <wen-nft-card
-              *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNft$ | async) && !isOwnedTab()" [collection]="(data.collection$ | async)"
+              *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNft$ | async)" [collection]="(data.collection$ | async)"
               [nft]="(data.firstNft$ | async)">
             </wen-nft-card>
 

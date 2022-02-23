@@ -8,6 +8,7 @@ import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftCheckoutModule } from '../nft-checkout/nft-checkout.module';
 import { NftCardComponent } from './nft-card.component';
 
@@ -27,6 +28,7 @@ import { NftCardComponent } from './nft-card.component';
     NftCheckoutModule,
     NzNotificationModule,
     NzAvatarModule,
+    NzToolTipModule,
     IpfsAvatarModule
   ],
   exports:[

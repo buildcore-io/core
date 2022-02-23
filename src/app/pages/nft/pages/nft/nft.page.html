@@ -97,10 +97,12 @@
                 </div>
             </div>
 
-            <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
-                    *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" class="mt-10" i18n>
-                Buy now
-            </button>
+            <span class="mt-10" nz-tooltip [nzTooltipTitle]="(!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)) ? 'Not Available for Sale.' : undefined">
+              <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                      *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" i18n>
+                  Buy now
+              </button>
+            </span>
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>

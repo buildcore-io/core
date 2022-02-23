@@ -63,7 +63,8 @@ export const WenError = {
   no_more_nft_available_for_sale: { code: 2057, key: 'No more NFT available for sale.' },
   nft_placeholder_cant_be_purchased: { code: 2056, key: 'Can\'t buy placeholder NFT.' },
   collection_must_be_approved: { code: 2058, key: 'Collection must be approved.' },
-  you_dont_have_required_badge: { code: 2006, key: 'You don\'t have required badge.' },
-  you_must_be_the_creator_of_this_collection: { code: 2027, key: 'You must be the creator of this collection.' },
+  you_dont_have_required_badge: { code: 2059, key: 'You don\'t have required badge.' },
+  you_must_be_the_creator_of_this_collection: { code: 2060, key: 'You must be the creator of this collection.' },
+  you_have_currently_another_order_in_progress: { code: 2061, key: 'You have currently another order in progress.' },
 }
 
