@@ -1,6 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
+import { MemberApi } from '@api/member.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { BADGE_TO_CREATE_COLLECTION } from 'functions/interfaces/config';
 import { Award, Collection } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
@@ -23,6 +25,7 @@ export class DataService implements OnDestroy {
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isAllowCollectionCreation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public guardians$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public proposalsDraft$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public proposalsActive$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
@@ -57,6 +60,7 @@ export class DataService implements OnDestroy {
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,
+    private memberApi: MemberApi,
     private proposalApi: ProposalApi,
     private collectionApi: CollectionApi
   ) {
@@ -113,6 +117,9 @@ export class DataService implements OnDestroy {
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isPendingMemberWithinSpace(spaceId, memberId).subscribe(this.isPendingMemberWithSpace$));
+
+    // Temporary limit collection creation.
+    this.subscriptionsRelatedRecords$.push(this.memberApi.hasBadge(memberId, BADGE_TO_CREATE_COLLECTION).subscribe(this.isAllowCollectionCreation$));
   }
 
   public listenToCompletedProposals(spaceId: string): void {

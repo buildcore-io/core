@@ -5,6 +5,7 @@ import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
+import { TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, uOn } from "../utils/dateTime.utils";
@@ -13,7 +14,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, TWITTER_REGEXP } from './../../interfaces/config';
+import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, TWITTER_REGEXP } from './../../interfaces/config';
 import { Categories, Collection, CollectionAccess, CollectionType } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
@@ -79,6 +80,17 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(creator).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
+
+  // Temporary. They must have special badge.
+  const qry: any = await admin.firestore().collection(COL.TRANSACTION)
+              .where('type', '==', TransactionType.BADGE)
+              .where('payload.award', '==', BADGE_TO_CREATE_COLLECTION)
+              .where('member', '==', creator).get();
+  if (qry.size === 0) {
+    throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+  }
+  // END
+
 
   // Validate royalty space exists
   const refSpaceRoyalty: any = admin.firestore().collection(COL.SPACE).doc(params.body.royaltiesSpace);

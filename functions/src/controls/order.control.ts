@@ -68,7 +68,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     let includes = false;
     const qry: any = await admin.firestore().collection(COL.TRANSACTION)
                .where('type', '==', TransactionType.BADGE)
-               .where('member', '==', owner);
+               .where('member', '==', owner).get();
     if (qry.size > 0) {
       for (const t of qry.docs) {
         if (docCollectionData.accessAwards.includes(t.data().payload.award)) {

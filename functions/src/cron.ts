@@ -36,7 +36,7 @@ export const hidePlaceholderAfterSoldOut: functions.CloudFunction<any> = functio
                     .where('owner', '==', null).get();
   if (qry.size > 0) {
     for (const t of qry.docs) {
-      if (t.data().soldOn && t.data().soldOn.toDate() && dayjs(t.data().soldOn.toDate()).isAfter(dayjs().add(24, 'hours'))) {
+      if (t.data().soldOn && t.data().soldOn.toDate() && dayjs(t.data().soldOn.toDate()).isBefore(dayjs().add(24, 'hours'))) {
         await admin.firestore().collection(COL.NFT).doc(t.data().uid).update({
           hidden: true
         });

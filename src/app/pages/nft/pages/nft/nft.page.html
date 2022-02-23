@@ -97,8 +97,7 @@
                 </div>
             </div>
 
-            <!-- TODO missing logic for this banner -->
-            <div *ngIf="!isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+            <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner"
                 class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
@@ -111,6 +110,14 @@
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
                     Collection pending approval
+                </div>
+            </div>
+
+            <div *ngIf="(data.collection$ | async)?.rejected === true"
+                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-red-300 rounded-xl">
+                <wen-icon-sad></wen-icon-sad>
+                <div class="font-medium ml-3.5">
+                    Collection rejected!
                 </div>
             </div>
 

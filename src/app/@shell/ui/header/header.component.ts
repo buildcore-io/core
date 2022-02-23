@@ -11,6 +11,7 @@ import { getItem, removeItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
+import { BADGE_TO_CREATE_COLLECTION } from 'functions/interfaces/config';
 import { Collection, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
@@ -33,7 +34,8 @@ export class HeaderComponent implements OnInit {
 
   public path = ROUTER_UTILS.config.base;
   public enableCreateAwardProposal = false;
-  public spaceSubscription$?: Subscription;
+  public enableCollection = false;
+  public accessSubscriptions$: Subscription[] = [];
   public isMemberProfile = false;
   public isLandingPage = false;
   public isAllowedCreation = false;
@@ -65,17 +67,21 @@ export class HeaderComponent implements OnInit {
       untilDestroyed(this)
     ).subscribe(async (obj) => {
       if (obj?.uid) {
-        this.spaceSubscription$?.unsubscribe();
-        this.spaceSubscription$ = this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
+        this.cancelAccessSubscriptions();
+        this.accessSubscriptions$.push(this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
           this.enableCreateAwardProposal = space.length > 0;
           this.cd.markForCheck();
-        });
+        }));
 
-        // TEMPORARY -> member must have at least one badge.
-        this.spaceSubscription$ = this.memberApi.topBadges(obj.uid, 'createdOn', undefined, 1).subscribe((badge) => {
+        this.accessSubscriptions$.push(this.memberApi.topBadges(obj.uid, 'createdOn', undefined, 1).subscribe((badge) => {
           this.isAllowedCreation = badge.length > 0;
           this.cd.markForCheck();
-        });
+        }));
+
+        this.accessSubscriptions$.push(this.memberApi.hasBadge(obj.uid, BADGE_TO_CREATE_COLLECTION).subscribe((bol) => {
+          this.enableCollection = bol;
+          this.cd.markForCheck();
+        }));
       } else {
         this.enableCreateAwardProposal = false;
         this.cd.markForCheck();
@@ -210,8 +216,14 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  public cancelAccessSubscriptions(): void {
+    this.accessSubscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+  }
+
   public ngOnDestroy(): void {
-    this.spaceSubscription$?.unsubscribe();
+    this.cancelAccessSubscriptions();
     this.subscriptionTransaction$?.unsubscribe();
     this.currentCheckoutNft = undefined;
     this.currentCheckoutCollection = undefined;
