@@ -116,8 +116,15 @@
                     [nzMin]="0"
                     [formControl]="priceControl"
                   ></nz-input-number>
+                  <i
+                    nz-icon
+                    nzType="info-circle"
+                    class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    nz-tooltip
+                    [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
+                  ></i>
                   <div
-                    class="absolute transform -translate-y-1/2 right-6 top-1/2"
+                    class="absolute transform -translate-y-1/2 right-10 top-1/2"
                   >
                     <button
                       *ngFor="let unit of priceUnits"
