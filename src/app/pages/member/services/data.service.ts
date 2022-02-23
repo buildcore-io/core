@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MemberApi } from '@api/member.api';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Award, Space } from 'functions/interfaces/models';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Transaction } from './../../../../../functions/interfaces/models/transaction';
 import { FULL_LIST } from './../../../@api/base.api';
@@ -16,7 +16,8 @@ export class DataService {
   public awardsPending$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
   public space$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
-  public lastLoadedAllBadges = false;
+  public lastLoadedMemberId?: string;
+  public subscriptions$: Subscription[] = [];
 
   constructor(
     private memberApi: MemberApi,
@@ -26,18 +27,21 @@ export class DataService {
   }
 
   public async refreshBadges(selectedSpace: Space | undefined, includeAlliances: boolean): Promise<void> {
+    this.cancelSubscriptions();
     if (this.member$.value?.uid) {
       if (!selectedSpace) {
         // Already loaded. Do nothing. Reduce network requests.
-        if (this.lastLoadedAllBadges) {
+        if (this.lastLoadedMemberId === this.member$.value.uid) {
           return;
         }
 
         // TODO implement paging.
-        this.lastLoadedAllBadges = true;
-        this.memberApi.topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.badges$);
+        this.lastLoadedMemberId = this.member$.value.uid
+        this.subscriptions$.push(
+          this.memberApi.topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.badges$)
+        );
       } else {
-        this.lastLoadedAllBadges = false;
+        this.lastLoadedMemberId = '';
         this.badges$.next(undefined);
         const allBadges: string[] = [...(this.member$.value.spaces?.[selectedSpace!.uid]?.badges || [])];
         if (includeAlliances) {
@@ -67,5 +71,11 @@ export class DataService {
     this.awardsPending$.next(undefined);
     this.badges$.next(undefined);
     this.space$.next(undefined);
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
   }
 }
