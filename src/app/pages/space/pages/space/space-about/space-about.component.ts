@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { DataService } from '@pages/space/services/data.service';
 import { Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
@@ -10,6 +10,7 @@ import { NotificationService } from '../../../../../@core/services/notification/
 import { AuthService } from '../../../../../components/auth/services/auth.service';
 import { AllianceExtended, SpaceWithAlliances } from './../../../../../@api/space.api';
 import { CacheService } from './../../../../../@core/services/cache/cache.service';
+import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
 @Component({
   selector: 'wen-space-about',
@@ -25,12 +26,12 @@ export class SpaceAboutComponent implements OnDestroy {
   public isNewAllianceOpen = false;
   public isNewAlliance = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
-  public reputationWeightControl: FormControl = new FormControl(null, Validators.required);
+  public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
   private spacesSubscription?: Subscription;
   constructor(
     public deviceService: DeviceService,
     public data: DataService,
-    public avatarService: AvatarService,
+    public previewImageService: PreviewImageService,
     public cache: CacheService,
     private notification: NotificationService,
     private auth: AuthService,
@@ -40,6 +41,11 @@ export class SpaceAboutComponent implements OnDestroy {
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
+
+  public get walletAddressEntities(): typeof EntityType {
+    return EntityType;
+  }
+
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
@@ -55,7 +61,7 @@ export class SpaceAboutComponent implements OnDestroy {
     this.spaceAllianceControl.setValue('');
     this.spaceAllianceControl.reset();
     this.spaceAllianceControl.markAsPristine();
-    this.reputationWeightControl.setValue('');
+    this.reputationWeightControl.setValue(1);
     this.reputationWeightControl.reset();
     this.reputationWeightControl.markAsPristine();
     this.isNewAllianceOpen = false;

@@ -226,7 +226,7 @@
                   [nzValue]="s.uid"
                 >
                   <nz-avatar
-                    [nzSrc]="avatarService.getAvatarSize(s.avatarUrl)"
+                    [nzSrc]="previewImageService.getAvatarSize(s.avatarUrl)"
                     [nzSize]="32"
                     class="mr-3 border-2 border-app-gray-100"
                     nzShape="circle"
@@ -250,7 +250,7 @@
             </nz-form-control>
           </nz-form-item>
         </nz-card>
-        <nz-card [nzBordered]="false" nzTitle="Space Setup">
+        <nz-card [nzBordered]="false" nzTitle="Proposal Setup">
           <nz-form-item>
             <nz-form-control>
               <nz-form-label class="text-sm font-medium text-app-gray-600"

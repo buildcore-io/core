@@ -1,0 +1,142 @@
+<nz-modal *ngIf="deviceService.isDesktop$ | async"
+    [nzVisible]="!!nft"
+    nzCentered
+    [nzClosable]="false"
+    [nzMaskClosable]="true"
+    [nzMask]="true"
+    (nzOnCancel)="close()"
+    [nzBodyStyle]="{ padding: '0px' }"
+    [nzContent]="nftPreviewModalContent"
+    [nzFooter]="null"
+    [nzWidth]="1000"
+    >
+    <ng-template #nftPreviewModalContent>
+        <div class="w-full h-full p-6 bg-bg-background rounded-2xl">
+            <div class="flex items-start justify-between">
+                <div class="text-2xl font-bold" i18n>Preview</div>
+                <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
+            </div>
+
+            <ng-container *ngTemplateOutlet="content"></ng-container>
+        </div>
+    </ng-template>
+</nz-modal>
+
+<nz-drawer *ngIf="deviceService.isMobile$ | async"
+    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+    [nzWidth]="'100vw'" #drawer
+    [nzClosable]="false"
+    [nzVisible]="!!nft">
+    <div *nzDrawerContent class="relative min-h-full h-max">
+        <div class="pb-4 text-3xl font-bold" i18n>Preview</div>
+        <button class="absolute right-0 z-10 top-1" (click)="close()">
+            <wen-icon-close></wen-icon-close>
+        </button>
+
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+    </div>
+</nz-drawer>
+
+<ng-template #content>
+    <div class="flex flex-col mt-12 lg:flex-row lg:mt-10" *ngIf="nft">
+        <div class="flex-grow w-full lg:w-1/2 lg:mr-10">
+            <h1 class="mt-2" i18n>{{ nft.name }}</h1>
+
+            <div class="flex flex-wrap items-center mt-5">
+                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
+                    <div class="flex items-center mt-2">
+                        <div class="text-lg font-bold truncate">{{ data.formatBest(nft.price) }}</div>
+                        <!-- <div class="ml-2 text-xs font-medium truncate text-foregrounds-secondary">{{ '100 $' }}</div> -->
+                    </div>
+                </div>
+
+
+                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
+                    <div class="flex items-center mt-2">
+                      <a [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
+                        <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                          class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                          style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                        </nz-avatar>
+                        <div class="ml-3 text-base font-medium truncate max-w-20">
+                          @{{ ((auth.member$ | async)?.name || (auth.member$ | async)?.uid) }}
+                        </div>
+                      </a>
+                    </div>
+                </div>
+
+                <div class="flex-grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
+                    <a class="flex items-center mt-2" [routerLink]="['/space', space?.uid]">
+                        <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                            [nzSrc]="previewImageService.getAvatarSize(space?.avatarUrl)">
+                        </nz-avatar>
+
+                        <div class="ml-3 text-base font-medium truncate max-w-20">{{ space?.name || space?.uid }}</div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-12 font-medium" [innerHtml]="(nft.description || '') | markdown">
+            </div>
+
+            <wen-collapse title="System info" class="mt-8">
+                <div class="wen-description-item bg-bg-background">
+                    <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
+                    <p nz-typography class="flex items-center">
+                      Shimmer/Mainnet (Tokenization)...SOON.
+
+                        <wen-icon-question-circle
+                            class="ml-2.5 text-app-gray-400"
+                            nz-tooltip
+                            i18n-nzTooltipTitle
+                            nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
+                        ></wen-icon-question-circle>
+                    </p>
+                </div>
+
+                <div class="wen-description-item bg-bg-background">
+                    <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
+                    <p nz-typography>
+                        {{ 'Preparing...'}}
+                    </p>
+                </div>
+                <div class="wen-description-item bg-bg-background">
+                  <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
+                  <p nz-typography>
+                      {{ 'Preparing...'}}
+                  </p>
+              </div>
+            </wen-collapse>
+
+            <wen-collapse title="Properties" class="mt-4" *ngIf="nft.properties">
+                <div class="wen-description-item bg-bg-background"
+                    *ngFor="let prop of getValues(nft.properties)">
+                        <span nz-typography class="text-app-gray-400">{{ prop.label }}</span>
+                        <p nz-typography>{{ prop.value }}</p>
+                </div>
+            </wen-collapse>
+
+            <wen-collapse title="Stats" class="mt-4" *ngIf="nft.stats">
+                <div class="wen-description-item bg-bg-background"
+                    *ngFor="let stat of getValues(nft.stats)">
+                        <span nz-typography class="text-app-gray-400">{{ stat.label }}</span>
+                        <p nz-typography>{{ stat.value }}</p>
+                </div>
+            </wen-collapse>
+        </div>
+
+        <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
+            <div class="relative w-full overflow-hidden rounded-2xl">
+                <img
+                alt="NFT Image"
+                [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
+                class="object-cover w-full h-full"
+                />
+            </div>
+        </div>
+    </div>
+</ng-template>

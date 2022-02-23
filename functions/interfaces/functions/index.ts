@@ -28,7 +28,21 @@ export const enum WEN_FUNC {
   cProposal = "cProposal",
   aProposal = "aProposal", // Approve
   rProposal = "rProposal", // Reject
-  voteOnProposal = "voteOnProposal"
+  voteOnProposal = "voteOnProposal",
+
+  // Collection functions.
+  cCollection = "cCollection",
+  uCollection = "uCollection",
+  approveCollection = "approveCollection",
+  rejectCollection = "rejectCollection",
+
+  // NFT functions.
+  cNft = "cNft",
+  cBatchNft = "cBatchNft",
+
+  // ORDER functions.
+  orderNft = "orderNft",
+  validateAddress = "validateAddress",
 }
 
 export interface cMemberNotExists {

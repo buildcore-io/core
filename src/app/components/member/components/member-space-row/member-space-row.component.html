@@ -2,7 +2,7 @@
     <div>
       <div class="flex items-center justify-between">
           <nz-avatar
-            [nzSrc]="avatarService.getAvatarSize(space?.avatarUrl)"
+            [nzSrc]="previewImageService.getAvatarSize(space?.avatarUrl)"
             [nzSize]="32"
             class="mr-3 border-2 border-app-gray-100"
             nzShape="circle"
@@ -38,7 +38,7 @@
           [member]="member"
           (onClose)="isReputationVisible = false">
         </wen-member-reputation-modal>
-        
+
         <wen-member-reputation-drawer
           *ngIf="(deviceService.isMobile$ | async) && !!space && includeAlliances"
           [isOpen]="isReputationVisible"

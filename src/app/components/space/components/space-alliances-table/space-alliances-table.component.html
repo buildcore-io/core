@@ -12,7 +12,7 @@
         <tr *ngFor="let ally of alliances | slice:0:(size === 'small' ? 3 : alliances.length); trackBy: trackByUid">
             <td class="flex items-center">
                 <nz-avatar
-                    [nzSrc]="avatarService.getAvatarSize(ally._record.avatarUrl)"
+                    [nzSrc]="previewImageService.getAvatarSize(ally._record.avatarUrl)"
                     class="mr-3 bg-white border-gray-400"
                     nzShape="circle"
                     [nzSize]="(deviceService.isDesktop$ | async) ? 32 : 24"
@@ -30,16 +30,16 @@
                 <div class="text-sm font-medium" [ngClass]="ally.established ? 'text-green-success' : 'text-app-gray-400'">
                     <div *ngIf="size === 'large' && (deviceService.isDesktop$ | async); else iconsBlock" i18n>
                         {{ ally.established ? 'Established' : 'Recognised' }}</div>
-
                     <ng-template #iconsBlock>
                         <wen-icon-check *ngIf="ally.established"></wen-icon-check>
-                        <wen-icon-eye *ngIf="!ally.established"></wen-icon-eye>
+                        <wen-icon-eye *ngIf="!ally.established" class="text-app-gray-400"></wen-icon-eye>
                     </ng-template>
                 </div>
             </td>
             <td>
-                <wen-icon-edit class="cursor-pointer" (click)="onAllianceEdit.emit(ally)"></wen-icon-edit>
+                <wen-icon-edit *ngIf="isGuardian" class="cursor-pointer" (click)="onAllianceEdit.emit(ally)"></wen-icon-edit>
             </td>
         </tr>
     </tbody>
 </nz-table>
+

@@ -47,7 +47,11 @@ module.exports = {
           200: '#CAC8BD',
           400: '#9F9D93',
           600: '#999999',
-          separator: '#F5F4EF'
+          700: '#E6E6E6',
+          separator: {
+            light: '#F5F4EF',
+            dark: '#C4C4C4'
+          }
         },
         tag: {
           blue: '#DCEFF9',
@@ -62,8 +66,20 @@ module.exports = {
           background: '#F6F5F0',
           footer: '#ECE8DE',
         },
+        alerts: {
+          error: '#D94B08',
+          warning: '#FAE312'
+        },
+        foregrounds: {
+          secondary: '#959388',
+          separator: '#F0EEE6',
+          tertiary: '#BCB9A9'
+        },
         brown: '#A66300',
         pink: '#F20CDF',
+        black: '#000000',
+        yellow: '#FFEF64',
+        'light-brown': '#C6BF9F'
       },
       spacing: {
         18: '4.5rem',
@@ -74,28 +90,42 @@ module.exports = {
         8: '2rem',
         10: '2.5rem',
         32: '8rem',
+        40: '10rem',
+        60: '15rem',
+        76: '19rem',
         100: '25rem',
         120: '30rem'
       },
       maxWidth: {
         fit: 'fit-content',
+        20: '5rem',
+        24: '6rem',
+        80: '20rem',
         128: '32rem',
-        160: '40rem'
+        160: '40rem',
+        '2/3': '66%'
       },
       width: {
         header: '500px',
+        76: '19rem',
+        '3/10': '30%'
       },
       minHeight: {
         6: '1.5rem',
         8: '2rem',
         10: '2.5rem',
         24: '6rem',
+        76: '19rem',
         180: '45rem'
       },
       maxHeight: {
         56: '14rem',
         80: '20rem',
         128: '32rem'
+      },
+      height: {
+        76: '19rem',
+        99: '24.75rem'
       },
       borderRadius: {
         9: '2.25rem',
@@ -109,6 +139,9 @@ module.exports = {
       boxShadow: {
         header: '0px 2px 3px #E6E5DE',
         modal: '0px 2px 32px rgba(0, 0, 0, 0.16)'
+      },
+      fontSize: {
+        xxs: '0.625rem'
       }
     },
   },

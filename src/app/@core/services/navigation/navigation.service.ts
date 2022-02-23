@@ -37,6 +37,8 @@ export class NavigationService implements OnDestroy {
       { url: ROUTER_UTILS.config.space.root, text: 'Space' },
       { url: ROUTER_UTILS.config.discover.root, text: 'Discover' },
       { url: ROUTER_UTILS.config.member.root, text: 'Profile' },
+      { url: ROUTER_UTILS.config.market.root, text: 'Marketplace' },
+      { url: ROUTER_UTILS.config.collection.root, text: 'Collection' },
       // { url: ROUTER_UTILS.config.award.root, text: 'Award' },
       // { url: ROUTER_UTILS.config.proposal.root, text: 'Proposal' },
     ];

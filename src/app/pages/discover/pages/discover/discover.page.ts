@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { NavigationEnd, Router } from '@angular/router';
+import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -9,10 +9,6 @@ import { debounceTime } from "rxjs";
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FilterService } from './../../services/filter.service';
 
-export interface TabSection {
-  label: string;
-  route: string | string[];
-}
 @UntilDestroy()
 @Component({
   selector: 'wen-discover',
@@ -20,9 +16,9 @@ export interface TabSection {
   styleUrls: ['./discover.page.less']
 })
 export class DiscoverPage implements OnInit, OnDestroy {
-  public filterControl: FormControl = new FormControl(undefined);
   public sections: TabSection[] = [
     { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
+    { route: [ ROUTER_UTILS.config.discover.collections], label: 'Collections' },
     { route: [ ROUTER_UTILS.config.discover.awards], label: 'Awards' },
     { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
     { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
@@ -40,8 +36,8 @@ export class DiscoverPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Discover');
-    this.filterControl.setValue(this.filter.search$.value);
-    this.filterControl.valueChanges.pipe(
+    this.filter.filterControl.setValue(this.filter.search$.value);
+    this.filter.filterControl.valueChanges.pipe(
       debounceTime(FilterService.DEBOUNCE_TIME)
     ).subscribe(this.filter.search$);
 
@@ -56,8 +52,8 @@ export class DiscoverPage implements OnInit, OnDestroy {
   }
 
   private setSelectedSection() {
-    this.selectedSection = 
-      this.sections.find((r: TabSection) => 
+    this.selectedSection =
+      this.sections.find((r: TabSection) =>
         this.router.url.includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
   }
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { DEFAULT_SPACE, SelectSpaceOption } from '@components/select-space/select-space.component';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -39,7 +39,7 @@ export class MembersPage implements OnInit, OnDestroy {
     private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
-    this.spaceControl = new FormControl(storageService.selectedSpace.getValue());
+    this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.includeAlliancesControl = new FormControl(storageService.isIncludeAlliancesChecked.getValue());
     this.spaceForm = new FormGroup({
       space: this.spaceControl,
@@ -50,11 +50,16 @@ export class MembersPage implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.listen();
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
       if (val && val.length > 0) {
+        this.spaceControl.setValue(DEFAULT_SPACE.value);
         this.listen(val);
       } else {
         this.listen();
@@ -74,7 +79,9 @@ export class MembersPage implements OnInit, OnDestroy {
         }
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
-        this.listen();
+        if (o.space !== DEFAULT_SPACE.value) {
+          this.filter.filterControl.setValue('');
+        }
     });
   }
 
@@ -149,7 +156,7 @@ export class MembersPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.members$.value[this.members$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.members$.value[this.members$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public isLoading(arr: any): boolean {

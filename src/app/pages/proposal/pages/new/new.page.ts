@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FULL_LIST } from '@api/base.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from "@env/environment";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -74,7 +75,7 @@ export class NewPage implements OnInit, OnDestroy {
     private nzNotification: NzNotificationService,
     public nav: NavigationService,
     public deviceService: DeviceService,
-    public avatarService: AvatarService
+    public previewImageService: PreviewImageService
   ) {
     this.questions = new FormArray([
       this.getQuestionForm()
@@ -113,7 +114,7 @@ export class NewPage implements OnInit, OnDestroy {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
         // TODO Implement paging.
-        this.subscriptions$.push(this.awardApi.top(undefined, undefined, 1000).subscribe(this.awards$));
+        this.subscriptions$.push(this.awardApi.top(undefined, undefined, FULL_LIST).subscribe(this.awards$));
       }
     });
 

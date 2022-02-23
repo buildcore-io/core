@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
-import { SelectSpaceModule } from '@components/select-space/select-space.module';
+import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -25,6 +26,7 @@ import { ProposalModule } from '../../components/proposal/proposals.module';
 import { SpaceModule } from '../../components/space/space.module';
 import { DiscoverRoutingModule } from './discover-routing.module';
 import { AwardsPage } from './pages/awards/awards.page';
+import { CollectionsPage } from './pages/collections/collections.page';
 import { DiscoverPage } from './pages/discover/discover.page';
 import { MembersPage } from './pages/members/members.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
@@ -38,7 +40,8 @@ import { FilterService } from './services/filter.service';
     SpacesPage,
     MembersPage,
     AwardsPage,
-    ProposalsPage
+    ProposalsPage,
+    CollectionsPage
   ],
   exports: [
   ],
@@ -69,7 +72,8 @@ import { FilterService } from './services/filter.service';
     IconModule,
     NzCheckboxModule,
     MobileSearchModule,
-    SelectSpaceModule
+    SelectSpaceModule,
+    CollectionCardModule
   ]
 })
 export class DiscoverModule { }

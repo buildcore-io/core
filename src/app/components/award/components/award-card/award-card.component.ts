@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Space } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -26,7 +26,7 @@ export class AwardCardComponent implements OnChanges, OnDestroy {
   constructor(
     private spaceApi: SpaceApi,
     public deviceService: DeviceService,
-    public avatarService: AvatarService
+    public previewImageService: PreviewImageService
   ) {
     // none.
   }

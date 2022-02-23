@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
+import { WenError } from '../../interfaces/errors';
 import { AppCheck } from './../../interfaces/config';
-import { WenError } from './../../interfaces/errors';
-import { throwArgument } from "./error.utils";
+import { throwArgument } from './error.utils';
 
 export function appCheck(func: string, context: any) {
   if (context.app === undefined && AppCheck.enabled) {

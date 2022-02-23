@@ -3,7 +3,6 @@
   <h1 class="mt-7" *ngIf="editMode" i18n>Edit space</h1>
   <form nz-form nzLayout="vertical" [formGroup]="spaceForm">
     <div class="py-4" nz-row [nzGutter]="24">
-      <!-- TODO improve responsibility -->
       <div
         class="space-y-4"
         nz-col
@@ -99,15 +98,11 @@
                 <wen-radio [value]="true">
                   <span class="inline-flex"
                     >Open for anyone to join instantly
-                    <!-- <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                      nzTooltipTitle="prompt text"></i> -->
                   </span>
                 </wen-radio>
                 <wen-radio [value]="false">
                   <span class="inline-flex"
                     >Requires a member approval
-                    <!-- <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                      nzTooltipTitle="prompt text"></i> -->
                   </span></wen-radio
                 >
               </nz-radio-group>
@@ -160,7 +155,7 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-upload
-                  class="wen-space-banner"
+                  class="wen-banner"
                   nzName="banner"
                   nzType="drag"
                   nzListType="picture-card"
