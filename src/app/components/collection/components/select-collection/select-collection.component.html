@@ -6,6 +6,7 @@
             [nzShowSearch]="deviceService.isDesktop$ | async"
             [nzCustomTemplate]="selectTpl"
             [formControl]="collectionControl"
+            nzPlaceHolder="Select Collection"
             [nzDropdownClassName]="(deviceService.isMobile$ | async) ? 'hidden' : ''"
             [nzDropdownStyle]="{ 'min-width': '400px', 'max-width': '100%' }"
             (nzOpenChange)="onSelectClick()">
