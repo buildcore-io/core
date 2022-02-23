@@ -1,4 +1,4 @@
-import { AES } from 'crypto-js';
+import { AES, enc } from 'crypto-js';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
@@ -14,6 +14,6 @@ export class MnemonicService {
   public static async get(address: string): Promise<string> {
     const salt = functions.config().encryption.salt || defaultSalt;
     const doc: any = await admin.firestore().collection('_mnemonic').doc(address).get();
-    return AES.decrypt(doc!.data().mnemonic, salt).toString(CryptoJS.enc.Utf8);
+    return AES.decrypt(doc!.data().mnemonic, salt).toString(enc.Utf8);
   }
 }
