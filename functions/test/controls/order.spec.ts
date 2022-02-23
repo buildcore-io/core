@@ -19,7 +19,7 @@ import { orderNft, validateAddress } from './../../src/controls/order.control';
 
 const db = admin.firestore();
 
-describe.only('Ordering flows', () => {
+describe.skip('Ordering flows', () => {
   let walletSpy: any;
   const defaultFromAddress = '1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz';
   jest.setTimeout(180000);

@@ -22,6 +22,7 @@
     "@metamask/eth-sig-util": "4.0.0",
     "axios": "^0.26.0",
     "bip39": "3.0.4",
+    "crypto-js": "4.1.1",
     "dayjs": "1.10.7",
     "ethers": "5.5.4",
     "firebase-admin": "10.0.2",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@types/chai": "4.3.0",
+    "@types/crypto-js": "4.1.1",
     "@types/jest": "27.4.0",
     "@types/lodash": "4.14.178",
     "@types/uuid": "8.3.4",
