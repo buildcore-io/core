@@ -10,6 +10,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftPreviewComponent } from './nft-preview.component';
 
 
@@ -29,7 +30,8 @@ import { NftPreviewComponent } from './nft-preview.component';
     NzIconModule,
     IpfsAvatarModule,
     MarkDownModule,
-    CollapseModule
+    CollapseModule,
+    NzToolTipModule
   ],
   exports: [
     NftPreviewComponent
