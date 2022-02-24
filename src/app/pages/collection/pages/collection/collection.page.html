@@ -127,8 +127,7 @@
 
     <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-app-gray-separator-dark lg:mt-12"></div>
 
-    <div class="flex items-center justify-between"
-        *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid">
+    <div class="flex items-center justify-between">
         <nz-input-group
             nzSize="default" [nzPrefix]="prefixIconSearch"
             class="w-full border-none shadow-none outline-0 lg:w-96" nzSearch>
@@ -139,6 +138,7 @@
         </ng-template>
 
         <button nz-button nzType="primary" nzSize="default"
+            *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
             class="flex items-center justify-center lg:justify-start w-10 lg:w-auto rounded-full ml-8" (click)="createNft()" i18n>
             <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
             <div *ngIf="deviceService.isDesktop$ | async">Create NFT</div>

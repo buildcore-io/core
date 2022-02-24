@@ -110,6 +110,12 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
     });
 
+    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
+      if (this.data.collectionId) {
+        this.listenToCollection(this.data.collectionId);
+      }
+    });
+
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
       this.filter.selectedSort$.next(o);
     });
@@ -120,21 +126,6 @@ export class CollectionPage implements OnInit, OnDestroy {
       debounceTime(GLOBAL_DEBOUNCE_TIME),
       untilDestroyed(this)
     ).subscribe(this.filter.search$);
-
-    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
-      if (val && val.length > 0) {
-        this.listen(val);
-      } else {
-        this.listen();
-      }
-    });
-  }
-
-  private listen(search?: string): void {
-    const id = this.data.collectionId;
-    this.cancelSubscriptions();
-    this.data.collectionId = id;
-    this.subscriptions$.push(this.getHandler(this.data.collectionId || '', undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
   public createNft(): void {
@@ -153,7 +144,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.data.collectionId = id;
     this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
-    this.subscriptions$.push(this.getHandler(id).subscribe(this.store.bind(this, this.data.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(id, undefined, this.filter.search$.getValue() || undefined).subscribe(this.store.bind(this, this.data.dataStore.length)));
     this.subscriptions$.push(
       this.nftApi.lowToHighCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
@@ -292,7 +283,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.data.collection$.value.uid, this.data.nft$.value[this.data.nft$.value.length - 1]._doc).subscribe(this.store.bind(this, this.data.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.data.collection$.value.uid, this.data.nft$.value[this.data.nft$.value.length - 1]._doc, this.filter.search$.getValue()).subscribe(this.store.bind(this, this.data.dataStore.length)));
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
