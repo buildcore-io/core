@@ -51,6 +51,7 @@ export class MultiplePage {
   public nftErrors: any[] = [];
   public allowedFileFormats = 'jpg/jpeg/png/webp';
   public uploadFilter: UploadFilter[] = [];
+  public uploadErrors: string[] = [];
   private usedFileNames = new Set<string>();
   public nftObject:  NFTObject = {
     media: {
@@ -165,7 +166,16 @@ export class MultiplePage {
       {
         name: 'filenameFilter',
         fn: (fileList: NzUploadFile[]): NzUploadFile[] | Observable<NzUploadFile[]> => {
-          return fileList.filter((file: NzUploadFile) => this.isValidFileName(file.name));
+          const res: NzUploadFile[] = [];
+          fileList.forEach((file: NzUploadFile) => {
+            if (this.isValidFileName(file.name)) {
+              res.push(file);
+            } else {
+              this.uploadErrors.push(`File name ${file.name} is not valid`);
+            }
+          });
+          this.cd.markForCheck();
+          return res;
         }
       }
     ];
