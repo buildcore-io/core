@@ -26,6 +26,11 @@ export class RouterService {
     this.router.events.subscribe((obj) => {
       if (obj instanceof NavigationEnd) {
         this.updateVariables();
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        });
       }
     });
   }

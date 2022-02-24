@@ -86,8 +86,7 @@ const APP_ROUTES: Routes = [
   imports: [
     CommonModule,
     RouterModule.forRoot(APP_ROUTES, {
-      onSameUrlNavigation: 'reload',
-      scrollPositionRestoration: 'top'
+      onSameUrlNavigation: 'reload'
     }),
     FooterModule,
     HeaderModule,
