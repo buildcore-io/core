@@ -125,25 +125,23 @@
         </div>
     </nz-drawer>
 
-    <div class="w-screen h-px mt-16 mb-8 -ml-20 xl:w-full xl:ml-0 bg-app-gray-separator-dark lg:mt-12"></div>
+    <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-app-gray-separator-dark lg:mt-12"></div>
 
-    <!-- Park search. -->
-    <!-- <nz-input-group
-        nzSize="small" [nzPrefix]="prefixIconSearch"
-        class="w-full mt-12 border-none shadow-none outline-0 lg:w-96" nzSearch>
-        <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
-    </nz-input-group>
-    <ng-template #prefixIconSearch>
-      <i nz-icon nzType="search" class="text-xl"></i>
-    </ng-template> -->
+    <div class="flex items-center justify-between"
+        *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid">
+        <nz-input-group
+            nzSize="default" [nzPrefix]="prefixIconSearch"
+            class="w-full border-none shadow-none outline-0 lg:w-96" nzSearch>
+            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
+        </nz-input-group>
+        <ng-template #prefixIconSearch>
+            <i nz-icon nzType="search" class="text-xl"></i>
+        </ng-template>
 
-    <div class="flex items-center justify-between" *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid">
-        <!-- Will be replaced by search - TODO move the condition above to the button once search added -->
-        <div></div>
-
-        <button nz-button nzType="primary" nzSize="default" class="flex items-center" (click)="createNft()" i18n>
-            <wen-icon-plus class="mr-2"></wen-icon-plus>
-            Create NFT
+        <button nz-button nzType="primary" nzSize="default"
+            class="flex items-center justify-center lg:justify-start w-10 lg:w-auto rounded-full ml-8" (click)="createNft()" i18n>
+            <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
+            <div *ngIf="deviceService.isDesktop$ | async">Create NFT</div>
         </button>
     </div>
 
@@ -167,15 +165,19 @@
         </div>
 
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
+            <nz-select class="wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
                 <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                 <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
                 <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
             </nz-select>
             <ng-template #defaultTemplate let-selected>
-                <span nz-typography nzType="secondary" class="text-xs" *ngIf="selected.nzValue !== filter.sortOptions.RECENT">Price</span>
-                {{ selected.nzLabel }}
+                <div class="flex items-center">
+                    <div nz-typography nzType="secondary" class="text-xs mr-1">
+                        {{ selected.nzValue === filter.sortOptions.RECENT ? 'Sort by' : 'Price' }}
+                    </div>
+                    {{ selected.nzLabel }}
+                </div>
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>

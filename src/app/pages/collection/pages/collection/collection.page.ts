@@ -17,11 +17,11 @@ import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import * as dayjs from 'dayjs';
-import { WEN_NAME } from 'functions/interfaces/config';
+import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
-import { BehaviorSubject, first, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, first, map, Observable, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
@@ -58,7 +58,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
-    this.filterControl = new FormControl('');
+    this.filterControl = new FormControl(undefined);
   }
 
   public ngOnInit(): void {
@@ -113,6 +113,28 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
       this.filter.selectedSort$.next(o);
     });
+
+    
+    this.filterControl.setValue(this.filter.search$.value);
+    this.filterControl.valueChanges.pipe(
+      debounceTime(GLOBAL_DEBOUNCE_TIME),
+      untilDestroyed(this)
+    ).subscribe(this.filter.search$);
+
+    this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
+      if (val && val.length > 0) {
+        this.listen(val);
+      } else {
+        this.listen();
+      }
+    });
+  }
+
+  private listen(search?: string): void {
+    const id = this.data.collectionId;
+    this.cancelSubscriptions();
+    this.data.collectionId = id;
+    this.subscriptions$.push(this.getHandler(this.data.collectionId || '', undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
   public createNft(): void {
