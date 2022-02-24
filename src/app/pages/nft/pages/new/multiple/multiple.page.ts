@@ -12,7 +12,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
-import { ALPHANUMERIC_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
+import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
 import { Collection, CollectionType } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
@@ -165,7 +165,7 @@ export class MultiplePage {
       {
         name: 'filenameFilter',
         fn: (fileList: NzUploadFile[]): NzUploadFile[] | Observable<NzUploadFile[]> => {
-          return fileList.filter((file: NzUploadFile) => this.isAlphaNumericFilename(file.name));
+          return fileList.filter((file: NzUploadFile) => this.isValidFileName(file.name));
         }
       }
     ];
@@ -190,6 +190,7 @@ export class MultiplePage {
     } else if (event.type === 'removed') {
       this.uploadedFiles = this.uploadedFiles.filter((f: NzUploadFile) => f.name !== event.file.name);
     }
+    this.cd.markForCheck();
   }
 
   public formatSubmitData(data: any): any {
@@ -387,10 +388,10 @@ export class MultiplePage {
     this.usedFileNames.clear();
   }
 
-  private isAlphaNumericFilename(str: string): boolean {
+  private isValidFileName(str: string): boolean {
     const dotIndex = str.indexOf('.');
     return dotIndex > -1 &&
-      ALPHANUMERIC_REGEXP.test(str.substring(0, dotIndex)) &&
+      FILENAME_REGEXP.test(str.substring(0, dotIndex)) &&
       this.allowedFileFormats.split('/').includes(str.substring(dotIndex + 1));
   }
 }
