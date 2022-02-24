@@ -1,4 +1,4 @@
-<article class="bg-white h-76 rounded-2xl wen-card"
+<article class="bg-white rounded-2xl wen-card"
     [ngClass]="fullWidth ? 'w-full' : 'w-76'" *ngIf="collection">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
@@ -35,12 +35,12 @@
             </div>
         </div>
 
-        <div class="relative flex flex-col w-full p-5 lg:p-4 lg:h-44">
-            <h3 class="mt-4 mb-0 text-lg font-bold truncate lg:mt-2">{{ collection.name }}</h3>
+        <div class="relative flex flex-col w-full px-5 h-32">
+            <h3 class="mt-4 mb-2 text-lg font-bold truncate">{{ collection.name }}</h3>
 
-            <p class="flex-grow flex-shrink min-h-0 py-3 overflow-hidden text-sm font-medium lg:py-2"
-                [ngClass]="{ 'text-foregrounds-secondary': fullWidth }">
-                {{ collection.description | stripMarkdown | truncate:[(deviceService.isMobile$ | async) || !fullWidth ? 95 : 1000]}}</p>
+            <div class="text-sm font-medium break-all line-clamp-3">
+                {{ collection.description | stripMarkdown }}
+            </div>
         </div>
     </a>
 </article>
