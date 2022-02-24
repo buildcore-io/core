@@ -1,13 +1,15 @@
 <div class="flex items-center pt-10 mt-8 lg:pt-0">
-    <a nz-button nzType="link" nzBlock nzSize="default" target="_new"
+    <a nz-button nzType="default" nzBlock nzSize="default" target="_new"
         *ngIf="(data.collection$ | async)?.url" [href]="(data.collection$ | async)?.url"
-        class="flex items-center justify-center flex-grow text-black mr-2 lg:mr-4 w-1/2 wen-link-padding border-blue-light1">
+        class="flex items-center justify-center flex-grow text-black mr-2 lg:mr-4 w-1/2 wen-link-padding"
+        [ngClass]="{ 'border-blue-light1': deviceService.isMobile$ | async }">
             <wen-icon-github></wen-icon-github>
             <div class="ml-2.5 text-xs font-medium" i18n>Visit website</div>
     </a>
-    <a nz-button nzType="link" nzSize="default" target="_new"
+    <a nz-button nzType="default" nzBlock nzSize="default" target="_new"
         [href]="getShareUrl()"
-        class="flex items-center justify-center flex-grow text-black w-1/2 wen-link-padding border-blue-light1">
+        class="flex items-center justify-center flex-grow text-black w-1/2 wen-link-padding"
+        [ngClass]="{ 'border-blue-light1': deviceService.isMobile$ | async }">
             <wen-icon-share></wen-icon-share>
             <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
     </a>

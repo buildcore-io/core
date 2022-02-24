@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 import { DataService } from '../../../services/data.service';
 
 @Component({
@@ -8,7 +9,10 @@ import { DataService } from '../../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionAboutComponent {
-  constructor(public data: DataService) {
+  constructor(
+    public data: DataService,
+    public deviceService: DeviceService
+  ) {
     // none.
   }
 
