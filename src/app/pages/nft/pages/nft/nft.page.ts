@@ -160,6 +160,14 @@ export class NFTPage implements OnInit, OnDestroy {
     return ((col.total - col.sold) > 0) && col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isBefore(dayjs()) && !nft?.owner;
   }
 
+  public saleNotStartedYet(nft?: Nft|null): boolean {
+    if (!nft) {
+      return false;
+    }
+
+    return dayjs(nft.availableFrom.toDate()).isAfter(dayjs())
+  }
+
   public discount(collection?: Collection|null): number {
     if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation) {
       return 1;

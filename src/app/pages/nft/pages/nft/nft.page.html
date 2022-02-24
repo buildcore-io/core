@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+            <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !saleNotStartedYet(data.nft$ | async)"
                 class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner"
+            <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner && saleNotStartedYet(data.nft$ | async)"
                 class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5">
