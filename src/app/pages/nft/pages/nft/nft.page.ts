@@ -13,7 +13,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { WEN_NAME } from 'functions/interfaces/config';
+import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from 'functions/interfaces/config';
 import { Collection, CollectionType, TransactionBillPayment, TransactionType } from 'functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
@@ -187,7 +187,12 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public calc(amount: number | null | undefined, discount: number): number {
-    return Math.ceil((amount || 0) * discount);
+    let finalPrice = Math.ceil((amount || 0) * discount);
+    if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
+      finalPrice = MIN_AMOUNT_TO_TRANSFER;
+    }
+
+    return finalPrice;
   }
 
   public buy(event: MouseEvent): void {

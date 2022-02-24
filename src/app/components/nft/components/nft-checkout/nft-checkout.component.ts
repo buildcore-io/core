@@ -13,6 +13,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
+import { MIN_AMOUNT_TO_TRANSFER } from 'functions/interfaces/config';
 import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
@@ -235,7 +236,12 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public calc(amount: number, discount: number): number {
-    return Math.ceil(amount * discount);
+    let finalPrice = Math.ceil(amount * discount);
+    if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
+      finalPrice = MIN_AMOUNT_TO_TRANSFER;
+    }
+
+    return finalPrice;
   }
 
   public reset(): void {

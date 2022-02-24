@@ -199,6 +199,11 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       });
     }
   });
+  let finalPrice = discount > 0 ? Math.ceil(discount * docNftData.price) : docNftData.price;
+  if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
+    finalPrice = MIN_AMOUNT_TO_TRANSFER;
+  }
+
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await refTran.set(<Transaction>{
     type: TransactionType.ORDER,
@@ -208,7 +213,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     createdOn: serverTime(),
     payload: {
       type: TransactionOrderType.NFT_PURCHASE,
-      amount: discount > 0 ? Math.ceil(discount * docNftData.price) : docNftData.price,
+      amount: finalPrice,
       targetAddress: targetAddress.bech32,
       beneficiary: docNft.data().owner ? 'member' : 'space',
       beneficiaryUid: docNft.data().owner || docCollectionData.space,

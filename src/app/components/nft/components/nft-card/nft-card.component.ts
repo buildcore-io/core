@@ -8,6 +8,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
+import { MIN_AMOUNT_TO_TRANSFER } from 'functions/interfaces/config';
 import { Collection, CollectionType, Member } from 'functions/interfaces/models';
 import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
@@ -91,7 +92,12 @@ export class NftCardComponent {
   }
 
   public applyDiscount(amount?: number | null): number {
-    return Math.ceil((amount || 0) * this.discount());
+    let finalPrice = Math.ceil((amount || 0) * this.discount());
+    if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
+      finalPrice = MIN_AMOUNT_TO_TRANSFER;
+    }
+
+    return finalPrice;
   }
 
   public formatBest(amount?: number|null): string {

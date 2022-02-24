@@ -4,7 +4,7 @@
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
             alt=""
-            [src]="previewImageService.getCollectionSize(collection?.bannerUrl) || '/assets/mocks/no_banner.jpg'"
+            [src]="(fullWidth ? collection?.bannerUrl : previewImageService.getCollectionSize(collection?.bannerUrl)) || '/assets/mocks/no_banner.jpg'"
             class="object-cover w-full h-full"
             />
 
@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="relative flex flex-col w-full px-5 h-32">
+        <div class="relative flex flex-col w-full h-32 px-5">
             <h3 class="mt-4 mb-2 text-lg font-bold truncate">{{ collection.name }}</h3>
 
             <div class="text-sm font-medium break-all line-clamp-3">

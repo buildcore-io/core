@@ -4,6 +4,7 @@ import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { DEFAULT_TRANSACTION_DELAY, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
+import { superPump } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
 import { WalletService } from "../services/wallet/wallet";
 import { serverTime } from "../utils/dateTime.utils";
@@ -11,6 +12,7 @@ import { serverTime } from "../utils/dateTime.utils";
 // Listen for changes in all documents in the 'users' collection
 export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 540,
+  minInstances: superPump,
   memory: "8GB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const newValue: Transaction = <Transaction>change.after.data();
