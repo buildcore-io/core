@@ -11,8 +11,13 @@
           'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }"
       >
-        <nz-card [nzBordered]="false" nzTitle="Proposal Info">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Proposal info"
+          nzDescription="Title and description will be included on the Proposal. Start and end dates determine the duration of the Proposal."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
               <input
                 nz-input
@@ -107,7 +112,12 @@
             </nz-form-control>
           </nz-form-item>
         </nz-card>
-        <nz-card [nzBordered]="false" nzTitle="Question">
+        <nz-card [nzBordered]="false">
+          <nz-card-meta class="mb-4"
+          nzTitle="Question Info"
+          nzDescription="Title and description will only be displayed for this question."
+        >
+        </nz-card-meta>
           <ng-container
             *ngFor="let question of questions.controls; let i = index"
           >
@@ -147,10 +157,14 @@
           >
             <nz-card
               [nzBordered]="false"
-              [nzTitle]="'Choice #' + (ii + 1)"
               [nzExtra]="actionsTpl"
             >
-              <div class="space-y-4">
+            <nz-card-meta
+            [nzTitle]="'Choice #' + (ii + 1)"
+            nzDescription="Text and description for each individual answer."
+          >
+          </nz-card-meta>
+              <div class="mt-4 space-y-4">
                 <nz-form-item>
                   <nz-form-control i18n-nzErrorTip nzErrorTip="Answer Text is required.">
                     <input
@@ -207,8 +221,13 @@
       </div>
 
       <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'" style="max-width: 450px">
-        <nz-card [nzBordered]="false" nzTitle="Space Info">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+            nzTitle="Space Info"
+            nzDescription="This is the space that will list the proposal."
+          >
+          </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
               <nz-select
                 class="w-full"
@@ -250,8 +269,13 @@
             </nz-form-control>
           </nz-form-item>
         </nz-card>
-        <nz-card [nzBordered]="false" nzTitle="Proposal Setup">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Proposal Setup"
+          nzDescription="Defines who has access to the proposal and what is the voting method."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-form-label class="text-sm font-medium text-app-gray-600"
                 >Target Participants</nz-form-label

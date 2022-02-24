@@ -123,6 +123,8 @@ export class BaseApi<T> {
           return subO.uid === o.uid;
         });
 
+        // Add parent object.
+        finObj._subColObj = o;
         if (!finObj) {
           console.warn('Missing record in database');
         } else {

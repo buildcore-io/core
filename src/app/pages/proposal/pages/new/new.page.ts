@@ -174,7 +174,7 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public getDateBasedOnMilestone(milestoneValue: number): Date|undefined  {
-    if (!this.lastMilestone$.value) {
+    if (!this.lastMilestone$.value || !this.lastMilestone$.value.cmi) {
       return undefined;
     }
 

@@ -12,7 +12,12 @@
         }"
       >
         <nz-card [nzBordered]="false"  i18n-nzErrorTip nzErrorTip="Title is required.">
-          <nz-form-item>
+          <nz-card-meta
+          nzTitle="Award info"
+          nzDescription="Title and description will be included on the Award. End date determines the duration of the Award."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="You must enter name.">
               <input
                 nz-input
@@ -50,8 +55,13 @@
           </nz-form-item>
         </nz-card>
 
-        <nz-card nzTitle="Badge definition">
-          <div class="space-y-4">
+        <nz-card>
+          <nz-card-meta
+          nzTitle="Badge definition"
+          nzDescription="Title and description will be included on the badge."
+        >
+        </nz-card-meta>
+          <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Badge Title is required.">
                 <input
@@ -78,48 +88,13 @@
       </div>
 
       <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
-        <nz-card [nzBordered]="false" nzTitle="Reward">
-          <div class="flex items-baseline">
-            <nz-form-item class="flex-grow">
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
-                <nz-input-number
-                  class="w-full"
-                  nzSize="large"
-                  nzPlaceHolder="Total XP (Max 10000)"
-                  [formControl]="badgeXpControl"
-                ></nz-input-number>
-              </nz-form-control>
-            </nz-form-item>
-            <wen-icon-question-circle
-              class="ml-3 text-app-gray-400"
-              nz-tooltip
-              nzTooltipPlacement="right"
-              i18n-nzTooltipTitle
-              nzTooltipTitle="The amount of the experience points (XP) you want to allocate for this award. Maximum 10000 XP. Total Experience Points / Number of Badges = Member's XP."
-            ></wen-icon-question-circle>
-          </div>
-          <div class="flex items-baseline">
-            <nz-form-item class="flex-grow">
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
-                <nz-input-number
-                  class="w-full"
-                  nzSize="large"
-                  nzPlaceHolder="Number of Badges"
-                  [formControl]="badgeCountControl"
-                ></nz-input-number>
-              </nz-form-control>
-            </nz-form-item>
-            <wen-icon-question-circle
-              class="ml-3 text-app-gray-400"
-              nz-tooltip
-              nzTooltipPlacement="right"
-              i18n-nzTooltipTitle
-              nzTooltipTitle="The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out."
-            ></wen-icon-question-circle>
-          </div>
-        </nz-card>
-        <nz-card [nzBordered]="false" nzTitle="Space Info">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Space Info"
+          nzDescription="This is the space that will list the award."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
               <nz-select
                 class="w-full"
@@ -162,9 +137,62 @@
           </nz-form-item>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Badge">
+
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Reward Info"
+          nzDescription="Defines the amount of XP for each badge and the number of badges available."
+        >
+        </nz-card-meta>
+          <div class="flex items-baseline mt-4">
+            <nz-form-item class="flex-grow">
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
+                <nz-input-number
+                  class="w-full"
+                  nzSize="large"
+                  nzPlaceHolder="Total XP (Max 10000)"
+                  [formControl]="badgeXpControl"
+                ></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <wen-icon-question-circle
+              class="ml-3 text-app-gray-400"
+              nz-tooltip
+              nzTooltipPlacement="right"
+              i18n-nzTooltipTitle
+              nzTooltipTitle="The amount of the experience points (XP) you want to allocate for this award. Maximum 10000 XP. Total Experience Points / Number of Badges = Member's XP."
+            ></wen-icon-question-circle>
+          </div>
+          <div class="flex items-baseline">
+            <nz-form-item class="flex-grow">
+              <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
+                <nz-input-number
+                  class="w-full"
+                  nzSize="large"
+                  nzPlaceHolder="Number of Badges"
+                  [formControl]="badgeCountControl"
+                ></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <wen-icon-question-circle
+              class="ml-3 text-app-gray-400"
+              nz-tooltip
+              nzTooltipPlacement="right"
+              i18n-nzTooltipTitle
+              nzTooltipTitle="The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out."
+            ></wen-icon-question-circle>
+          </div>
+        </nz-card>
+
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Badge"
+          nzDescription="What the badge looks like."
+        >
+        </nz-card-meta>
+
           <div
-            class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text"
+            class="flex p-4 mt-4 space-x-4 bg-blue-dropbg text-app-gray-text"
             *ngIf="!imageControl.value"
           >
             <wen-icon-award></wen-icon-award>
@@ -193,8 +221,13 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Award Setup">
-          <nz-form-item>
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Award Setup"
+          nzDescription="Defines who and how can get a badge."
+        >
+        </nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
                 <wen-radio [value]="types.PARTICIPATE_AND_APPROVE">

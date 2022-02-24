@@ -85,7 +85,9 @@ const APP_ROUTES: Routes = [
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule.forRoot(APP_ROUTES),
+    RouterModule.forRoot(APP_ROUTES, {
+      onSameUrlNavigation: 'reload'
+    }),
     FooterModule,
     HeaderModule,
     LayoutModule,
