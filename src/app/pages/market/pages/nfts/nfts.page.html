@@ -37,21 +37,25 @@
         </div>
 
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="w-48 wen-sort-button"[nzCustomTemplate]="defaultTemplate"
+            <nz-select class="wen-sort-button" nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
-                <nz-option nzLabel="Recent Listed" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                 <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
                 <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
             </nz-select>
             <ng-template #defaultTemplate let-selected>
-                <span nz-typography nzType="secondary" class="text-xs" *ngIf="selected.nzValue !== filter.sortOptions.RECENT">Price</span>
-                {{ selected.nzLabel }}
+                <div class="flex items-center">
+                    <div nz-typography nzType="secondary" class="text-xs mr-1">
+                        {{ selected.nzValue === filter.sortOptions.RECENT ? 'Sort by' : 'Price' }}
+                    </div>
+                    {{ selected.nzLabel }}
+                </div>
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>
             <div class="relative">
                 <nz-select class="w-44 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-                    <nz-option nzLabel="Recent Listed" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                    <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                     <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
                     <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
                 </nz-select>
