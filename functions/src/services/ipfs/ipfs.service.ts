@@ -71,6 +71,7 @@ export class IpfsService {
       image: new File([await fs.promises.readFile('/tmp/' + filename)], nft.name, {
         type: file.headers.get('content-type'),
       }),
+      platform: 'Soonaverse',
       properties: this.formatPropsStats(nft.properties),
       stats: this.formatPropsStats(nft.stats),
     });
