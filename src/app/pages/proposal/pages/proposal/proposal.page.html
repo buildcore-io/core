@@ -81,8 +81,7 @@
 
       <nz-card nzTitle="Selected Badges" *ngIf="(proposalData.badges$ | async)?.length">
         <div class="flex flex-wrap gap-2">
-          <article *ngFor="let a of (proposalData.badges$ | async); trackBy: trackByUid" nz-tooltip
-            [nzTooltipTitle]="a.badge.name"
+          <article *ngFor="let a of (proposalData.badges$ | async); trackBy: trackByUid"
             class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
             <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
           </article>
