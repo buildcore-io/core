@@ -104,6 +104,12 @@ export class MembersPage implements OnInit, OnDestroy {
     this.onScroll();
   }
 
+  public customCreatedOn(member?: Member): any {
+    return () => {
+      return member?._subColObj?.createdOn;
+    }
+  }
+
   public handleFilterChange(filter: MemberFilterOptions): void {
     this.selectedListControl.setValue(filter);
     this.cd.markForCheck();

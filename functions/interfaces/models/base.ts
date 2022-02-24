@@ -64,6 +64,8 @@ export interface BaseRecord extends Base {
 
   // Doc cursor used internally.
   _doc?: any;
+  // Sometimes we want data from parent collecton because we search through it.
+  _subColObj?: any;
 }
 
 export interface FileMetedata {

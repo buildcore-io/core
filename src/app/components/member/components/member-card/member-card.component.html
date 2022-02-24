@@ -17,7 +17,7 @@
           {{ role }}</nz-tag>
 
         <span nz-typography class="truncate lg:mt-3 text-app-gray-400" [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'">
-          <span i18n>joined</span> {{ member.createdOn?.toDate() | date:"short" }}
+          <span i18n>{{createdOnLabel}}</span> {{ (createdOn || member?.createdOn)?.toDate() | date:"short" }}
         </span>
       </div>
       <p class="mt-2 mb-3 leading-5 text-black whitespace-pre-line truncate-line-3" [ngClass]="fullWidth ? 'text-base' : 'text-xs'">{{ (about !== undefined
@@ -27,9 +27,9 @@
 
     <div class="bottom-0 flex lg:relative" [ngClass]="fullWidth ? 'flex-col lg:flex-row' : 'flex-col w-full lg:h-28'">
       <div class="relative inline-flex items-center space-x-3">
-        <nz-tag class="wen-xp-tag flex items-center">
+        <nz-tag class="flex items-center wen-xp-tag">
           {{ getTotal('totalReputation') }} <span i18n>XP</span>
-          <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400 ml-2"
+          <i nz-icon nzType="info-circle" class="ml-2 cursor-pointer text-app-gray-400"
             *ngIf="!!selectedSpace && includeAlliances"
             (click)="isReputationVisible = true"></i>
         </nz-tag>
