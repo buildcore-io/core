@@ -31,6 +31,7 @@ const IS_SCROLLED_HEIGHT = 20;
 })
 export class HeaderComponent implements OnInit {
   @ViewChild('notCompletedNotification', { static: false }) notCompletedNotification!: TemplateRef<any>;
+  @ViewChild('emptyIcon', { static: false }) emptyIcon!: TemplateRef<any>;
 
   public path = ROUTER_UTILS.config.base;
   public enableCreateAwardProposal = false;
@@ -121,7 +122,8 @@ export class HeaderComponent implements OnInit {
       if (expired === false && o?.payload.void === false && o?.payload.reconciled === false) {
         if (!this.notificationRef) {
           this.notificationRef = this.nzNotification.template(this.notCompletedNotification, {
-            nzDuration: 0
+            nzDuration: 0,
+            nzCloseIcon: this.emptyIcon
           });
         }
       } else {
