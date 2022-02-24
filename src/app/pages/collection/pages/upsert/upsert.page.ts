@@ -248,6 +248,17 @@ export class UpsertPage implements OnInit, OnDestroy {
             .subscribe(this.awards$);
         }
       });
+
+    this.typeControl.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((val) => {
+        if (val === CollectionType.CLASSIC) {
+          this.placeholderUrlControl.removeValidators(Validators.required);
+        } else {
+          this.placeholderUrlControl.addValidators(Validators.required);
+        }
+        this.placeholderUrlControl.updateValueAndValidity();
+      });
     
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
