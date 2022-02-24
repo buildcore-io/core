@@ -41,7 +41,7 @@ export class DataService {
           this.memberApi.topBadges(this.member$.value.uid, 'createdOn', undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.badges$)
         );
       } else {
-        this.lastLoadedMemberId = '';
+        this.lastLoadedMemberId = undefined;
         this.badges$.next(undefined);
         const allBadges: string[] = [...(this.member$.value.spaces?.[selectedSpace!.uid]?.badges || [])];
         if (includeAlliances) {
