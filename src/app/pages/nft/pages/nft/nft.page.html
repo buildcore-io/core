@@ -173,22 +173,22 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>On-Chain Record</span>
                     <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)">Preparing...</p>
-                    <p nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center">
-                      {{ getOnChainInfo(data.orders$ | async) | truncate: [24] }}
-                      <a class="underline text-blue-light1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank">View</a>
-                      <wen-icon-question-circle
-                          class="ml-2.5 text-app-gray-400"
-                          nz-tooltip
-                          i18n-nzTooltipTitle
-                          nzTooltipTitle="View all of the transaction details of this NFT on the Tangle"
-                      ></wen-icon-question-circle>
-                    </p>
+                    <div nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center justify-end">
+                        <div class="w-3/5 break-all line-clamp-2">{{ getOnChainInfo(data.orders$ | async) }}</div>
+                        <a class="underline text-blue-light1 ml-1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank">View</a>
+                        <wen-icon-question-circle
+                            class="ml-2.5 text-app-gray-400"
+                            nz-tooltip
+                            i18n-nzTooltipTitle
+                            nzTooltipTitle="View all of the transaction details of this NFT on the Tangle"
+                        ></wen-icon-question-circle>
+                    </div>
                 </div>
 
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
-                    <p nz-typography class="flex items-center">
-                        Shimmer/Mainnet (Tokenization)...SOON.
+                    <div nz-typography class="flex items-center justify-end">
+                        <div class="w-3/5 break-all line-clamp-2">Shimmer/Mainnet (Tokenization)...SOON.</div>
 
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
@@ -196,22 +196,22 @@
                             i18n-nzTooltipTitle
                             nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
                         ></wen-icon-question-circle>
-                    </p>
+                    </div>
                 </div>
 
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
-                  <p nz-typography>
-                      {{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...')  | truncate: [24] }}
-                      <a class="underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank">View</a>
-                  </p>
+                  <div nz-typography class="flex items-center justify-end">
+                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
+                      <a class="underline left-16 text-blue-light1 ml-1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank">View</a>
+                  </div>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
-                  <p nz-typography>
-                      {{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...')| truncate: [24] }}
-                      <a class="underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank">View</a>
-                  </p>
+                  <div nz-typography class="flex items-center justify-end">
+                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
+                      <a class="underline left-16 text-blue-light1 ml-1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank">View</a>
+                  </div>
               </div>
             </wen-collapse>
 
@@ -289,7 +289,7 @@
         </div>
 
         <div class="mt-10 lg:grid place-items-start">
-            <div class="flex flex-wrap gap-6 mb-10">
+            <div class="flex flex-wrap gap-2 mb-10">
                 <nz-skeleton *ngIf="isLoading(data.topNftWithinCollection$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
                     [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
