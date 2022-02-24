@@ -16,7 +16,7 @@ export const DISCORD_REGEXP = /^.{3,32}#[0-9]{4}$/i;
 export const TWITTER_REGEXP = /^@?(\w){1,15}$/i;
 /* eslint-disable */
 export const URL_REGEXP = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i;
-export const FILENAME_REGEXP = /^[a-zA-Z0-9_]+$/i;
+export const FILENAME_REGEXP = /^[a-zA-Z0-9_-]+$/i;
 /* eslint-enable */
 export const NFT_CONTRACT_ADDRESS = '';
 export const METAMASK_CHAIN_ID = '0x432';

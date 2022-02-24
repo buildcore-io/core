@@ -42,7 +42,7 @@
                         <i nz-icon nzType="info-circle" nz-tooltip [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
                         <ng-template #tooltip>
                             <div>
-                                <div class="text-sm font-medium mb-2" i18n>Please only use a-z, A-Z, _, 0-9 characters.</div>
+                                <div class="mb-2 text-sm font-medium" i18n>Please only use a-z, A-Z, _, -, 0-9 characters.</div>
                                 <div *ngFor="let err of uploadErrors" class="text-sm font-medium text-alerts-error">
                                     - {{ err }}
                                 </div>
