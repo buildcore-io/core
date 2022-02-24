@@ -1,5 +1,5 @@
 /* eslint-disable no-invalid-this */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
@@ -38,7 +38,7 @@ export interface NFTObject {
   styleUrls: ['./multiple.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MultiplePage {
+export class MultiplePage implements OnInit {
   public collectionControl: FormControl = new FormControl('');
   public nftForm: FormGroup;
   public stepType = StepType;
@@ -265,7 +265,7 @@ export class MultiplePage {
     res.price = Number(data.price);
     res.collection = this.collectionControl.value;
     res.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
-    res.availableFrom = data.availableFrom;
+    res.availableFrom = new Date(data.availableFrom);
     res.price = data.price;
     return res;
   }
