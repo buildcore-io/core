@@ -14,7 +14,7 @@
       <h3 i18n>Your spaces</h3>
       <div class="flex flex-wrap gap-6 mb-10">
 
-        <nz-skeleton *ngIf="isLoading(spaces$ | async)" class="p-4 bg-white pt-28 rounded-2xl w-75 h-75" [nzActive]="true"
+        <nz-skeleton *ngIf="isLoading(spaces$ | async)" class="p-4 bg-white pt-28 rounded-2xl w-76 h-76" [nzActive]="true"
           [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 3, width: 100 }"></nz-skeleton>
 
         <nz-card class="w-full" *ngIf="isEmpty((spaces$ | async))">

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TabSection } from '@pages/discover/pages/discover/discover.page';
+import { TabSection } from '@components/tabs/tabs.component';
 
 @Component({
   selector: 'wen-dropdown-tabs',

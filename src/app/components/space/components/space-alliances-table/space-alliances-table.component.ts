@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AllianceExtended } from '@api/space.api';
-import { AvatarService } from '@core/services/avatar';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 
 @Component({
   selector: 'wen-space-alliances-table',
@@ -17,7 +17,7 @@ export class SpaceAlliancesTableComponent {
 
   constructor(
     public deviceService: DeviceService,
-    public avatarService: AvatarService
+    public previewImageService: PreviewImageService
   ) { }
 
   public trackByUid(index: number, item: any): number {

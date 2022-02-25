@@ -63,6 +63,18 @@ const APP_ROUTES: Routes = [
     canLoad: [],
   },
   {
+    path: ROUTER_UTILS.config.collection.root,
+    loadChildren: async () =>
+      (await import('@pages/collection/collection.module')).CollectionModule,
+    canLoad: [],
+  },
+  {
+    path: ROUTER_UTILS.config.nft.root,
+    loadChildren: async () =>
+      (await import('@pages/nft/nft.module')).NFTModule,
+    canLoad: [],
+  },
+  {
     path: '**',
     loadChildren: async () =>
       (await import('@shell/ui/not-found/not-found.module')).NotFoundModule,
@@ -73,7 +85,9 @@ const APP_ROUTES: Routes = [
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule.forRoot(APP_ROUTES),
+    RouterModule.forRoot(APP_ROUTES, {
+      onSameUrlNavigation: 'reload'
+    }),
     FooterModule,
     HeaderModule,
     LayoutModule,

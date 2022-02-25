@@ -1,11 +1,11 @@
-<article class="w-full bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-auto p-6' : 'lg:w-75 lg:h-75 p-4'"
+<article class="w-full bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-auto p-6' : 'lg:w-76 lg:h-76 p-4'"
   *ngIf="proposal">
   <a class="relative block w-full h-full text-current hover:text-current" [routerLink]="['/', this.path, proposal.uid]">
     <wen-icon-angle-left class="absolute flex rotate-180 right-6" *ngIf="fullWidth && (deviceService.isDesktop$ | async)"></wen-icon-angle-left>
     <div class="relative flex flex-col w-full" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-24'">
       <h3 class="max-w-md mt-2 mb-2 text-lg font-bold lg:truncate">{{ proposal.name || proposal.uid }}</h3>
       <div class="flex items-center w-full space-x-4" *ngIf="deviceService.isDesktop$ | async">
-        <nz-avatar [nzSrc]="avatarService.getAvatarSize((space$ | async)?.avatarUrl)"
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize((space$ | async)?.avatarUrl)"
           class="border-2 border-app-gray-100 bg-bg-background min-w-10" nzShape="circle">
         </nz-avatar>
         <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>

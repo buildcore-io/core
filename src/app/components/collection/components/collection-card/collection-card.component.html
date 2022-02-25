@@ -1,0 +1,46 @@
+<article class="bg-white rounded-2xl wen-card"
+    [ngClass]="fullWidth ? 'w-full' : 'w-76'" *ngIf="collection">
+    <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
+        <div class="relative w-full overflow-hidden h-44 rounded-2xl">
+            <img
+            alt=""
+            [src]="(fullWidth ? collection?.bannerUrl : previewImageService.getCollectionSize(collection?.bannerUrl)) || '/assets/mocks/no_banner.jpg'"
+            class="object-cover w-full h-full"
+            />
+
+            <div class="absolute top-4 left-4 z-10 rounded-lg bg-white flex items-center px-2.5 py-1.5"
+                *ngIf="!fullWidth">
+                <nz-avatar
+                    class="border-app-gray-100 min-w-6 min-h-6"
+                    [nzSrc]="spaceAvatarUrl"
+                    [nzSize]="24"
+                    nzShape="circle"
+                ></nz-avatar>
+                <div class="text-sm font-medium ml-2.5 max-w-24 truncate">
+                    {{this.space?.name || this.space?.uid}}
+                </div>
+            </div>
+
+            <!-- Needs to be implemented: ngClass -->
+            <div class="absolute top-5 right-5 lg:top-6 lg:right-6 z-10 rounded-lg flex items-center px-2.5 py-1.5 text-sm font-medium"
+                *ngIf="fullWidth"
+                [ngClass]="getStatusProperties().className">
+                {{ getStatusProperties().label }}
+            </div>
+
+            <!-- Needs to be implemented -->
+            <div class="absolute z-10 flex items-center justify-center p-2 text-black rounded-full top-5 right-5 bg-alerts-warning"
+                *ngIf="!fullWidth && collection.access !== targetAccess.OPEN">
+                    <wen-icon-user-plus></wen-icon-user-plus>
+            </div>
+        </div>
+
+        <div class="relative flex flex-col w-full h-32 px-5">
+            <h3 class="mt-4 mb-2 text-lg font-bold truncate">{{ collection.name }}</h3>
+
+            <div class="text-sm font-medium break-all line-clamp-3">
+                {{ collection.description | stripMarkdown }}
+            </div>
+        </div>
+    </a>
+</article>

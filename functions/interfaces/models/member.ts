@@ -19,4 +19,5 @@ export interface Member extends BaseRecord {
   alliances?: string[];
   awardsCompleted?: number;
   totalReputation?: number;
+  validatedAddress?: string;
 }

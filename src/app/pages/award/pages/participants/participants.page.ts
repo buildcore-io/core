@@ -192,6 +192,10 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     }
   }
 
+  public getMemberCreatedOnLabel(): string {
+    return 'applied on';
+  }
+
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }

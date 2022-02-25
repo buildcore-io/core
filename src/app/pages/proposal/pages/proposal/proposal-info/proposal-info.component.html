@@ -11,7 +11,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let t of data?.transactions$ | async">
-            <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]"> @{{ (t.memberRec.name || t.member )| truncate:[16] }}</td>
+            <td class="cursor-pointer" [routerLink]="['/', 'member', t.member]"> @{{ (t.memberRec.name || t.member )| truncate:[7] }}</td>
             <td>{{ t.createdOn?.toDate() | date:"short" }}</td>
             <td>{{ data.findAnswerText((data?.proposal$ | async)?.questions, t.payload.values) }}</td>
         </tr>

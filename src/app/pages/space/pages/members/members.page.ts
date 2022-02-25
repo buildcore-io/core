@@ -28,6 +28,7 @@ export class MembersPage implements OnInit, OnDestroy {
   public filterControl: FormControl = new FormControl(undefined);
   public overTenRecords = false;
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
+  public memberPath = ROUTER_UTILS.config.member.root;
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -101,6 +102,12 @@ export class MembersPage implements OnInit, OnDestroy {
 
     // Load initial list.
     this.onScroll();
+  }
+
+  public customCreatedOn(member?: Member): any {
+    return () => {
+      return member?._subColObj?.createdOn;
+    }
   }
 
   public handleFilterChange(filter: MemberFilterOptions): void {

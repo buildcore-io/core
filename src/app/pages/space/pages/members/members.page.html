@@ -22,17 +22,16 @@
         <ng-template #hotTagsMobileBlock>
           <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl?.value" (ngModelChange)="handleFilterChange($event)">
             <nz-option [nzLabel]="'Active'" [nzValue]="filterOptions.ACTIVE"></nz-option>
-            <nz-option *ngIf="!(data.space$ | async)?.open" 
-              [nzLabel]="'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')" 
+            <nz-option *ngIf="!(data.space$ | async)?.open"
+              [nzLabel]="'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')"
               [nzValue]="filterOptions.PENDING"></nz-option>
             <nz-option [nzLabel]="'Blocked'" [nzValue]="filterOptions.BLOCKED"></nz-option>
           </nz-select>
         </ng-template>
       </div>
-
-      <nz-input-group *ngIf="(data.isGuardianWithinSpace$ | async) === false || (deviceService.isDesktop$ | async); else mobileSearch" 
+      <nz-input-group *ngIf="(data.isGuardianWithinSpace$ | async) === false || (deviceService.isDesktop$ | async); else mobileSearch"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'large' : 'small'" [nzPrefix]="prefixIconSearch"
-        class="w-full ml-0 border-none shadow-none lg:ml-8 outline-0 lg:w-72" nzSearch>
+        class="w-full ml-0 border-none shadow-none outline-0 lg:w-72" nzSearch>
         <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base" [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
@@ -60,10 +59,10 @@
       </div>
     </nz-card>
 
-    <wen-member-card class="block" [fullWidth]="true" [selectedSpace]="(data.space$ | async)?.uid" [includeAlliances]="true"
+    <wen-member-card class="block" createdOnLabel="joined space on" [fullWidth]="true" [createdOn]="member?._subColObj?.createdOn" [selectedSpace]="(data.space$ | async)?.uid" [includeAlliances]="true"
       [role]="memberIsGuardian(member.uid) && isActiveList() ? 'Guardian' : 'Member'"
       *ngFor="let member of getList() | async; trackBy: trackByUid" [member]="member">
-      <a class="w-full" [routerLink]="['/', member.uid]" *ngIf="(data.isGuardianWithinSpace$ | async) === false">
+      <a class="w-full" [routerLink]="['/', this.memberPath, member.uid]" *ngIf="(data.isGuardianWithinSpace$ | async) === false">
         <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>
       </a>
       <!-- TODO show button only when there is any option available -->

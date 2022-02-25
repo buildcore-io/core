@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { CollectionApi } from '@api/collection.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award, Space } from 'functions/interfaces/models';
+import { Collection, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
-import { AwardApi } from './../../@api/award.api';
 import { SpaceApi } from './../../@api/space.api';
 
 export interface StepArticle {
@@ -25,7 +25,7 @@ export interface StepArticle {
 export class HomePage implements OnInit {
   public path = ROUTER_UTILS.config;
   public theme = ThemeList;
-  public award$: BehaviorSubject<Award[]> = new BehaviorSubject<Award[]>([]);
+  public collection$: BehaviorSubject<Collection[]> = new BehaviorSubject<Collection[]>([]);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public stepArticles: StepArticle[] = [
     {
@@ -43,20 +43,20 @@ export class HomePage implements OnInit {
       title: 'Manage, Maintain, Grow',
       description: 'Governance, voting, for both public and private communities.'
     }
-  ]; 
+  ];
 
   constructor(
     public deviceService: DeviceService,
     private auth: AuthService,
     private themeService: ThemeService,
     private router: Router,
-    private awardApi: AwardApi,
+    private collectionApi: CollectionApi,
     private spaceApi: SpaceApi
   ) {}
 
   public ngOnInit(): void {
     this.spaceApi.last(undefined, undefined, 3).pipe(untilDestroyed(this)).subscribe(this.spaces$);
-    this.awardApi.last(undefined, undefined, 3).pipe(untilDestroyed(this)).subscribe(this.award$);
+    this.collectionApi.last(undefined, undefined, 3).pipe(untilDestroyed(this)).subscribe(this.collection$);
   }
 
   public onClickChangeTheme(theme: ThemeList): void {

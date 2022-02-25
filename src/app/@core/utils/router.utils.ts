@@ -9,14 +9,17 @@ export const ROUTER_UTILS = {
       signIn: 'signIn'
     },
     market: {
-      root: 'market'
+      root: 'market',
+      collections: 'collections',
+      nfts: 'nfts',
     },
     discover: {
       root: 'discover',
       spaces: 'spaces',
       awards: 'awards',
       proposals: 'proposals',
-      members: 'members'
+      members: 'members',
+      collections: 'collections'
     },
     member: {
       // Redirect back to discovery
@@ -25,7 +28,8 @@ export const ROUTER_UTILS = {
       activity: 'activity',
       awards: 'awards',
       badges: 'badges',
-      spaces: 'spaces'
+      spaces: 'spaces',
+      nfts: 'nfts'
     },
     space: {
       // Redirect back to discovery
@@ -38,6 +42,7 @@ export const ROUTER_UTILS = {
       awards: 'awards',
       treasury: 'treasury',
       members: 'members',
+      collections: 'collections'
     },
     proposal: {
       // Redirect back to space?!
@@ -54,6 +59,19 @@ export const ROUTER_UTILS = {
       award: ':awardId',
       overview: 'overview',
       participants: 'participants',
+    },
+    collection: {
+      root: 'collection',
+      collection: ':collectionId',
+      new: 'new',
+      edit: 'edit'
+    },
+    nft: {
+      root: 'nft',
+      newNft: 'new',
+      nft: ':nftId',
+      single: 'single',
+      multiple: 'multiple'
     },
     errorResponse: {
       notFound: '404',

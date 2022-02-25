@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import * as dayjs from 'dayjs';
 import { Award } from 'functions/interfaces/models';
-import { Observable, switchMap } from "rxjs";
+import { map, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
@@ -64,6 +64,14 @@ export class MemberApi extends BaseApi<Member> {
     return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, undefined, (obj: any) => {
       return (obj.settings.endDate?.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
     });
+  }
+
+  public hasBadge(memberId: EthAddress, badgeId: EthAddress): Observable<boolean> {
+    return this._query(COL.TRANSACTION, 'createdOn', 'asc', undefined, undefined, FULL_LIST, (ref: any) => {
+      return ref.where('member', '==', memberId).where('type', '==', TransactionType.BADGE).where('payload.award', '==',badgeId);
+    }).pipe(map((o) => {
+      return o.length > 0;
+    }));
   }
 
   public topBadges(memberId: string, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {

@@ -39,7 +39,6 @@ function defaultJoiUpdateCreateSchema(): any {
 }
 
 export const createMember: functions.CloudFunction<Member> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.cMemberNotExists),
 }).https.onCall(async (address: string, context: any): Promise<Member> => {
   appCheck(WEN_FUNC.cMemberNotExists, context);
@@ -65,11 +64,10 @@ export const createMember: functions.CloudFunction<Member> = functions.runWith({
 });
 
 export const updateMember: functions.CloudFunction<Member> = functions.runWith({
-  // Keep 1 instance so we never have cold start.
   minInstances: scale(WEN_FUNC.uMember),
 }).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
   appCheck(WEN_FUNC.uMember, context);
-  // We must part
+  // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const address = params.address.toLowerCase();
   const schema: ObjectSchema<Member> = Joi.object(merge(defaultJoiUpdateCreateSchema(), {

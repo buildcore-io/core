@@ -28,6 +28,7 @@ export interface Space extends BaseRecord {
   totalGuardians: number;
   totalMembers: number;
   totalPendingMembers: number;
+  validatedAddress?: string;
   alliances: {
     [propName: string]: Alliance;
   }

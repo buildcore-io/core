@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { DEFAULT_SPACE, SelectSpaceOption } from '@components/select-space/select-space.component';
+import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import { FILE_SIZES } from 'functions/interfaces/models/base';
 import {
   ApexAxisChartSeries,
   ApexChart, ApexDataLabels, ApexFill, ApexMarkers, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
@@ -45,7 +44,6 @@ export class ActivityPage implements OnInit {
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public defaultSpace = DEFAULT_SPACE;
-  public showAllBadges = false;
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -57,7 +55,7 @@ export class ActivityPage implements OnInit {
     // Init empty.
     this.initChart([]);
     this.spaceForm = new FormGroup({
-      space: new FormControl(storageService.selectedSpace.getValue()),
+      space: new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value),
       includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
   }
@@ -202,9 +200,5 @@ export class ActivityPage implements OnInit {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public get filesizes(): typeof FILE_SIZES {
-    return FILE_SIZES;
   }
 }

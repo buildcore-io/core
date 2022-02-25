@@ -48,7 +48,7 @@ export class OverviewPage implements OnInit {
     });
 
     // Run ticker.
-    const int: Subscription = interval(1000).subscribe(() => {
+    const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.startDateTicker$.next(this.startDateTicker$.value);
 
       // If it's in the past.

@@ -29,7 +29,7 @@ export class SpacesPage implements OnInit, OnDestroy {
   private subscriptions$: Subscription[] = [];
 
   constructor(
-    private spaceApi: SpaceApi, 
+    private spaceApi: SpaceApi,
     public filter: FilterService,
     public deviceService: DeviceService
   ) {
@@ -55,7 +55,11 @@ export class SpacesPage implements OnInit, OnDestroy {
 
     // Init listen.
     this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
   }
 
@@ -95,7 +99,7 @@ export class SpacesPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions$.push(this.getHandler(this.spaces$.value[this.spaces$.value.length - 1].createdOn).subscribe(this.store.bind(this, this.dataStore.length)));
+    this.subscriptions$.push(this.getHandler(this.spaces$.value[this.spaces$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
   public isLoading(arr: any): boolean {

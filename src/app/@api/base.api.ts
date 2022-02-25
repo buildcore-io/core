@@ -1,7 +1,7 @@
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { WEN_FUNC } from "functions/interfaces/functions";
-import { firstValueFrom, Observable, switchMap } from 'rxjs';
+import { firstValueFrom, map, Observable, switchMap } from 'rxjs';
 import { COL, EthAddress, SUB_COL } from "./../../../functions/interfaces/models/base";
 
 export const DEFAULT_LIST_SIZE = 50;
@@ -69,7 +69,14 @@ export class BaseApi<T> {
         return query;
       }
     );
-    return ref.valueChanges();
+    return ref.snapshotChanges().pipe(map((actions) => {
+      // We need cursor.
+      return actions.map(a => {
+        const data = a.payload.doc.data();
+        const doc = a.payload.doc;
+        return {...data, _doc: doc };
+      });
+    }));
   }
 
   // TODO Redo arguments into an object
@@ -116,6 +123,8 @@ export class BaseApi<T> {
           return subO.uid === o.uid;
         });
 
+        // Add parent object.
+        finObj._subColObj = o;
         if (!finObj) {
           console.warn('Missing record in database');
         } else {

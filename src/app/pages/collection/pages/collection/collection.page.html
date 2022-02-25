@@ -1,0 +1,241 @@
+<wen-content [showBackButton]="true">
+    <ng-container *ngIf="deviceService.isMobile$ | async">
+        <wen-drawer-toggle label="About collection" (click)="isAboutCollectionVisible = true">
+        </wen-drawer-toggle>
+    </ng-container>
+
+    <div class="relative w-auto h-48 mt-8 overflow-hidden lg:h-96 rounded-2xl lg:mt-16">
+        <img [src]="(data.collection$ | async)?.bannerUrl || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
+
+        <div class="absolute z-10 flex items-center p-2 bg-white rounded-lg top-5 left-5"
+            *ngIf="deviceService.isDesktop$ | async">
+            <nz-avatar
+              [nzSize]="32"
+              [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+              class="border-app-gray-100 min-w-8 min-h-8"
+              nzShape="circle">
+            </nz-avatar>
+            <div class="ml-3 text-sm font-medium truncate max-w-24">
+                {{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}
+            </div>
+        </div>
+    </div>
+
+    <div class="relative w-full mt-6" nz-row [nzGutter]="40">
+        <div class="flex-auto p-0 my-0 ml-5 -mr-5 lg:mx-0 lg:px-5" [ngStyle]="{
+            'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+            }">
+            <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>Collection</nz-tag>
+            <wen-collection-status [collection]="data.collection$ | async"></wen-collection-status>
+
+            <h1 class="mt-3 mb-0 lg:mt-2">{{ (data.collection$ | async)?.name }}</h1>
+
+            <div class="w-full mt-10 mb-4 space-y-4" *ngIf="(deviceService.isMobile$ | async)">
+                <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                    Approve Collection
+                </button>
+
+                <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                    Reject Collection
+                </button>
+
+                <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+                    Edit Collection
+                </button>
+            </div>
+
+            <div class="flex flex-wrap items-center mt-8">
+                <a  *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace"
+                  [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center mt-2">
+                  <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                    class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                    style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                  </nz-avatar>
+                  <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
+                    @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
+                  </div>
+                </a>
+
+                <a *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace"
+                  [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center mt-2">
+                  <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
+                    class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                    style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                  </nz-avatar>
+                  <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
+                    {{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}
+                  </div>
+                </a>
+
+                <div class="flex items-center mt-4 mr-8 lg:mt-2">
+                    <wen-icon-time></wen-icon-time>
+                    <div class="ml-2.5 font-medium">{{(data.collection$ | async)?.createdOn?.toDate() | date:'short'}}</div>
+                </div>
+
+                <div class="flex items-center mt-4 lg:mt-2">
+                    <wen-icon-tag></wen-icon-tag>
+                    <div class="ml-2.5 font-medium">{{ (data.collection$ | async)?.category }}</div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center mt-8 lg:mt-6">
+                <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl lg:mt-2">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
+                    <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
+                </div>
+
+                <div class="flex-grow h-16 px-4 py-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available</div>
+                    <div class="text-lg font-bold truncate">{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}</div>
+                </div>
+
+                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
+                    <div class="text-lg font-bold truncate">{{formatBest((data.cheapestNft$ | async)?.price)}}</div>
+                </div>
+            </div>
+
+            <div class="mt-10 font-medium lg:mt-6" [innerHtml]="(data.collection$ | async)?.description | markdown">
+            </div>
+
+            <div class="flex items-center p-5 mt-8 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.collection$ | async)">
+                <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+                <div class="text-lg font-bold">
+                    <span i18n>Sale in progress</span>
+                    <span> - {{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}} </span>
+                    <span i18n>remaining</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;"
+            *ngIf="(deviceService.isDesktop$ | async)">
+            <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                Approve Collection
+            </button>
+
+            <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
+                Reject Collection
+            </button>
+
+            <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+                Edit Collection
+            </button>
+
+            <wen-collection-about></wen-collection-about>
+        </div>
+    </div>
+
+    <nz-drawer [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }" [nzWidth]="'100vw'" [nzClosable]="false"
+        [nzVisible]="isAboutCollectionVisible">
+        <div *nzDrawerContent class="relative h-full">
+            <button class="absolute z-10 -top-0 right-5" (click)="isAboutCollectionVisible = false">
+                <wen-icon-close></wen-icon-close>
+            </button>
+
+            <wen-collection-about></wen-collection-about>
+        </div>
+    </nz-drawer>
+
+    <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-app-gray-separator-dark lg:mt-12"></div>
+
+    <div class="flex items-center justify-between">
+        <nz-input-group
+            nzSize="default" [nzPrefix]="prefixIconSearch"
+            class="w-full border-none shadow-none outline-0 lg:w-96" nzSearch>
+            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
+        </nz-input-group>
+        <ng-template #prefixIconSearch>
+            <i nz-icon nzType="search" class="text-xl"></i>
+        </ng-template>
+
+        <button nz-button nzType="primary" nzSize="default"
+            *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
+            class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()" i18n>
+            <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
+            <div *ngIf="deviceService.isDesktop$ | async">Create NFT</div>
+        </button>
+    </div>
+
+
+    <div class="w-full h-px mt-8 mb-6 bg-app-gray-700" *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"></div>
+
+    <div class="flex items-end justify-between">
+        <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
+            <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
+                <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
+                    (nzCheckedChange)="handleChange(tag)">
+                    {{ tag }}
+                </nz-tag>
+            </ng-container>
+
+            <ng-template #hotTagsMobileBlock>
+                <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
+                    <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+                </nz-select>
+            </ng-template>
+        </div>
+
+        <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
+            <nz-select class="wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
+                [formControl]="sortControl" nz-tooltip>
+                <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
+            </nz-select>
+            <ng-template #defaultTemplate let-selected>
+                <div class="flex items-center">
+                    <div nz-typography nzType="secondary" class="mr-1 text-xs">
+                        {{ selected.nzValue === filter.sortOptions.RECENT ? 'Sort by' : 'Price' }}
+                    </div>
+                    {{ selected.nzLabel }}
+                </div>
+            </ng-template>
+        </ng-container>
+        <ng-template #sortMobileBlock>
+            <div class="relative">
+                <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
+                  <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                  <nz-option nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                  <nz-option nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
+                </nz-select>
+                <ng-template #mobileSuffixIcon>
+                    <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
+                </ng-template>
+            </div>
+        </ng-template>
+    </div>
+
+    <div class="mt-10 lg:grid place-items-start" *ngIf="(data.collection$ | async)?.uid">
+        <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(data.nft$ | async)">
+          {{ getTotalNfts(data.nft$ | async, data.collection$ | async) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
+        </p>
+        <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+            (scrolled)="onScroll()">
+
+            <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+                [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+
+            <nz-card class="w-76" *ngIf="isEmpty(data.nft$ | async) && !((data.collection$ | async)?.placeholderNft && (data.firstNft$ | async))">
+                <div class="flex flex-col justify-center text-center h-36">
+                    <span class="leading-7 text-app-gray-400" i18n>
+                        No NFTs
+                    </span>
+                </div>
+            </nz-card>
+
+            <!-- Place holder NFT MUST be always first -->
+            <wen-nft-card
+              *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNft$ | async)" [collection]="(data.collection$ | async)"
+              [nft]="(data.firstNft$ | async)">
+            </wen-nft-card>
+
+            <ng-container *ngFor="let nft of data.nft$ | async; trackBy: trackByUid">
+              <wen-nft-card [collection]="(data.collection$ | async)"
+                  *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNft$ | async)?.uid)"
+                  [nft]="nft">
+              </wen-nft-card>
+            </ng-container>
+        </div>
+    </div>
+</wen-content>

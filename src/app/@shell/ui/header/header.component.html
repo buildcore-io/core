@@ -67,6 +67,9 @@
         <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal" i18n>
           <wen-icon-award icon></wen-icon-award>Award
         </wen-menu-item>
+        <wen-menu-item [routerLink]="routerService.urlToNewCollection" *ngIf="enableCollection" i18n>
+          <wen-icon-collection icon></wen-icon-collection>Collection
+        </wen-menu-item>
       </wen-menu>
     </nz-dropdown-menu>
 
@@ -106,3 +109,22 @@
 </header>
 
 <wen-sign-in-modal></wen-sign-in-modal>
+
+<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="currentCheckoutNft" [collection]="currentCheckoutCollection" (onClose)="closeCheckout()"></wen-nft-checkout>
+
+<ng-template #notCompletedNotification>
+  <div class="flex">
+      <wen-icon-alert-octagon class="text-alerts-warning mr-3.5" [size]="20"></wen-icon-alert-octagon>
+      <div>
+          <div class="w-4/5 font-bold" i18n>Purchase has not been completed</div>
+          <div class="mt-2 text-xs font-medium text-foregrounds-secondary">
+              You have <span class="text-alerts-error">{{(expiryTicker$ | async) | countdownTime}}</span> to finish your transaction
+          </div>
+          <button nz-button nzType="primary" nzSize="small" class="mt-5" (click)="onOpenCheckout()" i18n>Open Checkout</button>
+      </div>
+  </div>
+</ng-template>
+
+<ng-template #emptyIcon>
+  <!-- nothing -->
+</ng-template>

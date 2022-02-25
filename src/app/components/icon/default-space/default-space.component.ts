@@ -6,6 +6,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   styleUrls: ['./default-space.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DefaultSpaceIconComponent{
+export class DefaultSpaceIconComponent {
   @Input() size = 24;
 }

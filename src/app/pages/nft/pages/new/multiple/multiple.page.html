@@ -1,0 +1,187 @@
+<ng-container *ngIf="deviceService.isDesktop$ | async">
+    <form nz-form nzLayout="vertical" [formGroup]="nftForm">
+        <div class="py-4" nz-row [nzGutter]="24">
+            <div
+                class="space-y-4"
+                nz-col
+                nzFlex="auto"
+                style="max-width: calc(100% - 450px)"
+            >
+                <nz-card [nzBordered]="false" *ngIf="currentStep === stepType.GENERATE">
+                    <nz-card-meta
+                        [nzTitle]="uploadedFiles.length === 0 ? 'Upload multiple images' : 'Upload more images'"
+                        [nzDescription]="uploadedFiles.length + '/500'"
+                        >
+                    </nz-card-meta>
+
+                    <div class="mt-6">
+                        <nz-form-item>
+                            <nz-form-control>
+                                <nz-upload
+                                    class="wen-banner"
+                                    nzName="banner"
+                                    nzType="drag"
+                                    [nzDirectory]="false"
+                                    [nzLimit]="500"
+                                    [nzMultiple]="true"
+                                    [nzCustomRequest]="uploadMultipleFiles.bind(this)"
+                                    [nzFilter]="uploadFilter"
+                                    (nzChange)="uploadMultipleChange($event)"
+                                    nzFileType="image/png,image/jpg,image/jpeg,image/webp"
+                                >
+                                    <ng-container>
+                                        <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">{{ allowedFileFormats }}</span>
+                                    </ng-container>
+                                </nz-upload>
+                            </nz-form-control>
+                        </nz-form-item>
+                    </div>
+
+                    <div class="flex items-center text-alerts-error" *ngIf="uploadErrors.length">
+                        <div class="mr-1 text-xs font-medium" i18n>Some files have not been uploaded</div>
+                        <i nz-icon nzType="info-circle" nz-tooltip [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+                        <ng-template #tooltip>
+                            <div>
+                                <div class="mb-2 text-sm font-medium" i18n>Please only use a-z, A-Z, _, -, 0-9 characters.</div>
+                                <div *ngFor="let err of uploadErrors" class="text-sm font-medium text-alerts-error">
+                                    - {{ err }}
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </nz-card>
+
+                <nz-card nzTitle="Uploaded CSV" *ngIf="currentStep === stepType.PUBLISH">
+                    <div class="flex items-center px-5 py-4 my-10 text-white rounded-xl bg-alerts-error" *ngIf="isNftError()">
+                        <wen-icon-alert-octagon class="mr-3.5"></wen-icon-alert-octagon>
+                        <div class="font-bold" i18n>
+                            Some of the NFTs are faulty!
+                        </div>
+                    </div>
+
+                    <nz-table class="block" nzNoResult="No NFTs"
+                        [nzData]="nfts" [nzShowPagination]="false">
+                        <thead>
+                            <tr>
+                                <th i18n>Filename</th>
+                                <th i18n>Name</th>
+                                <th i18n>Price</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let nft of nfts; let i = index; trackBy: trackByName">
+                                <td>
+                                    <div class="text-base font-medium truncate">{{ getMediaName(nft.media) | truncate:[12] }}</div>
+                                </td>
+                                <td>
+                                    <div class="text-base font-medium">{{ nft.name | truncate:[12] }}</div>
+                                </td>
+                                <td>
+                                    <div class="text-base font-medium">{{ data.formatBest(nft.price) }}</div>
+                                </td>
+                                <td class="w-0">
+                                    <wen-icon-eye *ngIf="!nftErrors[i]?.length; else errorBlock"
+                                        class="text-black cursor-pointer" (click)="previewNft = nft"></wen-icon-eye>
+                                    <ng-template #errorBlock>
+                                        <div class="flex items-center text-alerts-error">
+                                            <div class="mr-1 text-xs font-medium" i18n>Error</div>
+                                            <i nz-icon nzType="info-circle" nz-tooltip [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+                                            <ng-template #tooltip>
+                                                <div>
+                                                    <div *ngFor="let err of nftErrors[i]" class="text-sm font-medium text-alerts-error">
+                                                        - {{ err }}
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </ng-template>
+                                </td>
+                                <td class="w-0">
+                                    <wen-icon-trash class="cursor-pointer text-app-gray-400" (click)="removeNft(i)"></wen-icon-trash>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </nz-card>
+            </div>
+
+            <div class="space-y-4" nz-col nzFlex="450px">
+                <nz-card [nzBordered]="false" nzTitle="Collection">
+                    <nz-form-item>
+                        <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
+                            <nz-select
+                                class="w-full"
+                                nzSize="large"
+                                nzShowSearch
+                                nzAllowClear
+                                nzPlaceHolder="Select collection"
+                                [formControl]="collectionControl"
+                                >
+                                <nz-option *ngFor="let o of data.getCollectionListOptions(cache.allCollections$ | async)" [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
+                            </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </nz-card>
+
+                <div class="relative mt-6">
+                    <nz-card [nzBordered]="false" [ngClass]="{ 'opacity-50': uploadedFiles.length === 0 }">
+                        <nz-card-meta
+                            nzTitle="Upload existing CSV"
+                            nzDescription="Upload back once you generate bellow"
+                            >
+                        </nz-card-meta>
+
+                        <div class="mt-6">
+                            <nz-form-item>
+                                <nz-form-control>
+                                    <nz-upload
+                                        class="wen-banner"
+                                        nzName="banner"
+                                        nzType="drag"
+                                        nzListType="picture-card"
+                                        [nzDisabled]="uploadedFiles.length === 0"
+                                        [nzDirectory]="false"
+                                        [nzBeforeUpload]="beforeCSVUpload.bind(this)"
+                                        nzFileType="text/csv,application/vnd.ms-excel"
+                                    >
+                                        <ng-container>
+                                            <i class="upload-icon" nz-icon nzType="upload"></i>
+                                        </ng-container>
+                                    </nz-upload>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </div>
+                    </nz-card>
+
+                    <div class="absolute top-0 left-0 w-full h-full" *ngIf="uploadedFiles.length === 0">
+                        <div class="absolute z-10 flex items-center justify-center px-5 py-3 text-base font-medium transform -translate-x-1/2 -translate-y-1/2 rounded-lg top-1/2 left-1/2 bg-alerts-warning text-app-gra-text whitespace-nowrap" i18n>
+                                You have to upload images first.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <button *ngIf="uploadedFiles.length"
+        nz-button
+        nzType="primary"
+        class="w-auto mb-6"
+        nzSize="large"
+        type="button"
+        (click)="buttonClick()"
+        [disabled]="isNftError()"
+        i18n
+    >
+        {{ currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs'}}
+    </button>
+
+    <wen-nft-preview [nft]="previewNft" (onClose)="previewNft = null"></wen-nft-preview>
+</ng-container>
+
+<div *ngIf="deviceService.isMobile$ | async" class="flex p-4 mt-6 bg-white rounded-2xl text-foregrounds-secondary">
+    <wen-icon-info-circle></wen-icon-info-circle>
+    <div class="ml-3" i18n>To create multiple classic NFTs, you have to use the web version of Soonaverse.</div>
+</div>

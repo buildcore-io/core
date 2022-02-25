@@ -1,10 +1,11 @@
 import { WEN_FUNC } from '../interfaces/functions';
+export const low = 1;
+export const medium = 3;
+export const important = 6;
+export const pump = 9;
+export const superPump = 12;
 
 export function scale(func: WEN_FUNC): number {
-  const low = 1;
-  const medium = 3;
-  const important = 6;
-  const pump = 9;
   const scaleSettings: any = {};
   scaleSettings[WEN_FUNC.cMemberNotExists] = pump;
   scaleSettings[WEN_FUNC.uMember] = important;
@@ -33,6 +34,18 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.aProposal] = low;
   scaleSettings[WEN_FUNC.rProposal] = low;
   scaleSettings[WEN_FUNC.voteOnProposal] = medium;
+
+  // Collections
+  scaleSettings[WEN_FUNC.cCollection] = medium;
+  scaleSettings[WEN_FUNC.uCollection] = medium;
+  scaleSettings[WEN_FUNC.approveCollection] = low;
+  scaleSettings[WEN_FUNC.rejectCollection] = low;
+
+  scaleSettings[WEN_FUNC.cNft] = medium;
+  scaleSettings[WEN_FUNC.cBatchNft] = medium;
+
+  scaleSettings[WEN_FUNC.orderNft] = superPump;
+  scaleSettings[WEN_FUNC.validateAddress] = superPump;
 
   return scaleSettings[func] || low;
 }

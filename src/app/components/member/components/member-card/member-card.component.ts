@@ -7,7 +7,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, first, firstValueFrom } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Space, Transaction } from "../../../../../../functions/interfaces/models";
-import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
+import { FILE_SIZES, Timestamp } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
@@ -36,6 +36,8 @@ export class MemberCardComponent implements OnDestroy {
   @Input() fullWidth?: boolean;
   @Input() about?: string;
   @Input() role?: string;
+  @Input() createdOn?: Timestamp;
+  @Input() createdOnLabel = 'joined';
 
   public get selectedSpace(): Space | undefined {
     return this._selectedSpace;

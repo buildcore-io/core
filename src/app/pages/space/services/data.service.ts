@@ -1,6 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { CollectionApi } from '@api/collection.api';
+import { MemberApi } from '@api/member.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Award } from 'functions/interfaces/models';
+import { BADGE_TO_CREATE_COLLECTION } from 'functions/interfaces/config';
+import { Award, Collection } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
@@ -22,6 +25,7 @@ export class DataService implements OnDestroy {
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isAllowCollectionCreation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public guardians$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public proposalsDraft$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
   public proposalsActive$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
@@ -34,6 +38,9 @@ export class DataService implements OnDestroy {
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
   public pendingMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
+  public rejectedCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
+  public pendingCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
+  public availableCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -42,6 +49,9 @@ export class DataService implements OnDestroy {
   private completedAwardsOn = false;
   private rejectedAwardsOn = false;
   private draftAwardsOn = false;
+  private availableCollectionOn = false;
+  private rejectedCollectionOn = false;
+  private pendingCollectionOn = false;
   private dataStoreMembers: Member[][] = [];
   private dataStorePendingMembers: Member[][] = [];
   private dataStoreBlockedMembers: Member[][] = [];
@@ -50,7 +60,9 @@ export class DataService implements OnDestroy {
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private awardApi: AwardApi,
-    private proposalApi: ProposalApi
+    private memberApi: MemberApi,
+    private proposalApi: ProposalApi,
+    private collectionApi: CollectionApi
   ) {
     // none.
   }
@@ -105,6 +117,9 @@ export class DataService implements OnDestroy {
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isMemberWithinSpace(spaceId, memberId).subscribe(this.isMemberWithinSpace$));
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isGuardianWithinSpace(spaceId, memberId).subscribe(this.isGuardianWithinSpace$));
     this.subscriptionsRelatedRecords$.push(this.spaceApi.isPendingMemberWithinSpace(spaceId, memberId).subscribe(this.isPendingMemberWithSpace$));
+
+    // Temporary limit collection creation.
+    this.subscriptionsRelatedRecords$.push(this.memberApi.hasBadge(memberId, BADGE_TO_CREATE_COLLECTION).subscribe(this.isAllowCollectionCreation$));
   }
 
   public listenToCompletedProposals(spaceId: string): void {
@@ -159,6 +174,33 @@ export class DataService implements OnDestroy {
 
     this.draftAwardsOn = true;
     this.subscriptions$.push(this.awardApi.listenSpace(spaceId, AwardFilter.DRAFT).subscribe(this.awardsDraft$));
+  }
+
+  public listenToPendingCollections(spaceId: string): void {
+    if (this.pendingCollectionOn === true) {
+      return;
+    }
+
+    this.pendingCollectionOn = true;
+    this.subscriptions$.push(this.collectionApi.allPendingSpace(spaceId).subscribe(this.pendingCollections$));
+  }
+
+  public listenToAvailableCollections(spaceId: string): void {
+    if (this.availableCollectionOn === true) {
+      return;
+    }
+
+    this.availableCollectionOn = true;
+    this.subscriptions$.push(this.collectionApi.allAvailableSpace(spaceId).subscribe(this.availableCollections$));
+  }
+
+  public listenToRejectedCollections(spaceId: string): void {
+    if (this.rejectedCollectionOn === true) {
+      return;
+    }
+
+    this.rejectedCollectionOn = true;
+    this.subscriptions$.push(this.collectionApi.allRejectedSpace(spaceId).subscribe(this.rejectedCollections$));
   }
 
   public isLoading(arr: any): boolean {
@@ -247,6 +289,9 @@ export class DataService implements OnDestroy {
     this.awardsRejected$.next(undefined);
     this.awardsDraft$.next(undefined);
     this.awardsCompleted$.next(undefined);
+    this.rejectedCollections$.next(undefined);
+    this.pendingCollections$.next(undefined);
+    this.availableCollections$.next(undefined);
     this.resetMembersSubjects();
   }
 
@@ -283,6 +328,9 @@ export class DataService implements OnDestroy {
     this.completedAwardsOn = false;
     this.draftAwardsOn = false;
     this.rejectedAwardsOn = false;
+    this.availableCollectionOn = false;
+    this.rejectedCollectionOn = false;
+    this.pendingCollectionOn = false;
     this.resetMembersDataStore();
     this.resetSubjects();
     this.resetRelatedRecordsSubjects();

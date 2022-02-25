@@ -3,7 +3,6 @@
   <h1 class="mt-7" *ngIf="editMode" i18n>Edit space</h1>
   <form nz-form nzLayout="vertical" [formGroup]="spaceForm">
     <div class="py-4" nz-row [nzGutter]="24">
-      <!-- TODO improve responsibility -->
       <div
         class="space-y-4"
         nz-col
@@ -12,8 +11,13 @@
           'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }"
       >
-        <nz-card [nzBordered]="false" nzTitle="Space Info">
-          <div class="space-y-4">
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+            nzTitle="Space info"
+            nzDescription="Title and description will be included on the Space."
+          >
+          </nz-card-meta>
+          <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control>
                 <input
@@ -38,10 +42,17 @@
           </div>
         </nz-card>
 
-        <nz-card [nzBordered]="false" nzTitle="Networking">
-          <div class="space-y-4">
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Networking"
+                nzDescription="Links will be included on the Space detail. Use account usernames for Github, Twitter and Discord (name#id).">
+            </nz-card-meta>
+          <div class="mt-4 space-y-4">
             <nz-form-item>
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Github username.">
+              <nz-form-control
+                i18n-nzErrorTip
+                nzErrorTip="Invalid Github username."
+              >
                 <nz-input-group nzSize="large" [nzPrefix]="prefixGithub">
                   <input
                     type="text"
@@ -57,7 +68,10 @@
             </nz-form-item>
 
             <nz-form-item>
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Twitter username.">
+              <nz-form-control
+                i18n-nzErrorTip
+                nzErrorTip="Invalid Twitter username."
+              >
                 <nz-input-group nzSize="large" [nzPrefix]="prefixTwitter">
                   <input
                     type="text"
@@ -73,7 +87,10 @@
             </nz-form-item>
 
             <nz-form-item>
-              <nz-form-control i18n-nzErrorTip nzErrorTip="Only discord invite code supported (i.e. RBHqpkKC)">
+              <nz-form-control
+                i18n-nzErrorTip
+                nzErrorTip="Only discord invite code supported (i.e. RBHqpkKC)"
+              >
                 <nz-input-group nzSize="large" [nzPrefix]="prefixDiscord">
                   <input
                     type="text"
@@ -91,23 +108,29 @@
         </nz-card>
       </div>
 
-      <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
-        <nz-card [nzBordered]="false" nzTitle="Space Type">
-          <nz-form-item>
+      <div
+        class="mt-4 space-y-4 lg:mt-0"
+        nz-col
+        [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+      >
+        <nz-card [nzBordered]="false">
+          <nz-card-meta
+          nzTitle="Space Type"
+          nzDescription="Each type has different characteristics."></nz-card-meta>
+          <nz-form-item class="mt-4">
             <nz-form-control>
-              <nz-radio-group class="wen-radio-group" [formControl]="openControl">
+              <nz-radio-group
+                class="wen-radio-group"
+                [formControl]="openControl"
+              >
                 <wen-radio [value]="true">
                   <span class="inline-flex"
                     >Open for anyone to join instantly
-                    <!-- <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                      nzTooltipTitle="prompt text"></i> -->
                   </span>
                 </wen-radio>
                 <wen-radio [value]="false">
                   <span class="inline-flex"
                     >Requires a member approval
-                    <!-- <i nz-icon nzType="question-circle" nzTheme="outline" nz-tooltip nzTooltipPlacement="right"
-                      nzTooltipTitle="prompt text"></i> -->
                   </span></wen-radio
                 >
               </nz-radio-group>
@@ -141,7 +164,8 @@
                   [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
                 >
                   <ng-container>
-                    <i class="upload-icon" nz-icon nzType="upload"></i><span class="pl-2 text-xs">jpeg/png</span>
+                    <i class="upload-icon" nz-icon nzType="upload"></i
+                    ><span class="pl-2 text-xs">jpeg/png</span>
                   </ng-container>
                 </nz-upload>
               </nz-form-control>
@@ -160,7 +184,7 @@
             <nz-form-item>
               <nz-form-control>
                 <nz-upload
-                  class="wen-space-banner"
+                  class="wen-banner"
                   nzName="banner"
                   nzType="drag"
                   nzListType="picture-card"
@@ -174,7 +198,8 @@
                   [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
                 >
                   <ng-container>
-                    <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpeg/png</span>
+                    <i class="upload-icon" nz-icon nzType="upload"></i>
+                    <span class="pl-2 text-xs">jpeg/png</span>
                   </ng-container>
                 </nz-upload>
               </nz-form-control>

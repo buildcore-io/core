@@ -11,7 +11,7 @@
         <tr *ngFor="let item of getAlliances(); trackBy: trackByUid" class="wrapper-row">
             <td class="alliance-data flex items-center" [class.font-bold]="memberWithinSpace[item.uid]">
                 <nz-avatar
-                    [nzSrc]="avatarService.getAvatarSize(item.avatar)"
+                    [nzSrc]="previewImageService.getAvatarSize(item.avatar)"
                     [nzSize]="32"
                     class="mr-3 border-2 border-app-gray-100"
                     nzShape="circle"
