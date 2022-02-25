@@ -121,7 +121,7 @@ export class NftCardComponent {
     } else {
       const remaining = ((this.collection?.total || 0) - (this.collection?.sold || 0));
       return {
-        label: `${remaining} remaining`,
+        label: remaining > 100 ? '100+ remaining' : '${remaining} remaining',
         className: remaining >= 100 ? 'bg-tag-blue' : 'bg-tag-red'
       };
     }
