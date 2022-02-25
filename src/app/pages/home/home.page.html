@@ -56,13 +56,8 @@
               </button>
             </h3>
             <div class="flex flex-col gap-6 px-5 lg:flex-row lg:px-0">
-              <!-- TODO show top collections -->
-              <!-- <wen-award-card
-                class="outline-none"
-                *ngFor="let award of award$ | async; trackBy: trackByUid"
-                [award]="award"
-              >
-              </wen-award-card> -->
+              <wen-collection-card class="outline-none" [collection]="col" *ngFor="let col of collection$ | async; trackBy: trackByUid">
+              </wen-collection-card>
             </div>
             <button
                 *ngIf="deviceService.isMobile$ | async"

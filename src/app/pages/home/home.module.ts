@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AwardCardModule } from '@components/award/components/award-card/award-card.module';
+import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -24,7 +24,7 @@ import { HomePage } from './home.page';
       },
     ]),
     NzButtonModule,
-    AwardCardModule,
+    CollectionCardModule,
     SpaceCardModule,
     NzIconModule,
     IconModule
