@@ -55,15 +55,29 @@
                 <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
                     <div class="flex items-center mt-2">
-                      <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center w-full">
-                        <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                          class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                          style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                        </nz-avatar>
-                        <div class="ml-3 text-base font-medium truncate">
-                          @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
-                        </div>
-                      </a>
+                      <ng-container *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace">
+                        <a [routerLink]="['/space', (data.creator$ | async)?.uid]" class="flex items-center w-full">
+                          <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
+                            class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                          </nz-avatar>
+                          <div class="ml-3 text-base font-medium truncate">
+                            {{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}
+                          </div>
+                        </a>
+                      </ng-container>
+
+                      <ng-container *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace">
+                        <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center w-full">
+                          <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                            class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                          </nz-avatar>
+                          <div class="ml-3 text-base font-medium truncate">
+                            @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
+                          </div>
+                        </a>
+                      </ng-container>
                     </div>
                 </div>
 
@@ -175,7 +189,7 @@
                     <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)">Preparing...</p>
                     <div nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center justify-end">
                         <div class="w-3/5 break-all line-clamp-2">{{ getOnChainInfo(data.orders$ | async) }}</div>
-                        <a class="underline text-blue-light1 ml-1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank">View</a>
+                        <a class="ml-1 underline text-blue-light1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank">View</a>
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
                             nz-tooltip
@@ -203,14 +217,14 @@
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                   <div nz-typography class="flex items-center justify-end">
                       <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
-                      <a class="underline left-16 text-blue-light1 ml-1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank">View</a>
+                      <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank">View</a>
                   </div>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
                   <div nz-typography class="flex items-center justify-end">
                       <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
-                      <a class="underline left-16 text-blue-light1 ml-1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank">View</a>
+                      <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank">View</a>
                   </div>
               </div>
             </wen-collapse>
