@@ -2,7 +2,7 @@
   <div class="w-full wen-home-vector">
     <div class="container px-8">
       <h1 class="pt-64 mb-6 text-3xl text-white lg:w-6/12 lg:pt-24 lg:text-6xl xl:pt-52">
-        Welcome to The Soonaverse?
+        Welcome to The Soonaverse
       </h1>
       <p class="mb-12 text-xl font-medium text-white lg:text-2xl lg:font-light lg:w-6/12">
         An all-in-one feeless platform for community engagement and DAO
@@ -17,10 +17,97 @@
       >
         {{(isLoggedIn | async) ? 'Discover' : 'Join us'}}
       </button>
+
+      <button class="block mt-4 lg:ml-4 lg:mt-0 lg:inline"
+      *ngIf="(isLoggedIn | async)"
+        nz-button
+        nzType="primary"
+        nzSize="large"
+        type="button"
+        [routerLink]="['/market', 'collections']"
+      >
+        Marketplace
+      </button>
     </div>
   </div>
 
   <div class="-mt-16 rounded-t-large bg-bg-background">
+
+    <div class="container px-5 mt-4 lg:my-16 lg:px-10">
+      <div class="mt-32">
+        <h1 class="mb-4 text-4xl lg:text-5xl lg:mb-10">Get started with the Soonaverse</h1>
+        <p class="text-lg text-app-gray-400">
+          Not sure where to start? Find featured spaces and NFT Collections below.
+        </p>
+
+        <div class="mt-16 space-y-24 lg:space-y-14">
+          <div class="-mx-6 overflow-hidden">
+            <h3 class="px-7">
+              Trending Collections
+              <button
+                *ngIf="deviceService.isDesktop$ | async"
+                nz-button
+                class="float-right"
+                nzType="primary"
+                type="button"
+                [routerLink]="['/market', 'collections']"
+              >
+                Go to Marketplace
+              </button>
+            </h3>
+            <div class="flex flex-col gap-6 px-5 lg:flex-row lg:px-0">
+              <wen-collection-card class="outline-none" [collection]="col" *ngFor="let col of collection$ | async; trackBy: trackByUid">
+              </wen-collection-card>
+            </div>
+            <button
+                *ngIf="deviceService.isMobile$ | async"
+                nz-button
+                class="block mx-auto mt-12"
+                nzType="primary"
+                type="button"
+                [routerLink]="['/discover', 'awards']"
+              >
+                Discover more
+            </button>
+          </div>
+
+          <div class="-mx-6 overflow-hidden">
+            <h3 class="px-7">
+              Popular spaces
+              <button
+                *ngIf="deviceService.isDesktop$ | async"
+                nz-button
+                class="float-right"
+                nzType="primary"
+                type="button"
+                [routerLink]="['/discover', 'spaces']"
+              >
+                Discover more
+              </button>
+            </h3>
+            <div class="flex flex-col gap-6 px-5 lg:flex-row lg:px-0">
+              <wen-space-card
+                class="outline-none"
+                *ngFor="let s of spaces$ | async; trackBy: trackByUid"
+                [space]="s"
+              ></wen-space-card>
+            </div>
+
+            <button
+                *ngIf="deviceService.isMobile$ | async"
+                nz-button
+                class="block mx-auto mt-12"
+                nzType="primary"
+                type="button"
+                [routerLink]="['/discover', 'spaces']"
+              >
+                Discover more
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container flex flex-col items-center justify-center px-5 pt-24">
       <h1 class="text-4xl text-center lg:text-5xl">Creating your community is easy as 1-2-3</h1>
       <p class="w-9/12 text-xl font-medium text-center lg:text-2xl lg:font-light text-app-gray-400">
@@ -106,83 +193,6 @@
             </button>
           </div>
         </article>
-      </div>
-
-      <div class="mt-32">
-        <h1 class="mb-4 text-4xl lg:text-5xl lg:mb-10">Get started with the Soonaverse</h1>
-        <p class="text-lg text-app-gray-400">
-          Not sure where to start? Find featured spaces and awards below.
-        </p>
-
-        <div class="mt-16 space-y-24 lg:space-y-14">
-          <div class="-mx-6 overflow-hidden">
-            <h3 class="px-7">
-              Popular spaces
-              <button
-                *ngIf="deviceService.isDesktop$ | async"
-                nz-button
-                class="float-right"
-                nzType="primary"
-                type="button"
-                [routerLink]="['/discover', 'spaces']"
-              >
-                Discover more
-              </button>
-            </h3>
-            <div class="flex flex-col gap-6 px-5 lg:flex-row lg:px-0">
-              <wen-space-card
-                class="outline-none"
-                *ngFor="let s of spaces$ | async; trackBy: trackByUid"
-                [space]="s"
-              ></wen-space-card>
-            </div>
-
-            <button
-                *ngIf="deviceService.isMobile$ | async"
-                nz-button
-                class="block mx-auto mt-12"
-                nzType="primary"
-                type="button"
-                [routerLink]="['/discover', 'spaces']"
-              >
-                Discover more
-            </button>
-          </div>
-
-          <div class="-mx-6 overflow-hidden">
-            <h3 class="px-7">
-              Active Awards
-              <button
-                *ngIf="deviceService.isDesktop$ | async"
-                nz-button
-                class="float-right"
-                nzType="primary"
-                type="button"
-                [routerLink]="['/discover', 'awards']"
-              >
-                Discover more
-              </button>
-            </h3>
-            <div class="flex flex-col gap-6 px-5 lg:flex-row lg:px-0">
-              <wen-award-card
-                class="outline-none"
-                *ngFor="let award of award$ | async; trackBy: trackByUid"
-                [award]="award"
-              >
-              </wen-award-card>
-            </div>
-            <button
-                *ngIf="deviceService.isMobile$ | async"
-                nz-button
-                class="block mx-auto mt-12"
-                nzType="primary"
-                type="button"
-                [routerLink]="['/discover', 'awards']"
-              >
-                Discover more
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
