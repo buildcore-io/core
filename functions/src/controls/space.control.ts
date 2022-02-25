@@ -181,7 +181,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   }
 
   if (params.body) {
-    await admin.firestore().collection(COL.SPACE).doc(params.body.uid).update(keywords(uOn(pSchema(schema, merge(params.body, append)))));
+    await admin.firestore().collection(COL.SPACE).doc(params.body.uid).update(merge(keywords(uOn(pSchema(schema, params.body))), append));
 
     // Load latest
     docSpace = await admin.firestore().collection(COL.SPACE).doc(params.body.uid).get();
