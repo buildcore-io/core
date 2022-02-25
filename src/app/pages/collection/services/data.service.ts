@@ -12,6 +12,7 @@ export class DataService {
   public nft$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
+  public royaltySpace$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
   public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public dataStore: Nft[][] = [];
   public isPending(collection?: Collection|null): boolean {

@@ -92,6 +92,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+        if (p.royaltiesSpace) {
+          this.subscriptions$.push(this.spaceApi.listen(p.royaltiesSpace).pipe(untilDestroyed(this)).subscribe(this.data.royaltySpace$));
+        }
         if (p.createdBy) {
           this.subscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.creator$));
         }
@@ -120,7 +123,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       this.filter.selectedSort$.next(o);
     });
 
-    
+
     this.filterControl.setValue(this.filter.search$.value);
     this.filterControl.valueChanges.pipe(
       debounceTime(GLOBAL_DEBOUNCE_TIME),

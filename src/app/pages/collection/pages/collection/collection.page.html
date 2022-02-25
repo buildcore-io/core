@@ -45,13 +45,25 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-8">
-                <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center mt-2">
+                <a  *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace"
+                  [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center mt-2">
                   <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                     class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                     style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                   </nz-avatar>
                   <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
                     @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
+                  </div>
+                </a>
+
+                <a *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace"
+                  [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center mt-2">
+                  <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
+                    class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                    style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                  </nz-avatar>
+                  <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
+                    {{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}
                   </div>
                 </a>
 
@@ -139,7 +151,7 @@
 
         <button nz-button nzType="primary" nzSize="default"
             *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
-            class="flex items-center justify-center lg:justify-start w-10 lg:w-auto rounded-full ml-8" (click)="createNft()" i18n>
+            class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()" i18n>
             <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
             <div *ngIf="deviceService.isDesktop$ | async">Create NFT</div>
         </button>
@@ -173,7 +185,7 @@
             </nz-select>
             <ng-template #defaultTemplate let-selected>
                 <div class="flex items-center">
-                    <div nz-typography nzType="secondary" class="text-xs mr-1">
+                    <div nz-typography nzType="secondary" class="mr-1 text-xs">
                         {{ selected.nzValue === filter.sortOptions.RECENT ? 'Sort by' : 'Price' }}
                     </div>
                     {{ selected.nzLabel }}
