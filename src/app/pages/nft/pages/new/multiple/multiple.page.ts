@@ -276,11 +276,12 @@ export class MultiplePage implements OnInit {
     this.usedFileNames.clear();
 
     Papa.parse(file as unknown as File, {
+      skipEmptyLines: true,
       complete: (results: any) => {
         // Use this nfts for multiple upload
         const nfts =
           results.data
-            .slice(1, results.data.length - 1)
+            .slice(1, results.data.length)
             .map((row: string[]) =>
               row.reduce((acc: any, cur: string, index: number) => ({ ...acc, [results.data[0][index]]: cur }), {}))
             .map((nft: any) => {
