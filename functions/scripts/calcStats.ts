@@ -1,7 +1,7 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { COL } from '../interfaces/models/base';
-import serviceAccount from './serviceAccountKeyTest.json';
+import serviceAccount from './serviceAccountKeyProd.json';
 
 initializeApp({
   credential: cert(<any>serviceAccount)
@@ -46,8 +46,22 @@ recs.forEach((r) => {
 //   }
 // });
 
-db.collection('transaction').where('type', '==', 'ORDER').orderBy('createdOn').get().then(async (snapshot) => {
-  for (const t of snapshot.docs) {
-    console.log(t.data().uid, t.data().type, t.data().createdOn.toDate());
-  }
+// db.collection('transaction').where('type', '==', 'PAYMENT').orderBy('createdOn', 'asc').get().then(async (snapshot) => {
+//   for (const t of snapshot.docs) {
+//     console.log(t.data().uid, t.data().member, t.data().type, t.data().payload.amount, t.data().createdOn.toDate());
+//   }
+// });
+
+let count = 0;
+let sum = 0;
+db.collection('transaction').where('type', '==', 'PAYMENT').orderBy('createdOn', 'asc').onSnapshot(querySnapshot => {
+  querySnapshot.docChanges().forEach(async (t) => {
+    // Get user name
+    const member: any = await db.collection('member').doc(t.doc.data().member).get();
+    if (t.type === 'added') {
+      count++;
+      sum += t.doc.data().payload.amount;
+      console.log(count, sum, t.doc.data().uid, member.data().name, 'https://soonaverse.com/member/' + t.doc.data().member, t.doc.data().type, t.doc.data().payload.amount, t.doc.data().createdOn.toDate());
+    }
+  });
 });

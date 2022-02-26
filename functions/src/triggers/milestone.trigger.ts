@@ -78,8 +78,8 @@ class ProcessingService {
   private findMatch(toAddress: string, amount: number): TransactionMatch | undefined {
     let found: TransactionMatch | undefined;
     for (const [msgId, t] of Object.entries(this.trans)) {
-      const fromAddress: MilestoneTransactionEntry = t.inputs[0];
-      if (t.outputs) {
+      const fromAddress: MilestoneTransactionEntry = t.inputs?.[0];
+      if (fromAddress && t.outputs) {
         for (const o of t.outputs) {
 
           // Ignore output that contains input address. Remaining balance.
@@ -472,13 +472,13 @@ class ProcessingService {
           const orders: any = await this.findAllOrdersWithAddress(o.address);
           if (orders.size > 0) {
             for (const order of orders.docs) {
-              const fromAddress: MilestoneTransactionEntry = t.inputs[0];
+              const fromAddress: MilestoneTransactionEntry = t.inputs?.[0];
               // if invalid proceed with credit.
-              if (
+              if (fromAddress && (
                 order.data().payload.reconciled === true ||
                 order.data().payload.void === true ||
                 order.data().payload.amount !== o.amount
-              ) {
+              )) {
                 const wrongTransaction: TransactionMatch = {
                   msgId: msgId,
                   from: fromAddress,
