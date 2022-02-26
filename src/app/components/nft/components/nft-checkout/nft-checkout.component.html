@@ -138,7 +138,7 @@
 
         <div class="w-full px-4 py-3 mt-6 bg-bg-background rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-app-gray-400" i18n>
-                Send {{formatBest((transaction$ | async)?.payload?.amount) }} IOTA to following address (it might unstake your IOTAs, make sure to stake again):
+                Send {{formatBest((transaction$ | async)?.payload?.amount) }} IOTA to following address (please restake after!):
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2">
