@@ -28,17 +28,41 @@ interface Output {
 }
 
 export class WalletService {
-  // private API_ENDPOINT = "https://chrysalis-nodes.iota.org"; // Mainnet
-  API_ENDPOINT = 'https://mainnet-node.tanglebay.com';
+  private API_ENDPOINT = "https://chrysalis-nodes.iota.org"; // Mainnet
+  private API_ENDPOINT_SLAVE = 'https://mainnet-node.tanglebay.com';
   // private API_ENDPOINT = 'https://api.lb-0.h.chrysalis-devnet.iota.cafe';   // DEV NET
   private client: SingleNodeClient;
+  private nodeInfo?: INodeInfo;
 
   constructor() {
     this.client = new SingleNodeClient(this.API_ENDPOINT);
   }
 
+  public async init(): Promise<void> {
+    try {
+      this.nodeInfo = await this.getNodeInfo();
+    } catch (_e) {
+      // We will try again below.
+    }
+
+    // Let's switch to slave.
+    if (!this.nodeInfo?.isHealthy) {
+      this.setSlaveEndPoint();
+      this.nodeInfo = await this.getNodeInfo();
+
+      // In this case we don't verify isHealthy anymore as we don't want to end up without node.
+      // This will cause delay.
+    }
+
+    return;
+  }
+
+  public setSlaveEndPoint(): void {
+    this.client = new SingleNodeClient(this.API_ENDPOINT_SLAVE);
+  }
+
   public async getNodeInfo(): Promise<INodeInfo> {
-    return (await this.client.info());
+    return this.client.info();
   }
 
   public async getNewIotaAddressDetails(): Promise<AddressDetails> {
@@ -47,6 +71,10 @@ export class WalletService {
   }
 
   public async getIotaAddressDetails(mnemonic: string): Promise<AddressDetails> {
+    if (!this.nodeInfo) {
+      await this.init();
+    }
+
     const genesisSeed: Ed25519Seed = Ed25519Seed.fromMnemonic(mnemonic);
     const genesisPath: Bip32Path = new Bip32Path("m/44'/4218'/0'/0'/0'");
     const genesisWalletSeed: ISeed = genesisSeed.generateSeedFromPath(genesisPath);
@@ -60,17 +88,25 @@ export class WalletService {
       mnemonic: mnemonic,
       keyPair: genesisWalletKeyPair,
       hex: genesisWalletAddressHex,
-      bech32: Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, genesisWalletAddress, (await this.getNodeInfo()).bech32HRP)
+      bech32: Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, genesisWalletAddress, this.nodeInfo!.bech32HRP)
     };
   }
 
   public async convertAddressToHex(address: string): Promise<string> {
-    const decodeBench32Target = Bech32Helper.fromBech32(address, (await this.getNodeInfo()).bech32HRP);
+    if (!this.nodeInfo) {
+      await this.init();
+    }
+
+    const decodeBench32Target = Bech32Helper.fromBech32(address, this.nodeInfo!.bech32HRP);
     const newAddressHex = Converter.bytesToHex(decodeBench32Target!.addressBytes);
     return newAddressHex;
   }
 
   public async sendFromGenesis(fromAddress: AddressDetails, toAddress: string, amount: number, data: string): Promise<string> {
+    if (!this.nodeInfo) {
+      await this.init();
+    }
+
     const genesisAddressOutputs = await this.client.addressEd25519Outputs(fromAddress.hex);
     const inputsWithKeyPairs: Input[] = [];
     let totalGenesis = 0;
