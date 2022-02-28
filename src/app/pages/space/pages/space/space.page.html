@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
-    <wen-drawer-toggle label="About space" (click)="isAboutSpaceVisible = true">
+    <wen-drawer-toggle i18n-label label="About space" (click)="isAboutSpaceVisible = true">
     </wen-drawer-toggle>
   </ng-container>
 
@@ -27,7 +27,7 @@
 
         <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
           [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
-          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false">
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false" i18n>
           {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending Request' :
           'Ask to Join Space'}}
         </button>
@@ -55,7 +55,7 @@
 
       <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
         [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
-        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false">
+        *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false" i18n>
         {{(data.isPendingMemberWithSpace$ | async) ? 'Pending Request' :
         'Ask to Join Space'}}
       </button>

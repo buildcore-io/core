@@ -19,27 +19,27 @@
 
       <label class="text-base font-medium lg:ml-6 text-app-gray-text"
         nz-checkbox formControlName="includeAlliances"
-        [nzDisabled]="spaceForm.value.space === defaultSpace.value">
+        [nzDisabled]="spaceForm.value.space === defaultSpace.value" i18n>
           Include connections {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
       </label>
     </div>
 
     <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-      <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
+      <nz-select class="w-48 wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
         [formControl]="sortControl" nz-tooltip>
-        <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-        <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
+        <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+        <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
       </nz-select>
       <ng-template #defaultTemplate let-selected>
-        <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
-        {{ selected.nzLabel }}
+        <span nz-typography nzType="secondary" class="text-xs" i18n>Sort by</span>
+        <span i18n>{{ selected.nzLabel }}</span>
       </ng-template>
     </ng-container>
     <ng-template #sortMobileBlock>
       <div class="relative">
         <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-          <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-          <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
+          <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+          <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
         </nz-select>
         <ng-template #mobileSuffixIcon>
           <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
@@ -51,7 +51,7 @@
 
 <div class="mt-10 lg:grid place-items-start">
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">
-    {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} members
+    {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>members</span>
   </p>
   <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
@@ -61,7 +61,7 @@
 
     <nz-card class="w-76" *ngIf="isEmpty(members$ | async)">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400">
+        <span class="leading-7 text-app-gray-400" i18n>
           No Members
         </span>
       </div>

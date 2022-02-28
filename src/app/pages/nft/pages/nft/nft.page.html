@@ -1,9 +1,9 @@
 <wen-content [showBackButton]="true">
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-10">
         <div class="flex-grow w-full mt-10 lg:w-1/2 lg:mr-10">
-            <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue">NFT</nz-tag>
+            <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>NFT</nz-tag>
             <wen-collection-status [collection]="data.collection$ | async" *ngIf="!(data.nft$ | async )?.owner"></wen-collection-status>
-            <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="(data.nft$ | async )?.owner">Owned</nz-tag>
+            <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="(data.nft$ | async )?.owner" i18n>Owned</nz-tag>
 
             <h1 class="mt-2 mb-1" i18n>{{ getTitle(data.nft$ | async) }}</h1>
             <div class="mb-10 text-xl font-medium" *ngIf="deviceService.isDesktop$ | async">{{ (data.nft$ | async)?.name }}</div>
@@ -11,27 +11,29 @@
             <ng-container *ngIf="deviceService.isMobile$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl" (click)="isNftPreviewOpen = true">
                     <img
-                    alt="NFT Image"
-                    [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
-                    class="object-cover w-full h-full"
+                        i18n-alt
+                        alt="NFT Image"
+                        [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
+                        class="object-cover w-full h-full"
                     />
                 </div>
 
                 <div class="flex items-center mt-5 mb-8">
                     <div class="mr-4 text-xs font-medium text-foregrounds-secondary" i18n>Share</div>
                     <!-- Used style because ant-design overwrites tailwind's padding -->
-                    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
+                    <a nz-button nzType="default" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
                         class="flex items-center justify-center px-4 py-3 mr-3 text-black w-max" style="padding-top: 0.75rem !important">
                             <wen-icon-twitter></wen-icon-twitter>
                     </a>
-                    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default" (click)="copy()"
+                    <button nz-button nzType="default" nzBlock nzSize="default" (click)="copy()"
                         class="flex items-center justify-center px-4 py-3 text-black w-max">
                             <wen-icon-link></wen-icon-link>
                     </button>
                 </div>
             </ng-container>
 
-            <div class="flex items-center justify-between w-full h-12 p-4 bg-white rounded-xl" *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom)">
+            <div class="flex items-center justify-between w-full h-12 p-4 bg-white rounded-xl"
+                *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom)">
                 <div class="flex items-center mr-8"
                     [ngClass]="{ 'text-alerts-error': false }">
                         <wen-icon-time></wen-icon-time>
@@ -106,7 +108,7 @@
             <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !saleNotStartedYet(data.nft$ | async)"
                 class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
-                <div class="font-medium ml-3.5">
+                <div class="font-medium ml-3.5" i18n>
                     Sale ended
                 </div>
             </div>
@@ -114,7 +116,7 @@
             <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner && saleNotStartedYet(data.nft$ | async)"
                 class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
-                <div class="font-medium ml-3.5">
+                <div class="font-medium ml-3.5" i18n>
                     Sale hasn't started yet
                 </div>
             </div>
@@ -122,7 +124,7 @@
             <div *ngIf="!(data.collection$ | async)?.approved"
                 class="flex items-center w-full px-5 py-4 mt-12 text-white bg-light-brown rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
-                <div class="font-medium ml-3.5">
+                <div class="font-medium ml-3.5" i18n>
                     Collection pending approval
                 </div>
             </div>
@@ -130,7 +132,7 @@
             <div *ngIf="(data.collection$ | async)?.rejected === true"
                 class="flex items-center w-full px-5 py-4 mt-12 text-white bg-red-300 rounded-xl">
                 <wen-icon-sad></wen-icon-sad>
-                <div class="font-medium ml-3.5">
+                <div class="font-medium ml-3.5" i18n>
                     Collection rejected!
                 </div>
             </div>
@@ -151,19 +153,20 @@
             <ng-container *ngIf="deviceService.isDesktop$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl" (click)="isNftPreviewOpen = true">
                     <img
-                    alt="NFT Image"
-                    [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
-                    class="object-cover w-full h-full"
+                        i18n-alt
+                        alt="NFT Image"
+                        [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
+                        class="object-cover w-full h-full"
                     />
                 </div>
 
                 <div class="flex flex-col items-center mt-8 lg:flex-row">
-                    <a nz-button nzType="default" (click)="null" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
+                    <a nz-button nzType="default" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
                         class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
                             <wen-icon-twitter></wen-icon-twitter>
                             <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
                     </a>
-                    <button nz-button nzType="default" (click)="null" nzBlock nzSize="default" (click)="copy()"
+                    <button nz-button nzType="default" nzBlock nzSize="default" (click)="copy()"
                         class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
                             <wen-icon-copy></wen-icon-copy>
                             <div class="ml-2.5 text-xs font-medium" i18n>{{ isCopied ? 'Copied' : 'Copy to clipboard' }}</div>
@@ -186,10 +189,10 @@
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>On-Chain Record</span>
-                    <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)">Preparing...</p>
+                    <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)" i18n>Preparing...</p>
                     <div nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center justify-end">
                         <div class="w-3/5 break-all line-clamp-2">{{ getOnChainInfo(data.orders$ | async) }}</div>
-                        <a class="ml-1 underline text-blue-light1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank">View</a>
+                        <a class="ml-1 underline text-blue-light1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank" i18n>View</a>
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
                             nz-tooltip
@@ -202,7 +205,7 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
                     <div nz-typography class="flex items-center justify-end">
-                        <div class="w-3/5 break-all line-clamp-2">Shimmer/Mainnet (Tokenization)...SOON.</div>
+                        <div class="w-3/5 break-all line-clamp-2" i18n>Shimmer/Mainnet (Tokenization)...SOON.</div>
 
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
@@ -216,15 +219,15 @@
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                   <div nz-typography class="flex items-center justify-end">
-                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
-                      <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank">View</a>
+                      <div class="w-3/5 break-all line-clamp-2" i18n>{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
+                      <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank" i18n>View</a>
                   </div>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
                   <div nz-typography class="flex items-center justify-end">
-                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
-                      <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank">View</a>
+                      <div class="w-3/5 break-all line-clamp-2" i18n>{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
+                      <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank" i18n>View</a>
                   </div>
               </div>
             </wen-collapse>
@@ -249,7 +252,7 @@
 
     <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-app-gray-separator-dark lg:mt-12"></div>
 
-    <nz-card class="relative block w-full mt-16" nzTitle="About the collection">
+    <nz-card class="relative block w-full mt-16" i18n-nzTitle nzTitle="About the collection">
         <a nz-button nzType="link" class="absolute flex items-center right-6 top-6" [routerLink]="['/', collectionPath, (data.collection$ | async)?.uid]" nzSize="small">
             <span i18n>Show {{ (deviceService.isDesktop$ | async) ? 'collection' : '' }}</span>
             <wen-icon-angle-right></wen-icon-angle-right>

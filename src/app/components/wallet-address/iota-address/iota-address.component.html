@@ -112,9 +112,9 @@
 
 <ng-template #transactionTemplate>
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-        <div class="max-w-md mt-10 text-lg font-medium text-center text-app-gray-400" i18n>
-            <span *ngIf="!isExpired((transaction$ | async))">Send a small {{formatBest(targetAmount) }} amount to validate your address. This expires in {{(expiryTicker$ | async) | countdownTime}}.</span>
-            <span *ngIf="isExpired((transaction$ | async))">Expired.</span>
+        <div class="max-w-md mt-10 text-lg font-medium text-center text-app-gray-400">
+            <span *ngIf="!isExpired((transaction$ | async))" i18n>Send a small {{formatBest(targetAmount) }} amount to validate your address. This expires in {{(expiryTicker$ | async) | countdownTime}}.</span>
+            <span *ngIf="isExpired((transaction$ | async))" i18n>Expired.</span>
         </div>
 
         <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
@@ -184,7 +184,7 @@
         <button nz-button nzSize="large" class="flex items-center mt-10 border-app-gray-200">
             <wen-icon-refresh class="mr-3 text-app-gray-400 animate-spin" ></wen-icon-refresh>
             <div i18n>
-                {{ 'Validating address...' }}
+                Validating address...
             </div>
         </button>
     </div>

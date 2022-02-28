@@ -7,8 +7,8 @@
 
   <a nz-button class="flex items-center mt-5 mb-5 ml-6 wen-space-links" nzType="link" [routerLink]="['members']">
     <wen-icon-members class="text-app-gray-400"></wen-icon-members>
-    <div class="ml-3">{{ (data.space$ | async)?.totalMembers }} members
-      <span *ngIf="(data.space$ | async)?.totalPendingMembers">
+    <div class="ml-3">{{ (data.space$ | async)?.totalMembers }} <span i18n>members</span>
+      <span *ngIf="(data.space$ | async)?.totalPendingMembers" i18n>
         {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
       </span>
     </div>
@@ -25,8 +25,8 @@
   <div class="flex flex-col items-baseline space-y-3">
     <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
       <wen-icon-members class="text-app-gray-400"></wen-icon-members>
-      <span>{{ (data.space$ | async)?.totalMembers }} members
-        <span *ngIf="(data.space$ | async)?.totalPendingMembers">
+      <span>{{ (data.space$ | async)?.totalMembers }} <span i18n>members</span>
+        <span *ngIf="(data.space$ | async)?.totalPendingMembers" i18n>
           {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
         </span>
       </span>
@@ -40,7 +40,7 @@
 <nz-card class="relative lg:mt-4">
   <div class="flex items-center justify-between">
     <div class="flex items-center">
-      <div class="text-lg font-bold">Connections</div>
+      <div class="text-lg font-bold" i18n>Connections</div>
       <div class="relative flex items-center justify-center ml-2">
         <wen-icon-question-circle class="cursor-help" nz-tooltip nzTooltipPlacement="right" i18n-nzTooltipTitle
           nzTooltipTitle="Connections between spaces enables members of one space to recognize members of another space's experience
@@ -54,7 +54,7 @@
     </button>
   </div>
 
-  <div class="w-5/6 mt-3 text-sm font-semibold text-app-gray-400">
+  <div class="w-5/6 mt-3 text-sm font-semibold text-app-gray-400" i18n>
     Connected spaces that you recognize
   </div>
 
@@ -93,14 +93,14 @@
   <nz-drawer *ngIf="deviceService.isMobile$ | async" [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
     [nzWidth]="'100vw'" [nzClosable]="false" [nzVisible]="isAlliancesListOpen">
     <div *nzDrawerContent class="relative h-full">
-      <div class="w-screen px-4 pb-4 -ml-5 text-3xl font-bold shadow-header" #spaceAlliancesTitle i18n>
-        {{ (data.space$ | async)?.name }} connections</div>
+      <div class="w-screen px-4 pb-4 -ml-5 text-3xl font-bold shadow-header" #spaceAlliancesTitle>
+        {{ (data.space$ | async)?.name }} <span i18n>connections</span></div>
 
       <wen-space-alliances-table [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
         class="block mt-2 overflow-y-auto" [ngStyle]="{
-                    'max-height': 'calc(100% - ' +
-                        ((spaceAlliancesTitle?.offsetHeight || 0) + (spaceAlliancesActions?.offsetHeight || 0) - 20) + 'px)'
-                }" size="large" [alliances]="getSortedAlliances(data.space$ | async)"
+            'max-height': 'calc(100% - ' +
+                ((spaceAlliancesTitle?.offsetHeight || 0) + (spaceAlliancesActions?.offsetHeight || 0) - 20) + 'px)'
+        }" size="large" [alliances]="getSortedAlliances(data.space$ | async)"
         (onAllianceEdit)="onAllianceEdit($event)">
       </wen-space-alliances-table>
 
@@ -181,7 +181,7 @@
     [enableVerification]="!!(data.isGuardianWithinSpace$ | async)"></wen-wallet-address>
 
   <ng-template #titleTpl>
-    <span>Wallet details</span>
+    <span i18n>Wallet details</span>
     <wen-icon-question-circle class="inline-block ml-2 cursor-help" nz-tooltip nzTooltipPlacement="right"
       i18n-nzTooltipTitle nzTooltipTitle="Wallet to hold funds for the Space.">
     </wen-icon-question-circle>

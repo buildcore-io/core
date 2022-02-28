@@ -6,6 +6,7 @@
             [nzShowSearch]="deviceService.isDesktop$ | async"
             [nzCustomTemplate]="selectTpl"
             [formControl]="spaceControl"
+            i18n-nzPlaceHolder
             nzPlaceHolder="Select Space"
             [nzDropdownClassName]="(deviceService.isMobile$ | async) ? 'hidden' : ''"
             [nzDropdownStyle]="{ 'min-width': '400px', 'max-width': '100%' }"
@@ -60,13 +61,14 @@
         <button class="absolute top-0 right-0 z-10" (click)="isDrawerOpen = false; isSelectOpen = false">
             <wen-icon-close></wen-icon-close>
         </button>
-        <div class="text-3xl font-bold">Select a space</div>
+        <div class="text-3xl font-bold" i18n>Select a space</div>
 
         <div class="absolute z-20 w-full pt-1 pb-5 bg-white rounded-2xl">
             <div class="flex items-center mt-3">
                 <wen-icon-search></wen-icon-search>
                 <input class="w-full px-3 py-2 text-sm text-gray-600 outline-0"
                     [formControl]="searchControl"
+                    i18n-placeholder
                     placeholder="Search"
                     nz-input
                     nzSize="large"
@@ -78,7 +80,7 @@
 
             <div *ngIf="shownSpaces.length === 0 && spaces.length > 0"
                 class="flex items-center justify-center text-xs font-medium min-h-24 text-app-gray-400">
-                No results for "{{ searchControl.value }}"
+                <span i18n>No results for</span> "{{ searchControl.value }}"
             </div>
 
             <div class="overflow-x-hidden overflow-y-hidden lg:max-h-56" style="max-height: calc(100% - 40)">

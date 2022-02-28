@@ -87,7 +87,7 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
                     <p nz-typography class="flex items-center w-3/5 lg:w-1/2">
-                      Shimmer/Mainnet (Tokenization)...SOON.
+                        <span i18n>Shimmer/Mainnet (Tokenization)...SOON.</span>
 
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
@@ -100,14 +100,14 @@
 
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
-                    <p nz-typography>
-                        {{ 'Preparing...'}}
+                    <p nz-typography i18n>
+                        Preparing...
                     </p>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
-                  <p nz-typography>
-                      {{ 'Preparing...'}}
+                  <p nz-typography i18n>
+                      Preparing...
                   </p>
               </div>
             </wen-collapse>
@@ -132,9 +132,10 @@
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
             <div class="relative w-full overflow-hidden rounded-2xl">
                 <img
-                alt="NFT Image"
-                [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
-                class="object-cover w-full h-full"
+                    i18n-alt
+                    alt="NFT Image"
+                    [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
+                    class="object-cover w-full h-full"
                 />
             </div>
         </div>

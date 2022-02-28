@@ -33,9 +33,9 @@
 
       <div class="flex flex-col justify-between mt-6 lg:flex-row lg:items-center">
         <div class="flex items-center">
-          <wen-member-tile [title]="'Awards Completed'" [value]="getTotal(data.member$ | async, 'awardsCompleted')">
+          <wen-member-tile i18n-title title="Awards Completed" [value]="getTotal(data.member$ | async, 'awardsCompleted')">
           </wen-member-tile>
-          <wen-member-tile class="ml-20" [title]="'Total Reputation'" [value]="getTotal(data.member$ | async, 'totalReputation')">
+          <wen-member-tile class="ml-20" i18n-title title="Total Reputation" [value]="getTotal(data.member$ | async, 'totalReputation')">
           </wen-member-tile>
         </div>
 
@@ -68,7 +68,7 @@
       <wen-member-alliances-table tableClasses="max-h-56" [member]="data.member$ | async" [selectedSpace]="spaceForm.value.space"></wen-member-alliances-table>
     </nz-card>
 
-    <nz-card nzTitle="Reputation">
+    <nz-card i18n-nzTitle nzTitle="Reputation">
       <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [colors]="chartOptions.colors!"
         [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [markers]="chartOptions.markers!"
         [stroke]="chartOptions.stroke!" [xaxis]="chartOptions.xaxis!" [tooltip]="chartOptions.tooltip!"></apx-chart>

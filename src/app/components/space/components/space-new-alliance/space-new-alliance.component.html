@@ -12,6 +12,7 @@
             [nzStep]="0.01"
             [nzMin]="0"
             [nzMax]="1000"
+            i18n-nzPlaceHolder
             [nzPlaceHolder]="(deviceService.isDesktop$ | async) ? 'Reputation weight' : 'Weight'"
             [formControl]="reputationWeightControl"
         ></nz-input-number>
@@ -25,7 +26,7 @@
                 {{ opt.label }}
             </button>
 
-            <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400" nz-tooltip 
+            <i nz-icon nzType="info-circle" class="cursor-pointer text-app-gray-400" nz-tooltip i18n-nzTooltipTitle
                 nzTooltipTitle="Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000"></i>
         </div>
     </nz-form-control>

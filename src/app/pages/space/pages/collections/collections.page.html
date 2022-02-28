@@ -11,7 +11,7 @@
 
                 <ng-template #hotTagsMobileBlock>
                   <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="selectedListControl?.value" (ngModelChange)="handleFilterChange($event)">
-                    <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag.label" [nzValue]="tag.value"></nz-option>
+                    <nz-option *ngFor="let tag of hotTags" i18n-nzLabel [nzLabel]="tag.label" [nzValue]="tag.value"></nz-option>
                   </nz-select>
                 </ng-template>
               </div>
@@ -19,9 +19,8 @@
               <span nz-tooltip [nzTooltipTitle]="!(data.space$ | async)?.validatedAddress ? 'You must set IOTA Address on the space.' : undefined" *ngIf="data.isAllowCollectionCreation$ | async">
                   <button nz-button class="bg-blue-dark2 border-blue-dark2 hover:bg-blue-hover hover:border-blue-hover"
                       [disabled]="!(data.space$ | async)?.validatedAddress"
-                      nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async"
-                      i18n>
-                      <i nz-icon nzType="plus" nzTheme="outline"></i>New {{ (deviceService.isDesktop$ | async) ? 'Collection' : '' }}
+                      nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async">
+                      <i nz-icon nzType="plus" nzTheme="outline"></i><span i18n>New {{ (deviceService.isDesktop$ | async) ? 'Collection' : '' }}</span>
                   </button>
               </span>
         </div>

@@ -2,7 +2,7 @@
     <label class="ml-6 text-base font-medium text-app-gray-text"
         nz-checkbox formControlName="includeAlliances"
         [nzDisabled]="includeAlliancesDisabled">
-            Include connections {{ includeAlliancesDisabled ? '(Join space with alliance)' : '' }}
+            <span i18n>Include connections {{ includeAlliancesDisabled ? '(Join space with alliance)' : '' }}</span>
     </label>
 
     <!-- DISABLED for now. -->
