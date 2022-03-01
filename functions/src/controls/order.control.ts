@@ -154,7 +154,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   // Validate there isn't any order in progress.
   const orderInProgress: any = await admin.firestore().collection(COL.TRANSACTION).where('payload.reconciled', '==', false)
-                              .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+                              .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE).where('member', '==', owner)
                               .where('type', '==', TransactionType.ORDER).where('payload.void', '==', false).get();
 
   if (orderInProgress.size > 0) {

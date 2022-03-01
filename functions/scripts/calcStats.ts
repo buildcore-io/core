@@ -1,6 +1,9 @@
+import { UnitsHelper } from '@iota/iota.js';
+import dayjs from 'dayjs';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { COL } from '../interfaces/models/base';
+import { TransactionType } from '../interfaces/models/transaction';
 import serviceAccount from './serviceAccountKeyProd.json';
 
 initializeApp({
@@ -52,16 +55,40 @@ recs.forEach((r) => {
 //   }
 // });
 
-let count = 0;
-let sum = 0;
-db.collection('transaction').where('type', '==', 'PAYMENT').orderBy('createdOn', 'asc').onSnapshot(querySnapshot => {
+console.log('Getting data...');
+let totalPayCount = 0;
+let totalPay = 0;
+let totalBillCount = 0;
+let totalBil = 0;
+let totalCreditCount = 0;
+let totalCreditPay = 0;
+let totalOrderCount = 0;
+db.collection('transaction').orderBy('createdOn', 'asc').onSnapshot(querySnapshot => {
   querySnapshot.docChanges().forEach(async (t) => {
     // Get user name
     const member: any = await db.collection('member').doc(t.doc.data().member).get();
     if (t.type === 'added') {
-      count++;
-      sum += t.doc.data().payload.amount;
-      console.log(count, sum, t.doc.data().uid, member.data().name, 'https://soonaverse.com/member/' + t.doc.data().member, t.doc.data().type, t.doc.data().payload.amount, t.doc.data().createdOn.toDate());
+      if (t.doc.data().type === TransactionType.PAYMENT) {
+        totalPayCount++;
+        totalPay += t.doc.data().payload.amount;
+        console.log('+PAY-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t' + totalOrderCount + '\t' + totalPayCount + '\t' + UnitsHelper.formatBest(totalPay) + '\t\t' +
+        UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
+        t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
+      } else if (t.doc.data().type === TransactionType.BILL_PAYMENT) {
+        totalBillCount++;
+        totalBil += t.doc.data().payload.amount;
+        console.log('-BILL-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t' + totalOrderCount + '\t' + totalBillCount + '\t' + UnitsHelper.formatBest(totalBil) + '\t\t' +
+        UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
+        t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
+      } else if (t.doc.data().type === TransactionType.CREDIT) {
+        totalCreditCount++;
+        totalCreditPay += t.doc.data().payload.amount;
+        console.log('-CREDIT-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t' + totalOrderCount + '\t' + totalCreditCount + '\t' + UnitsHelper.formatBest(totalCreditPay) + '\t\t' +
+        UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
+        t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
+      } else if (t.doc.data().type === TransactionType.ORDER) {
+        totalOrderCount++;
+      }
     }
   });
 });
