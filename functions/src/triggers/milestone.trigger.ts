@@ -6,7 +6,7 @@ import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { DEFAULT_TRANSACTION_DELAY, MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { Transaction, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
-import { medium } from '../scale.settings';
+import { superPump } from '../scale.settings';
 import { serverTime } from "../utils/dateTime.utils";
 import { getRandomEthAddress } from "../utils/wallet.utils";
 import { EthAddress, IotaAddress } from './../../interfaces/models/base';
@@ -22,7 +22,7 @@ interface TransactionMatch {
 // Listen for changes in all documents in the 'users' collection
 export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 300,
-  minInstances: medium,
+  minInstances: superPump,
   memory: "8GB",
 }).firestore.document(COL.MILESTONE + '/{milestoneId}').onWrite(async (change) => {
   const newValue: any = change.after.data();

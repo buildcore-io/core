@@ -3,7 +3,7 @@ export const low = 1;
 export const medium = 3;
 export const important = 6;
 export const pump = 9;
-export const superPump = 12;
+export const superPump = 14;
 
 export function scale(func: WEN_FUNC): number {
   const scaleSettings: any = {};

@@ -71,19 +71,19 @@ db.collection('transaction').orderBy('createdOn', 'asc').onSnapshot(querySnapsho
       if (t.doc.data().type === TransactionType.PAYMENT) {
         totalPayCount++;
         totalPay += t.doc.data().payload.amount;
-        console.log('+PAY-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t' + totalOrderCount + '\t' + totalPayCount + '\t' + UnitsHelper.formatBest(totalPay) + '\t\t' +
+        console.log('+PAY-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t\t' + totalOrderCount + '\t' + totalPayCount + '\t' + UnitsHelper.formatBest(totalPay) + '\t\t' +
         UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
         t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
       } else if (t.doc.data().type === TransactionType.BILL_PAYMENT) {
         totalBillCount++;
         totalBil += t.doc.data().payload.amount;
-        console.log('-BILL-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t' + totalOrderCount + '\t' + totalBillCount + '\t' + UnitsHelper.formatBest(totalBil) + '\t\t' +
+        console.log('-BILL-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t\t' + totalOrderCount + '\t' + totalBillCount + '\t' + UnitsHelper.formatBest(totalBil) + '\t\t' +
         UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
         t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
       } else if (t.doc.data().type === TransactionType.CREDIT) {
         totalCreditCount++;
         totalCreditPay += t.doc.data().payload.amount;
-        console.log('-CREDIT-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t' + totalOrderCount + '\t' + totalCreditCount + '\t' + UnitsHelper.formatBest(totalCreditPay) + '\t\t' +
+        console.log('-CREDIT-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t\t' + totalOrderCount + '\t' + totalCreditCount + '\t' + UnitsHelper.formatBest(totalCreditPay) + '\t\t' +
         UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
         t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
       } else if (t.doc.data().type === TransactionType.ORDER) {
