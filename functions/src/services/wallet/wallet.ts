@@ -65,6 +65,10 @@ export class WalletService {
     return this.client.info();
   }
 
+  public async getBalance(addressBech32: string): Promise<number> {
+    return (await this.client.address(addressBech32))?.balance || 0;
+  }
+
   public async getNewIotaAddressDetails(): Promise<AddressDetails> {
     const mnemonic: string = generateMnemonic() + ' ' + generateMnemonic();
     return this.getIotaAddressDetails(mnemonic);

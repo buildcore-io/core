@@ -169,7 +169,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   }
 
   public getExplorerLink(link: string): string {
-    return 'https://explorer.iota.org/mainnet/search/' + link;
+    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {

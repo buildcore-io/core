@@ -59,7 +59,9 @@ console.log('Getting data...');
 let totalPayCount = 0;
 let totalPay = 0;
 let totalBillCount = 0;
+let totalBillRoyCount = 0;
 let totalBil = 0;
+let totalBilRoy = 0;
 let totalCreditCount = 0;
 let totalCreditPay = 0;
 let totalOrderCount = 0;
@@ -75,9 +77,15 @@ db.collection('transaction').orderBy('createdOn', 'asc').onSnapshot(querySnapsho
         UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
         t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
       } else if (t.doc.data().type === TransactionType.BILL_PAYMENT) {
-        totalBillCount++;
-        totalBil += t.doc.data().payload.amount;
-        console.log('-BILL-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t\t' + totalOrderCount + '\t' + totalBillCount + '\t' + UnitsHelper.formatBest(totalBil) + '\t\t' +
+        if (t.doc.data().payload.royalty) {
+          totalBillRoyCount++;
+          totalBilRoy += t.doc.data().payload.amount;
+        } else {
+          totalBillCount++;
+          totalBil += t.doc.data().payload.amount;
+        }
+        console.log('-BILL-' + (t.doc.data().payload.invalidPayment ? 'Y' : 'N') + '\t\t' +
+        totalOrderCount + '\t' + (t.doc.data().payload.royalty ? totalBillRoyCount : totalBillCount) + '\t' + UnitsHelper.formatBest(t.doc.data().payload.royalty ? totalBilRoy : totalBil) + '\t\t' +
         UnitsHelper.formatBest(t.doc.data().payload.amount) + '\t' + dayjs(t.doc.data().createdOn.toDate()).format('DD/MM HH:mm:ss') + '\t' +
         t.doc.data().uid + '\t' + member.data().name + '\t' + 'https://soonaverse.com/member/' + t.doc.data().member);
       } else if (t.doc.data().type === TransactionType.CREDIT) {
