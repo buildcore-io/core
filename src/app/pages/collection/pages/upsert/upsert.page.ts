@@ -267,6 +267,14 @@ export class UpsertPage implements OnInit, OnDestroy {
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });
+
+    this.royaltiesSpaceDifferentControl.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        if (!this.royaltiesSpaceDifferentControl.value) {
+          this.royaltiesSpaceControl.setValue(this.spaceControl.value);
+        }
+      });
   }
 
   public get maxDiscountCount(): number {
