@@ -212,7 +212,7 @@ export class MultiplePage implements OnInit {
           .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
           .filter((s: { [key: string]: string }) => s.key && s.value)
           .reduce((acc: any, cur: any) => {
-            const index = Number(cur.key.substr(cur.key.split('').findIndex((c: any) => !isNaN(c))));
+            const index = Number(cur.key.substring(cur.key.split('').findIndex((c: any) => !isNaN(c))));
             const key = `prop${index}`;
             const newObj = acc[key] || {};
             if (cur.key.includes('label')) {
@@ -239,7 +239,7 @@ export class MultiplePage implements OnInit {
           .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
           .filter((s: { [key: string]: string }) => s.key && s.value)
           .reduce((acc: any, cur: any) => {
-            const index = Number(cur.key.substr(cur.key.split('').findIndex((c: any) => !isNaN(c))));
+            const index = Number(cur.key.substring(cur.key.split('').findIndex((c: any) => !isNaN(c))));
             const key = `stat${index}`;
             const newObj = acc[key] || {};
             if (cur.key.includes('label')) {
