@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { CollectionAccess } from 'functions/interfaces/models';
 import { DataService } from '../../../services/data.service';
 
 @Component({
@@ -14,6 +15,26 @@ export class CollectionAboutComponent {
     public deviceService: DeviceService
   ) {
     // none.
+  }
+
+  public get access(): typeof CollectionAccess {
+    return CollectionAccess;
+  }
+
+  public getAccessLabel(access?: CollectionAccess|null): string {
+    if (!access) {
+      return '';
+    }
+
+    if (access === CollectionAccess.GUARDIANS_ONLY) {
+      return 'Guardians of Space Only';
+    } else if (access === CollectionAccess.MEMBERS_ONLY) {
+      return 'Members of Space Only';
+    } else if (access === CollectionAccess.MEMBERS_WITH_BADGE) {
+      return 'Members With Badge Only';
+    } else {
+      return '';
+    }
   }
 
   public getShareUrl(): string {

@@ -18,6 +18,8 @@ db.collection('_mnemonic').get().then(async (ss) => {
     } catch(e) {
       // ignore
     }
-    console.log(t.id + ',' + balance + ',' + t.createTime.toDate())
+    if (balance > 0) {
+      console.log(t.id + ',' + balance + ',' + t.createTime.toDate())
+    }
   }
 });
