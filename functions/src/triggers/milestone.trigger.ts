@@ -23,7 +23,7 @@ interface TransactionMatch {
 export const milestoneWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 300,
   minInstances: superPump,
-  memory: "8GB",
+  memory: "2GB",
 }).firestore.document(COL.MILESTONE + '/{milestoneId}').onWrite(async (change) => {
   const newValue: any = change.after.data();
   const previousValue: any = change.before.data();
