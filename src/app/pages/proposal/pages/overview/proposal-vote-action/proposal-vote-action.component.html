@@ -1,4 +1,4 @@
-<button nz-button nzType="primary" nzBlock nzSize="large" (click)="onVote.emit()" *ngIf="(data.canVote$ | async) && data.isMemberVote((data.proposal$ | async)?.type)"
+<button nz-button nzType="primary" nzBlock nzSize="large" (click)="wenOnVote.emit()" *ngIf="(data.canVote$ | async) && data.isMemberVote((data.proposal$ | async)?.type)"
     [disabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length">
     <span *ngIf="(data.currentMembersVotes$ | async)?.length" i18n>Voted</span>
     <span *ngIf="data.isInProgress(data.proposal$ | async) && !(data.currentMembersVotes$ | async)?.length" i18n>Vote Now</span>

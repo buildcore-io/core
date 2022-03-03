@@ -13,7 +13,7 @@
       [isLandingPage]="isLandingPage"
       [isMobileMenuVisible]="isMobileMenuVisible"
       [isAllowedCreation]="isAllowedCreation"
-      (onVisibleChange)="isMobileMenuVisible = !isMobileMenuVisible">
+      (wenOnVisibleChange)="isMobileMenuVisible = !isMobileMenuVisible">
     </wen-mobile-header>
 
     <div class="p-4" *ngIf="!isScrolled">
@@ -110,7 +110,7 @@
 
 <wen-sign-in-modal></wen-sign-in-modal>
 
-<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="currentCheckoutNft" [collection]="currentCheckoutCollection" (onClose)="closeCheckout()"></wen-nft-checkout>
+<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="currentCheckoutNft" [collection]="currentCheckoutCollection" (wenOnClose)="closeCheckout()"></wen-nft-checkout>
 
 <ng-template #notCompletedNotification>
   <div class="flex">

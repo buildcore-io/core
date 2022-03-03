@@ -25,7 +25,7 @@ export class NftPreviewComponent {
     return this._nft
   }
 
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   public space?: Space;
   private _nft: any | null;
@@ -40,7 +40,7 @@ export class NftPreviewComponent {
 
   public close(): void {
     this.nft = null;
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public get filesizes(): typeof FILE_SIZES {

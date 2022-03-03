@@ -13,7 +13,7 @@ export class CreateDropdownComponent {
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
   @Input() isAllowedCreation = true;
-  @Output() onCreateClick = new EventEmitter<void>();
+  @Output() wenOnCreateClick = new EventEmitter<void>();
 
   constructor(
     public routerService: RouterService,

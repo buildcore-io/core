@@ -53,7 +53,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   @Input() nft?: Nft|null;
   @Input() purchasedNft?: Nft|null;
   @Input() collection?: Collection|null;
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
   public isCopied = false;
@@ -255,7 +255,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public goToNft(): void {
     this.router.navigate(['/', this.path, this.purchasedNft?.uid]);
     this.reset();
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public isExpired(val?: Transaction | null): boolean {
@@ -269,7 +269,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
   public close(): void {
     this.reset();
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public formatBest(amount: number|undefined): string {

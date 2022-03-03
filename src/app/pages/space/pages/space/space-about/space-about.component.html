@@ -60,7 +60,7 @@
 
   <div class="mt-6">
     <wen-space-alliances-table [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
-      [alliances]="getSortedAlliances(data.space$ | async)" size="small" (onAllianceEdit)="onAllianceEdit($event)">
+      [alliances]="getSortedAlliances(data.space$ | async)" size="small" (wenOnAllianceEdit)="onAllianceEdit($event)">
     </wen-space-alliances-table>
   </div>
 
@@ -84,7 +84,7 @@
 
       <div class="overflow-y-auto h-96 mt-7">
         <wen-space-alliances-table [isGuardian]="!!(data.isGuardianWithinSpace$ | async)"
-          [alliances]="getSortedAlliances(data.space$ | async)" size="large" (onAllianceEdit)="onAllianceEdit($event)">
+          [alliances]="getSortedAlliances(data.space$ | async)" size="large" (wenOnAllianceEdit)="onAllianceEdit($event)">
         </wen-space-alliances-table>
       </div>
     </ng-template>
@@ -101,7 +101,7 @@
                     'max-height': 'calc(100% - ' +
                         ((spaceAlliancesTitle?.offsetHeight || 0) + (spaceAlliancesActions?.offsetHeight || 0) - 20) + 'px)'
                 }" size="large" [alliances]="getSortedAlliances(data.space$ | async)"
-        (onAllianceEdit)="onAllianceEdit($event)">
+        (wenOnAllianceEdit)="onAllianceEdit($event)">
       </wen-space-alliances-table>
 
       <div class="absolute bottom-0 z-10 flex items-center w-full bg-white" #spaceAlliancesActions>
@@ -230,7 +230,7 @@
 </nz-card>
 
 <div class="pt-6 lg:mt-4 lg:pt-0">
-  <button class="flex justify-center" nz-button nzBlock nzDanger (click)="onLeave.emit()"
+  <button class="flex justify-center" nz-button nzBlock nzDanger (click)="wenOnLeave.emit()"
     *ngIf="!!(data.isMemberWithinSpace$ | async)">
     <wen-icon-log-out class="mr-2 "></wen-icon-log-out>
     <span i18n>Leave Space</span>

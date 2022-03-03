@@ -13,7 +13,7 @@ export class MemberReputationModalComponent {
   @Input() member?: Member;
   @Input() isOpen = false;
   @Input() width?: number;
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   constructor(
     private cd: ChangeDetectorRef
@@ -25,7 +25,7 @@ export class MemberReputationModalComponent {
 
   public onCancel(): void {
     this.isOpen = false;
-    this.onClose.emit();
+    this.wenOnClose.emit();
     this.cd.markForCheck();
   }
 }

@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between">
     <a
       [routerLink]="homeRoute"
-      (onVisibleChange)="setMobileMenuVisible(false)"
+      (wenOnVisibleChange)="setMobileMenuVisible(false)"
       class="m-1"
       >
         <!-- TODO Create component. -->
@@ -16,7 +16,7 @@
           [isMemberProfile]="isMemberProfile"
           [isLandingPage]="isLandingPage"
           [isAllowedCreation]="isAllowedCreation"
-          (onCreateClick)="onCreateClick()"
+          (wenOnCreateClick)="wenOnCreateClick()"
         ></wen-create-dropdown>
         <button>
           <wen-icon-bell></wen-icon-bell>

@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ProposalVoteActionComponent {
   @Input() startDateTicker$?: BehaviorSubject<Timestamp>;
-  @Output() onVote: EventEmitter<void> = new EventEmitter<void>();
+  @Output() wenOnVote: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(
     public auth: AuthService,

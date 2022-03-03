@@ -13,7 +13,7 @@ export class SpaceAlliancesTableComponent {
   @Input() alliances: AllianceExtended[] = []
   @Input() size: 'small' | 'large' = 'large';
   @Input() isGuardian = false;
-  @Output() onAllianceEdit = new EventEmitter<AllianceExtended>();
+  @Output() wenOnAllianceEdit = new EventEmitter<AllianceExtended>();
 
   constructor(
     public deviceService: DeviceService,

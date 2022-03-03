@@ -40,7 +40,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.GENERATE;
   @Input() entityType?: EntityType;
   @Input() entity?: Space|Member|null;
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
   public isCopied = false;
@@ -190,7 +190,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
   public close(): void {
     this.reset();
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public formatBest(amount: number|undefined): string {
