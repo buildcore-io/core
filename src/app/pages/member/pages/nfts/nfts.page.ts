@@ -5,10 +5,10 @@ import { NftApi } from '@api/nft.api';
 import { DEFAULT_COLLECTION, SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
+import { Collection } from '@functions/interfaces/models';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ParticipantsPage } from '@pages/proposal/pages/participants/participants.page';
-import { Collection } from 'functions/interfaces/models';
-import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, debounceTime, map, Observable, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 

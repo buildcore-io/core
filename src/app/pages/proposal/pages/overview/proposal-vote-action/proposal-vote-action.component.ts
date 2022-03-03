@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { Timestamp } from '@functions/interfaces/models/base';
 import { DataService } from '@pages/proposal/services/data.service';
-import { Timestamp } from 'functions/interfaces/models/base';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

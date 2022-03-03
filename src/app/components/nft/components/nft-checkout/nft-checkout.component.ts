@@ -11,12 +11,12 @@ import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
+import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Timestamp } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { MIN_AMOUNT_TO_TRANSFER } from 'functions/interfaces/config';
-import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
-import { Timestamp } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 

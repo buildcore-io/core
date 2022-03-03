@@ -6,12 +6,12 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
+import { Collection, CollectionType, Member } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { MIN_AMOUNT_TO_TRANSFER } from 'functions/interfaces/config';
-import { Collection, CollectionType, Member } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription } from 'rxjs';
 

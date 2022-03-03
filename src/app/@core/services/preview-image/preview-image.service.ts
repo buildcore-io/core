@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FileApi } from '@api/file.api';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Award, Space } from '@functions/interfaces/models';
 import * as dayjs from 'dayjs';
-import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 
