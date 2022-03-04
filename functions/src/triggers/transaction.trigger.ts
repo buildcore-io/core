@@ -12,8 +12,8 @@ import { serverTime } from "../utils/dateTime.utils";
 // Listen for changes in all documents in the 'users' collection
 export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 540,
-  minInstances: superPump * 3,
-  memory: "2GB",
+  minInstances: superPump * 7,
+  memory: "1GB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const newValue: Transaction = <Transaction>change.after.data();
   if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
