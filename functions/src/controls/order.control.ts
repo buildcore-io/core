@@ -101,6 +101,15 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     }
   }
 
+  if (docCollectionData.onePerMemberOnly === true) {
+    const qry: any = await admin.firestore().collection(COL.NFT)
+               .where('collection', '==', docCollectionData.uid)
+               .where('owner', '==', owner).get();
+    if (qry.size >= 1) {
+      throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
+    }
+  }
+
   // Let's determine if NFT can be indicated or we need to randomly select one.
   let refNft: any;
   let mustBeSold = false;
@@ -196,7 +205,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   if (docCollectionData.discounts?.length && dataMember.spaces?.[docCollectionData.space]?.totalReputation) {
     const membersXp: number = dataMember.spaces[docCollectionData.space].totalReputation || 0;
     for (const d of docCollectionData.discounts) {
-      if (d.xp < membersXp) {
+      if (Number(d.xp) < membersXp) {
         discount = (1 - d.amount);
       }
     }

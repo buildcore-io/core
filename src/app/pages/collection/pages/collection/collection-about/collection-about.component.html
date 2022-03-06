@@ -47,6 +47,11 @@
             {{ getAccessLabel((data.collection$ | async)?.access) }}
           </nz-tag>
         </div>
+        <div *ngIf="(data.collection$ | async)?.onePerMemberOnly === true">
+          <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
+            One NFT per member
+          </nz-tag>
+        </div>
         <div *ngFor="let item of (data.collection$ | async)?.discounts"
             class="flex items-center">
             <wen-icon-percentage class="mr-3 text-app-gray-400"></wen-icon-percentage>

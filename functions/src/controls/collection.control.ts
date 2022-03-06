@@ -43,6 +43,10 @@ function defaultJoiUpdateCreateSchema(): any {
       is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_BADGE),
       then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
     }),
+    accessCollections: Joi.when('access', {
+      is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION),
+      then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+    }),
     // TODO Validate XP is not the same.
     discounts: Joi.array().items(Joi.object().keys({
       xp: Joi.string().required(),
@@ -167,6 +171,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   delete defaultSchema.access;
   delete defaultSchema.availableFrom;
   delete defaultSchema.category;
+  delete defaultSchema.onePerMemberOnly;
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {
     uid: CommonJoi.uidCheck()
   }));
