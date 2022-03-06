@@ -23,11 +23,12 @@ export interface VoteTransaction {
 
 export interface WalletResult {
   createdOn: Timestamp;
+  processedOn: Timestamp;
   chainReference?: string|null;
+  chainReferences?: string[];
   error?: any|null;
   confirmed: boolean;
   count: number;
-  reattach: number;
 }
 
 export interface BadgeTransaction {

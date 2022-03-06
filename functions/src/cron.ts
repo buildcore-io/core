@@ -2,11 +2,10 @@ import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL, SUB_COL } from '../../functions/interfaces/models/base';
-import { MAX_WALLET_RETRY } from '../interfaces/config';
+import { DEFAULT_TRANSACTION_DELAY, MAX_WALLET_RETRY } from '../interfaces/config';
 import { Collection, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
-import { WalletService } from './services/wallet/wallet';
 
 export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
@@ -29,14 +28,21 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
   return null;
 });
 
-export const reAttachWallet: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+export const reTryWallet: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.TRANSACTION)
                     .where('payload.walletReference.confirmed', '==', false)
-                    .where('payload.walletReference.reattach', '<', MAX_WALLET_RETRY).get();
+                    .where('payload.walletReference.count', '<', MAX_WALLET_RETRY).get();
   if (qry.size > 0) {
     for (const t of qry.docs) {
       // We ignore while there are errors.
       if (t.data().payload.walletReference.chainReference) {
+        // If processed on does not exists something went wrong and try again.
+        const readyToRun: dayjs.Dayjs = t.data().payload.walletReference.processedOn ? dayjs(t.data().payload.walletReference.processedOn.toDate()).add(DEFAULT_TRANSACTION_DELAY, 'ms') : dayjs().subtract(1, 's');
+        // This is one is not ready yet.
+        if (readyToRun.isAfter(dayjs())) {
+          continue;
+        }
+
         // Does it exists in sub-collection?
         const ref: any = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS).where('messageId', '==', t.data().payload.walletReference.chainReference).get();
         const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(t.data().uid);
@@ -44,13 +50,13 @@ export const reAttachWallet: functions.CloudFunction<any> = functions.pubsub.sch
           const sfDoc: any = await transaction.get(refSource);
           if (sfDoc.data()) {
             const data: any = sfDoc.data();
-            data.payload.walletReference.reattach = admin.firestore.FieldValue.increment(1);
             if (ref.size > 0) {
               data.payload.walletReference.confirmed = true;
             } else {
-              // Let's try to re-attach.
-              const walletService: WalletService = new WalletService();
-              await walletService.reattach(data.payload.walletReference.chainReference);
+              // Save old and retry.
+              data.payload.walletReference.chainReferences = data.payload.walletReference.chainReferences || [];
+              data.payload.walletReference.chainReferences.push(data.payload.walletReference.chainReference);
+              data.payload.walletReference.chainReference = null;
             }
 
             transaction.update(refSource, data);
