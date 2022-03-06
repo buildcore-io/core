@@ -28,8 +28,8 @@ interface Output {
 }
 
 export class WalletService {
-  private API_ENDPOINT = "https://chrysalis-nodes.iota.org"; // Mainnet
-  private API_ENDPOINT_SLAVE = 'https://mainnet-node.tanglebay.com';
+  private API_ENDPOINT = "https://svrs.io"; // Mainnet
+  private API_ENDPOINT_SLAVE = 'https://chrysalis-nodes.iota.org';
   // private API_ENDPOINT = 'https://api.lb-0.h.chrysalis-devnet.iota.cafe';   // DEV NET
   private client: SingleNodeClient;
   private nodeInfo?: INodeInfo;
