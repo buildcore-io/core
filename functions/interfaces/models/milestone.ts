@@ -7,6 +7,8 @@ export interface MilestoneTransactionEntry {
 
 export interface MilestoneTransaction {
   createdOn: Timestamp;
+  messageId: string;
+  milestone: number;
   inputs: MilestoneTransactionEntry[],
   outputs: MilestoneTransactionEntry[],
 }

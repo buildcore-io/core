@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import * as admin from 'firebase-admin';
 import { TransactionOrderType, TransactionType } from '../../../functions/interfaces/models';
-import { COL } from '../../../functions/interfaces/models/base';
+import { COL, SUB_COL } from '../../../functions/interfaces/models/base';
 import { approveCollection, createCollection } from '../../../functions/src/controls/collection.control';
 import { createNft } from '../../../functions/src/controls/nft.control';
 import { createSpace } from '../../../functions/src/controls/space.control';
@@ -21,6 +21,7 @@ const db = admin.firestore();
 
 describe.skip('Ordering flows', () => {
   let walletSpy: any;
+  const defTranId = '9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b251';
   const defaultFromAddress = '1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz';
   jest.setTimeout(180000);
   const mocker = (adr: string, params: any) => {
@@ -37,7 +38,7 @@ describe.skip('Ordering flows', () => {
           await new Promise((r) => setTimeout(r, 500));
         }
         try {
-          const rec: any = await db.collection(COL.MILESTONE).doc(nextMilestone).get();
+          const rec: any = await db.collection(COL.MILESTONE).doc(nextMilestone).collection(SUB_COL.TRANSACTIONS).doc(defTranId).get();
           if (rec.data().processed === true) {
             processed = true;
           }
@@ -103,9 +104,10 @@ describe.skip('Ordering flows', () => {
     const allMil = await db.collection(COL.MILESTONE).get();
     const nextMilestone = (allMil.size + 1).toString();
     await db.collection(COL.MILESTONE).doc(nextMilestone)
-    .collection('transactions').doc('9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b251')
+    .collection('transactions').doc(defTranId)
     .set({
       createdOn: serverTime(),
+      messageId: defTranId,
       inputs: [{
         address: defaultFromAddress,
         amount: 123

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL } from '../../functions/interfaces/models/base';
-import { Collection } from '../interfaces/models';
+import { Collection, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 
@@ -19,6 +19,54 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
 
         await admin.firestore().collection(COL.AWARD).doc(t.data().uid).update({
           completed: true
+        });
+    }
+  }
+
+  // Finished.
+  return null;
+});
+
+export const voidExpiredOrders: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+  const qry = await admin.firestore().collection(COL.TRANSACTION)
+                    .where('type', '==', TransactionType.ORDER)
+                    .where('payload.void', '==', false)
+                    .where('payload.reconciled', '==', false)
+                    .where('createdOn', '<=', dayjs().subtract(TRANSACTION_AUTO_EXPIRY_MS, 'ms').toDate()).get();
+
+  if (qry.size > 0) {
+    for (const t of qry.docs) {
+        const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(t.data().uid);
+        await admin.firestore().runTransaction(async (transaction) => {
+          const updates: any[] = [];
+          const sfDoc: any = await transaction.get(refSource);
+          if (sfDoc.data()) {
+            const data: any = sfDoc.data();
+            data.payload.void = true;
+            updates.push({
+              ref: refSource,
+              data: data
+            });
+          }
+
+          // We need to unlock NFT.
+          if (sfDoc.data().payload.nft) {
+            const refNft: any = await admin.firestore().collection(COL.NFT).doc(sfDoc.data().payload.nft);
+            const sfDocNft: any = await transaction.get(refNft);
+            if (sfDocNft.data()) {
+              updates.push({
+                ref: refNft,
+                data: {
+                  locked: false,
+                  lockedBy: null
+                }
+              });
+            }
+          }
+
+          updates.forEach((p) => {
+            transaction.update(p.ref, p.data);
+          });
         });
     }
   }
@@ -49,7 +97,7 @@ export const hidePlaceholderAfterSoldOut: functions.CloudFunction<any> = functio
 });
 
 const MAX_UPLOAD_RETRY = 3;
-export const ipfsForNft: functions.CloudFunction<any> = functions.runWith({ timeoutSeconds: 540, memory: '8GB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
+export const ipfsForNft: functions.CloudFunction<any> = functions.runWith({ timeoutSeconds: 540, memory: '256MB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).limit(1000).get();;
   if (qry.size > 0) {
     for (const doc of qry.docs) {

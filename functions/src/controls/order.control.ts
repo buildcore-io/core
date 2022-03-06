@@ -65,21 +65,39 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
-    let includes = false;
+    const includedBadges: string[] = [];
     const qry: any = await admin.firestore().collection(COL.TRANSACTION)
                .where('type', '==', TransactionType.BADGE)
                .where('member', '==', owner).get();
     if (qry.size > 0) {
       for (const t of qry.docs) {
-        if (docCollectionData.accessAwards.includes(t.data().payload.award)) {
-          includes = true;
+        if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
+          includedBadges.push(t.data().payload.award)
           break;
         }
       }
     }
 
-    if (includes === false) {
+    if (docCollectionData.accessAwards.length !== includedBadges.length) {
       throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+    }
+  }
+
+  if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
+    const includedCollections: string[] = [];
+    const qry: any = await admin.firestore().collection(COL.NFT)
+               .where('owner', '==', owner).get();
+    if (qry.size > 0) {
+      for (const t of qry.docs) {
+        if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
+          includedCollections.push(t.data().collection);
+          break;
+        }
+      }
+    }
+
+    if (docCollectionData.accessCollections.length !== includedCollections.length) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
     }
   }
 
