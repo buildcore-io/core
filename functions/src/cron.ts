@@ -1,10 +1,12 @@
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { COL } from '../../functions/interfaces/models/base';
+import { COL, SUB_COL } from '../../functions/interfaces/models/base';
+import { MAX_WALLET_RETRY } from '../interfaces/config';
 import { Collection, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
+import { WalletService } from './services/wallet/wallet';
 
 export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
@@ -20,6 +22,41 @@ export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubs
         await admin.firestore().collection(COL.AWARD).doc(t.data().uid).update({
           completed: true
         });
+    }
+  }
+
+  // Finished.
+  return null;
+});
+
+export const reAttachWallet: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+  const qry = await admin.firestore().collection(COL.TRANSACTION)
+                    .where('payload.walletReference.confirmed', '==', false)
+                    .where('payload.walletReference.reattach', '<', MAX_WALLET_RETRY).get();
+  if (qry.size > 0) {
+    for (const t of qry.docs) {
+      // We ignore while there are errors.
+      if (t.data().payload.walletReference.chainReference) {
+        // Does it exists in sub-collection?
+        const ref: any = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS).where('messageId', '==', t.data().payload.walletReference.chainReference).get();
+        const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(t.data().uid);
+        await admin.firestore().runTransaction(async (transaction) => {
+          const sfDoc: any = await transaction.get(refSource);
+          if (sfDoc.data()) {
+            const data: any = sfDoc.data();
+            data.payload.walletReference.reattach = admin.firestore.FieldValue.increment(1);
+            if (ref.size > 0) {
+              data.payload.walletReference.confirmed = true;
+            } else {
+              // Let's try to re-attach.
+              const walletService: WalletService = new WalletService();
+              await walletService.reattach(data.payload.walletReference.chainReference);
+            }
+
+            transaction.update(refSource, data);
+          }
+        });
+      }
     }
   }
 

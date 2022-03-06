@@ -24,7 +24,9 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
     const walletService: WalletService = new WalletService();
     const walletResponse: WalletResult = newValue.payload.walletReference || {
       createdOn: serverTime(),
-      count: 0
+      confirmed: false,
+      count: 0,
+      reattach: 0
     };
 
     // Reset defaults.

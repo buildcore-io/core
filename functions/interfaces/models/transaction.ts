@@ -25,7 +25,9 @@ export interface WalletResult {
   createdOn: Timestamp;
   chainReference?: string|null;
   error?: any|null;
+  confirmed: boolean;
   count: number;
+  reattach: number;
 }
 
 export interface BadgeTransaction {

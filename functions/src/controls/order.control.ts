@@ -200,7 +200,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   // Calculate discount.
   const dataMember: Member = docMember.data();
-  let discount = 0;
+  let discount = 1;
   // We must apply discount.
   if (docCollectionData.discounts?.length && dataMember.spaces?.[docCollectionData.space]?.totalReputation) {
     const membersXp: number = dataMember.spaces[docCollectionData.space].totalReputation || 0;
@@ -226,7 +226,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       });
     }
   });
-  let finalPrice = discount > 0 ? Math.ceil(discount * docNftData.price) : docNftData.price;
+  let finalPrice = discount < 1 ? Math.ceil(discount * docNftData.price) : docNftData.price;
   if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
     finalPrice = MIN_AMOUNT_TO_TRANSFER;
   }

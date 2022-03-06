@@ -2,8 +2,7 @@ import { Bip32Path } from "@iota/crypto.js";
 import {
   Bech32Helper,
   Ed25519Address,
-  Ed25519Seed,
-  ED25519_ADDRESS_TYPE, IKeyPair, INodeInfo, ISeed, ISigLockedSingleOutput, IUTXOInput, sendAdvanced, SIG_LOCKED_SINGLE_OUTPUT_TYPE, SingleNodeClient, UTXO_INPUT_TYPE
+  Ed25519Seed, ED25519_ADDRESS_TYPE, IKeyPair, IMessage, INodeInfo, ISeed, ISigLockedSingleOutput, IUTXOInput, reattach, sendAdvanced, SIG_LOCKED_SINGLE_OUTPUT_TYPE, SingleNodeClient, UTXO_INPUT_TYPE
 } from "@iota/iota.js";
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
@@ -63,6 +62,13 @@ export class WalletService {
 
   public async getNodeInfo(): Promise<INodeInfo> {
     return this.client.info();
+  }
+
+  public async reattach(messageId: string): Promise<{
+      message: IMessage;
+      messageId: string;
+  }> {
+    return reattach(this.client, messageId);
   }
 
   public async getBalance(addressBech32: string): Promise<number> {
