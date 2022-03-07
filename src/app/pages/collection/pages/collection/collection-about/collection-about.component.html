@@ -52,7 +52,7 @@
             One NFT per member
           </nz-tag>
         </div>
-        <div *ngFor="let item of (data.collection$ | async)?.discounts"
+        <div *ngFor="let item of sortedDiscounts((data.collection$ | async)?.discounts)"
             class="flex items-center">
             <wen-icon-percentage class="mr-3 text-app-gray-400"></wen-icon-percentage>
             <div class="text-xs font-medium">{{ (item.amount * 100) }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>

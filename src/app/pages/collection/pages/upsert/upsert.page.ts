@@ -212,7 +212,9 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.discordControl.setValue(o.discord);
               this.categoryControl.setValue(o.category);
               this.discounts.removeAt(0);
-              o.discounts.forEach((v) => {
+              o.discounts.sort((a, b) => {
+                return a.xp - b.xp;
+              }).forEach((v) => {
                 this.addDiscount(
                   v.xp ? v.xp.toString() : '',
                   v.amount ? (v.amount * 100).toString() : '',
@@ -440,7 +442,9 @@ export class UpsertPage implements OnInit, OnDestroy {
         });
       }
     });
-    data.discounts = discounts;
+    data.discounts = discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    });
 
     // Convert royaltiesFee
     if (data.royaltiesFee > 0) {

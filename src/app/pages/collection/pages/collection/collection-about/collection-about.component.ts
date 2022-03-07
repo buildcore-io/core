@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { CollectionAccess } from 'functions/interfaces/models';
+import { CollectionAccess, DiscountLine } from 'functions/interfaces/models';
 import { DataService } from '../../../services/data.service';
 
 @Component({
@@ -35,6 +35,16 @@ export class CollectionAboutComponent {
     } else {
       return '';
     }
+  }
+
+  public sortedDiscounts(discounts?: DiscountLine[]|null): DiscountLine[] {
+    if (!discounts?.length) {
+      return [];
+    }
+
+    return discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    });
   }
 
   public getShareUrl(): string {

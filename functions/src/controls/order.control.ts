@@ -204,7 +204,9 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // We must apply discount.
   if (docCollectionData.discounts?.length && dataMember.spaces?.[docCollectionData.space]?.totalReputation) {
     const membersXp: number = dataMember.spaces[docCollectionData.space].totalReputation || 0;
-    for (const d of docCollectionData.discounts) {
+    for (const d of docCollectionData.discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    })) {
       if (Number(d.xp) < membersXp) {
         discount = (1 - d.amount);
       }
@@ -231,6 +233,8 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     finalPrice = MIN_AMOUNT_TO_TRANSFER;
   }
 
+  // Remove unwanted decimals.
+  finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await refTran.set(<Transaction>{
     type: TransactionType.ORDER,
@@ -297,8 +301,8 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-  const min = (MIN_AMOUNT_TO_TRANSFER / 100); // Reduce number of decimals.
-  const randomAmount: number = (Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 100);
+  const min = (MIN_AMOUNT_TO_TRANSFER / 1000 / 10); // Reduce number of decimals.
+  const randomAmount: number = (Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 1000 * 10);
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
   const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);

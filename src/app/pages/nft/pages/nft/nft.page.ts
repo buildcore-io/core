@@ -176,7 +176,9 @@ export class NFTPage implements OnInit, OnDestroy {
     const xp: number = this.auth.member$.value.spaces[collection.space].totalReputation || 0;
     let discount = 1;
     if (xp > 0) {
-      for (const d of collection.discounts) {
+      for (const d of collection.discounts.sort((a, b) => {
+        return a.xp - b.xp;
+      })) {
         if (d.xp < xp) {
           discount = (1 - d.amount);
         }
@@ -192,6 +194,7 @@ export class NFTPage implements OnInit, OnDestroy {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
 
+    finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
     return finalPrice;
   }
 
