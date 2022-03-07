@@ -126,6 +126,8 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
         position: 0,
         lockedBy: null,
         ipfsMedia: null,
+        approved: false,
+        rejected: false,
         sold: true,
         soldOn: admin.firestore.Timestamp.now(),
         owner: null,
