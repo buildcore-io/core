@@ -49,7 +49,7 @@ export class NFTsPage implements OnInit, OnDestroy {
       this.filterControl.setValue(this.filterControl.value);
     });
 
-    this.data.member$.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj) {
         this.listen();
       }

@@ -56,7 +56,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'NFT');
-    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.nft.nft.replace(':', '')];
       if (id) {
         this.listenToNft(id);
@@ -90,7 +90,7 @@ export class NFTPage implements OnInit, OnDestroy {
           this.data.owner$.next(undefined);
         }
         this.nftSubscriptions$.push(
-          this.nftApi.lastCollection(p.collection, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+          this.nftApi.lastCollection(p.collection, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );

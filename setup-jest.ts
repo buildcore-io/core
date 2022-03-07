@@ -1,8 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { AngularFireStorage } from "@angular/fire/compat/storage";
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { ReactiveFormsModule } from '@angular/forms';
+import '@angular/localize/init';
 import { defineGlobalsInjections } from '@ngneat/spectator';
 import 'jest-preset-angular/setup-jest';
 import { MockProvider, ngMocks } from 'ng-mocks';
@@ -36,7 +37,6 @@ import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
-import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import { CoreModule } from './src/app/@core/core.module';
 import { TruncateModule } from './src/app/@core/pipes/truncate/truncate.module';
 
@@ -48,7 +48,6 @@ defineGlobalsInjections({
     NzCardModule,
     CoreModule,
     TruncateModule,
-    InfiniteScrollModule,
     NzTimelineModule,
     NzDividerModule,
     NzBadgeModule,

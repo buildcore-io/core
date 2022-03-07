@@ -165,14 +165,14 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.route.params.pipe(untilDestroyed(this)).subscribe((p) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);
         this.royaltiesSpaceControl.setValue(p.space);
       }
     });
 
-    this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.collectionId) {
         this.editMode = true;
         this.collectionId = o.collectionId;
@@ -224,7 +224,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.memberApi
           .allSpacesAsMember(o.uid)

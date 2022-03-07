@@ -158,7 +158,7 @@ export class MultiplePage implements OnInit {
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
 

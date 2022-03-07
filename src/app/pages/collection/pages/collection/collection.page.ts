@@ -63,7 +63,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Collection');
-    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
       if (id) {
         this.listenToCollection(id);
@@ -146,15 +146,15 @@ export class CollectionPage implements OnInit, OnDestroy {
   private listenToCollection(id: string): void {
     this.cancelSubscriptions();
     this.data.collectionId = id;
-    this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
+    this.subscriptions$.push(this.collectionApi.listen(id)?.pipe(untilDestroyed(this)).subscribe(this.data.collection$));
     this.subscriptions$.push(this.getHandler(id, undefined, this.filter.search$.getValue() || undefined).subscribe(this.store.bind(this, this.data.dataStore.length)));
     this.subscriptions$.push(
-      this.nftApi.lowToHighCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+      this.nftApi.lowToHighCollection(id, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
       })).subscribe(this.data.cheapestNft$)
     );
     this.subscriptions$.push(
-      this.nftApi.lastCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+      this.nftApi.lastCollection(id, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
         if (obj[0] && this.isAvailableTab() && (obj[0]?.availableFrom === null || !dayjs(obj[0].availableFrom.toDate()).isBefore(dayjs()) || obj[0].owner)) {
           return undefined;
         } else if (this.isOwnedTab()) {

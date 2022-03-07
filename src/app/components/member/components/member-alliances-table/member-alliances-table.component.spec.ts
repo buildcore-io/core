@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { CollectionApi } from '@api/collection.api';
+import { SpaceApi } from '@api/space.api';
+import { CacheService } from '@core/services/cache/cache.service';
+import { MockProvider } from 'ng-mocks';
 import { MemberAlliancesTableComponent } from './member-alliances-table.component';
+
 
 describe('MemberAlliancesTableComponent', () => {
   let component: MemberAlliancesTableComponent;
@@ -8,7 +12,12 @@ describe('MemberAlliancesTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MemberAlliancesTableComponent ]
+      declarations: [ MemberAlliancesTableComponent ],
+      providers: [
+        MockProvider(SpaceApi),
+        MockProvider(CollectionApi),
+        MockProvider(CacheService)
+      ]
     })
     .compileComponents();
   });

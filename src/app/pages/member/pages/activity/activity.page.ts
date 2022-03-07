@@ -43,6 +43,7 @@ export class ActivityPage implements OnInit {
   public chartOptions: Partial<ChartOptions> = {};
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
+  public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;
 
   constructor(
@@ -54,8 +55,9 @@ export class ActivityPage implements OnInit {
   ) {
     // Init empty.
     this.initChart([]);
+    this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.spaceForm = new FormGroup({
-      space: new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value),
+      space: this.spaceControl,
       includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
   }
@@ -102,7 +104,7 @@ export class ActivityPage implements OnInit {
     });
 
     let prev: string | undefined;
-    this.data.member$.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (prev !== obj?.uid) {
         this.data.refreshBadges(this.getSelectedSpace(), this.spaceForm.value.includeAlliances);
         prev = obj?.uid;
