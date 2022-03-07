@@ -24,7 +24,7 @@
       "sourceRoot": "src",
       "prefix": "wen",
       "i18n": {
-        "sourceLocale": "en-US",
+        "sourceLocale": "en-CA",
         "locales": {
           "fr": "src/locale/messages.fr.xlf"
         }
