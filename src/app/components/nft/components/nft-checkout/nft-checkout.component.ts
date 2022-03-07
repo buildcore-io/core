@@ -203,7 +203,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public getExplorerLink(link: string): string {
-    return 'https://explorer.iota.org/mainnet/search/' + link;
+    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {
@@ -241,6 +241,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
 
+    finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
     return finalPrice;
   }
 
@@ -298,7 +299,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return '';
+    return 'tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse';
   }
 
   public async proceedWithOrder(): Promise<void> {

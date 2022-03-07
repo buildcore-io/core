@@ -266,7 +266,6 @@ export class MultiplePage implements OnInit {
     res.collection = this.collectionControl.value;
     res.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
     res.availableFrom = new Date(data.availableFrom);
-    res.price = data.price;
     return res;
   }
 

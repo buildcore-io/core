@@ -38,9 +38,13 @@ function defaultJoiUpdateCreateSchema(): any {
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0).max(1).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
-    access: Joi.number().equal(CollectionAccess.OPEN, CollectionAccess.MEMBERS_ONLY, CollectionAccess.GUARDIANS_ONLY, CollectionAccess.MEMBERS_WITH_BADGE).required(),
+    access: Joi.number().equal(CollectionAccess.OPEN, CollectionAccess.MEMBERS_ONLY, CollectionAccess.GUARDIANS_ONLY, CollectionAccess.MEMBERS_WITH_BADGE, CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION).required(),
     accessAwards: Joi.when('access', {
       is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_BADGE),
+      then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+    }),
+    accessCollections: Joi.when('access', {
+      is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION),
       then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
     }),
     // TODO Validate XP is not the same.
@@ -48,6 +52,7 @@ function defaultJoiUpdateCreateSchema(): any {
       xp: Joi.string().required(),
       amount: Joi.number().min(0.01).max(1).required()
     })).min(0).max(5).optional(),
+    onePerMemberOnly: Joi.boolean().required(),
     discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
     url: Joi.string().allow(null, '').uri({
       scheme: ['https', 'http']
@@ -121,6 +126,8 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
         position: 0,
         lockedBy: null,
         ipfsMedia: null,
+        approved: false,
+        rejected: false,
         sold: true,
         soldOn: admin.firestore.Timestamp.now(),
         owner: null,
@@ -166,6 +173,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   delete defaultSchema.access;
   delete defaultSchema.availableFrom;
   delete defaultSchema.category;
+  delete defaultSchema.onePerMemberOnly;
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {
     uid: CommonJoi.uidCheck()
   }));

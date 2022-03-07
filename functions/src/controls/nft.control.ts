@@ -102,12 +102,14 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
   }
 
   const refNft: any = admin.firestore().collection(COL.NFT).doc(nftAddress);
+  const finalPrice: number = parseInt(params.price);
   let docNft: any = await refNft.get();
   if (!docNft.exists) {
     // Document does not exists.
     await refNft.set(keywords(cOn(merge(cleanParams(params), {
       uid: nftAddress,
       locked: false,
+      price: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
       position: docCollection.data().total + 1,
       lockedBy: null,
       ipfsMedia: null,

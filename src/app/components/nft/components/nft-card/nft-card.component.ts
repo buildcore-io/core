@@ -81,7 +81,9 @@ export class NftCardComponent {
     const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
     let discount = 1;
     if (xp > 0) {
-      for (const d of this.collection.discounts) {
+      for (const d of this.collection.discounts.sort((a, b) => {
+        return a.xp - b.xp;
+      })) {
         if (d.xp < xp) {
           discount = (1 - d.amount);
         }

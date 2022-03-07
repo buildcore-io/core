@@ -8,10 +8,13 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi, AwardFilter } from '@api/award.api';
+import { FULL_LIST } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NavigationService } from '@core/services/navigation/navigation.service';
 import { NotificationService } from '@core/services/notification';
@@ -44,6 +47,7 @@ import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import {
+  Collection,
   CollectionAccess,
   DiscountLine
 } from './../../../../../../functions/interfaces/models/collection';
@@ -81,6 +85,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   );
   public placeholderUrlControl: FormControl = new FormControl('');
   public accessAwardsControl: FormControl = new FormControl([]);
+  public accessCollectionsControl: FormControl = new FormControl([]);
   public bannerUrlControl: FormControl = new FormControl('', Validators.required);
   public categoryControl: FormControl = new FormControl('', Validators.required);
   public selectedAccessControl: FormControl = new FormControl(CollectionAccess.OPEN, Validators.required);
@@ -92,6 +97,9 @@ export class UpsertPage implements OnInit, OnDestroy {
   public royaltiesSpaceDifferentControl: FormControl = new FormControl(
     false,
     Validators.required,
+  );
+  public onePerMemberOnlyControl: FormControl = new FormControl(
+    false
   );
   public typeControl: FormControl = new FormControl(
     CollectionType.CLASSIC,
@@ -127,6 +135,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   private awardSub?: Subscription;
 
   constructor(
+    public cache: CacheService,
     public deviceService: DeviceService,
     public nav: NavigationService,
     private route: ActivatedRoute,
@@ -148,6 +157,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       type: this.typeControl,
       access: this.selectedAccessControl,
       accessAwards: this.accessAwardsControl,
+      accessCollections: this.accessCollectionsControl,
       price: this.priceControl,
       unit: this.unitControl,
       availableFrom: this.availableFromControl,
@@ -158,6 +168,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       twitter: this.twitterControl,
       discord: this.discordControl,
       bannerUrl: this.bannerUrlControl,
+      onePerMemberOnly: this.onePerMemberOnlyControl,
       placeholderUrl: this.placeholderUrlControl,
       category: this.categoryControl,
       discounts: this.discounts,
@@ -201,7 +212,9 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.discordControl.setValue(o.discord);
               this.categoryControl.setValue(o.category);
               this.discounts.removeAt(0);
-              o.discounts.forEach((v) => {
+              o.discounts.sort((a, b) => {
+                return a.xp - b.xp;
+              }).forEach((v) => {
                 this.addDiscount(
                   v.xp ? v.xp.toString() : '',
                   v.amount ? (v.amount * 100).toString() : '',
@@ -217,6 +230,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.availableFromControl.disable();
               this.typeControl.disable();
               this.categoryControl.disable();
+              this.onePerMemberOnlyControl.disable();
 
               this.cd.markForCheck();
             }
@@ -226,10 +240,8 @@ export class UpsertPage implements OnInit, OnDestroy {
 
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
-        this.memberApi
-          .allSpacesAsMember(o.uid)
-          .pipe(untilDestroyed(this))
-          .subscribe(this.spaces$);
+        this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
+        this.awardApi.top(undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
       }
     });
 
@@ -259,7 +271,7 @@ export class UpsertPage implements OnInit, OnDestroy {
         }
         this.placeholderUrlControl.updateValueAndValidity();
       });
-    
+
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
@@ -289,6 +301,16 @@ export class UpsertPage implements OnInit, OnDestroy {
     }
 
     return of().subscribe();
+  }
+
+  public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {
+    return (list || [])
+      .filter((o) => o.rejected !== true)
+      .map((o) => ({
+          label: o.name || o.uid,
+          value: o.uid,
+          img: o.bannerUrl
+      }));
   }
 
   public uploadFilePlaceholder(item: NzUploadXHRArgs): Subscription {
@@ -420,7 +442,9 @@ export class UpsertPage implements OnInit, OnDestroy {
         });
       }
     });
-    data.discounts = discounts;
+    data.discounts = discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    });
 
     // Convert royaltiesFee
     if (data.royaltiesFee > 0) {
@@ -436,6 +460,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.access;
       delete data.price;
       delete data.availableFrom;
+      delete data.onePerMemberOnly;
     }
 
     delete data.royaltiesSpaceDifferent;
