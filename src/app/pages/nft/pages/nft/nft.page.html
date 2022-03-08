@@ -9,8 +9,8 @@
             <div class="mb-10 text-xl font-medium" *ngIf="deviceService.isDesktop$ | async">{{ (data.nft$ | async)?.name }}</div>
 
             <ng-container *ngIf="deviceService.isMobile$ | async">
-                <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl" (click)="isNftPreviewOpen = true">
-                    <img
+                <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl">
+                    <img (click)="isNftPreviewOpen = true"
                     *ngIf="mediaType === 'image'"
                     alt="NFT Image"
                     [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
@@ -155,8 +155,8 @@
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
             <ng-container *ngIf="deviceService.isDesktop$ | async">
-                <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl" (click)="isNftPreviewOpen = true">
-                    <img
+                <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl">
+                    <img (click)="isNftPreviewOpen = true"
                     *ngIf="mediaType === 'image'"
                     alt="NFT Image"
                     [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
