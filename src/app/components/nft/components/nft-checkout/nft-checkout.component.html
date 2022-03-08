@@ -39,10 +39,16 @@
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-6">
         <div class="relative w-full lg:w-72 lg:w-overflow-hidden">
             <img
+                *ngIf="mediaType === 'image'"
                 alt="NFT image"
                 [src]="getRecord()?.media || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full rounded-2xl"
             />
+
+            <video controls class="object-cover w-full h-full rounded-2xl" *ngIf="mediaType === 'video'">
+              <source [src]="getRecord()?.media" type="video/mp4">
+              Your browser does not support HTML video.
+            </video>
         </div>
         <div class="mt-8 lg:ml-8 lg:mt-0 ">
             <div class="relative flex flex-col w-full h-full">
