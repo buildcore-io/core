@@ -11,7 +11,7 @@ export interface SelectCollectionOption {
 }
 
 export const DEFAULT_COLLECTION: SelectCollectionOption = {
-  label: 'All Collections',
+  label: $localize`All Collections`,
   value: 'all'
 };
 

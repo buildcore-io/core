@@ -27,11 +27,11 @@ import { NotificationService } from './../../../../@core/services/notification/n
 export class SpacePage implements OnInit, OnDestroy {
   // Overview / Forum / Proposals / Awards / Treasury / Members
   public sections = [
-    { route: 'overview', label: 'Overview' },
-    { route: 'collections', label: 'Collections' },
-    { route: 'proposals', label: 'Proposals' },
-    { route: 'awards', label: 'Awards' },
-    { route: 'members', label: 'Members' }
+    { route: 'overview', label: $localize`Overview` },
+    { route: 'collections', label: $localize`Collections` },
+    { route: 'proposals', label: $localize`Proposals` },
+    { route: 'awards', label: $localize`Awards` },
+    { route: 'members', label: $localize`Members` }
   ];
   public isAboutSpaceVisible = false;
 

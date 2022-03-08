@@ -24,8 +24,9 @@
 
         <label class="mt-3 text-base font-medium text-app-gray-text"
           nz-checkbox formControlName="includeAlliances"
-          [nzDisabled]="spaceForm.value.space === defaultSpace.value" i18n>
-            Include connections {{ (deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value ? '(Select some space)' : '' }}
+          [nzDisabled]="spaceForm.value.space === defaultSpace.value">
+          <span i18n>Include connections </span>
+          <ng-container *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value" i18n>(Select some space)</ng-container>
         </label>
       </form>
 

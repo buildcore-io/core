@@ -28,8 +28,10 @@
             </td>
             <td>
                 <div class="text-sm font-medium" [ngClass]="ally.established ? 'text-green-success' : 'text-app-gray-400'">
-                    <div *ngIf="size === 'large' && (deviceService.isDesktop$ | async); else iconsBlock" i18n>
-                        {{ ally.established ? 'Established' : 'Recognised' }}</div>
+                    <div *ngIf="size === 'large' && (deviceService.isDesktop$ | async); else iconsBlock">
+                        <ng-container *ngIf="ally.established; else recognisedBlock" i18n>Established</ng-container>
+                        <ng-template #recognisedBlock i18n>Recognised</ng-template>
+                    </div>
                     <ng-template #iconsBlock>
                         <wen-icon-check *ngIf="ally.established"></wen-icon-check>
                         <wen-icon-eye *ngIf="!ally.established" class="text-app-gray-400"></wen-icon-eye>

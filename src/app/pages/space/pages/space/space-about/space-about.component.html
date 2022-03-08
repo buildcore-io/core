@@ -121,7 +121,11 @@
     [nzFooter]="null" [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }">
     <ng-template #newAllianceModalContent>
       <div class="flex items-start justify-between">
-        <div class="text-2xl font-bold" i18n>{{ isNewAlliance ? 'New' : 'Edit' }} connection</div>
+        <div class="text-2xl font-bold">
+          <ng-container *ngIf="isNewAlliance; else notNewAlliance" i18n>New</ng-container>
+          <ng-template #notNewAlliance i18n>Edit</ng-template>
+          <span i18n> connection</span>
+        </div>
         <wen-icon-close class="cursor-pointer" (click)="closeNewAlliance()"></wen-icon-close>
       </div>
 
@@ -133,8 +137,9 @@
 
       <div class="flex items-center justify-between mt-2">
         <div class="flex items-center">
-          <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()" i18n>
-            {{ isNewAlliance ? 'Form a connection' : 'Save' }}
+          <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()">
+            <ng-container *ngIf="isNewAlliance; else desktopSaveAlliance" i18n>Form a connection</ng-container>
+            <ng-template #desktopSaveAlliance i18n>Save</ng-template>
           </button>
           <button nz-button nzType="link" nzSize="small" class="ml-8" (click)="closeNewAlliance()" i18n>
             Cancel
@@ -153,15 +158,20 @@
   <nz-drawer *ngIf="deviceService.isMobile$ | async" [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
     [nzWidth]="'100vw'" [nzClosable]="false" [nzVisible]="isNewAllianceOpen">
     <div *nzDrawerContent class="relative h-full">
-      <div class="pb-4 text-3xl font-bold" i18n>{{ isNewAlliance ? 'New' : 'Edit' }} alliance</div>
+      <div class="pb-4 text-3xl font-bold">
+        <ng-container *ngIf="isNewAlliance; else mobileEditAlliance" i18n>New</ng-container>
+        <ng-template #mobileEditAlliance i18n>Edit</ng-template>
+        <span i18n> alliance</span>
+      </div>
 
       <wen-space-new-alliance [spaces]="(cache.allSpaces$ | async) || []" [spaceAllianceControl]="spaceAllianceControl"
         [reputationWeightControl]="reputationWeightControl">
       </wen-space-new-alliance>
 
       <div class="z-10 flex items-center w-full bg-white">
-        <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()" i18n>
-          {{ isNewAlliance ? 'Form a connection' : 'Save' }}
+        <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()">
+          <ng-container *ngIf="isNewAlliance; else mobileSaveAlliance" i18n>Form a connection</ng-container>
+          <ng-template #mobileSaveAlliance i18n>Save</ng-template>
         </button>
         <button nz-button nzType="link" nzSize="small" class="ml-8" (click)="closeNewAlliance()" i18n>
           Cancel

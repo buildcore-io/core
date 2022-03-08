@@ -20,10 +20,10 @@ export class AwardsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(AwardFilter.ACTIVE);
   public hotTags: { value: AwardFilter; label: string}[] = [
-    { value: AwardFilter.DRAFT, label: 'Pending' },
-    { value: AwardFilter.ACTIVE, label: 'Active' },
-    { value: AwardFilter.COMPLETED, label: 'Completed' },
-    { value: AwardFilter.REJECTED, label: 'Rejected' }
+    { value: AwardFilter.DRAFT, label: $localize`Pending` },
+    { value: AwardFilter.ACTIVE, label: $localize`Active` },
+    { value: AwardFilter.COMPLETED, label: $localize`Completed` },
+    { value: AwardFilter.REJECTED, label: $localize`Rejected` }
   ];
   private subscriptions$: Subscription[] = [];
 

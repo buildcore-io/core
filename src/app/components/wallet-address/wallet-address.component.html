@@ -20,8 +20,10 @@
             <wen-icon-check class="text-white" [size]="8"></wen-icon-check>
         </div>
     </div>
-    <button class="lg:hidden verified-copy-btn" nz-button nzType="primary" nzSize="small" (click)="copyAddress()" i18n>
-        {{ isCopied ? 'Copied' : 'Copy' }}</button>
+    <button class="lg:hidden verified-copy-btn" nz-button nzType="primary" nzSize="small" (click)="copyAddress()">
+        <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
+        <ng-template #isNotCopied i18n>Copy</ng-template>
+    </button>
 </div>
 
 <nz-modal *ngIf="deviceService.isDesktop$ | async"

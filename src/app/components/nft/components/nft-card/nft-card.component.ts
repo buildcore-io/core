@@ -133,7 +133,7 @@ export class NftCardComponent {
   public getBadgeProperties(): { label: string; className: string} {
     if (this.nft?.type === CollectionType.CLASSIC) {
       return {
-        label: 'New NFT',
+        label: $localize`New NFT`,
         className: 'bg-tag-green'
       };
     } else {

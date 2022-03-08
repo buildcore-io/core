@@ -100,8 +100,11 @@
 
 <ng-template #generateTemplate>
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-        <div class="mx-4 my-auto text-lg font-medium lg:mt-24 text-app-gray-400" i18n>
-            You will be asked to send funds to the new IOTA address for the verification process. The address you send funds from will be linked to your {{isSpaceVerification() ? 'space' : 'profile' }} for future transactions.
+        <div class="mx-4 my-auto text-lg font-medium lg:mt-24 text-app-gray-400">
+            <span i18n>You will be asked to send funds to the new IOTA address for the verification process. The address you send funds from will be linked to your </span>
+            <ng-container *ngIf="isSpaceVerification(); else isNotSpaceVerification" i18n>space</ng-container>
+            <ng-template #isNotSpaceVerification i18n>profile</ng-template>
+            <span i18n> for future transactions.</span>
         </div>
 
         <button nz-button nzType="primary" nzSize="large" class="lg:mt-24" i18n (click)="initVerification()">
@@ -129,8 +132,9 @@
                   {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()" i18n>
-                    {{ isCopied ? 'Copied' : 'Copy' }}
+                <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
+                    <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
+                    <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
             </div>
         </div>

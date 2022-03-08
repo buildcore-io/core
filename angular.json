@@ -26,7 +26,26 @@
       "i18n": {
         "sourceLocale": "en-US",
         "locales": {
-          "fr": "src/locale/messages.fr.xlf"
+          "fr": {
+            "translation": "src/locale/messages.fr.xlf",
+            "baseHref": ""
+          },
+          "de": {
+            "translation": "src/locale/messages.de.xlf",
+            "baseHref": "" 
+          },
+          "es": {
+            "translation": "src/locale/messages.es.xlf",
+            "baseHref": "" 
+          },
+          "tr": {
+            "translation": "src/locale/messages.tr.xlf",
+            "baseHref": "" 
+          },
+          "it": {
+            "translation": "src/locale/messages.it.xlf",
+            "baseHref": "" 
+          }
         }
       },
       "architect": {
@@ -83,9 +102,34 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "fr": {
+              "localize": ["fr"],
+              "outputPath": "dist/fr/",
+              "i18nMissingTranslation": "error"
+            },
+            "de": {
+              "localize": ["de"],
+              "outputPath": "dist/de/",
+              "i18nMissingTranslation": "error"
+            },
+            "es": {
+              "localize": ["es"],
+              "outputPath": "dist/es/",
+              "i18nMissingTranslation": "error"
+            },
+            "tr": {
+              "localize": ["tr"],
+              "outputPath": "dist/tr/",
+              "i18nMissingTranslation": "error"
+            },
+            "it": {
+              "localize": ["it"],
+              "outputPath": "dist/it/",
+              "i18nMissingTranslation": "error"
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "production",
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -95,6 +139,21 @@
             },
             "development": {
               "browserTarget": "soonaverse:build:development"
+            },
+            "fr": {
+              "browserTarget": "soonaverse:build:fr"
+            },
+            "de": {
+              "browserTarget": "soonaverse:build:de"
+            },
+            "es": {
+              "browserTarget": "soonaverse:build:es"
+            },
+            "tr": {
+              "browserTarget": "soonaverse:build:tr"
+            },
+            "it": {
+              "browserTarget": "soonaverse:build:it"
             }
           },
           "defaultConfiguration": "development"

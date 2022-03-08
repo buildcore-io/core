@@ -185,8 +185,9 @@
             </nz-select>
             <ng-template #defaultTemplate let-selected>
                 <div class="flex items-center">
-                    <div nz-typography nzType="secondary" class="mr-1 text-xs" i18n>
-                        {{ selected.nzValue === filter.sortOptions.RECENT ? 'Sort by' : 'Price' }}
+                    <div nz-typography nzType="secondary" class="mr-1 text-xs">
+                        <ng-container *ngIf="selected.nzValue === filter.sortOptions.RECENT; else notRecent" i18n>Sort by</ng-container>
+                        <ng-template #notRecent i18n>Price</ng-template>
                     </div>
                     <span i18n>{{ selected.nzLabel }}</span>
                 </div>

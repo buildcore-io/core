@@ -18,7 +18,11 @@
 
       <button nz-button class="bg-blue-dark2 border-blue-dark2 hover:bg-blue-hover hover:border-blue-hover"
         nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async">
-        <i nz-icon nzType="plus" nzTheme="outline"></i><span i18n> New {{ (deviceService.isDesktop$ | async) ? 'proposal' : '' }}</span>
+        <i nz-icon nzType="plus" nzTheme="outline"></i>
+        <span>
+          <span i18n>New </span>
+          <ng-container *ngIf="(deviceService.isDesktop$ | async)" i18n>proposal</ng-container>
+        </span>
       </button>
     </div>
 

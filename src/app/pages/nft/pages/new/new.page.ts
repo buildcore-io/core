@@ -15,8 +15,8 @@ export enum StepType {
 })
 export class NewPage {
   public sections = [
-    { route: [ ROUTER_UTILS.config.nft.single], label: 'Single' },
-    { route: [ ROUTER_UTILS.config.nft.multiple], label: 'Multiple' }
+    { route: [ ROUTER_UTILS.config.nft.single], label: $localize`Single` },
+    { route: [ ROUTER_UTILS.config.nft.multiple], label: $localize`Multiple` }
   ];
 
   constructor(

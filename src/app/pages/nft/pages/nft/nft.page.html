@@ -181,7 +181,10 @@
                     <button nz-button nzType="default" nzBlock nzSize="default" (click)="copy()"
                         class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
                             <wen-icon-copy></wen-icon-copy>
-                            <div class="ml-2.5 text-xs font-medium" i18n>{{ isCopied ? 'Copied' : 'Copy to clipboard' }}</div>
+                            <div class="ml-2.5 text-xs font-medium">
+                                <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
+                                <ng-template #isNotCopied i18n>Copy to clipboard</ng-template>
+                            </div>
                     </button>
                 </div>
             </ng-container>
@@ -266,7 +269,10 @@
 
     <nz-card class="relative block w-full mt-16" i18n-nzTitle nzTitle="About the collection">
         <a nz-button nzType="link" class="absolute flex items-center right-6 top-6" [routerLink]="['/', collectionPath, (data.collection$ | async)?.uid]" nzSize="small">
-            <span i18n>Show {{ (deviceService.isDesktop$ | async) ? 'collection' : '' }}</span>
+            <span>
+                <span i18n>Show </span>
+                <ng-container *ngIf="(deviceService.isDesktop$ | async)" i18n>collection</ng-container>
+            </span>
             <wen-icon-angle-right></wen-icon-angle-right>
         </a>
 

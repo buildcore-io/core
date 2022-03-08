@@ -11,7 +11,7 @@ export interface SelectSpaceOption {
 }
 
 export const DEFAULT_SPACE: SelectSpaceOption = {
-  label: 'All Spaces',
+  label: $localize`All Spaces`,
   value: 'all'
 };
 

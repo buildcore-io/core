@@ -34,5 +34,8 @@
 
     <button nz-button nzType="primary" class="self-center block w-48 mx-auto mt-6"
         *ngIf="((badges)?.length || 0) > 3"
-        (click)="showAllBadges = !showAllBadges" i18n>{{ showAllBadges ? 'Show less' : 'Show more' }}</button>
+        (click)="showAllBadges = !showAllBadges">        
+        <ng-container *ngIf="showAllBadges; else showMoreBlock" i18n>Show less</ng-container>
+        <ng-template #showMoreBlock i18n>Show more</ng-template>
+    </button>
 </nz-card>
