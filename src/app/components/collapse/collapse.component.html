@@ -7,7 +7,7 @@
         [ngClass]="{ 'rotate-180': !isCollapsed }"
         (click)="isCollapsed = !isCollapsed">
     </wen-icon-angle-down>
-    <div class="overflow-hidden transition-all" [ngClass]="isCollapsed ? 'max-h-0' : 'max-h-96'">
+    <div class="overflow-hidden transition-all" [ngClass]="isCollapsed ? 'max-h-0' : ''">
         <ng-content></ng-content>
     </div>
 </nz-card>

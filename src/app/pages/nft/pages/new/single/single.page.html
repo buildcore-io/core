@@ -295,7 +295,7 @@
                     i18n-nzTitle
                     nzTitle="NFT Image"
                     i18n-nzDescription
-                    nzDescription="Upload image of your NFT. File types supported: PNG, JPEG, WEBP. Max size: 20 MB."
+                    nzDescription="Upload image of your NFT. File types supported: PNG, JPEG, WEBP, MP4. Max size: 100 MB."
                 >
                 </nz-card-meta>
 
@@ -310,12 +310,12 @@
                                 [nzLimit]="1"
                                 [nzCustomRequest]="uploadMediaFile.bind(this)"
                                 (nzChange)="uploadMediaChange($event)"
-                                nzFileType="image/png,image/jpg,image/jpeg,image/webp"
+                                nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                                 [nzFileList]="uploadedFile ? [uploadedFile] : []"
                                 [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                             >
                                 <ng-container>
-                                    <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp</span>
+                                    <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                                 </ng-container>
                             </nz-upload>
                             <div class="text-orange-darkest" *ngIf="mediaControl.invalid && !mediaControl.pristine" i18n>

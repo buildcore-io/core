@@ -112,9 +112,9 @@ export class CollectionsPage implements OnInit, OnDestroy {
       }
     } else {
       if (this.filter.selectedSort$.value === SortOptions.OLDEST) {
-        return this.collectionApi.last(last, search);
+        return this.collectionApi.lastApproved(last, search);
       } else {
-        return this.collectionApi.top(last, search);
+        return this.collectionApi.topApproved(last, search);
       }
     }
   }

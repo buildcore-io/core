@@ -131,12 +131,18 @@
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
             <div class="relative w-full overflow-hidden rounded-2xl">
-                <img
+                <img 
+                    *ngIf="mediaType === 'image'"
                     i18n-alt
                     alt="NFT Image"
                     [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
                     class="object-cover w-full h-full"
                 />
+
+                <video controls class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                  <source [src]="nft?.media" type="video/mp4">
+                  Your browser does not support HTML video.
+                </video>
             </div>
         </div>
     </div>

@@ -462,12 +462,12 @@
                         [nzLimit]="1"
                         [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
                         (nzChange)="uploadChangePlaceholder($event)"
-                        nzFileType="image/png,image/jpg,image/jpeg,image/webp"
+                        nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                         [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
                         [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                       >
                           <ng-container>
-                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp</span>
+                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                           </ng-container>
                       </nz-upload>
                       <div class="text-orange-darkest" *ngIf="placeholderUrlControl.invalid && !placeholderUrlControl.pristine" i18n>
@@ -565,17 +565,38 @@
                       nzTooltipTitle="Only Space Members with badge can access."
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
+                <wen-radio [value]="targetAccess.MEMBERS_WITH_NFT_FROM_COLLECTION"
+                  ><span class="flex items-center" i18n
+                    >At least one NFT from Collections
+                    <wen-icon-question-circle
+                      class="ml-1"
+                      nz-tooltip
+                      nzTooltipTitle="Member must hold at least one NFT from each selected collection."
+                    ></wen-icon-question-circle> </span
+                ></wen-radio>
               </nz-radio-group>
             </nz-form-control>
           </nz-form-item>
         </nz-card>
-        <nz-card
-          [nzBordered]="false"
-          i18n-nzTitle
-          nzTitle="Required Badge"
-          *ngIf="selectedAccessControl.value === targetAccess.MEMBERS_WITH_BADGE"
-        >
+        <nz-card [nzBordered]="false" i18n-nzTitle nzTitle="Collection Options" >
           <nz-form-item>
+            <label nz-checkbox [formControl]="onePerMemberOnlyControl">
+              <div class="flex items-center">
+                <div class="font-medium mr-2.5" i18n>
+                  One NFT per Member Only
+                </div>
+                <i
+                  nz-icon
+                  nzType="info-circle"
+                  class="cursor-pointer text-app-gray-400"
+                  nz-tooltip
+                  nzTooltipTitle="One NFT per Member Only"
+                ></i>
+              </div>
+            </label>
+          </nz-form-item>
+
+          <nz-form-item *ngIf="selectedAccessControl.value === targetAccess.MEMBERS_WITH_NFT_FROM_COLLECTION">
             <nz-form-control>
               <nz-select
                 class="w-full"
@@ -585,7 +606,28 @@
                 [nzMaxTagCount]="9"
                 nzMode="multiple"
                 i18n-nzPlaceHolder
-                nzPlaceHolder="Select Badge"
+                nzPlaceHolder="Select Collections"
+                [formControl]="accessCollectionsControl"
+              >
+                <nz-option
+                  *ngFor="let a of getCollectionListOptions(cache.allCollections$ | async); trackBy: trackByUid"
+                  [nzLabel]="a.label"
+                  [nzValue]="a.value"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item *ngIf="selectedAccessControl.value === targetAccess.MEMBERS_WITH_BADGE">
+            <nz-form-control>
+              <nz-select
+                class="w-full"
+                nzSize="large"
+                nzShowSearch
+                nzAllowClear
+                [nzMaxTagCount]="9"
+                nzMode="multiple"
+                nzPlaceHolder="Select Required Badge"
                 [formControl]="accessAwardsControl"
               >
                 <nz-option

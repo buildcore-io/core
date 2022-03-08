@@ -2,6 +2,7 @@
     <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
         <nz-select
             class="w-full"
+            [ngClass]="{ 'select-search-margin': spaceControl.value }"
             [nzSize]="size"
             [nzShowSearch]="deviceService.isDesktop$ | async"
             [nzCustomTemplate]="selectTpl"

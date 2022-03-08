@@ -72,6 +72,7 @@ export class IpfsService {
         type: file.headers.get('content-type'),
       }),
       platform: 'Soonaverse',
+      uid: nft.uid,
       properties: this.formatPropsStats(nft.properties),
       stats: this.formatPropsStats(nft.stats),
     });

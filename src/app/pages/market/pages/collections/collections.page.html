@@ -1,4 +1,4 @@
-<div class="flex flex-col items-end justify-between lg:flex-row">
+<div class="flex flex-col items-end justify-between xl:flex-row">
     <wen-select-space
       *ngIf="deviceService.isMobile$ | async"
       class="block w-full mt-6 mb-6"
@@ -6,8 +6,8 @@
       [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
       size="large">
     </wen-select-space>
-    <div class="flex items-start lg:items-end justify-between w-full lg:mt-12">
-        <div class="flex items-start flex-col lg:flex-row lg:items-center">
+    <div class="flex items-start xl:items-end justify-between w-full lg:mt-12">
+        <div class="flex items-start flex-col xl:flex-row xl:items-center">
             <div>
                 <div class="text-xs font-medium text-foregrounds-secondary mb-2" i18n>NFTs</div>
                 <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
@@ -25,7 +25,7 @@
             </div>
 
             <div *ngIf="deviceService.isDesktop$ | async">
-                <div class="text-xs font-medium text-foregrounds-secondary mb-2" i18n>Space</div>
+                <div class="text-xs font-medium text-foregrounds-secondary mt-2 xl:mt-0 mb-2" i18n>Space</div>
                 <wen-select-space
                     class="block w-44"
                     [formControl]="spaceControl"
@@ -34,7 +34,7 @@
                 </wen-select-space>
             </div>
 
-            <div class="mt-4 lg:mt-0 lg:ml-4">
+            <div class="mt-4 xl:mt-0 xl:ml-4">
                 <div class="text-xs font-medium text-foregrounds-secondary mb-2" i18n>Category</div>
                 <nz-select
                     class="w-44"
@@ -55,7 +55,7 @@
             </div>
         </div>
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
+            <nz-select class="wen-sort-button mt-6 xl:mt-0" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
                 <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                 <nz-option i18n-nzLabel nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
@@ -85,7 +85,7 @@
     </div>
 </div>
 
-<div class="mt-10 lg:grid place-items-start">
+<div class="mt-10 xl:grid place-items-start">
     <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(collections$ | async)">
       {{ ((collections$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>collections</span> 
     </p>

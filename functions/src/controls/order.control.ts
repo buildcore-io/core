@@ -65,21 +65,48 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
-    let includes = false;
+    const includedBadges: string[] = [];
     const qry: any = await admin.firestore().collection(COL.TRANSACTION)
                .where('type', '==', TransactionType.BADGE)
                .where('member', '==', owner).get();
     if (qry.size > 0) {
       for (const t of qry.docs) {
-        if (docCollectionData.accessAwards.includes(t.data().payload.award)) {
-          includes = true;
+        if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
+          includedBadges.push(t.data().payload.award)
           break;
         }
       }
     }
 
-    if (includes === false) {
+    if (docCollectionData.accessAwards.length !== includedBadges.length) {
       throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+    }
+  }
+
+  if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
+    const includedCollections: string[] = [];
+    const qry: any = await admin.firestore().collection(COL.NFT)
+               .where('owner', '==', owner).get();
+    if (qry.size > 0) {
+      for (const t of qry.docs) {
+        if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
+          includedCollections.push(t.data().collection);
+          break;
+        }
+      }
+    }
+
+    if (docCollectionData.accessCollections.length !== includedCollections.length) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
+    }
+  }
+
+  if (docCollectionData.onePerMemberOnly === true) {
+    const qry: any = await admin.firestore().collection(COL.NFT)
+               .where('collection', '==', docCollectionData.uid)
+               .where('owner', '==', owner).get();
+    if (qry.size >= 1) {
+      throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
     }
   }
 
@@ -154,7 +181,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   // Validate there isn't any order in progress.
   const orderInProgress: any = await admin.firestore().collection(COL.TRANSACTION).where('payload.reconciled', '==', false)
-                              .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE)
+                              .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE).where('member', '==', owner)
                               .where('type', '==', TransactionType.ORDER).where('payload.void', '==', false).get();
 
   if (orderInProgress.size > 0) {
@@ -173,12 +200,14 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   // Calculate discount.
   const dataMember: Member = docMember.data();
-  let discount = 0;
+  let discount = 1;
   // We must apply discount.
   if (docCollectionData.discounts?.length && dataMember.spaces?.[docCollectionData.space]?.totalReputation) {
     const membersXp: number = dataMember.spaces[docCollectionData.space].totalReputation || 0;
-    for (const d of docCollectionData.discounts) {
-      if (d.xp < membersXp) {
+    for (const d of docCollectionData.discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    })) {
+      if (Number(d.xp) < membersXp) {
         discount = (1 - d.amount);
       }
     }
@@ -199,11 +228,13 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       });
     }
   });
-  let finalPrice = discount > 0 ? Math.ceil(discount * docNftData.price) : docNftData.price;
+  let finalPrice = discount < 1 ? Math.ceil(discount * docNftData.price) : docNftData.price;
   if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
     finalPrice = MIN_AMOUNT_TO_TRANSFER;
   }
 
+  // Remove unwanted decimals.
+  finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await refTran.set(<Transaction>{
     type: TransactionType.ORDER,
@@ -270,8 +301,8 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-  const min = (MIN_AMOUNT_TO_TRANSFER / 100); // Reduce number of decimals.
-  const randomAmount: number = (Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 100);
+  const min = (MIN_AMOUNT_TO_TRANSFER / 1000 / 10); // Reduce number of decimals.
+  const randomAmount: number = (Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 1000 * 10);
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
   const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);

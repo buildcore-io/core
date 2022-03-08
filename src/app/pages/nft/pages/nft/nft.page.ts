@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
+import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
@@ -18,7 +19,7 @@ import { Collection, CollectionType, TransactionBillPayment, TransactionType } f
 import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { map, skip, Subscription } from 'rxjs';
+import { map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -32,6 +33,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
   public isCopied = false;
+  public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
@@ -48,6 +50,7 @@ export class NFTPage implements OnInit, OnDestroy {
     private nzNotification: NzNotificationService,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
+    private fileApi: FileApi,
     private router: Router,
     private cd: ChangeDetectorRef
   ) {
@@ -70,6 +73,17 @@ export class NFTPage implements OnInit, OnDestroy {
         this.notFound();
         return;
       }
+
+      // Get file metadata.
+      this.fileApi.getMetadata(obj.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+        if (o.contentType.match('video/.*')) {
+          this.mediaType = 'video';
+        } else if (o.contentType.match('image/.*')) {
+          this.mediaType = 'image';
+        }
+
+        this.cd.markForCheck();
+      });
     });
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
@@ -111,7 +125,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public getExplorerLink(link: string): string {
-    return 'https://explorer.iota.org/mainnet/search/' + link;
+    return 'https://thetangle.org/search/' + link;
   }
 
   public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[]|null): string|undefined {
@@ -176,7 +190,9 @@ export class NFTPage implements OnInit, OnDestroy {
     const xp: number = this.auth.member$.value.spaces[collection.space].totalReputation || 0;
     let discount = 1;
     if (xp > 0) {
-      for (const d of collection.discounts) {
+      for (const d of collection.discounts.sort((a, b) => {
+        return a.xp - b.xp;
+      })) {
         if (d.xp < xp) {
           discount = (1 - d.amount);
         }
@@ -192,6 +208,7 @@ export class NFTPage implements OnInit, OnDestroy {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
 
+    finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
     return finalPrice;
   }
 

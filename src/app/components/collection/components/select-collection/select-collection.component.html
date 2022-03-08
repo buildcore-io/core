@@ -2,6 +2,7 @@
     <nz-form-control i18n-nzErrorTip nzErrorTip="Collection is required.">
         <nz-select
             class="w-full"
+            [ngClass]="{ 'select-search-margin': collectionControl.value }"
             [nzSize]="size"
             [nzShowSearch]="deviceService.isDesktop$ | async"
             [nzCustomTemplate]="selectTpl"

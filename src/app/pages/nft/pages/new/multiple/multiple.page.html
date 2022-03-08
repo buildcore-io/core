@@ -29,7 +29,7 @@
                                     [nzCustomRequest]="uploadMultipleFiles.bind(this)"
                                     [nzFilter]="uploadFilter"
                                     (nzChange)="uploadMultipleChange($event)"
-                                    nzFileType="image/png,image/jpg,image/jpeg,image/webp"
+                                    nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                                 >
                                     <ng-container>
                                         <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">{{ allowedFileFormats }}</span>

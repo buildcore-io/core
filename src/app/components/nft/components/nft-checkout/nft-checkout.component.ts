@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -17,8 +18,7 @@ import { MIN_AMOUNT_TO_TRANSFER } from 'functions/interfaces/config';
 import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
 import { Timestamp } from 'functions/interfaces/models/base';
 import { Nft } from 'functions/interfaces/models/nft';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, interval, Subscription, take } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -50,22 +50,42 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public get isOpen(): boolean {
     return this._isOpen;
   }
-  @Input() nft?: Nft|null;
-  @Input() purchasedNft?: Nft|null;
+  @Input()
+  set nft(value: Nft|null|undefined) {
+    this._nft = value;
+    if (this._nft) {
+      this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+        if (o.contentType.match('video/.*')) {
+          this.mediaType = 'video';
+        } else if (o.contentType.match('image/.*')) {
+          this.mediaType = 'image';
+        }
+
+        this.cd.markForCheck();
+      });
+    }
+  }
+  get nft(): Nft|null|undefined {
+    return this._nft;
+  }
+
   @Input() collection?: Collection|null;
   @Output() onClose = new EventEmitter<void>();
 
+  public purchasedNft?: Nft|null;
   public stepType = StepType;
   public isCopied = false;
   public agreeTermsConditions = false;
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public receivedTransactions = false;
+  public mediaType: 'video'|'image'|undefined;
   public history: HistoryItem[] = [];
   public invalidPayment = false;
   public targetAddress?: string;
   public targetAmount?: number;
   private _isOpen = false;
+  private _nft?: Nft|null;
 
   private transSubscription?: Subscription;
   public path = ROUTER_UTILS.config.nft.root;
@@ -79,7 +99,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private orderApi: OrderApi,
     private nftApi: NftApi,
-    private notificationService: NzNotificationService
+    private fileApi: FileApi,
   ) {
   }
 
@@ -137,6 +157,15 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
           firstValueFrom(this.nftApi.listen(val.payload.nft)).then((obj) => {
             if (obj) {
               this.purchasedNft = obj;
+              this.fileApi.getMetadata(this.purchasedNft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+                if (o.contentType.match('video/.*')) {
+                  this.mediaType = 'video';
+                } else if (o.contentType.match('image/.*')) {
+                  this.mediaType = 'image';
+                }
+
+                this.cd.markForCheck();
+              });
               this.cd.markForCheck();
             }
           });
@@ -203,7 +232,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public getExplorerLink(link: string): string {
-    return 'https://explorer.iota.org/mainnet/search/' + link;
+    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {
@@ -241,6 +270,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
 
+    finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
     return finalPrice;
   }
 
@@ -298,7 +328,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return '';
+    return 'tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse';
   }
 
   public async proceedWithOrder(): Promise<void> {

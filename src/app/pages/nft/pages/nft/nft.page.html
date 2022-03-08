@@ -11,11 +11,17 @@
             <ng-container *ngIf="deviceService.isMobile$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl" (click)="isNftPreviewOpen = true">
                     <img
+                        *ngIf="mediaType === 'image'"
                         i18n-alt
                         alt="NFT Image"
                         [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
                         class="object-cover w-full h-full"
                     />
+
+                    <video controls class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                      <source [src]="(data.nft$ | async)?.media" type="video/mp4">
+                      Your browser does not support HTML video.
+                    </video>
                 </div>
 
                 <div class="flex items-center mt-5 mb-8">
@@ -153,11 +159,17 @@
             <ng-container *ngIf="deviceService.isDesktop$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl" (click)="isNftPreviewOpen = true">
                     <img
+                        *ngIf="mediaType === 'image'"
                         i18n-alt
                         alt="NFT Image"
                         [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
                         class="object-cover w-full h-full"
                     />
+
+                    <video controls class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                      <source [src]="(data.nft$ | async)?.media" type="video/mp4">
+                      Your browser does not support HTML video.
+                    </video>
                 </div>
 
                 <div class="flex flex-col items-center mt-8 lg:flex-row">
@@ -344,6 +356,10 @@
     [nzBodyStyle]="{ padding: '0' }"
 >
     <ng-template #prevewNftModalContent>
-        <img [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
+        <img *ngIf="mediaType === 'image'" [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
+        <video controls class="w-full rounded-3xl" *ngIf="mediaType === 'video'">
+          <source [src]="(data.nft$ | async)?.media" type="video/mp4">
+          Your browser does not support HTML video.
+        </video>
     </ng-template>
 </nz-modal>

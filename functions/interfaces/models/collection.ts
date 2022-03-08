@@ -10,7 +10,8 @@ export enum CollectionAccess {
   OPEN = 0,
   MEMBERS_ONLY = 1,
   GUARDIANS_ONLY = 2,
-  MEMBERS_WITH_BADGE = 3
+  MEMBERS_WITH_BADGE = 3,
+  MEMBERS_WITH_NFT_FROM_COLLECTION = 4
 }
 
 export interface DiscountLine {
@@ -29,6 +30,7 @@ export enum Categories {
   INTERACTIVE = 'INTERACTIVE',
   ABSTRACT = 'ABSTRACT',
   PIXELART = 'PIXELART',
+  GAME = 'GAME',
   ART = 'ART'
 }
 
@@ -40,6 +42,7 @@ export interface Collection extends BaseRecord {
   type: CollectionType,
   access: CollectionAccess,
   accessAwards: string[],
+  accessCollections: string[],
   space: string;
   royaltiesFee: number;
   royaltiesSpace: EthAddress;
@@ -53,5 +56,6 @@ export interface Collection extends BaseRecord {
   twitter: string;
   approved: boolean;
   rejected: boolean;
+  onePerMemberOnly: boolean;
   placeholderNft?: EthAddress;
 }

@@ -49,7 +49,7 @@ export class MultiplePage implements OnInit {
   public availableFrom?: Date | null;
   public nfts: any[] = [];
   public nftErrors: any[] = [];
-  public allowedFileFormats = 'jpg/jpeg/png/webp';
+  public allowedFileFormats = 'jpg/jpeg/png/webp/mp4';
   public uploadFilter: UploadFilter[] = [];
   public uploadErrors: string[] = [];
   private usedFileNames = new Set<string>();
@@ -266,7 +266,6 @@ export class MultiplePage implements OnInit {
     res.collection = this.collectionControl.value;
     res.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
     res.availableFrom = new Date(data.availableFrom);
-    res.price = data.price;
     return res;
   }
 

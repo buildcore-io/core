@@ -61,7 +61,11 @@ export class DataService {
     }
 
     const final: any[] = [];
-    for (const v of Object.values(obj)) {
+    for (const v of Object.values(obj).sort(function(a: any, b: any){
+      if(a.label < b.label) { return -1; }
+      if(a.label > b.label) { return 1; }
+      return 0;
+    })) {
       final.push(v);
     }
 
