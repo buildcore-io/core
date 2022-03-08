@@ -437,12 +437,12 @@
                         [nzLimit]="1"
                         [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
                         (nzChange)="uploadChangePlaceholder($event)"
-                        nzFileType="image/png,image/jpg,image/jpeg,image/webp"
+                        nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                         [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
                         [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                       >
                           <ng-container>
-                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp</span>
+                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                           </ng-container>
                       </nz-upload>
                       <div class="text-orange-darkest" *ngIf="placeholderUrlControl.invalid && !placeholderUrlControl.pristine" i18n>
