@@ -9,7 +9,8 @@
             class="object-cover w-full h-full"
             />
 
-            <video *ngIf="mediaType === 'video'" controls class="object-cover w-full h-full">
+            <video *ngIf="mediaType === 'video'"
+            preload="metadata" controls class="object-cover w-full h-full">
               <source [src]="nft?.media" type="video/mp4">
               Your browser does not support HTML video.
             </video>
