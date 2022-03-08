@@ -30,6 +30,7 @@ export enum Categories {
   INTERACTIVE = 'INTERACTIVE',
   ABSTRACT = 'ABSTRACT',
   PIXELART = 'PIXELART',
+  GAME = 'GAME',
   ART = 'ART'
 }
 
