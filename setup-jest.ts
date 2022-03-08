@@ -12,6 +12,7 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
@@ -76,7 +77,8 @@ defineGlobalsInjections({
     NzInputNumberModule,
     NzSelectModule,
     NzRadioModule,
-    NzDrawerModule
+    NzDrawerModule,
+    NzCheckboxModule
   ],
   providers: [
     MockProvider(AngularFirestore),
