@@ -49,7 +49,7 @@ export class MultiplePage implements OnInit {
   public availableFrom?: Date | null;
   public nfts: any[] = [];
   public nftErrors: any[] = [];
-  public allowedFileFormats = 'jpg/jpeg/png/webp';
+  public allowedFileFormats = 'jpg/jpeg/png/webp/mp4';
   public uploadFilter: UploadFilter[] = [];
   public uploadErrors: string[] = [];
   private usedFileNames = new Set<string>();
