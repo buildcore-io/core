@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage, AngularFireStorageReference, AngularFireUploadTask } from "@angular/fire/compat/storage";
 import { NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
-import { finalize, Subscription } from 'rxjs';
+import { finalize, Observable, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
 
 export type FileType = 'space_avatar' | 'space_banner' | 'collection_banner' | 'nft_media' | 'nft_placeholder';
@@ -24,6 +24,11 @@ export class FileApi {
   public static getUrl(org: string, type: FileType, size: FILE_SIZES): string {
     return org.replace(type, type + '_' + FileApi.FILE_SIZES[size]);
   }
+
+  public getMetadata(url: string): Observable<any> {
+    const ref: AngularFireStorageReference = this.storage.refFromURL(url);
+    return ref.getMetadata();
+ }
 
   public upload(memberId: string, item: NzUploadXHRArgs, type: FileType): Subscription {
     const file: NzUploadFile = item.file;
