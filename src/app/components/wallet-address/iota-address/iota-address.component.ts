@@ -169,7 +169,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   }
 
   public getExplorerLink(link: string): string {
-    return 'https://explorer.iota.org/mainnet/search/' + link;
+    return 'https://thetangle.org/search/' + link;
   }
 
   public copyAddress() {
@@ -198,7 +198,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 4);
+    return UnitsHelper.formatBest(amount, 2);
   }
 
   public fireflyDeepLink(): SafeUrl {
@@ -215,7 +215,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return '';
+    return 'tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse';
   }
 
   public isSpaceVerification(): boolean {

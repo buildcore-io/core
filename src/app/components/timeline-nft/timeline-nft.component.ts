@@ -53,7 +53,7 @@ export class TimelineNftComponent {
   }
 
   public getExplorerLink(link: string): string {
-    return 'https://explorer.iota.org/mainnet/search/' + link;
+    return 'https://thetangle.org/search/' + link;
   }
 
   public trackByUid(index: number, item: any): number {

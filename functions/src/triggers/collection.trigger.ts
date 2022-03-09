@@ -9,8 +9,7 @@ import { low } from '../scale.settings';
 // Listen for changes in all documents in the 'users' collection
 export const collectionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 300,
-  minInstances: low,
-  memory: "4GB",
+  minInstances: low
 }).firestore.document(COL.COLLECTION + '/{collectionId}').onWrite(async (change) => {
   const newValue: Collection = <Collection>change.after.data();
   const previousValue: Collection = <Collection>change.before.data();

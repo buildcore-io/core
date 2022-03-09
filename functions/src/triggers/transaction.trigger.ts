@@ -13,17 +13,20 @@ import { serverTime } from "../utils/dateTime.utils";
 export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 540,
   minInstances: superPump,
-  memory: "8GB",
+  memory: "512MB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const newValue: Transaction = <Transaction>change.after.data();
   if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
     return;
   }
 
-  if (!newValue.payload.walletReference || (newValue.payload.walletReference.error && newValue.payload.walletReference.count <= MAX_WALLET_RETRY)) {
+  if (!newValue.payload.walletReference?.chainReference || (newValue.payload.walletReference.error && newValue.payload.walletReference.count <= MAX_WALLET_RETRY)) {
     const walletService: WalletService = new WalletService();
     const walletResponse: WalletResult = newValue.payload.walletReference || {
       createdOn: serverTime(),
+      processedOn: serverTime(),
+      confirmed: false,
+      chainReferences: [],
       count: 0
     };
 
@@ -33,7 +36,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
 
     // Delay because it's retry.
     if (walletResponse.count > 0) {
-      await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY * MAX_WALLET_RETRY)));
+      await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY)));
     } else if (newValue.payload.delay > 0) { // Standard Delay required.
       await new Promise(resolve => setTimeout(resolve, newValue.payload.delay));
     }
@@ -84,6 +87,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
 
     // Set wallet reference.
     walletResponse.count = walletResponse.count + 1;
+    walletResponse.processedOn = serverTime();
     newValue.payload.walletReference = walletResponse;
     return change.after.ref.set(newValue, {merge: true});
   } else {
