@@ -6,8 +6,8 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Proposal } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Proposal } from 'functions/interfaces/models';
 import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
@@ -63,7 +63,7 @@ export class ProposalPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Proposal');
-    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
       if (id) {
         this.listenToProposal(id);
@@ -124,7 +124,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((member) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((member) => {
       this.currentMemberVotedTransSubscription$?.unsubscribe();
       this.canVoteSubscription$?.unsubscribe();
       if (member?.uid && this.proposalId) {
@@ -136,7 +136,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       }
     });
 
-    this.milestoneApi.top(undefined, undefined, 1).pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.proposalData.lastMilestone$);
   }

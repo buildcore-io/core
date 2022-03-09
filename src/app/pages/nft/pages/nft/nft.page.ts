@@ -12,12 +12,12 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
+import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from '@functions/interfaces/config';
+import { Collection, CollectionType, TransactionBillPayment, TransactionType } from '@functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from 'functions/interfaces/config';
-import { Collection, CollectionType, TransactionBillPayment, TransactionType } from 'functions/interfaces/models';
-import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
@@ -59,7 +59,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'NFT');
-    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.nft.nft.replace(':', '')];
       if (id) {
         this.listenToNft(id);
@@ -104,7 +104,7 @@ export class NFTPage implements OnInit, OnDestroy {
           this.data.owner$.next(undefined);
         }
         this.nftSubscriptions$.push(
-          this.nftApi.lastCollection(p.collection, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+          this.nftApi.lastCollection(p.collection, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );

@@ -7,7 +7,7 @@
     <div *nzDrawerContent class="relative h-full min-h-180">
         <wen-mobile-header
           [isMobileMenuVisible]="isVisible"
-          (onVisibleChange)="onVisibleChange($event)"
+          (wenOnVisibleChange)="wenOnVisibleChange($event)"
           [isMemberProfile]="isMemberProfile"
           [isLandingPage]="isLandingPage"
           [isAllowedCreation]="isAllowedCreation">
@@ -35,7 +35,7 @@
           </button>
         </div>
 
-        <div class="mt-7 w-fit" (click)="onVisibleChange(false)">
+        <div class="mt-7 w-fit" (click)="wenOnVisibleChange(false)">
           <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
         </div>
 

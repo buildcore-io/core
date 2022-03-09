@@ -8,7 +8,7 @@ import { DataService } from '@pages/proposal/services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProposalInfoComponent {
-  @Output() onExportClick = new EventEmitter<void>();
+  @Output() wenOnExportClick = new EventEmitter<void>();
 
   constructor(
     public data: DataService

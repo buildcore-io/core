@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MemberApi } from '@api/member.api';
+import { Award, Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Award, Space } from 'functions/interfaces/models';
 import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Transaction } from './../../../../../functions/interfaces/models/transaction';

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TimelineBadgeComponent } from './timeline-badges.component';
+import { TimelineBadgesComponent } from './timeline-badges.component';
 
 
 describe('TimelineComponent', () => {
-  let component: TimelineBadgeComponent;
-  let fixture: ComponentFixture<TimelineBadgeComponent>;
+  let component: TimelineBadgesComponent;
+  let fixture: ComponentFixture<TimelineBadgesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TimelineBadgeComponent ]
+      declarations: [ TimelineBadgesComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TimelineBadgeComponent);
+    fixture = TestBed.createComponent(TimelineBadgesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

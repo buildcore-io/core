@@ -12,15 +12,15 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from '@functions/interfaces/config';
+import { Collection, CollectionType } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import * as dayjs from 'dayjs';
-import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from 'functions/interfaces/config';
-import { Collection, CollectionType } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, debounceTime, first, map, Observable, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
@@ -63,7 +63,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Collection');
-    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
       if (id) {
         this.listenToCollection(id);
@@ -146,15 +146,15 @@ export class CollectionPage implements OnInit, OnDestroy {
   private listenToCollection(id: string): void {
     this.cancelSubscriptions();
     this.data.collectionId = id;
-    this.subscriptions$.push(this.collectionApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.collection$));
+    this.subscriptions$.push(this.collectionApi.listen(id)?.pipe(untilDestroyed(this)).subscribe(this.data.collection$));
     this.subscriptions$.push(this.getHandler(id, undefined, this.filter.search$.getValue() || undefined).subscribe(this.store.bind(this, this.data.dataStore.length)));
     this.subscriptions$.push(
-      this.nftApi.lowToHighCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+      this.nftApi.lowToHighCollection(id, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
         return obj[0];
       })).subscribe(this.data.cheapestNft$)
     );
     this.subscriptions$.push(
-      this.nftApi.lastCollection(id, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+      this.nftApi.lastCollection(id, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
         if (obj[0] && this.isAvailableTab() && (obj[0]?.availableFrom === null || !dayjs(obj[0].availableFrom.toDate()).isBefore(dayjs()) || obj[0].owner)) {
           return undefined;
         } else if (this.isOwnedTab()) {

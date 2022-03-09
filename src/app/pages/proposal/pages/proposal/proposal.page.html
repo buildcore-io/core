@@ -74,9 +74,9 @@
         class="block mt-4 space-y-4"
         *ngIf="deviceService.isDesktop$ | async"
         [isGuardianWithinSpace$]="isGuardianWithinSpace$"
-        (onApprove)="approve()"
-        (onReject)="reject()">
-        (onExportClick)="exportNativeEvent()">
+        (wenOnApprove)="approve()"
+        (wenOnReject)="reject()">
+        (wenOnExportClick)="exportNativeEvent()">
       </wen-proposal-info>
 
       <nz-card nzTitle="Selected Badges" *ngIf="(proposalData.badges$ | async)?.length">
@@ -103,9 +103,9 @@
 
       <wen-proposal-info
         [isGuardianWithinSpace$]="isGuardianWithinSpace$"
-        (onApprove)="approve()"
-        (onReject)="reject()">
-        (onExportClick)="exportNativeEvent()">
+        (wenOnApprove)="approve()"
+        (wenOnReject)="reject()">
+        (wenOnExportClick)="exportNativeEvent()">
       </wen-proposal-info>
     </div>
   </nz-drawer>

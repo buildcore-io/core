@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { DataService } from '@pages/collection/services/data.service';
 import { CollectionAboutComponent } from './collection-about.component';
+
 
 describe('CollectionAboutComponent', () => {
   let component: CollectionAboutComponent;
@@ -8,7 +9,8 @@ describe('CollectionAboutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CollectionAboutComponent ]
+      declarations: [ CollectionAboutComponent ],
+      providers: [DataService]
     })
     .compileComponents();
   });

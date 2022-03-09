@@ -11,9 +11,9 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ProposalInfoComponent {
   @Input() isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  @Output() onExportClick = new EventEmitter<void>();
-  @Output() onApprove = new EventEmitter<void>();
-  @Output() onReject = new EventEmitter<void>();
+  @Output() wenOnExportClick = new EventEmitter<void>();
+  @Output() wenOnApprove = new EventEmitter<void>();
+  @Output() wenOnReject = new EventEmitter<void>();
 
   constructor(
     public deviceService: DeviceService,

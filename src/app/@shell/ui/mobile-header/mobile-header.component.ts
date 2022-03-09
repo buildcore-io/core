@@ -20,7 +20,7 @@ export class MobileHeaderComponent {
   @Input() isLandingPage = false;
   @Input() isAllowedCreation = false;
   @Input() goBackHeader = false;
-  @Output() onVisibleChange = new EventEmitter<boolean>();
+  @Output() wenOnVisibleChange = new EventEmitter<boolean>();
 
   public homeRoute = ROUTER_UTILS.config.base.home;
 
@@ -32,10 +32,10 @@ export class MobileHeaderComponent {
 
   public setMobileMenuVisible(isVisible: boolean): void {
     this.isMobileMenuVisible = isVisible;
-    this.onVisibleChange.emit(isVisible);
+    this.wenOnVisibleChange.emit(isVisible);
   }
 
-  public onCreateClick(): void {
+  public wenOnCreateClick(): void {
     if(this.isMobileMenuVisible) {
       this.setMobileMenuVisible(false);
     }

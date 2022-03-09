@@ -26,7 +26,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       this.cancelSubscriptions();
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.topSpaces(o.uid).subscribe(this.spaces$));

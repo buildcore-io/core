@@ -81,13 +81,13 @@ export class NewPage implements OnInit, OnDestroy {
     if (this.nav.getLastUrl() && this.nav.getLastUrl()[1] === ROUTER_UTILS.config.space.root && this.nav.getLastUrl()[2]) {
       this.spaceControl.setValue(this.nav.getLastUrl()[2]);
     }
-    this.route.params.pipe(untilDestroyed(this)).subscribe((p) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
       }

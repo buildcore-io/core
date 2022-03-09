@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,27 +21,27 @@ import { NotificationService } from '@core/services/notification';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
+import {
+    DISCORD_REGEXP,
+    MAX_IOTA_AMOUNT,
+    MIN_IOTA_AMOUNT,
+    TWITTER_REGEXP,
+    URL_REGEXP
+} from '@functions/interfaces/config';
+import {
+    Award,
+    Categories,
+    CollectionType,
+    Space
+} from '@functions/interfaces/models';
+import { PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import {
-  DISCORD_REGEXP,
-  MAX_IOTA_AMOUNT,
-  MIN_IOTA_AMOUNT,
-  TWITTER_REGEXP,
-  URL_REGEXP
-} from 'functions/interfaces/config';
-import {
-  Award,
-  Categories,
-  CollectionType,
-  Space
-} from 'functions/interfaces/models';
-import { PRICE_UNITS } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
-  NzUploadChangeParam,
-  NzUploadFile,
-  NzUploadXHRArgs
+    NzUploadChangeParam,
+    NzUploadFile,
+    NzUploadXHRArgs
 } from 'ng-zorro-antd/upload';
 import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -176,14 +176,14 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.route.params.pipe(untilDestroyed(this)).subscribe((p) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);
         this.royaltiesSpaceControl.setValue(p.space);
       }
     });
 
-    this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.collectionId) {
         this.editMode = true;
         this.collectionId = o.collectionId;
@@ -238,7 +238,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
         this.awardApi.top(undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
