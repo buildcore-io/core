@@ -59,3 +59,29 @@ export interface Collection extends BaseRecord {
   onePerMemberOnly: boolean;
   placeholderNft?: EthAddress;
 }
+
+export interface SchemaCollection extends BaseRecord {
+  name: string;
+  description: string;
+  bannerUrl: string;
+  category?: Categories,
+  type?: CollectionType,
+  access?: CollectionAccess,
+  accessAwards: string[],
+  accessCollections: string[],
+  space?: string;
+  royaltiesFee: number;
+  royaltiesSpace: EthAddress;
+  discounts: DiscountLine[];
+  total: number;
+  sold: number;
+  availableFrom?: Timestamp;
+  price?: number;
+  discord: string;
+  url: string;
+  twitter: string;
+  approved: boolean;
+  rejected: boolean;
+  onePerMemberOnly?: boolean;
+  placeholderNft?: EthAddress;
+}

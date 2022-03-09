@@ -7,6 +7,7 @@ import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { Member } from '../../interfaces/models/member';
+import { Nft } from '../../interfaces/models/nft';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
@@ -17,7 +18,7 @@ import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { CollectionType } from './../../interfaces/models/collection';
 
-function defaultJoiUpdateCreateSchema(): any {
+function defaultJoiUpdateCreateSchema(): Nft {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').required(),
     description: Joi.string().allow(null, '').required(),

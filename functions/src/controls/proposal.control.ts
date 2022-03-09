@@ -23,7 +23,7 @@ import { Transaction, TransactionType } from './../../interfaces/models/transact
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
-function defaultJoiUpdateCreateSchema(): any {
+function defaultJoiUpdateCreateSchema(): Proposal {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     space: CommonJoi.uidCheck(),
@@ -69,7 +69,7 @@ function defaultJoiUpdateCreateSchema(): any {
         text: Joi.string().required(),
         additionalInfo: Joi.string().allow(null, '').optional(),
       })).min(2).required()
-    // To enable more questions, fix front-end. Also tweak voteOnProposal to validate.
+      // To enable more questions, fix front-end. Also tweak voteOnProposal to validate.
     })).min(1).max(1).required()
   });
 }
@@ -135,8 +135,8 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
           params.body.subType === ProposalSubType.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE ||
           params.body.subType === ProposalSubType.REPUTATION_BASED_ON_AWARDS) {
           const qry = await admin.firestore().collection(COL.TRANSACTION)
-                      .where('type', '==', TransactionType.BADGE)
-                      .where('member', '==', g.data().uid).get();
+            .where('type', '==', TransactionType.BADGE)
+            .where('member', '==', g.data().uid).get();
           if (qry.size > 0) {
             let totalReputation = 0;
             for (const t of qry.docs) {
@@ -215,7 +215,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -256,7 +256,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -300,9 +300,9 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Proposal> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      // TODO Validate across multiple questions.
-      values: Joi.array().items(Joi.number()).min(1).max(1).unique().required()
+    uid: CommonJoi.uidCheck(),
+    // TODO Validate across multiple questions.
+    values: Joi.array().items(Joi.number()).min(1).max(1).unique().required()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -400,7 +400,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
         // We add weight to each answer.
         doc.data().values.forEach((obj: any) => {
           Object.keys(obj).forEach((k) => {
-            results[k]  = results[k] || 0;
+            results[k] = results[k] || 0;
             results[k] += doc.data().weight;
           });
         });

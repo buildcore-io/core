@@ -22,7 +22,7 @@ import { Transaction, TransactionType } from './../../interfaces/models/transact
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
-function defaultJoiUpdateCreateSchema(): any {
+function defaultJoiUpdateCreateSchema(): Award {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
@@ -143,8 +143,8 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -185,7 +185,7 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -226,7 +226,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -272,8 +272,8 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
   const participant = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      comment: Joi.string().allow(null, '').optional()
+    uid: CommonJoi.uidCheck(),
+    comment: Joi.string().allow(null, '').optional()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -337,8 +337,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
   const owner = params.address.toLowerCase();
   const tranId = getRandomEthAddress();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 

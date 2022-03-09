@@ -20,7 +20,7 @@ import { Space } from './../../interfaces/models/space';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
-function defaultJoiUpdateCreateSchema(): any {
+function defaultJoiUpdateCreateSchema(): Space {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
@@ -37,7 +37,7 @@ function defaultJoiUpdateCreateSchema(): any {
   });
 };
 
-async function updateLinkedEntityForMember(opp: 'add'|'remove', space: Space, memberId: string): Promise<void> {
+async function updateLinkedEntityForMember(opp: 'add' | 'remove', space: Space, memberId: string): Promise<void> {
   // Establish space hashes.
   const hashes: number[] = [];
 
@@ -200,7 +200,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -268,7 +268,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -328,8 +328,8 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -380,8 +380,8 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -429,8 +429,8 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -516,8 +516,8 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -549,8 +549,8 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -603,8 +603,8 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions.runW
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
@@ -636,10 +636,10 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
   const guardian = params.address.toLowerCase();
 
   const schema: ObjectSchema<Space> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      targetSpaceId: CommonJoi.uidCheck(),
-      enabled: Joi.bool().required(),
-      weight: Joi.number().min(0).required()
+    uid: CommonJoi.uidCheck(),
+    targetSpaceId: CommonJoi.uidCheck(),
+    enabled: Joi.bool().required(),
+    weight: Joi.number().min(0).required()
   }));
 
   assertValidation(schema.validate(params.body));
@@ -669,7 +669,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
       updatedOn: serverTime(),
       createdOn: currentSpace.alliances[params.body.targetSpaceId]?.createdOn || serverTime()
     };
-    const newHash: number = cyrb53([params.body.uid,...getAlliancesKeys(currentSpace.alliances)].join(''));
+    const newHash: number = cyrb53([params.body.uid, ...getAlliancesKeys(currentSpace.alliances)].join(''));
 
     // Update space.
     await refSpace.update(currentSpace);
@@ -690,7 +690,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
     if (prevHash !== newHash) {
       // We have to go through each space.
       const updateMembers: string[] = [];
-      for(const spaceId of [currentSpace.uid, ...getAlliancesKeys(currentSpace.alliances)]) {
+      for (const spaceId of [currentSpace.uid, ...getAlliancesKeys(currentSpace.alliances)]) {
         const spaceToUpdate: any = admin.firestore().collection(COL.SPACE).doc(spaceId);
         const query: QuerySnapshot = await spaceToUpdate.collection(SUB_COL.MEMBERS).get();
         for (const g of query.docs) {
@@ -705,40 +705,40 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
       // Update members.
       const chunk = 500;
       for (let i = 0; i < updateMembers.length; i += chunk) {
-          await admin.firestore().runTransaction(async (transaction) => {
-            const updates: any[] = [];
-            for (const m of updateMembers.slice(i, i + chunk)) {
-              const refMember: any = admin.firestore().collection(COL.MEMBER).doc(m);
-              const sfDoc: any = await transaction.get(refMember);
-              if (sfDoc.data()) {
-                const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
-                if (prevHash !== cyrb53(params.body.uid)) {
-                  if (prevHash && linkedEntities.length > 0) {
-                    const index = linkedEntities.indexOf(prevHash);
-                    if (index > -1) {
-                      linkedEntities.splice(index, 1);
-                    }
+        await admin.firestore().runTransaction(async (transaction) => {
+          const updates: any[] = [];
+          for (const m of updateMembers.slice(i, i + chunk)) {
+            const refMember: any = admin.firestore().collection(COL.MEMBER).doc(m);
+            const sfDoc: any = await transaction.get(refMember);
+            if (sfDoc.data()) {
+              const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
+              if (prevHash !== cyrb53(params.body.uid)) {
+                if (prevHash && linkedEntities.length > 0) {
+                  const index = linkedEntities.indexOf(prevHash);
+                  if (index > -1) {
+                    linkedEntities.splice(index, 1);
                   }
                 }
-
-                if (newHash) {
-                  linkedEntities.push(newHash);
-                }
-
-                updates.push({
-                  ref: refMember,
-                  linkedEntities: linkedEntities
-                });
               }
-            }
 
-            // Trigger updates.
-            for (const u of updates) {
-                transaction.update(u.ref, {
-                  linkedEntities: u.linkedEntities
-                });
+              if (newHash) {
+                linkedEntities.push(newHash);
+              }
+
+              updates.push({
+                ref: refMember,
+                linkedEntities: linkedEntities
+              });
             }
-          });
+          }
+
+          // Trigger updates.
+          for (const u of updates) {
+            transaction.update(u.ref, {
+              linkedEntities: u.linkedEntities
+            });
+          }
+        });
       }
     }
 
