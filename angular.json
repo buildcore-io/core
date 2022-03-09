@@ -53,7 +53,6 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "less",
-            "localize": true,
             "assets": [
               "src/favicon.ico",
               "src/maintenance.html",
