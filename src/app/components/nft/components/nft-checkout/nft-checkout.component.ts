@@ -18,12 +18,6 @@ import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
-import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
-import { Timestamp } from '@functions/interfaces/models/base';
-import { Nft } from '@functions/interfaces/models/nft';
 import { BehaviorSubject, firstValueFrom, interval, Subscription, take } from 'rxjs';
 
 export enum StepType {

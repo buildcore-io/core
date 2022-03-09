@@ -6,11 +6,8 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { Space } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
-import { DataService } from '@pages/nft/services/data.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
-import { Space } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { take } from 'rxjs';
 
 @UntilDestroy()
