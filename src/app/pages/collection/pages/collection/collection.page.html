@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true">
     <ng-container *ngIf="deviceService.isMobile$ | async">
-        <wen-drawer-toggle label="About collection" (click)="isAboutCollectionVisible = true">
+        <wen-drawer-toggle i18n-label label="About collection" (click)="isAboutCollectionVisible = true">
         </wen-drawer-toggle>
     </ng-container>
 
@@ -45,7 +45,7 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-8">
-                <a  *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace"
+                <a *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace"
                   [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center mt-2">
                   <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                     class="border-2 border-app-gray-100 bg-bg-background min-w-10"
@@ -151,9 +151,9 @@
 
         <button nz-button nzType="primary" nzSize="default"
             *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
-            class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()" i18n>
+            class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()">
             <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
-            <div *ngIf="deviceService.isDesktop$ | async">Create NFT</div>
+            <div *ngIf="deviceService.isDesktop$ | async" i18n>Create NFT</div>
         </button>
     </div>
 
@@ -164,40 +164,41 @@
         <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
             <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
                 <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-                    (nzCheckedChange)="handleChange(tag)">
+                    (nzCheckedChange)="handleChange(tag)" i18n>
                     {{ tag }}
                 </nz-tag>
             </ng-container>
 
             <ng-template #hotTagsMobileBlock>
                 <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-                    <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+                    <nz-option *ngFor="let tag of hotTags" i18n-nzLabel [nzLabel]="tag" [nzValue]="tag"></nz-option>
                 </nz-select>
             </ng-template>
         </div>
 
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
+            <nz-select class="wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
-                <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
-                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
             </nz-select>
             <ng-template #defaultTemplate let-selected>
                 <div class="flex items-center">
                     <div nz-typography nzType="secondary" class="mr-1 text-xs">
-                        {{ selected.nzValue === filter.sortOptions.RECENT ? 'Sort by' : 'Price' }}
+                        <ng-container *ngIf="selected.nzValue === filter.sortOptions.RECENT; else notRecent" i18n>Sort by</ng-container>
+                        <ng-template #notRecent i18n>Price</ng-template>
                     </div>
-                    {{ selected.nzLabel }}
+                    <span i18n>{{ selected.nzLabel }}</span>
                 </div>
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>
             <div class="relative">
                 <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-                  <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                  <nz-option nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
-                  <nz-option nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
+                  <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                  <nz-option i18n-nzLabel nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                  <nz-option i18n-nzLabel nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
                 </nz-select>
                 <ng-template #mobileSuffixIcon>
                     <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>

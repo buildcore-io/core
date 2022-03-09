@@ -1,4 +1,4 @@
-<nz-table class="block h-full" nzNoResult="No Connections"
+<nz-table class="block h-full" i18n-nzNoResult nzNoResult="No Connections"
     [nzData]="alliances" [nzShowPagination]="false">
     <thead>
         <tr>
@@ -16,7 +16,7 @@
                     class="mr-3 bg-white border-gray-400"
                     nzShape="circle"
                     [nzSize]="(deviceService.isDesktop$ | async) ? 32 : 24"
-                    >
+                >
                 </nz-avatar>
                 <div class="ml-3 text-sm font-bold break-all line-clamp-2"
                     [ngClass]="size === 'large' && (deviceService.isDesktop$ | async) ? 'w-1/3' : 'w-12'">
@@ -28,8 +28,10 @@
             </td>
             <td>
                 <div class="text-sm font-medium" [ngClass]="ally.established ? 'text-green-success' : 'text-app-gray-400'">
-                    <div *ngIf="size === 'large' && (deviceService.isDesktop$ | async); else iconsBlock" i18n>
-                        {{ ally.established ? 'Established' : 'Recognised' }}</div>
+                    <div *ngIf="size === 'large' && (deviceService.isDesktop$ | async); else iconsBlock">
+                        <ng-container *ngIf="ally.established; else recognisedBlock" i18n>Established</ng-container>
+                        <ng-template #recognisedBlock i18n>Recognised</ng-template>
+                    </div>
                     <ng-template #iconsBlock>
                         <wen-icon-check *ngIf="ally.established"></wen-icon-check>
                         <wen-icon-eye *ngIf="!ally.established" class="text-app-gray-400"></wen-icon-eye>

@@ -8,12 +8,12 @@
           [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
         <h5 nz-typography class="m-auto truncate">{{ member.name ? '@' + member.name : member.uid }}</h5>
         <nz-tag *ngIf="role && (deviceService.isDesktop$ | async)" class="wen-status-tag"
-          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'">
+          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'" i18n>
           {{ role }}</nz-tag>
       </a>
       <div class="flex items-center mt-4 lg:mt-0">
         <nz-tag *ngIf="role && (deviceService.isMobile$ | async)" class="wen-status-tag h-6 lg:h-8 px-1 lg:px-3 py-0 lg:py-2 text=xs lg:text-sm"
-          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'">
+          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'" i18n>
           {{ role }}</nz-tag>
 
         <span nz-typography class="truncate lg:mt-3 text-app-gray-400" [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'">

@@ -20,10 +20,10 @@ export class ProposalsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(ProposalFilter.ACTIVE);
   public hotTags: { value: ProposalFilter; label: string}[] = [
-    { value: ProposalFilter.DRAFT, label: 'Pending' },
-    { value: ProposalFilter.ACTIVE, label: 'Active' },
-    { value: ProposalFilter.COMPLETED, label: 'Completed' },
-    { value: ProposalFilter.REJECTED, label: 'Rejected' }
+    { value: ProposalFilter.DRAFT, label: $localize`Pending` },
+    { value: ProposalFilter.ACTIVE, label: $localize`Active` },
+    { value: ProposalFilter.COMPLETED, label: $localize`Completed` },
+    { value: ProposalFilter.REJECTED, label: $localize`Rejected` }
   ];
   private subscriptions$: Subscription[] = [];
 

@@ -34,8 +34,8 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   public filterControl: FormControl = new FormControl(undefined);
   public overTenRecords = false;
   public hotTags: { value: FilterOptions; label: string}[] = [
-    { value: FilterOptions.PENDING, label: 'Pending' },
-    { value: FilterOptions.ISSUED, label: 'Issued' }
+    { value: FilterOptions.PENDING, label: $localize`Pending` },
+    { value: FilterOptions.ISSUED, label: $localize`Issued` }
   ];
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
   private subscriptions$: Subscription[] = [];

@@ -1,22 +1,19 @@
-<nz-card nzTitle="Detailed Info" class="block">
+<nz-card i18n-nzTitle nzTitle="Detailed Info" class="block">
     <div class="wen-description-item bg-bg-background">
-      <span nz-typography class="text-app-gray-400"
-        >Badges used / available</span
-      >
+      <span nz-typography class="text-app-gray-400" i18n>Badges used / available</span>
       <p nz-typography>
-        {{(data.award$ | async)?.issued}} / {{(data.award$ |
-        async)?.badge?.count}}
+        {{(data.award$ | async)?.issued}} / {{(data.award$ | async)?.badge?.count}}
       </p>
     </div>
     <div class="wen-description-item bg-bg-background">
-      <span nz-typography class="text-app-gray-400">End Date</span>
+      <span nz-typography class="text-app-gray-400" i18n>End Date</span>
       <p nz-typography>
         {{(data.award$ | async)?.endDate?.toDate() | date:'short'}}
       </p>
     </div>
 </nz-card>
 
-<nz-card nzTitle="Owner" class="block">
+<nz-card i18n-nzTitle nzTitle="Owner" class="block">
     <div
       *ngFor="let g of data.owners$ | async; trackBy: trackByUid"
       [routerLink]="['/', 'member', g.uid]"

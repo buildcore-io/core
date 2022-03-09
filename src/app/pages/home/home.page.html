@@ -1,10 +1,10 @@
 <main class="mx-auto mb-32 lg:mb-40 bg-bg-background">
   <div class="w-full wen-home-vector">
     <div class="container px-8">
-      <h1 class="pt-64 mb-6 text-3xl text-white lg:w-6/12 lg:pt-24 lg:text-6xl xl:pt-52">
+      <h1 class="pt-64 mb-6 text-3xl text-white lg:w-6/12 lg:pt-24 lg:text-6xl xl:pt-52" i18n>
         Welcome to The Soonaverse
       </h1>
-      <p class="mb-12 text-xl font-medium text-white lg:text-2xl lg:font-light lg:w-6/12">
+      <p class="mb-12 text-xl font-medium text-white lg:text-2xl lg:font-light lg:w-6/12" i18n>
         An all-in-one feeless platform for community engagement and DAO
         creation. Build, vote, earn, learn and let the best ideas win.
       </p>
@@ -14,19 +14,21 @@
         nzSize="large"
         type="button"
         (click)="join()"
+        i18n
       >
         {{(isLoggedIn | async) ? 'Discover' : 'Join us'}}
       </button>
 
       <button class="block mt-4 lg:ml-4 lg:mt-0 lg:inline"
-      *ngIf="(isLoggedIn | async)"
+        *ngIf="(isLoggedIn | async)"
         nz-button
         nzType="primary"
         nzSize="large"
         type="button"
         [routerLink]="['/market', 'collections']"
+        i18n
       >
-        Marketplace
+          Marketplace
       </button>
 
       <a class="inline-block mt-4 lg:ml-4 lg:mt-0"
@@ -46,15 +48,15 @@
 
     <div class="container px-5 mt-4 lg:my-16 lg:px-10">
       <div class="mt-32">
-        <h1 class="mb-4 text-4xl lg:text-5xl lg:mb-10">Get started with the Soonaverse</h1>
-        <p class="text-lg text-app-gray-400">
+        <h1 class="mb-4 text-4xl lg:text-5xl lg:mb-10" i18n>Get started with the Soonaverse</h1>
+        <p class="text-lg text-app-gray-400" i18n>
           Not sure where to start? Find featured spaces and NFT Collections below.
         </p>
 
         <div class="mt-16 space-y-24 lg:space-y-14">
           <div class="-mx-6 overflow-hidden">
             <h3 class="px-7">
-              Trending Collections
+              <span i18n>Trending Collections</span>
               <button
                 *ngIf="deviceService.isDesktop$ | async"
                 nz-button
@@ -62,6 +64,7 @@
                 nzType="primary"
                 type="button"
                 [routerLink]="['/market', 'collections']"
+                i18n
               >
                 Go to Marketplace
               </button>
@@ -77,6 +80,7 @@
                 nzType="primary"
                 type="button"
                 [routerLink]="['/discover', 'awards']"
+                i18n
               >
                 Discover more
             </button>
@@ -84,7 +88,7 @@
 
           <div class="-mx-6 overflow-hidden">
             <h3 class="px-7">
-              Popular spaces
+              <span i18n>Popular spaces</span>
               <button
                 *ngIf="deviceService.isDesktop$ | async"
                 nz-button
@@ -92,6 +96,7 @@
                 nzType="primary"
                 type="button"
                 [routerLink]="['/discover', 'spaces']"
+                i18n
               >
                 Discover more
               </button>
@@ -111,6 +116,7 @@
                 nzType="primary"
                 type="button"
                 [routerLink]="['/discover', 'spaces']"
+                i18n
               >
                 Discover more
             </button>
@@ -120,8 +126,8 @@
     </div>
 
     <div class="container flex flex-col items-center justify-center px-5 pt-24">
-      <h1 class="text-4xl text-center lg:text-5xl">Creating your community is easy as 1-2-3</h1>
-      <p class="w-9/12 text-xl font-medium text-center lg:text-2xl lg:font-light text-app-gray-400">
+      <h1 class="text-4xl text-center lg:text-5xl" i18n>Creating your community is easy as 1-2-3</h1>
+      <p class="w-9/12 text-xl font-medium text-center lg:text-2xl lg:font-light text-app-gray-400" i18n>
         No more worries about “the tech”. Spend your time where it belongs,
         building your community and realizing your collective vision.
       </p>
@@ -132,7 +138,8 @@
         <article class="w-full mt-8 bg-white lg:w-80 rounded-2xl lg:mt-0" *ngFor="let item of stepArticles">
           <div class="w-full overflow-hidden h-36 rounded-2xl">
             <img
-              alt=""
+              i18n-alt
+              alt="StepArticle image"
               [src]="item.img"
               class="object-cover w-full h-full"
             />
@@ -141,8 +148,8 @@
           <div
             class="relative flex flex-col justify-center w-full p-6 text-center lg:h-48"
           >
-            <h3 class="my-1 text-2xl">{{ item.title }}</h3>
-            <p class="mt-1 mb-2 text-lg font-medium text-app-gray-400 lg:mb-1">{{ item.description }}</p>
+            <h3 class="my-1 text-2xl" i18n>{{ item.title }}</h3>
+            <p class="mt-1 mb-2 text-lg font-medium text-app-gray-400 lg:mb-1" i18n>{{ item.description }}</p>
           </div>
         </article>
       </div>
@@ -150,10 +157,10 @@
       <div class="w-screen mt-32 -ml-5 lg:ml-0 lg:w-auto">
         <article class="flex flex-col-reverse w-full bg-white lg:flex-row lg:h-96 rounded-large">
           <div class="relative h-full px-5 py-16 space-y-12 lg:w-1/2 lg:p-10 lg:space-y-6">
-            <h3 class="mb-1 text-4xl">
+            <h3 class="mb-1 text-4xl" i18n>
               Voting is essential and it needs to be on-chain and FREE.
             </h3>
-            <p class="text-base lg:mb-0 lg:text-lg text-app-gray-400">
+            <p class="text-base lg:mb-0 lg:text-lg text-app-gray-400" i18n>
               By building on the IOTA network we have enshrined a crucial
               feature of proper DAO management. Feeless, secure voting. Read
               more about this in our manifesto.
@@ -164,6 +171,7 @@
               nzSize="large"
               type="button"
               (click)="goToManifesto()"
+              i18n
             >
               Go there now
             </button>
@@ -190,7 +198,7 @@
             />
           </div>
           <div class="relative w-full p-6 space-y-6 lg:w-1/2 lg:h-full lg:p-10">
-            <h3 class="mb-4 text-2xl">Want to learn more about SoonLabs?</h3>
+            <h3 class="mb-4 text-2xl" i18n>Want to learn more about SoonLabs?</h3>
             <p class="text-lg text-app-gray-400"></p>
             <button
               nz-button
@@ -199,6 +207,7 @@
               nzSize="large"
               type="button"
               (click)="goToYoutube()"
+              i18n
             >
               Visit YouTube
             </button>
@@ -209,7 +218,7 @@
   </div>
 </main>
 <footer class="pt-16 lg:p-24 lg:-mt-16 bg-bg-footer rounded-t-large">
-  <h1 class="m-5 mt-12 text-4xl lg:m-0 lg:text-5xl lg:mt-0">Who’s using the Soonaverse?</h1>
+  <h1 class="m-5 mt-12 text-4xl lg:m-0 lg:text-5xl lg:mt-0" i18n>Who’s using the Soonaverse?</h1>
 
   <div class="w-full overflow-hidden lg:m-6 max-h-52 lg:max-h-full" style="height: 750px">
     <img
@@ -260,6 +269,7 @@
         class="font-normal text-app-gray-text"
         nzType="link"
         type="button"
+        i18n
         >Investors</a
       >
       <a
@@ -269,6 +279,7 @@
         class="font-normal text-app-gray-text"
         nzType="link"
         type="button"
+        i18n
         >Privacy</a
       >
       <a
@@ -278,6 +289,7 @@
         class="font-normal text-app-gray-text"
         nzType="link"
         type="button"
+        i18n
         >Terms</a
       >
       <a
@@ -288,6 +300,7 @@
         class="font-normal text-app-gray-text"
         nzType="link"
         type="button"
+        i18n
         >Powered by SoonLabs</a
       >
     </div>
@@ -299,6 +312,7 @@
         class="font-normal text-app-gray-text"
         nzType="link"
         type="button"
+        i18n
         >Powered by SoonLabs</a
       >
   </div>

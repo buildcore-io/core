@@ -20,9 +20,9 @@
 
       <p class="flex-grow flex-shrink min-h-0 py-3 overflow-hidden text-sm font-medium lg:py-2">{{ space.about | stripMarkdown | truncate:[110]}}</p>
 
-      <div i18n class="inline-flex gap-2 text-sm font-medium text-app-gray-400">
+      <div class="inline-flex gap-2 text-sm font-medium text-app-gray-400">
         <wen-icon-members></wen-icon-members>
-        {{ space.totalMembers }} members</div>
+        {{ space.totalMembers }} <span i18n>members</span></div>
     </div>
   </a>
 </article>

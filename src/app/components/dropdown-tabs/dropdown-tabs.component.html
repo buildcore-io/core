@@ -1,8 +1,8 @@
 <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu"
     nzType="primary" type="button"
     [(nzVisible)]="isVisible"
-    class="flex items-center gap-2 pr-2" i18n>
-    {{ selectedTab?.label }} <wen-icon-angle-down></wen-icon-angle-down>
+    class="flex items-center gap-2 pr-2">
+    <span i18n>{{ selectedTab?.label }}</span> <wen-icon-angle-down></wen-icon-angle-down>
 </button>
 
 <nz-dropdown-menu #createMenu="nzDropdownMenu">
@@ -13,7 +13,7 @@
             [routerLink]="item.route"
             (click)="isVisible = false"
             class="flex items-center w-36 gap-2 px-5 py-2 wen-secondary" i18n
-            [ngClass]="{ 'selected': item === selectedTab }">
+            [ngClass]="{ 'selected': item === selectedTab }" i18n>
             {{ item.label }}
         </button>
     </div>

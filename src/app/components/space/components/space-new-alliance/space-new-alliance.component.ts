@@ -36,9 +36,9 @@ export class SpaceNewAllianceComponent {
 
   public spaceOptions: SelectSpaceOption[] = [];
   public weightOptions = [
-    { label: 'Equal', value: 1 },
-    { label: 'Half', value: 0.5 },
-    { label: 'Double', value: 2 }
+    { label: $localize`Equal`, value: 1 },
+    { label: $localize`Half`, value: 0.5 },
+    { label: $localize`Double`, value: 2 }
   ];
   private _spaces: Space[] = [];
 

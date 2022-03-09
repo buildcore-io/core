@@ -1,6 +1,6 @@
 <div class="mx-5 lg:mx-10 xl:container xl:mx-auto">
   <button nz-button class="z-10 wen-back-button mt-0 lg:mt-14" (click)="nav.goBack()" *ngIf="showBackButton">
-    <wen-icon-angle-left class="flex"></wen-icon-angle-left>{{ title | async }}
+    <wen-icon-angle-left class="flex"></wen-icon-angle-left> <span i18n>{{ title | async }}</span>
   </button>
 
   <ng-content></ng-content>

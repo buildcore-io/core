@@ -17,7 +17,7 @@
     </wen-mobile-header>
 
     <div class="p-4" *ngIf="!isScrolled">
-      <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Coming SOON"
+      <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Coming SOON"
         nzTooltipPlacement="bottom" [nzDropdownMenu]="notificationMenu"
         [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
         class="inline-flex items-center justify-center border-0 wen-header-button">
@@ -45,37 +45,38 @@
 
   <ng-template #isDesktop>
     <button nz-button *ngIf="isLandingPage" class="flex items-center gap-2 wen-header-button" [routerLink]="urlToDiscover"
-      type="button" i18n>
-      <wen-icon-rocket></wen-icon-rocket>Discover
+      type="button">
+      <wen-icon-rocket></wen-icon-rocket><span i18n>Discover</span>
     </button>
 
     <button nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="createMenu" nz-tooltip nzTooltipPlacement="bottom"
+      i18n-nzTooltipTitle
       [nzTooltipTitle]="!isAllowedCreation ? 'To create a new space you must first earn a badge!' : undefined"
       *ngIf="(isLoggedIn$ | async) && !isMemberProfile && !isLandingPage" nzType="primary" type="button"
-      class="flex items-center gap-2 pr-2" i18n>
-      Create new <wen-icon-angle-down></wen-icon-angle-down>
+      class="flex items-center gap-2 pr-2">
+      <span i18n>Create new </span><wen-icon-angle-down></wen-icon-angle-down>
     </button>
 
     <nz-dropdown-menu #createMenu="nzDropdownMenu">
       <wen-menu *ngIf="isAllowedCreation">
-        <wen-menu-item [routerLink]="routerService.urlToNewSpace" i18n>
-          <wen-icon-space icon></wen-icon-space>Space
+        <wen-menu-item [routerLink]="routerService.urlToNewSpace">
+          <wen-icon-space icon></wen-icon-space><span i18n>Space</span>
         </wen-menu-item>
-        <wen-menu-item [routerLink]="routerService.urlToNewProposal" *ngIf="enableCreateAwardProposal" i18n>
-          <wen-icon-check-circle icon></wen-icon-check-circle>Proposal
+        <wen-menu-item [routerLink]="routerService.urlToNewProposal" *ngIf="enableCreateAwardProposal">
+          <wen-icon-check-circle icon></wen-icon-check-circle><span i18n>Proposal</span> 
         </wen-menu-item>
-        <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal" i18n>
-          <wen-icon-award icon></wen-icon-award>Award
+        <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal">
+          <wen-icon-award icon></wen-icon-award><span i18n>Award</span>
         </wen-menu-item>
-        <wen-menu-item [routerLink]="routerService.urlToNewCollection" *ngIf="enableCollection" i18n>
-          <wen-icon-collection icon></wen-icon-collection>Collection
+        <wen-menu-item [routerLink]="routerService.urlToNewCollection" *ngIf="enableCollection">
+          <wen-icon-collection icon></wen-icon-collection><span i18n>Collection</span>
         </wen-menu-item>
       </wen-menu>
     </nz-dropdown-menu>
 
     <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"
       [ngClass]="isMemberProfile ? 'isMember' : ''"></wen-sign-in>
-    <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Coming SOON"
+    <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Coming SOON"
       nzTooltipPlacement="bottom" *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
       [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
       class="inline-flex items-center justify-center border-0 wen-header-button">
@@ -99,9 +100,9 @@
 
   <nz-dropdown-menu #userMenu="nzDropdownMenu">
     <wen-menu>
-      <wen-menu-item (click)="goToMyProfile()" i18n>
+      <wen-menu-item (click)="goToMyProfile()">
         <wen-icon-unamused icon></wen-icon-unamused>
-        My Profile
+        <span i18n>My Profile</span>
       </wen-menu-item>
       <wen-sign-out></wen-sign-out>
     </wen-menu>
@@ -118,7 +119,7 @@
       <div>
           <div class="w-4/5 font-bold" i18n>Purchase has not been completed</div>
           <div class="mt-2 text-xs font-medium text-foregrounds-secondary">
-              You have <span class="text-alerts-error">{{(expiryTicker$ | async) | countdownTime}}</span> to finish your transaction
+              <span i18n>You have </span><span class="text-alerts-error">{{(expiryTicker$ | async) | countdownTime}}</span><span i18n> to finish your transaction</span>
           </div>
           <button nz-button nzType="primary" nzSize="small" class="mt-5" (click)="onOpenCheckout()" i18n>Open Checkout</button>
       </div>

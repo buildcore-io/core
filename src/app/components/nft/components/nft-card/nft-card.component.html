@@ -3,10 +3,11 @@
     <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
             <img
-            *ngIf="mediaType === 'image'"
-            alt="NFT image"
-            [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
-            class="object-cover w-full h-full"
+                *ngIf="mediaType === 'image'"
+                i18n-alt
+                alt="NFT image"
+                [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
+                class="object-cover w-full h-full"
             />
 
             <video *ngIf="mediaType === 'video'"
@@ -41,13 +42,13 @@
                       </div>
                   </div>
 
-                    <span class="ml-auto" nz-tooltip [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
+                    <span class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
                       <button nz-button nzType="primary" [disabled]="!collection?.approved || !isAvailableForSale()"
                           (click)="onBuy($event)" i18n>Buy now</button>
                     </span>
                 </div>
 
-                <span class="w-4/5 mt-2 ml-auto" nz-tooltip [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
+                <span class="w-4/5 mt-2 ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
                   <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || !isAvailableForSale()"
                       (click)="onBuy($event)" i18n>Buy now</button>
                 </span>

@@ -9,7 +9,9 @@
             >
                 <nz-card [nzBordered]="false" *ngIf="currentStep === stepType.GENERATE">
                     <nz-card-meta
+                        i18n-nzTitle
                         [nzTitle]="uploadedFiles.length === 0 ? 'Upload multiple images' : 'Upload more images'"
+                        i18n-nzDescription
                         [nzDescription]="uploadedFiles.length + '/500'"
                         >
                     </nz-card-meta>
@@ -39,11 +41,11 @@
 
                     <div class="flex items-center text-alerts-error" *ngIf="uploadErrors.length">
                         <div class="mr-1 text-xs font-medium" i18n>Some files have not been uploaded</div>
-                        <i nz-icon nzType="info-circle" nz-tooltip [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+                        <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
                         <ng-template #tooltip>
                             <div>
                                 <div class="mb-2 text-sm font-medium" i18n>Please only use a-z, A-Z, _, -, 0-9 characters.</div>
-                                <div *ngFor="let err of uploadErrors" class="text-sm font-medium text-alerts-error">
+                                <div *ngFor="let err of uploadErrors" class="text-sm font-medium text-alerts-error" i18n>
                                     - {{ err }}
                                 </div>
                             </div>
@@ -51,7 +53,7 @@
                     </div>
                 </nz-card>
 
-                <nz-card nzTitle="Uploaded CSV" *ngIf="currentStep === stepType.PUBLISH">
+                <nz-card i18n-nzTitle nzTitle="Uploaded CSV" *ngIf="currentStep === stepType.PUBLISH">
                     <div class="flex items-center px-5 py-4 my-10 text-white rounded-xl bg-alerts-error" *ngIf="isNftError()">
                         <wen-icon-alert-octagon class="mr-3.5"></wen-icon-alert-octagon>
                         <div class="font-bold" i18n>
@@ -87,10 +89,10 @@
                                     <ng-template #errorBlock>
                                         <div class="flex items-center text-alerts-error">
                                             <div class="mr-1 text-xs font-medium" i18n>Error</div>
-                                            <i nz-icon nzType="info-circle" nz-tooltip [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
+                                            <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="tooltip" class="cursor-pointer"></i>
                                             <ng-template #tooltip>
                                                 <div>
-                                                    <div *ngFor="let err of nftErrors[i]" class="text-sm font-medium text-alerts-error">
+                                                    <div *ngFor="let err of nftErrors[i]" class="text-sm font-medium text-alerts-error" i18n>
                                                         - {{ err }}
                                                     </div>
                                                 </div>
@@ -108,7 +110,7 @@
             </div>
 
             <div class="space-y-4" nz-col nzFlex="450px">
-                <nz-card [nzBordered]="false" nzTitle="Collection">
+                <nz-card [nzBordered]="false" i18n-nzTitle nzTitle="Collection">
                     <nz-form-item>
                         <nz-form-control i18n-nzErrorTip nzErrorTip="Cateogy.">
                             <nz-select
@@ -116,10 +118,11 @@
                                 nzSize="large"
                                 nzShowSearch
                                 nzAllowClear
+                                i18n-nzPlaceHolder
                                 nzPlaceHolder="Select collection"
                                 [formControl]="collectionControl"
                                 >
-                                <nz-option *ngFor="let o of data.getCollectionListOptions(cache.allCollections$ | async)" [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
+                                <nz-option *ngFor="let o of data.getCollectionListOptions(cache.allCollections$ | async)" i18n-nzLabel [nzLabel]="o.label" [nzValue]="o.value"></nz-option>
                             </nz-select>
                         </nz-form-control>
                     </nz-form-item>
@@ -128,9 +131,11 @@
                 <div class="relative mt-6">
                     <nz-card [nzBordered]="false" [ngClass]="{ 'opacity-50': uploadedFiles.length === 0 }">
                         <nz-card-meta
+                            i18n-nzTitle
                             nzTitle="Upload existing CSV"
+                            i18n-nzDescription
                             nzDescription="Upload back once you generate bellow"
-                            >
+                        >
                         </nz-card-meta>
 
                         <div class="mt-6">

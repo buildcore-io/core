@@ -1,6 +1,6 @@
 <button *ngIf="(auth.isLoggedIn$ | async) && !isMemberProfile && !isLandingPage"
     nz-button nz-dropdown nzTrigger="click" [nzDropdownMenu]="isAllowedCreation ? createMenu : null" nz-tooltip nzTooltipPlacement="bottom" nzPlacement="bottomLeft"
-    [nzTooltipTitle]="!isAllowedCreation ? 'To create a new space you must first earn a badge!' : undefined"
+    i18n-nzTooltipTitle [nzTooltipTitle]="!isAllowedCreation ? 'To create a new space you must first earn a badge!' : undefined"
     class="bg-blue-light1 w-10 h-10 flex justify-center items-center rounded-full" nzType="primary" type="button">
     <wen-icon-plus></wen-icon-plus>
 </button>

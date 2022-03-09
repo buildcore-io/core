@@ -1,5 +1,5 @@
 <wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
-  <h1 class="mt-7" i18 n>New Award</h1>
+  <h1 class="mt-7" i18n>New Award</h1>
 
   <form nz-form nzLayout="vertical">
     <div class="py-4" nz-row [nzGutter]="24">
@@ -13,14 +13,17 @@
       >
         <nz-card [nzBordered]="false"  i18n-nzErrorTip nzErrorTip="Title is required.">
           <nz-card-meta
-          nzTitle="Award info"
-          nzDescription="Title and description will be included on the Award. End date determines the duration of the Award."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Award info"
+            i18n-nzDescription
+            nzDescription="Title and description will be included on the Award. End date determines the duration of the Award."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="You must enter name.">
               <input
                 nz-input
+                i18n-placeholder
                 placeholder="Title"
                 nzSize="large"
                 [formControl]="nameControl"
@@ -37,6 +40,7 @@
                   nzShowTime
                   nzFormat="yyyy-MM-dd HH:mm:ss"
                   [formControl]="endControl"
+                  i18n-nzPlaceHolder
                   nzPlaceHolder="End"
                 ></nz-date-picker>
               </nz-form-control>
@@ -47,6 +51,7 @@
               <textarea
                 nz-input
                 nzSize="large"
+                i18n-placeholder
                 placeholder="Award description"
                 rows="4"
                 [formControl]="descriptionControl"
@@ -57,7 +62,9 @@
 
         <nz-card>
           <nz-card-meta
+          i18n-nzTitle
           nzTitle="Badge definition"
+          i18n-nzDescription
           nzDescription="Title and description will be included on the badge."
         >
         </nz-card-meta>
@@ -67,6 +74,7 @@
                 <input
                   nz-input
                   nzSize="large"
+                  i18n-placeholder
                   placeholder="Badge Title"
                   [formControl]="badgeNameControl"
                 />
@@ -77,6 +85,7 @@
                 <textarea
                   nz-input
                   nzSize="large"
+                  i18n-placeholder
                   placeholder="Badge description"
                   rows="4"
                   [formControl]="badgeDescriptionControl"
@@ -90,10 +99,12 @@
       <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Space Info"
-          nzDescription="This is the space that will list the award."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Space Info"
+            i18n-nzDescription
+            nzDescription="This is the space that will list the award."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Space is required.">
               <nz-select
@@ -124,7 +135,7 @@
               <ng-template #placeholderTpl>
                 <div class="flex items-center space-x-4">
                   <wen-icon-globe class="text-app-gray-text"></wen-icon-globe>
-                  <span>Select a space</span>
+                  <span i18n>Select a space</span>
                 </div>
               </ng-template>
               <ng-template #selectTpl let-s>
@@ -140,16 +151,19 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Reward Info"
-          nzDescription="Defines the amount of XP for each badge and the number of badges available."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Reward Info"
+            i18n-nzDescription
+            nzDescription="Defines the amount of XP for each badge and the number of badges available."
+          >
+          </nz-card-meta>
           <div class="flex items-baseline mt-4">
             <nz-form-item class="flex-grow">
               <nz-form-control i18n-nzErrorTip nzErrorTip="Minimum 1 and maximum 10000.">
                 <nz-input-number
                   class="w-full"
                   nzSize="large"
+                  i18n-nzPlaceHolder
                   nzPlaceHolder="Total XP (Max 10000)"
                   [formControl]="badgeXpControl"
                 ></nz-input-number>
@@ -169,6 +183,7 @@
                 <nz-input-number
                   class="w-full"
                   nzSize="large"
+                  i18n-nzPlaceHolder
                   nzPlaceHolder="Number of Badges"
                   [formControl]="badgeCountControl"
                 ></nz-input-number>
@@ -186,23 +201,26 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Badge"
-          nzDescription="What the badge looks like."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Badge"
+            i18n-nzDescription
+            nzDescription="What the badge looks like."
+          >
+          </nz-card-meta>
 
           <div
             class="flex p-4 mt-4 space-x-4 bg-blue-dropbg text-app-gray-text"
             *ngIf="!imageControl.value"
           >
             <wen-icon-award></wen-icon-award>
-            <span>Mint an unique NTT badge.</span>
+            <span i18n>Mint an unique NTT badge.</span>
             <button
               nz-button
               nzSize="small"
               nzType="primary"
               type="button"
               (click)="mint()"
+              i18n
             >
               Mint Avatar
             </button>
@@ -217,57 +235,59 @@
               [nzSize]="48"
               [nzSrc]="imageControl.value | ipfsAvatar:filesizes.small"
             ></nz-avatar>
-            <span>WOW! Now reward your members with it! </span>
+            <span i18n>WOW! Now reward your members with it! </span>
           </div>
         </nz-card>
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Award Setup"
-          nzDescription="Defines who and how can get a badge."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Award Setup"
+            i18n-nzDescription
+            nzDescription="Defines who and how can get a badge."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
                 <wen-radio [value]="types.PARTICIPATE_AND_APPROVE">
-                  <span class="inline-flex"
-                    >Guardian approval
+                  <span class="inline-flex items-center" i18n>Guardian approval
                     <wen-icon-question-circle
-                      class="inline-block"
+                      class="inline-block h-max"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="The award must be approved by the guardians of the space before it's active or distributed"
                     >
                     </wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="types.DISCORD_ACTIVITY" [disabled]="true">
-                  <span class="inline-flex"
-                    >Discord Activity
+                  <span class="inline-flex items-center" i18n>Discord Activity
                     <wen-icon-question-circle
-                      class="inline-block"
+                      class="inline-block h-max"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Coming SOON"
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="types.GITHUB_ACTIVITY" [disabled]="true">
-                  <span class="inline-flex"
-                    >Github Activity
+                  <span class="inline-flex items-center" i18n>Github Activity
                     <wen-icon-question-circle
-                      class="inline-block"
+                      class="inline-block h-max"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Coming SOON"
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="types.CUSTOM" [disabled]="true">
-                  <span class="inline-flex"
-                    >Custom and more
+                  <span class="inline-flex items-center" i18n>Custom and more
                     <wen-icon-question-circle
-                      class="inline-block"
+                      class="inline-block h-max"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Coming SOON"
                     ></wen-icon-question-circle> </span
                 ></wen-radio>

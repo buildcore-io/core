@@ -17,11 +17,11 @@ import { FilterService } from './../../services/filter.service';
 })
 export class DiscoverPage implements OnInit, OnDestroy {
   public sections: TabSection[] = [
-    { route: [ ROUTER_UTILS.config.discover.spaces], label: 'Spaces' },
-    { route: [ ROUTER_UTILS.config.discover.collections], label: 'Collections' },
-    { route: [ ROUTER_UTILS.config.discover.awards], label: 'Awards' },
-    { route: [ ROUTER_UTILS.config.discover.proposals], label: 'Proposals' },
-    { route: [ ROUTER_UTILS.config.discover.members], label: 'Members' }
+    { route: [ ROUTER_UTILS.config.discover.spaces], label: $localize`Spaces` },
+    { route: [ ROUTER_UTILS.config.discover.collections], label: $localize`Collections` },
+    { route: [ ROUTER_UTILS.config.discover.awards], label: $localize`Awards` },
+    { route: [ ROUTER_UTILS.config.discover.proposals], label: $localize`Proposals` },
+    { route: [ ROUTER_UTILS.config.discover.members], label: $localize`Members` }
   ];
   public selectedSection?: TabSection;
   public isSearchInputFocused = false;
