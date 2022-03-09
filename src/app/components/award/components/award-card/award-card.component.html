@@ -1,6 +1,6 @@
 <article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-44' : 'w-full lg:w-76 lg:h-76'" *ngIf="award">
   <a class="relative block w-full h-full" [ngClass]="fullWidth ? 'lg:flex' : ''" [routerLink]="['/', this.path, award.uid]">
-    <div class="relative flex flex-col lg:w-full" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-40'">
+    <div class="relative flex flex-col" style="width: calc(100% - 300px)" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-40'">
       <div class="flex items-center w-full space-x-4">
         <ng-container *ngIf="deviceService.isDesktop$ | async">
           <nz-avatar [nzSrc]="previewImageService.getAvatarSize((space$ | async)?.avatarUrl)"
