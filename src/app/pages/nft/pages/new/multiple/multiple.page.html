@@ -24,10 +24,11 @@
                                     nzName="banner"
                                     nzType="drag"
                                     [nzDirectory]="false"
-                                    [nzLimit]="500"
+                                    [nzLimit]="imagesLimit"
                                     [nzMultiple]="true"
                                     [nzCustomRequest]="uploadMultipleFiles.bind(this)"
                                     [nzFilter]="uploadFilter"
+                                    [nzBeforeUpload]="beforeImagesUpload.bind(this)"
                                     (nzChange)="uploadMultipleChange($event)"
                                     nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                                 >

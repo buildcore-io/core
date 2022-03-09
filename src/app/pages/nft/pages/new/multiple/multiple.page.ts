@@ -52,6 +52,7 @@ export class MultiplePage implements OnInit {
   public allowedFileFormats = 'jpg/jpeg/png/webp/mp4';
   public uploadFilter: UploadFilter[] = [];
   public uploadErrors: string[] = [];
+  public imagesLimit = 500;
   private usedFileNames = new Set<string>();
   public nftObject:  NFTObject = {
     media: {
@@ -326,6 +327,10 @@ export class MultiplePage implements OnInit {
       }
     })
     return false;
+  }
+  public beforeImagesUpload(file: NzUploadFile) : boolean | Observable<boolean> {
+    if (!file) return false;
+    return this.uploadedFiles.length < this.imagesLimit;
   }
 
   public buttonClick(): void {
