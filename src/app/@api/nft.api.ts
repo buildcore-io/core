@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Member, Transaction, TransactionOrder, TransactionType } from 'functions/interfaces/models';
+import { Member, Transaction, TransactionOrder, TransactionType } from '@functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';

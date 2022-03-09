@@ -6,10 +6,10 @@ import { SelectSpaceOption } from '@components/space/components/select-space/sel
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
+import { Space } from '@functions/interfaces/models';
+import { Collection } from '@functions/interfaces/models/collection';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/discover/services/filter.service';
-import { Space } from 'functions/interfaces/models';
-import { Collection } from 'functions/interfaces/models/collection';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 import { DEFAULT_SPACE } from '../../../../components/space/components/select-space/select-space.component';
 import { SortOptions } from './../../services/sort-options.interface';

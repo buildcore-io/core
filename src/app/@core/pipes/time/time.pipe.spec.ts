@@ -1,8 +1,8 @@
-import { RelativeTime } from './relative-time.pipe';
+import { Time } from './time.pipe';
 
-describe('RelativeTime', () => {
+describe('Time', () => {
   it('create an instance', () => {
-    const pipe = new RelativeTime();
+    const pipe = new Time();
     expect(pipe).toBeTruthy();
   });
 });

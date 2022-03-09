@@ -4,9 +4,9 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Space } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { Collection, CollectionAccess } from 'functions/interfaces/models/collection';
+import { Space } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Collection, CollectionAccess } from '@functions/interfaces/models/collection';
 
 @Component({
   selector: 'wen-collection-card',

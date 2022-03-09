@@ -6,7 +6,6 @@ import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { IpfsBadgeModule } from './../../../../@core/pipes/ipfs-badge/ipfs-badge.module';
 import { DrawerToggleModule } from './../../../../components/drawer-toggle/drawer-toggle.module';
-import { ProposalInfoModule } from './../../../../components/proposal/components/proposal-info/proposal-info.module';
 import { ProposalStatusModule } from './../../../../components/proposal/components/proposal-status/proposal-status.module';
 import { DataService } from './../../services/data.service';
 import { ProposalPage } from './proposal.page';
@@ -15,7 +14,7 @@ describe('ProposalPage', () => {
   let spectator: Spectator<ProposalPage>;
   const createComponent = createRoutingFactory({
     component: ProposalPage,
-    imports: [ TabsModule, IconModule, ProposalStatusModule, BadgeModule, IpfsAvatarModule, IpfsBadgeModule, LayoutModule, DrawerToggleModule, ProposalInfoModule ],
+    imports: [ TabsModule, IconModule, ProposalStatusModule, BadgeModule, IpfsAvatarModule, IpfsBadgeModule, LayoutModule, DrawerToggleModule ],
     providers: [ DataService ]
   });
 

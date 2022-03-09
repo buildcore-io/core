@@ -4,8 +4,8 @@ import { FormControl } from '@angular/forms';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
-import { Space } from 'functions/interfaces/models';
 
 @Component({
   selector: 'wen-space-new-alliance',

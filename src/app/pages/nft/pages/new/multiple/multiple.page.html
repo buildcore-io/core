@@ -183,7 +183,7 @@
         {{ currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs'}}
     </button>
 
-    <wen-nft-preview [nft]="previewNft" (onClose)="previewNft = null"></wen-nft-preview>
+    <wen-nft-preview [nft]="previewNft" (wenOnClose)="previewNft = null"></wen-nft-preview>
 </ng-container>
 
 <div *ngIf="deviceService.isMobile$ | async" class="flex p-4 mt-6 bg-white rounded-2xl text-foregrounds-secondary">

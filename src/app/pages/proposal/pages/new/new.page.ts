@@ -104,13 +104,13 @@ export class NewPage implements OnInit, OnDestroy {
       this.spaceControl.setValue(this.nav.getLastUrl()[2]);
     }
 
-    this.route.params.pipe(untilDestroyed(this)).subscribe((p) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.subscriptions$.push(this.memberApi.allSpacesAsMember(o.uid).subscribe(this.spaces$));
         // TODO Implement paging.
@@ -137,7 +137,7 @@ export class NewPage implements OnInit, OnDestroy {
       }
     });
 
-    this.milestoneApi.top(undefined, undefined, 1).pipe(untilDestroyed(this), map((o: Milestone[]) => {
+    this.milestoneApi.top(undefined, undefined, 1)?.pipe(untilDestroyed(this), map((o: Milestone[]) => {
       return o[0];
     })).subscribe(this.lastMilestone$);
   }

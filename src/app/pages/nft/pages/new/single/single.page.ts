@@ -9,12 +9,12 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { Collection, CollectionType } from '@functions/interfaces/models';
+import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import * as dayjs from 'dayjs';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
-import { Collection, CollectionType } from 'functions/interfaces/models';
-import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { merge, of, Subscription } from 'rxjs';
@@ -111,7 +111,7 @@ export class SinglePage implements OnInit {
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
 
