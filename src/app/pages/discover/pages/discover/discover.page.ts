@@ -54,7 +54,7 @@ export class DiscoverPage implements OnInit, OnDestroy {
   private setSelectedSection() {
     this.selectedSection =
       this.sections.find((r: TabSection) =>
-        this.router.url.includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
+        (this.router.url || '').includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
   }
 
   onSearchIconClick(): void {

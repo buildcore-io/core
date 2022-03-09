@@ -45,7 +45,7 @@
         </div>
 
         <ng-container [ngSwitch]="type">
-            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (onClose)="close()"></wen-iota-address>
+            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (wenOnClose)="close()"></wen-iota-address>
         </ng-container>
     </ng-template>
 </nz-modal>
@@ -62,7 +62,7 @@
         </button>
 
         <ng-container [ngSwitch]="type">
-            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (onClose)="close()"></wen-iota-address>
+            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (wenOnClose)="close()"></wen-iota-address>
         </ng-container>
     </div>
 </nz-drawer>

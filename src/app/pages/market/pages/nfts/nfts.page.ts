@@ -6,11 +6,11 @@ import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/s
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
+import { Collection, Space } from '@functions/interfaces/models';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
-import { Collection, Space } from 'functions/interfaces/models';
-import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum HOT_TAGS {

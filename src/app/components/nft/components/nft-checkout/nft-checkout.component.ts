@@ -12,12 +12,12 @@ import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
+import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Timestamp } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { MIN_AMOUNT_TO_TRANSFER } from 'functions/interfaces/config';
-import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 'functions/interfaces/models';
-import { Timestamp } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, firstValueFrom, interval, Subscription, take } from 'rxjs';
 
 export enum StepType {
@@ -70,7 +70,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   @Input() collection?: Collection|null;
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   public purchasedNft?: Nft|null;
   public stepType = StepType;
@@ -285,7 +285,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public goToNft(): void {
     this.router.navigate(['/', this.path, this.purchasedNft?.uid]);
     this.reset();
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public isExpired(val?: Transaction | null): boolean {
@@ -299,7 +299,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
   public close(): void {
     this.reset();
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public formatBest(amount: number|undefined): string {

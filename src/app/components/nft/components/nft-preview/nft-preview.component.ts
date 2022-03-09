@@ -4,10 +4,10 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Space } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
-import { Space } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
 import { take } from 'rxjs';
 
 @UntilDestroy()
@@ -40,7 +40,7 @@ export class NftPreviewComponent {
     return this._nft
   }
 
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   public space?: Space;
   public mediaType: 'video'|'image'|undefined;
@@ -58,7 +58,7 @@ export class NftPreviewComponent {
 
   public close(): void {
     this.nft = null;
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public get filesizes(): typeof FILE_SIZES {

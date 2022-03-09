@@ -10,10 +10,10 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
+import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { Collection, CollectionType } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
-import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from 'functions/interfaces/config';
-import { Collection, CollectionType } from 'functions/interfaces/models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
@@ -158,7 +158,7 @@ export class MultiplePage implements OnInit {
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
 
@@ -212,7 +212,7 @@ export class MultiplePage implements OnInit {
           .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
           .filter((s: { [key: string]: string }) => s.key && s.value)
           .reduce((acc: any, cur: any) => {
-            const index = Number(cur.key.substr(cur.key.split('').findIndex((c: any) => !isNaN(c))));
+            const index = Number(cur.key.substring(cur.key.split('').findIndex((c: any) => !isNaN(c))));
             const key = `prop${index}`;
             const newObj = acc[key] || {};
             if (cur.key.includes('label')) {
@@ -239,7 +239,7 @@ export class MultiplePage implements OnInit {
           .map((s: { [key: string]: string }) => ({ key: Object.keys(s)[0], value: Object.values(s)[0] }))
           .filter((s: { [key: string]: string }) => s.key && s.value)
           .reduce((acc: any, cur: any) => {
-            const index = Number(cur.key.substr(cur.key.split('').findIndex((c: any) => !isNaN(c))));
+            const index = Number(cur.key.substring(cur.key.split('').findIndex((c: any) => !isNaN(c))));
             const key = `stat${index}`;
             const newObj = acc[key] || {};
             if (cur.key.includes('label')) {

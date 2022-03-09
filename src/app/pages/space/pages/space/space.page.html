@@ -67,7 +67,7 @@
         </button>
       </div>
       
-      <wen-space-about class="block" [avatarUrl]="(avatarUrl$ | async) || undefined" (onLeave)="leave()"></wen-space-about>
+      <wen-space-about class="block" [avatarUrl]="(avatarUrl$ | async) || undefined" (wenOnLeave)="leave()"></wen-space-about>
     </div>
   </div>
 
@@ -78,7 +78,7 @@
         <wen-icon-close></wen-icon-close>
       </button>
 
-      <wen-space-about [avatarUrl]="(avatarUrl$ | async) || undefined" (onLeave)="leave()"></wen-space-about>
+      <wen-space-about [avatarUrl]="(avatarUrl$ | async) || undefined" (wenOnLeave)="leave()"></wen-space-about>
     </div>
   </nz-drawer>
 </wen-content>

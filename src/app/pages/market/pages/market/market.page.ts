@@ -59,7 +59,7 @@ export class MarketPage implements OnInit, OnDestroy {
   private setSelectedSection() {
     this.selectedSection =
       this.sections.find((r: TabSection) =>
-        this.router.url.includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
+        (this.router.url || '').includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase()));
   }
 
   public onSearchIconClick(): void {

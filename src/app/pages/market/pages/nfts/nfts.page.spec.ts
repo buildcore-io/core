@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NftApi } from '@api/nft.api';
+import { CacheService } from '@core/services/cache/cache.service';
+import { FilterService } from '@pages/market/services/filter.service';
+import { MockProvider } from 'ng-mocks';
 import { NFTsPage } from './nfts.page';
 
 
@@ -8,7 +12,8 @@ describe('NFTsPage', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NFTsPage ]
+      declarations: [ NFTsPage ],
+      providers: [FilterService, MockProvider(CacheService), MockProvider(NftApi)]
     })
     .compileComponents();
   });
