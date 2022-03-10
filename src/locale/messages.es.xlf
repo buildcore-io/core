@@ -714,7 +714,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">34,37</context>
         </context-group>
-        <target state="needs-translation">Mint a free unique avatar for your profile picture. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> New super rare premium avatar species and avatar collectibles/accessories that can all be traded are coming SOON. </target>
+        <target state="translated">Crea un avatar único y gratuito para tu foto de perfil. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> Nuevas especies prémium superraras de avatar y coleccionables/accesorios de avatares que se podrán intercambiar PRONTO. </target>
       </trans-unit>
       <trans-unit id="7678665112140498921" datatype="html">
         <source>WOW! Looks like yours is the prettiest avatar of all. Congratulations. </source>
@@ -722,7 +722,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation">WOW! Looks like yours is the prettiest avatar of all. Congratulations. </target>
+        <target state="translated">¡WOW! Parece que el tuyo es el avatar más bonito de todos. Felicidades. </target>
       </trans-unit>
       <trans-unit id="4399347141966423692" datatype="html">
         <source>Networking</source>
@@ -734,7 +734,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Networking</target>
+        <target state="translated">Redes</target>
       </trans-unit>
       <trans-unit id="8518289414313197012" datatype="html">
         <source>Invalid Github username.</source>
@@ -746,7 +746,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">60,61</context>
         </context-group>
-        <target state="needs-translation">Invalid Github username.</target>
+        <target state="translated">Nombre de usuario Github inválido.</target>
       </trans-unit>
       <trans-unit id="1026313154710103937" datatype="html">
         <source>Type your Github account username</source>
@@ -758,7 +758,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="needs-translation">Type your Github account username</target>
+        <target state="translated">Escribe tu nombre de usuario de Github</target>
       </trans-unit>
       <trans-unit id="9037477696979809280" datatype="html">
         <source>Invalid Twitter username.</source>
@@ -774,7 +774,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">80,81</context>
         </context-group>
-        <target state="needs-translation">Invalid Twitter username.</target>
+        <target state="translated">Nombre de usuario de Twitter inválido.</target>
       </trans-unit>
       <trans-unit id="4073392478148771631" datatype="html">
         <source>Type your Twitter account username</source>
@@ -786,7 +786,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">87,88</context>
         </context-group>
-        <target state="needs-translation">Type your Twitter account username</target>
+        <target state="translated">Escribe tu nombre de usuario de cuenta de Twitter</target>
       </trans-unit>
       <trans-unit id="589863444641052422" datatype="html">
         <source>Only username#1234 format supported.</source>
@@ -794,7 +794,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">75,76</context>
         </context-group>
-        <target state="needs-translation">Only username#1234 format supported.</target>
+        <target state="translated">Solo el formato de username#1234 es compatible.</target>
       </trans-unit>
       <trans-unit id="7718055114292804578" datatype="html">
         <source>Type your Discord account username</source>
@@ -802,7 +802,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
-        <target state="needs-translation">Type your Discord account username</target>
+        <target state="translated">Escribe tu nombre de usuario de Discord</target>
       </trans-unit>
       <trans-unit id="4930506384627295710" datatype="html">
         <source>Settings</source>
@@ -810,7 +810,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">89,90</context>
         </context-group>
-        <target state="needs-translation">Settings</target>
+        <target state="translated">Configuración</target>
       </trans-unit>
       <trans-unit id="2156730257988465074" datatype="html">
         <source> Save changes </source>
@@ -818,7 +818,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="needs-translation"> Save changes </target>
+        <target state="translated"> Guardar cambios </target>
       </trans-unit>
       <trans-unit id="7949057347796278949" datatype="html">
         <source>reputation</source>
@@ -830,7 +830,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-reputation-modal/member-reputation-modal.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">reputation</target>
+        <target state="translated">reputación</target>
       </trans-unit>
       <trans-unit id="4855584904719347847" datatype="html">
         <source>NFT image</source>
@@ -842,7 +842,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="needs-translation">NFT image</target>
+        <target state="translated">Imagen NFT</target>
       </trans-unit>
       <trans-unit id="8894377483833272091" datatype="html">
         <source>Price</source>
@@ -878,7 +878,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="needs-translation">Price</target>
+        <target state="translated">Precio</target>
       </trans-unit>
       <trans-unit id="5745314848838735502" datatype="html">
         <source>Buy now</source>
@@ -890,7 +890,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">53,54</context>
         </context-group>
-        <target state="needs-translation">Buy now</target>
+        <target state="translated">Comprar ahora</target>
       </trans-unit>
       <trans-unit id="5383011891382211495" datatype="html">
         <source>Owned by</source>
@@ -898,7 +898,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="needs-translation">Owned by</target>
+        <target state="translated">Propiedad de</target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
@@ -906,7 +906,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
           <context context-type="linenumber">136,135</context>
         </context-group>
-        <target state="needs-translation">New NFT</target>
+        <target state="translated">Nuevo NFT</target>
       </trans-unit>
       <trans-unit id="4776389683576645610" datatype="html">
         <source>Checkout</source>
@@ -918,7 +918,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">29,30</context>
         </context-group>
-        <target state="needs-translation">Checkout</target>
+        <target state="translated">Confirmar compra</target>
       </trans-unit>
       <trans-unit id="1138828998549529161" datatype="html">
         <source>Royalties</source>
