@@ -3338,7 +3338,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="needs-translation"> No Proposals </target>
+        <target state="translated"> Pas de propositions </target>
       </trans-unit>
       <trans-unit id="5883692848266642259" datatype="html">
         <source> No Spaces </source>
@@ -3346,7 +3346,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="needs-translation"> No Spaces </target>
+        <target state="translated"> Aucun Espace </target>
       </trans-unit>
       <trans-unit id="6605589104672584220" datatype="html">
         <source> Welcome to The Soonaverse </source>
@@ -3354,7 +3354,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="needs-translation"> Welcome to The Soonaverse </target>
+        <target state="translated"> Bienvenue dans le Soonaverse </target>
       </trans-unit>
       <trans-unit id="6008946950660389197" datatype="html">
         <source> An all-in-one feeless platform for community engagement and DAO creation. Build, vote, earn, learn and let the best ideas win. </source>
@@ -3362,7 +3362,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
-        <target state="needs-translation"> An all-in-one feeless platform for community engagement and DAO creation. Build, vote, earn, learn and let the best ideas win. </target>
+        <target state="translated"> Une plateforme tout-en-un sans frais pour l'engagement de la communauté et la création de DAO. Coder voter, gagner des récompenses, apprendre et laisser les meilleures idées émerger. </target>
       </trans-unit>
       <trans-unit id="7563359411248828587" datatype="html">
         <source> Marketplace </source>
@@ -3370,7 +3370,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="needs-translation"> Marketplace </target>
+        <target state="translated"> Marché </target>
       </trans-unit>
       <trans-unit id="3435164391616018739" datatype="html">
         <source>Get started with the Soonaverse</source>
@@ -3378,7 +3378,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">50,51</context>
         </context-group>
-        <target state="needs-translation">Get started with the Soonaverse</target>
+        <target state="translated">Commencer avec Soonaverse</target>
       </trans-unit>
       <trans-unit id="7733507556239346134" datatype="html">
         <source> Not sure where to start? Find featured spaces and NFT Collections below. </source>
@@ -3386,7 +3386,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation"> Not sure where to start? Find featured spaces and NFT Collections below. </target>
+        <target state="translated"> Vous ne savez pas par où commencer ? Trouvez les espaces en vedette et les collections NFT ci-dessous. </target>
       </trans-unit>
       <trans-unit id="3563942064552758340" datatype="html">
         <source>Trending Collections</source>
@@ -3394,7 +3394,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="needs-translation">Trending Collections</target>
+        <target state="translated">Collections tendances</target>
       </trans-unit>
       <trans-unit id="6882162387927283170" datatype="html">
         <source> Go to Marketplace </source>
@@ -3402,7 +3402,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">68</context>
         </context-group>
-        <target state="needs-translation"> Go to Marketplace </target>
+        <target state="translated"> Aller sur le Marketplace </target>
       </trans-unit>
       <trans-unit id="2236800446301334981" datatype="html">
         <source> Discover more </source>
