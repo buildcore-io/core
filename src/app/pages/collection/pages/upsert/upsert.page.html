@@ -494,14 +494,14 @@
                 nzShowSearch
                 nzAllowClear
                 i18n-nzPlaceHolder
-                nzPlaceHolder="Title"
+                nzPlaceHolder="Category"
                 [formControl]="categoryControl"
               >
                 <nz-option
                   *ngFor="let cc of collectionCategories"
                   i18n-nzLabel
-                  [nzLabel]="cc.key"
-                  [nzValue]="cc.value"
+                  [nzLabel]="cc.value"
+                  [nzValue]="cc.key"
                 >
                 </nz-option>
               </nz-select>
