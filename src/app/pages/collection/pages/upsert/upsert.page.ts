@@ -1,9 +1,9 @@
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    OnDestroy,
-    OnInit
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,26 +22,26 @@ import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import {
-    DISCORD_REGEXP,
-    MAX_IOTA_AMOUNT,
-    MIN_IOTA_AMOUNT,
-    TWITTER_REGEXP,
-    URL_REGEXP
+  DISCORD_REGEXP,
+  MAX_IOTA_AMOUNT,
+  MIN_IOTA_AMOUNT,
+  TWITTER_REGEXP,
+  URL_REGEXP
 } from '@functions/interfaces/config';
 import {
-    Award,
-    Categories,
-    CollectionType,
-    Space
+  Award,
+  Categories,
+  CollectionType,
+  Space
 } from '@functions/interfaces/models';
 import { PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
-    NzUploadChangeParam,
-    NzUploadFile,
-    NzUploadXHRArgs
+  NzUploadChangeParam,
+  NzUploadFile,
+  NzUploadXHRArgs
 } from 'ng-zorro-antd/upload';
 import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -211,6 +211,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.twitterControl.setValue(o.twitter);
               this.discordControl.setValue(o.discord);
               this.categoryControl.setValue(o.category);
+              this.selectedAccessControl.setValue(o.access);
               this.discounts.removeAt(0);
               o.discounts.sort((a, b) => {
                 return a.xp - b.xp;
