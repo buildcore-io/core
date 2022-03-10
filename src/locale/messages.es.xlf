@@ -454,7 +454,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation">Select Collection</target>
+        <target state="translated">Seleccionar Colección</target>
       </trans-unit>
       <trans-unit id="7117782883150296094" datatype="html">
         <source>Select a Collection</source>
@@ -462,7 +462,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.html</context>
           <context context-type="linenumber">65,67</context>
         </context-group>
-        <target state="needs-translation">Select a Collection</target>
+        <target state="translated">Seleccionar una Colección</target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
         <source>Search</source>
@@ -482,7 +482,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Search</target>
+        <target state="translated">Buscar</target>
       </trans-unit>
       <trans-unit id="7250507828547194400" datatype="html">
         <source>No results for</source>
@@ -494,7 +494,7 @@
           <context context-type="sourcefile">src/app/components/space/components/select-space/select-space.component.html</context>
           <context context-type="linenumber">84</context>
         </context-group>
-        <target state="needs-translation">No results for</target>
+        <target state="translated">Sin resultados para</target>
       </trans-unit>
       <trans-unit id="6532389984123779648" datatype="html">
         <source>All Collections</source>
@@ -502,7 +502,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.ts</context>
           <context context-type="linenumber">14,13</context>
         </context-group>
-        <target state="needs-translation">All Collections</target>
+        <target state="translated">Todas las Colecciones</target>
       </trans-unit>
       <trans-unit id="8428523226337704040" datatype="html">
         <source>Wallet details</source>
@@ -510,7 +510,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="needs-translation">Wallet details</target>
+        <target state="translated">Detalles de la billetera</target>
       </trans-unit>
       <trans-unit id="469380883757198215" datatype="html">
         <source>Member&apos;s Wallet Address.</source>
@@ -518,7 +518,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="needs-translation">Member's Wallet Address.</target>
+        <target state="translated">Dirección de la Billetera del Miembro.</target>
       </trans-unit>
       <trans-unit id="4744367994495761400" datatype="html">
         <source>Recently joined spaces</source>
@@ -526,7 +526,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Recently joined spaces</target>
+        <target state="translated">Espacios a los que se a unido recientemente</target>
       </trans-unit>
       <trans-unit id="1616102757855967475" datatype="html">
         <source>All</source>
@@ -534,7 +534,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="needs-translation">All</target>
+        <target state="translated">Todo</target>
       </trans-unit>
       <trans-unit id="5362807210252118625" datatype="html">
         <source>No Contribution Yet.</source>
@@ -542,7 +542,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">78,79</context>
         </context-group>
-        <target state="needs-translation">No Contribution Yet.</target>
+        <target state="translated">Ninguna Contribución Aún.</target>
       </trans-unit>
       <trans-unit id="7570465744523810069" datatype="html">
         <source>Latest Badges</source>
@@ -550,7 +550,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">84,85</context>
         </context-group>
-        <target state="needs-translation">Latest Badges</target>
+        <target state="translated">Últimas Insignias</target>
       </trans-unit>
       <trans-unit id="1888256859473055215" datatype="html">
         <source>No badges</source>
@@ -558,7 +558,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">93,94</context>
         </context-group>
-        <target state="needs-translation">No badges</target>
+        <target state="translated">Sin Insignias</target>
       </trans-unit>
       <trans-unit id="3874137787806029269" datatype="html">
         <source>See all</source>
@@ -566,7 +566,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation">See all</target>
+        <target state="translated">Ver todo</target>
       </trans-unit>
       <trans-unit id="2557623954339695776" datatype="html">
         <source>Connections</source>
@@ -582,7 +582,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation">Connections</target>
+        <target state="translated">Conecciones</target>
       </trans-unit>
       <trans-unit id="5466085200395052815" datatype="html">
         <source>Awards</source>
@@ -602,7 +602,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Awards</target>
+        <target state="translated">Premios</target>
       </trans-unit>
       <trans-unit id="7770530583769024002" datatype="html">
         <source>XP</source>
@@ -622,7 +622,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-space-row/member-space-row.component.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="needs-translation">XP</target>
+        <target state="translated">XP</target>
       </trans-unit>
       <trans-unit id="2313832019053603054" datatype="html">
         <source>Total reputation</source>
@@ -630,7 +630,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-alliances-table/member-alliances-table.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Total reputation</target>
+        <target state="translated">Reputación Total</target>
       </trans-unit>
       <trans-unit id="4112746459433867442" datatype="html">
         <source>awards</source>
@@ -638,7 +638,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-card/member-card.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation">awards</target>
+        <target state="translated">premios</target>
       </trans-unit>
       <trans-unit id="3013055597615607317" datatype="html">
         <source>Display Name</source>
@@ -646,7 +646,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation">Display Name</target>
+        <target state="translated">Mostrar nombre</target>
       </trans-unit>
       <trans-unit id="569962948698127053" datatype="html">
         <source>Set a display name. This does not change your username.</source>
