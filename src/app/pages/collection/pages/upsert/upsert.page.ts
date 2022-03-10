@@ -211,6 +211,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.twitterControl.setValue(o.twitter);
               this.discordControl.setValue(o.discord);
               this.categoryControl.setValue(o.category);
+              this.selectedAccessControl.setValue(o.access);
               this.discounts.removeAt(0);
               o.discounts.sort((a, b) => {
                 return a.xp - b.xp;
