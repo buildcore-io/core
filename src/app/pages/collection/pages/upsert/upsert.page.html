@@ -391,7 +391,7 @@
                   *ngFor="let type of collectionTypes; trackBy: trackByValue"
                   [value]="type.value"
                 >
-                  <span class="flex items-center" i18n>
+                  <span class="flex items-center">
                     {{ type.key }}
                     <wen-icon-question-circle
                       class="ml-1"
@@ -524,8 +524,8 @@
                 [formControl]="selectedAccessControl"
               >
                 <wen-radio [value]="targetAccess.OPEN"
-                  ><span class="flex items-center" i18n
-                    >Open Sale
+                  ><span class="flex items-center"
+                    ><span i18n>Open Sale</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -534,8 +534,8 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
-                  ><span class="flex items-center" i18n
-                    >Space Guardians Only
+                  ><span class="flex items-center"
+                    ><span i18n>Space Guardians Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -545,8 +545,8 @@
                     </wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_ONLY"
-                  ><span class="flex items-center" i18n
-                    >Space Members Only
+                  ><span class="flex items-center"
+                    ><span i18n>Space Members Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -556,8 +556,8 @@
                     </wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
-                  ><span class="flex items-center" i18n
-                    >Space Members with Badge Only
+                  ><span class="flex items-center"
+                    ><span i18n>Space Members with Badge Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -566,8 +566,8 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_WITH_NFT_FROM_COLLECTION"
-                  ><span class="flex items-center" i18n
-                    >At least one NFT from Collections
+                  ><span class="flex items-center"
+                    ><span i18n>At least one NFT from Collections</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip

@@ -44,7 +44,7 @@
 
         <div class="w-full mt-6 lg:w-max lg:mt-0">
           <div class="flex items-center justify-between text-xs font-medium text-app-gray-400">
-            <span i18n>Earned badges {{(data.badges$ | async)?.length}}</span>
+            <span><span i18n>Earned badges</span> {{(data.badges$ | async)?.length}}</span>
             <a nz-button nzType="link" nzSize="small"
               class="flex items-center ml-6"
               [routerLink]="getBadgeRoute()">

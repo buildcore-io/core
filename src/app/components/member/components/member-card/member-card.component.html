@@ -13,7 +13,7 @@
       </a>
       <div class="flex items-center mt-4 lg:mt-0">
         <nz-tag *ngIf="role && (deviceService.isMobile$ | async)" class="wen-status-tag h-6 lg:h-8 px-1 lg:px-3 py-0 lg:py-2 text=xs lg:text-sm"
-          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'" i18n>
+          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'">
           {{ role }}</nz-tag>
 
         <span nz-typography class="truncate lg:mt-3 text-app-gray-400" [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'">
@@ -56,7 +56,7 @@
         </wen-member-reputation-drawer>
       </div>
 
-      <div i18n class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">
+      <div class="inline-flex" [ngClass]="fullWidth ? 'mt-5 lg:mt-0 lg:ml-4' : 'mt-4'">
         <nz-avatar *ngFor="let badge of (badges$ | async) | slice:0:totalVisibleBadges;"
           [nzSrc]="badge.payload.image | ipfsBadge:filesizes.small"
           class="mr-2 bg-white border-gray-400 lg:mr-0" nzShape="circle"

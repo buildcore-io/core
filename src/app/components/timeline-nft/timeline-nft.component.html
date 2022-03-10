@@ -29,7 +29,7 @@
                 <ng-template #lineTpl>
                   <span i18n>Purchased by</span> @{{t.newMember.name || t.newMember.uid}}
                   <span i18n>for</span> {{formatBest(t.order.payload.amount)}}
-                  <a i18n class="inline text-sm underline text-blue-light1">{{isCollapsed ? 'hide' : 'see'}} details</a>
+                  <a class="inline text-sm underline text-blue-light1">{{isCollapsed ? 'hide' : 'see'}} <span i18n>details</span></a>
                 </ng-template>
 
                 <div class="overflow-y-auto max-h-24">
