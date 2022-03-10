@@ -926,7 +926,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="needs-translation">Royalties</target>
+        <target state="translated">Regalías</target>
       </trans-unit>
       <trans-unit id="7856806101502977514" datatype="html">
         <source>Royalties are automatically deducted and paid to artists.</source>
@@ -934,7 +934,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">71,72</context>
         </context-group>
-        <target state="needs-translation">Royalties are automatically deducted and paid to artists.</target>
+        <target state="translated">Los derechos de autor se deducirán automáticamente y se pagarán a los artistas.</target>
       </trans-unit>
       <trans-unit id="3521411922357728471" datatype="html">
         <source>Total price</source>
@@ -942,7 +942,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="needs-translation">Total price</target>
+        <target state="translated">Importe total</target>
       </trans-unit>
       <trans-unit id="6309493669385041493" datatype="html">
         <source>By checking this box, you agree with</source>
@@ -950,7 +950,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">115,116</context>
         </context-group>
-        <target state="needs-translation">By checking this box, you agree with</target>
+        <target state="translated">Al marcar esta casilla, aceptas</target>
       </trans-unit>
       <trans-unit id="664573589261423471" datatype="html">
         <source>Terms and Conditions</source>
@@ -958,7 +958,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">118,119</context>
         </context-group>
-        <target state="needs-translation">Terms and Conditions</target>
+        <target state="translated">Términos y Condiciones</target>
       </trans-unit>
       <trans-unit id="6670434028870878828" datatype="html">
         <source> Confirm and Lock </source>
@@ -966,7 +966,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="needs-translation"> Confirm and Lock </target>
+        <target state="translated"> Confirmar y bloquear </target>
       </trans-unit>
       <trans-unit id="4991378406307145470" datatype="html">
         <source>Your NFT will be locked for purchase for</source>
@@ -974,7 +974,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="needs-translation">Your NFT will be locked for purchase for</target>
+        <target state="translated">Tu NFT se bloqueará para la compra por</target>
       </trans-unit>
       <trans-unit id="982745398054129955" datatype="html">
         <source>minutes</source>
@@ -982,7 +982,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">minutes</target>
+        <target state="translated">minutos</target>
       </trans-unit>
       <trans-unit id="3518250060212035927" datatype="html">
         <source> remaining to make the transfer.</source>
@@ -990,7 +990,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">139,140</context>
         </context-group>
-        <target state="needs-translation"> remaining to make the transfer.</target>
+        <target state="translated"> restantes para hacer la transferencia.</target>
       </trans-unit>
       <trans-unit id="464749780222721589" datatype="html">
         <source>Expired</source>
@@ -998,7 +998,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Expired</target>
+        <target state="translated">Caducado</target>
       </trans-unit>
       <trans-unit id="4871765403323848538" datatype="html">
         <source>We received invalid amount. Try again.</source>
@@ -1006,7 +1006,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">144</context>
         </context-group>
-        <target state="needs-translation">We received invalid amount. Try again.</target>
+        <target state="translated">Hemos recibido una cantidad no válida. Inténtalo de nuevo.</target>
       </trans-unit>
       <trans-unit id="6490688569532630280" datatype="html">
         <source>Send</source>
@@ -1018,7 +1018,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">130</context>
         </context-group>
-        <target state="needs-translation">Send</target>
+        <target state="translated">Enviar</target>
       </trans-unit>
       <trans-unit id="2448339751576066057" datatype="html">
         <source>IOTA to following address (please restake after!):</source>
@@ -1030,7 +1030,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="needs-translation">IOTA to following address (please restake after!):</target>
+        <target state="translated">IOTA a la siguiente dirección (¡por favor vuelve a stakear después!):</target>
       </trans-unit>
       <trans-unit id="2115592966120408375" datatype="html">
         <source>Copied</source>
@@ -1050,7 +1050,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">183</context>
         </context-group>
-        <target state="needs-translation">Copied</target>
+        <target state="translated">Copiado</target>
       </trans-unit>
       <trans-unit id="4323470180912194028" datatype="html">
         <source>Copy</source>
@@ -1066,7 +1066,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="needs-translation">Copy</target>
+        <target state="translated">Copiar</target>
       </trans-unit>
       <trans-unit id="2370778860499758288" datatype="html">
         <source> Firefly </source>
@@ -1078,7 +1078,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">151</context>
         </context-group>
-        <target state="needs-translation"> Firefly </target>
+        <target state="translated"> Firefly </target>
       </trans-unit>
       <trans-unit id="1285479880156294308" datatype="html">
         <source> Tanglepay </source>
@@ -1090,7 +1090,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">160</context>
         </context-group>
-        <target state="needs-translation"> Tanglepay </target>
+        <target state="translated"> Tanglepay </target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -1110,7 +1110,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">204</context>
         </context-group>
-        <target state="needs-translation"> Transaction history </target>
+        <target state="translated"> Historial de transacciones </target>
       </trans-unit>
       <trans-unit id="425557118450087391" datatype="html">
         <source> Validating your transaction... </source>
@@ -1118,7 +1118,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="needs-translation"> Validating your transaction... </target>
+        <target state="translated"> Validando tu transacción... </target>
       </trans-unit>
       <trans-unit id="889823730139224375" datatype="html">
         <source>Transaction complete. Congratulations.</source>
@@ -1126,7 +1126,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">235,236</context>
         </context-group>
-        <target state="needs-translation">Transaction complete. Congratulations.</target>
+        <target state="translated">Transacción completa. Felicidades.</target>
       </trans-unit>
       <trans-unit id="8528366073079211415" datatype="html">
         <source> Close checkout </source>
@@ -1134,7 +1134,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation"> Close checkout </target>
+        <target state="translated"> Cerrar el pago </target>
       </trans-unit>
       <trans-unit id="535977460003741771" datatype="html">
         <source> Show my NFT </source>
@@ -1142,7 +1142,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">246</context>
         </context-group>
-        <target state="needs-translation"> Show my NFT </target>
+        <target state="translated"> Ver mi NFT </target>
       </trans-unit>
       <trans-unit id="1295614462098694869" datatype="html">
         <source>Preview</source>
@@ -1154,7 +1154,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
-        <target state="needs-translation">Preview</target>
+        <target state="translated">Vista previa</target>
       </trans-unit>
       <trans-unit id="4629255373567370412" datatype="html">
         <source>Current price</source>
@@ -1166,7 +1166,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="needs-translation">Current price</target>
+        <target state="translated">Precio actual</target>
       </trans-unit>
       <trans-unit id="7071470734400948493" datatype="html">
         <source>Author</source>
@@ -1178,7 +1178,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">63,64</context>
         </context-group>
-        <target state="needs-translation">Author</target>
+        <target state="translated">Autor</target>
       </trans-unit>
       <trans-unit id="7596769783947942591" datatype="html">
         <source>Migrate</source>
@@ -1190,7 +1190,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">219,220</context>
         </context-group>
-        <target state="needs-translation">Migrate</target>
+        <target state="translated">Migrar</target>
       </trans-unit>
       <trans-unit id="8315498121193062276" datatype="html">
         <source>Shimmer/Mainnet (Tokenization)...SOON.</source>
@@ -1202,7 +1202,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">221,223</context>
         </context-group>
-        <target state="needs-translation">Shimmer/Mainnet (Tokenization)...SOON.</target>
+        <target state="translated">Shimmer/Mainnet (Tokenización)...PRONTO.</target>
       </trans-unit>
       <trans-unit id="809642350371086523" datatype="html">
         <source>The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice.</source>
@@ -1214,7 +1214,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">227,228</context>
         </context-group>
-        <target state="needs-translation">The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice.</target>
+        <target state="translated">La dirección actual no está conectada a una red principal en vivo. Tan pronto como la funcionalidad sea soportada por IOTA/Shimmer, tendrás la capacidad de migrar este NFT en un clic a tu red de preferencia.</target>
       </trans-unit>
       <trans-unit id="562973371031157697" datatype="html">
         <source>IPFS Metadata</source>
@@ -1226,7 +1226,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">233,234</context>
         </context-group>
-        <target state="needs-translation">IPFS Metadata</target>
+        <target state="translated">Metadatos IPFS</target>
       </trans-unit>
       <trans-unit id="6114133845791044682" datatype="html">
         <source> Preparing... </source>
@@ -1238,7 +1238,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">110</context>
         </context-group>
-        <target state="needs-translation"> Preparing... </target>
+        <target state="translated"> Preparando... </target>
       </trans-unit>
       <trans-unit id="163617933164027990" datatype="html">
         <source>IPFS Image</source>
@@ -1250,7 +1250,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">240,241</context>
         </context-group>
-        <target state="needs-translation">IPFS Image</target>
+        <target state="translated">Imagen IPFS</target>
       </trans-unit>
       <trans-unit id="9073868935709862564" datatype="html">
         <source>NFT Image</source>
@@ -1266,7 +1266,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">15,16</context>
         </context-group>
-        <target state="needs-translation">NFT Image</target>
+        <target state="translated">Imagen NFT</target>
       </trans-unit>
       <trans-unit id="1809847784604950003" datatype="html">
         <source>Donut graph coming SOON.</source>
@@ -1274,7 +1274,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-card/proposal-card.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">Donut graph coming SOON.</target>
+        <target state="translated">Gráfico de donut PRONTO.</target>
       </trans-unit>
       <trans-unit id="160701937417956396" datatype="html">
         <source>Commencing
@@ -1283,7 +1283,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="needs-translation">Commencing
+        <target state="translated">Comenzando
 </target>
       </trans-unit>
       <trans-unit id="867767930599354792" datatype="html">
@@ -1292,7 +1292,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation"> In-Progress</target>
+        <target state="translated"> En proceso</target>
       </trans-unit>
       <trans-unit id="5413541067782808528" datatype="html">
         <source>Completed
@@ -1301,7 +1301,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation">Completed
+        <target state="translated">Completo
 </target>
       </trans-unit>
       <trans-unit id="4571927022363545389" datatype="html">
@@ -1318,7 +1318,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">230,231</context>
         </context-group>
-        <target state="needs-translation">Space is required.</target>
+        <target state="translated">Se requiere un espacio.</target>
       </trans-unit>
       <trans-unit id="393843353725038860" datatype="html">
         <source>Select Space</source>
@@ -1326,7 +1326,7 @@
           <context context-type="sourcefile">src/app/components/space/components/select-space/select-space.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation">Select Space</target>
+        <target state="translated">Seleccionar Espacio</target>
       </trans-unit>
       <trans-unit id="7516823680655125055" datatype="html">
         <source>Select a space</source>
@@ -1338,7 +1338,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Select a space</target>
+        <target state="translated">Selecciona un espacio</target>
       </trans-unit>
       <trans-unit id="6524771526246211499" datatype="html">
         <source>All Spaces</source>
@@ -1346,7 +1346,7 @@
           <context context-type="sourcefile">src/app/components/space/components/select-space/select-space.component.ts</context>
           <context context-type="linenumber">14,13</context>
         </context-group>
-        <target state="needs-translation">All Spaces</target>
+        <target state="translated">Todos los Espacios</target>
       </trans-unit>
       <trans-unit id="5784504836068973909" datatype="html">
         <source>No Connections</source>
@@ -1354,7 +1354,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">1,2</context>
         </context-group>
-        <target state="needs-translation">No Connections</target>
+        <target state="translated">Ninguna conexión</target>
       </trans-unit>
       <trans-unit id="5262300527216752326" datatype="html">
         <source>Rep. weight</source>
@@ -1362,7 +1362,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation">Rep. weight</target>
+        <target state="translated">Peso de Rep</target>
       </trans-unit>
       <trans-unit id="5611592591303869712" datatype="html">
         <source>Status</source>
@@ -1370,7 +1370,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation">Status</target>
+        <target state="translated">Estado</target>
       </trans-unit>
       <trans-unit id="4342663636565341166" datatype="html">
         <source>Established</source>
@@ -1378,7 +1378,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">Established</target>
+        <target state="translated">Establecido</target>
       </trans-unit>
       <trans-unit id="2028218033073659493" datatype="html">
         <source>Recognised</source>
@@ -1386,7 +1386,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Recognised</target>
+        <target state="translated">Reconocido</target>
       </trans-unit>
       <trans-unit id="5190509713271209562" datatype="html">
         <source>members</source>
@@ -1406,7 +1406,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation">members</target>
+        <target state="translated">miembros</target>
       </trans-unit>
       <trans-unit id="2385926578126260283" datatype="html">
         <source>Value range is 0-1000</source>
@@ -1414,7 +1414,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
-        <target state="needs-translation">Value range is 0-1000</target>
+        <target state="translated">El rango de valores es 0-1000</target>
       </trans-unit>
       <trans-unit id="1989424947945479650" datatype="html">
         <source>Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000</source>
