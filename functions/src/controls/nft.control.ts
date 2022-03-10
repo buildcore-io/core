@@ -64,7 +64,7 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
   assertValidation(schema.validate(params.body));
 
   // Batch create.
-  const process: any = [];
+  const process: Promise<Member>[] = [];
   for (const b of params.body) {
     process.push(processOneCreateNft(creator, b));
   }

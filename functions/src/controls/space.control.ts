@@ -159,7 +159,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace = await refSpace.get();
   if (!docSpace.exists) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
@@ -171,7 +171,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   // Decline all pending members.
   let append: any = {};
   if (params.body.open === true) {
-    const query: QuerySnapshot = await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).get();
+    const query: admin.firestore.QuerySnapshot = await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).get();
     for (const g of query.docs) {
       await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(g.data().uid).delete();
     }
@@ -207,7 +207,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
 
   const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   const docSpace: DocumentSnapshotType = await refSpace.get();
-  let output: any;
+  let output!: DocumentSnapshotType;
   if (!docSpace.exists) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
   }
@@ -298,7 +298,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   if (params.body) {
     await refSpace.collection(SUB_COL.MEMBERS).doc(owner).delete();
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refSpace);
+      const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       const totalMembers = (sfDoc.data().totalMembers || 0) - 1;
       const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? 1 : 0);
       transaction.update(refSpace, {
@@ -335,7 +335,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  let docSpace: any;
+  let docSpace!: DocumentSnapshotType;
   await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
@@ -358,7 +358,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
     });
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refSpace);
+      const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       const totalGuardians = (sfDoc.data().totalGuardians || 0) + 1;
       transaction.update(refSpace, {
         totalGuardians: totalGuardians
@@ -400,7 +400,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
     throw throwInvalidArgument(WenError.member_is_not_guardian_of_space);
   }
 
-  const guardians: any[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
+  const guardians: admin.firestore.DocumentData[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
   if (guardians.length === 1) {
     throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
   }
@@ -408,7 +408,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
   if (params.body) {
     await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refSpace);
+      const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       const totalGuardians = (sfDoc.data().totalGuardians || 0) - 1;
       transaction.update(refSpace, {
         totalGuardians: totalGuardians
@@ -435,8 +435,8 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  let docSpace: any;
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  let docSpace!: DocumentSnapshotType;
   await SpaceValidator.spaceExists(refSpace);
 
   const isGuardian: boolean = (await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).get()).exists;
