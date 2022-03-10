@@ -69,7 +69,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     const qry: any = await admin.firestore().collection(COL.TRANSACTION)
                .where('type', '==', TransactionType.BADGE)
                .where('member', '==', owner).get();
-    if (qry.size > 0) {
+    if (qry.size > 0 && docCollectionData.accessAwards?.length) {
       for (const t of qry.docs) {
         if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
           includedBadges.push(t.data().payload.award)
@@ -87,7 +87,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     const includedCollections: string[] = [];
     const qry: any = await admin.firestore().collection(COL.NFT)
                .where('owner', '==', owner).get();
-    if (qry.size > 0) {
+    if (qry.size > 0 && docCollectionData.accessCollections?.length) {
       for (const t of qry.docs) {
         if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
           includedCollections.push(t.data().collection);
