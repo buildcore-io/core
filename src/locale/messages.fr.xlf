@@ -238,120 +238,6 @@
         </context-group>
         <target state="needs-translation"> Discover Soonaverse </target>
       </trans-unit>
-      <trans-unit id="7708270344948043036" datatype="html">
-        <source>
-          <x id="INTERPOLATION" equiv-text="{{ item.title }}"/>
-        </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/@shell/ui/sider/menu/menu.component.html</context>
-          <context context-type="linenumber">12,14</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/member/components/tile/member-tile.component.html</context>
-          <context context-type="linenumber">2,4</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/member/components/tile/member-tile.component.html</context>
-          <context context-type="linenumber">5,7</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">23,24</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
-          <context context-type="linenumber">26,27</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tabs/tabs.component.html</context>
-          <context context-type="linenumber">13,15</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">75,77</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.html</context>
-          <context context-type="linenumber">25,26</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
-          <context context-type="linenumber">47,48</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">168,169</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.html</context>
-          <context context-type="linenumber">6,8</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/collections/collections.page.html</context>
-          <context context-type="linenumber">15,16</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.html</context>
-          <context context-type="linenumber">6,8</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.html</context>
-          <context context-type="linenumber">6,8</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.html</context>
-          <context context-type="linenumber">26,28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">19,22</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
-          <context context-type="linenumber">16,17</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">17,18</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
-          <context context-type="linenumber">184,187</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
-          <context context-type="linenumber">10,11</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.html</context>
-          <context context-type="linenumber">8,9</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.html</context>
-          <context context-type="linenumber">8,9</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
-          <context context-type="linenumber">14,15</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.html</context>
-          <context context-type="linenumber">8,9</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
-          <context context-type="linenumber">12,14</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
-          <context context-type="linenumber">30,32</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
-          <context context-type="linenumber">35,37</context>
-        </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ item.title }}"/> </target>
-      </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
         <context-group purpose="location">
@@ -416,7 +302,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">149,150</context>
+          <context context-type="linenumber">147,148</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
@@ -745,80 +631,6 @@
           <context context-type="linenumber">29</context>
         </context-group>
         <target state="needs-translation">Total reputation</target>
-      </trans-unit>
-      <trans-unit id="187187500641108332" datatype="html">
-        <source>
-          <x id="INTERPOLATION" equiv-text="abel}}"/>
-        </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/member/components/member-card/member-card.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
-          <context context-type="linenumber">43,45</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">31,33</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">166,168</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
-          <context context-type="linenumber">192,193</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.html</context>
-          <context context-type="linenumber">25,26</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/collections/collections.page.html</context>
-          <context context-type="linenumber">43,44</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.html</context>
-          <context context-type="linenumber">36,37</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.html</context>
-          <context context-type="linenumber">25,26</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">151,152</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">152,153</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
-          <context context-type="linenumber">70,71</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
-          <context context-type="linenumber">52,53</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">8,9</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">235,236</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">242,243</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
-          <context context-type="linenumber">27,29</context>
-        </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="abel}}"/></target>
       </trans-unit>
       <trans-unit id="4112746459433867442" datatype="html">
         <source>awards</source>
@@ -1940,7 +1752,7 @@
         <source>Approve Award</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">86,87</context>
+          <context context-type="linenumber">84,85</context>
         </context-group>
         <target state="needs-translation">Approve Award</target>
       </trans-unit>
@@ -1948,7 +1760,7 @@
         <source> Approve </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">96</context>
         </context-group>
         <target state="needs-translation"> Approve </target>
       </trans-unit>
@@ -1956,7 +1768,7 @@
         <source> Decline </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <target state="needs-translation"> Decline </target>
       </trans-unit>
@@ -1964,7 +1776,7 @@
         <source>Confirm your participation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">123,124</context>
+          <context context-type="linenumber">121,122</context>
         </context-group>
         <target state="needs-translation">Confirm your participation</target>
       </trans-unit>
@@ -1972,7 +1784,7 @@
         <source> The whole communication is now handled outside the platform, let the award creator know how to contact you. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">131,132</context>
+          <context context-type="linenumber">129,130</context>
         </context-group>
         <target state="needs-translation"> The whole communication is now handled outside the platform, let the award creator know how to contact you. </target>
       </trans-unit>
@@ -1980,7 +1792,7 @@
         <source>Provide description or link to your work.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">137,138</context>
+          <context context-type="linenumber">135,136</context>
         </context-group>
         <target state="needs-translation">Provide description or link to your work.</target>
       </trans-unit>
@@ -1988,7 +1800,7 @@
         <source> Submit </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">146,147</context>
+          <context context-type="linenumber">144,145</context>
         </context-group>
         <target state="needs-translation"> Submit </target>
       </trans-unit>
@@ -3556,7 +3368,7 @@
         <source> Marketplace </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">31,32</context>
+          <context context-type="linenumber">30,31</context>
         </context-group>
         <target state="needs-translation"> Marketplace </target>
       </trans-unit>
@@ -3564,7 +3376,7 @@
         <source>Get started with the Soonaverse</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
         <target state="needs-translation">Get started with the Soonaverse</target>
       </trans-unit>
@@ -3572,7 +3384,7 @@
         <source> Not sure where to start? Find featured spaces and NFT Collections below. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">53,54</context>
+          <context context-type="linenumber">52,53</context>
         </context-group>
         <target state="needs-translation"> Not sure where to start? Find featured spaces and NFT Collections below. </target>
       </trans-unit>
@@ -3580,7 +3392,7 @@
         <source>Trending Collections</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">59,60</context>
+          <context context-type="linenumber">58,59</context>
         </context-group>
         <target state="needs-translation">Trending Collections</target>
       </trans-unit>
@@ -3588,7 +3400,7 @@
         <source> Go to Marketplace </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">68</context>
         </context-group>
         <target state="needs-translation"> Go to Marketplace </target>
       </trans-unit>
@@ -3596,15 +3408,15 @@
         <source> Discover more </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">84</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">100</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">121</context>
+          <context context-type="linenumber">120</context>
         </context-group>
         <target state="needs-translation"> Discover more </target>
       </trans-unit>
@@ -3612,7 +3424,7 @@
         <source>Popular spaces</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">91,92</context>
+          <context context-type="linenumber">90,91</context>
         </context-group>
         <target state="needs-translation">Popular spaces</target>
       </trans-unit>
@@ -3620,7 +3432,7 @@
         <source>Creating your community is easy as 1-2-3</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">129,130</context>
+          <context context-type="linenumber">128,129</context>
         </context-group>
         <target state="needs-translation">Creating your community is easy as 1-2-3</target>
       </trans-unit>
@@ -3628,7 +3440,7 @@
         <source> No more worries about “the tech”. Spend your time where it belongs, building your community and realizing your collective vision. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">131,132</context>
+          <context context-type="linenumber">130,131</context>
         </context-group>
         <target state="needs-translation"> No more worries about “the tech”. Spend your time where it belongs, building your community and realizing your collective vision. </target>
       </trans-unit>
@@ -3636,7 +3448,7 @@
         <source>StepArticle image</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">142,143</context>
+          <context context-type="linenumber">141,142</context>
         </context-group>
         <target state="needs-translation">StepArticle image</target>
       </trans-unit>
@@ -3644,7 +3456,7 @@
         <source> Voting is essential and it needs to be on-chain and FREE. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">160</context>
         </context-group>
         <target state="needs-translation"> Voting is essential and it needs to be on-chain and FREE. </target>
       </trans-unit>
@@ -3652,7 +3464,7 @@
         <source> By building on the IOTA network we have enshrined a crucial feature of proper DAO management. Feeless, secure voting. Read more about this in our manifesto. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">164,166</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
         <target state="needs-translation"> By building on the IOTA network we have enshrined a crucial feature of proper DAO management. Feeless, secure voting. Read more about this in our manifesto. </target>
       </trans-unit>
@@ -3660,7 +3472,7 @@
         <source> Go there now </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">176</context>
+          <context context-type="linenumber">175</context>
         </context-group>
         <target state="needs-translation"> Go there now </target>
       </trans-unit>
@@ -3668,7 +3480,7 @@
         <source>Want to learn more about SoonLabs?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">201,202</context>
+          <context context-type="linenumber">200,201</context>
         </context-group>
         <target state="needs-translation">Want to learn more about SoonLabs?</target>
       </trans-unit>
@@ -3676,7 +3488,7 @@
         <source> Visit YouTube </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">212</context>
+          <context context-type="linenumber">211</context>
         </context-group>
         <target state="needs-translation"> Visit YouTube </target>
       </trans-unit>
@@ -3684,7 +3496,7 @@
         <source>Who’s using the Soonaverse?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">221,223</context>
+          <context context-type="linenumber">220,222</context>
         </context-group>
         <target state="needs-translation">Who’s using the Soonaverse?</target>
       </trans-unit>
@@ -3692,7 +3504,7 @@
         <source>Investors</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">273,274</context>
+          <context context-type="linenumber">272,273</context>
         </context-group>
         <target state="needs-translation">Investors</target>
       </trans-unit>
@@ -3700,7 +3512,7 @@
         <source>Privacy</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">283,284</context>
+          <context context-type="linenumber">282,283</context>
         </context-group>
         <target state="needs-translation">Privacy</target>
       </trans-unit>
@@ -3708,7 +3520,7 @@
         <source>Terms</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">294</context>
+          <context context-type="linenumber">293</context>
         </context-group>
         <target state="needs-translation">Terms</target>
       </trans-unit>
@@ -3716,11 +3528,11 @@
         <source>Powered by SoonLabs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">304,305</context>
+          <context context-type="linenumber">303,304</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">316,317</context>
+          <context context-type="linenumber">315,316</context>
         </context-group>
         <target state="needs-translation">Powered by SoonLabs</target>
       </trans-unit>
@@ -3988,7 +3800,7 @@
         <source>To create multiple classic NFTs, you have to use the web version of Soonaverse.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
-          <context context-type="linenumber">192,193</context>
+          <context context-type="linenumber">191,192</context>
         </context-group>
         <target state="needs-translation">To create multiple classic NFTs, you have to use the web version of Soonaverse.</target>
       </trans-unit>
