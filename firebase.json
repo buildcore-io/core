@@ -21,7 +21,30 @@
       ],
       "i18n": {
         "root": "/"
-      }
+      },
+      "rewrites": [
+        {
+          "source": "/de{,/**}",
+          "destination": "/de/index.html"
+        },
+        {
+          "source": "/es{,/**}",
+          "destination": "/es/index.html"
+        },
+        {
+          "source": "/fr{,/**}",
+          "destination": "/fr/index.html"
+        },
+        {
+          "source": "/it{,/**}",
+          "destination": "/it/index.html"
+        },
+        {
+          "source": "/tr{,/**}",
+          "destination": "/tr/index.html"
+        },
+        { "source": "**", "destination": "/en/index.html"}
+      ]
     },
     {
       "target": "edge",
@@ -33,7 +56,30 @@
       ],
       "i18n": {
         "root": "/"
-      }
+      },
+      "rewrites": [
+        {
+          "source": "/de{,/**}",
+          "destination": "/de/index.html"
+        },
+        {
+          "source": "/es{,/**}",
+          "destination": "/es/index.html"
+        },
+        {
+          "source": "/fr{,/**}",
+          "destination": "/fr/index.html"
+        },
+        {
+          "source": "/it{,/**}",
+          "destination": "/it/index.html"
+        },
+        {
+          "source": "/tr{,/**}",
+          "destination": "/tr/index.html"
+        },
+        { "source": "**", "destination": "/en/index.html"}
+      ]
     }
   ],
   "emulators": {
@@ -44,6 +90,7 @@
       "port": 8080
     },
     "hosting": {
+      "port": 8095,
       "enabled": false
     },
     "ui": {
