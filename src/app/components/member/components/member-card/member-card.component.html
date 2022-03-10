@@ -8,7 +8,7 @@
           [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
         <h5 nz-typography class="m-auto truncate">{{ member.name ? '@' + member.name : member.uid }}</h5>
         <nz-tag *ngIf="role && (deviceService.isDesktop$ | async)" class="wen-status-tag"
-          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'" i18n>
+          [ngClass]="role === 'Member' ? 'bg-tag-green border-tag-green' : 'bg-tag-black border-tag-black text-white'">
           {{ role }}</nz-tag>
       </a>
       <div class="flex items-center mt-4 lg:mt-0">

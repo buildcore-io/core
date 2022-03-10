@@ -32,7 +32,7 @@
 
             <div class="w-full mt-10 mb-4 space-y-4" *ngIf="(deviceService.isMobile$ | async)">
                 <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-                    Approve Collection
+                    PUBLISH Collection
                 </button>
 
                 <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
@@ -111,7 +111,7 @@
         <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;"
             *ngIf="(deviceService.isDesktop$ | async)">
             <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-                Approve Collection
+              PUBLISH Collection
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
