@@ -73,13 +73,13 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   const schema: ObjectSchema<Member> = Joi.object(defaultJoiUpdateCreateSchema());
   assertValidation(schema.validate(params.body));
 
-  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
+  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
   // Validate space exists.
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.space);
   await SpaceValidator.spaceExists(refSpace);
   await SpaceValidator.hasValidAddress(refSpace);
 
@@ -88,7 +88,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   // Temporary. They must have special badge.
-  const qry: any = await admin.firestore().collection(COL.TRANSACTION)
+  const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.BADGE)
     .where('payload.award', '==', BADGE_TO_CREATE_COLLECTION)
     .where('member', '==', creator).get();
@@ -114,7 +114,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
     let placeholderNft: string | undefined;
     if (params.body.type !== CollectionType.CLASSIC) {
       placeholderNft = getRandomEthAddress();
-      const nftPlaceholder: any = admin.firestore().collection(COL.NFT).doc(placeholderNft);
+      const nftPlaceholder: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(placeholderNft);
       await nftPlaceholder.set(keywords(cOn({
         uid: placeholderNft,
         name: params.body.name,
@@ -180,7 +180,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   }));
   assertValidation(schema.validate(params.body));
 
-  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(member).get();
+  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(member).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
@@ -189,8 +189,8 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
   }
 
-  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
-  let docCollection: any = await refCollection.get();
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
+  let docCollection: DocumentSnapshotType = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
@@ -200,7 +200,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   // Validate space exists.
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
   await SpaceValidator.isGuardian(refSpace, member);
 
   await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update(keywords(uOn(pSchema(
@@ -209,7 +209,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   ))));
 
   if (docCollection.data().placeholderNft) {
-    const nftPlaceholder: any = admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft);
+    const nftPlaceholder: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft);
     await nftPlaceholder.update(keywords(uOn({
       name: params.body.name,
       description: params.body.description,
@@ -239,19 +239,19 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
   });
   assertValidation(schema.validate(params.body));
 
-  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(member).get();
+  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(member).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
-  let docCollection: any = await refCollection.get();
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);
+  let docCollection: DocumentSnapshotType = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
   // Validate space exists.
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
   await SpaceValidator.spaceExists(refSpace);
   await SpaceValidator.isGuardian(refSpace, member);
 

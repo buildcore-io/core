@@ -286,7 +286,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   }
 
   const isSpaceValidation = !!params.body.space;
-  let docSpace: any;
+  let docSpace!: DocumentSnapshotType;
   if (isSpaceValidation) {
     const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.space);
     await SpaceValidator.spaceExists(refSpace);

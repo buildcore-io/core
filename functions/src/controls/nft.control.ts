@@ -6,8 +6,8 @@ import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
+import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { Member } from '../../interfaces/models/member';
-import { Nft } from '../../interfaces/models/nft';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
@@ -18,7 +18,7 @@ import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { CollectionType } from './../../interfaces/models/collection';
 
-function defaultJoiUpdateCreateSchema(): Nft {
+function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').required(),
     description: Joi.string().allow(null, '').required(),
@@ -78,13 +78,13 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
 
 const processOneCreateNft = async (creator: string, params: any): Promise<Member> => {
   const nftAddress: string = getRandomEthAddress();
-  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
+  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.collection);
-  const docCollection: any = await refCollection.get();
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.collection);
+  const docCollection: DocumentSnapshotType = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
@@ -102,9 +102,9 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     params.availableFrom = docCollection.data().availableFrom || docCollection.data().createdOn;
   }
 
-  const refNft: any = admin.firestore().collection(COL.NFT).doc(nftAddress);
+  const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(nftAddress);
   const finalPrice: number = parseInt(params.price);
-  let docNft: any = await refNft.get();
+  let docNft: DocumentSnapshotType = await refNft.get();
   if (!docNft.exists) {
     // Document does not exists.
     await refNft.set(keywords(cOn(merge(cleanParams(params), {

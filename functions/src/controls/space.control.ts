@@ -6,6 +6,7 @@ import { merge } from 'lodash';
 import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions/index';
 import { cyrb53 } from "../../interfaces/hash.utils";
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { scale } from "../scale.settings";
 import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
@@ -50,16 +51,16 @@ async function updateLinkedEntityForMember(opp: 'add' | 'remove', space: Space, 
   // Other alliances
   for (const key of Object.keys(space.alliances || {})) {
     // Load space.
-    const sDoc: any = await admin.firestore().collection(COL.SPACE).doc(key).get();
+    const sDoc: DocumentSnapshotType = await admin.firestore().collection(COL.SPACE).doc(key).get();
 
     if (sDoc.data().alliances[space.uid]?.enabled) {
       hashes.push(cyrb53([key, ...getAlliancesKeys(sDoc.data().alliances)].join('')));
     }
   }
 
-  const refMember: any = admin.firestore().collection(COL.MEMBER).doc(memberId);
+  const refMember: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(memberId);
   await admin.firestore().runTransaction(async (transaction) => {
-    const sfDoc: any = await transaction.get(refMember);
+    const sfDoc: DocumentSnapshotType = await transaction.get(refMember);
     if (sfDoc.data()) {
       const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
       if (opp === 'add') {
@@ -100,7 +101,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
     assertValidation(schema.validate(params.body));
   }
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(spaceAddress);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(spaceAddress);
   let docSpace = await refSpace.get();
   if (!docSpace.exists) {
     // Document does not exists. We must create the member.
@@ -204,8 +205,8 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  const docSpace: any = await refSpace.get();
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const docSpace: DocumentSnapshotType = await refSpace.get();
   let output: any;
   if (!docSpace.exists) {
     throw throwInvalidArgument(WenError.space_does_not_exists);
@@ -272,9 +273,9 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   await SpaceValidator.spaceExists(refSpace);
-  const docSpace: any = await refSpace.get();
+  const docSpace: DocumentSnapshotType = await refSpace.get();
 
   // Validate guardian is an guardian within the space.
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
@@ -283,13 +284,13 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 
   const isGuardian: boolean = (await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists;
   // Must be minimum one member.
-  const members: any[] = await refSpace.collection(SUB_COL.MEMBERS).listDocuments();
+  const members: admin.firestore.DocumentReference[] = await refSpace.collection(SUB_COL.MEMBERS).listDocuments();
   if (members.length === 1) {
     throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
   // Is last guardian? isGuardian
-  const guardians: any[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
+  const guardians: admin.firestore.DocumentReference[] = await refSpace.collection(SUB_COL.GUARDIANS).listDocuments();
   if (guardians.length === 1 && isGuardian) {
     throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
   }
@@ -333,7 +334,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace: any;
   await SpaceValidator.spaceExists(refSpace);
 
@@ -385,7 +386,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.

@@ -4,7 +4,7 @@ import { CollectionType } from './collection';
 
 export const MAX_PROPERTIES_COUNT = 25;
 export const MAX_STATS_COUNT = 25;
-export const PRICE_UNITS: ('Mi'|'Gi')[] = ['Mi', 'Gi'];
+export const PRICE_UNITS: ('Mi' | 'Gi')[] = ['Mi', 'Gi'];
 
 export interface PropStats {
   [propName: string]: {

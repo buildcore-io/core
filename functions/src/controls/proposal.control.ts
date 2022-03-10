@@ -1,4 +1,3 @@
-import { QuerySnapshot } from "@firebase/firestore";
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
@@ -8,6 +7,7 @@ import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { DocumentSnapshotType } from "../../interfaces/models/firebase";
 import { Proposal } from '../../interfaces/models/proposal';
 import { scale } from "../scale.settings";
 import { getAlliancesKeys } from "../utils/alliance.utils";
@@ -89,10 +89,10 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   const schema: ObjectSchema<Proposal> = Joi.object(defaultJoiUpdateCreateSchema());
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.space);
   await SpaceValidator.spaceExists(refSpace);
 
-  const docSpace: any = await refSpace.get();
+  const docSpace: DocumentSnapshotType = await refSpace.get();
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
@@ -105,7 +105,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
     params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate);
   }
 
-  const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);
+  const refProposal: admin.firestore.DocumentReference = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);
   let docProposal = await refProposal.get();
   if (!docProposal.exists) {
     // Document does not exists.
@@ -121,7 +121,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
     // Add Owners based on space's guardians or members.
     let totalWeight = 0;
     if (params.body.type === ProposalType.MEMBERS) {
-      let query: QuerySnapshot;
+      let query: admin.firestore.QuerySnapshot
       if (params.body.settings.onlyGuardians) {
         query = await refSpace.collection(SUB_COL.GUARDIANS).get();
       } else {
@@ -219,14 +219,14 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
   }));
   assertValidation(schema.validate(params.body));
 
-  const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(params.body.uid);
-  const docProposal: any = await refProposal.get();
-  let docTran: any;
+  const refProposal: admin.firestore.DocumentReference = admin.firestore().collection(COL.PROPOSAL).doc(params.body.uid);
+  const docProposal: DocumentSnapshotType = await refProposal.get();
+  let docTran!: DocumentSnapshotType;
   if (!docProposal.exists) {
     throw throwInvalidArgument(WenError.proposal_does_not_exists);
   }
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docProposal.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docProposal.data().space);
   if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
@@ -260,14 +260,14 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
   }));
   assertValidation(schema.validate(params.body));
 
-  const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(params.body.uid);
-  const docProposal: any = await refProposal.get();
-  let docTran: any;
+  const refProposal: admin.firestore.DocumentReference = admin.firestore().collection(COL.PROPOSAL).doc(params.body.uid);
+  const docProposal: DocumentSnapshotType = await refProposal.get();
+  let docTran!: DocumentSnapshotType;
   if (!docProposal.exists) {
     throw throwInvalidArgument(WenError.proposal_does_not_exists);
   }
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docProposal.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docProposal.data().space);
   if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
@@ -306,15 +306,15 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
   }));
   assertValidation(schema.validate(params.body));
 
-  const refProposal: any = admin.firestore().collection(COL.PROPOSAL).doc(params.body.uid);
-  const docProposal: any = await refProposal.get();
-  let docTran: any;
+  const refProposal: admin.firestore.DocumentReference = admin.firestore().collection(COL.PROPOSAL).doc(params.body.uid);
+  const docProposal: DocumentSnapshotType = await refProposal.get();
+  let docTran!: DocumentSnapshotType;
   if (!docProposal.exists) {
     throw throwInvalidArgument(WenError.proposal_does_not_exists);
   }
 
-  const refMember: any = refProposal.collection(SUB_COL.MEMBERS).doc(owner);
-  const docMember: any = await refMember.get();
+  const refMember: admin.firestore.DocumentReference = refProposal.collection(SUB_COL.MEMBERS).doc(owner);
+  const docMember: DocumentSnapshotType = await refMember.get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.you_are_not_allowed_to_vote_on_this_proposal);
   }
@@ -360,7 +360,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
   if (params.body) {
     // This this member already voted? New transaction will be valid. Historical one will be ineffective.
     const tranId: string = getRandomEthAddress();
-    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+    const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
     await refTran.set(<Transaction>{
       type: TransactionType.VOTE,
       uid: tranId,
@@ -388,7 +388,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     const results: any = {};
     let voted = 0;
     let total = 0;
-    const allMembers: any = await refProposal.collection(SUB_COL.MEMBERS).get();
+    const allMembers: admin.firestore.QuerySnapshot = await refProposal.collection(SUB_COL.MEMBERS).get();
     for (const doc of allMembers.docs) {
       // Total is based on number of questions.
       total += doc.data().weight * docProposal.data().questions.length;
