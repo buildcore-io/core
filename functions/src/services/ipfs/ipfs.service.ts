@@ -55,7 +55,7 @@ export class IpfsService {
 
     // Let's get the file from URL and detect the type.
     const file: any = await fetch(fileUrl);
-    const filename: string = nft.name + (Math.random() * 1000);
+    const filename: string = nft.uid + (Math.random() * 1000);
     const fileStream = fs.createWriteStream('/tmp/' + filename);
     await new Promise((resolve, reject) => {
       file.body.pipe(fileStream);
