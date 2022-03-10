@@ -13,11 +13,11 @@
                 <div class="text-xs font-medium text-foregrounds-secondary mb-2" i18n>NFTs</div>
                 <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
                     <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-                        (nzCheckedChange)="handleChange(tag)" i18n>
+                        (nzCheckedChange)="handleChange(tag)">
                         {{ tag }}
                     </nz-tag>
                 </ng-container>
-    
+
                 <ng-template #hotTagsMobileBlock>
                     <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
                         <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
@@ -49,7 +49,7 @@
                         <ng-container *ngIf="selected.nzValue === filter.sortOptions.RECENT; else notRecent" i18n>Sort by</ng-container>
                         <ng-template #notRecent i18n>Price</ng-template>
                     </div>
-                    <span i18n>{{ selected.nzLabel }}</span>
+                    <span>{{ selected.nzLabel }}</span>
                 </div>
             </ng-template>
         </ng-container>

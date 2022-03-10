@@ -10,7 +10,7 @@
           </nz-tag>
           <nz-tag nzMode="checkable" *ngIf="!(data.space$ | async)?.open"
             [nzChecked]="selectedListControl?.value === filterOptions.PENDING"
-            (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)" i18n>
+            (nzCheckedChange)="handleFilterChange(filterOptions.PENDING)">
             {{'Pending' + (data.getPendingMembersCount(data.pendingMembers$ | async) > 0 ? '*' : '')}}
           </nz-tag>
           <nz-tag nzMode="checkable" [nzChecked]="selectedListControl?.value === filterOptions.BLOCKED"

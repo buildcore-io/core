@@ -8,7 +8,7 @@
   <a nz-button class="flex items-center mt-5 mb-5 ml-6 wen-space-links" nzType="link" [routerLink]="['members']">
     <wen-icon-members class="text-app-gray-400"></wen-icon-members>
     <div class="ml-3">{{ (data.space$ | async)?.totalMembers }} <span i18n>members</span>
-      <span *ngIf="(data.space$ | async)?.totalPendingMembers" i18n>
+      <span *ngIf="(data.space$ | async)?.totalPendingMembers">
         {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
       </span>
     </div>
@@ -26,12 +26,12 @@
     <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
       <wen-icon-members class="text-app-gray-400"></wen-icon-members>
       <span>{{ (data.space$ | async)?.totalMembers }} <span i18n>members</span>
-        <span *ngIf="(data.space$ | async)?.totalPendingMembers" i18n>
+        <span *ngIf="(data.space$ | async)?.totalPendingMembers">
           {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
         </span>
       </span>
     </a>
-    <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
+    <nz-tag class="px-2 py-1 text-xs border-none rounded-md">
       {{ (data.space$ | async)?.open ? 'Open to join instantly' : 'Requires approval to join'}}
     </nz-tag>
   </div>

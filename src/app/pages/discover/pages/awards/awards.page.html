@@ -2,7 +2,7 @@
   <div class="flex items-center mt-6 lg:mt-12">
     <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
       <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-        (nzCheckedChange)="handleChange(tag)" i18n>
+        (nzCheckedChange)="handleChange(tag)">
         {{ tag }}
       </nz-tag>
     </ng-container>
@@ -22,7 +22,7 @@
     </nz-select>
     <ng-template #defaultTemplate let-selected>
       <span nz-typography nzType="secondary" class="text-xs" i18n>Sort by</span>
-      <span i18n>{{ selected.nzLabel }}</span>
+      <span>{{ selected.nzLabel }}</span>
     </ng-template>
   </ng-container>
   <ng-template #sortMobileBlock>

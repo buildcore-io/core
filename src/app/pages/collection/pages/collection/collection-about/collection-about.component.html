@@ -43,7 +43,7 @@
 <nz-card nzTitle="Additional Details" class="mt-8" *ngIf="(data.collection$ | async)?.access !== access.OPEN || (data.collection$ | async)?.discounts?.length">
     <div class="space-y-5">
         <div *ngIf="(data.collection$ | async)?.access !== access.OPEN">
-          <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
+          <nz-tag class="px-2 py-1 text-xs border-none rounded-md">
             {{ getAccessLabel((data.collection$ | async)?.access) }}
           </nz-tag>
         </div>

@@ -4,7 +4,7 @@
             <div class="flex items-center">
                 <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
                   <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="selectedListControl?.value === tag.value"
-                    (nzCheckedChange)="handleFilterChange(tag.value)" i18n>
+                    (nzCheckedChange)="handleFilterChange(tag.value)">
                     {{ tag.label }}
                   </nz-tag>
                 </ng-container>

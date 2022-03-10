@@ -164,7 +164,7 @@
         <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
             <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
                 <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-                    (nzCheckedChange)="handleChange(tag)" i18n>
+                    (nzCheckedChange)="handleChange(tag)">
                     {{ tag }}
                 </nz-tag>
             </ng-container>
@@ -189,7 +189,7 @@
                         <ng-container *ngIf="selected.nzValue === filter.sortOptions.RECENT; else notRecent" i18n>Sort by</ng-container>
                         <ng-template #notRecent i18n>Price</ng-template>
                     </div>
-                    <span i18n>{{ selected.nzLabel }}</span>
+                    <span>{{ selected.nzLabel }}</span>
                 </div>
             </ng-template>
         </ng-container>

@@ -17,11 +17,11 @@
             [formControl]="reputationWeightControl"
         ></nz-input-number>
 
-        <div class="flex items-center space-x-1 absolute right-6 top-1/2 transform -translate-y-1/2">
+        <div class="absolute flex items-center space-x-1 transform -translate-y-1/2 right-6 top-1/2">
             <button nz-button nzSize="small" type="button"
                 *ngFor="let opt of weightOptions"
                 (click)="reputationWeightControl.setValue(opt.value)"
-                class="flex items-center px-3 py-1 wen-secondary" i18n
+                class="flex items-center px-3 py-1 wen-secondary"
                 [ngClass]="{ 'selected': opt.value === reputationWeightControl.value }">
                 {{ opt.label }}
             </button>

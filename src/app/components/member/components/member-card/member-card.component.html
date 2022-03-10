@@ -17,7 +17,7 @@
           {{ role }}</nz-tag>
 
         <span nz-typography class="truncate lg:mt-3 text-app-gray-400" [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'">
-          <span i18n>{{createdOnLabel}}</span> {{ (createdOn || member?.createdOn)?.toDate() | date:"short" }}
+          <span>{{createdOnLabel}}</span> {{ (createdOn || member?.createdOn)?.toDate() | date:"short" }}
         </span>
       </div>
       <p class="mt-2 mb-3 leading-5 text-black whitespace-pre-line truncate-line-3" [ngClass]="fullWidth ? 'text-base' : 'text-xs'">{{ (about !== undefined

@@ -5,7 +5,7 @@
             <wen-collection-status [collection]="data.collection$ | async" *ngIf="!(data.nft$ | async )?.owner"></wen-collection-status>
             <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="(data.nft$ | async )?.owner" i18n>Owned</nz-tag>
 
-            <h1 class="mt-2 mb-1" i18n>{{ getTitle(data.nft$ | async) }}</h1>
+            <h1 class="mt-2 mb-1">{{ getTitle(data.nft$ | async) }}</h1>
             <div class="mb-10 text-xl font-medium" *ngIf="deviceService.isDesktop$ | async">{{ (data.nft$ | async)?.name }}</div>
 
             <ng-container *ngIf="deviceService.isMobile$ | async">
@@ -232,14 +232,14 @@
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                   <div nz-typography class="flex items-center justify-end">
-                      <div class="w-3/5 break-all line-clamp-2" i18n>{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
+                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
                       <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank" i18n>View</a>
                   </div>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
                   <div nz-typography class="flex items-center justify-end">
-                      <div class="w-3/5 break-all line-clamp-2" i18n>{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
+                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
                       <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank" i18n>View</a>
                   </div>
               </div>
