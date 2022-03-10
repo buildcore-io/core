@@ -27,7 +27,7 @@
 
         <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large"
           [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
-          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false" i18n>
+          *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false">
           {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending Request' :
           'Ask to Join Space'}}
         </button>

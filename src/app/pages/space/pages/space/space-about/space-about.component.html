@@ -2,7 +2,7 @@
   <div class="flex items-center mt-5 ml-6">
     <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="bg-white border-2 border-gray-400 min-w-10" nzShape="circle">
     </nz-avatar>
-    <h1 class="w-2/3 mb-0 ml-4 text-2xl" i18n>{{ (data.space$ | async)?.name }}</h1>
+    <h1 class="w-2/3 mb-0 ml-4 text-2xl">{{ (data.space$ | async)?.name }}</h1>
   </div>
 
   <a nz-button class="flex items-center mt-5 mb-5 ml-6 wen-space-links" nzType="link" [routerLink]="['members']">
