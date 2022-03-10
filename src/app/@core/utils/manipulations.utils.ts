@@ -27,6 +27,6 @@ export function undefinedToEmpty(o: any): any {
 }
 
 export function enumToArray(e: any): any[] {
-  const values = Object.values(e);
-  return values.filter((v: any) => typeof v !== 'number').map((v: any) => ({ key: v, value: e[v] }));
+  const keys = Object.keys(e);
+  return keys.filter((k: any) => typeof k !== 'number' && isNaN(Number(k))).map((k: any) => ({ key: k, value: e[k] }));
 }
