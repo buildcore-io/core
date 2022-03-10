@@ -24,7 +24,10 @@
           "source": "**",
           "destination": "/index.html"
         }
-      ]
+      ],
+      "i18n": {
+        "root": "/"
+      }
     },
     {
       "target": "edge",
@@ -39,7 +42,10 @@
           "source": "**",
           "destination": "/index.html"
         }
-      ]
+      ],
+      "i18n": {
+        "root": "/"
+      }
     }
   ],
   "emulators": {
