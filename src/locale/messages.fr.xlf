@@ -2734,7 +2734,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Available On is required.</target>
+        <target state="translated">"Disponible sur" est requis.</target>
       </trans-unit>
       <trans-unit id="8351398594800422168" datatype="html">
         <source>Available on</source>
@@ -2746,7 +2746,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">99,100</context>
         </context-group>
-        <target state="needs-translation">Available on</target>
+        <target state="translated">Disponible sur</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -2754,7 +2754,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">180</context>
         </context-group>
-        <target state="needs-translation">Links</target>
+        <target state="translated">Liens</target>
       </trans-unit>
       <trans-unit id="5321246944354917718" datatype="html">
         <source>Links will be included on the NFT detail. Use account usernames for Twitter and Discord (name#id).</source>
@@ -2762,7 +2762,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">181,182</context>
         </context-group>
-        <target state="needs-translation">Links will be included on the NFT detail. Use account usernames for Twitter and Discord (name#id).</target>
+        <target state="translated">Les liens seront inclus dans les détails du NFT. Utilisez les noms d'utilisateur pour Twitter et Discord (name#id).</target>
       </trans-unit>
       <trans-unit id="7814705431910246103" datatype="html">
         <source>Invalid URL.</source>
@@ -2770,7 +2770,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">186,187</context>
         </context-group>
-        <target state="needs-translation">Invalid URL.</target>
+        <target state="translated">URL invalide.</target>
       </trans-unit>
       <trans-unit id="2375260419993138758" datatype="html">
         <source>URL</source>
@@ -2778,7 +2778,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">193</context>
         </context-group>
-        <target state="needs-translation">URL</target>
+        <target state="translated">URL</target>
       </trans-unit>
       <trans-unit id="9102604775808873093" datatype="html">
         <source>Link to your Twitter account</source>
@@ -2786,7 +2786,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">212,213</context>
         </context-group>
-        <target state="needs-translation">Link to your Twitter account</target>
+        <target state="translated">Connecter votre compte Twitter</target>
       </trans-unit>
       <trans-unit id="2647862460775197644" datatype="html">
         <source>Invalid Discord username.</source>
@@ -2794,7 +2794,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">225,226</context>
         </context-group>
-        <target state="needs-translation">Invalid Discord username.</target>
+        <target state="translated">Nom d'utilisateur Discord invalide.</target>
       </trans-unit>
       <trans-unit id="773388984570253788" datatype="html">
         <source>Link to your Discord account</source>
@@ -2802,7 +2802,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">232,233</context>
         </context-group>
-        <target state="needs-translation">Link to your Discord account</target>
+        <target state="translated">Associer votre compte Discord</target>
       </trans-unit>
       <trans-unit id="5708470610943476504" datatype="html">
         <source>Member discounts</source>
@@ -2810,7 +2810,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">247,248</context>
         </context-group>
-        <target state="needs-translation">Member discounts</target>
+        <target state="translated">Réductions membre</target>
       </trans-unit>
       <trans-unit id="8990923031411268743" datatype="html">
         <source>Space support an ability to airdrop NFTs to their members for free or at discount.</source>
@@ -2818,7 +2818,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">249,250</context>
         </context-group>
-        <target state="needs-translation">Space support an ability to airdrop NFTs to their members for free or at discount.</target>
+        <target state="translated">L'espace supporte la possibilité de faire des envois de NFT vers leurs membres gratuitement ou à prix réduit.</target>
       </trans-unit>
       <trans-unit id="4808411315981120788" datatype="html">
         <source>Discount</source>
@@ -2826,7 +2826,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">297</context>
         </context-group>
-        <target state="needs-translation">Discount</target>
+        <target state="translated">Réduction</target>
       </trans-unit>
       <trans-unit id="7211289365347068889" datatype="html">
         <source> Discount XP </source>
