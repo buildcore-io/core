@@ -5271,12 +5271,12 @@
         <target state="needs-translation">Requires a member approval </target>
       </trans-unit>
       <trans-unit id="6932048807565988787" datatype="html">
-        <source> Create space Italian </source>
+        <source> Create space French </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">238,239</context>
         </context-group>
-        <target state="needs-translation"> Create space Italian </target>
+        <target state="needs-translation"> Create space French </target>
       </trans-unit>
       <trans-unit id="2908894845500511218" datatype="html">
         <source> Save space </source>
