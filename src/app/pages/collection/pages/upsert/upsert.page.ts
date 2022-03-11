@@ -110,7 +110,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     Validators.required
   ]);;
   public unitControl: FormControl = new FormControl(
-    PRICE_UNITS[0],
+    <Units>'Mi',
     Validators.required,
   );
   public availableFromControl: FormControl = new FormControl(
@@ -201,7 +201,13 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.spaceControl.setValue(o.space);
               this.descriptionControl.setValue(o.description);
               this.typeControl.setValue(o.type);
-              this.priceControl.setValue(o.price / 1000 / 1000);
+              if (o.price >= 1000 * 1000 * 1000) {
+                this.priceControl.setValue(o.price / 1000 / 1000 / 1000);
+                this.unitControl.setValue(<Units>'Gi');
+              } else {
+                this.priceControl.setValue(o.price / 1000 / 1000);
+                this.unitControl.setValue(<Units>'Mi');
+              }
               this.availableFromControl.setValue(o.availableFrom.toDate());
               this.royaltiesFeeControl.setValue(o.royaltiesFee * 100);
               this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
