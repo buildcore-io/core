@@ -34,29 +34,43 @@ export enum Categories {
   ART = 'ART'
 }
 
-export interface Collection extends BaseRecord {
+export interface CollectionBase extends BaseRecord {
   name: string;
   description: string;
   bannerUrl: string;
-  category: Categories,
-  type: CollectionType,
-  access: CollectionAccess,
   accessAwards: string[],
   accessCollections: string[],
-  space: string;
   royaltiesFee: number;
   royaltiesSpace: EthAddress;
   discounts: DiscountLine[];
   total: number;
   sold: number;
-  availableFrom: Timestamp;
-  price: number;
   discord: string;
   url: string;
   twitter: string;
   approved: boolean;
   rejected: boolean;
+}
+
+export interface Collection extends CollectionBase {
+  category: Categories,
+  type: CollectionType,
+  access: CollectionAccess,
+  space: string;
+  availableFrom: Timestamp;
+  price: number;
   onePerMemberOnly: boolean;
+  placeholderNft: EthAddress;
+}
+
+export interface SchemaCollection extends CollectionBase {
+  category?: Categories,
+  type?: CollectionType,
+  access?: CollectionAccess,
+  space?: string;
+  availableFrom?: Timestamp;
+  price?: number;
+  onePerMemberOnly?: boolean;
   placeholderNft?: EthAddress;
   placeholderUrl?: string;
 }

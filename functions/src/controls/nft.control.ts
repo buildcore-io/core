@@ -15,7 +15,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { CollectionType } from './../../interfaces/models/collection';
+import { Collection, CollectionType } from './../../interfaces/models/collection';
 
 function defaultJoiUpdateCreateSchema(): any {
   return merge(getDefaultParams(), {
@@ -63,7 +63,7 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
   assertValidation(schema.validate(params.body));
 
   // Batch create.
-  const process: any = [];
+  const process: Promise<Member>[] = [];
   for (const b of params.body) {
     process.push(processOneCreateNft(creator, b));
   }
@@ -77,18 +77,19 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
 
 const processOneCreateNft = async (creator: string, params: any): Promise<Member> => {
   const nftAddress: string = getRandomEthAddress();
-  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
+  const docMember: admin.firestore.DocumentSnapshot = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.collection);
-  const docCollection: any = await refCollection.get();
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.collection);
+  const docCollection: admin.firestore.DocumentSnapshot = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
-  if (docCollection.data().createdBy !== creator) {
+  const collectionData: Collection = <Collection>docCollection.data()
+  if (collectionData.createdBy !== creator) {
     throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
   }
 
@@ -96,33 +97,33 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     params.availableFrom = dateToTimestamp(params.availableFrom);
   }
 
-  if (docCollection.data().type === CollectionType.GENERATED || docCollection.data().type === CollectionType.SFT) {
-    params.price = docCollection.data().price || 0;
-    params.availableFrom = docCollection.data().availableFrom || docCollection.data().createdOn;
+  if (collectionData.type === CollectionType.GENERATED || collectionData.type === CollectionType.SFT) {
+    params.price = collectionData.price || 0;
+    params.availableFrom = collectionData.availableFrom || collectionData.createdOn;
   }
 
-  const refNft: any = admin.firestore().collection(COL.NFT).doc(nftAddress);
+  const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(nftAddress);
   const finalPrice: number = parseInt(params.price);
-  let docNft: any = await refNft.get();
+  let docNft: admin.firestore.DocumentSnapshot = await refNft.get();
   if (!docNft.exists) {
     // Document does not exists.
     await refNft.set(keywords(cOn(merge(cleanParams(params), {
       uid: nftAddress,
       locked: false,
       price: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
-      position: docCollection.data().total + 1,
+      position: collectionData.total + 1,
       lockedBy: null,
       ipfsMedia: null,
       ipfsMetadata: null,
       sold: false,
-      approved: docCollection.data().approved,
-      rejected: docCollection.data().rejected,
+      approved: collectionData.approved,
+      rejected: collectionData.rejected,
       owner: null,
       soldOn: null,
       ipfsRetries: 0,
-      space: docCollection.data().space,
-      type: docCollection.data().type,
-      hidden: (CollectionType.CLASSIC !== docCollection.data().type),
+      space: collectionData.space,
+      type: collectionData.type,
+      hidden: (CollectionType.CLASSIC !== collectionData.type),
       createdBy: creator,
       placeholderNft: false
     }))));
@@ -133,8 +134,8 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     });
 
     // Let's validate if collection has pending item to sell.
-    if (docCollection.data().placeholderNft) {
-      await admin.firestore().collection(COL.NFT).doc(docCollection.data().placeholderNft).update({
+    if (collectionData.placeholderNft) {
+      await admin.firestore().collection(COL.NFT).doc(collectionData.placeholderNft).update({
         sold: false,
         availableFrom: params.availableFrom,
         hidden: false

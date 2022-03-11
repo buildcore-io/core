@@ -16,7 +16,7 @@ import { cleanParams, decodeAuth, ethAddressLength } from "../utils/wallet.utils
 import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
 import { Member } from './../../interfaces/models/member';
 
-function defaultJoiUpdateCreateSchema(): any {
+function defaultJoiUpdateCreateSchema(): Member {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
@@ -83,7 +83,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   // Validate user name is not yet used.
   if (params.body.name) {
     const doc = await admin.firestore().collection(COL.MEMBER)
-                .where('name', '==', params.body.name).where('uid', '!=', address).get();
+      .where('name', '==', params.body.name).where('uid', '!=', address).get();
     if (doc.size > 0) {
       throw throwInvalidArgument(WenError.member_username_exists);
     }
