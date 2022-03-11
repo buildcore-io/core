@@ -3054,7 +3054,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">609,610</context>
         </context-group>
-        <target state="needs-translation">Select Collections</target>
+        <target state="translated">Selecionar Coleções</target>
       </trans-unit>
       <trans-unit id="6073483839648665496" datatype="html">
         <source> Create collection </source>
@@ -3062,7 +3062,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">657,658</context>
         </context-group>
-        <target state="needs-translation"> Create collection </target>
+        <target state="translated"> Criar coleção </target>
       </trans-unit>
       <trans-unit id="6591255718325372009" datatype="html">
         <source> Save collection </source>
