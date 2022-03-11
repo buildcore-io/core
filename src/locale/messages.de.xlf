@@ -1362,7 +1362,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation">Rep. weight</target>
+        <target state="translated">Ansehen Gewichtung</target>
       </trans-unit>
       <trans-unit id="5611592591303869712" datatype="html">
         <source>Status</source>
@@ -1378,7 +1378,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">Established</target>
+        <target state="translated">Verbunden</target>
       </trans-unit>
       <trans-unit id="2028218033073659493" datatype="html">
         <source>Recognised</source>
@@ -1386,7 +1386,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Recognised</target>
+        <target state="translated">Anerkennt</target>
       </trans-unit>
       <trans-unit id="5190509713271209562" datatype="html">
         <source>members</source>
@@ -1558,7 +1558,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">You will be asked to send funds to the new IOTA address for the verification process. The address you send funds from will be linked to your </target>
+        <target state="translated">Für den Verifizierungsprozess wirst du gebeten Geld an die neue IOTA Adresse zu senden. Die Adresse von der du Geld sendet wird mit deinem... verlinkt </target>
       </trans-unit>
       <trans-unit id="1717434159688656264" datatype="html">
         <source>space</source>
@@ -2126,7 +2126,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">285,286</context>
         </context-group>
-        <target state="needs-translation">Custom and more</target>
+        <target state="translated">Benutzerdefiniert und mehr</target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -2734,7 +2734,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Available On is required.</target>
+        <target state="translated">Verfügbar ab erforderlich.</target>
       </trans-unit>
       <trans-unit id="8351398594800422168" datatype="html">
         <source>Available on</source>
@@ -2746,7 +2746,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">99,100</context>
         </context-group>
-        <target state="needs-translation">Available on</target>
+        <target state="translated">Verfügbar ab</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -3362,7 +3362,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
-        <target state="needs-translation"> An all-in-one feeless platform for community engagement and DAO creation. Build, vote, earn, learn and let the best ideas win. </target>
+        <target state="translated"> Eine komplett gebührenfreie Plattform zur aktiven Beteiligung in Communities und zur Erstellung von DAOs. Erstellen, abstimmen, verdienen, lernen und die besten Ideen gewinnen lassen. </target>
       </trans-unit>
       <trans-unit id="7563359411248828587" datatype="html">
         <source> Marketplace </source>
@@ -3442,7 +3442,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="needs-translation"> No more worries about “the tech”. Spend your time where it belongs, building your community and realizing your collective vision. </target>
+        <target state="translated"> Keine Sorgen mehr über "die Technik". Verbringe deine Zeit mit dem Aufbau deiner Community und der Verwirklichung deiner kollektiven Visionen. </target>
       </trans-unit>
       <trans-unit id="1296407136174431296" datatype="html">
         <source>StepArticle image</source>
@@ -3466,7 +3466,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">163,165</context>
         </context-group>
-        <target state="needs-translation"> By building on the IOTA network we have enshrined a crucial feature of proper DAO management. Feeless, secure voting. Read more about this in our manifesto. </target>
+        <target state="translated"> Mit dem Aufbau auf dem IOTA Netzwerk haben wir ein wesentliches Merkmal für ein ordnungsgemäßes DAO-Management verankert. Gebührenfreies, sicheres wählen. Lies mehr darüber in unserem Manifest. </target>
       </trans-unit>
       <trans-unit id="8710865889166765986" datatype="html">
         <source> Go there now </source>
@@ -3702,7 +3702,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/spaces/member-spaces.component.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
-        <target state="needs-translation">(Join space with alliance)</target>
+        <target state="translated">(Raum mit Allianz beitreten)</target>
       </trans-unit>
       <trans-unit id="6849706234547031644" datatype="html">
         <source>Some files have not been uploaded</source>
@@ -3726,7 +3726,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">57</context>
         </context-group>
-        <target state="needs-translation">Uploaded CSV</target>
+        <target state="translated">Hochgeladene CSV-Datei</target>
       </trans-unit>
       <trans-unit id="6033265935024845314" datatype="html">
         <source> Some of the NFTs are faulty! </source>
@@ -3786,7 +3786,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="translated">Erneut hochladen sobald du unten generiert hast</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -3958,7 +3958,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">203</context>
         </context-group>
-        <target state="needs-translation">Stats</target>
+        <target state="translated">Attribute</target>
       </trans-unit>
       <trans-unit id="5165670355553213114" datatype="html">
         <source>Stats show up underneath your item.</source>
@@ -3966,7 +3966,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">204,205</context>
         </context-group>
-        <target state="needs-translation">Stats show up underneath your item.</target>
+        <target state="translated">Attribute werden unter deinem Item angezeigt.</target>
       </trans-unit>
       <trans-unit id="1996682359718209694" datatype="html">
         <source>Stats name (E.g. Stamina)</source>
@@ -3974,7 +3974,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">211,212</context>
         </context-group>
-        <target state="needs-translation">Stats name (E.g. Stamina)</target>
+        <target state="translated">Name der Attribute (z.B. Stamina)</target>
       </trans-unit>
       <trans-unit id="3752180635843218570" datatype="html">
         <source>Value (E.g. 10, 1/10 , etc.)</source>
@@ -3998,7 +3998,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">264,265</context>
         </context-group>
-        <target state="needs-translation">Stat name</target>
+        <target state="translated">Name des Attributs</target>
       </trans-unit>
       <trans-unit id="7652319011121347113" datatype="html">
         <source>Stat</source>
@@ -4006,7 +4006,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">250</context>
         </context-group>
-        <target state="needs-translation">Stat</target>
+        <target state="translated">Attribut</target>
       </trans-unit>
       <trans-unit id="239278463808170705" datatype="html">
         <source>Add stat</source>
@@ -4014,7 +4014,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">286,287</context>
         </context-group>
-        <target state="needs-translation">Add stat</target>
+        <target state="translated">Attribut hinzufügen</target>
       </trans-unit>
       <trans-unit id="8411489505208550839" datatype="html">
         <source>Upload image of your NFT. File types supported: PNG, JPEG, WEBP, MP4. Max size: 100 MB.</source>
@@ -4030,7 +4030,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">322</context>
         </context-group>
-        <target state="needs-translation"> Media is required. </target>
+        <target state="translated"> Medien erforderlich. </target>
       </trans-unit>
       <trans-unit id="9199594040130693701" datatype="html">
         <source>Select one of your collections to display this NFT.</source>
@@ -4134,7 +4134,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">204,205</context>
         </context-group>
-        <target state="needs-translation">On-Chain Record</target>
+        <target state="translated">On-Chain Aufzeichnung</target>
       </trans-unit>
       <trans-unit id="5287337180755715471" datatype="html">
         <source>Preparing...</source>
@@ -4214,7 +4214,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="needs-translation">Commencing milestone.</target>
+        <target state="translated">Meilenstein wird gestartet.</target>
       </trans-unit>
       <trans-unit id="2793713233329713998" datatype="html">
         <source>Start milestone.</source>
@@ -4911,7 +4911,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">196,197</context>
         </context-group>
-        <target state="needs-translation">Wallet to hold funds for the Space.</target>
+        <target state="translated">Wallet zum Halten von Guthaben für den Raum.</target>
       </trans-unit>
       <trans-unit id="4712811063517949869" datatype="html">
         <source>Leave Space</source>
