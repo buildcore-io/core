@@ -1558,7 +1558,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">You will be asked to send funds to the new IOTA address for the verification process. The address you send funds from will be linked to your </target>
+        <target state="translated">Se te pedirá que envíes fondos a la nueva dirección de IOTA para el proceso de verificación. La dirección desde la que envias fondos será vinculada a tu </target>
       </trans-unit>
       <trans-unit id="1717434159688656264" datatype="html">
         <source>space</source>
@@ -1566,7 +1566,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">space</target>
+        <target state="translated">espacio</target>
       </trans-unit>
       <trans-unit id="7813000971625481835" datatype="html">
         <source>profile</source>
@@ -1574,7 +1574,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">106</context>
         </context-group>
-        <target state="needs-translation">profile</target>
+        <target state="translated">perfil</target>
       </trans-unit>
       <trans-unit id="4037735433864781804" datatype="html">
         <source> for future transactions.</source>
@@ -1582,7 +1582,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">107,108</context>
         </context-group>
-        <target state="needs-translation"> for future transactions.</target>
+        <target state="translated"> para futuras transacciones.</target>
       </trans-unit>
       <trans-unit id="2299078546330713376" datatype="html">
         <source> Generate new address </source>
@@ -1590,7 +1590,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation"> Generate new address </target>
+        <target state="translated"> Generar nueva dirección </target>
       </trans-unit>
       <trans-unit id="8339972866659886806" datatype="html">
         <source>Send a small </source>
@@ -1598,7 +1598,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">120</context>
         </context-group>
-        <target state="needs-translation">Send a small </target>
+        <target state="translated">Enviar un pequeño </target>
       </trans-unit>
       <trans-unit id="309988044844746809" datatype="html">
         <source>amount to validate your address. This expires in </source>
