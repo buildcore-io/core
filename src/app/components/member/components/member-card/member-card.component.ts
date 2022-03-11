@@ -34,6 +34,7 @@ export class MemberCardComponent implements OnDestroy {
   }
   @Input() member?: Member;
   @Input() fullWidth?: boolean;
+  @Input() allowMobileContent?: boolean;
   @Input() about?: string;
   @Input() role?: string;
   @Input() createdOn?: Timestamp;
