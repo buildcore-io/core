@@ -1422,7 +1422,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="needs-translation">Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000</target>
+        <target state="translated">Selecciona el peso con el que la experiencia dada en un espacio es reconocida. El rango válido es de 0 - 1000</target>
       </trans-unit>
       <trans-unit id="7514940606218254317" datatype="html">
         <source>Equal</source>
@@ -1606,7 +1606,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">121</context>
         </context-group>
-        <target state="needs-translation">amount to validate your address. This expires in </target>
+        <target state="translated">cantidad para validar tu dirección. Esto expira en </target>
       </trans-unit>
       <trans-unit id="7970375349244346571" datatype="html">
         <source>Expired.</source>
@@ -1614,7 +1614,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">123,124</context>
         </context-group>
-        <target state="needs-translation">Expired.</target>
+        <target state="translated">Caducado.</target>
       </trans-unit>
       <trans-unit id="4661651495757868853" datatype="html">
         <source> Wait for transaction to be validated. We will send back your transaction once completed </source>
