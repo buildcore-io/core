@@ -206,8 +206,9 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.royaltiesSpaceDifferentControl.setValue(
                 o.royaltiesSpace !== o.space,
               );
-              this.placeholderUrlControl.setValue(o.bannerUrl);
+              this.placeholderUrlControl.setValue(o.placeholderUrl);
               this.bannerUrlControl.setValue(o.bannerUrl);
+              this.urlControl.setValue(o.url);
               this.twitterControl.setValue(o.twitter);
               this.discordControl.setValue(o.discord);
               this.categoryControl.setValue(o.category);
