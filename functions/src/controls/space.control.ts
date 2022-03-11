@@ -1,4 +1,3 @@
-import { QuerySnapshot } from '@firebase/firestore';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
@@ -231,7 +230,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
 
     // Set members.
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refSpace);
+      const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       let totalMembers = (sfDoc.data().totalMembers || 0);
       let totalPendingMembers = (sfDoc.data().totalPendingMembers || 0);
       if (isOpenSpace) {
@@ -435,7 +434,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace!: DocumentSnapshotType;
   await SpaceValidator.spaceExists(refSpace);
 
@@ -454,13 +453,13 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   }
 
   // Must be minimum one member.
-  const members: any = await refSpace.collection(SUB_COL.MEMBERS).where('uid', '!=', params.body.member).get();
+  const members: admin.firestore.QuerySnapshot = await refSpace.collection(SUB_COL.MEMBERS).where('uid', '!=', params.body.member).get();
   if (members.size === 0) {
     throw throwInvalidArgument(WenError.at_least_one_member_must_be_in_the_space);
   }
 
   // Is last guardian? isGuardian
-  const guardians: any = await refSpace.collection(SUB_COL.GUARDIANS).where('uid', '!=', params.body.member).get();
+  const guardians: admin.firestore.QuerySnapshot = await refSpace.collection(SUB_COL.GUARDIANS).where('uid', '!=', params.body.member).get();
   if (guardians.size === 0 && isGuardian) {
     throw throwInvalidArgument(WenError.at_least_one_guardian_must_be_in_the_space);
   }
@@ -522,7 +521,7 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
@@ -556,7 +555,7 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
   assertValidation(schema.validate(params.body));
 
   const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  let docSpace: any;
+  let docSpace!: DocumentSnapshotType;
   await SpaceValidator.spaceExists(refSpace);
 
   // Validate guardian is an guardian within the space.
@@ -692,8 +691,8 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
       // We have to go through each space.
       const updateMembers: string[] = [];
       for (const spaceId of [currentSpace.uid, ...getAlliancesKeys(currentSpace.alliances)]) {
-        const spaceToUpdate: any = admin.firestore().collection(COL.SPACE).doc(spaceId);
-        const query: QuerySnapshot = await spaceToUpdate.collection(SUB_COL.MEMBERS).get();
+        const spaceToUpdate: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(spaceId);
+        const query: admin.firestore.QuerySnapshot = await spaceToUpdate.collection(SUB_COL.MEMBERS).get();
         for (const g of query.docs) {
           if (updateMembers.indexOf(g.data().uid) > -1) {
             continue;
