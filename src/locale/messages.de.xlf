@@ -974,7 +974,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="needs-translation">Your NFT will be locked for purchase for</target>
+        <target state="translated">Dein NFT wird für den Kauf gesperrt für</target>
       </trans-unit>
       <trans-unit id="982745398054129955" datatype="html">
         <source>minutes</source>
@@ -982,7 +982,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">minutes</target>
+        <target state="translated">Minuten</target>
       </trans-unit>
       <trans-unit id="3518250060212035927" datatype="html">
         <source> remaining to make the transfer.</source>
@@ -990,7 +990,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">139,140</context>
         </context-group>
-        <target state="needs-translation"> remaining to make the transfer.</target>
+        <target state="translated"> verbleibend, um die Übertragung durchzuführen.</target>
       </trans-unit>
       <trans-unit id="464749780222721589" datatype="html">
         <source>Expired</source>
@@ -1134,7 +1134,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation"> Close checkout </target>
+        <target state="translated"> Kasse schließen </target>
       </trans-unit>
       <trans-unit id="535977460003741771" datatype="html">
         <source> Show my NFT </source>
@@ -1190,7 +1190,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">219,220</context>
         </context-group>
-        <target state="needs-translation">Migrate</target>
+        <target state="translated">Migrieren</target>
       </trans-unit>
       <trans-unit id="8315498121193062276" datatype="html">
         <source>Shimmer/Mainnet (Tokenization)...SOON.</source>
@@ -1202,7 +1202,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">221,223</context>
         </context-group>
-        <target state="needs-translation">Shimmer/Mainnet (Tokenization)...SOON.</target>
+        <target state="translated">Shimmer/Mainnet (Tokenization)...Bald.</target>
       </trans-unit>
       <trans-unit id="809642350371086523" datatype="html">
         <source>The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice.</source>
@@ -1214,7 +1214,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">227,228</context>
         </context-group>
-        <target state="needs-translation">The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice.</target>
+        <target state="translated">Die aktuelle Adresse ist nicht mit einem Live-Mainnet verbunden. Sobald die Funktionalität auf IOTA/Shimmer unterstützt wird, wirst du die Möglichkeit haben dieses NFT mit einem Klick in das Netzwerk deiner Wahl zu migrieren.</target>
       </trans-unit>
       <trans-unit id="562973371031157697" datatype="html">
         <source>IPFS Metadata</source>
@@ -1226,7 +1226,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">233,234</context>
         </context-group>
-        <target state="needs-translation">IPFS Metadata</target>
+        <target state="translated">IPFS-Metadaten</target>
       </trans-unit>
       <trans-unit id="6114133845791044682" datatype="html">
         <source> Preparing... </source>
@@ -1238,7 +1238,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">110</context>
         </context-group>
-        <target state="needs-translation"> Preparing... </target>
+        <target state="translated"> Wird vorbereitet... </target>
       </trans-unit>
       <trans-unit id="163617933164027990" datatype="html">
         <source>IPFS Image</source>
@@ -1274,7 +1274,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-card/proposal-card.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">Donut graph coming SOON.</target>
+        <target state="translated">Donut-Diagramm bald verfügbar.</target>
       </trans-unit>
       <trans-unit id="160701937417956396" datatype="html">
         <source>Commencing
@@ -1283,7 +1283,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="needs-translation">Commencing
+        <target state="translated">Wird gestartet
 </target>
       </trans-unit>
       <trans-unit id="867767930599354792" datatype="html">
@@ -1292,7 +1292,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation"> In-Progress</target>
+        <target state="translated"> In Bearbeitung</target>
       </trans-unit>
       <trans-unit id="5413541067782808528" datatype="html">
         <source>Completed
@@ -1318,7 +1318,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">230,231</context>
         </context-group>
-        <target state="needs-translation">Space is required.</target>
+        <target state="translated">Raum benötigt.</target>
       </trans-unit>
       <trans-unit id="393843353725038860" datatype="html">
         <source>Select Space</source>
@@ -1406,7 +1406,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation">members</target>
+        <target state="translated">Mitglieder</target>
       </trans-unit>
       <trans-unit id="2385926578126260283" datatype="html">
         <source>Value range is 0-1000</source>
@@ -1414,7 +1414,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
-        <target state="needs-translation">Value range is 0-1000</target>
+        <target state="translated">Wertbereich ist 0-1000</target>
       </trans-unit>
       <trans-unit id="1989424947945479650" datatype="html">
         <source>Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000</source>
@@ -1422,7 +1422,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="needs-translation">Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000</target>
+        <target state="translated">Wähle die Gewichtung mit der die Erfahrung eines bestimmten Raumes anerkannt wird. Gültiger Bereich ist 0-1000</target>
       </trans-unit>
       <trans-unit id="7514940606218254317" datatype="html">
         <source>Equal</source>
@@ -1430,7 +1430,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Equal</target>
+        <target state="translated">Gleich</target>
       </trans-unit>
       <trans-unit id="6596014368803471493" datatype="html">
         <source>Half</source>
@@ -1438,7 +1438,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation">Half</target>
+        <target state="translated">Halbiert</target>
       </trans-unit>
       <trans-unit id="4061312488520540569" datatype="html">
         <source>Double</source>
@@ -1446,7 +1446,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation">Double</target>
+        <target state="translated">Verdoppelt</target>
       </trans-unit>
       <trans-unit id="4233821199291749572" datatype="html">
         <source>Earned Badge</source>
@@ -1454,7 +1454,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Earned Badge</target>
+        <target state="translated">Abzeichen erhalten</target>
       </trans-unit>
       <trans-unit id="1351814922314683865" datatype="html">
         <source>with</source>
@@ -1462,7 +1462,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">with</target>
+        <target state="translated">mit</target>
       </trans-unit>
       <trans-unit id="3517550046701184661" datatype="html">
         <source>Show less</source>
@@ -1518,7 +1518,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">75</context>
         </context-group>
-        <target state="needs-translation">Listed by space</target>
+        <target state="translated">Aufgelistet nach Raum</target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -1706,7 +1706,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Detailed Info</target>
+        <target state="translated">Detaillierte Infos</target>
       </trans-unit>
       <trans-unit id="2838379337251742684" datatype="html">
         <source>Badges used / available</source>
@@ -1726,7 +1726,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">50</context>
         </context-group>
-        <target state="needs-translation">End Date</target>
+        <target state="translated">Enddatum</target>
       </trans-unit>
       <trans-unit id="3715596725146409911" datatype="html">
         <source>Owner</source>
@@ -1746,7 +1746,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">17,18</context>
         </context-group>
-        <target state="needs-translation">Award info</target>
+        <target state="translated">Informationen zur Auszeichnung</target>
       </trans-unit>
       <trans-unit id="7377060302632014530" datatype="html">
         <source>Approve Award</source>
@@ -1754,7 +1754,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">84,85</context>
         </context-group>
-        <target state="needs-translation">Approve Award</target>
+        <target state="translated">Auszeichnung genehmigen</target>
       </trans-unit>
       <trans-unit id="2607565416406926368" datatype="html">
         <source> Approve </source>
@@ -1762,7 +1762,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">96</context>
         </context-group>
-        <target state="needs-translation"> Approve </target>
+        <target state="translated"> Genehmigen </target>
       </trans-unit>
       <trans-unit id="8618224804651366925" datatype="html">
         <source> Decline </source>
@@ -1770,7 +1770,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="needs-translation"> Decline </target>
+        <target state="translated"> Ablehnen </target>
       </trans-unit>
       <trans-unit id="4207094385815311412" datatype="html">
         <source>Confirm your participation</source>
@@ -1786,7 +1786,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="needs-translation"> The whole communication is now handled outside the platform, let the award creator know how to contact you. </target>
+        <target state="translated"> Die gesamte Kommunikation wird nun außerhalb der Plattform abgewickelt, teile dem Ersteller der Auszeichnung mit, wie er dich kontaktieren kann. </target>
       </trans-unit>
       <trans-unit id="4292058841992410367" datatype="html">
         <source>Provide description or link to your work.</source>
@@ -1794,7 +1794,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">135,136</context>
         </context-group>
-        <target state="needs-translation">Provide description or link to your work.</target>
+        <target state="translated">Gib eine Beschreibung oder einen Link zu deiner Arbeit an.</target>
       </trans-unit>
       <trans-unit id="4943998242904350511" datatype="html">
         <source> Submit </source>
@@ -1802,7 +1802,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">144,145</context>
         </context-group>
-        <target state="needs-translation"> Submit </target>
+        <target state="translated"> Einreichen </target>
       </trans-unit>
       <trans-unit id="2614607010577950577" datatype="html">
         <source>Overview</source>
@@ -1850,7 +1850,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Title is required.</target>
+        <target state="translated">Titel erforderlich.</target>
       </trans-unit>
       <trans-unit id="7522433942110696467" datatype="html">
         <source>Title and description will be included on the Award. End date determines the duration of the Award.</source>
@@ -1858,7 +1858,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation">Title and description will be included on the Award. End date determines the duration of the Award.</target>
+        <target state="translated">Titel und Beschreibung werden auf der Auszeichnung angezeigt. Das Enddatum bestimmt die Dauer der Auszeichnung.</target>
       </trans-unit>
       <trans-unit id="1221393376920511249" datatype="html">
         <source>You must enter name.</source>
@@ -1882,7 +1882,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Title</target>
+        <target state="translated">Titel</target>
       </trans-unit>
       <trans-unit id="1246839737741610932" datatype="html">
         <source>End Date is required.</source>
@@ -1894,7 +1894,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">47,48</context>
         </context-group>
-        <target state="needs-translation">End Date is required.</target>
+        <target state="translated">Enddatum erforderlich.</target>
       </trans-unit>
       <trans-unit id="1241348629231510663" datatype="html">
         <source>End</source>
@@ -1902,7 +1902,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">45</context>
         </context-group>
-        <target state="needs-translation">End</target>
+        <target state="translated">Ende</target>
       </trans-unit>
       <trans-unit id="6479294521660912370" datatype="html">
         <source>Award description</source>
@@ -1910,7 +1910,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Award description</target>
+        <target state="translated">Beschreibung der Auszeichnung</target>
       </trans-unit>
       <trans-unit id="7236087781229220675" datatype="html">
         <source>Badge definition</source>
@@ -1918,7 +1918,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">66,67</context>
         </context-group>
-        <target state="needs-translation">Badge definition</target>
+        <target state="translated">Definition des Badges</target>
       </trans-unit>
       <trans-unit id="2439887104778279013" datatype="html">
         <source>Title and description will be included on the badge.</source>
@@ -2894,7 +2894,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">439</context>
         </context-group>
-        <target state="needs-translation"> Banner is required. </target>
+        <target state="translated"> Banner erforderlich. </target>
       </trans-unit>
       <trans-unit id="3170046505893444934" datatype="html">
         <source>Placeholder</source>
@@ -2934,7 +2934,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">486,487</context>
         </context-group>
-        <target state="needs-translation">Category is used when filtering content.</target>
+        <target state="translated">Kategorie wird beim Filtern von Inhalten verwendet.</target>
       </trans-unit>
       <trans-unit id="3290327607648658784" datatype="html">
         <source>Category.</source>
@@ -2950,7 +2950,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">515,516</context>
         </context-group>
-        <target state="needs-translation">Collection Setup</target>
+        <target state="translated">Einstellungen Kollektionen</target>
       </trans-unit>
       <trans-unit id="6170042633630334607" datatype="html">
         <source>Who has access to a given collection.</source>
@@ -2966,7 +2966,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">528,529</context>
         </context-group>
-        <target state="needs-translation">Open Sale</target>
+        <target state="translated">Offener Verkauf</target>
       </trans-unit>
       <trans-unit id="5730067783654077462" datatype="html">
         <source>Everyone has access to this collection.</source>
@@ -3038,7 +3038,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">581,582</context>
         </context-group>
-        <target state="needs-translation">Collection Options</target>
+        <target state="translated">Kollektionsoptionen</target>
       </trans-unit>
       <trans-unit id="6916773748615527066" datatype="html">
         <source> One NFT per Member Only </source>
@@ -3102,7 +3102,7 @@
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation"> No Spaces yet </target>
+        <target state="translated"> Keine Räume bisher </target>
       </trans-unit>
       <trans-unit id="1990247176385528889" datatype="html">
         <source>Discover Spaces</source>
@@ -3294,7 +3294,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/spaces/member-spaces.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="needs-translation">Include connections </target>
+        <target state="translated">Verbindungen anzeigen </target>
       </trans-unit>
       <trans-unit id="6428281401899195338" datatype="html">
         <source>(Select some space)</source>
@@ -3306,7 +3306,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">(Select some space)</target>
+        <target state="translated">(Einen Raum auswählen)</target>
       </trans-unit>
       <trans-unit id="4033772615432038713" datatype="html">
         <source> No Members </source>
@@ -3434,7 +3434,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">Creating your community is easy as 1-2-3</target>
+        <target state="translated">Deine eigene Community zu erstellen ist kinderleicht</target>
       </trans-unit>
       <trans-unit id="7915937961793984299" datatype="html">
         <source> No more worries about “the tech”. Spend your time where it belongs, building your community and realizing your collective vision. </source>
@@ -3450,7 +3450,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">141,142</context>
         </context-group>
-        <target state="needs-translation">StepArticle image</target>
+        <target state="translated">StepArticle Bild</target>
       </trans-unit>
       <trans-unit id="7719648407147871439" datatype="html">
         <source> Voting is essential and it needs to be on-chain and FREE. </source>
@@ -3458,7 +3458,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">160</context>
         </context-group>
-        <target state="needs-translation"> Voting is essential and it needs to be on-chain and FREE. </target>
+        <target state="translated"> Abstimmungen sind essenziell und sie müssen on-chain und KOSTENLOS erfolgen. </target>
       </trans-unit>
       <trans-unit id="8583178827581496484" datatype="html">
         <source> By building on the IOTA network we have enshrined a crucial feature of proper DAO management. Feeless, secure voting. Read more about this in our manifesto. </source>
@@ -3474,7 +3474,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">175</context>
         </context-group>
-        <target state="needs-translation"> Go there now </target>
+        <target state="translated"> Gehe jetzt dorthin </target>
       </trans-unit>
       <trans-unit id="7637119562549860678" datatype="html">
         <source>Want to learn more about SoonLabs?</source>
@@ -3482,7 +3482,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">200,201</context>
         </context-group>
-        <target state="needs-translation">Want to learn more about SoonLabs?</target>
+        <target state="translated">Du willst mehr über SoonLabs erfahren?</target>
       </trans-unit>
       <trans-unit id="8346786652329459022" datatype="html">
         <source> Visit YouTube </source>
@@ -3514,7 +3514,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">282,283</context>
         </context-group>
-        <target state="needs-translation">Privacy</target>
+        <target state="translated">Datenschutz</target>
       </trans-unit>
       <trans-unit id="2544569632476723854" datatype="html">
         <source>Terms</source>
@@ -3522,7 +3522,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">293</context>
         </context-group>
-        <target state="needs-translation">Terms</target>
+        <target state="translated">Bedingungen</target>
       </trans-unit>
       <trans-unit id="7838843438514554464" datatype="html">
         <source>Powered by SoonLabs</source>
@@ -3534,7 +3534,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">315,316</context>
         </context-group>
-        <target state="needs-translation">Powered by SoonLabs</target>
+        <target state="translated">Unterstützt von SoonLabs</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
@@ -3590,7 +3590,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation">View space</target>
+        <target state="translated">Raum anzeigen</target>
       </trans-unit>
       <trans-unit id="2971061865126372183" datatype="html">
         <source>Awards Completed</source>
@@ -3598,7 +3598,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
-        <target state="needs-translation">Awards Completed</target>
+        <target state="translated">Abgeschlossene Auszeichnungen</target>
       </trans-unit>
       <trans-unit id="4015344045011391178" datatype="html">
         <source>Total Reputation</source>
@@ -3606,7 +3606,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Total Reputation</target>
+        <target state="translated">Gesamtansehen</target>
       </trans-unit>
       <trans-unit id="6594328713484058107" datatype="html">
         <source>Earned badges</source>
@@ -3630,7 +3630,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">72,73</context>
         </context-group>
-        <target state="needs-translation">Reputation</target>
+        <target state="translated">Ansehen</target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -3646,7 +3646,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">10,11</context>
         </context-group>
-        <target state="needs-translation"> Issued </target>
+        <target state="translated"> Zugelassen </target>
       </trans-unit>
       <trans-unit id="2487023924929153299" datatype="html">
         <source>Discover Awards</source>
@@ -3654,7 +3654,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Discover Awards</target>
+        <target state="translated">Entdecke Auszeichnungen</target>
       </trans-unit>
       <trans-unit id="6486778458433488557" datatype="html">
         <source> No Badges yet </source>
@@ -3662,7 +3662,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation"> No Badges yet </target>
+        <target state="translated"> Keine Abzeichen bisher </target>
       </trans-unit>
       <trans-unit id="1926408800750418975" datatype="html">
         <source>Discover Badges</source>
@@ -3670,7 +3670,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Discover Badges</target>
+        <target state="translated">Entdecke Abzeichen</target>
       </trans-unit>
       <trans-unit id="4915431133669985304" datatype="html">
         <source>Profile</source>
@@ -3686,7 +3686,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Activity</target>
+        <target state="translated">Aktivität</target>
       </trans-unit>
       <trans-unit id="2684344419716682750" datatype="html">
         <source>Badges</source>
@@ -3734,7 +3734,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="needs-translation"> Some of the NFTs are faulty! </target>
+        <target state="translated"> Einige der NFTs sind fehlerhaft! </target>
       </trans-unit>
       <trans-unit id="7003790776240394114" datatype="html">
         <source>Filename</source>
@@ -3778,7 +3778,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">136,137</context>
         </context-group>
-        <target state="needs-translation">Upload existing CSV</target>
+        <target state="translated">Bestehendes CSV hochladen</target>
       </trans-unit>
       <trans-unit id="189367192793231292" datatype="html">
         <source>Upload back once you generate bellow</source>
@@ -3794,7 +3794,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">166</context>
         </context-group>
-        <target state="needs-translation"> You have to upload images first. </target>
+        <target state="translated"> Du musst zuerst Bilder hochladen. </target>
       </trans-unit>
       <trans-unit id="1638075922526073680" datatype="html">
         <source>To create multiple classic NFTs, you have to use the web version of Soonaverse.</source>
@@ -3802,7 +3802,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">191,192</context>
         </context-group>
-        <target state="needs-translation">To create multiple classic NFTs, you have to use the web version of Soonaverse.</target>
+        <target state="translated">Um mehrere klassische NFTs zu erstellen, musst du die Webversion von Soonaverse verwenden.</target>
       </trans-unit>
       <trans-unit id="3413004253239957216" datatype="html">
         <source>Single</source>
@@ -3810,7 +3810,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/new.page.ts</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="needs-translation">Single</target>
+        <target state="translated">Einzel</target>
       </trans-unit>
       <trans-unit id="7628975763567276368" datatype="html">
         <source>Multiple</source>
@@ -3818,7 +3818,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/new.page.ts</context>
           <context context-type="linenumber">19</context>
         </context-group>
-        <target state="needs-translation">Multiple</target>
+        <target state="translated">Mehrfach</target>
       </trans-unit>
       <trans-unit id="2593988160505574345" datatype="html">
         <source>NFT info</source>
@@ -3826,7 +3826,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">14,15</context>
         </context-group>
-        <target state="needs-translation">NFT info</target>
+        <target state="translated">NFT Info</target>
       </trans-unit>
       <trans-unit id="2267166571580211473" datatype="html">
         <source>Name and description will be included on the NFT.</source>
@@ -3834,7 +3834,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">16,17</context>
         </context-group>
-        <target state="needs-translation">Name and description will be included on the NFT.</target>
+        <target state="translated">Name und Beschreibung werden in dem NFT aufgeführt.</target>
       </trans-unit>
       <trans-unit id="4444753420973870540" datatype="html">
         <source>Name is required.</source>
@@ -3842,7 +3842,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Name is required.</target>
+        <target state="translated">Name erforderlich.</target>
       </trans-unit>
       <trans-unit id="2512365026527188575" datatype="html">
         <source>Description is required.</source>
@@ -3850,7 +3850,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="needs-translation">Description is required.</target>
+        <target state="translated">Beschreibung erforderlich.</target>
       </trans-unit>
       <trans-unit id="6717245332621479967" datatype="html">
         <source>All times are reflected in user&apos;s timezone. For generated NFT and SFT the price is set per collection and cannot be changed here.</source>
@@ -3858,7 +3858,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation">All times are reflected in user's timezone. For generated NFT and SFT the price is set per collection and cannot be changed here.</target>
+        <target state="translated">Alle Zeiten sind in der Zeitzone des Nutzers angegeben. Für generierte NFT und SFT ist der Preis pro Kollektion festgelegt und kann hier nicht geändert werden.</target>
       </trans-unit>
       <trans-unit id="8721861281513890587" datatype="html">
         <source>Properties</source>
@@ -3866,7 +3866,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">110,111</context>
         </context-group>
-        <target state="needs-translation">Properties</target>
+        <target state="translated">Eigenschaften</target>
       </trans-unit>
       <trans-unit id="2381401539460093095" datatype="html">
         <source>Properties show up underneath your item.</source>
@@ -3874,7 +3874,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">112,113</context>
         </context-group>
-        <target state="needs-translation">Properties show up underneath your item.</target>
+        <target state="translated">Eigenschaften werden unterhalb deines Items angezeigt.</target>
       </trans-unit>
       <trans-unit id="4342943393476103968" datatype="html">
         <source>Property name (E.g. Character)</source>
