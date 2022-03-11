@@ -58,4 +58,5 @@ export interface Collection extends BaseRecord {
   rejected: boolean;
   onePerMemberOnly: boolean;
   placeholderNft?: EthAddress;
+  placeholderUrl?: string;
 }
