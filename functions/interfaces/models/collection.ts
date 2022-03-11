@@ -61,6 +61,7 @@ export interface Collection extends CollectionBase {
   price: number;
   onePerMemberOnly: boolean;
   placeholderNft: EthAddress;
+  placeholderUrl: string;
 }
 
 export interface SchemaCollection extends CollectionBase {
@@ -72,5 +73,4 @@ export interface SchemaCollection extends CollectionBase {
   price?: number;
   onePerMemberOnly?: boolean;
   placeholderNft?: EthAddress;
-  placeholderUrl?: string;
 }
