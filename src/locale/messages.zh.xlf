@@ -40,7 +40,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="translated">探索</target>
+        <target state="translated">发现</target>
       </trans-unit>
       <trans-unit id="2943097308103842625" datatype="html">
         <source>Create new </source>
