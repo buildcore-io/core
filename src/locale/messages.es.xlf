@@ -1430,7 +1430,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Equal</target>
+        <target state="translated">Igual</target>
       </trans-unit>
       <trans-unit id="6596014368803471493" datatype="html">
         <source>Half</source>
@@ -1438,7 +1438,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation">Half</target>
+        <target state="translated">Mitad</target>
       </trans-unit>
       <trans-unit id="4061312488520540569" datatype="html">
         <source>Double</source>
@@ -1446,7 +1446,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation">Double</target>
+        <target state="translated">Doble</target>
       </trans-unit>
       <trans-unit id="4233821199291749572" datatype="html">
         <source>Earned Badge</source>
@@ -1454,7 +1454,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Earned Badge</target>
+        <target state="translated">Insignia Ganada</target>
       </trans-unit>
       <trans-unit id="1351814922314683865" datatype="html">
         <source>with</source>
@@ -1462,7 +1462,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">with</target>
+        <target state="translated">con</target>
       </trans-unit>
       <trans-unit id="3517550046701184661" datatype="html">
         <source>Show less</source>
@@ -1470,7 +1470,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="needs-translation">Show less</target>
+        <target state="translated">Ver menos</target>
       </trans-unit>
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
@@ -1478,7 +1478,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Show more</target>
+        <target state="translated">Ver más</target>
       </trans-unit>
       <trans-unit id="9074325042294858925" datatype="html">
         <source>Purchased by</source>
@@ -1486,7 +1486,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="needs-translation">Purchased by</target>
+        <target state="translated">Adquirido por</target>
       </trans-unit>
       <trans-unit id="8553460997100418147" datatype="html">
         <source>for</source>
@@ -1494,7 +1494,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
-        <target state="needs-translation">for</target>
+        <target state="translated">para</target>
       </trans-unit>
       <trans-unit id="2497399796653488268" datatype="html">
         <source>details</source>
@@ -1502,7 +1502,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">details</target>
+        <target state="translated">detalles</target>
       </trans-unit>
       <trans-unit id="4136129438009397007" datatype="html">
         <source>Invalid</source>
@@ -1510,7 +1510,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="needs-translation">Invalid</target>
+        <target state="translated">Inválido</target>
       </trans-unit>
       <trans-unit id="5674790342225467123" datatype="html">
         <source>Listed by space</source>
