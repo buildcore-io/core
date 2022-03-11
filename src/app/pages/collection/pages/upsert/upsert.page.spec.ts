@@ -4,6 +4,8 @@ import { AwardApi } from '@api/award.api';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
+import { SpaceApi } from '@api/space.api';
+import { CacheService } from '@core/services/cache/cache.service';
 import { NavigationService } from '@core/services/navigation/navigation.service';
 import { NotificationService } from '@core/services/notification';
 import { MockProvider } from 'ng-mocks';
@@ -27,7 +29,9 @@ describe('UpsertPage', () => {
         MockProvider(NzNotificationService),
         MockProvider(Router),
         MockProvider(FileApi),
-        MockProvider(AwardApi)
+        MockProvider(AwardApi),
+        MockProvider(SpaceApi),
+        MockProvider(CacheService)
       ]
     })
     .compileComponents();
