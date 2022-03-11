@@ -44,63 +44,6 @@
                 ></textarea>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item>
-              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n>Royalty</nz-form-label>
-              <span class="ant-card-meta-description" i18n>
-                This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol.
-              </span><br />
-              <nz-form-control class="relative">
-                <nz-input-number
-                  class="w-full"
-                  [nzMin]="0"
-                  [nzMax]="100"
-                  [nzStep]="1"
-                  [nzFormatter]="formatterPercent"
-                  [nzParser]="parserPercent"
-                  i18n-nzPlaceHolder
-                  nzPlaceHolder="Royalties - Percentage fee"
-                  nzSize="large"
-                  [formControl]="royaltiesFeeControl"
-                ></nz-input-number>
-                <i
-                  nz-icon
-                  nzType="info-circle"
-                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
-                  nz-tooltip
-                  i18n-nzTooltipTitle
-                  nzTooltipTitle="Example: 10 % , 20 % , etc.."
-                ></i>
-              </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item>
-              <label nz-checkbox [formControl]="royaltiesSpaceDifferentControl">
-                <div class="flex items-center">
-                  <div class="font-medium mr-2.5" i18n>
-                    Royalties goes to a different space
-                  </div>
-                  <i
-                    nz-icon
-                    nzType="info-circle"
-                    class="cursor-pointer text-app-gray-400"
-                    nz-tooltip
-                    i18n-nzTooltipTitle
-                    nzTooltipTitle="Royalties goes to a different space"
-                  ></i>
-                </div>
-              </label>
-            </nz-form-item>
-
-            <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
-              <wen-select-space
-                class="block w-full"
-                [includeDefaultSpace]="false"
-                [formControl]="royaltiesSpaceControl"
-                [spaces]="getSpaceListOptions(spaces$ | async)"
-                size="large"
-              >
-              </wen-select-space>
-            </nz-form-item>
           </div>
         </nz-card>
 
@@ -169,6 +112,63 @@
                 >
                 </nz-date-picker>
               </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n>Royalty</nz-form-label>
+              <span class="ant-card-meta-description" i18n>
+                This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol.
+              </span><br />
+              <nz-form-control class="relative">
+                <nz-input-number
+                  class="w-full"
+                  [nzMin]="0"
+                  [nzMax]="100"
+                  [nzStep]="1"
+                  [nzFormatter]="formatterPercent"
+                  [nzParser]="parserPercent"
+                  i18n-nzPlaceHolder
+                  nzPlaceHolder="Royalties - Percentage fee"
+                  nzSize="large"
+                  [formControl]="royaltiesFeeControl"
+                ></nz-input-number>
+                <i
+                  nz-icon
+                  nzType="info-circle"
+                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                  nz-tooltip
+                  i18n-nzTooltipTitle
+                  nzTooltipTitle="Example: 10 % , 20 % , etc.."
+                ></i>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <label nz-checkbox [formControl]="royaltiesSpaceDifferentControl">
+                <div class="flex items-center">
+                  <div class="font-medium mr-2.5" i18n>
+                    Royalties goes to a different space
+                  </div>
+                  <i
+                    nz-icon
+                    nzType="info-circle"
+                    class="cursor-pointer text-app-gray-400"
+                    nz-tooltip
+                    i18n-nzTooltipTitle
+                    nzTooltipTitle="Royalties goes to a different space"
+                  ></i>
+                </div>
+              </label>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
+              <wen-select-space
+                class="block w-full"
+                [includeDefaultSpace]="false"
+                [formControl]="royaltiesSpaceControl"
+                [spaces]="getSpaceListOptions(spaces$ | async)"
+                size="large"
+              >
+              </wen-select-space>
             </nz-form-item>
           </div>
         </nz-card>
@@ -246,7 +246,8 @@
             i18n-nzTitle
             nzTitle="Member discounts"
             i18n-nzDescription
-            nzDescription="Space support an ability to airdrop NFTs to their members for free or at discount."
+            [nzDescription]="'Space support an ability to airdrop NFTs to their members for free or at discount. The maximum discount for your price is '
+              + maxDiscount + '%'"
           >
           </nz-card-meta>
 
@@ -279,8 +280,11 @@
                     [formControl]="gForm(discount, 'amount')"
                   ></nz-input-number>
 
+                  <i *ngIf="gForm(discount, 'amount').errors?.maxDiscount" nz-icon nzType="info-circle"
+                    nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="'Discount must be less or equal than ' + maxDiscount" class="ml-2 text-alerts-error cursor-pointer"></i>
+
                   <wen-icon-trash
-                    class="ml-4 cursor-pointer"
+                    class="ml-1 cursor-pointer"
                     (click)="removeDiscount(i)"
                   ></wen-icon-trash>
                 </div>
@@ -296,10 +300,15 @@
                   <div class="text-xs font-bold">
                     <span i18n>Discount</span> #0{{ i + 1 }}
                   </div>
-                  <wen-icon-trash
-                    class="cursor-pointer"
-                    (click)="removeDiscount(i)"
-                  ></wen-icon-trash>
+                  <div class="flex items-center">
+                    <i *ngIf="gForm(discount, 'amount').errors?.maxDiscount" nz-icon nzType="info-circle"
+                    nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="'Discount must be less or equal than ' + maxDiscount" class="mr-2 text-alerts-error cursor-pointer"></i>
+                    
+                    <wen-icon-trash
+                      class="cursor-pointer"
+                      (click)="removeDiscount(i)"
+                    ></wen-icon-trash>
+                  </div>
                 </div>
 
                 <div class="mt-2 mb-5 separator"></div>
@@ -340,6 +349,7 @@
             *ngIf="discounts.controls.length < maxDiscountCount"
             nzType="link"
             class="flex items-center pl-0 mt-3"
+            [disabled]="priceControl.invalid"
             (click)="addDiscount()"
           >
             <wen-icon-plus class="mr-0.5"></wen-icon-plus>

@@ -5,7 +5,7 @@ import {
   OnDestroy,
   OnInit
 } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi, AwardFilter } from '@api/award.api';
 import { FULL_LIST } from '@api/base.api';
@@ -53,6 +53,7 @@ import {
 } from './../../../../../../functions/interfaces/models/collection';
 
 const MAX_DISCOUNT_COUNT = 3;
+const MIN_DISCOUNT_PRICE = 1000 * 1000;
 
 @UntilDestroy()
 @Component({
@@ -109,7 +110,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     Validators.required
   ]);;
   public unitControl: FormControl = new FormControl(
-    PRICE_UNITS[0],
+    <Units>'Mi',
     Validators.required,
   );
   public availableFromControl: FormControl = new FormControl(
@@ -132,6 +133,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
+  public maxDiscount = 0;
   private awardSub?: Subscription;
 
   constructor(
@@ -199,7 +201,13 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.spaceControl.setValue(o.space);
               this.descriptionControl.setValue(o.description);
               this.typeControl.setValue(o.type);
-              this.priceControl.setValue(o.price / 1000 / 1000);
+              if (o.price >= 1000 * 1000 * 1000) {
+                this.priceControl.setValue(o.price / 1000 / 1000 / 1000);
+                this.unitControl.setValue(<Units>'Gi');
+              } else {
+                this.priceControl.setValue(o.price / 1000 / 1000);
+                this.unitControl.setValue(<Units>'Mi');
+              }
               this.availableFromControl.setValue(o.availableFrom.toDate());
               this.royaltiesFeeControl.setValue(o.royaltiesFee * 100);
               this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
@@ -277,9 +285,11 @@ export class UpsertPage implements OnInit, OnDestroy {
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = Number(this.priceControl.value) * (<Units>this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+        const value = this.getRawPrice(Number(this.priceControl.value), <Units>this.unitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
+        this.discounts = new FormArray([]);
+        this.maxDiscount = Math.floor((100 - MIN_DISCOUNT_PRICE / value * 100) * 100) / 100;
       });
 
     this.royaltiesSpaceDifferentControl.valueChanges
@@ -429,11 +439,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public formatSubmitData(data: any, mode: 'create' | 'edit' = 'create'): any {
     if (data.price) {
-      if (<Units>data.unit === 'Gi') {
-        data.price = data.price * 1000 * 1000 * 1000;
-      } else {
-        data.price = data.price * 1000 * 1000;
-      }
+      data.price = this.getRawPrice(data.price, data.unit);
     }
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
@@ -521,7 +527,12 @@ export class UpsertPage implements OnInit, OnDestroy {
   private getDiscountForm(xp = '', amount = ''): FormGroup {
     return new FormGroup({
       xp: new FormControl(xp),
-      amount: new FormControl(amount),
+      amount: new FormControl(amount, [Validators.required,
+          (control: AbstractControl): ValidationErrors | null => {
+            const error = control.value <= this.maxDiscount ? null : { maxDiscount: true };
+            return error;
+          }
+        ])
     });
   }
 
@@ -541,5 +552,9 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.awardSub?.unsubscribe();
+  }
+
+  private getRawPrice(price: number, unit: Units): number {
+    return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
   }
 }
