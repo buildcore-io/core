@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">124,125</context>
         </context-group>
-        <target state="needs-translation">Open Checkout</target>
+        <target state="translated">開啟結帳</target>
       </trans-unit>
       <trans-unit id="7130854181625494946" datatype="html">
         <source> Space </source>
@@ -240,7 +240,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
-        <target state="needs-translation"> Discover Soonaverse </target>
+        <target state="translated"> 探索 Soonaverse </target>
       </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
@@ -272,7 +272,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation">Make sure you select public IOTA EVM Chain in MetaMask.</target>
+        <target state="translated">確保您在MetaMask上選擇公開的IOTA EVM鏈</target>
       </trans-unit>
       <trans-unit id="6970134539747340940" datatype="html">
         <source>Network Name: IOTA EVM</source>
@@ -280,7 +280,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Network Name: IOTA EVM</target>
+        <target state="translated">網路名稱: IOTA EVM</target>
       </trans-unit>
       <trans-unit id="1895879371426538757" datatype="html">
         <source>RPC URL: https://evm.wasp.sc.iota.org/</source>
@@ -288,7 +288,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation">RPC URL: https://evm.wasp.sc.iota.org/</target>
+        <target state="translated">RPC URL: https://evm.wasp.sc.iota.org/</target>
       </trans-unit>
       <trans-unit id="7577690990575717256" datatype="html">
         <source>Chain ID: 1074</source>
@@ -296,7 +296,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
-        <target state="needs-translation">Chain ID: 1074</target>
+        <target state="translated">區塊鏈身分：1074</target>
       </trans-unit>
       <trans-unit id="2330577642930707695" datatype="html">
         <source> Cancel </source>
@@ -316,7 +316,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">177,178</context>
         </context-group>
-        <target state="needs-translation"> Cancel </target>
+        <target state="translated">取消</target>
       </trans-unit>
       <trans-unit id="1431600251182607708" datatype="html">
         <source> Connect
@@ -325,7 +325,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in/sign-in.component.html</context>
           <context context-type="linenumber">1,3</context>
         </context-group>
-        <target state="needs-translation"> Connect
+        <target state="translated"> 連線
 </target>
       </trans-unit>
       <trans-unit id="2907016025519254862" datatype="html">
@@ -334,7 +334,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-out/sign-out.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Disconnect</target>
+        <target state="translated">中斷連線</target>
       </trans-unit>
       <trans-unit id="9217311297628108490" datatype="html">
         <source>Pending
@@ -351,7 +351,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">1,2</context>
         </context-group>
-        <target state="needs-translation">Pending
+        <target state="translated">待處理
 </target>
       </trans-unit>
       <trans-unit id="6390262366094210912" datatype="html">
@@ -369,7 +369,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Rejected
+        <target state="translated">已駁回
 </target>
       </trans-unit>
       <trans-unit id="1161299114153631702" datatype="html">
@@ -386,7 +386,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="needs-translation">Completed</target>
+        <target state="translated">已完成</target>
       </trans-unit>
       <trans-unit id="3955868613858648955" datatype="html">
         <source>Available</source>
@@ -410,7 +410,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="needs-translation">Available</target>
+        <target state="translated">可購買</target>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
         <source>Pending approval</source>
@@ -418,7 +418,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.ts</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <target state="needs-translation">Pending approval</target>
+        <target state="translated">等待核准</target>
       </trans-unit>
       <trans-unit id="4188654437346976139" datatype="html">
         <source>Rejected</source>
@@ -438,7 +438,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Rejected</target>
+        <target state="translated">已駁回</target>
       </trans-unit>
       <trans-unit id="4991536037209689408" datatype="html">
         <source>Collection is required.</source>
@@ -450,7 +450,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">338,339</context>
         </context-group>
-        <target state="needs-translation">Collection is required.</target>
+        <target state="translated">必須填寫收藏品</target>
       </trans-unit>
       <trans-unit id="924135691635990986" datatype="html">
         <source>Select Collection</source>
@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation">Select Collection</target>
+        <target state="translated">選擇收藏品</target>
       </trans-unit>
       <trans-unit id="7117782883150296094" datatype="html">
         <source>Select a Collection</source>
@@ -466,7 +466,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.html</context>
           <context context-type="linenumber">65,67</context>
         </context-group>
-        <target state="needs-translation">Select a Collection</target>
+        <target state="translated">選擇一組收藏品</target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
         <source>Search</source>
@@ -498,7 +498,7 @@
           <context context-type="sourcefile">src/app/components/space/components/select-space/select-space.component.html</context>
           <context context-type="linenumber">84</context>
         </context-group>
-        <target state="needs-translation">No results for</target>
+        <target state="translated">沒有結果</target>
       </trans-unit>
       <trans-unit id="6532389984123779648" datatype="html">
         <source>All Collections</source>
@@ -506,7 +506,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/select-collection/select-collection.component.ts</context>
           <context context-type="linenumber">14,13</context>
         </context-group>
-        <target state="needs-translation">All Collections</target>
+        <target state="translated">所有收藏品</target>
       </trans-unit>
       <trans-unit id="8428523226337704040" datatype="html">
         <source>Wallet details</source>
@@ -514,7 +514,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="needs-translation">Wallet details</target>
+        <target state="translated">錢包詳細資料</target>
       </trans-unit>
       <trans-unit id="469380883757198215" datatype="html">
         <source>Member&apos;s Wallet Address.</source>
@@ -522,7 +522,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="needs-translation">Member's Wallet Address.</target>
+        <target state="translated">會員的錢包地址</target>
       </trans-unit>
       <trans-unit id="4744367994495761400" datatype="html">
         <source>Recently joined spaces</source>
@@ -530,7 +530,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Recently joined spaces</target>
+        <target state="translated">最近加入的空間</target>
       </trans-unit>
       <trans-unit id="1616102757855967475" datatype="html">
         <source>All</source>
@@ -538,7 +538,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="needs-translation">All</target>
+        <target state="translated">全部</target>
       </trans-unit>
       <trans-unit id="5362807210252118625" datatype="html">
         <source>No Contribution Yet.</source>
@@ -554,7 +554,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">84,85</context>
         </context-group>
-        <target state="needs-translation">Latest Badges</target>
+        <target state="translated">最新徽章</target>
       </trans-unit>
       <trans-unit id="1888256859473055215" datatype="html">
         <source>No badges</source>
@@ -562,7 +562,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">93,94</context>
         </context-group>
-        <target state="needs-translation">No badges</target>
+        <target state="translated">沒有徽章</target>
       </trans-unit>
       <trans-unit id="3874137787806029269" datatype="html">
         <source>See all</source>
@@ -570,7 +570,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation">See all</target>
+        <target state="translated">查看全部</target>
       </trans-unit>
       <trans-unit id="2557623954339695776" datatype="html">
         <source>Connections</source>
@@ -586,7 +586,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation">Connections</target>
+        <target state="translated">連線</target>
       </trans-unit>
       <trans-unit id="5466085200395052815" datatype="html">
         <source>Awards</source>
@@ -606,7 +606,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Awards</target>
+        <target state="translated">獎勵</target>
       </trans-unit>
       <trans-unit id="7770530583769024002" datatype="html">
         <source>XP</source>
@@ -626,7 +626,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-space-row/member-space-row.component.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="needs-translation">XP</target>
+        <target state="translated">XP</target>
       </trans-unit>
       <trans-unit id="2313832019053603054" datatype="html">
         <source>Total reputation</source>
@@ -634,7 +634,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-alliances-table/member-alliances-table.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Total reputation</target>
+        <target state="translated">所有聲望</target>
       </trans-unit>
       <trans-unit id="4112746459433867442" datatype="html">
         <source>awards</source>
@@ -650,7 +650,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation">Display Name</target>
+        <target state="translated">顯示名稱</target>
       </trans-unit>
       <trans-unit id="569962948698127053" datatype="html">
         <source>Set a display name. This does not change your username.</source>
@@ -658,7 +658,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation">Set a display name. This does not change your username.</target>
+        <target state="translated">設定顯示名稱。這不會改變您的用戶名。</target>
       </trans-unit>
       <trans-unit id="4670052686967204775" datatype="html">
         <source>Display name (optional)</source>
@@ -666,7 +666,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">Display name (optional)</target>
+        <target state="translated">顯示名稱 (選擇性)</target>
       </trans-unit>
       <trans-unit id="1726363342938046830" datatype="html">
         <source>About</source>
@@ -674,7 +674,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">About</target>
+        <target state="translated">關於</target>
       </trans-unit>
       <trans-unit id="1013259492339547143" datatype="html">
         <source>A brief description of yourself shown on your profile.</source>
@@ -682,7 +682,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation">A brief description of yourself shown on your profile.</target>
+        <target state="translated">顯示在您個人檔案上的簡短自述。</target>
       </trans-unit>
       <trans-unit id="1793778323686892052" datatype="html">
         <source>Your description (optional)</source>
@@ -690,7 +690,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Your description (optional)</target>
+        <target state="translated">您的自述 (選填)</target>
       </trans-unit>
       <trans-unit id="6525109356951792180" datatype="html">
         <source>Avatar</source>
@@ -702,7 +702,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">154</context>
         </context-group>
-        <target state="needs-translation">Avatar</target>
+        <target state="translated">大頭貼</target>
       </trans-unit>
       <trans-unit id="2458349631370931488" datatype="html">
         <source>Customise your Soonaverse identity.</source>
@@ -710,7 +710,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
-        <target state="needs-translation">Customise your Soonaverse identity.</target>
+        <target state="translated">自訂您的 Soonaverse 身分。</target>
       </trans-unit>
       <trans-unit id="7938682624365592165" datatype="html">
         <source>Mint a free unique avatar for your profile picture. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> New super rare premium avatar species and avatar collectibles/accessories that can all be traded are coming SOON. </source>
@@ -738,7 +738,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Networking</target>
+        <target state="translated">網路</target>
       </trans-unit>
       <trans-unit id="8518289414313197012" datatype="html">
         <source>Invalid Github username.</source>
@@ -750,7 +750,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">60,61</context>
         </context-group>
-        <target state="needs-translation">Invalid Github username.</target>
+        <target state="translated">無效的 Github 用戶名。</target>
       </trans-unit>
       <trans-unit id="1026313154710103937" datatype="html">
         <source>Type your Github account username</source>
@@ -834,13 +834,13 @@
           <context context-type="sourcefile">src/app/components/member/components/member-reputation-modal/member-reputation-modal.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">reputation</target>
+        <target state="translated">聲望</target>
       </trans-unit>
       <trans-unit id="4855584904719347847" datatype="html">
         <source>NFT image</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">8,9</context>
+          <context context-type="linenumber">9,10</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
@@ -852,7 +852,7 @@
         <source>Price</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">39,40</context>
+          <context context-type="linenumber">40,41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
@@ -888,29 +888,29 @@
         <source>Buy now</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">47,48</context>
+          <context context-type="linenumber">48,49</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">53,54</context>
+          <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="needs-translation">Buy now</target>
+        <target state="translated">立刻購買</target>
       </trans-unit>
       <trans-unit id="5383011891382211495" datatype="html">
         <source>Owned by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">64,65</context>
+          <context context-type="linenumber">65,66</context>
         </context-group>
-        <target state="needs-translation">Owned by</target>
+        <target state="translated">擁有者</target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
-          <context context-type="linenumber">136,135</context>
+          <context context-type="linenumber">141,140</context>
         </context-group>
-        <target state="needs-translation">New NFT</target>
+        <target state="translated">新的NFT</target>
       </trans-unit>
       <trans-unit id="4776389683576645610" datatype="html">
         <source>Checkout</source>
@@ -922,7 +922,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">29,30</context>
         </context-group>
-        <target state="needs-translation">Checkout</target>
+        <target state="translated">結帳</target>
       </trans-unit>
       <trans-unit id="1138828998549529161" datatype="html">
         <source>Royalties</source>
@@ -930,7 +930,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">65</context>
         </context-group>
-        <target state="needs-translation">Royalties</target>
+        <target state="translated">權利金</target>
       </trans-unit>
       <trans-unit id="7856806101502977514" datatype="html">
         <source>Royalties are automatically deducted and paid to artists.</source>
@@ -946,7 +946,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="needs-translation">Total price</target>
+        <target state="translated">總價格</target>
       </trans-unit>
       <trans-unit id="6309493669385041493" datatype="html">
         <source>By checking this box, you agree with</source>
@@ -954,7 +954,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">115,116</context>
         </context-group>
-        <target state="needs-translation">By checking this box, you agree with</target>
+        <target state="translated">點擊此按鈕即表示您同意我們的</target>
       </trans-unit>
       <trans-unit id="664573589261423471" datatype="html">
         <source>Terms and Conditions</source>
@@ -962,7 +962,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">118,119</context>
         </context-group>
-        <target state="needs-translation">Terms and Conditions</target>
+        <target state="translated">條款及細則</target>
       </trans-unit>
       <trans-unit id="6670434028870878828" datatype="html">
         <source> Confirm and Lock </source>
@@ -970,7 +970,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="needs-translation"> Confirm and Lock </target>
+        <target state="translated"> 確認並鎖定 </target>
       </trans-unit>
       <trans-unit id="4991378406307145470" datatype="html">
         <source>Your NFT will be locked for purchase for</source>
@@ -978,7 +978,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="needs-translation">Your NFT will be locked for purchase for</target>
+        <target state="translated">您的 NFT 將被鎖定進行購買</target>
       </trans-unit>
       <trans-unit id="982745398054129955" datatype="html">
         <source>minutes</source>
@@ -986,7 +986,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">minutes</target>
+        <target state="translated">分鐘</target>
       </trans-unit>
       <trans-unit id="3518250060212035927" datatype="html">
         <source> remaining to make the transfer.</source>
@@ -1002,7 +1002,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Expired</target>
+        <target state="translated">已過期</target>
       </trans-unit>
       <trans-unit id="4871765403323848538" datatype="html">
         <source>We received invalid amount. Try again.</source>
@@ -1022,7 +1022,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">130</context>
         </context-group>
-        <target state="needs-translation">Send</target>
+        <target state="translated">發送</target>
       </trans-unit>
       <trans-unit id="2448339751576066057" datatype="html">
         <source>IOTA to following address (please restake after!):</source>
@@ -1054,7 +1054,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">183</context>
         </context-group>
-        <target state="needs-translation">Copied</target>
+        <target state="translated">已複製</target>
       </trans-unit>
       <trans-unit id="4323470180912194028" datatype="html">
         <source>Copy</source>
@@ -1070,7 +1070,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="needs-translation">Copy</target>
+        <target state="translated">複製</target>
       </trans-unit>
       <trans-unit id="2370778860499758288" datatype="html">
         <source> Firefly </source>
@@ -1082,7 +1082,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">151</context>
         </context-group>
-        <target state="needs-translation"> Firefly </target>
+        <target state="translated">螢火蟲</target>
       </trans-unit>
       <trans-unit id="1285479880156294308" datatype="html">
         <source> Tanglepay </source>
@@ -1094,7 +1094,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">160</context>
         </context-group>
-        <target state="needs-translation"> Tanglepay </target>
+        <target state="translated"> Tanglepay </target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -1114,7 +1114,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">204</context>
         </context-group>
-        <target state="needs-translation"> Transaction history </target>
+        <target state="translated">交易記錄</target>
       </trans-unit>
       <trans-unit id="425557118450087391" datatype="html">
         <source> Validating your transaction... </source>
@@ -1122,7 +1122,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">207</context>
         </context-group>
-        <target state="needs-translation"> Validating your transaction... </target>
+        <target state="translated">正在驗證你的交易...</target>
       </trans-unit>
       <trans-unit id="889823730139224375" datatype="html">
         <source>Transaction complete. Congratulations.</source>
@@ -1130,7 +1130,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">235,236</context>
         </context-group>
-        <target state="needs-translation">Transaction complete. Congratulations.</target>
+        <target state="translated">交易完成，恭喜您！</target>
       </trans-unit>
       <trans-unit id="8528366073079211415" datatype="html">
         <source> Close checkout </source>
@@ -1138,7 +1138,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation"> Close checkout </target>
+        <target state="translated"> 關閉結帳 </target>
       </trans-unit>
       <trans-unit id="535977460003741771" datatype="html">
         <source> Show my NFT </source>
@@ -1146,7 +1146,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">246</context>
         </context-group>
-        <target state="needs-translation"> Show my NFT </target>
+        <target state="translated"> 顯示我的NFT </target>
       </trans-unit>
       <trans-unit id="1295614462098694869" datatype="html">
         <source>Preview</source>
@@ -1158,7 +1158,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
-        <target state="needs-translation">Preview</target>
+        <target state="translated">預覽</target>
       </trans-unit>
       <trans-unit id="4629255373567370412" datatype="html">
         <source>Current price</source>
@@ -1170,7 +1170,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="needs-translation">Current price</target>
+        <target state="translated">當前價格</target>
       </trans-unit>
       <trans-unit id="7071470734400948493" datatype="html">
         <source>Author</source>
@@ -1182,7 +1182,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">63,64</context>
         </context-group>
-        <target state="needs-translation">Author</target>
+        <target state="translated">作者</target>
       </trans-unit>
       <trans-unit id="7596769783947942591" datatype="html">
         <source>Migrate</source>
@@ -1194,7 +1194,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">219,220</context>
         </context-group>
-        <target state="needs-translation">Migrate</target>
+        <target state="translated">遷移</target>
       </trans-unit>
       <trans-unit id="8315498121193062276" datatype="html">
         <source>Shimmer/Mainnet (Tokenization)...SOON.</source>
@@ -1242,7 +1242,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">110</context>
         </context-group>
-        <target state="needs-translation"> Preparing... </target>
+        <target state="translated">準備中...</target>
       </trans-unit>
       <trans-unit id="163617933164027990" datatype="html">
         <source>IPFS Image</source>
@@ -1270,7 +1270,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">15,16</context>
         </context-group>
-        <target state="needs-translation">NFT Image</target>
+        <target state="translated">NFT圖像</target>
       </trans-unit>
       <trans-unit id="1809847784604950003" datatype="html">
         <source>Donut graph coming SOON.</source>
@@ -1296,7 +1296,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation"> In-Progress</target>
+        <target state="translated">進行中</target>
       </trans-unit>
       <trans-unit id="5413541067782808528" datatype="html">
         <source>Completed
@@ -1305,8 +1305,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation">Completed
-</target>
+        <target state="translated">已完成!</target>
       </trans-unit>
       <trans-unit id="4571927022363545389" datatype="html">
         <source>Space is required.</source>
@@ -1350,7 +1349,7 @@
           <context context-type="sourcefile">src/app/components/space/components/select-space/select-space.component.ts</context>
           <context context-type="linenumber">14,13</context>
         </context-group>
-        <target state="needs-translation">All Spaces</target>
+        <target state="translated">所有空間</target>
       </trans-unit>
       <trans-unit id="5784504836068973909" datatype="html">
         <source>No Connections</source>
@@ -1358,7 +1357,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">1,2</context>
         </context-group>
-        <target state="needs-translation">No Connections</target>
+        <target state="translated">沒有連線</target>
       </trans-unit>
       <trans-unit id="5262300527216752326" datatype="html">
         <source>Rep. weight</source>
@@ -1366,7 +1365,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
-        <target state="needs-translation">Rep. weight</target>
+        <target state="translated">聲望權重</target>
       </trans-unit>
       <trans-unit id="5611592591303869712" datatype="html">
         <source>Status</source>
@@ -1374,7 +1373,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation">Status</target>
+        <target state="translated">狀態</target>
       </trans-unit>
       <trans-unit id="4342663636565341166" datatype="html">
         <source>Established</source>
@@ -1382,7 +1381,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">Established</target>
+        <target state="translated">建立</target>
       </trans-unit>
       <trans-unit id="2028218033073659493" datatype="html">
         <source>Recognised</source>
@@ -1390,7 +1389,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-alliances-table/space-alliances-table.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Recognised</target>
+        <target state="translated">已承認</target>
       </trans-unit>
       <trans-unit id="5190509713271209562" datatype="html">
         <source>members</source>
@@ -1410,7 +1409,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation">members</target>
+        <target state="translated">成員</target>
       </trans-unit>
       <trans-unit id="2385926578126260283" datatype="html">
         <source>Value range is 0-1000</source>
@@ -1418,7 +1417,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
-        <target state="needs-translation">Value range is 0-1000</target>
+        <target state="translated">值的範圍是 0-1000</target>
       </trans-unit>
       <trans-unit id="1989424947945479650" datatype="html">
         <source>Select the weight with which the experience from a given space is recognized. Valid range is 0 - 1000</source>
@@ -1434,7 +1433,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Equal</target>
+        <target state="translated">相等</target>
       </trans-unit>
       <trans-unit id="6596014368803471493" datatype="html">
         <source>Half</source>
@@ -1442,7 +1441,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
-        <target state="needs-translation">Half</target>
+        <target state="translated">一半</target>
       </trans-unit>
       <trans-unit id="4061312488520540569" datatype="html">
         <source>Double</source>
@@ -1450,7 +1449,7 @@
           <context context-type="sourcefile">src/app/components/space/components/space-new-alliance/space-new-alliance.component.ts</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation">Double</target>
+        <target state="translated">雙倍</target>
       </trans-unit>
       <trans-unit id="4233821199291749572" datatype="html">
         <source>Earned Badge</source>
@@ -1458,7 +1457,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Earned Badge</target>
+        <target state="translated">獲得的徽章</target>
       </trans-unit>
       <trans-unit id="1351814922314683865" datatype="html">
         <source>with</source>
@@ -1466,7 +1465,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">with</target>
+        <target state="translated">和</target>
       </trans-unit>
       <trans-unit id="3517550046701184661" datatype="html">
         <source>Show less</source>
@@ -1474,7 +1473,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <target state="needs-translation">Show less</target>
+        <target state="translated">顯示較少</target>
       </trans-unit>
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
@@ -1482,7 +1481,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Show more</target>
+        <target state="translated">顯示更多</target>
       </trans-unit>
       <trans-unit id="9074325042294858925" datatype="html">
         <source>Purchased by</source>
@@ -1718,7 +1717,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award-info/award-info.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Badges used / available</target>
+        <target state="translated">已使用 / 可用的徽章</target>
       </trans-unit>
       <trans-unit id="7379726829888309084" datatype="html">
         <source>End Date</source>
@@ -1918,7 +1917,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">66,67</context>
         </context-group>
-        <target state="needs-translation">Badge definition</target>
+        <target state="translated">徽章定義</target>
       </trans-unit>
       <trans-unit id="2439887104778279013" datatype="html">
         <source>Title and description will be included on the badge.</source>
@@ -1926,7 +1925,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">68,69</context>
         </context-group>
-        <target state="needs-translation">Title and description will be included on the badge.</target>
+        <target state="translated">標題和說明將包含在徽章上。</target>
       </trans-unit>
       <trans-unit id="4347881176750558596" datatype="html">
         <source>Badge Title is required.</source>
@@ -1934,7 +1933,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="needs-translation">Badge Title is required.</target>
+        <target state="translated">必須填寫徽章標題。</target>
       </trans-unit>
       <trans-unit id="7532611298093557341" datatype="html">
         <source>Badge Title</source>
@@ -1942,7 +1941,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">78,79</context>
         </context-group>
-        <target state="needs-translation">Badge Title</target>
+        <target state="translated">徽章標題</target>
       </trans-unit>
       <trans-unit id="4240771527295032523" datatype="html">
         <source>Badge description</source>
@@ -1950,7 +1949,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">89,90</context>
         </context-group>
-        <target state="needs-translation">Badge description</target>
+        <target state="translated">徽章說明</target>
       </trans-unit>
       <trans-unit id="3400842428234348842" datatype="html">
         <source>Space Info</source>
@@ -2022,7 +2021,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">187,188</context>
         </context-group>
-        <target state="needs-translation">Number of Badges</target>
+        <target state="translated">徽章數量</target>
       </trans-unit>
       <trans-unit id="1324056890449652394" datatype="html">
         <source>The amount of badges you want to make available for this award. This can also be thought of as how many awards you want to give out.</source>
@@ -2038,7 +2037,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">206</context>
         </context-group>
-        <target state="needs-translation">Badge</target>
+        <target state="translated">徽章</target>
       </trans-unit>
       <trans-unit id="8294348925763275640" datatype="html">
         <source>What the badge looks like.</source>
@@ -2302,7 +2301,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">83</context>
         </context-group>
-        <target state="needs-translation">Selected Badges</target>
+        <target state="translated">選定的徽章</target>
       </trans-unit>
       <trans-unit id="4604389504185553211" datatype="html">
         <source>Guardians of Space Only</source>
@@ -3009,6 +3008,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">43,44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
+          <context context-type="linenumber">116,117</context>
         </context-group>
         <target state="needs-translation">Category</target>
       </trans-unit>
@@ -3762,7 +3765,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="needs-translation">Earned badges</target>
+        <target state="translated">已獲得的徽章</target>
       </trans-unit>
       <trans-unit id="5937251202465808296" datatype="html">
         <source>More</source>
@@ -3778,7 +3781,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">72,73</context>
         </context-group>
-        <target state="needs-translation">Reputation</target>
+        <target state="translated">聲望</target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -3810,7 +3813,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation"> No Badges yet </target>
+        <target state="translated"> 尚無徽章 </target>
       </trans-unit>
       <trans-unit id="1926408800750418975" datatype="html">
         <source>Discover Badges</source>
@@ -3818,7 +3821,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/badges/badges.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Discover Badges</target>
+        <target state="translated">探索徽章</target>
       </trans-unit>
       <trans-unit id="4915431133669985304" datatype="html">
         <source>Profile</source>
@@ -3842,7 +3845,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="needs-translation">Badges</target>
+        <target state="translated">徽章</target>
       </trans-unit>
       <trans-unit id="1985906514874027071" datatype="html">
         <source>(Join space with alliance)</source>
@@ -3900,14 +3903,6 @@
         </context-group>
         <target state="needs-translation">Error</target>
       </trans-unit>
-      <trans-unit id="6313868216585207629" datatype="html">
-        <source>Cateogy.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
-          <context context-type="linenumber">116,117</context>
-        </context-group>
-        <target state="needs-translation">Cateogy.</target>
-      </trans-unit>
       <trans-unit id="7571861503037880448" datatype="html">
         <source>Select collection</source>
         <context-group purpose="location">
@@ -3928,13 +3923,13 @@
         </context-group>
         <target state="needs-translation">Upload existing CSV</target>
       </trans-unit>
-      <trans-unit id="189367192793231292" datatype="html">
-        <source>Upload back once you generate bellow</source>
+      <trans-unit id="7608437179935502715" datatype="html">
+        <source>Upload back once you generate below</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="needs-translation">Upload back once you generate below</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -4486,7 +4481,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">370,371</context>
         </context-group>
-        <target state="needs-translation">XP Reputation - Selected Badges</target>
+        <target state="translated">XP 聲望 - 選定的徽章</target>
       </trans-unit>
       <trans-unit id="7518498657175852149" datatype="html">
         <source> Create Proposal </source>

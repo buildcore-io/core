@@ -216,7 +216,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation">Log out</target>
+        <target state="translated">Wisk'ay</target>
       </trans-unit>
       <trans-unit id="7933384538978087776" datatype="html">
         <source>Powered by</source>
@@ -240,7 +240,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
-        <target state="needs-translation"> Discover Soonaverse </target>
+        <target state="translated"> Tariy Soonaverse </target>
       </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
@@ -702,7 +702,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">154</context>
         </context-group>
-        <target state="needs-translation">Avatar</target>
+        <target state="translated">Avatar</target>
       </trans-unit>
       <trans-unit id="2458349631370931488" datatype="html">
         <source>Customise your Soonaverse identity.</source>
@@ -840,7 +840,7 @@
         <source>NFT image</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">8,9</context>
+          <context context-type="linenumber">9,10</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
@@ -852,7 +852,7 @@
         <source>Price</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">39,40</context>
+          <context context-type="linenumber">40,41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
@@ -888,11 +888,11 @@
         <source>Buy now</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">47,48</context>
+          <context context-type="linenumber">48,49</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">53,54</context>
+          <context context-type="linenumber">54,55</context>
         </context-group>
         <target state="needs-translation">Buy now</target>
       </trans-unit>
@@ -900,7 +900,7 @@
         <source>Owned by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
-          <context context-type="linenumber">64,65</context>
+          <context context-type="linenumber">65,66</context>
         </context-group>
         <target state="needs-translation">Owned by</target>
       </trans-unit>
@@ -908,7 +908,7 @@
         <source>New NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
-          <context context-type="linenumber">136,135</context>
+          <context context-type="linenumber">141,140</context>
         </context-group>
         <target state="needs-translation">New NFT</target>
       </trans-unit>
@@ -3010,6 +3010,10 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
         <target state="needs-translation">Category</target>
       </trans-unit>
       <trans-unit id="5737395495058289759" datatype="html">
@@ -3900,14 +3904,6 @@
         </context-group>
         <target state="needs-translation">Error</target>
       </trans-unit>
-      <trans-unit id="6313868216585207629" datatype="html">
-        <source>Cateogy.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
-          <context context-type="linenumber">116,117</context>
-        </context-group>
-        <target state="needs-translation">Cateogy.</target>
-      </trans-unit>
       <trans-unit id="7571861503037880448" datatype="html">
         <source>Select collection</source>
         <context-group purpose="location">
@@ -3928,13 +3924,13 @@
         </context-group>
         <target state="needs-translation">Upload existing CSV</target>
       </trans-unit>
-      <trans-unit id="189367192793231292" datatype="html">
-        <source>Upload back once you generate bellow</source>
+      <trans-unit id="7608437179935502715" datatype="html">
+        <source>Upload back once you generate below</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="needs-translation">Upload back once you generate below</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
