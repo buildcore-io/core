@@ -172,6 +172,8 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   delete defaultSchema.space;
   delete defaultSchema.price;
   delete defaultSchema.access;
+  delete defaultSchema.accessAwards;
+  delete defaultSchema.accessCollections;
   delete defaultSchema.availableFrom;
   delete defaultSchema.category;
   delete defaultSchema.onePerMemberOnly;

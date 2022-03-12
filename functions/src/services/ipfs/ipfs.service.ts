@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as functions from 'firebase-functions';
 import fs from 'fs';
 import { File, NFTStorage } from 'nft.storage';
 import { Collection } from '../../../interfaces/models';
@@ -9,17 +10,15 @@ export interface IpfsSuccessResult {
   image: string;
 }
 
-// THESE API KEYS ARE NOT SENSITIVE WE GO PUBLIC WITH THIS REPO
 const nftStorageConfig: any = {
   endpoint: 'https://api.nft.storage', // the default
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkzMDE1ZWQwY2NmNDY5MDIzRUJiM2ZlNzJDZEQ2YkQwOTFlOGM4REEiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzNzk4MTMxODIyMywibmFtZSI6ImNvbnNvbGUgdGVzdCJ9.CwE1wW3hWt_ck6AKzSKVd7RmYdRgsy5S9PdD7Ew4zVA'
+  token: functions.config()?.nftstorage.token
 }
 
 const pinataConfig: any = {
-  key: '3415c6c7bb6561bf1fba',
-  secret: '3aa23f1ccad529da79d6ac6276b342e140e0b2380043a33b76dbdbcab7263c66'
+  key: functions.config()?.pinata.key,
+  secret: functions.config()?.pinata.secret
 }
-// THESE API KEYS ARE NOT REALLY SENSITIVE UNTIL WE GO PUBLIC WITH THIS REPO
 
 export class IpfsService {
   private async pinByHash(hashToPin: any, metadata: any): Promise<any> {
@@ -55,7 +54,7 @@ export class IpfsService {
 
     // Let's get the file from URL and detect the type.
     const file: any = await fetch(fileUrl);
-    const filename: string = nft.name + (Math.random() * 1000);
+    const filename: string = nft.uid + (Math.random() * 1000);
     const fileStream = fs.createWriteStream('/tmp/' + filename);
     await new Promise((resolve, reject) => {
       file.body.pipe(fileStream);

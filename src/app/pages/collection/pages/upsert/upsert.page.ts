@@ -214,6 +214,8 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.royaltiesSpaceDifferentControl.setValue(
                 o.royaltiesSpace !== o.space,
               );
+              this.accessAwardsControl.setValue(o.accessAwards);
+              this.accessCollectionsControl.setValue(o.accessCollections);
               this.placeholderUrlControl.setValue(o.placeholderUrl);
               this.bannerUrlControl.setValue(o.bannerUrl);
               this.urlControl.setValue(o.url);
@@ -235,6 +237,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.spaceControl.disable();
               this.selectedAccessControl.disable();
               this.accessAwardsControl.disable();
+              this.accessCollectionsControl.disable();
               this.priceControl.disable();
               this.unitControl.disable();
               this.availableFromControl.disable();
@@ -466,6 +469,8 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.type;
       delete data.category;
       delete data.access;
+      delete data.accessAwards;
+      delete data.accessCollections;
       delete data.price;
       delete data.availableFrom;
       delete data.onePerMemberOnly;
