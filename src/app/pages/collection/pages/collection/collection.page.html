@@ -39,6 +39,12 @@
                     Reject Collection
                 </button>
 
+                <button nz-button nzDanger nzType="primary" (click)="reject()"
+                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                    nzBlock nzSize="large" i18n>
+                    Cancel Collection
+                </button>
+
                 <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
                     Edit Collection
                 </button>

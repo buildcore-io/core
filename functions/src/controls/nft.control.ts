@@ -99,6 +99,10 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     params.availableFrom = dateToTimestamp(params.availableFrom);
   }
 
+  if (!collectionData.availableFrom || dayjs(collectionData.availableFrom.toDate()).isAfter(dayjs(params.availableFrom.toDate()), 'minutes')) {
+    throw throwInvalidArgument(WenError.nft_date_must_be_after_or_same_with_collection_available_from_date);
+  }
+
   if (collectionData.type === CollectionType.GENERATED || collectionData.type === CollectionType.SFT) {
     params.price = collectionData.price || 0;
     params.availableFrom = collectionData.availableFrom || collectionData.createdOn;

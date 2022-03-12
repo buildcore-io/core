@@ -264,7 +264,15 @@ export class CollectionPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return ((col.total - col.sold) > 0) && col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
+    return ((col.total - col.sold) > 0) && this.isAvailable(col);
+  }
+
+  public isAvailable(col?: Collection|null): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
   }
 
   public isAvailableTab(): boolean {

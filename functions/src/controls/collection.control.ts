@@ -253,6 +253,14 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
+  if (docCollection.data().approved) {
+    throw throwInvalidArgument(WenError.collection_is_already_approved);
+  }
+
+  if (docCollection.data().rejected) {
+    throw throwInvalidArgument(WenError.collection_is_already_rejected);
+  }
+
   // Validate space exists.
   const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollection.data().space);
   await SpaceValidator.spaceExists(refSpace);
@@ -292,6 +300,14 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions.r
   let docCollection: DocumentSnapshotType = await refCollection.get();
   if (!docCollection.exists) {
     throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  if (!docCollection.data().availableFrom || dayjs(docCollection.data().availableFrom.toDate()).isAfter(dayjs())) {
+    throw throwInvalidArgument(WenError.collection_is_past_available_date);
+  }
+
+  if (docCollection.data().rejected) {
+    throw throwInvalidArgument(WenError.collection_is_already_rejected);
   }
 
   // Validate space exists.
