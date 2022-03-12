@@ -171,7 +171,7 @@
                 </div>
 
                 <div class="flex flex-col items-center mt-8 lg:flex-row">
-                    <a nz-button nzType="default" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
+                    <a nz-button nzType="default" nzBlock nzSize="default" target="_new" [href]="getShareUrl(data.nft$ | async)"
                         class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
                             <wen-icon-twitter></wen-icon-twitter>
                             <div class="ml-2.5 text-xs font-medium" i18n>Share</div>

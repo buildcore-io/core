@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { CollectionAccess, DiscountLine } from '@functions/interfaces/models';
+import { Collection, CollectionAccess, DiscountLine } from '@functions/interfaces/models';
 import { DataService } from '../../../services/data.service';
 
 @Component({
@@ -51,8 +51,9 @@ export class CollectionAboutComponent {
     });
   }
 
-  public getShareUrl(): string {
+  public getShareUrl(col?: Collection | null): string {
     const text = $localize`Check out collection`;
-    return 'http://twitter.com/share?text= ' + text + ' &url=' + window.location.href + '&hashtags=soonaverse';
+    const url: string = (col?.wenUrlShort || col?.wenUrl || window.location.href);
+    return 'http://twitter.com/share?text= ' + text + ' &url=' + url + '&hashtags=soonaverse';
   }
 }
