@@ -14,7 +14,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { GITHUB_REGEXP, TWITTER_REGEXP } from './../../interfaces/config';
+import { GITHUB_REGEXP, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
 import { WenError } from './../../interfaces/errors';
 import { Space } from './../../interfaces/models/space';
 import { CommonJoi } from './../services/joi/common';
@@ -113,7 +113,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
       totalGuardians: 1,
       totalPendingMembers: 0,
       rank: 1
-    }))));
+    }), URL_PATHS.SPACE)));
 
     // Add Guardians.
     await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).set({

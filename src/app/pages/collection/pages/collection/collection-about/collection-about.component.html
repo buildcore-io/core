@@ -7,7 +7,7 @@
             <div class="ml-2.5 text-xs font-medium" i18n>Visit website</div>
     </a>
     <a nz-button nzType="default" nzBlock nzSize="default" target="_new"
-        [href]="getShareUrl()"
+        [href]="getShareUrl(data.collection$ | async)"
         class="flex items-center justify-center flex-grow w-1/2 text-black wen-link-padding"
         [ngClass]="{ 'border-blue-light1': deviceService.isMobile$ | async }">
             <wen-icon-share></wen-icon-share>
@@ -15,7 +15,7 @@
     </a>
 </div>
 
-<nz-card nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
+<nz-card i18n-nzTitle nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
     <div class="space-y-5">
         <a *ngIf="(data.collection$ | async)?.url" target="_new"
             [href]="(data.collection$ | async)?.url"
@@ -40,7 +40,7 @@
     </div>
 </nz-card>
 
-<nz-card nzTitle="Additional Details" class="mt-8" *ngIf="(data.collection$ | async)?.access !== access.OPEN || (data.collection$ | async)?.discounts?.length">
+<nz-card i18n-nzTitle nzTitle="Additional Details" class="mt-8" *ngIf="(data.collection$ | async)?.access !== access.OPEN || (data.collection$ | async)?.discounts?.length">
     <div class="space-y-5">
         <div *ngIf="(data.collection$ | async)?.access !== access.OPEN">
           <nz-tag class="px-2 py-1 text-xs border-none rounded-md">
@@ -58,4 +58,13 @@
             <div class="text-xs font-medium">{{ (item.amount * 100) }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
         </div>
     </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="Selected Badges" class="mt-8" *ngIf="(data.accessBadges$ | async)?.length">
+  <div class="flex flex-wrap gap-2">
+    <article *ngFor="let a of (data.accessBadges$ | async); trackBy: trackByUid"
+      class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
+      <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
+    </article>
+  </div>
 </nz-card>

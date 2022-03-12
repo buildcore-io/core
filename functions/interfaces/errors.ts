@@ -68,5 +68,9 @@ export const WenError = {
   you_must_be_the_creator_of_this_collection: { code: 2060, key: 'You must be the creator of this collection.' },
   you_have_currently_another_order_in_progress: { code: 2061, key: 'You have currently another order in progress.' },
   you_can_only_own_one_nft_from_collection: { code: 2061, key: 'You can only own one NFT from the collection.' },
+  collection_is_already_approved: { code: 2062, key: 'Collection is already approved.' },
+  collection_is_already_rejected: { code: 2063, key: 'Collection is already rejected.' },
+  collection_is_past_available_date: { code: 2064, key: 'Collection available from date is in the past already.' },
+  nft_date_must_be_after_or_same_with_collection_available_from_date: { code: 2065, key: 'Collection available from date is after NFT available from date.' },
 }
 

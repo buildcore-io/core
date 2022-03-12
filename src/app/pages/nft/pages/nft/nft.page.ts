@@ -241,8 +241,10 @@ export class NFTPage implements OnInit, OnDestroy {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public getShareUrl(): string {
-    return 'http://twitter.com/share?text=Check out collection&url=' + window.location.href + '&hashtags=soonaverse';
+  public getShareUrl(nft?: Nft | null): string {
+    const text = $localize`Check out nft`;
+    const url: string = (nft?.wenUrlShort || nft?.wenUrl || window.location.href);
+    return 'http://twitter.com/share?text=' + text + '&url=' + url + '&hashtags=soonaverse';
   }
 
   private notFound(): void {

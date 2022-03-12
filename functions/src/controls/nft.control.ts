@@ -1,8 +1,9 @@
+import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
@@ -25,7 +26,8 @@ function defaultJoiUpdateCreateSchema(): any {
     media: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    availableFrom: Joi.date().required(),
+    // On test we allow now.
+    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -60000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     url: Joi.string().allow(null, '').uri({
@@ -97,6 +99,10 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     params.availableFrom = dateToTimestamp(params.availableFrom);
   }
 
+  if (!collectionData.availableFrom || dayjs(collectionData.availableFrom.toDate()).isAfter(dayjs(params.availableFrom.toDate()), 'minutes')) {
+    throw throwInvalidArgument(WenError.nft_date_must_be_after_or_same_with_collection_available_from_date);
+  }
+
   if (collectionData.type === CollectionType.GENERATED || collectionData.type === CollectionType.SFT) {
     params.price = collectionData.price || 0;
     params.availableFrom = collectionData.availableFrom || collectionData.createdOn;
@@ -126,7 +132,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
       hidden: (CollectionType.CLASSIC !== collectionData.type),
       createdBy: creator,
       placeholderNft: false
-    }))));
+    }), URL_PATHS.NFT)));
 
     // Update collection.
     await refCollection.update({

@@ -38,8 +38,6 @@ export interface CollectionBase extends BaseRecord {
   name: string;
   description: string;
   bannerUrl: string;
-  accessAwards: string[],
-  accessCollections: string[],
   royaltiesFee: number;
   royaltiesSpace: EthAddress;
   discounts: DiscountLine[];
@@ -56,6 +54,8 @@ export interface Collection extends CollectionBase {
   category: Categories,
   type: CollectionType,
   access: CollectionAccess,
+  accessAwards: string[],
+  accessCollections: string[],
   space: string;
   availableFrom: Timestamp;
   price: number;
@@ -68,6 +68,8 @@ export interface SchemaCollection extends CollectionBase {
   category?: Categories,
   type?: CollectionType,
   access?: CollectionAccess,
+  accessAwards?: string[],
+  accessCollections?: string[],
   space?: string;
   availableFrom?: Timestamp;
   price?: number;

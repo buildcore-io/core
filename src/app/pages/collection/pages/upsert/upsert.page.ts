@@ -5,7 +5,7 @@ import {
   OnDestroy,
   OnInit
 } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi, AwardFilter } from '@api/award.api';
 import { FULL_LIST } from '@api/base.api';
@@ -23,8 +23,8 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import {
   DISCORD_REGEXP,
-  MAX_IOTA_AMOUNT,
-  MIN_IOTA_AMOUNT,
+  MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT,
+  NftAvailableFromDateMin,
   TWITTER_REGEXP,
   URL_REGEXP
 } from '@functions/interfaces/config';
@@ -53,7 +53,6 @@ import {
 } from './../../../../../../functions/interfaces/models/collection';
 
 const MAX_DISCOUNT_COUNT = 3;
-const MIN_DISCOUNT_PRICE = 1000 * 1000;
 
 @UntilDestroy()
 @Component({
@@ -133,7 +132,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
-  public maxDiscount = 0;
   private awardSub?: Subscription;
 
   constructor(
@@ -223,12 +221,13 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.discordControl.setValue(o.discord);
               this.categoryControl.setValue(o.category);
               this.selectedAccessControl.setValue(o.access);
+              this.onePerMemberOnlyControl.setValue(o.onePerMemberOnly);
               this.discounts.removeAt(0);
               o.discounts.sort((a, b) => {
                 return a.xp - b.xp;
               }).forEach((v) => {
                 this.addDiscount(
-                  v.xp ? v.xp.toString() : '',
+                  v.xp ? v.xp.toString() : '0',
                   v.amount ? (v.amount * 100).toString() : '',
                 );
               });
@@ -291,8 +290,6 @@ export class UpsertPage implements OnInit, OnDestroy {
         const value = this.getRawPrice(Number(this.priceControl.value), <Units>this.unitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
-        this.discounts = new FormArray([]);
-        this.maxDiscount = Math.floor((100 - MIN_DISCOUNT_PRICE / value * 100) * 100) / 100;
       });
 
     this.royaltiesSpaceDifferentControl.valueChanges
@@ -433,7 +430,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
       return true;
     }
 
@@ -446,9 +443,9 @@ export class UpsertPage implements OnInit, OnDestroy {
     }
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
-      if (v.amount > 0 && v.xp > 0) {
+      if (v.amount > 0) {
         discounts.push({
-          xp: v.xp,
+          xp: v.xp || 0,
           amount: v.amount / 100,
         });
       }
@@ -532,12 +529,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   private getDiscountForm(xp = '', amount = ''): FormGroup {
     return new FormGroup({
       xp: new FormControl(xp),
-      amount: new FormControl(amount, [Validators.required,
-          (control: AbstractControl): ValidationErrors | null => {
-            const error = control.value <= this.maxDiscount ? null : { maxDiscount: true };
-            return error;
-          }
-        ])
+      amount: new FormControl(amount, [Validators.required])
     });
   }
 

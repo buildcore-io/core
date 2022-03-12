@@ -63,6 +63,10 @@ export interface BaseRecord extends Base {
   updatedOn?: Timestamp;
   createdBy?: string;
 
+  // Sharabble url
+  wenUrl?: string;
+  wenUrlShort?: string;
+
   // Doc cursor used internally.
   _doc?: any;
   // Sometimes we want data from parent collecton because we search through it.
