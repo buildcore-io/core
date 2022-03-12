@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { CollectionAccess, DiscountLine } from 'functions/interfaces/models';
+import { CollectionAccess, DiscountLine } from '@functions/interfaces/models';
 import { DataService } from '../../../services/data.service';
 
 @Component({

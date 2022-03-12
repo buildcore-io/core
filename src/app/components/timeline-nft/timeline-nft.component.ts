@@ -3,9 +3,9 @@ import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Space, Transaction, TransactionType } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
+import { Space, Transaction, TransactionType } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 
 @Component({
   selector: 'wen-timeline-nft',

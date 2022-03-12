@@ -20,7 +20,7 @@ import { EntityType } from './../../../../../components/wallet-address/wallet-ad
 })
 export class SpaceAboutComponent implements OnDestroy {
   @Input() avatarUrl?: string;
-  @Output() onLeave = new EventEmitter<void>();
+  @Output() wenOnLeave = new EventEmitter<void>();
 
   public isAlliancesListOpen = false;
   public isNewAllianceOpen = false;

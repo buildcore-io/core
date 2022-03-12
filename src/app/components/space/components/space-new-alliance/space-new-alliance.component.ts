@@ -4,8 +4,8 @@ import { FormControl } from '@angular/forms';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
-import { Space } from 'functions/interfaces/models';
 
 @Component({
   selector: 'wen-space-new-alliance',
@@ -36,9 +36,9 @@ export class SpaceNewAllianceComponent {
 
   public spaceOptions: SelectSpaceOption[] = [];
   public weightOptions = [
-    { label: 'Equal', value: 1 },
-    { label: 'Half', value: 0.5 },
-    { label: 'Double', value: 2 }
+    { label: $localize`Equal`, value: 1 },
+    { label: $localize`Half`, value: 0.5 },
+    { label: $localize`Double`, value: 2 }
   ];
   private _spaces: Space[] = [];
 

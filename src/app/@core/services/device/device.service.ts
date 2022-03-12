@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, fromEvent } from 'rxjs';
+import { BehaviorSubject, debounceTime, fromEvent } from 'rxjs';
+
+export const LAYOUT_CHANGE_DEBOUNCE_TIME = 50;
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +19,10 @@ export class DeviceService {
     this.setScroll();
 
     fromEvent(window, 'resize')
+      .pipe(debounceTime(LAYOUT_CHANGE_DEBOUNCE_TIME))
       .subscribe(this.setDevice.bind(this));
     fromEvent(window, 'scroll')
+      .pipe(debounceTime(LAYOUT_CHANGE_DEBOUNCE_TIME))
       .subscribe(this.setScroll.bind(this));
   }
 

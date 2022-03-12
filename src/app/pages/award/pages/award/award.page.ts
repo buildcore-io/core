@@ -25,8 +25,8 @@ import { DataService } from './../../services/data.service';
 })
 export class AwardPage implements OnInit, OnDestroy {
   public sections = [
-    { route: [ROUTER_UTILS.config.award.overview], label: 'Overview' },
-    { route: [ROUTER_UTILS.config.award.participants], label: 'Participants' }
+    { route: [ROUTER_UTILS.config.award.overview], label: $localize`Overview` },
+    { route: [ROUTER_UTILS.config.award.participants], label: $localize`Participants` }
   ];
   public isSubmitParticipationModalVisible = false;
   public commentControl: FormControl = new FormControl('');
@@ -52,7 +52,7 @@ export class AwardPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Award');
-    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
       if (id) {
         this.listenToAward(id);

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Award } from '@functions/interfaces/models';
 import * as dayjs from 'dayjs';
-import { Award } from 'functions/interfaces/models';
 
 @Component({
   selector: 'wen-award-status',

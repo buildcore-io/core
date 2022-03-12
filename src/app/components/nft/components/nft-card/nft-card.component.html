@@ -3,24 +3,25 @@
     <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
             <img
-            alt="NFT image"
-            [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
-            class="object-cover w-full h-full"
+                *ngIf="mediaType === 'image'"
+                i18n-alt
+                alt="NFT image"
+                [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
+                class="object-cover w-full h-full"
             />
 
-            <!-- NFT amount logic has to be added -->
+            <video *ngIf="mediaType === 'video'"
+            preload="metadata" controls class="object-cover w-full h-full">
+              <source [src]="nft?.media" type="video/mp4">
+              Your browser does not support HTML video.
+            </video>
+
             <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || nft?.placeholderNft)"
                 class="absolute top-4 left-4 z-10 rounded-lg bg-white
                     flex items-center justify-center px-3 py-1.5 text-sm font-medium"
-                [ngClass]="getBadgeProperties().className" i18n>
+                [ngClass]="getBadgeProperties().className">
                     {{ getBadgeProperties().label }}
             </div>
-
-            <!-- <div class="absolute left-3 bottom-3 bg-bg-background rounded-lg flex items-center px-2.5 py-2"
-                *ngIf="true && (deviceService.isMobile$ | async)">
-                    <wen-icon-time class="mr-3 text-app-gray-400"></wen-icon-time>
-                    <div class="text-xs font-medium">2 hours left</div>
-            </div> -->
         </div>
 
         <div class="relative flex flex-col flex-grow w-full px-4 py-3 lg:py-4">
@@ -41,13 +42,13 @@
                       </div>
                   </div>
 
-                    <span class="ml-auto" nz-tooltip [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
+                    <span class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
                       <button nz-button nzType="primary" [disabled]="!collection?.approved || !isAvailableForSale()"
                           (click)="onBuy($event)" i18n>Buy now</button>
                     </span>
                 </div>
 
-                <span class="w-4/5 mt-2 ml-auto" nz-tooltip [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
+                <span class="w-4/5 mt-2 ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
                   <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || !isAvailableForSale()"
                       (click)="onBuy($event)" i18n>Buy now</button>
                 </span>
@@ -71,4 +72,4 @@
     </a>
 </article>
 
-<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="nft" [collection]="collection" (onClose)="isCheckoutOpen = false"></wen-nft-checkout>
+<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="nft" [collection]="collection" (wenOnClose)="isCheckoutOpen = false"></wen-nft-checkout>

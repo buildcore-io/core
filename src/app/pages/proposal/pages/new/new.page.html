@@ -213,9 +213,8 @@
             type="button"
             (click)="addAnswer(question)"
             *ngIf="getAnswers(question).length < 4"
-            i18n
           >
-            <i nz-icon nzType="plus" nzTheme="outline"></i>Add Choice
+            <i nz-icon nzType="plus" nzTheme="outline"></i><span i18n>Add Choice</span>
           </button>
         </ng-container>
       </div>
@@ -285,7 +284,7 @@
                 [formControl]="selectedGroupControl"
               >
                 <wen-radio [value]="targetGroups.GUARDIANS"
-                  ><span i18n>All Guardians
+                  ><span><span i18n>All Guardians</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -294,7 +293,7 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetGroups.MEMBERS"
-                  ><span i18n>All Members
+                  ><span><span i18n>All Members</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -304,7 +303,7 @@
                 ></wen-radio>
 
                 <wen-radio *ngIf="!isProd" [value]="targetGroups.NATIVE"
-                  ><span i18n>IOTA Token Holders
+                  ><span><span i18n>IOTA Token Holders</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -317,7 +316,7 @@
           </nz-form-item>
           <nz-form-item *ngIf="selectedGroupControl.value !== targetGroups.NATIVE">
             <nz-form-control>
-              <nz-form-label class="text-sm font-medium text-app-gray-600"
+              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n
                 >Voting Type</nz-form-label
               ><br />
               <nz-radio-group
@@ -325,7 +324,7 @@
                 [formControl]="subTypeControl"
               >
                 <wen-radio [value]="subTypes.ONE_MEMBER_ONE_VOTE">
-                  <span>Member - One Vote
+                  <span><span i18n>Member - One Vote</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -338,7 +337,7 @@
                   [value]="subTypes.REPUTATION_BASED_ON_SPACE"
                 >
                   <p class="max-w-xs pr-2">
-                    XP Reputation - Space
+                    <span i18n>XP Reputation - Space</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -353,7 +352,7 @@
                   [value]="subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
                 >
                   <p class="max-w-xs pr-2">
-                    XP Reputation - Space + Connection
+                    <span i18n>XP Reputation - Space + Connection</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -368,7 +367,7 @@
                   [value]="subTypes.REPUTATION_BASED_ON_AWARDS"
                 >
                   <p class="max-w-xs">
-                    XP Reputation - Selected Badges
+                    <span i18n>XP Reputation - Selected Badges</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip

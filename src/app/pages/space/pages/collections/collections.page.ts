@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionFilter } from '@api/collection.api';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Collection } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/space/services/data.service';
-import { Collection } from 'functions/interfaces/models';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @UntilDestroy()
@@ -20,9 +20,9 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(CollectionFilter.AVAILABLE);
   public hotTags: { value: CollectionFilter; label: string}[] = [
-    { value: CollectionFilter.PENDING, label: 'Pending' },
-    { value: CollectionFilter.AVAILABLE, label: 'Available' },
-    { value: CollectionFilter.REJECTED, label: 'Rejected' },
+    { value: CollectionFilter.PENDING, label: $localize`Pending` },
+    { value: CollectionFilter.AVAILABLE, label: $localize`Available` },
+    { value: CollectionFilter.REJECTED, label: $localize`Rejected` },
   ];
   private subscriptions$: Subscription[] = [];
 

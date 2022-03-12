@@ -59,7 +59,7 @@ export class UpsertPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.spaceId) {
         this.editMode = true;
         this.spaceId = o.spaceId;

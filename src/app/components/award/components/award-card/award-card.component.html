@@ -1,6 +1,7 @@
 <article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-44' : 'w-full lg:w-76 lg:h-76'" *ngIf="award">
   <a class="relative block w-full h-full" [ngClass]="fullWidth ? 'lg:flex' : ''" [routerLink]="['/', this.path, award.uid]">
-    <div class="relative flex flex-col lg:w-full" [ngClass]="fullWidth ? 'h-auto' : 'lg:h-40'">
+    <div class="relative flex flex-col" [ngStyle]="{ width: (deviceService.isDesktop$ | async) && fullWidth ? 'calc(100% - 300px)' : '100%' }"
+      [ngClass]="fullWidth ? 'h-auto' : 'lg:h-40'">
       <div class="flex items-center w-full space-x-4">
         <ng-container *ngIf="deviceService.isDesktop$ | async">
           <nz-avatar [nzSrc]="previewImageService.getAvatarSize((space$ | async)?.avatarUrl)"
@@ -19,7 +20,7 @@
         <wen-icon-angle-left class="flex rotate-180" *ngIf="fullWidth && (deviceService.isDesktop$ | async)"></wen-icon-angle-left>
       </div>
 
-      <div i18n class="inline-flex mt-6" [ngClass]="fullWidth ? 'lg:absolute bottom-4 right-4' : ''">
+      <div class="inline-flex mt-6" [ngClass]="fullWidth ? 'lg:absolute bottom-4 right-4' : ''">
         <wen-award-status [award]="award"></wen-award-status>
         <wen-date-tag [date]="award.endDate.toDate()"></wen-date-tag>
       </div>

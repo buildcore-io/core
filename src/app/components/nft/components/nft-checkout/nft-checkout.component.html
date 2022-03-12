@@ -39,10 +39,17 @@
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-6">
         <div class="relative w-full lg:w-72 lg:w-overflow-hidden">
             <img
+                *ngIf="mediaType === 'image'"
+                i18n-alt
                 alt="NFT image"
                 [src]="getRecord()?.media || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full rounded-2xl"
             />
+
+            <video controls class="object-cover w-full h-full rounded-2xl" *ngIf="mediaType === 'video'">
+              <source [src]="getRecord()?.media" type="video/mp4">
+              Your browser does not support HTML video.
+            </video>
         </div>
         <div class="mt-8 lg:ml-8 lg:mt-0 ">
             <div class="relative flex flex-col w-full h-full">
@@ -55,7 +62,7 @@
                 </div> -->
                 <div class="flex items-center mt-2.5">
                     <wen-icon-crown class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-crown>
-                    <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% Royalties</div>
+                    <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
                     <wen-icon-question-circle
                         [size]="20"
                         class="ml-1.5 text-app-gray-400"
@@ -117,8 +124,8 @@
                 Confirm and Lock
         </button>
 
-        <div class="mt-4 text-xs font-medium text-foregrounds-secondary" i18n>
-          Your NFT will be locked for purchase for {{lockTime}} minutes.
+        <div class="mt-4 text-xs font-medium text-foregrounds-secondary">
+          <span i18n>Your NFT will be locked for purchase for</span> {{lockTime}} <span i18n>minutes</span>.
         </div>
     </div>
 </ng-template>
@@ -130,15 +137,15 @@
             <div class="text-base font-medium">
                 <span *ngIf="!isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
                 <span class="text-alerts-error" *ngIf="!isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
-                <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))">Expired</span>
+                <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))" i18n>Expired</span>
             </div>
         </div>
 
-        <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
+        <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" i18n-nzMessage nzMessage="We received invalid amount. Try again."></nz-alert>
 
         <div class="w-full px-4 py-3 mt-6 bg-bg-background rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
-            <div class="text-xs font-medium text-app-gray-400" i18n>
-                Send {{formatBest((transaction$ | async)?.payload?.amount) }} IOTA to following address (please restake after!):
+            <div class="text-xs font-medium text-app-gray-400">
+              <span i18n>Send</span> {{formatBest(calc(getRecord()?.price || 0, discount())) }} <span i18n>IOTA to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2">
@@ -146,8 +153,9 @@
                     {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()" i18n>
-                    {{ isCopied ? 'Copied' : 'Copy' }}
+                <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
+                    <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
+                    <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
             </div>
         </div>
@@ -195,8 +203,8 @@
 
         <button nz-button nzSize="large" class="flex items-center border-app-gray-200">
             <wen-icon-refresh class="mr-3 text-app-gray-400 animate-spin" ></wen-icon-refresh>
-            <div class="text-app-gray-text" i18n i18n>
-              {{ 'Validating your transaction...' }}
+            <div class="text-app-gray-text" i18n>
+              Validating your transaction...
             </div>
         </button>
     </div>

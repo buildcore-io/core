@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -6,14 +7,14 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
+import { Collection, CollectionType, Member } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { MIN_AMOUNT_TO_TRANSFER } from 'functions/interfaces/config';
-import { Collection, CollectionType, Member } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -35,12 +36,25 @@ export class NftCardComponent {
     } else {
       this.owner$.next(undefined);
     }
+
+    if (this._nft) {
+      this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+        if (o.contentType.match('video/.*')) {
+          this.mediaType = 'video';
+        } else if (o.contentType.match('image/.*')) {
+          this.mediaType = 'image';
+        }
+
+        this.cd.markForCheck();
+      });
+    }
   }
   get nft(): Nft|null|undefined {
     return this._nft;
   }
   @Input() collection?: Collection|null;
 
+  public mediaType: 'video'|'image'|undefined;
   public isCheckoutOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
@@ -51,8 +65,10 @@ export class NftCardComponent {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     private auth: AuthService,
+    private cd: ChangeDetectorRef,
     private nzNotification: NzNotificationService,
-    private memberApi: MemberApi
+    private memberApi: MemberApi,
+    private fileApi: FileApi
   ) {}
 
   public onBuy(event: MouseEvent): void {
@@ -117,7 +133,7 @@ export class NftCardComponent {
   public getBadgeProperties(): { label: string; className: string} {
     if (this.nft?.type === CollectionType.CLASSIC) {
       return {
-        label: 'New NFT',
+        label: $localize`New NFT`,
         className: 'bg-tag-green'
       };
     } else {

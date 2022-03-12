@@ -5,8 +5,8 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Collection, Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Collection, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { SpaceApi } from './../../@api/space.api';
 

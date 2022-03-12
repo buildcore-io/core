@@ -28,8 +28,8 @@
 
                 <ng-template #lineTpl>
                   <span i18n>Purchased by</span> @{{t.newMember.name || t.newMember.uid}}
-                  <span i18n>for </span>{{formatBest(t.order.payload.amount)}}
-                  <a i18n class="inline text-sm underline text-blue-light1">{{isCollapsed ? 'hide' : 'see'}} details</a>
+                  <span i18n>for</span> {{formatBest(t.order.payload.amount)}}
+                  <a class="inline text-sm underline text-blue-light1">{{isCollapsed ? 'hide' : 'see'}} <span i18n>details</span></a>
                 </ng-template>
 
                 <div class="overflow-y-auto max-h-24">
@@ -41,7 +41,7 @@
                       [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)">{{getTitle(tt)}}</a>
 
                     <span class="absolute text-sm font-medium text-red-500 left-56"
-                      *ngIf="tt.payload.invalidPayment">Invalid</span>
+                      *ngIf="tt.payload.invalidPayment" i18n>Invalid</span>
                   </div>
                 </div>
 

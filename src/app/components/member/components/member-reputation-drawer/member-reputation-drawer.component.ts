@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Member, Space } from 'functions/interfaces/models';
-import { FILE_SIZES } from 'functions/interfaces/models/base';
+import { Member, Space } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-member-reputation-drawer',
@@ -12,7 +12,7 @@ export class MemberReputationDrawerComponent {
   @Input() selectedSpace?: Space;
   @Input() member?: Member;
   @Input() isOpen = false;
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   constructor(
     private cd: ChangeDetectorRef
@@ -24,7 +24,7 @@ export class MemberReputationDrawerComponent {
 
   public onCancel(): void {
     this.isOpen = false;
-    this.onClose.emit();
+    this.wenOnClose.emit();
     this.cd.markForCheck();
   }
 }

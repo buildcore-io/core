@@ -2,7 +2,8 @@
     <label class="ml-6 text-base font-medium text-app-gray-text"
         nz-checkbox formControlName="includeAlliances"
         [nzDisabled]="includeAlliancesDisabled">
-            Include connections {{ includeAlliancesDisabled ? '(Join space with alliance)' : '' }}
+          <span i18n>Include connections </span>
+          <ng-container *ngIf="includeAlliancesDisabled" i18n>(Join space with alliance)</ng-container>
     </label>
 
     <!-- DISABLED for now. -->

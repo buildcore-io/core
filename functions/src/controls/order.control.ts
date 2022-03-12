@@ -8,6 +8,7 @@ import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Transaction } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { serverTime } from "../utils/dateTime.utils";
@@ -36,16 +37,16 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }));
   assertValidation(schema.validate(params.body));
 
-  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
+  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refCollection: any = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
-  const docCollection: any = await refCollection.get();
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
+  const docCollection: DocumentSnapshotType = await refCollection.get();
   const docCollectionData: Collection = docCollection.data();
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
-  const docSpace: any = await refSpace.get();
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
+  const docSpace: DocumentSnapshotType = await refSpace.get();
 
   // Collection must be approved.
   if (!docCollectionData.approved) {
@@ -66,7 +67,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
     const includedBadges: string[] = [];
-    const qry: any = await admin.firestore().collection(COL.TRANSACTION)
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
                .where('type', '==', TransactionType.BADGE)
                .where('member', '==', owner).get();
     if (qry.size > 0 && docCollectionData.accessAwards?.length) {
@@ -85,7 +86,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
     const includedCollections: string[] = [];
-    const qry: any = await admin.firestore().collection(COL.NFT)
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
                .where('owner', '==', owner).get();
     if (qry.size > 0 && docCollectionData.accessCollections?.length) {
       for (const t of qry.docs) {
@@ -102,16 +103,16 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   if (docCollectionData.onePerMemberOnly === true) {
-    const qry: any = await admin.firestore().collection(COL.NFT)
-               .where('collection', '==', docCollectionData.uid)
-               .where('owner', '==', owner).get();
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
+      .where('collection', '==', docCollectionData.uid)
+      .where('owner', '==', owner).get();
     if (qry.size >= 1) {
       throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
     }
   }
 
   // Let's determine if NFT can be indicated or we need to randomly select one.
-  let refNft: any;
+  let refNft: admin.firestore.DocumentReference;
   let mustBeSold = false;
   if (docCollectionData.type === CollectionType.CLASSIC) {
     if (!params.body.nft) {
@@ -125,17 +126,17 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       const randNumber: number = Math.floor(Math.random() * docCollectionData.total);
       // Above / below
       const nftAbove: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT)
-                            .where('sold', '==', false)
-                            .where('locked', '==', false)
-                            .where('placeholderNft', '==', false)
-                            .where('collection', '==', docCollectionData.uid)
-                            .where('position', '>=', randNumber).orderBy('position', 'asc').limit(1).get();
+        .where('sold', '==', false)
+        .where('locked', '==', false)
+        .where('placeholderNft', '==', false)
+        .where('collection', '==', docCollectionData.uid)
+        .where('position', '>=', randNumber).orderBy('position', 'asc').limit(1).get();
       const nftBelow: FirebaseFirestore.QuerySnapshot<any> = await admin.firestore().collection(COL.NFT)
-                            .where('sold', '==', false)
-                            .where('locked', '==', false)
-                            .where('placeholderNft', '==', false)
-                            .where('collection', '==', docCollectionData.uid)
-                            .where('position', '<=', randNumber).orderBy('position', 'desc').limit(1).get();
+        .where('sold', '==', false)
+        .where('locked', '==', false)
+        .where('placeholderNft', '==', false)
+        .where('collection', '==', docCollectionData.uid)
+        .where('position', '<=', randNumber).orderBy('position', 'desc').limit(1).get();
       if (nftAbove.size > 0) {
         refNft = admin.firestore().collection(COL.NFT).doc(nftAbove.docs[0].data().uid);
       } else if (nftBelow.size > 0) {
@@ -149,7 +150,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     }
   }
 
-  const docNft: any = await refNft.get();
+  const docNft: DocumentSnapshotType = await refNft.get();
   if (!docNft.exists) {
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
@@ -180,9 +181,9 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Validate there isn't any order in progress.
-  const orderInProgress: any = await admin.firestore().collection(COL.TRANSACTION).where('payload.reconciled', '==', false)
-                              .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE).where('member', '==', owner)
-                              .where('type', '==', TransactionType.ORDER).where('payload.void', '==', false).get();
+  const orderInProgress: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION).where('payload.reconciled', '==', false)
+    .where('payload.type', '==', TransactionOrderType.NFT_PURCHASE).where('member', '==', owner)
+    .where('type', '==', TransactionType.ORDER).where('payload.void', '==', false).get();
 
   if (orderInProgress.size > 0) {
     throw throwInvalidArgument(WenError.you_have_currently_another_order_in_progress);
@@ -191,12 +192,12 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-  const refRoyaltySpace: any = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
-  const docRoyaltySpace: any = await refRoyaltySpace.get();
+  const refRoyaltySpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
+  const docRoyaltySpace: DocumentSnapshotType = await refRoyaltySpace.get();
 
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
-  const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
 
   // Calculate discount.
   const dataMember: Member = docMember.data();
@@ -215,7 +216,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
   // Lock NFT
   await admin.firestore().runTransaction(async (transaction) => {
-    const sfDoc: any = await transaction.get(refNft);
+    const sfDoc: DocumentSnapshotType = await transaction.get(refNft);
     if (sfDoc.data()) {
       // Was locked by another transaction.
       if (sfDoc.data().locked) {
@@ -279,15 +280,15 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   }));
   assertValidation(schema.validate(params.body));
 
-  const docMember: any = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
+  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
   const isSpaceValidation = !!params.body.space;
-  let docSpace: any;
+  let docSpace!: DocumentSnapshotType;
   if (isSpaceValidation) {
-    const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
+    const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.space);
     await SpaceValidator.spaceExists(refSpace);
     docSpace = await refSpace.get();
   }
@@ -305,7 +306,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const randomAmount: number = (Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 1000 * 10);
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
-  const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await refTran.set(<Transaction>{
     type: TransactionType.ORDER,
@@ -326,7 +327,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   });
 
   // Load latest
-  const docTrans: any = await refTran.get();
+  const docTrans: DocumentSnapshotType = await refTran.get();
 
   // Return member.
   return <Transaction>docTrans.data();

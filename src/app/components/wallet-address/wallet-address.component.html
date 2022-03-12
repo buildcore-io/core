@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between" *ngIf="!address">
     <div class="flex items-center">
         <wen-icon-wallet class="mr-3 text-app-gray-400"></wen-icon-wallet>
-        <span class="text-xs font-medium text-alerts-error">Not verified</span>
+        <span class="text-xs font-medium text-alerts-error" i18n>Not verified</span>
         <div class="flex items-center justify-center w-4 h-4 ml-2 rounded-full bg-alerts-error">
             <wen-icon-close class="text-white" [size]="12"></wen-icon-close>
         </div>
@@ -20,8 +20,10 @@
             <wen-icon-check class="text-white" [size]="8"></wen-icon-check>
         </div>
     </div>
-    <button class="lg:hidden verified-copy-btn" nz-button nzType="primary" nzSize="small" (click)="copyAddress()" i18n>
-        {{ isCopied ? 'Copied' : 'Copy' }}</button>
+    <button class="lg:hidden verified-copy-btn" nz-button nzType="primary" nzSize="small" (click)="copyAddress()">
+        <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
+        <ng-template #isNotCopied i18n>Copy</ng-template>
+    </button>
 </div>
 
 <nz-modal *ngIf="deviceService.isDesktop$ | async"
@@ -38,12 +40,12 @@
 >
     <ng-template #verifyAddressModalContent>
         <div class="flex items-start justify-between">
-            <div class="text-2xl font-bold" i18n>Verify your {{ type }} address</div>
+            <div class="text-2xl font-bold"><span i18n>Verify your</span> {{ type }} <span i18n>address</span></div>
             <wen-icon-close class="cursor-pointer" (click)="isVerifyAddressOpen = false"></wen-icon-close>
         </div>
 
         <ng-container [ngSwitch]="type">
-            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (onClose)="close()"></wen-iota-address>
+            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (wenOnClose)="close()"></wen-iota-address>
         </ng-container>
     </ng-template>
 </nz-modal>
@@ -54,13 +56,13 @@
     [nzClosable]="false"
     [nzVisible]="isVerifyAddressOpen">
     <div *nzDrawerContent class="relative h-full">
-        <div class="pb-4 text-3xl font-bold max-w-2/3" i18n>Verify your {{ type }} address</div>
+        <div class="pb-4 text-3xl font-bold max-w-2/3"><span i18n>Verify your </span>{{ type }} <span i18n>address</span></div>
         <button class="absolute z-10 top-4 right-5" (click)="isVerifyAddressOpen = false">
             <wen-icon-close></wen-icon-close>
         </button>
 
         <ng-container [ngSwitch]="type">
-            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (onClose)="close()"></wen-iota-address>
+            <wen-iota-address *ngSwitchCase="addressTypes.IOTA" [entity]="entity" [entityType]="entityType" (wenOnClose)="close()"></wen-iota-address>
         </ng-container>
     </div>
 </nz-drawer>

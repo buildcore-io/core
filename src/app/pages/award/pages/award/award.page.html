@@ -1,6 +1,7 @@
 <wen-content [showBackButton]="true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
     <wen-drawer-toggle
+      i18n-label
       label="Award info"
       (click)="isAwardInfoVisible = true">
     </wen-drawer-toggle>
@@ -22,14 +23,12 @@
           {{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}
         </a>
 
-        <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue"
-          >Award</nz-tag
-        >
+        <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>Award</nz-tag>
 
         <wen-award-status [award]="data.award$ | async"></wen-award-status>
       </div>
 
-      <h1 i18n class="mb-6">{{(data.award$ | async)?.name}}</h1>
+      <h1 class="mb-6">{{(data.award$ | async)?.name}}</h1>
 
       <div class="flex items-center space-x-4">
         <div class="flex items-center">
@@ -81,6 +80,7 @@
       </wen-award-awards>
 
       <nz-card class="block"
+        i18n-nzTitle
         nzTitle="Approve Award"
         *ngIf="!(data.award$ | async)?.approved && (data.isGuardianWithinSpace$ | async) && !(data.award$ | async)?.rejected"
       >
@@ -91,6 +91,7 @@
             nzBlock
             nzSize="large"
             (click)="approve()"
+            i18n
           >
             Approve
           </button>
@@ -101,6 +102,7 @@
             nzBlock
             nzSize="large"
             (click)="reject()"
+            i18n
           >
             Decline
           </button>
@@ -115,6 +117,7 @@
 
   <nz-modal
     [(nzVisible)]="isSubmitParticipationModalVisible"
+    i18n-nzTitle
     nzTitle="Confirm your participation"
     nzClosable="false"
     [nzContent]="modalContent"
@@ -128,6 +131,7 @@
       </p>
       <textarea
         nz-input
+        i18n-placeholder
         placeholder="Provide description or link to your work."
         [formControl]="commentControl"
         rows="5"
@@ -136,10 +140,10 @@
 
     <ng-template #modalFooter>
       <div class="text-left">
-        <button nz-button class="mr-4" nzType="primary" (click)="participate()">
+        <button nz-button class="mr-4" nzType="primary" (click)="participate()" i18n>
           Submit
         </button>
-        <button nz-button nzType="default" (click)="handleParticipateCancel()">
+        <button nz-button nzType="default" (click)="handleParticipateCancel()" i18n>
           Cancel
         </button>
       </div>
@@ -157,7 +161,7 @@
         <wen-icon-close></wen-icon-close>
       </button>
 
-      <h1 i18n class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
+      <h1 class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
 
       <wen-award-awards></wen-award-awards>
 

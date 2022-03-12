@@ -1,11 +1,19 @@
 import { registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import cs from '@angular/common/locales/cs';
 import de from '@angular/common/locales/de';
 import en from '@angular/common/locales/en';
 import es from '@angular/common/locales/es';
 import fr from '@angular/common/locales/fr';
 import it from '@angular/common/locales/it';
+import ja from '@angular/common/locales/ja';
+import pl from '@angular/common/locales/pl';
+import pt from '@angular/common/locales/pt';
+import qu from '@angular/common/locales/qu';
+import ru from '@angular/common/locales/ru';
 import tr from '@angular/common/locales/tr';
+import uk from '@angular/common/locales/uk';
+import zh from '@angular/common/locales/zh';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { provideAppCheck } from "@angular/fire/app-check";
@@ -21,22 +29,30 @@ import { IconDefinition } from '@ant-design/icons-angular';
 import { environment } from '@env/environment';
 import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
 import { WebShellModule } from '@shell/ft/web-shell.module';
+/* eslint-disable */
 import {
-  de_DE as DeDe,
-  // en_US as EnUs,
-  en_GB as EnGb, es_ES as EsEs, fr_FR as FrFr, it_IT as ItIt, NZ_I18N as Nzi18n, tr_TR as TrTR
+  cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, NZ_I18N, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN
 } from 'ng-zorro-antd/i18n';
+/* eslint-enable */
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { CoreModule } from './@core/core.module';
 import { WenComponent } from './app.component';
 
 // Register languages.
 registerLocaleData(en);
+registerLocaleData(cs);
 registerLocaleData(de);
 registerLocaleData(fr);
 registerLocaleData(es);
 registerLocaleData(it);
 registerLocaleData(tr);
+registerLocaleData(ja);
+registerLocaleData(pl);
+registerLocaleData(pt);
+registerLocaleData(qu);
+registerLocaleData(ru);
+registerLocaleData(uk);
+registerLocaleData(zh);
 
 const icons: IconDefinition[] = [];
 const emulator = false;
@@ -75,25 +91,43 @@ if (environment.production) {
   providers: [
     PerformanceMonitoringService,
     {
-    provide: Nzi18n,
+    /* eslint-disable */
+    provide: NZ_I18N,
     useFactory: (localId: string) => {
       /** keep the same with angular.json/i18n/locales configuration **/
       switch (localId) {
-        case 'en':
-          return EnGb;
+        case 'cs':
+          return cs_CZ;
         case 'de':
-          return DeDe;
+          return de_DE;
         case 'es':
-          return EsEs;
+          return es_ES;
         case 'fr':
-          return FrFr;
+          return fr_FR;
         case 'it':
-          return ItIt;
+          return it_IT;
+        case 'ja':
+          return ja_JP;
+        case 'pl':
+          return pl_PL;
+        case 'pt-BR':
+          return pt_BR;
+        case 'pt-PT':
+          return pt_PT;
+        // case 'qu-PE':
+        //   return qu;
+        case 'ru':
+          return ru_RU;
         case 'tr':
-          return TrTR;
+          return tr_TR;
+        case 'uk':
+          return uk_UA;
+        case 'zh':
+          return zh_CN;
         default:
-          return EnGb;
+          return en_GB;
       }
+      /* eslint-enable */
     },
     deps: [LOCALE_ID]
   },

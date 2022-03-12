@@ -15,13 +15,13 @@
                     {{ tag }}
                 </nz-tag>
             </ng-container>
-        
+
             <ng-template #hotTagsMobileBlock>
                 <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
                     <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
                 </nz-select>
             </ng-template>
-            
+
             <wen-select-space
                 *ngIf="deviceService.isDesktop$ | async"
                 class="block w-44"
@@ -30,23 +30,24 @@
                 size="small">
             </wen-select-space>
         </div>
-      
+
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="w-48 wen-sort-button" nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate" 
+            <nz-select class="w-48 wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Sort by"
+                nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
-                <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
             </nz-select>
             <ng-template #defaultTemplate let-selected>
-                <span nz-typography nzType="secondary" class="text-xs">Sort by</span>
-                {{ selected.nzLabel }}
+                <span nz-typography nzType="secondary" class="text-xs" i18n>Sort by</span>
+                <span>{{ selected.nzLabel }}</span>
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>
             <div class="relative">
                 <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-                    <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                    <nz-option nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
+                    <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                    <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
                 </nz-select>
                 <ng-template #mobileSuffixIcon>
                     <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
@@ -58,22 +59,22 @@
 
 <div class="mt-10 lg:grid place-items-start">
     <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(collections$ | async)">
-      {{ ((collections$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} collections
+      {{ ((collections$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>collections</span>
     </p>
     <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
-    
+
         <nz-skeleton *ngIf="isLoading(collections$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
             [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-    
+
         <nz-card class="w-76" *ngIf="isEmpty(collections$ | async)">
             <div class="flex flex-col justify-center text-center h-36">
-                <span class="leading-7 text-app-gray-400">
+                <span class="leading-7 text-app-gray-400" i18n>
                     No Collections
                 </span>
             </div>
         </nz-card>
-    
+
         <wen-collection-card class="outline-none"
             *ngFor="let c of collections$ | async; trackBy: trackByUid"
             [collection]="c"
@@ -81,4 +82,3 @@
         </wen-collection-card>
     </div>
 </div>
-  

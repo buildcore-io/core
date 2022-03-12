@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { Award } from '@functions/interfaces/models';
 import * as dayjs from 'dayjs';
-import { Award } from 'functions/interfaces/models';
 import { map, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';

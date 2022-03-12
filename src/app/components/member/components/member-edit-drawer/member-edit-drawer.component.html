@@ -3,35 +3,35 @@
   <ng-container *nzDrawerContent>
     <form class="-mt-16 space-y-12" nz-form nzLayout="vertical" [formGroup]="memberForm">
       <nz-form-item>
-        <h4 nz-typography class="pt-4 mb-1">Display Name</h4>
-        <span nz-typography class="mb-6 text-app-gray-400">Set a display name. This does not change your
+        <h4 nz-typography class="pt-4 mb-1" i18n>Display Name</h4>
+        <span nz-typography class="mb-6 text-app-gray-400" i18n>Set a display name. This does not change your
           username.</span>
         <nz-form-control>
           <nz-input-group [nzPrefix]="prefixName" nzSize="large">
-            <input nz-input placeholder="Display name (optional)" [formControl]="nameControl" />
+            <input nz-input i18n-placeholder placeholder="Display name (optional)" [formControl]="nameControl" />
             <ng-template #prefixName>@</ng-template>
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <h4 nz-typography class="pt-4 mb-1">About</h4>
-        <span nz-typography class="mb-6 whitespace-pre-line text-app-gray-400">A brief description of yourself shown on your profile.</span>
+        <h4 nz-typography class="pt-4 mb-1" i18n>About</h4>
+        <span nz-typography class="mb-6 whitespace-pre-line text-app-gray-400" i18n>A brief description of yourself shown on your profile.</span>
         <nz-form-control nzSize="large">
           <nz-textarea-count [nzMaxCharacterCount]="maxAboutCharacters">
-            <textarea nz-input placeholder="Your description (optional)" rows="4"
+            <textarea nz-input i18n-placeholder placeholder="Your description (optional)" rows="4"
               [formControl]="aboutControl"></textarea>
           </nz-textarea-count>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <h4 nz-typography class="pt-4 mb-1">Avatar</h4>
-        <span nz-typography class="mb-6 text-app-gray-400">Customise your Soonaverse identity.</span>
+        <h4 nz-typography class="pt-4 mb-1" i18n>Avatar</h4>
+        <span nz-typography class="mb-6 text-app-gray-400" i18n>Customise your Soonaverse identity.</span>
         <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="!currentProfileImageControl.value">
           <nz-avatar class="border-2 border-app-gray-100 min-w-max" [nzSize]="48" nzSrc="/assets/mocks/no_avatar.png">
           </nz-avatar>
-          <span>Mint a free unique avatar for your profile picture.
+          <span i18n>Mint a free unique avatar for your profile picture.
             <br /><br />
             New super rare premium avatar species and avatar collectibles/accessories that can all be traded are coming SOON.
           </span>
@@ -40,17 +40,17 @@
         <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="currentProfileImageControl.value">
           <nz-avatar class="border-2 border-app-gray-100 min-w-max" [nzSize]="48"
             [nzSrc]="currentProfileImageControl.value | ipfsAvatar:filesizes.small"></nz-avatar>
-          <span>WOW! Looks like yours is the prettiest avatar of all. Congratulations.
+          <span i18n>WOW! Looks like yours is the prettiest avatar of all. Congratulations.
           </span>
         </div>
       </nz-form-item>
 
       <div class="space-y-4">
-        <h4 nz-typography class="pt-4 mb-1">Networking</h4>
+        <h4 nz-typography class="pt-4 mb-1" i18n>Networking</h4>
         <nz-form-item>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Github username.">
             <nz-input-group [nzPrefix]="prefixGithub" nzSize="large">
-              <input type="text" nz-input placeholder="Type your Github account username"
+              <input type="text" nz-input i18n-placeholder placeholder="Type your Github account username"
                 [formControl]="githubControl" />
               <ng-template #prefixGithub>
                 <wen-icon-github></wen-icon-github>
@@ -62,7 +62,7 @@
         <nz-form-item>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Twitter username.">
             <nz-input-group [nzPrefix]="prefixTwitter" nzSize="large">
-              <input type="text" nz-input placeholder="Type your Twitter account username"
+              <input type="text" nz-input i18n-placeholder placeholder="Type your Twitter account username"
                 [formControl]="twitterControl" />
               <ng-template #prefixTwitter>
                 <wen-icon-twitter></wen-icon-twitter>
@@ -74,7 +74,7 @@
         <nz-form-item>
           <nz-form-control i18n-nzErrorTip nzErrorTip="Only username#1234 format supported.">
             <nz-input-group [nzPrefix]="prefixDiscord" nzSize="large">
-              <input type="text" nz-input placeholder="Type your Discord account username"
+              <input type="text" nz-input i18n-placeholder placeholder="Type your Discord account username"
                 [formControl]="discordControl" />
               <ng-template #prefixDiscord>
                 <wen-icon-discord></wen-icon-discord>
@@ -86,8 +86,8 @@
     </form>
   </ng-container>
   <ng-template #titleTpl>
-    Settings
-    <button class="float-right mr-8" nz-button nzType="primary" type="button" (click)="save()">
+    <span i18n>Settings</span>
+    <button class="float-right mr-8" nz-button nzType="primary" type="button" (click)="save()" i18n>
       Save changes
     </button>
   </ng-template>
