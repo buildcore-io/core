@@ -14,6 +14,7 @@ import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/in
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
+import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
@@ -97,8 +98,8 @@ export class MultiplePage implements OnInit {
       validate: (value: string) => {
         if (this.availableFrom) return true;
         if(!value || isNaN(Date.parse(value))) return false;
-        const d = new Date(value);
-        return new Date().getTime() < d.getTime();
+        const d = dayjs(value);
+        return new Date().getTime() < d.toDate().getTime();
       },
       value: () => this.availableFrom
     },
@@ -266,7 +267,7 @@ export class MultiplePage implements OnInit {
     res.price = Number(data.price);
     res.collection = this.collectionControl.value;
     res.media = this.uploadedFiles.find((f: NzUploadFile) => f.name === data.media)?.response;
-    res.availableFrom = new Date(data.availableFrom);
+    res.availableFrom = dayjs(data.availableFrom).toDate();
     return res;
   }
 
