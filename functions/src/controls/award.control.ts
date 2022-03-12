@@ -4,6 +4,7 @@ import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
+import { URL_PATHS } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SUB_COL } from '../../interfaces/models/base';
@@ -110,7 +111,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
       createdBy: owner,
       approved: false,
       rejected: false
-    }), PATH_AWARD)));
+    }), URL_PATHS.AWARD)));
 
     // Add Owner.
     await refAward.collection(SUB_COL.OWNERS).doc(owner).set({
