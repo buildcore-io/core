@@ -81,6 +81,11 @@ export class NftCardComponent {
     this.isCheckoutOpen = true;
   }
 
+  public onImgErrorWeShowPlaceHolderVideo(event: any): any {
+    // Try full image instead.
+    event.target.src = '/assets/mocks/video_placeholder.jpg';
+  }
+
   public isAvailableForSale(): boolean {
     if (!this.collection) {
       return false;

@@ -5,6 +5,7 @@
             <img
                 *ngIf="mediaType === 'image'"
                 i18n-alt
+                (error)="onImgErrorWeShowPlaceHolderVideo($event)"
                 alt="NFT image"
                 [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full"
