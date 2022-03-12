@@ -210,12 +210,12 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
            '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
   }
 
-  public tanglePayDeepLink(): string {
+  public tanglePayDeepLink(): SafeUrl {
     if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
 
-    return 'tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse';
+    return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 
   public isSpaceVerification(): boolean {
