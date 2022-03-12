@@ -3924,13 +3924,13 @@
         </context-group>
         <target state="translated">Upload bestaande CSV</target>
       </trans-unit>
-      <trans-unit id="189367192793231292" datatype="html">
-        <source>Upload back once you generate bellow</source>
+      <trans-unit id="7608437179935502715" datatype="html">
+        <source>Upload back once you generate below</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="translated">Upload opnieuw nadat je onderstaande hebt gemaakt</target>
+        <target state="needs-translation">Upload back once you generate below</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -4932,7 +4932,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="translated"> Verbonden ruimtes die je herkent </target>
+        <target state="translated"> Geconnecteerde groepen die je herkent </target>
       </trans-unit>
       <trans-unit id="6841356844516749994" datatype="html">
         <source> New connection </source>
@@ -4948,7 +4948,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">110,111</context>
         </context-group>
-        <target state="translated"> Nieuwe verbinding </target>
+        <target state="translated"> Nieuwe connectie </target>
       </trans-unit>
       <trans-unit id="709013703638123766" datatype="html">
         <source>connections</source>
