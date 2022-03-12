@@ -252,7 +252,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
-        <target state="translated">Metamask</target>
+        <target state="needs-translation">Metamask</target>
       </trans-unit>
       <trans-unit id="7137489371050964608" datatype="html">
         <source>Connect to your Metamask wallet</source>
@@ -284,7 +284,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="translated">RPC URL: https://evm.wasp.sc.iota.org/</target>
+        <target state="needs-translation">RPC URL: https://evm.wasp.sc.iota.org/</target>
       </trans-unit>
       <trans-unit id="7577690990575717256" datatype="html">
         <source>Chain ID: 1074</source>
