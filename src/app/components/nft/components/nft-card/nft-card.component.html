@@ -13,7 +13,7 @@
 
             <video *ngIf="mediaType === 'video'"
             preload="metadata" controls class="object-cover w-full h-full">
-              <source [src]="nft?.media" type="video/mp4">
+              <source [src]="nft?.media + '#t=0.001'" type="video/mp4">
               Your browser does not support HTML video.
             </video>
 
