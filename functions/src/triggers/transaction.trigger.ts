@@ -22,7 +22,12 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
     return;
   }
 
-  if (!newValue.payload.walletReference?.chainReference || (newValue.payload.walletReference.error && newValue.payload.walletReference.count <= MAX_WALLET_RETRY)) {
+  if (
+      // Either not on chain yet or there was an error.
+      (!newValue.payload.walletReference?.chainReference || newValue.payload.walletReference.error) &&
+      // Not payment yet or at least one count happen to avoid loop
+      (!newValue.payload.walletReference || (newValue.payload.walletReference.count > 0 && newValue.payload.walletReference.count <= MAX_WALLET_RETRY))
+    ) {
     const walletService: WalletService = new WalletService();
     const walletResponse: WalletResult = newValue.payload.walletReference || {
       createdOn: serverTime(),
