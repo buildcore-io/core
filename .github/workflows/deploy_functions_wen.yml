@@ -1,8 +1,9 @@
-name: Firebase Functions - DEPLOY Production
+name: Firebase Functions - DEPLOY WEN
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - develop
 
 jobs:
   deploy:
@@ -16,6 +17,6 @@ jobs:
       - name:  Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-            args: deploy --only functions -P soonaverse -f
+            args: deploy --only functions -P soonaverse-test -f
         env:
             FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
