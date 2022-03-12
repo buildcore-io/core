@@ -10,7 +10,7 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
-import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
@@ -96,10 +96,16 @@ export class MultiplePage implements OnInit {
       label: 'available_from',
       required: true,
       validate: (value: string) => {
-        if (this.availableFrom) return true;
-        if(!value || isNaN(Date.parse(value))) return false;
+        if (this.availableFrom) {
+          return true;
+        }
+
+        if(!value || dayjs(value).isValid())  {
+          return false;
+        }
+
         const d = dayjs(value);
-        return new Date().getTime() < d.toDate().getTime();
+        return dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime() > d.toDate().getTime();
       },
       value: () => this.availableFrom
     },

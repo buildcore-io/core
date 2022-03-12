@@ -9,7 +9,7 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -171,7 +171,7 @@ export class SinglePage implements OnInit {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
       return true;
     }
 

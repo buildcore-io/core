@@ -15,7 +15,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
+import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
 import { Categories, Collection, CollectionAccess, CollectionType, SchemaCollection } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
@@ -32,7 +32,8 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
     bannerUrl: Joi.string().allow(null, '').uri({
       scheme: ['https']
     }).optional(),
-    availableFrom: Joi.date().greater(dayjs().subtract(1, 'hour').toDate()).required(),
+    // On test we allow now.
+    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -60000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),

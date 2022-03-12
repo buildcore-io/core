@@ -25,6 +25,7 @@ import {
   DISCORD_REGEXP,
   MAX_IOTA_AMOUNT,
   MIN_IOTA_AMOUNT,
+  NftAvailableFromDateMin,
   TWITTER_REGEXP,
   URL_REGEXP
 } from '@functions/interfaces/config';
@@ -433,7 +434,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
       return true;
     }
 
