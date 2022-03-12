@@ -96,19 +96,19 @@ if (environment.production) {
     useFactory: (localId: string) => {
       /** keep the same with angular.json/i18n/locales configuration **/
       switch (localId) {
-        case 'cs-CZ':
+        case 'cs':
           return cs_CZ;
-        case 'de-DE':
+        case 'de':
           return de_DE;
-        case 'es-ES':
+        case 'es':
           return es_ES;
-        case 'fr-FR':
+        case 'fr':
           return fr_FR;
-        case 'it-IT':
+        case 'it':
           return it_IT;
-        case 'ja-JP':
+        case 'ja':
           return ja_JP;
-        case 'pl-PL':
+        case 'pl':
           return pl_PL;
         case 'pt-BR':
           return pt_BR;
@@ -116,13 +116,13 @@ if (environment.production) {
           return pt_PT;
         // case 'qu-PE':
         //   return qu;
-        case 'ru-RU':
+        case 'ru':
           return ru_RU;
-        case 'tr-TR':
+        case 'tr':
           return tr_TR;
-        case 'uk-UA':
+        case 'uk':
           return uk_UA;
-        case 'zh-CN':
+        case 'zh':
           return zh_CN;
         default:
           return en_GB;

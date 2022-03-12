@@ -26,40 +26,43 @@
       "i18n": {
         "sourceLocale": "en",
         "locales": {
-          "cs-CZ": {
+          "cs": {
             "translation": "src/locale/messages.cs-CZ.xlf"
           },
-          "de-DE": {
+          "de": {
             "translation": "src/locale/messages.de-DE.xlf"
           },
-          "es-ES": {
+          "es": {
             "translation": "src/locale/messages.es-ES.xlf"
           },
-          "fr-FR": {
+          "fr": {
             "translation": "src/locale/messages.fr-FR.xlf"
           },
-          "it-IT": {
+          "it": {
             "translation": "src/locale/messages.it-IT.xlf"
           },
-          "ja-JP": {
+          "ja": {
             "translation": "src/locale/messages.ja-JP.xlf"
           },
-          "pl-PL": {
+          "pl": {
             "translation": "src/locale/messages.pl-PL.xlf"
           },
           "pt-BR": {
             "translation": "src/locale/messages.pt-BR.xlf"
           },
-          "ru-RU": {
+          "pt-PT": {
+            "translation": "src/locale/messages.pt-PT.xlf"
+          },
+          "ru": {
             "translation": "src/locale/messages.ru-RU.xlf"
           },
-          "tr-TR": {
+          "tr": {
             "translation": "src/locale/messages.tr-TR.xlf"
           },
-          "uk-UA": {
+          "uk": {
             "translation": "src/locale/messages.uk-UA.xlf"
           },
-          "zh-CN": {
+          "zh": {
             "translation": "src/locale/messages.zh-CN.xlf"
           }
         }
@@ -120,64 +123,52 @@
               "namedChunks": true
             },
             "cs": {
-              "localize": ["cs-CZ"],
-              "outputPath": "dist/cs/",
-              "i18nMissingTranslation": "error"
+              "localize": ["cs"],
+              "i18nMissingTranslation": "warning"
             },
             "de": {
-              "localize": ["de-DE"],
-              "outputPath": "dist/de/",
-              "i18nMissingTranslation": "error"
+              "localize": ["de"],
+              "i18nMissingTranslation": "warning"
             },
             "es": {
-              "localize": ["es-ES"],
-              "outputPath": "dist/es/",
-              "i18nMissingTranslation": "error"
+              "localize": ["es"],
+              "i18nMissingTranslation": "warning"
             },
             "fr": {
-              "localize": ["fr-FR"],
-              "outputPath": "dist/fr/",
-              "i18nMissingTranslation": "error"
+              "localize": ["fr"],
+              "i18nMissingTranslation": "warning"
             },
             "it": {
-              "localize": ["it-IT"],
-              "outputPath": "dist/it/",
-              "i18nMissingTranslation": "error"
+              "localize": ["it"],
+              "i18nMissingTranslation": "warning"
             },
             "ja": {
-              "localize": ["ja-JP"],
-              "outputPath": "dist/ja/",
-              "i18nMissingTranslation": "error"
+              "localize": ["ja"],
+              "i18nMissingTranslation": "warning"
             },
             "pl": {
-              "localize": ["pl-PL"],
-              "outputPath": "dist/pl/",
-              "i18nMissingTranslation": "error"
+              "localize": ["pl"],
+              "i18nMissingTranslation": "warning"
             },
             "pt-BR": {
               "localize": ["pt-BR"],
-              "outputPath": "dist/pt-BR/",
-              "i18nMissingTranslation": "error"
+              "i18nMissingTranslation": "warning"
             },
             "pt-PT": {
               "localize": ["pt-PT"],
-              "outputPath": "dist/pt-PT/",
-              "i18nMissingTranslation": "error"
+              "i18nMissingTranslation": "warning"
             },
             "tr": {
-              "localize": ["tr-TR"],
-              "outputPath": "dist/tr/",
-              "i18nMissingTranslation": "error"
+              "localize": ["tr"],
+              "i18nMissingTranslation": "warning"
             },
             "uk": {
-              "localize": ["uk-UA"],
-              "outputPath": "dist/uk/",
-              "i18nMissingTranslation": "error"
+              "localize": ["uk"],
+              "i18nMissingTranslation": "warning"
             },
             "zh": {
-              "localize": ["zh-CN"],
-              "outputPath": "dist/zh/",
-              "i18nMissingTranslation": "error"
+              "localize": ["zh"],
+              "i18nMissingTranslation": "warning"
             }
           },
           "defaultConfiguration": "production"
