@@ -3466,7 +3466,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">163,165</context>
         </context-group>
-        <target state="translated"> Mit dem Aufbau auf dem IOTA Netzwerk haben wir ein wesentliches Merkmal für ein ordnungsgemäßes DAO-Management verankert. Gebührenfreies, sicheres wählen. Lies mehr darüber in unserem Manifest. </target>
+        <target state="translated"> Durch die Entscheidung IOTA als unser Netzwerk zu nutzen, haben wir Zugang zu Funktionen die für ein hervoragendes DAO-Management unverzichtbar sind. Gebührenfreies und sicheres wählen. Lies mehr darüber in unserem Manifest. </target>
       </trans-unit>
       <trans-unit id="8710865889166765986" datatype="html">
         <source> Go there now </source>
@@ -3534,7 +3534,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">315,316</context>
         </context-group>
-        <target state="translated">Unterstützt von SoonLabs</target>
+        <target state="translated">Betrieben von SoonLabs</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
@@ -3558,7 +3558,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
-        <target state="translated"> Keine Kollektionen </target>
+        <target state="translated"> Keine Sammlungen</target>
       </trans-unit>
       <trans-unit id="7623649064629539622" datatype="html">
         <source>Marketplace</source>
@@ -3606,7 +3606,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="translated">Gesamtansehen</target>
+        <target state="translated">Reputation gesamt</target>
       </trans-unit>
       <trans-unit id="6594328713484058107" datatype="html">
         <source>Earned badges</source>
@@ -3630,7 +3630,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">72,73</context>
         </context-group>
-        <target state="translated">Ansehen</target>
+        <target state="translated">Reputation</target>
       </trans-unit>
       <trans-unit id="3458528087553681046" datatype="html">
         <source> Pending </source>
@@ -4038,7 +4038,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">334,335</context>
         </context-group>
-        <target state="translated">Wähle eine deiner Kollektionen um dieses NFT anzuzeigen.</target>
+        <target state="translated">Wähle eine deiner Sammlungen, um dieses NFT anzuzeigen.</target>
       </trans-unit>
       <trans-unit id="5196839809055021648" datatype="html">
         <source> Create NFT </source>
@@ -4102,7 +4102,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">133</context>
         </context-group>
-        <target state="translated"> Genehmigung der Kollektion ausstehend </target>
+        <target state="translated"> Genehmigung der Sammlung ausstehend </target>
       </trans-unit>
       <trans-unit id="3203200523527486057" datatype="html">
         <source> Collection rejected! </source>
@@ -4134,7 +4134,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">204,205</context>
         </context-group>
-        <target state="translated">On-Chain Aufzeichnung</target>
+        <target state="translated">On-Chain Datensatz</target>
       </trans-unit>
       <trans-unit id="5287337180755715471" datatype="html">
         <source>Preparing...</source>
@@ -4174,7 +4174,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">268,269</context>
         </context-group>
-        <target state="translated">Über die Kollektion</target>
+        <target state="translated">Über die Sammlung</target>
       </trans-unit>
       <trans-unit id="7054628444008204937" datatype="html">
         <source>Show </source>
@@ -4190,7 +4190,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">272</context>
         </context-group>
-        <target state="translated">Kollektion</target>
+        <target state="translated">Sammlung</target>
       </trans-unit>
       <trans-unit id="1719091699885493218" datatype="html">
         <source>by</source>
@@ -4214,7 +4214,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="translated">Meilenstein wird gestartet.</target>
+        <target state="translated">Anfangs Meilenstein.</target>
       </trans-unit>
       <trans-unit id="2793713233329713998" datatype="html">
         <source>Start milestone.</source>
@@ -4222,7 +4222,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
-        <target state="translated">Meilenstein starten.</target>
+        <target state="translated">Start Meilenstein.</target>
       </trans-unit>
       <trans-unit id="8083446854633867417" datatype="html">
         <source>End milestone.</source>
@@ -4230,7 +4230,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="translated">Meilenstein beenden.</target>
+        <target state="translated">Ende Meilenstein.</target>
       </trans-unit>
       <trans-unit id="351136863252723542" datatype="html">
         <source>Proposal description is required.</source>
@@ -4262,7 +4262,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">217,218</context>
         </context-group>
-        <target state="translated">Optoin hinzufügen</target>
+        <target state="translated">Auswahl hinzufügen</target>
       </trans-unit>
       <trans-unit id="4014485883731431399" datatype="html">
         <source>All Guardians</source>
@@ -4314,7 +4314,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">340,341</context>
         </context-group>
-        <target state="translated">XP Ansehen - Raum</target>
+        <target state="translated">XP Reputation - Raum</target>
       </trans-unit>
       <trans-unit id="1171519555154717304" datatype="html">
         <source>XP Reputation - Space + Connection</source>
@@ -4322,7 +4322,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">355,356</context>
         </context-group>
-        <target state="translated">XP Ansehen - Raum + Verbindung</target>
+        <target state="translated">XP Reputation - Raum + Verbindung</target>
       </trans-unit>
       <trans-unit id="5394345820497679692" datatype="html">
         <source>XP Reputation - Selected Badges</source>
@@ -4330,7 +4330,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">370,371</context>
         </context-group>
-        <target state="translated">XP Ansehen - Ausgewählte Abzeichen</target>
+        <target state="translated">XP Reputation - Ausgewählte Abzeichen</target>
       </trans-unit>
       <trans-unit id="7518498657175852149" datatype="html">
         <source> Create Proposal </source>
@@ -4446,7 +4446,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">35</context>
         </context-group>
-        <target state="translated">Ausstehende Stimmen</target>
+        <target state="translated">Ausstehende Abstimmung</target>
       </trans-unit>
       <trans-unit id="835836004237796752" datatype="html">
         <source>Voter</source>
@@ -4502,7 +4502,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="translated">Startdatum</target>
+        <target state="translated">Anfangsdatum</target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -4542,7 +4542,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">65,67</context>
         </context-group>
-        <target state="translated">Nach JSON exportieren</target>
+        <target state="translated">Als JSON exportieren</target>
       </trans-unit>
       <trans-unit id="7803836174893864003" datatype="html">
         <source>Proposal info</source>
@@ -4771,7 +4771,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="translated">Verbindungen zwischen Räumen ermöglichen es Mitgliedern eines Raumes, die Erfahrungspunkte von Mitgliedern eines anderen Raumes         zu sehen. Bestehende Verbindungen werden zu Allianzen.</target>
+        <target state="translated">Verbindungen zwischen Räumen ermöglichen es Mitgliedern eines Raumes, die Erfahrungspunkte von Mitgliedern eines anderen Raumes         anzuerkennen. Das Anerkennen der Erfahrungspunkte eines anderen Raumes bildet einen Allianz zwischen beiden.</target>
       </trans-unit>
       <trans-unit id="8832680940728722211" datatype="html">
         <source>Show All</source>
