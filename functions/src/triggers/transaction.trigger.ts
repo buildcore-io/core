@@ -50,6 +50,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
 
     const details: any = {};
     details.tranId = newValue.uid;
+    details.network = (functions.config()?.environment?.type === 'prod') ? 'soon' : 'wen';
     if (newValue.type === TransactionType.BILL_PAYMENT) {
       details.payment = true;
 
