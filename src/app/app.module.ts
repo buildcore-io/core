@@ -29,6 +29,7 @@ import { IconDefinition } from '@ant-design/icons-angular';
 import { environment } from '@env/environment';
 import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
 import { WebShellModule } from '@shell/ft/web-shell.module';
+import { getApp } from 'firebase/app';
 /* eslint-disable */
 import {
   cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, NZ_I18N, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN
@@ -76,7 +77,7 @@ const imports: any[] = [
 if (environment.production) {
   imports.push(provideAppCheck(() =>  {
     const provider = new ReCaptchaV3Provider(environment.captcha);
-    return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
+    return initializeAppCheck(getApp(), { provider, isTokenAutoRefreshEnabled: true });
   }));
 
   // In production enable performance monitoring.
