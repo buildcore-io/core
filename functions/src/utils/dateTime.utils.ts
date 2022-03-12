@@ -15,7 +15,7 @@ export function cOn<T>(o: T, path: URL_PATHS): T {
   }
 
   return uOn(merge(o, {
-    url: url + path + (<any>o).uid,
+    wenUrl: url + path + '/' + (<any>o).uid,
     createdOn: admin.firestore.Timestamp.now(),
   }));
 };

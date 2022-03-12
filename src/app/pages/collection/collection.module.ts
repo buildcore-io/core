@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BadgeModule } from '@components/badge/badge.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -69,6 +70,7 @@ import { DataService } from './services/data.service';
     NzRadioModule,
     NzIconModule,
     NzAvatarModule,
+    BadgeModule,
     NzDrawerModule,
     IconModule,
     DrawerToggleModule,

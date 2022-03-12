@@ -15,6 +15,7 @@ import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum HOT_TAGS {
   ALL = 'All',
+  PENDING = 'Pending',
   AVAILABLE = 'Available',
   OWNED = 'Owned',
   SPACE = 'SPACE'

@@ -27,14 +27,18 @@ export class CollectionAboutComponent {
     }
 
     if (access === CollectionAccess.GUARDIANS_ONLY) {
-      return 'Guardians of Space Only';
+      return $localize`Guardians of Space Only`;
     } else if (access === CollectionAccess.MEMBERS_ONLY) {
-      return 'Members of Space Only';
+      return $localize`Members of Space Only`;
     } else if (access === CollectionAccess.MEMBERS_WITH_BADGE) {
-      return 'Members With Badge Only';
+      return $localize`Members With Badge Only`;
     } else {
       return '';
     }
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
   }
 
   public sortedDiscounts(discounts?: DiscountLine[]|null): DiscountLine[] {
@@ -48,6 +52,7 @@ export class CollectionAboutComponent {
   }
 
   public getShareUrl(): string {
-    return 'http://twitter.com/share?text=Check out collection&url=' + window.location.href + '&hashtags=soonaverse';
+    const text = $localize`Check out collection`;
+    return 'http://twitter.com/share?text= ' + text + ' &url=' + window.location.href + '&hashtags=soonaverse';
   }
 }

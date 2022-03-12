@@ -15,9 +15,9 @@
               class="border-app-gray-100 min-w-8 min-h-8"
               nzShape="circle">
             </nz-avatar>
-            <div class="ml-3 text-sm font-medium truncate max-w-24">
+            <a class="ml-3 text-sm font-medium truncate max-w-24" [routerLink]="['/space', (data.space$ | async)?.uid]">
                 {{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}
-            </div>
+            </a>
         </div>
     </div>
 
@@ -32,7 +32,7 @@
 
             <div class="w-full mt-10 mb-4 space-y-4" *ngIf="(deviceService.isMobile$ | async)">
                 <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-                    PUBLISH Collection
+                    Publish Collection
                 </button>
 
                 <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
@@ -84,7 +84,22 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center mt-8 lg:mt-6">
+            <div class="flex items-center justify-between w-full h-12 p-4 mt-8 bg-white rounded-xl"
+              *ngIf="isDateInFuture((data.collection$ | async)?.availableFrom)">
+              <div class="flex items-center mr-8"
+                  [ngClass]="{ 'text-alerts-error': false }">
+                      <wen-icon-time></wen-icon-time>
+                      <div class="ml-2.5 font-bold">
+                        <span i18n>Sale Starts </span>
+                        <span *ngIf="(data.collection$ | async)?.type === collectionTypes.CLASSIC" i18n>from</span>
+                      </div>
+              </div>
+              <div class="font-medium">
+                {{(data.collection$ | async)?.availableFrom?.toDate() | date:'short'}}
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center mt-5 lg:mt-3">
                 <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
@@ -101,9 +116,6 @@
                 </div>
             </div>
 
-            <div class="mt-10 font-medium lg:mt-6" [innerHtml]="(data.collection$ | async)?.description | markdown">
-            </div>
-
             <div class="flex items-center p-5 mt-8 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-lg font-bold">
@@ -112,16 +124,26 @@
                     <span i18n>remaining</span>
                 </div>
             </div>
+
+            <div class="mt-10 font-medium lg:mt-6" [innerHtml]="(data.collection$ | async)?.description | markdown">
+            </div>
+
         </div>
 
         <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;"
             *ngIf="(deviceService.isDesktop$ | async)">
             <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-              PUBLISH Collection
+              Publish Collection
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-                Reject Collection
+              Reject Collection
+            </button>
+
+            <button nz-button nzDanger nzType="primary" (click)="reject()"
+                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                nzBlock nzSize="large" i18n>
+                Cancel Collection
             </button>
 
             <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>

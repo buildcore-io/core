@@ -15,7 +15,8 @@
         type="button"
         (click)="join()"
       >
-        {{(isLoggedIn | async) ? 'Discover' : 'Join us'}}
+        <span *ngIf="(isLoggedIn | async)" i18n>Discover</span>
+        <span *ngIf="(isLoggedIn | async) === false" i18n>Join Us</span>
       </button>
 
       <button class="block mt-4 lg:ml-4 lg:mt-0 lg:inline"
@@ -37,6 +38,7 @@
         type="button"
         href="https://docs.soonaverse.com/"
         target="_blank"
+        i18n
       >
         See Docs
     </a>

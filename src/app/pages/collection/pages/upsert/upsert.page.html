@@ -246,8 +246,7 @@
             i18n-nzTitle
             nzTitle="Member discounts"
             i18n-nzDescription
-            [nzDescription]="'Space support an ability to airdrop NFTs to their members for free or at discount. The maximum discount for your price is '
-              + maxDiscount + '%'"
+            [nzDescription]="'Space support an ability to airdrop NFTs to their members for free or at discount. Please note, 1Mi will always be required to purchase NFT.'"
           >
           </nz-card-meta>
 
@@ -271,7 +270,7 @@
                 <div class="flex items-center flex-grow w-1/2">
                   <nz-input-number
                     class="w-full max-w-80"
-                    [nzMin]="1"
+                    [nzMin]="0"
                     [nzMax]="100"
                     [nzStep]="1"
                     [nzFormatter]="formatterPercent"
@@ -279,9 +278,6 @@
                     nzSize="large"
                     [formControl]="gForm(discount, 'amount')"
                   ></nz-input-number>
-
-                  <i *ngIf="gForm(discount, 'amount').errors?.maxDiscount" nz-icon nzType="info-circle"
-                    nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="'Discount must be less or equal than ' + maxDiscount" class="ml-2 text-alerts-error cursor-pointer"></i>
 
                   <wen-icon-trash
                     class="ml-1 cursor-pointer"
@@ -301,9 +297,6 @@
                     <span i18n>Discount</span> #0{{ i + 1 }}
                   </div>
                   <div class="flex items-center">
-                    <i *ngIf="gForm(discount, 'amount').errors?.maxDiscount" nz-icon nzType="info-circle"
-                    nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="'Discount must be less or equal than ' + maxDiscount" class="mr-2 text-alerts-error cursor-pointer"></i>
-                    
                     <wen-icon-trash
                       class="cursor-pointer"
                       (click)="removeDiscount(i)"

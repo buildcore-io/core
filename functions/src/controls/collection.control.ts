@@ -302,7 +302,7 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions.r
     throw throwInvalidArgument(WenError.collection_does_not_exists);
   }
 
-  if (!docCollection.data().availableFrom || dayjs(docCollection.data().availableFrom.toDate()).isAfter(dayjs())) {
+  if (!docCollection.data().availableFrom || dayjs(docCollection.data().availableFrom.toDate()).isBefore(dayjs())) {
     throw throwInvalidArgument(WenError.collection_is_past_available_date);
   }
 

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AwardApi } from '@api/award.api';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
@@ -13,15 +14,15 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from '@functions/interfaces/config';
-import { Collection, CollectionType } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Award, Collection, CollectionType } from '@functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, debounceTime, first, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, first, firstValueFrom, map, Observable, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
@@ -36,7 +37,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   public isAboutCollectionVisible = false;
   public sortControl: FormControl;
   public filterControl: FormControl;
-  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.OWNED];
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.PENDING, HOT_TAGS.AVAILABLE, HOT_TAGS.OWNED];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private guardiansSubscription$?: Subscription;
   private subscriptions$: Subscription[] = [];
@@ -49,6 +50,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     public auth: AuthService,
     private notification: NotificationService,
     private spaceApi: SpaceApi,
+    private awardApi: AwardApi,
     private memberApi: MemberApi,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
@@ -72,7 +74,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Collection|undefined) => {
+    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async (obj: Collection|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -87,6 +89,19 @@ export class CollectionPage implements OnInit, OnDestroy {
         this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
                                       .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$);
       }
+
+      // Get badges to show.
+      const awards: Award[] = [];
+      if (obj.accessAwards?.length) {
+        for (const a of obj.accessAwards) {
+          const award: Award|undefined = await firstValueFrom(this.awardApi.listen(a));
+          if (award) {
+            awards.push(award);
+          }
+        }
+      }
+
+      this.data.accessBadges$.next(awards);
     });
 
     this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {
@@ -182,6 +197,10 @@ export class CollectionPage implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
 
+  public get collectionTypes(): typeof CollectionType {
+    return CollectionType;
+  }
+
   public async approve(): Promise<void> {
     if (!this.data.collection$.value?.uid) {
       return;
@@ -194,6 +213,14 @@ export class CollectionPage implements OnInit, OnDestroy {
         // none.
       });
     });
+  }
+
+  public isDateInFuture(date?: Timestamp|null): boolean {
+    if (!date) {
+      return false;
+    }
+
+    return dayjs(date.toDate()).isAfter(dayjs());
   }
 
   public async reject(): Promise<void> {
@@ -224,6 +251,8 @@ export class CollectionPage implements OnInit, OnDestroy {
     if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
       if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.lowToHighAvailableCollection(collectionId, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.PENDING) {
+        return this.nftApi.lowToHighPendingCollection(collectionId, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.lowToHighOwnedCollection(collectionId, last, search);
       } else {
@@ -232,6 +261,8 @@ export class CollectionPage implements OnInit, OnDestroy {
     } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
       if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.topAvailableCollection(collectionId, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.PENDING) {
+        return this.nftApi.topPendingCollection(collectionId, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.topOwnedCollection(collectionId, last, search);
       } else {
@@ -240,6 +271,8 @@ export class CollectionPage implements OnInit, OnDestroy {
     } else {
       if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.highToLowAvailableCollection(collectionId, last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.PENDING) {
+        return this.nftApi.highToLowPendingCollection(collectionId, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.highToLowOwnedCollection(collectionId, last, search);
       } else {
