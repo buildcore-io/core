@@ -26,20 +26,41 @@
       "i18n": {
         "sourceLocale": "en",
         "locales": {
-          "fr": {
-            "translation": "src/locale/messages.fr.xlf"
+          "cs-CZ": {
+            "translation": "src/locale/messages.cs-CZ.xlf"
           },
-          "de": {
-            "translation": "src/locale/messages.de.xlf"
+          "de-DE": {
+            "translation": "src/locale/messages.de-DE.xlf"
           },
-          "es": {
-            "translation": "src/locale/messages.es.xlf"
+          "es-ES": {
+            "translation": "src/locale/messages.es-ES.xlf"
           },
-          "tr": {
-            "translation": "src/locale/messages.tr.xlf"
+          "fr-FR": {
+            "translation": "src/locale/messages.fr-FR.xlf"
           },
-          "it": {
-            "translation": "src/locale/messages.it.xlf"
+          "it-IT": {
+            "translation": "src/locale/messages.it-IT.xlf"
+          },
+          "ja-JP": {
+            "translation": "src/locale/messages.ja-JP.xlf"
+          },
+          "pl-PL": {
+            "translation": "src/locale/messages.pl-PL.xlf"
+          },
+          "pt-BR": {
+            "translation": "src/locale/messages.pt-BR.xlf"
+          },
+          "ru-RU": {
+            "translation": "src/locale/messages.ru-RU.xlf"
+          },
+          "tr-TR": {
+            "translation": "src/locale/messages.tr-TR.xlf"
+          },
+          "uk-UA": {
+            "translation": "src/locale/messages.uk-UA.xlf"
+          },
+          "zh-CN": {
+            "translation": "src/locale/messages.zh-CN.xlf"
           }
         }
       },
@@ -98,29 +119,64 @@
               "sourceMap": true,
               "namedChunks": true
             },
-            "fr": {
-              "localize": ["fr"],
-              "outputPath": "dist/fr/",
+            "cs": {
+              "localize": ["cs-CZ"],
+              "outputPath": "dist/cs/",
               "i18nMissingTranslation": "error"
             },
             "de": {
-              "localize": ["de"],
+              "localize": ["de-DE"],
               "outputPath": "dist/de/",
               "i18nMissingTranslation": "error"
             },
             "es": {
-              "localize": ["es"],
+              "localize": ["es-ES"],
               "outputPath": "dist/es/",
               "i18nMissingTranslation": "error"
             },
-            "tr": {
-              "localize": ["tr"],
-              "outputPath": "dist/tr/",
+            "fr": {
+              "localize": ["fr-FR"],
+              "outputPath": "dist/fr/",
               "i18nMissingTranslation": "error"
             },
             "it": {
-              "localize": ["it"],
+              "localize": ["it-IT"],
               "outputPath": "dist/it/",
+              "i18nMissingTranslation": "error"
+            },
+            "ja": {
+              "localize": ["ja-JP"],
+              "outputPath": "dist/ja/",
+              "i18nMissingTranslation": "error"
+            },
+            "pl": {
+              "localize": ["pl-PL"],
+              "outputPath": "dist/pl/",
+              "i18nMissingTranslation": "error"
+            },
+            "pt-BR": {
+              "localize": ["pt-BR"],
+              "outputPath": "dist/pt-BR/",
+              "i18nMissingTranslation": "error"
+            },
+            "pt-PT": {
+              "localize": ["pt-PT"],
+              "outputPath": "dist/pt-PT/",
+              "i18nMissingTranslation": "error"
+            },
+            "tr": {
+              "localize": ["tr-TR"],
+              "outputPath": "dist/tr/",
+              "i18nMissingTranslation": "error"
+            },
+            "uk": {
+              "localize": ["uk-UA"],
+              "outputPath": "dist/uk/",
+              "i18nMissingTranslation": "error"
+            },
+            "zh": {
+              "localize": ["zh-CN"],
+              "outputPath": "dist/zh/",
               "i18nMissingTranslation": "error"
             }
           },
@@ -134,21 +190,6 @@
             },
             "development": {
               "browserTarget": "soonaverse:build:development"
-            },
-            "fr": {
-              "browserTarget": "soonaverse:build:fr"
-            },
-            "de": {
-              "browserTarget": "soonaverse:build:de"
-            },
-            "es": {
-              "browserTarget": "soonaverse:build:es"
-            },
-            "tr": {
-              "browserTarget": "soonaverse:build:tr"
-            },
-            "it": {
-              "browserTarget": "soonaverse:build:it"
             }
           },
           "defaultConfiguration": "development"
