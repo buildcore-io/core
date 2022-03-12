@@ -4,7 +4,7 @@ import { AppCheck } from './../../interfaces/config';
 import { throwArgument } from './error.utils';
 
 export function appCheck(func: string, context: any) {
-  if (context.app === undefined && AppCheck.enabled) {
+  if (context.app === undefined && AppCheck.enabled && (functions.config()?.environment?.type === 'prod')) {
     functions.logger.warn('failed-app-check', "The function must be called from an App Check verified app.", {
       func: func
     });

@@ -110,7 +110,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
       createdBy: owner,
       approved: false,
       rejected: false
-    }))));
+    }), PATH_AWARD)));
 
     // Add Owner.
     await refAward.collection(SUB_COL.OWNERS).doc(owner).set({

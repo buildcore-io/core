@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
@@ -126,7 +126,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
       hidden: (CollectionType.CLASSIC !== collectionData.type),
       createdBy: creator,
       placeholderNft: false
-    }))));
+    }), URL_PATHS.NFT)));
 
     // Update collection.
     await refCollection.update({

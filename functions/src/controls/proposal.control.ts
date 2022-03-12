@@ -17,7 +17,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { ProposalStartDateMin, RelatedRecordsResponse } from './../../interfaces/config';
+import { ProposalStartDateMin, RelatedRecordsResponse, URL_PATHS } from './../../interfaces/config';
 import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 import { CommonJoi } from './../services/joi/common';
@@ -115,7 +115,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
       createdBy: owner,
       approved: false,
       rejected: false
-    }))));
+    }), URL_PATHS.PROPOSAL)));
 
     // This can't be empty.
     // Add Owners based on space's guardians or members.

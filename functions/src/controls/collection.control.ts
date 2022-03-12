@@ -15,7 +15,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, TWITTER_REGEXP } from './../../interfaces/config';
+import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
 import { Categories, Collection, CollectionAccess, CollectionType, SchemaCollection } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
@@ -137,7 +137,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
         hidden: true,
         placeholderNft: true,
         createdBy: creator
-      })));
+      }, URL_PATHS.NFT)));
     }
 
     // Document does not exists.
@@ -149,7 +149,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
       approved: false,
       rejected: false,
       placeholderNft: placeholderNft || null
-    }))));
+    }), URL_PATHS.NFT)));
 
     // Load latest
     docCollection = await refCollection.get();

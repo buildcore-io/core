@@ -10,7 +10,18 @@ export class AppCheck {
   public static enabled = true;
 }
 
+export enum URL_PATHS {
+  NFT = 'nft',
+  SPACE = 'space',
+  PROPOSAL = 'proposal',
+  AWARD = 'award',
+  MEMBER = 'member',
+  COLLECTION = 'collection'
+}
+
 export const WEN_NAME = 'Soonaverse';
+export const WEN_PROD_ADDRESS = 'https://soonaverse.com/';
+export const WEN_TEST_ADDRESS = 'https://wen.soonaverse.com/';
 export const GITHUB_REGEXP = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
 export const DISCORD_REGEXP = /^.{3,32}#[0-9]{4}$/i;
 export const TWITTER_REGEXP = /^@?(\w){1,15}$/i;
