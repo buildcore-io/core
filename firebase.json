@@ -83,6 +83,14 @@
           "destination": "/ja/index.html"
         },
         {
+          "source": "/ko{,/**}",
+          "destination": "/ko/index.html"
+        },
+        {
+          "source": "/nl{,/**}",
+          "destination": "/nl/index.html"
+        },
+        {
           "source": "/pl{,/**}",
           "destination": "/pl/index.html"
         },
@@ -103,12 +111,16 @@
           "destination": "/uk/index.html"
         },
         {
-          "source": "/zn{,/**}",
-          "destination": "/zn/index.html"
-        },
-        {
           "source": "/tr{,/**}",
           "destination": "/tr/index.html"
+        },
+        {
+          "source": "/zn-CN{,/**}",
+          "destination": "/zn-CN/index.html"
+        },
+        {
+          "source": "/zn-TW{,/**}",
+          "destination": "/zn-TW/index.html"
         },
         { "source": "**", "destination": "/en/index.html"}
       ]
