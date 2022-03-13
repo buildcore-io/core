@@ -40,7 +40,11 @@
         </div>
 
         <div class="mt-10 ml-2">
-          <wen-theme-switch nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Coming SOON"></wen-theme-switch>
+          <wen-theme-switch>
+            <div class="flex items-center justify-center w-10 h-10 text-xl rounded-full cursor-pointer" nz-tooltip  i18n-nzTooltipTitle nzTooltipTitle="Switch to English" (click)="goToEn()" *ngIf="!isEnglish()">
+              EN
+            </div>
+          </wen-theme-switch>
         </div>
 
         <div class="absolute flex flex-col items-center justify-between w-full bottom-10">

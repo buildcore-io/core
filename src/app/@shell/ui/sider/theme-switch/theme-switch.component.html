@@ -12,7 +12,7 @@
 
 <ng-template #isMobileBlock>
   <div class="flex items-center h-16 space-x-7">
-    <div (click)="onClickChangeTheme(theme.Light)" 
+    <div (click)="onClickChangeTheme(theme.Light)"
       class="w-10 h-10 flex justify-center items-center rounded-full"
       [ngClass]="{
         'bg-orange': (currentTheme$ | async) === theme.Light
@@ -27,5 +27,7 @@
       }">
       <wen-icon-moon> </wen-icon-moon>
     </div>
+
+    <ng-content></ng-content>
   </div>
 </ng-template>
