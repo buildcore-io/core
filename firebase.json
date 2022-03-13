@@ -13,7 +13,7 @@
   "hosting": [
     {
       "target": "prod",
-      "public": "dist/soonaverse/en",
+      "public": "dist/soonaverse",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -28,7 +28,7 @@
     },
     {
       "target": "edge",
-      "public": "dist/soonaverse/en",
+      "public": "dist/soonaverse",
       "ignore": [
         "firebase.json",
         "**/.*",
