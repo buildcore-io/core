@@ -13,116 +13,32 @@
   "hosting": [
     {
       "target": "prod",
-      "public": "dist/soonaverse",
+      "public": "dist/soonaverse/en",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
       ],
-      "i18n": {
-        "root": "/"
-      },
       "rewrites": [
         {
-          "source": "/de{,/**}",
-          "destination": "/de/index.html"
-        },
-        {
-          "source": "/es{,/**}",
-          "destination": "/es/index.html"
-        },
-        {
-          "source": "/fr{,/**}",
-          "destination": "/fr/index.html"
-        },
-        {
-          "source": "/it{,/**}",
-          "destination": "/it/index.html"
-        },
-        {
-          "source": "/tr{,/**}",
-          "destination": "/tr/index.html"
-        },
-        { "source": "**", "destination": "/en/index.html"}
+          "source": "**",
+          "destination": "/index.html"
+        }
       ]
     },
     {
       "target": "edge",
-      "public": "dist/soonaverse",
+      "public": "dist/soonaverse/en",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
       ],
-      "i18n": {
-        "root": "/"
-      },
       "rewrites": [
         {
-          "source": "/cs{,/**}",
-          "destination": "/cs/index.html"
-        },
-        {
-          "source": "/de{,/**}",
-          "destination": "/de/index.html"
-        },
-        {
-          "source": "/es{,/**}",
-          "destination": "/es/index.html"
-        },
-        {
-          "source": "/fr{,/**}",
-          "destination": "/fr/index.html"
-        },
-        {
-          "source": "/it{,/**}",
-          "destination": "/it/index.html"
-        },
-        {
-          "source": "/ja{,/**}",
-          "destination": "/ja/index.html"
-        },
-        {
-          "source": "/ko{,/**}",
-          "destination": "/ko/index.html"
-        },
-        {
-          "source": "/nl{,/**}",
-          "destination": "/nl/index.html"
-        },
-        {
-          "source": "/pl{,/**}",
-          "destination": "/pl/index.html"
-        },
-        {
-          "source": "/pt-BR{,/**}",
-          "destination": "/pt-BR/index.html"
-        },
-        {
-          "source": "/pt-PT{,/**}",
-          "destination": "/pt-PT/index.html"
-        },
-        {
-          "source": "/ru{,/**}",
-          "destination": "/ru/index.html"
-        },
-        {
-          "source": "/uk{,/**}",
-          "destination": "/uk/index.html"
-        },
-        {
-          "source": "/tr{,/**}",
-          "destination": "/tr/index.html"
-        },
-        {
-          "source": "/zh-CN{,/**}",
-          "destination": "/zh-CN/index.html"
-        },
-        {
-          "source": "/zh-TW{,/**}",
-          "destination": "/zh-TW/index.html"
-        },
-        { "source": "**", "destination": "/en/index.html"}
+          "source": "**",
+          "destination": "/index.html"
+        }
       ]
     }
   ],
