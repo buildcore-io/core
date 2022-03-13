@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">124,125</context>
         </context-group>
-        <target state="translated">Afrekenen</target>
+        <target state="translated">Open transactieverwerking</target>
       </trans-unit>
       <trans-unit id="7130854181625494946" datatype="html">
         <source> Space </source>
@@ -176,7 +176,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <target state="translated"> Groepen </target>
+        <target state="translated"> Groep </target>
       </trans-unit>
       <trans-unit id="7760190548492587697" datatype="html">
         <source> Proposal </source>
@@ -1138,7 +1138,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="translated"> Afrekenen sluiten </target>
+        <target state="translated"> Sluit transactieverwerking </target>
       </trans-unit>
       <trans-unit id="535977460003741771" datatype="html">
         <source> Show my NFT </source>
@@ -1962,7 +1962,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">362,363</context>
         </context-group>
-        <target state="translated">Groep Informatie</target>
+        <target state="translated">Informatie over Groep</target>
       </trans-unit>
       <trans-unit id="469394451440055210" datatype="html">
         <source>This is the space that will list the award.</source>
@@ -3538,7 +3538,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="translated">Het maken van een community ontzettend makkelijk</target>
+        <target state="translated">Het maken van een community is een fluitje van een cent</target>
       </trans-unit>
       <trans-unit id="7915937961793984299" datatype="html">
         <source> No more worries about “the tech”. Spend your time where it belongs, building your community and realizing your collective vision. </source>
@@ -3546,7 +3546,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="translated"> Geen zorgen meer over “de technology”. Besteed je tijd daar waar het nut heeft, namelijk je gemeenschap opbouwen en je collectieve visie realiseren. </target>
+        <target state="translated"> Geen zorgen meer over “de technology”. Besteed je tijd daar waar het nut heeft, namelijk je community opbouwen en je collectieve visie realiseren. </target>
       </trans-unit>
       <trans-unit id="1296407136174431296" datatype="html">
         <source>StepArticle image</source>
@@ -3646,7 +3646,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">33,31</context>
         </context-group>
-        <target state="translated">Maak je community aan</target>
+        <target state="translated">Creëer je community</target>
       </trans-unit>
       <trans-unit id="5261937616330500097" datatype="html">
         <source>Feeless, secure, on-chain voting, and “one click” creation tools.</source>
@@ -3930,7 +3930,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate below</target>
+        <target state="translated">Upload opnieuw nadat je onderstaande hebt gemaakt</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -4858,7 +4858,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">89,91</context>
         </context-group>
-        <target state="translated">Blok Lid</target>
+        <target state="translated">Blokkeer lid</target>
       </trans-unit>
       <trans-unit id="3148742460474838524" datatype="html">
         <source>Unblock Member</source>
@@ -4866,7 +4866,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">91,93</context>
         </context-group>
-        <target state="translated">Deblokkeer Lid</target>
+        <target state="translated">Deblokkeer lid</target>
       </trans-unit>
       <trans-unit id="6731859764357922789" datatype="html">
         <source>Active Proposals</source>
@@ -4890,7 +4890,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">24,26</context>
         </context-group>
-        <target state="translated">Actieve onderscheidingen</target>
+        <target state="translated">Actieve awards</target>
       </trans-unit>
       <trans-unit id="826596871061379376" datatype="html">
         <source> No Active Awards </source>
@@ -4898,7 +4898,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="translated"> Geen actieve onderscheidingen </target>
+        <target state="translated"> Geen actieve awards </target>
       </trans-unit>
       <trans-unit id="1958939778635956613" datatype="html">
         <source>proposal</source>
@@ -4915,8 +4915,8 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="translated">Verbindingen tussen ruimtes stellen leden van de ene ruimte in staat om leden van de ervaring van een andere ruimte te herkennen
-        punten. Gevestigde connecties veranderen in allianties.</target>
+        <target state="translated">Connecties tussen groepen stellen leden van de ene ruimte in staat om experience 
+        punten van leden van een andere groep te erkennen. Vastgelegde connecties worden allianties.</target>
       </trans-unit>
       <trans-unit id="8832680940728722211" datatype="html">
         <source>Show All</source>
@@ -5192,7 +5192,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">143,144</context>
         </context-group>
-        <target state="translated">Vereist goedkeuring van een lid </target>
+        <target state="translated">Vereist goedkeuring van een bewaker </target>
       </trans-unit>
       <trans-unit id="6932048807565988787" datatype="html">
         <source> Create space </source>

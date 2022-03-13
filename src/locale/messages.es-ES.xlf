@@ -1806,7 +1806,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">144,145</context>
         </context-group>
-        <target state="needs-translation"> Submit </target>
+        <target state="translated"> Enviar </target>
       </trans-unit>
       <trans-unit id="2614607010577950577" datatype="html">
         <source>Overview</source>
@@ -2046,7 +2046,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">207,208</context>
         </context-group>
-        <target state="needs-translation">What the badge looks like.</target>
+        <target state="translated">Qué aspecto tiene la insignia.</target>
       </trans-unit>
       <trans-unit id="2524817745292019266" datatype="html">
         <source>Mint an unique NTT badge.</source>
@@ -2054,7 +2054,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">216,217</context>
         </context-group>
-        <target state="needs-translation">Mint an unique NTT badge.</target>
+        <target state="translated">Acuñe una insignia única NTT.</target>
       </trans-unit>
       <trans-unit id="3465775377424936239" datatype="html">
         <source> Mint Avatar </source>
@@ -2062,7 +2062,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">225</context>
         </context-group>
-        <target state="needs-translation"> Mint Avatar </target>
+        <target state="translated"> Crear Avatar </target>
       </trans-unit>
       <trans-unit id="8899837847378200483" datatype="html">
         <source>WOW! Now reward your members with it! </source>
@@ -2070,7 +2070,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">238,239</context>
         </context-group>
-        <target state="needs-translation">WOW! Now reward your members with it! </target>
+        <target state="translated">¡WOW! ¡Ahora recompensa a tus miembros con ella! </target>
       </trans-unit>
       <trans-unit id="6224216341519239266" datatype="html">
         <source>Award Setup</source>
@@ -2078,7 +2078,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">245,246</context>
         </context-group>
-        <target state="needs-translation">Award Setup</target>
+        <target state="translated">Configuración del premio</target>
       </trans-unit>
       <trans-unit id="7365459513663675787" datatype="html">
         <source>Defines who and how can get a badge.</source>
@@ -2086,7 +2086,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">247,248</context>
         </context-group>
-        <target state="needs-translation">Defines who and how can get a badge.</target>
+        <target state="translated">Define quién y cómo puede obtener una insignia.</target>
       </trans-unit>
       <trans-unit id="1004325069349842290" datatype="html">
         <source>Guardian approval</source>
@@ -2094,7 +2094,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">254,255</context>
         </context-group>
-        <target state="needs-translation">Guardian approval</target>
+        <target state="translated">Aprobación del tutor</target>
       </trans-unit>
       <trans-unit id="944911078022228647" datatype="html">
         <source>The award must be approved by the guardians of the space before it&apos;s active or distributed</source>
@@ -2102,7 +2102,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">260,261</context>
         </context-group>
-        <target state="needs-translation">The award must be approved by the guardians of the space before it's active or distributed</target>
+        <target state="translated">El premio debe ser aprobado por los garantes del espacio antes de que este sea activado o distribuido</target>
       </trans-unit>
       <trans-unit id="3555708348385429459" datatype="html">
         <source>Discord Activity</source>
@@ -2110,7 +2110,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">265,266</context>
         </context-group>
-        <target state="needs-translation">Discord Activity</target>
+        <target state="translated">Actividad de Discord</target>
       </trans-unit>
       <trans-unit id="4972944609814373169" datatype="html">
         <source>Github Activity</source>
@@ -2118,7 +2118,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">275,276</context>
         </context-group>
-        <target state="needs-translation">Github Activity</target>
+        <target state="translated">Actividad de Github</target>
       </trans-unit>
       <trans-unit id="7398855954644093121" datatype="html">
         <source>Custom and more</source>
@@ -2126,7 +2126,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">285,286</context>
         </context-group>
-        <target state="needs-translation">Custom and more</target>
+        <target state="translated">Personalizado y más</target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -2134,7 +2134,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">310,311</context>
         </context-group>
-        <target state="needs-translation"> Create award </target>
+        <target state="translated"> Crear premio </target>
       </trans-unit>
       <trans-unit id="3700187992174805144" datatype="html">
         <source>Award Description</source>
@@ -2142,7 +2142,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/overview/overview.page.html</context>
           <context context-type="linenumber">2,3</context>
         </context-group>
-        <target state="needs-translation">Award Description</target>
+        <target state="translated">Descripción del Premio</target>
       </trans-unit>
       <trans-unit id="733041191345531116" datatype="html">
         <source>Find Participant</source>
@@ -2162,7 +2162,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
-        <target state="needs-translation">Find Participant</target>
+        <target state="translated">Buscar participante</target>
       </trans-unit>
       <trans-unit id="6157188013889386517" datatype="html">
         <source>Showing only few top records...</source>
