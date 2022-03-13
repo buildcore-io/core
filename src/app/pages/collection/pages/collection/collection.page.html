@@ -40,7 +40,7 @@
                 </button>
 
                 <button nz-button nzDanger nzType="primary" (click)="reject()"
-                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                     nzBlock nzSize="large" i18n>
                     Cancel Collection
                 </button>
@@ -141,7 +141,7 @@
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()"
-                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                 nzBlock nzSize="large" i18n>
                 Cancel Collection
             </button>
