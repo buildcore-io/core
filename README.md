@@ -26,7 +26,6 @@ _See [Litepaper](https://docs.google.com/document/d/107AWznbIIz1CwsqRO2Jwj5vmqVd
 The platform is designed to transition fully into the ISCP and away from any centralized services. Centralized services are transitioned as infrastructure becomes ready for production use.
 
 There are three key elements:
-
 ### /protocol
 - Solidity
 - Hardhat

@@ -40,7 +40,7 @@
                 </button>
 
                 <button nz-button nzDanger nzType="primary" (click)="reject()"
-                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                     nzBlock nzSize="large" i18n>
                     Cancel Collection
                 </button>
@@ -141,7 +141,7 @@
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()"
-                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                 nzBlock nzSize="large" i18n>
                 Cancel Collection
             </button>
@@ -178,10 +178,10 @@
         </ng-template>
 
         <button nz-button nzType="primary" nzSize="default"
-            *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
+            *ngIf="!isLocked(data.collection$ | async) && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
             class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()">
             <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
-            <div *ngIf="deviceService.isDesktop$ | async" i18n>Create NFT</div>
+            <div *ngIf="(deviceService.isDesktop$ | async)" i18n>Create NFT</div>
         </button>
     </div>
 

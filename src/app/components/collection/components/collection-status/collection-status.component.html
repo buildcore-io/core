@@ -2,4 +2,4 @@
 </nz-tag>
 <nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="collection?.rejected" i18n>Rejected
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="collection?.approved" i18n>Available</nz-tag>
+<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="collection?.approved && !collection?.rejected" i18n>Available</nz-tag>
