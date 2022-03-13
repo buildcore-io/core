@@ -115,12 +115,12 @@
           "destination": "/tr/index.html"
         },
         {
-          "source": "/zn-CN{,/**}",
-          "destination": "/zn-CN/index.html"
+          "source": "/zh-CN{,/**}",
+          "destination": "/zh-CN/index.html"
         },
         {
-          "source": "/zn-TW{,/**}",
-          "destination": "/zn-TW/index.html"
+          "source": "/zh-TW{,/**}",
+          "destination": "/zh-TW/index.html"
         },
         { "source": "**", "destination": "/en/index.html"}
       ]
