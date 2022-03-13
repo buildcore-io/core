@@ -12,6 +12,9 @@
   </div>
 
   <div class="sticky bottom-0 flex flex-col flex-shrink px-3">
+    <a class="grid mb-5 text-xl cursor-pointer" nz-tooltip  i18n-nzTooltipTitle nzTooltipTitle="Switch to English" (click)="goToEn()" *ngIf="!isEnglish()" target="_blank">
+      EN
+    </a>
     <a class="grid" href="https://docs.soonaverse.com/" target="_blank">
       <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="See Docs" class="mb-5 text-xl cursor-pointer"></i>
     </a>
