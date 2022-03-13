@@ -7,6 +7,8 @@ import es from '@angular/common/locales/es';
 import fr from '@angular/common/locales/fr';
 import it from '@angular/common/locales/it';
 import ja from '@angular/common/locales/ja';
+import ko from '@angular/common/locales/ko';
+import nl from '@angular/common/locales/nl';
 import pl from '@angular/common/locales/pl';
 import pt from '@angular/common/locales/pt';
 import qu from '@angular/common/locales/qu';
@@ -32,7 +34,7 @@ import { WebShellModule } from '@shell/ft/web-shell.module';
 import { getApp } from 'firebase/app';
 /* eslint-disable */
 import {
-  cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, NZ_I18N, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN
+  cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, ko_KR, nl_NL, NZ_I18N, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN, zh_TW
 } from 'ng-zorro-antd/i18n';
 /* eslint-enable */
 import { NzIconModule } from "ng-zorro-antd/icon";
@@ -43,15 +45,17 @@ import { WenComponent } from './app.component';
 registerLocaleData(en);
 registerLocaleData(cs);
 registerLocaleData(de);
-registerLocaleData(fr);
 registerLocaleData(es);
+registerLocaleData(fr);
 registerLocaleData(it);
-registerLocaleData(tr);
 registerLocaleData(ja);
+registerLocaleData(ko);
+registerLocaleData(nl);
 registerLocaleData(pl);
 registerLocaleData(pt);
 registerLocaleData(qu);
 registerLocaleData(ru);
+registerLocaleData(tr);
 registerLocaleData(uk);
 registerLocaleData(zh);
 
@@ -109,6 +113,10 @@ if (environment.production) {
           return it_IT;
         case 'ja':
           return ja_JP;
+        case 'ko':
+          return ko_KR;
+        case 'nl':
+          return nl_NL;
         case 'pl':
           return pl_PL;
         case 'pt-BR':
@@ -123,8 +131,10 @@ if (environment.production) {
           return tr_TR;
         case 'uk':
           return uk_UA;
-        case 'zh':
+        case 'zh-CN':
           return zh_CN;
+        case 'zh-TW':
+          return zh_TW;
         default:
           return en_GB;
       }

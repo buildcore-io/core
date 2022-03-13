@@ -44,6 +44,12 @@
           "ja": {
             "translation": "src/locale/messages.ja-JP.xlf"
           },
+          "ko": {
+            "translation": "src/locale/messages.ko-KR.xlf"
+          },
+          "nl": {
+            "translation": "src/locale/messages.nl-NL.xlf"
+          },
           "pl": {
             "translation": "src/locale/messages.pl-PL.xlf"
           },
@@ -62,8 +68,11 @@
           "uk": {
             "translation": "src/locale/messages.uk-UA.xlf"
           },
-          "zh": {
+          "zh-CN": {
             "translation": "src/locale/messages.zh-CN.xlf"
+          },
+          "zh-TW": {
+            "translation": "src/locale/messages.zh-TW.xlf"
           }
         }
       },
@@ -146,6 +155,15 @@
               "localize": ["ja"],
               "i18nMissingTranslation": "warning"
             },
+            "ko": {
+              "localize": ["ko"],
+              "i18nMissingTranslation": "warning"
+            },
+
+            "nl": {
+              "localize": ["nl"],
+              "i18nMissingTranslation": "warning"
+            },
             "pl": {
               "localize": ["pl"],
               "i18nMissingTranslation": "warning"
@@ -166,8 +184,12 @@
               "localize": ["uk"],
               "i18nMissingTranslation": "warning"
             },
-            "zh": {
-              "localize": ["zh"],
+            "zh-CN": {
+              "localize": ["zh-CN"],
+              "i18nMissingTranslation": "warning"
+            },
+            "zh-TW": {
+              "localize": ["zh-TW"],
               "i18nMissingTranslation": "warning"
             }
           },
