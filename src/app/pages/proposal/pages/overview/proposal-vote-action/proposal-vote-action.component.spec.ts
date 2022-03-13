@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { AuthService } from '@components/auth/services/auth.service';
+import { DataService } from '@pages/proposal/services/data.service';
+import { MockProvider } from 'ng-mocks';
 import { ProposalVoteActionComponent } from './proposal-vote-action.component';
+
 
 describe('ProposalVoteActionComponent', () => {
   let component: ProposalVoteActionComponent;
@@ -8,7 +11,8 @@ describe('ProposalVoteActionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProposalVoteActionComponent ]
+      declarations: [ ProposalVoteActionComponent ],
+      providers: [MockProvider(AuthService), MockProvider(DataService)]
     })
     .compileComponents();
   });

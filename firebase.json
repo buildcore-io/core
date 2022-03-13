@@ -19,11 +19,31 @@
         "**/.*",
         "**/node_modules/**"
       ],
+      "i18n": {
+        "root": "/"
+      },
       "rewrites": [
         {
-          "source": "**",
-          "destination": "/index.html"
-        }
+          "source": "/de{,/**}",
+          "destination": "/de/index.html"
+        },
+        {
+          "source": "/es{,/**}",
+          "destination": "/es/index.html"
+        },
+        {
+          "source": "/fr{,/**}",
+          "destination": "/fr/index.html"
+        },
+        {
+          "source": "/it{,/**}",
+          "destination": "/it/index.html"
+        },
+        {
+          "source": "/tr{,/**}",
+          "destination": "/tr/index.html"
+        },
+        { "source": "**", "destination": "/en/index.html"}
       ]
     },
     {
@@ -34,11 +54,63 @@
         "**/.*",
         "**/node_modules/**"
       ],
+      "i18n": {
+        "root": "/"
+      },
       "rewrites": [
         {
-          "source": "**",
-          "destination": "/index.html"
-        }
+          "source": "/cs{,/**}",
+          "destination": "/cs/index.html"
+        },
+        {
+          "source": "/de{,/**}",
+          "destination": "/de/index.html"
+        },
+        {
+          "source": "/es{,/**}",
+          "destination": "/es/index.html"
+        },
+        {
+          "source": "/fr{,/**}",
+          "destination": "/fr/index.html"
+        },
+        {
+          "source": "/it{,/**}",
+          "destination": "/it/index.html"
+        },
+        {
+          "source": "/ja{,/**}",
+          "destination": "/ja/index.html"
+        },
+        {
+          "source": "/pl{,/**}",
+          "destination": "/pl/index.html"
+        },
+        {
+          "source": "/pt-BR{,/**}",
+          "destination": "/pt-BR/index.html"
+        },
+        {
+          "source": "/pt-PT{,/**}",
+          "destination": "/pt-PT/index.html"
+        },
+        {
+          "source": "/ru{,/**}",
+          "destination": "/ru/index.html"
+        },
+        {
+          "source": "/uk{,/**}",
+          "destination": "/uk/index.html"
+        },
+        {
+          "source": "/zn{,/**}",
+          "destination": "/zn/index.html"
+        },
+        {
+          "source": "/tr{,/**}",
+          "destination": "/tr/index.html"
+        },
+        { "source": "**", "destination": "/en/index.html"}
       ]
     }
   ],
@@ -50,6 +122,7 @@
       "port": 8080
     },
     "hosting": {
+      "port": 8095,
       "enabled": false
     },
     "ui": {

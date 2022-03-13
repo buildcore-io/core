@@ -23,11 +23,11 @@ import { DataService } from './../../services/data.service';
 export class MemberPage implements OnInit, OnDestroy {
   public memberId = ''
   public sections = [
-    { route: 'activity', label: 'Activity' },
-    { route: 'awards', label: 'Awards' },
-    { route: 'badges', label: 'Badges' },
-    { route: 'spaces', label: 'Spaces' },
-    { route: 'nfts', label: 'NFTs' }
+    { route: 'activity', label: $localize`Activity` },
+    { route: 'awards', label: $localize`Awards` },
+    { route: 'badges', label: $localize`Badges` },
+    { route: 'spaces', label: $localize`Spaces` },
+    { route: 'nfts', label: $localize`NFTs` }
   ]
   public isAboutMemberVisible = false;
   public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);

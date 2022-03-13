@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
+import { TIME_GAP_BETWEEN_MILESTONES } from '@functions/interfaces/config';
+import { Proposal, Space, SpaceGuardian, Transaction } from '@functions/interfaces/models';
 import * as dayjs from 'dayjs';
-import { TIME_GAP_BETWEEN_MILESTONES } from 'functions/interfaces/config';
-import { Proposal, Space, SpaceGuardian, Transaction } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { Award } from './../../../../../functions/interfaces/models/award';
 import { Member } from './../../../../../functions/interfaces/models/member';
@@ -28,6 +28,7 @@ export class DataService {
     // Clean up all streams.
     this.proposal$.next(undefined);
     this.space$.next(undefined);
+    this.badges$.next(undefined);
     this.creator$.next(undefined);
     this.transactions$.next(undefined);
     this.guardians$.next(undefined);

@@ -32,8 +32,8 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   public membersPending$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
   public membersVoted$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
   public hotTags: { value: ParticipantFilterOptions; label: string}[] = [
-    { value: ParticipantFilterOptions.PENDING, label: 'Pending Vote' },
-    { value: ParticipantFilterOptions.VOTED, label: 'Voted' }
+    { value: ParticipantFilterOptions.PENDING, label: $localize`Pending Vote` },
+    { value: ParticipantFilterOptions.VOTED, label: $localize`Voted` }
   ];
   private dataStorePendingMembers: ProposalParticipantWithMember[][] = [];
   private dataStoreVotedMembers: ProposalParticipantWithMember[][] = [];

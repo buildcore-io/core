@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
-  <h1 class="mt-7" *ngIf="!editMode" i18>Create new collection</h1>
-  <h1 class="mt-7" *ngIf="editMode" i18>Edit collection</h1>
+  <h1 class="mt-7" *ngIf="!editMode" i18n>Create new collection</h1>
+  <h1 class="mt-7" *ngIf="editMode" i18n>Edit collection</h1>
 
   <form nz-form nzLayout="vertical" [formGroup]="collectionForm">
     <div class="py-4" nz-row [nzGutter]="24">
@@ -9,20 +9,23 @@
         nz-col
         nzFlex="auto"
         [ngStyle]="{
-                    'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
-                }"
+          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+        }"
       >
         <nz-card [nzBordered]="false">
           <nz-card-meta
-              nzTitle="Collection info"
-                    nzDescription="Name and description will be included on the Collection."
-                >
-                </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Collection info"
+            i18n-nzDescription
+            nzDescription="Name and description will be included on the Collection."
+          >
+          </nz-card-meta>
           <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control>
                 <input
                   nz-input
+                  i18n-placeholder
                   placeholder="Name"
                   nzSize="large"
                   [formControl]="nameControl"
@@ -33,6 +36,7 @@
               <nz-form-control>
                 <textarea
                   nz-input
+                  i18n-placeholder
                   placeholder="Description"
                   nzSize="large"
                   rows="4"
@@ -40,76 +44,23 @@
                 ></textarea>
               </nz-form-control>
             </nz-form-item>
-            <nz-form-item>
-              <nz-form-label class="text-sm font-medium text-app-gray-600"
-                >Royalty</nz-form-label
-              >
-              <span class="ant-card-meta-description">
-                This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol.
-              </span><br />
-              <nz-form-control class="relative">
-                <nz-input-number
-                  class="w-full"
-                  [nzMin]="0"
-                  [nzMax]="100"
-                  [nzStep]="1"
-                  [nzFormatter]="formatterPercent"
-                  [nzParser]="parserPercent"
-                  nzPlaceHolder="Royalties - Percentage fee"
-                  nzSize="large"
-                  [formControl]="royaltiesFeeControl"
-                ></nz-input-number>
-                <i
-                  nz-icon
-                  nzType="info-circle"
-                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
-                  nz-tooltip
-                  nzTooltipTitle="Example: 10 % , 20 % , etc.."
-                ></i>
-              </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item>
-              <label nz-checkbox [formControl]="royaltiesSpaceDifferentControl">
-                <div class="flex items-center">
-                  <div class="font-medium mr-2.5" i18n>
-                    Royalties goes to a different space
-                  </div>
-                  <i
-                    nz-icon
-                    nzType="info-circle"
-                    class="cursor-pointer text-app-gray-400"
-                    nz-tooltip
-                    nzTooltipTitle="Royalties goes to a different space"
-                  ></i>
-                </div>
-              </label>
-            </nz-form-item>
-
-            <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
-              <wen-select-space
-                class="block w-full"
-                [includeDefaultSpace]="false"
-                [formControl]="royaltiesSpaceControl"
-                [spaces]="getSpaceListOptions(spaces$ | async)"
-                size="large"
-              >
-              </wen-select-space>
-            </nz-form-item>
           </div>
         </nz-card>
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-              nzTitle="Sales info"
-                    nzDescription="All times are reflected in user's timezone. For generated NFT and SFT the price is set here and cannot be changed on the NFT. Price for classic NFT collection is only indicative and can be changed on the NFT."
-                >
-                </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Sales info"
+            i18n-nzDescription
+            nzDescription="All times are reflected in user's timezone. For generated NFT and SFT the price is set here and cannot be changed on the NFT. Price for classic NFT collection is only indicative and can be changed on the NFT."
+          >
+          </nz-card-meta>
           <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control>
                 <nz-input-group nzSize="large" class="relative">
                   <nz-input-number
+                    i18n-nzPlaceHolder
                     nzPlaceHolder="Price"
                     nzSize="large"
                     class="w-full"
@@ -121,6 +72,7 @@
                     nzType="info-circle"
                     class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
                     nz-tooltip
+                    i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
                   ></i>
                   <div
@@ -155,20 +107,80 @@
                   [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
                   nzFormat="yyyy-MM-dd HH:mm"
                   [formControl]="availableFromControl"
+                  i18n-nzPlaceHolder
                   nzPlaceHolder="Available on"
                 >
                 </nz-date-picker>
               </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n>Royalty</nz-form-label>
+              <span class="ant-card-meta-description" i18n>
+                This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol.
+              </span><br />
+              <nz-form-control class="relative">
+                <nz-input-number
+                  class="w-full"
+                  [nzMin]="0"
+                  [nzMax]="100"
+                  [nzStep]="1"
+                  [nzFormatter]="formatterPercent"
+                  [nzParser]="parserPercent"
+                  i18n-nzPlaceHolder
+                  nzPlaceHolder="Royalties - Percentage fee"
+                  nzSize="large"
+                  [formControl]="royaltiesFeeControl"
+                ></nz-input-number>
+                <i
+                  nz-icon
+                  nzType="info-circle"
+                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                  nz-tooltip
+                  i18n-nzTooltipTitle
+                  nzTooltipTitle="Example: 10 % , 20 % , etc.."
+                ></i>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <label nz-checkbox [formControl]="royaltiesSpaceDifferentControl">
+                <div class="flex items-center">
+                  <div class="font-medium mr-2.5" i18n>
+                    Royalties goes to a different space
+                  </div>
+                  <i
+                    nz-icon
+                    nzType="info-circle"
+                    class="cursor-pointer text-app-gray-400"
+                    nz-tooltip
+                    i18n-nzTooltipTitle
+                    nzTooltipTitle="Royalties goes to a different space"
+                  ></i>
+                </div>
+              </label>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="royaltiesSpaceDifferentControl.value">
+              <wen-select-space
+                class="block w-full"
+                [includeDefaultSpace]="false"
+                [formControl]="royaltiesSpaceControl"
+                [spaces]="getSpaceListOptions(spaces$ | async)"
+                size="large"
+              >
+              </wen-select-space>
             </nz-form-item>
           </div>
         </nz-card>
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-              nzTitle="Links"
-                    nzDescription="Links will be included on the NFT detail. Use account usernames for Twitter and Discord (name#id)."
-                >
-                </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Links"
+            i18n-nzDescription
+            nzDescription="Links will be included on the NFT detail. Use account usernames for Twitter and Discord (name#id)."
+          >
+          </nz-card-meta>
           <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid URL.">
@@ -176,6 +188,7 @@
                   <input
                     type="text"
                     nz-input
+                    i18n-placeholder
                     placeholder="URL"
                     [formControl]="urlControl"
                   />
@@ -195,6 +208,7 @@
                   <input
                     type="text"
                     nz-input
+                    i18n-placeholder
                     placeholder="Link to your Twitter account"
                     [formControl]="twitterControl"
                   />
@@ -214,6 +228,7 @@
                   <input
                     type="text"
                     nz-input
+                    i18n-placeholder
                     placeholder="Link to your Discord account"
                     [formControl]="discordControl"
                   />
@@ -228,8 +243,10 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Member discounts"
-            nzDescription="Space support an ability to airdrop NFTs to their members for free or at discount."
+            i18n-nzDescription
+            [nzDescription]="'Space support an ability to airdrop NFTs to their members for free or at discount. Please note, 1Mi will always be required to purchase NFT.'"
           >
           </nz-card-meta>
 
@@ -253,7 +270,7 @@
                 <div class="flex items-center flex-grow w-1/2">
                   <nz-input-number
                     class="w-full max-w-80"
-                    [nzMin]="1"
+                    [nzMin]="0"
                     [nzMax]="100"
                     [nzStep]="1"
                     [nzFormatter]="formatterPercent"
@@ -263,7 +280,7 @@
                   ></nz-input-number>
 
                   <wen-icon-trash
-                    class="ml-4 cursor-pointer"
+                    class="ml-1 cursor-pointer"
                     (click)="removeDiscount(i)"
                   ></wen-icon-trash>
                 </div>
@@ -279,10 +296,12 @@
                   <div class="text-xs font-bold">
                     <span i18n>Discount</span> #0{{ i + 1 }}
                   </div>
-                  <wen-icon-trash
-                    class="cursor-pointer"
-                    (click)="removeDiscount(i)"
-                  ></wen-icon-trash>
+                  <div class="flex items-center">
+                    <wen-icon-trash
+                      class="cursor-pointer"
+                      (click)="removeDiscount(i)"
+                    ></wen-icon-trash>
+                  </div>
                 </div>
 
                 <div class="mt-2 mb-5 separator"></div>
@@ -323,6 +342,7 @@
             *ngIf="discounts.controls.length < maxDiscountCount"
             nzType="link"
             class="flex items-center pl-0 mt-3"
+            [disabled]="priceControl.invalid"
             (click)="addDiscount()"
           >
             <wen-icon-plus class="mr-0.5"></wen-icon-plus>
@@ -338,7 +358,9 @@
       >
         <nz-card [nzBordered]="false">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Space Info"
+            i18n-nzDescription
             nzDescription="This is the space that will be minting the NFT collection. Only spaces with verified wallets show up in the dropdown list. Please make sure you choose the correct space because all funds from the NFT sale will go to this space's verified wallet."
           >
           </nz-card-meta>
@@ -356,10 +378,12 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Collection Type"
-          nzDescription="Each type has different characteristics. This cannot be changed after creation."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Collection Type"
+            i18n-nzDescription
+            nzDescription="Each type has different characteristics. This cannot be changed after creation."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group
@@ -370,11 +394,12 @@
                   *ngFor="let type of collectionTypes; trackBy: trackByValue"
                   [value]="type.value"
                 >
-                  <span class="flex items-center" i18n>
+                  <span class="flex items-center">
                     {{ type.key }}
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
+                      i18n-nzTooltipTitle
                       [nzTooltipTitle]="getTooltip(type.value, '')">
                     </wen-icon-question-circle>
                   </span>
@@ -386,7 +411,9 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Banner"
+            i18n-nzDescription
             [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Upload banner image for you Collection.'"
           >
           </nz-card-meta>
@@ -421,11 +448,12 @@
 
         <nz-card [nzBordered]="false" *ngIf="showPlaceholder()">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Placeholder"
+            i18n-nzDescription
             [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Upload image. Will be used as an NFT placeholder.'"
           >
           </nz-card-meta>
-
           <div class="mt-6">
               <nz-form-item>
                   <nz-form-control>
@@ -437,12 +465,12 @@
                         [nzLimit]="1"
                         [nzCustomRequest]="uploadFilePlaceholder.bind(this)"
                         (nzChange)="uploadChangePlaceholder($event)"
-                        nzFileType="image/png,image/jpg,image/jpeg,image/webp"
+                        nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                         [nzFileList]="uploadedPlaceholder ? [uploadedPlaceholder] : []"
                         [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
                       >
                           <ng-container>
-                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp</span>
+                              <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                           </ng-container>
                       </nz-upload>
                       <div class="text-orange-darkest" *ngIf="placeholderUrlControl.invalid && !placeholderUrlControl.pristine" i18n>
@@ -455,10 +483,12 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Category"
-          nzDescription="Category is used when filtering content."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Category"
+            i18n-nzDescription
+            nzDescription="Category is used when filtering content."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Category.">
               <nz-select
@@ -466,13 +496,15 @@
                 nzSize="large"
                 nzShowSearch
                 nzAllowClear
-                nzPlaceHolder="Title"
+                i18n-nzPlaceHolder
+                nzPlaceHolder="Category"
                 [formControl]="categoryControl"
               >
                 <nz-option
                   *ngFor="let cc of collectionCategories"
-                  [nzLabel]="cc.key"
-                  [nzValue]="cc.value"
+                  i18n-nzLabel
+                  [nzLabel]="cc.value"
+                  [nzValue]="cc.key"
                 >
                 </nz-option>
               </nz-select>
@@ -482,10 +514,12 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Collection Setup"
-          nzDescription="Who has access to a given collection."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Collection Setup"
+            i18n-nzDescription
+            nzDescription="Who has access to a given collection."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group
@@ -493,46 +527,50 @@
                 [formControl]="selectedAccessControl"
               >
                 <wen-radio [value]="targetAccess.OPEN"
-                  ><span class="flex items-center" i18n
-                    >Open Sale
+                  ><span class="flex items-center"
+                    ><span i18n>Open Sale</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Everyone has access to this collection."
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
-                  ><span class="flex items-center" i18n
-                    >Space Guardians Only
+                  ><span class="flex items-center"
+                    ><span i18n>Space Guardians Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Only Space Guardians can access."
                     >
                     </wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_ONLY"
-                  ><span class="flex items-center" i18n
-                    >Space Members Only
+                  ><span class="flex items-center"
+                    ><span i18n>Space Members Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Only Space Members can access."
                     >
                     </wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
-                  ><span class="flex items-center" i18n
-                    >Space Members with Badge Only
+                  ><span class="flex items-center"
+                    ><span i18n>Space Members with Badge Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Only Space Members with badge can access."
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_WITH_NFT_FROM_COLLECTION"
-                  ><span class="flex items-center" i18n
-                    >At least one NFT from Collections
+                  ><span class="flex items-center"
+                    ><span i18n>At least one NFT from Collections</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -543,7 +581,7 @@
             </nz-form-control>
           </nz-form-item>
         </nz-card>
-        <nz-card [nzBordered]="false" nzTitle="Collection Options" >
+        <nz-card [nzBordered]="false" i18n-nzTitle nzTitle="Collection Options" >
           <nz-form-item>
             <label nz-checkbox [formControl]="onePerMemberOnlyControl">
               <div class="flex items-center">
@@ -570,6 +608,7 @@
                 nzAllowClear
                 [nzMaxTagCount]="9"
                 nzMode="multiple"
+                i18n-nzPlaceHolder
                 nzPlaceHolder="Select Collections"
                 [formControl]="accessCollectionsControl"
               >
@@ -596,6 +635,7 @@
               >
                 <nz-option
                   *ngFor="let a of awards$ | async; trackBy: trackByUid"
+                  i18n-nzLabel
                   [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
                   [nzValue]="a.uid"
                 ></nz-option>

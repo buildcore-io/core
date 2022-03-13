@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NavigationCancel, NavigationEnd, Router } from '@angular/router';
-import { DeviceService } from '@core/services/device';
+import { DeviceService, LAYOUT_CHANGE_DEBOUNCE_TIME } from '@core/services/device';
 import { RouterService } from '@core/services/router';
 import { ThemeService } from '@core/services/theme';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, combineLatest } from "rxjs";
-import { filter } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -18,7 +18,6 @@ export class LayoutComponent implements OnInit {
   public showSideBar$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   constructor(
     private themeService: ThemeService,
-    private cd: ChangeDetectorRef,
     private router: Router,
     private deviceService: DeviceService,
     public routerService: RouterService
@@ -30,16 +29,17 @@ export class LayoutComponent implements OnInit {
       this.deviceService.isMobile$
     ]).pipe(
       untilDestroyed(this),
-      filter(([routerEvent, isMobile]: [any, boolean]) => {
-        return routerEvent && (routerEvent instanceof NavigationEnd || routerEvent instanceof NavigationCancel);
-      }))
-    .subscribe(([routerEvent, isMobile]: [any, boolean]) => {
-      if (routerEvent.url === '/' || isMobile) {
-        this.showSideBar$.next(false);
-      } else {
-        this.showSideBar$.next(true);
-      }
-    });
+      debounceTime(LAYOUT_CHANGE_DEBOUNCE_TIME),
+      filter(([event, _]: [any, boolean]) => {
+        return !event?.routerEvent || (event.routerEvent instanceof NavigationEnd || event.routerEvent instanceof NavigationCancel);
+      })
+    ).subscribe(() => {
+        if (this.router.url === '/' || this.deviceService.isMobile$.getValue()) {
+          this.showSideBar$.next(false);
+        } else {
+          this.showSideBar$.next(true);
+        }
+      });
   }
 
   public get isDarkTheme() {

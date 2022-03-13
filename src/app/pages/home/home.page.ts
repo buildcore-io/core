@@ -5,8 +5,8 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Collection, Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Collection, Space } from 'functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { SpaceApi } from './../../@api/space.api';
 
@@ -30,18 +30,18 @@ export class HomePage implements OnInit {
   public stepArticles: StepArticle[] = [
     {
       img: '/assets/mocks/build_dao_banner.jpg',
-      title: 'Create your community',
-      description: 'Feeless, secure, on-chain voting, and “one click” creation tools.'
+      title: $localize`Create your community`,
+      description: $localize`Feeless, secure, on-chain voting, and “one click” creation tools.`
     },
     {
       img: '/assets/mocks/manage_dao_banner.jpg',
-      title: 'Build reputation and rewards',
-      description: 'Create incentives and build reputation, trust and community engagement.'
+      title: $localize`Build reputation and rewards`,
+      description: $localize`Create incentives and build reputation, trust and community engagement.`
     },
     {
       img: '/assets/mocks/own_dao_banner.jpg',
-      title: 'Manage, Maintain, Grow',
-      description: 'Governance, voting, for both public and private communities.'
+      title: $localize`Manage, Maintain, Grow`,
+      description: $localize`Governance, voting, for both public and private communities.`
     }
   ];
 

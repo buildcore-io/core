@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { Member } from 'functions/interfaces/models';
+import { Member } from '@functions/interfaces/models';
 import { Space } from './../../../../functions/interfaces/models/space';
 
 export enum AddressType {

@@ -1,13 +1,12 @@
 <nav
   nz-menu
   nzMode="horizontal"
-  class="inline-flex items-center h-10 border-b-0 lg:rounded-3xl px-5 lg:px-0 min-w-full w-auto"
+  class="inline-flex items-center w-auto h-10 min-w-full px-5 border-b-0 lg:rounded-3xl lg:px-0"
 >
   <a
     *ngFor="let tab of tabs"
     nz-menu-item
     class="inline-flex items-center h-full font-semibold leading-10 text-current rounded-3xl"
-    i18n
     [routerLink]="tab.route"
     nzMatchRouter
   >

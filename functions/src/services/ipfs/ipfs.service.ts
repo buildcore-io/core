@@ -12,12 +12,12 @@ export interface IpfsSuccessResult {
 
 const nftStorageConfig: any = {
   endpoint: 'https://api.nft.storage', // the default
-  token: functions.config()?.nftstorage.token
+  token: functions.config()?.nftstorage?.token
 }
 
 const pinataConfig: any = {
-  key: functions.config()?.pinata.key,
-  secret: functions.config()?.pinata.secret
+  key: functions.config()?.pinata?.key,
+  secret: functions.config()?.pinata?.secret
 }
 
 export class IpfsService {

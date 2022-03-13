@@ -6,15 +6,16 @@ import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/s
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
+import { Collection, Space } from '@functions/interfaces/models';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
-import { Collection, Space } from 'functions/interfaces/models';
-import { Nft } from 'functions/interfaces/models/nft';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum HOT_TAGS {
   ALL = 'All',
+  PENDING = 'Pending',
   AVAILABLE = 'Available',
   OWNED = 'Owned',
   SPACE = 'SPACE'
@@ -32,7 +33,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   public spaceControl: FormControl;
   public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.OWNED];
-  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
+  public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.AVAILABLE]);
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
 

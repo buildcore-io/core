@@ -56,7 +56,7 @@ export class MemberEditDrawerComponent implements OnInit {
     if (this.auth.member$.value) {
       this.setFormValues(this.auth.member$.value);
     }
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (obj) {
         this.setFormValues(obj);
       }

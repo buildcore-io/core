@@ -13,7 +13,9 @@
       >
         <nz-card [nzBordered]="false">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Space info"
+            i18n-nzDescription
             nzDescription="Title and description will be included on the Space."
           >
           </nz-card-meta>
@@ -22,6 +24,7 @@
               <nz-form-control>
                 <input
                   nz-input
+                  i18n-placeholder
                   placeholder="Title"
                   nzSize="large"
                   [formControl]="nameControl"
@@ -32,6 +35,7 @@
               <nz-form-control>
                 <textarea
                   nz-input
+                  i18n-placeholder
                   placeholder="Space description"
                   nzSize="large"
                   rows="4"
@@ -44,9 +48,11 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Networking"
-                nzDescription="Links will be included on the Space detail. Use account usernames for Github, Twitter and Discord (name#id).">
-            </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Networking"
+            i18n-nzDescription
+            nzDescription="Links will be included on the Space detail. Use account usernames for Github, Twitter and Discord (name#id).">
+          </nz-card-meta>
           <div class="mt-4 space-y-4">
             <nz-form-item>
               <nz-form-control
@@ -57,6 +63,7 @@
                   <input
                     type="text"
                     nz-input
+                    i18n-placeholder
                     placeholder="Type your Github account username"
                     [formControl]="githubControl"
                   />
@@ -76,6 +83,7 @@
                   <input
                     type="text"
                     nz-input
+                    i18n-placeholder
                     placeholder="Type your Twitter account username"
                     [formControl]="twitterControl"
                   />
@@ -95,6 +103,7 @@
                   <input
                     type="text"
                     nz-input
+                    i18n-placeholder
                     placeholder="Type your Discord invite code"
                     [formControl]="discordControl"
                   />
@@ -115,8 +124,11 @@
       >
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Space Type"
-          nzDescription="Each type has different characteristics."></nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Space Type"
+            i18n-nzDescription
+            nzDescription="Each type has different characteristics.">
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control>
               <nz-radio-group
@@ -124,13 +136,11 @@
                 [formControl]="openControl"
               >
                 <wen-radio [value]="true">
-                  <span class="inline-flex"
-                    >Open for anyone to join instantly
+                  <span class="inline-flex" i18n>Open for anyone to join instantly
                   </span>
                 </wen-radio>
                 <wen-radio [value]="false">
-                  <span class="inline-flex"
-                    >Requires a member approval
+                  <span class="inline-flex" i18n>Requires a member approval
                   </span></wen-radio
                 >
               </nz-radio-group>
@@ -139,7 +149,9 @@
         </nz-card>
         <nz-card [nzBordered]="false">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Avatar"
+            i18n-nzDescription
             [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Your brand is key.'"
           >
           </nz-card-meta>
@@ -148,6 +160,7 @@
             <nz-form-item>
               <nz-form-control
                 [nzValidateStatus]="avatarControl"
+                i18n-nzErrorTip
                 [nzErrorTip]="'Avatar is mandatory'"
               >
                 <nz-upload
@@ -175,7 +188,9 @@
 
         <nz-card [nzBordered]="false">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Banner"
+            i18n-nzDescription
             [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Make it personal.'"
           >
           </nz-card-meta>

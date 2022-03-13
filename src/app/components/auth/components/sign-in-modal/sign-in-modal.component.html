@@ -5,8 +5,8 @@
       class="flex w-full h-auto gap-6 p-6 mt-10 border border-app-gray-200 hover:border-app-gray-400 focus:border-app-gray-400 rounded-large">
         <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="border-2 border-app-gray-100"></nz-avatar>
         <div class="flex flex-col items-start text-app-gray-text">
-          Metamask
-          <small class="font-medium text-app-gray-400">Connect to your Metamask wallet</small>
+          <span i18n>Metamask</span>
+          <small class="font-medium text-app-gray-400" i18n>Connect to your Metamask wallet</small>
         </div>
       </button>
 
@@ -17,11 +17,11 @@
       </div>
 
       <div nz-typography class="mx-auto mt-4 font-semibold" *ngIf="(auth.showWalletPopup$ | async) === 3">
-        <p>Make sure you select public IOTA EVM Chain in MetaMask.</p>
+        <p i18n>Make sure you select public IOTA EVM Chain in MetaMask.</p>
         <br /><br />
-        <p>Network Name: IOTA EVM</p>
-        <p>RPC URL: https://evm.wasp.sc.iota.org/</p>
-        <p>Chain ID: 1074</p>
+        <p i18n>Network Name: IOTA EVM</p>
+        <p i18n>RPC URL: https://evm.wasp.sc.iota.org/</p>
+        <p i18n>Chain ID: 1074</p>
       </div>
     </div>
   </ng-container>

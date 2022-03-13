@@ -4,9 +4,11 @@ import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
+import { URL_PATHS } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { DecodedToken } from '../../interfaces/functions/index';
 import { COL, SUB_COL } from '../../interfaces/models/base';
+import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
@@ -22,7 +24,7 @@ import { Transaction, TransactionType } from './../../interfaces/models/transact
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
-function defaultJoiUpdateCreateSchema(): any {
+function defaultJoiUpdateCreateSchema(): Award {
   return merge(getDefaultParams(), {
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
@@ -72,7 +74,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
   const schema: ObjectSchema<Award> = Joi.object(defaultJoiUpdateCreateSchema());
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.space);
   await SpaceValidator.spaceExists(refSpace);
 
   const member = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
@@ -96,7 +98,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
     }
   }
 
-  const refAward: any = admin.firestore().collection(COL.AWARD).doc(awardAddress);
+  const refAward: admin.firestore.DocumentReference = admin.firestore().collection(COL.AWARD).doc(awardAddress);
   let docAward = await refAward.get();
   if (!docAward.exists) {
     // Document does not exists.
@@ -109,7 +111,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
       createdBy: owner,
       approved: false,
       rejected: false
-    }))));
+    }), URL_PATHS.AWARD)));
 
     // Add Owner.
     await refAward.collection(SUB_COL.OWNERS).doc(owner).set({
@@ -143,13 +145,13 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   const owner = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
-  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
-  let docAward: any;
+  const refAward: admin.firestore.DocumentReference = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  let docAward!: DocumentSnapshotType;
   if (!(await refAward.get()).exists) {
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
@@ -185,18 +187,18 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
-  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
-  const docAward: any = await refAward.get();
-  let docTran: any;
+  const refAward: admin.firestore.DocumentReference = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  const docAward: DocumentSnapshotType = await refAward.get();
+  let docTran!: DocumentSnapshotType;
   if (!docAward.exists) {
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
   if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
@@ -226,18 +228,18 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
-  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
-  const docAward: any = await refAward.get();
-  let docTran: any;
+  const refAward: admin.firestore.DocumentReference = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  const docAward: DocumentSnapshotType = await refAward.get();
+  let docTran!: DocumentSnapshotType;
   if (!docAward.exists) {
     throw throwInvalidArgument(WenError.proposal_does_not_exists);
   }
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
   if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
@@ -272,13 +274,13 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
   const participant = params.address.toLowerCase();
 
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      comment: Joi.string().allow(null, '').optional()
+    uid: CommonJoi.uidCheck(),
+    comment: Joi.string().allow(null, '').optional()
   }));
   assertValidation(schema.validate(params.body));
 
-  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
-  const docAward: any = (await refAward.get());
+  const refAward: admin.firestore.DocumentReference = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  const docAward: DocumentSnapshotType = (await refAward.get());
   if (!docAward.exists) {
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
@@ -287,7 +289,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
     throw throwInvalidArgument(WenError.award_is_no_longer_available);
   }
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
   if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(participant).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_part_of_space);
   }
@@ -309,7 +311,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
     throw throwInvalidArgument(WenError.award_is_not_approved);
   }
 
-  let output: any;
+  let output!: DocumentSnapshotType;
   if (params.body) {
     await refAward.collection(SUB_COL.PARTICIPANTS).doc(participant).set({
       uid: participant,
@@ -337,19 +339,19 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
   const owner = params.address.toLowerCase();
   const tranId = getRandomEthAddress();
   const schema: ObjectSchema<Award> = Joi.object(merge(getDefaultParams(), {
-      uid: CommonJoi.uidCheck(),
-      member: CommonJoi.uidCheck()
+    uid: CommonJoi.uidCheck(),
+    member: CommonJoi.uidCheck()
   }));
   assertValidation(schema.validate(params.body));
 
-  const refAward: any = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
-  const docAward: any = await refAward.get();
-  let docTran: any;
+  const refAward: admin.firestore.DocumentReference = admin.firestore().collection(COL.AWARD).doc(params.body.uid);
+  const docAward: DocumentSnapshotType = await refAward.get();
+  let docTran!: DocumentSnapshotType;
   if (!docAward.exists) {
     throw throwInvalidArgument(WenError.award_does_not_exists);
   }
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docAward.data().space);
   if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
     throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
   }
@@ -364,8 +366,8 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const participant: any = await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member);
-  const participantRec: any = await participant.get();
+  const participant: admin.firestore.DocumentReference = await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member);
+  const participantRec: DocumentSnapshotType = await participant.get();
   if (params.body) {
     // Member might not be participant of the space, that's fine. we just need to add him.
     if (!participantRec.exists) {
@@ -379,7 +381,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
 
     // Increase count via transaction.
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refAward);
+      const sfDoc: DocumentSnapshotType = await transaction.get(refAward);
       const newCount = (sfDoc.data().issued || 0) + 1;
       transaction.update(refAward, {
         issued: newCount,
@@ -388,7 +390,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     });
 
     // Issue badge transaction.
-    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+    const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
     const xp: number = round(docAward.data().badge.xp / docAward.data().badge.count);
 
     // Mark participant that he completed.
@@ -416,9 +418,9 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     // We've to update the members stats.
     // - We need to track it per space as well.
     // - We need to track on space who they have alliance with and use that to determine which XP/awards to pick
-    const refMember: any = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
+    const refMember: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refMember);
+      const sfDoc: DocumentSnapshotType = await transaction.get(refMember);
       const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
       const totalReputation = (sfDoc.data().totalReputation || 0) + xp;
       const finalObj: any = {

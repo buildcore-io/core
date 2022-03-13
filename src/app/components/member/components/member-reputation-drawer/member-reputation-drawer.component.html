@@ -12,7 +12,7 @@
             <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
                 style="max-width: 48px; min-width: 48px;" [nzSize]="48"
                 [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
-            <div class="mb-0 ml-3 text-lg font-bold truncate">{{ member?.name ? '@' + member?.name : member?.uid }} reputation</div>
+            <div class="mb-0 ml-3 text-lg font-bold truncate">{{ member?.name ? '@' + member?.name : member?.uid }} <span i18n>reputation</span></div>
         </div>
 
         <wen-member-alliances-table class="block" style="height: calc(100% - 150px)" [member]="member" [selectedSpace]="selectedSpace">

@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Space } from 'functions/interfaces/models';
 import {
-  ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
-  ApexResponsive
+    ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
+    ApexResponsive
 } from "ng-apexcharts";
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Proposal, ProposalAnswer, ProposalType } from '../../../../../../functions/interfaces/models/proposal';

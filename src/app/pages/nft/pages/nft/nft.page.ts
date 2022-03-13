@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
+import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
@@ -11,14 +12,14 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
+import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from '@functions/interfaces/config';
+import { Collection, CollectionType, TransactionBillPayment, TransactionType } from '@functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from 'functions/interfaces/config';
-import { Collection, CollectionType, TransactionBillPayment, TransactionType } from 'functions/interfaces/models';
-import { FILE_SIZES, Timestamp } from 'functions/interfaces/models/base';
-import { Nft } from 'functions/interfaces/models/nft';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { map, skip, Subscription } from 'rxjs';
+import { map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -32,6 +33,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
   public isCopied = false;
+  public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
@@ -48,6 +50,7 @@ export class NFTPage implements OnInit, OnDestroy {
     private nzNotification: NzNotificationService,
     private collectionApi: CollectionApi,
     private nftApi: NftApi,
+    private fileApi: FileApi,
     private router: Router,
     private cd: ChangeDetectorRef
   ) {
@@ -56,7 +59,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'NFT');
-    this.route.params.pipe(untilDestroyed(this)).subscribe((obj) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.nft.nft.replace(':', '')];
       if (id) {
         this.listenToNft(id);
@@ -70,6 +73,17 @@ export class NFTPage implements OnInit, OnDestroy {
         this.notFound();
         return;
       }
+
+      // Get file metadata.
+      this.fileApi.getMetadata(obj.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+        if (o.contentType.match('video/.*')) {
+          this.mediaType = 'video';
+        } else if (o.contentType.match('image/.*')) {
+          this.mediaType = 'image';
+        }
+
+        this.cd.markForCheck();
+      });
     });
 
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
@@ -90,7 +104,7 @@ export class NFTPage implements OnInit, OnDestroy {
           this.data.owner$.next(undefined);
         }
         this.nftSubscriptions$.push(
-          this.nftApi.lastCollection(p.collection, undefined, undefined, 1).pipe(untilDestroyed(this), map((obj: Nft[]) => {
+          this.nftApi.lastCollection(p.collection, undefined, undefined, 1)?.pipe(untilDestroyed(this), map((obj: Nft[]) => {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );
@@ -227,8 +241,10 @@ export class NFTPage implements OnInit, OnDestroy {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public getShareUrl(): string {
-    return 'http://twitter.com/share?text=Check out collection&url=' + window.location.href + '&hashtags=soonaverse';
+  public getShareUrl(nft?: Nft | null): string {
+    const text = $localize`Check out nft`;
+    const url: string = (nft?.wenUrlShort || nft?.wenUrl || window.location.href);
+    return 'http://twitter.com/share?text=' + text + '&url=' + url + '&hashtags=soonaverse';
   }
 
   private notFound(): void {

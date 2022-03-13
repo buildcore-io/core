@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true">
     <ng-container *ngIf="deviceService.isMobile$ | async">
-        <wen-drawer-toggle label="About collection" (click)="isAboutCollectionVisible = true">
+        <wen-drawer-toggle i18n-label label="About collection" (click)="isAboutCollectionVisible = true">
         </wen-drawer-toggle>
     </ng-container>
 
@@ -15,9 +15,9 @@
               class="border-app-gray-100 min-w-8 min-h-8"
               nzShape="circle">
             </nz-avatar>
-            <div class="ml-3 text-sm font-medium truncate max-w-24">
+            <a class="ml-3 text-sm font-medium truncate max-w-24" [routerLink]="['/space', (data.space$ | async)?.uid]">
                 {{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}
-            </div>
+            </a>
         </div>
     </div>
 
@@ -32,11 +32,17 @@
 
             <div class="w-full mt-10 mb-4 space-y-4" *ngIf="(deviceService.isMobile$ | async)">
                 <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-                    Approve Collection
+                    Publish Collection
                 </button>
 
                 <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
                     Reject Collection
+                </button>
+
+                <button nz-button nzDanger nzType="primary" (click)="reject()"
+                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                    nzBlock nzSize="large" i18n>
+                    Cancel Collection
                 </button>
 
                 <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
@@ -45,7 +51,7 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-8">
-                <a  *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace"
+                <a *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace"
                   [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center mt-2">
                   <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                     class="border-2 border-app-gray-100 bg-bg-background min-w-10"
@@ -78,7 +84,22 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center mt-8 lg:mt-6">
+            <div class="flex items-center justify-between w-full h-12 p-4 mt-8 bg-white rounded-xl"
+              *ngIf="isDateInFuture((data.collection$ | async)?.availableFrom)">
+              <div class="flex items-center mr-8"
+                  [ngClass]="{ 'text-alerts-error': false }">
+                      <wen-icon-time></wen-icon-time>
+                      <div class="ml-2.5 font-bold">
+                        <span i18n>Sale Starts </span>
+                        <span *ngIf="(data.collection$ | async)?.type === collectionTypes.CLASSIC" i18n>from</span>
+                      </div>
+              </div>
+              <div class="font-medium">
+                {{(data.collection$ | async)?.availableFrom?.toDate() | date:'short'}}
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center mt-5 lg:mt-3">
                 <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
@@ -95,9 +116,6 @@
                 </div>
             </div>
 
-            <div class="mt-10 font-medium lg:mt-6" [innerHtml]="(data.collection$ | async)?.description | markdown">
-            </div>
-
             <div class="flex items-center p-5 mt-8 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-lg font-bold">
@@ -106,16 +124,26 @@
                     <span i18n>remaining</span>
                 </div>
             </div>
+
+            <div class="mt-10 font-medium lg:mt-6" [innerHtml]="(data.collection$ | async)?.description | markdown">
+            </div>
+
         </div>
 
         <div class="space-y-4" nz-col nzFlex="450px" style="max-width: 450px;"
             *ngIf="(deviceService.isDesktop$ | async)">
             <button nz-button nzType="primary" (click)="approve()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-                Approve Collection
+              Publish Collection
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()" *ngIf="data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async)" nzBlock nzSize="large" i18n>
-                Reject Collection
+              Reject Collection
+            </button>
+
+            <button nz-button nzDanger nzType="primary" (click)="reject()"
+                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async)"
+                nzBlock nzSize="large" i18n>
+                Cancel Collection
             </button>
 
             <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
@@ -151,9 +179,9 @@
 
         <button nz-button nzType="primary" nzSize="default"
             *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
-            class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()" i18n>
+            class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()">
             <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
-            <div *ngIf="deviceService.isDesktop$ | async">Create NFT</div>
+            <div *ngIf="deviceService.isDesktop$ | async" i18n>Create NFT</div>
         </button>
     </div>
 
@@ -171,33 +199,34 @@
 
             <ng-template #hotTagsMobileBlock>
                 <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-                    <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+                    <nz-option *ngFor="let tag of hotTags" i18n-nzLabel [nzLabel]="tag" [nzValue]="tag"></nz-option>
                 </nz-select>
             </ng-template>
         </div>
 
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="wen-sort-button" nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
+            <nz-select class="wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Price" [nzCustomTemplate]="defaultTemplate"
                 [formControl]="sortControl" nz-tooltip>
-                <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                <nz-option nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
-                <nz-option nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                <nz-option i18n-nzLabel nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
             </nz-select>
             <ng-template #defaultTemplate let-selected>
                 <div class="flex items-center">
                     <div nz-typography nzType="secondary" class="mr-1 text-xs">
-                        {{ selected.nzValue === filter.sortOptions.RECENT ? 'Sort by' : 'Price' }}
+                        <ng-container *ngIf="selected.nzValue === filter.sortOptions.RECENT; else notRecent" i18n>Sort by</ng-container>
+                        <ng-template #notRecent i18n>Price</ng-template>
                     </div>
-                    {{ selected.nzLabel }}
+                    <span>{{ selected.nzLabel }}</span>
                 </div>
             </ng-template>
         </ng-container>
         <ng-template #sortMobileBlock>
             <div class="relative">
                 <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-                  <nz-option nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                  <nz-option nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
-                  <nz-option nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
+                  <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
+                  <nz-option i18n-nzLabel nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
+                  <nz-option i18n-nzLabel nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
                 </nz-select>
                 <ng-template #mobileSuffixIcon>
                     <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>

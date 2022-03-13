@@ -40,7 +40,7 @@
 <ng-template #content>
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-10" *ngIf="nft">
         <div class="flex-grow w-full lg:w-1/2 lg:mr-10">
-            <h1 class="mt-2" i18n>{{ nft.name }}</h1>
+            <h1 class="mt-2">{{ nft.name }}</h1>
 
             <div class="flex flex-wrap items-center mt-5">
                 <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
@@ -87,7 +87,7 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
                     <p nz-typography class="flex items-center w-3/5 lg:w-1/2">
-                      Shimmer/Mainnet (Tokenization)...SOON.
+                        <span i18n>Shimmer/Mainnet (Tokenization)...SOON.</span>
 
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
@@ -100,14 +100,14 @@
 
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
-                    <p nz-typography>
-                        {{ 'Preparing...'}}
+                    <p nz-typography i18n>
+                        Preparing...
                     </p>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
-                  <p nz-typography>
-                      {{ 'Preparing...'}}
+                  <p nz-typography i18n>
+                      Preparing...
                   </p>
               </div>
             </wen-collapse>
@@ -132,10 +132,17 @@
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
             <div class="relative w-full overflow-hidden rounded-2xl">
                 <img
-                alt="NFT Image"
-                [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
-                class="object-cover w-full h-full"
+                    *ngIf="mediaType === 'image'"
+                    i18n-alt
+                    alt="NFT Image"
+                    [src]="nft?.media || '/assets/mocks/no_banner.jpg'"
+                    class="object-cover w-full h-full"
                 />
+
+                <video controls class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                  <source [src]="nft?.media" type="video/mp4">
+                  Your browser does not support HTML video.
+                </video>
             </div>
         </div>
     </div>

@@ -1,0 +1,22 @@
+name: Firebase Functions - DEPLOY WEN
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm packages
+        run: |
+          cd functions
+          npm install
+      - name:  Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+            args: deploy --only functions -P soonaverse-test -f
+        env:
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

@@ -1,9 +1,11 @@
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { DEFAULT_TRANSACTION_DELAY, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
+import { Nft } from '../../interfaces/models/nft';
 import { superPump } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
 import { WalletService } from "../services/wallet/wallet";
@@ -48,6 +50,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
 
     const details: any = {};
     details.tranId = newValue.uid;
+    details.network = (functions.config()?.environment?.type === 'prod') ? 'soon' : 'wen';
     if (newValue.type === TransactionType.BILL_PAYMENT) {
       details.payment = true;
 
@@ -66,6 +69,13 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
       }
       if (newValue.payload.nft) {
         details.nft = newValue.payload.nft;
+
+        // Get NFT details.
+        const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(newValue.payload.nft);
+        const docNftData: Nft = <Nft>(await refNft.get()).data();
+        if (docNftData) {
+          details.ipfs = docNftData.ipfsMetadata;
+        }
       }
     }
 

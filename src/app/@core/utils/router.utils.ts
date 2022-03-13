@@ -1,3 +1,5 @@
+import { URL_PATHS } from "@functions/interfaces/config";
+
 export const ROUTER_UTILS = {
   config: {
     base: {
@@ -23,7 +25,7 @@ export const ROUTER_UTILS = {
     },
     member: {
       // Redirect back to discovery
-      root: 'member',
+      root: URL_PATHS.MEMBER,
       member: ':memberId',
       activity: 'activity',
       awards: 'awards',
@@ -33,7 +35,7 @@ export const ROUTER_UTILS = {
     },
     space: {
       // Redirect back to discovery
-      root: 'space',
+      root: URL_PATHS.SPACE,
       space: ':spaceId',
       new: 'new',
       edit: 'edit',
@@ -46,7 +48,7 @@ export const ROUTER_UTILS = {
     },
     proposal: {
       // Redirect back to space?!
-      root: 'proposal',
+      root: URL_PATHS.PROPOSAL,
       newProposal: 'new',
       proposal: ':proposalId',
       overview: 'overview',
@@ -54,20 +56,20 @@ export const ROUTER_UTILS = {
     },
     award: {
       // Redirect back to space?!
-      root: 'award',
+      root: URL_PATHS.AWARD,
       newAward: 'new',
       award: ':awardId',
       overview: 'overview',
       participants: 'participants',
     },
     collection: {
-      root: 'collection',
+      root: URL_PATHS.COLLECTION,
       collection: ':collectionId',
       new: 'new',
       edit: 'edit'
     },
     nft: {
-      root: 'nft',
+      root: URL_PATHS.NFT,
       newNft: 'new',
       nft: ':nftId',
       single: 'single',

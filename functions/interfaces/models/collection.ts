@@ -30,31 +30,49 @@ export enum Categories {
   INTERACTIVE = 'INTERACTIVE',
   ABSTRACT = 'ABSTRACT',
   PIXELART = 'PIXELART',
+  GAME = 'GAME',
   ART = 'ART'
 }
 
-export interface Collection extends BaseRecord {
+export interface CollectionBase extends BaseRecord {
   name: string;
   description: string;
   bannerUrl: string;
+  royaltiesFee: number;
+  royaltiesSpace: EthAddress;
+  discounts: DiscountLine[];
+  total: number;
+  sold: number;
+  discord: string;
+  url: string;
+  twitter: string;
+  approved: boolean;
+  rejected: boolean;
+}
+
+export interface Collection extends CollectionBase {
   category: Categories,
   type: CollectionType,
   access: CollectionAccess,
   accessAwards: string[],
   accessCollections: string[],
   space: string;
-  royaltiesFee: number;
-  royaltiesSpace: EthAddress;
-  discounts: DiscountLine[];
-  total: number;
-  sold: number;
   availableFrom: Timestamp;
   price: number;
-  discord: string;
-  url: string;
-  twitter: string;
-  approved: boolean;
-  rejected: boolean;
   onePerMemberOnly: boolean;
+  placeholderNft: EthAddress;
+  placeholderUrl: string;
+}
+
+export interface SchemaCollection extends CollectionBase {
+  category?: Categories,
+  type?: CollectionType,
+  access?: CollectionAccess,
+  accessAwards?: string[],
+  accessCollections?: string[],
+  space?: string;
+  availableFrom?: Timestamp;
+  price?: number;
+  onePerMemberOnly?: boolean;
   placeholderNft?: EthAddress;
 }

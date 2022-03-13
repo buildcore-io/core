@@ -1,3 +1,4 @@
+import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { createRoutingFactory, Spectator } from '@ngneat/spectator/jest';
 import { DataService } from "@pages/member/services/data.service";
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -8,7 +9,7 @@ describe('ActivityPage', () => {
   const createComponent = createRoutingFactory({
     component: ActivityPage,
     providers: [ DataService ],
-    imports: [ NgApexchartsModule ]
+    imports: [ NgApexchartsModule, SelectSpaceModule ]
   });
 
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Member, Transaction, TransactionOrder, TransactionType } from 'functions/interfaces/models';
+import { Member, Transaction, TransactionOrder, TransactionType } from '@functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -156,9 +156,27 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
+  public topPendingCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('approved', '==', false).where('rejected', '==', false).where('collection', '==', collection);
+    });
+  }
+
+  public lowToHighPendingCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('approved', '==', false).where('rejected', '==', false).where('collection', '==', collection);
+    });
+  }
+
   public lowToHighCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('hidden', '==', false).where('collection', '==', collection);
+    });
+  }
+
+  public highToLowPendingCollection(collection: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('approved', '==', false).where('rejected', '==', false).where('collection', '==', collection);
     });
   }
 

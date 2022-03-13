@@ -6,9 +6,9 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
+import { Timestamp } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { Timestamp } from 'functions/interfaces/models/base';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
 import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
@@ -40,7 +40,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
   @Input() currentStep = StepType.GENERATE;
   @Input() entityType?: EntityType;
   @Input() entity?: Space|Member|null;
-  @Output() onClose = new EventEmitter<void>();
+  @Output() wenOnClose = new EventEmitter<void>();
 
   public stepType = StepType;
   public isCopied = false;
@@ -190,7 +190,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
 
   public close(): void {
     this.reset();
-    this.onClose.next();
+    this.wenOnClose.next();
   }
 
   public formatBest(amount: number|undefined): string {
@@ -210,12 +210,12 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
            '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
   }
 
-  public tanglePayDeepLink(): string {
+  public tanglePayDeepLink(): SafeUrl {
     if (!this.targetAddress || !this.targetAmount) {
       return '';
     }
 
-    return 'tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse';
+    return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 
   public isSpaceVerification(): boolean {

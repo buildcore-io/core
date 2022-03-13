@@ -21,22 +21,22 @@ import { NotificationService } from '@core/services/notification';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
 import {
   DISCORD_REGEXP,
-  MAX_IOTA_AMOUNT,
-  MIN_IOTA_AMOUNT,
+  MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT,
+  NftAvailableFromDateMin,
   TWITTER_REGEXP,
   URL_REGEXP
-} from 'functions/interfaces/config';
+} from '@functions/interfaces/config';
 import {
   Award,
   Categories,
   CollectionType,
   Space
-} from 'functions/interfaces/models';
-import { PRICE_UNITS } from 'functions/interfaces/models/nft';
+} from '@functions/interfaces/models';
+import { PRICE_UNITS } from '@functions/interfaces/models/nft';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   NzUploadChangeParam,
@@ -109,7 +109,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     Validators.required
   ]);;
   public unitControl: FormControl = new FormControl(
-    PRICE_UNITS[0],
+    <Units>'Mi',
     Validators.required,
   );
   public availableFromControl: FormControl = new FormControl(
@@ -176,14 +176,14 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.route.params.pipe(untilDestroyed(this)).subscribe((p) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.space) {
         this.spaceControl.setValue(p.space);
         this.royaltiesSpaceControl.setValue(p.space);
       }
     });
 
-    this.route.params.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.route.params?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.collectionId) {
         this.editMode = true;
         this.collectionId = o.collectionId;
@@ -199,26 +199,35 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.spaceControl.setValue(o.space);
               this.descriptionControl.setValue(o.description);
               this.typeControl.setValue(o.type);
-              this.priceControl.setValue(o.price / 1000 / 1000);
+              if (o.price >= 1000 * 1000 * 1000) {
+                this.priceControl.setValue(o.price / 1000 / 1000 / 1000);
+                this.unitControl.setValue(<Units>'Gi');
+              } else {
+                this.priceControl.setValue(o.price / 1000 / 1000);
+                this.unitControl.setValue(<Units>'Mi');
+              }
               this.availableFromControl.setValue(o.availableFrom.toDate());
               this.royaltiesFeeControl.setValue(o.royaltiesFee * 100);
               this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
               this.royaltiesSpaceDifferentControl.setValue(
                 o.royaltiesSpace !== o.space,
               );
-              this.placeholderUrlControl.setValue(o.bannerUrl);
               this.accessAwardsControl.setValue(o.accessAwards);
               this.accessCollectionsControl.setValue(o.accessCollections);
+              this.placeholderUrlControl.setValue(o.placeholderUrl);
               this.bannerUrlControl.setValue(o.bannerUrl);
+              this.urlControl.setValue(o.url);
               this.twitterControl.setValue(o.twitter);
               this.discordControl.setValue(o.discord);
               this.categoryControl.setValue(o.category);
+              this.selectedAccessControl.setValue(o.access);
+              this.onePerMemberOnlyControl.setValue(o.onePerMemberOnly);
               this.discounts.removeAt(0);
               o.discounts.sort((a, b) => {
                 return a.xp - b.xp;
               }).forEach((v) => {
                 this.addDiscount(
-                  v.xp ? v.xp.toString() : '',
+                  v.xp ? v.xp.toString() : '0',
                   v.amount ? (v.amount * 100).toString() : '',
                 );
               });
@@ -241,7 +250,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       }
     });
 
-    this.auth.member$.pipe(untilDestroyed(this)).subscribe((o) => {
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
         this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.spaces$);
         this.awardApi.top(undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.awards$)
@@ -278,7 +287,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = Number(this.priceControl.value) * (<Units>this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+        const value = this.getRawPrice(Number(this.priceControl.value), <Units>this.unitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });
@@ -421,7 +430,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().subtract(1, 'day').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
       return true;
     }
 
@@ -430,17 +439,13 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public formatSubmitData(data: any, mode: 'create' | 'edit' = 'create'): any {
     if (data.price) {
-      if (<Units>data.unit === 'Gi') {
-        data.price = data.price * 1000 * 1000 * 1000;
-      } else {
-        data.price = data.price * 1000 * 1000;
-      }
+      data.price = this.getRawPrice(data.price, data.unit);
     }
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
-      if (v.amount > 0 && v.xp > 0) {
+      if (v.amount > 0) {
         discounts.push({
-          xp: v.xp,
+          xp: v.xp || 0,
           amount: v.amount / 100,
         });
       }
@@ -524,7 +529,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   private getDiscountForm(xp = '', amount = ''): FormGroup {
     return new FormGroup({
       xp: new FormControl(xp),
-      amount: new FormControl(amount),
+      amount: new FormControl(amount, [Validators.required])
     });
   }
 
@@ -544,5 +549,9 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.awardSub?.unsubscribe();
+  }
+
+  private getRawPrice(price: number, unit: Units): number {
+    return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
   }
 }

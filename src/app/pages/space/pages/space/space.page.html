@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true">
   <ng-container *ngIf="deviceService.isMobile$ | async">
-    <wen-drawer-toggle label="About space" (click)="isAboutSpaceVisible = true">
+    <wen-drawer-toggle i18n-label label="About space" (click)="isAboutSpaceVisible = true">
     </wen-drawer-toggle>
   </ng-container>
 
@@ -17,7 +17,7 @@
     <div class="flex-auto p-0 mx-5 my-0 lg:mx-0 lg:px-5" [ngStyle]="{
       'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
     }">
-      <h1 class="mb-8 lg:mb-10" i18n>{{ (data.space$ | async)!.name }}</h1>
+      <h1 class="mb-8 lg:mb-10">{{ (data.space$ | async)!.name }}</h1>
 
       <div *ngIf="deviceService.isMobile$ | async" class="mb-14">
         <button nz-button nzType="primary" (click)="join()" nzBlock nzSize="large" i18n
@@ -37,7 +37,7 @@
           </button>
         </div>
       </div>
-      
+
       <wen-tabs [tabs]="sections" class="block w-screen -ml-5 overflow-x-auto overflow-y-hidden lg:w-max lg:ml-0">
       </wen-tabs>
 
@@ -59,15 +59,15 @@
         {{(data.isPendingMemberWithSpace$ | async) ? 'Pending Request' :
         'Ask to Join Space'}}
       </button>
-      
+
       <div>
-        <button class="mb-4" nz-button nzBlock nzSize="large" 
+        <button class="mb-4" nz-button nzBlock nzSize="large"
           *ngIf="data.isGuardianWithinSpace$ | async" (click)="edit()" i18n>
           Edit Space
         </button>
       </div>
-      
-      <wen-space-about class="block" [avatarUrl]="(avatarUrl$ | async) || undefined" (onLeave)="leave()"></wen-space-about>
+
+      <wen-space-about class="block" [avatarUrl]="(avatarUrl$ | async) || undefined" (wenOnLeave)="leave()"></wen-space-about>
     </div>
   </div>
 
@@ -78,7 +78,7 @@
         <wen-icon-close></wen-icon-close>
       </button>
 
-      <wen-space-about [avatarUrl]="(avatarUrl$ | async) || undefined" (onLeave)="leave()"></wen-space-about>
+      <wen-space-about [avatarUrl]="(avatarUrl$ | async) || undefined" (wenOnLeave)="leave()"></wen-space-about>
     </div>
   </nz-drawer>
 </wen-content>
