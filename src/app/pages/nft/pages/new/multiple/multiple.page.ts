@@ -100,12 +100,12 @@ export class MultiplePage implements OnInit {
           return true;
         }
 
-        if(!value || dayjs(value).isValid())  {
+        if(!value || !dayjs(value).isValid())  {
           return false;
         }
 
         const d = dayjs(value);
-        return dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime() > d.toDate().getTime();
+        return dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime() < d.toDate().getTime();
       },
       value: () => this.availableFrom
     },
