@@ -315,9 +315,9 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions.r
   await SpaceValidator.spaceExists(refSpace);
   await SpaceValidator.isGuardian(refSpace, member);
 
-
   // Document does not exists.
   await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update({
+    approved: false,
     rejected: true
   });
 
