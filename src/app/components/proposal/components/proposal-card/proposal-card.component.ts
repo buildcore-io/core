@@ -4,8 +4,8 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
-    ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
-    ApexResponsive
+  ApexChart, ApexDataLabels, ApexFill, ApexLegend, ApexNonAxisChartSeries,
+  ApexResponsive
 } from "ng-apexcharts";
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Proposal, ProposalAnswer, ProposalType } from '../../../../../../functions/interfaces/models/proposal';
@@ -93,11 +93,20 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
     });
   }
 
-  public getProgressForTwo(a: ProposalAnswer[]): number[] {
-    if (this.proposal?.type === ProposalType.NATIVE) {
+  public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
+    if (proposal?.type === ProposalType.MEMBERS) {
       let total = 0;
-      if ((<any>this.proposal?.results)?.questions?.[0].answers) {
-        (<any>this.proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
+      if (proposal?.results?.answers) {
+        Object.keys(proposal?.results?.answers).forEach((b: any) => {
+          total += proposal?.results?.answers[b] || 0;
+        });
+      }
+
+      return  (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
+    } else {
+      let total = 0;
+      if ((<any>proposal?.results)?.questions?.[0].answers) {
+        (<any>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
           if (b.value === 0 || b.value === 255) {
             return;
           }
@@ -106,24 +115,11 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
         });
       }
 
-      const ans1: any = (<any>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
-        return suba.value === 1;
-      });
-      const ans2: any = (<any>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
-        return suba.value === 2;
+      const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+        return suba.value === a.value;
       });
 
-      return [
-        total > 0 ? (ans1?.accumulated || 0) / (total) * 100 : 0,
-        total > 0 ? (ans2?.accumulated || 0) / (total) * 100 : 0
-      ]
-    } else {
-      const answerOne = (this.proposal?.results?.answers?.[a[0].value] || 0) / (this.proposal?.results?.total || 1) * 100;
-      const answerTwo = (this.proposal?.results?.answers?.[a[1].value] || 0) / (this.proposal?.results?.total || 1) * 100;
-      return [
-        answerOne > 0 ? 100 - answerTwo : 0,
-        answerTwo
-      ];
+      return  (ans?.accumulated || 0) / (total) * 100;
     }
   }
 

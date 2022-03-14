@@ -18,11 +18,11 @@
           <!-- TODO fix 2 options percantage calc-->
           <div class="w-full" *ngIf="q.answers.length === 2">
             <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
-              [nzPercent]="getProgressForTwo(q.answers)[0] | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
+              [nzPercent]="getProgress(proposal, q.answers[0]) | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
             <p nz-typography class="wen-two-lines">
-              <span class="truncate">{{getProgressForTwo(q.answers)[0] | number : '1.2-2'}}% {{q.answers[0].text |
+              <span class="truncate">{{getProgress(proposal, q.answers[0]) | number : '1.2-2'}}% {{q.answers[0].text |
                 truncate:[8]}}</span>
-              <span class="truncate">{{getProgressForTwo(q.answers)[1] | number : '1.2-2'}}% {{q.answers[1].text |
+              <span class="truncate">{{getProgress(proposal, q.answers[1]) | number : '1.2-2'}}% {{q.answers[1].text |
                 truncate:[8]}}</span>
             </p>
           </div>
