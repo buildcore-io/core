@@ -1,0 +1,15 @@
+{
+  "pinata": {
+    "key": "",
+    "secret": ""
+  },
+  "nftstorage": {
+    "token": ""
+  },
+  "encryption": {
+    "salt": "sa#asda!2sasd##asad"
+  },
+  "environment": {
+    "type": "emulator"
+  }
+}

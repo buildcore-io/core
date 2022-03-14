@@ -87,6 +87,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       access: CollectionAccess.OPEN,
       space: space.uid,
       royaltiesSpace: space.uid,
+      onePerMemberOnly: false,
       availableFrom: dayjs().add(1, 'hour').toDate(),
       price: 10 * 1000 * 1000
     });

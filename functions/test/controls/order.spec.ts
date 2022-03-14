@@ -107,7 +107,7 @@ describe.skip('Ordering flows', () => {
     .collection('transactions').doc(defTranId)
     .set({
       createdOn: serverTime(),
-      messageId: defTranId,
+      messageId: 'mes-' + defTranId,
       inputs: [{
         address: defaultFromAddress,
         amount: 123
