@@ -6,6 +6,8 @@ jobs:
   functions_unit_tests:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      fail-fast: false
     defaults:
       run:
         working-directory: functions

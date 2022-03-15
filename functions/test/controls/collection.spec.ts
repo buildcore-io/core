@@ -1,3 +1,4 @@
+import chance from 'chance';
 import dayjs from "dayjs";
 import * as admin from 'firebase-admin';
 import { WEN_FUNC } from "../../interfaces/functions";
@@ -12,6 +13,7 @@ import { approveCollection, createCollection, rejectCollection, updateCollection
 import { createMember } from './../../src/controls/member.control';
 import { validateAddress } from './../../src/controls/order.control';
 import { createSpace } from './../../src/controls/space.control';
+
 const db = admin.firestore();
 
 describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
@@ -51,14 +53,15 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     // Create milestone to process my validation.
     const allMil = await db.collection(COL.MILESTONE).get();
     const nextMilestone = (allMil.size + 1).toString();
-    const defTranId = '9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b' + Math.floor(Math.random() * 1000);
+    const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
+    const iotaAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
     await db.collection(COL.MILESTONE).doc(nextMilestone)
     .collection('transactions').doc(defTranId)
     .set({
       createdOn: serverTime(),
       messageId: 'mes-' + defTranId,
       inputs: [{
-        address: 'iota1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz',
+        address: iotaAddress,
         amount: 123
       }],
       outputs: [{
@@ -66,11 +69,10 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
         amount: order.payload.amount
       }]
     });
-    await db.collection(COL.MILESTONE).doc(nextMilestone).set({ completed: true });
 
     const milestoneProcessed: any = async () => {
       let processed: any = false;
-      for (let attempt = 0; attempt < 100; ++attempt) {
+      for (let attempt = 0; attempt < 400; ++attempt) {
           if (attempt > 0) {
             await new Promise((r) => setTimeout(r, 500));
           }
