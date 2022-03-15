@@ -32,6 +32,7 @@ import { DataService } from '../../services/data.service';
 export class NFTPage implements OnInit, OnDestroy {
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
+  public isSaleOpen = true;
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;

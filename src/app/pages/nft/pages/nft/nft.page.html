@@ -351,6 +351,7 @@
 </wen-content>
 
 <wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (wenOnClose)="isCheckoutOpen = false"></wen-nft-checkout>
+<wen-nft-sale *ngIf="isSaleOpen" [isOpen]="isSaleOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (wenOnClose)="isSaleOpen = false"></wen-nft-sale>
 
 <nz-modal nzWidth="min(100vw - 50px, 100vh - 50px)"
     [nzVisible]="isNftPreviewOpen"
