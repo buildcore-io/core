@@ -1,3 +1,4 @@
+import chance from 'chance';
 import dayjs from "dayjs";
 import * as admin from 'firebase-admin';
 import { TransactionOrderType, TransactionType } from '../../../functions/interfaces/models';
@@ -19,10 +20,10 @@ import { orderNft, validateAddress } from './../../src/controls/order.control';
 
 const db = admin.firestore();
 
-describe.skip('Ordering flows', () => {
+describe('Ordering flows', () => {
   let walletSpy: any;
-  const defTranId = '9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b251';
-  const defaultFromAddress = '1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz';
+  const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
+  const defaultFromAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
   jest.setTimeout(180000);
   const mocker = (adr: string, params: any) => {
     walletSpy.mockReturnValue(Promise.resolve({
@@ -114,7 +115,6 @@ describe.skip('Ordering flows', () => {
       }],
       outputs: outputs
     });
-    await db.collection(COL.MILESTONE).doc(nextMilestone).set({ completed: true });
     return nextMilestone;
 }
 
@@ -166,6 +166,7 @@ describe.skip('Ordering flows', () => {
       royaltiesFee: ro,
       space: space.uid,
       royaltiesSpace: space.uid,
+      onePerMemberOnly: false,
       availableFrom: date,
       price: priceMi * 1000 * 1000
     };
@@ -395,8 +396,14 @@ describe.skip('Ordering flows', () => {
     expect(err).toEqual(WenError.no_more_nft_available_for_sale.code);
   });
 
-  it('One collection, generated NFT, 15 Nfts should equal to 15 purchases', async () => {
+  it.skip('One collection, generated NFT, 15 Nfts should equal to 15 purchases', async () => {
+    const batchSize = 15;
     const member: Member = await createMemberFunc();
+    const members: Member[] = [];
+    for (let i = 0; i < batchSize; i++) {
+      members.push(await createMemberFunc());
+    }
+
     const space: Space = await createSpaceFunc(member.uid, dummySpace());
 
     // Validate space address.
@@ -409,12 +416,12 @@ describe.skip('Ordering flows', () => {
     const collection: Collection = await createCollectionFunc(member.uid, dummyCollection(space, CollectionType.GENERATED, 0.5, price));
 
     // It's randomly picked.
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < batchSize; i++) {
       await createNftFunc(member.uid, dummyNft(collection, price));
     }
 
-    for (let i = 0; i < 15; i++) {
-      await submitOrderFunc(member.uid, {
+    for (let i = 0; i < batchSize; i++) {
+      await submitOrderFunc(members[i].uid, {
         collection: collection.uid
       });
     }
@@ -434,8 +441,12 @@ describe.skip('Ordering flows', () => {
   });
 
   const batchSize = 5;
-  it('One collection, generated NFT, ' + batchSize + ' Nfts should equal to ' + batchSize + ' purchases + payment in one BIG milestone', async () => {
+  it('One collection, generated NFT, ' + batchSize + ' Nfts should equal to ' + batchSize + ' purchases + payment in multiple milestone', async () => {
     const member: Member = await createMemberFunc();
+    const members: Member[] = [];
+    for (let i = 0; i < batchSize; i++) {
+      members.push(await createMemberFunc());
+    }
     const space: Space = await createSpaceFunc(member.uid, dummySpace());
 
     // Validate space address.
@@ -454,25 +465,24 @@ describe.skip('Ordering flows', () => {
 
     const orders: TransactionOrder[] = [];
     for (let i = 0; i < batchSize; i++) {
-      orders.push(await submitOrderFunc(member.uid, {
+      orders.push(await submitOrderFunc(members[i].uid, {
         collection: collection.uid
       }));
     }
 
-    // submitMilestoneOutputsFunc
-    const outputs: any[] = orders.map((o) => {
-      return {
+    for (const o of orders) {
+      const nextMilestone3 = await submitMilestoneOutputsFunc([{
         amount: o.payload.amount,
         address: o.payload.targetAddress
-      };
-    });
+      }]);
+      await milestoneProcessed(nextMilestone3);
+    }
 
-    const nextMilestone3 = await submitMilestoneOutputsFunc(outputs);
-    await milestoneProcessed(nextMilestone3);
-
-    // Validate owner has all the NFTs.
-    const nftDbRec: any = await db.collection(COL.NFT).where('owner', '==', member.uid).get();
-    expect(nftDbRec.size).toEqual(batchSize);
+    // Validate each owner has the NFTs.
+    for (let i = 0; i < batchSize; i++) {
+      const nftDbRec: any = await db.collection(COL.NFT).where('owner', '==', members[i].uid).get();
+      expect(nftDbRec.size).toEqual(1);
+    }
   });
 
   it('One collection, generated NFT, one purchase for generated NFT directly. It must be sold.', async () => {
@@ -597,7 +607,7 @@ describe.skip('Ordering flows', () => {
     expect(c).toBe(2);
   });
 
-  it('One collection, generated NFT, order and expect transaction to be voided.', async () => {
+  it.skip('One collection, generated NFT, order and expect transaction to be voided. (cron test)', async () => {
     const member: Member = await createMemberFunc();
     const space: Space = await createSpaceFunc(member.uid, dummySpace());
 
