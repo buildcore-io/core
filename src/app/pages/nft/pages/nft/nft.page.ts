@@ -17,10 +17,16 @@ import { Collection, CollectionType, TransactionBillPayment, TransactionType } f
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ChartOptions } from '@pages/member/pages/activity/activity.page';
 import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
+
+export enum ListingType {
+  LISTING = 0,
+  OFFER = 1
+}
 
 @UntilDestroy()
 @Component({
@@ -30,11 +36,25 @@ import { DataService } from '../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NFTPage implements OnInit, OnDestroy {
+  public chartOptions: Partial<ChartOptions> = {};
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
+  public currentListingType = ListingType.LISTING;
+  public listingsData = [
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'}
+  ];
+  public offersData = [
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
+    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'}
+  ];
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
@@ -55,6 +75,29 @@ export class NFTPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef
   ) {
     // none
+    // TODO: Dummy data
+    this.initChart([
+        [
+            new Date("2021-12-03T04:57:39.576Z"),
+            1
+        ],
+        [
+            new Date("2022-02-19T02:55:43.383Z"),
+            201
+        ],
+        [
+            new Date("2022-02-23T06:59:37.177Z"),
+            211
+        ],
+        [
+            new Date("2022-03-06T06:03:51.811Z"),
+            212
+        ],
+        [
+            new Date("2022-03-06T06:04:51.447Z"),
+            222
+        ]
+    ]);
   }
 
   public ngOnInit(): void {
@@ -259,6 +302,10 @@ export class NFTPage implements OnInit, OnDestroy {
     return FILE_SIZES;
   }
 
+  public get listingTypes(): typeof ListingType {
+    return ListingType;
+  }
+
   public isDateInFuture(date?: Timestamp|null): boolean {
     if (!date) {
       return false;
@@ -291,6 +338,48 @@ export class NFTPage implements OnInit, OnDestroy {
     }
 
     return (!nft.owner && (nft.type === CollectionType.GENERATED || nft.type === CollectionType.SFT));
+  }
+
+  
+
+  public initChart(data: any): void {
+    this.chartOptions = {
+      series: [
+        {
+          data: data
+        }
+      ],
+      chart: {
+        type: "area",
+        height: 350
+      },
+      dataLabels: {
+        enabled: false
+      },
+      markers: {
+        size: 0
+      },
+      xaxis: {
+        type: "datetime",
+        min: (data?.[0]?.[0] || dayjs().subtract(1, 'month').toDate()).getTime(),
+        tickAmount: 6
+      },
+      tooltip: {
+        x: {
+          format: "dd MMM yyyy"
+        }
+      },
+      fill: {
+        type: "gradient",
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.7,
+          opacityTo: 0.9,
+          stops: [0, 100]
+        }
+      }
+    };
+    this.cd.markForCheck();
   }
 
   private cancelSubscriptions(): void {

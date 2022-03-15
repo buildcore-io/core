@@ -15,6 +15,7 @@ import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -82,7 +83,9 @@ import { DataService } from './services/data.service';
     CollapseModule,
     NzTableModule,
     TruncateModule,
-    NzModalModule
+    NzModalModule,
+    NgApexchartsModule,
+    CollapseModule
   ],
   providers: [
     DataService
