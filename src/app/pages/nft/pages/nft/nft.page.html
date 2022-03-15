@@ -152,6 +152,75 @@
 
             <!-- This should be used for timeline -->
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
+            
+            <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">
+                <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [colors]="chartOptions.colors!"
+                    [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [markers]="chartOptions.markers!"
+                    [stroke]="chartOptions.stroke!" [xaxis]="chartOptions.xaxis!" [tooltip]="chartOptions.tooltip!"></apx-chart>
+            </wen-collapse>
+
+            <wen-collapse i18n-nzTitle title="Listings / Offers" class="mt-4" [isCollapsed]="false">
+                <div class="flex flex-col lg:flex-row lg:items-center mt-6 px-6 mb-4">
+                    <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentListingType === listingTypes.LISTING"
+                        (nzCheckedChange)="currentListingType = listingTypes.LISTING">
+                            <span i18n>Listings</span>
+                    </nz-tag>
+                    <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentListingType === listingTypes.OFFER"
+                        (nzCheckedChange)="currentListingType = listingTypes.OFFER">
+                            <span i18n>Offers</span>
+                    </nz-tag>
+                </div>
+
+                <nz-table *ngIf="currentListingType === listingTypes.LISTING" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                    [nzData]="listingsData" [nzShowPagination]="false">
+                    <thead>
+                        <tr>
+                            <th i18n>From</th>
+                            <th i18n>Ends on</th>
+                            <th i18n>Type</th>
+                            <th i18n>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of listingsData">
+                            <td>
+                                <nz-avatar nzIcon="user" [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" class="mr-2"
+                                    [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
+                                </nz-avatar>
+                                <span [routerLink]="'/'">@ {{ item.from | truncate:[16]}}</span>
+                            </td>
+                            <td>{{ item.endsOn }}</td>
+                            <td>{{ item.type }}</td>
+                            <td>{{ item.price }}</td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+
+                <nz-table *ngIf="currentListingType === listingTypes.OFFER" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                    [nzData]="offersData" [nzShowPagination]="false">
+                    <thead>
+                        <tr>
+                            <th i18n>From</th>
+                            <th i18n>Ends on</th>
+                            <th i18n>Type</th>
+                            <th i18n>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of listingsData">
+                            <td>
+                                <nz-avatar nzIcon="user" [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" class="mr-2"
+                                    [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
+                                </nz-avatar>
+                                <span [routerLink]="'/'">@ {{ item.from | truncate:[16]}}</span>
+                            </td>
+                            <td>{{ item.endsOn }}</td>
+                            <td>{{ item.type }}</td>
+                            <td>{{ item.price }}</td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </wen-collapse>
         </div>
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
