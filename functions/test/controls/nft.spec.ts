@@ -60,12 +60,14 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     // Create milestone to process my validation.
     const allMil = await db.collection(COL.MILESTONE).get();
     const nextMilestone = (allMil.size + 1).toString();
+    const defTranId = '9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b' + Math.floor(Math.random() * 1000);
+    const iotaAddress = 'iota1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32' + Math.floor(Math.random() * 1000);
     await db.collection(COL.MILESTONE).doc(nextMilestone)
-    .collection('transactions').doc('9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b251')
+    .collection('transactions').doc(defTranId)
     .set({
       createdOn: serverTime(),
       inputs: [{
-        address: 'iota1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz',
+        address: iotaAddress,
         amount: 123
       }],
       outputs: [{
@@ -97,7 +99,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(collection?.uid).toBeDefined();
   });
 
-  it.only('successfully create NFT', async () => {
+  it('successfully create NFT', async () => {
     mocker({
       name: 'Collection A',
       description: 'babba',

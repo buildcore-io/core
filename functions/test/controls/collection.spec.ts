@@ -52,13 +52,14 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     const allMil = await db.collection(COL.MILESTONE).get();
     const nextMilestone = (allMil.size + 1).toString();
     const defTranId = '9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b' + Math.floor(Math.random() * 1000);
+    const iotaAddress = 'iota1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32' + Math.floor(Math.random() * 1000);
     await db.collection(COL.MILESTONE).doc(nextMilestone)
     .collection('transactions').doc(defTranId)
     .set({
       createdOn: serverTime(),
       messageId: 'mes-' + defTranId,
       inputs: [{
-        address: 'iota1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz',
+        address: iotaAddress,
         amount: 123
       }],
       outputs: [{
