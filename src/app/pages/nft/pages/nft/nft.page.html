@@ -49,6 +49,31 @@
                 </div>
             </div>
 
+            <!-- TODO -->
+            <div class="w-full p-4 bg-white rounded-xl"
+                *ngIf="true">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <wen-icon-time></wen-icon-time>
+                            <div class="ml-2.5 font-bold" i18n>Sale ends</div>
+                        </div>
+                        <div class="font-medium">
+                            January 29th, 2022 at 6:53am AEDT
+                            <!-- TODO: Put date here -->
+                            <!-- {{  | date:'long'}} -->
+                        </div>
+                    </div>
+
+                    <div class="w-full flex items-center justify-between mt-5 space-x-3">
+                        <div class="bg-bg-background py-3 flex items-center justify-center
+                            font-bold rounded-2xl flex-grow">20 hours</div>
+                        <div class="bg-bg-background py-3 flex items-center justify-center
+                            font-bold rounded-2xl flex-grow">20 min</div>
+                        <div class="bg-bg-background py-3 flex items-center justify-center
+                            font-bold rounded-2xl flex-grow">10 sec</div>
+                    </div>
+            </div>
+
             <div class="flex flex-wrap items-center mt-5">
                 <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
@@ -142,10 +167,28 @@
                 </div>
             </div>
 
-              <button class="mt-10" nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
-                      *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" i18n>
-                  Buy now
-              </button>
+            <!-- TODO -->
+            <button class="mt-10" nz-button nzType="default" (click)="sell($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                    *ngIf="true" nzBlock nzSize="large" i18n>
+                Sell NFT
+            </button>
+
+            <!-- TODO -->
+            <button class="mt-10" nz-button nzType="primary" (click)="sell($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                    *ngIf="true" nzBlock nzSize="large" i18n>
+                Place bid
+            </button>
+
+            <!-- TODO -->
+            <button class="mt-6" nz-button nzType="default" (click)="sell($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                    *ngIf="true" nzBlock nzSize="large" i18n>
+                Buy now
+            </button>
+
+            <button class="mt-10" nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
+                    *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" i18n>
+                Buy now
+            </button>
 
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
