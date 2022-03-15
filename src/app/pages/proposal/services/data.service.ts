@@ -89,16 +89,34 @@ export class DataService {
   }
 
   public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
-    if (proposal?.type === ProposalType.MEMBERS) {
-      let total = 0;
-      if (proposal?.results?.answers) {
-        Object.keys(proposal?.results?.answers).forEach((b: any) => {
-          total += proposal?.results?.answers[b] || 0;
-        });
-      }
+    // if (proposal?.type === ProposalType.MEMBERS) {
+    //   let total = 0;
+    //   if (proposal?.results?.answers) {
+    //     Object.keys(proposal?.results?.answers).forEach((b: any) => {
+    //       total += proposal?.results?.answers[b] || 0;
+    //     });
+    //   }
 
-      return  (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
-    } else {
+    //   return  (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
+    // } else {
+    //   let total = 0;
+    //   if ((<any>proposal?.results)?.questions?.[0].answers) {
+    //     (<any>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
+    //       if (b.value === 0 || b.value === 255) {
+    //         return;
+    //       }
+
+    //       total += b.accumulated || 0;
+    //     });
+    //   }
+
+    //   const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+    //     return suba.value === a.value;
+    //   });
+
+    //   return  (ans?.accumulated || 0) / (total) * 100;
+    // }
+    if (proposal?.type === ProposalType.NATIVE) {
       let total = 0;
       if ((<any>proposal?.results)?.questions?.[0].answers) {
         (<any>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
@@ -110,11 +128,10 @@ export class DataService {
         });
       }
 
-      const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
-        return suba.value === a.value;
-      });
-
-      return  (ans?.accumulated || 0) / (total) * 100;
+      return total > 0 ? ((<any>a)?.accumulated || 0) / (total) * 100 : 0;
+    } else {
+      const answer = (proposal?.results?.answers?.[a.value] || 0) / (proposal?.results?.total || 1) * 100;
+      return answer;
     }
   }
 
