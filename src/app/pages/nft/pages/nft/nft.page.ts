@@ -222,6 +222,17 @@ export class NFTPage implements OnInit, OnDestroy {
     this.isCheckoutOpen = true;
   }
 
+  public sell(event: MouseEvent): void {
+    return;
+    event.stopPropagation();
+    event.preventDefault();
+    if (getItem(StorageItem.CheckoutTransaction)) {
+      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
+      return;
+    }
+    this.isCheckoutOpen = true;
+  }
+
   public copy(): void {
     if (!this.isCopied) {
       copyToClipboard(window.location.href);
