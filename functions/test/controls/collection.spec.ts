@@ -72,7 +72,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
 
     const milestoneProcessed: any = async () => {
       let processed: any = false;
-      for (let attempt = 0; attempt < 100; ++attempt) {
+      for (let attempt = 0; attempt < 200; ++attempt) {
           if (attempt > 0) {
             await new Promise((r) => setTimeout(r, 500));
           }
