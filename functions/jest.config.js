@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testTimeout: 60000,
+  testTimeout: 520000,
   globalSetup: "./test/reset-db.mjs",
   globals: {
     'ts-jest': {

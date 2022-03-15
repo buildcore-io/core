@@ -34,7 +34,7 @@ describe.skip('Ordering flows', () => {
 
   const milestoneProcessed = async (nextMilestone: string) => {
     let processed: any = false;
-    for (let attempt = 0; attempt < 200; ++attempt) {
+    for (let attempt = 0; attempt < 400; ++attempt) {
         if (attempt > 0) {
           await new Promise((r) => setTimeout(r, 500));
         }
