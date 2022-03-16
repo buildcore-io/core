@@ -175,9 +175,9 @@ export class NftSaleComponent implements OnInit {
     if (this.nft.type === CollectionType.CLASSIC) {
       return this.nft.name;
     } else if (this.nft.type === CollectionType.GENERATED) {
-      return 'Generated NFT';
+      return $localize`Generated NFT`;
     } else if (this.nft.type === CollectionType.SFT) {
-      return 'SFT';
+      return $localize`SFT`;
     }
   }
 
