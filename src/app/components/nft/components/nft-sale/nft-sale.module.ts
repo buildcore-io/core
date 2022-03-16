@@ -16,12 +16,18 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftSaleComponent } from './nft-sale.component';
+import { NftSaleNotForSaleComponent } from './nft-sale-not-for-sale/nft-sale-not-for-sale.component';
+import { NftSaleFixedPriceComponent } from './nft-sale-fixed-price/nft-sale-fixed-price.component';
+import { NftSaleAuctionComponent } from './nft-sale-auction/nft-sale-auction.component';
 
 
 
 @NgModule({
   declarations: [
-    NftSaleComponent
+    NftSaleComponent,
+    NftSaleNotForSaleComponent,
+    NftSaleFixedPriceComponent,
+    NftSaleAuctionComponent
   ],
   imports: [
     CommonModule,

@@ -1,15 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
-import { MAX_IOTA_AMOUNT, MIN_AMOUNT_TO_TRANSFER, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
+import { MIN_AMOUNT_TO_TRANSFER, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { Nft, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
-import { merge, take } from 'rxjs';
+import { take } from 'rxjs';
 
 export enum SaleType {
   NOT_FOR_SALE = 'NOT_FOR_SALE',
@@ -30,7 +29,7 @@ export enum NftSaleAccess {
   styleUrls: ['./nft-sale.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NftSaleComponent implements OnInit {
+export class NftSaleComponent {
   @Input() currentSaleType = SaleType.NOT_FOR_SALE;
   @Input() isOpen = false;
   @Input() collection?: Collection|null;
@@ -55,23 +54,6 @@ export class NftSaleComponent implements OnInit {
   @Output() wenOnClose = new EventEmitter<void>();
   public saleType = SaleType;
   public mediaType: 'video'|'image'|undefined;
-  public fixedPriceForm: FormGroup;
-  public auctionForm: FormGroup;
-  public fixedPriceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
-  public fixedUnitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
-  public fixedAvailableFromControl: FormControl = new FormControl('', Validators.required);
-  public fixedSelectedAccessControl: FormControl = new FormControl(NftSaleAccess.OPEN, Validators.required);
-  public fixedBuyerControl: FormControl = new FormControl('');
-  public auctionFloorPriceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
-  public auctionFloorUnitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
-  public auctionBuyPriceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
-  public auctionBuyUnitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
-  public auctionAvailableFromControl: FormControl = new FormControl('', Validators.required);
-  public auctionSelectedAccessControl: FormControl = new FormControl(NftSaleAccess.OPEN, Validators.required);
-  public auctionBuyerControl: FormControl = new FormControl('');
-  public auctionBuyAvailableControl: FormControl = new FormControl(false);
-  public minimumPrice = MIN_IOTA_AMOUNT;
-  public maximumPrice = MAX_IOTA_AMOUNT;
   private _nft?: Nft|null;
 
   constructor(
@@ -79,83 +61,7 @@ export class NftSaleComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private fileApi: FileApi,
     private auth: AuthService
-  ) {
-    this.fixedPriceForm = new FormGroup({
-      price: this.fixedPriceControl,
-      unit: this.fixedUnitControl,
-      availableFrom: this.fixedAvailableFromControl,
-      selectedAccess: this.fixedSelectedAccessControl,
-      buyer: this.fixedBuyerControl
-    });
-    
-    this.auctionForm = new FormGroup({
-      floorPrice: this.auctionFloorPriceControl,
-      floorUnit: this.auctionFloorUnitControl,
-      availableFrom: this.auctionAvailableFromControl,
-      selectedAccess: this.auctionSelectedAccessControl,
-      buyer: this.auctionBuyerControl,
-      buyPrice: this.auctionBuyPriceControl,
-      buyUnit: this.auctionBuyUnitControl
-    });
-  }
-
-  public ngOnInit(): void {
-    merge(this.fixedUnitControl.valueChanges, this.fixedPriceControl.valueChanges)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        const value = this.getRawPrice(Number(this.fixedPriceControl.value), <Units>this.fixedUnitControl.value);
-        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
-        this.fixedPriceControl.setErrors(errors);
-      });
-      
-    this.fixedSelectedAccessControl.valueChanges.pipe(untilDestroyed(this))
-      .subscribe(() => {
-        switch (this.fixedSelectedAccessControl.value) {
-          case NftSaleAccess.OPEN:
-          case NftSaleAccess.MEMBERS_ONLY:
-            this.fixedBuyerControl.removeValidators(Validators.required);
-            this.fixedBuyerControl.setErrors(null);
-            break;
-          case NftSaleAccess.SPECIFIC_ONLY:
-            this.fixedBuyerControl.addValidators(Validators.required);
-            break;
-        }
-      });
-
-    merge(this.auctionFloorPriceControl.valueChanges, this.auctionFloorUnitControl.valueChanges)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        const value = this.getRawPrice(Number(this.auctionFloorPriceControl.value), <Units>this.auctionFloorUnitControl.value);
-        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
-        this.auctionFloorPriceControl.setErrors(errors);
-      });
-
-    merge(this.auctionBuyPriceControl.valueChanges, this.auctionBuyUnitControl.valueChanges, this.auctionBuyAvailableControl.valueChanges)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        if (!this.auctionBuyAvailableControl.value) {
-          this.auctionBuyPriceControl.setErrors(null);
-          return;
-        }
-        const value = this.getRawPrice(Number(this.auctionBuyPriceControl.value), <Units>this.auctionBuyUnitControl.value);
-        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
-        this.auctionBuyPriceControl.setErrors(errors);
-      });
-      
-    this.auctionSelectedAccessControl.valueChanges.pipe(untilDestroyed(this))
-      .subscribe(() => {
-        switch (this.auctionSelectedAccessControl.value) {
-          case NftSaleAccess.OPEN:
-          case NftSaleAccess.MEMBERS_ONLY:
-            this.auctionBuyerControl.removeValidators(Validators.required);
-            this.auctionBuyerControl.setErrors(null);
-            break;
-          case NftSaleAccess.SPECIFIC_ONLY:
-            this.auctionBuyerControl.addValidators(Validators.required);
-            break;
-        }
-      });
-  }
+  ) { }
 
   public close(): void {
     this.reset();
