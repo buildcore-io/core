@@ -3765,7 +3765,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/activity/activity.page.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Total Reputation</target>
+        <target state="translated">所有聲望</target>
       </trans-unit>
       <trans-unit id="6594328713484058107" datatype="html">
         <source>Earned badges</source>
@@ -4057,7 +4057,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">172,173</context>
         </context-group>
-        <target state="needs-translation">Property name</target>
+        <target state="translated">屬性名稱</target>
       </trans-unit>
       <trans-unit id="6555318547274416232" datatype="html">
         <source>Value</source>
@@ -4085,7 +4085,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">275</context>
         </context-group>
-        <target state="needs-translation">Value</target>
+        <target state="translated">值</target>
       </trans-unit>
       <trans-unit id="3792445020401925970" datatype="html">
         <source>Property</source>
@@ -4093,7 +4093,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">158</context>
         </context-group>
-        <target state="needs-translation">Property</target>
+        <target state="translated">屬性</target>
       </trans-unit>
       <trans-unit id="6154968770919804859" datatype="html">
         <source>Add property</source>
@@ -4101,7 +4101,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">195,196</context>
         </context-group>
-        <target state="needs-translation">Add property</target>
+        <target state="translated">增加屬性</target>
       </trans-unit>
       <trans-unit id="4088311569349098646" datatype="html">
         <source>Stats</source>
@@ -4269,7 +4269,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">147</context>
         </context-group>
-        <target state="needs-translation"> Buy now </target>
+        <target state="translated"> 立刻購買 </target>
       </trans-unit>
       <trans-unit id="8738732372986673558" datatype="html">
         <source>Copy to clipboard</source>
@@ -4381,7 +4381,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
-        <target state="needs-translation">Start milestone.</target>
+        <target state="translated">啟動里程碑</target>
       </trans-unit>
       <trans-unit id="8083446854633867417" datatype="html">
         <source>End milestone.</source>
@@ -4389,7 +4389,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">End milestone.</target>
+        <target state="translated">結束里程碑</target>
       </trans-unit>
       <trans-unit id="351136863252723542" datatype="html">
         <source>Proposal description is required.</source>
@@ -4445,7 +4445,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">306,307</context>
         </context-group>
-        <target state="needs-translation">IOTA Token Holders</target>
+        <target state="translated">IOTA代幣持有者</target>
       </trans-unit>
       <trans-unit id="2815746757024794057" datatype="html">
         <source>Voting Type</source>
@@ -4797,7 +4797,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation"> Active </target>
+        <target state="translated">上線</target>
       </trans-unit>
       <trans-unit id="7696372753317556089" datatype="html">
         <source> Blocked </source>
