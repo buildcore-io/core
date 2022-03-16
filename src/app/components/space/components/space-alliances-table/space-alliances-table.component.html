@@ -18,7 +18,7 @@
                     [nzSize]="(deviceService.isDesktop$ | async) ? 32 : 24"
                 >
                 </nz-avatar>
-                <div class="ml-3 text-sm font-bold break-all line-clamp-2"
+                <div class="ml-3 text-sm font-bold break-words line-clamp-2"
                     [ngClass]="size === 'large' && (deviceService.isDesktop$ | async) ? 'w-1/3' : 'w-12'">
                         {{ ally._record.name }}
                 </div>
