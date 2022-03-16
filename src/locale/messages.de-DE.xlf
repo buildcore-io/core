@@ -3938,7 +3938,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="translated">Erneut hochladen sobald du unten generiert hast</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
