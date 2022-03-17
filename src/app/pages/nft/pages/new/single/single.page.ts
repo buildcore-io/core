@@ -15,6 +15,7 @@ import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from '@functions/i
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import * as dayjs from 'dayjs';
+import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { merge, of, Subscription } from 'rxjs';
@@ -171,11 +172,38 @@ export class SinglePage implements OnInit {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
+    if (
+      dayjs(startValue).isBefore(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day')
+    ) {
       return true;
     }
 
     return false;
+  };
+
+  private range(start: number, end: number): number[] {
+    const result: number[] = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+
+  public disabledDateTime(startValue: Date | Date[]): DisabledTimeConfig {
+    if (
+        !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day') ) {
+      return {
+        nzDisabledHours: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
+        nzDisabledMinutes: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),
+        nzDisabledSeconds: () => []
+      };
+    } else {
+      return {
+        nzDisabledHours: () => [],
+        nzDisabledMinutes: () => [],
+        nzDisabledSeconds: () => []
+      };
+    }
   };
 
   public addProperty(): void {
