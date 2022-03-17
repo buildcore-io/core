@@ -2,7 +2,6 @@ import { AfterViewChecked, ChangeDetectionStrategy, Component, ComponentFactoryR
 import { Router } from "@angular/router";
 import { MenuItem } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
-import { ThemeService } from '@core/services/theme';
 import { MenuItemDirective } from './menu-item.directive';
 
 @Component({
@@ -23,7 +22,6 @@ export class MenuComponent implements AfterViewChecked {
   constructor(
     public deviceService: DeviceService,
     private router: Router,
-    private themeService: ThemeService,
     private componentFactoryResolver: ComponentFactoryResolver
   ) { }
 
@@ -56,10 +54,6 @@ export class MenuComponent implements AfterViewChecked {
     }
 
     return false;
-  }
-
-  public get isDarkTheme() {
-    return this.themeService.isDarkTheme()
   }
 
   public trackByTitle(index: number, item: MenuItem): string {
