@@ -20,7 +20,7 @@ import { orderNft, validateAddress } from './../../src/controls/order.control';
 
 const db = admin.firestore();
 
-describe.skip('Ordering flows', () => {
+describe('Ordering flows', () => {
   let walletSpy: any;
   const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
   const defaultFromAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
