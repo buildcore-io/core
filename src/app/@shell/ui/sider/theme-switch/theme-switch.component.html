@@ -6,22 +6,22 @@
     }"
   >
     <wen-icon-moon (click)="onClickChangeTheme(theme.Light)"> </wen-icon-moon>
-    <wen-icon-sun (click)="onClickChangeTheme(theme.Light)"> </wen-icon-sun>
+    <wen-icon-sun (click)="onClickChangeTheme(theme.Dark)"> </wen-icon-sun>
   </div>
 </div>
 
 <ng-template #isMobileBlock>
   <div class="flex items-center h-16 space-x-7">
     <div (click)="onClickChangeTheme(theme.Light)"
-      class="w-10 h-10 flex justify-center items-center rounded-full"
+      class="flex items-center justify-center w-10 h-10 rounded-full"
       [ngClass]="{
         'bg-orange': (currentTheme$ | async) === theme.Light
       }">
       <wen-icon-sun> </wen-icon-sun>
     </div>
 
-    <div (click)="onClickChangeTheme(theme.Light)"
-      class="w-10 h-10 flex justify-center items-center rounded-full"
+    <div (click)="onClickChangeTheme(theme.Dark)"
+      class="flex items-center justify-center w-10 h-10 rounded-full"
       [ngClass]="{
         'bg-orange': (currentTheme$ | async) === theme.Dark
       }">

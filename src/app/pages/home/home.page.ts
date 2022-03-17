@@ -59,10 +59,6 @@ export class HomePage implements OnInit {
     this.collectionApi.last(undefined, undefined, 3).pipe(untilDestroyed(this)).subscribe(this.collection$);
   }
 
-  public onClickChangeTheme(theme: ThemeList): void {
-    this.themeService.setTheme(theme);
-  }
-
   public trackByUid(index: number, item: any): number {
     return item.uid;
   }
