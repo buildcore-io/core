@@ -15,6 +15,13 @@
   </a>
 </ng-container>
 
+<wen-share
+  class="block mb-4 p-6 lg:p-0"
+  i18n-shareText
+  shareText="Check out space"
+  [shareUrl]="getShareUrl(data.space$ | async)">
+</wen-share>
+
 <nz-card nzTitle="About">
   <p nz-typography [innerHtml]="(data.space$ | async)?.about | markdown"
     class="text-base font-medium whitespace-pre-line text-app-gray-text">

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
+import { ShareModule } from '@components/share/share.module';
 import { SpaceAlliancesTableModule } from '@components/space/components/space-alliances-table/space-alliances-table.module';
 import { SpaceNewAllianceModule } from '@components/space/components/space-new-alliance/space-new-alliance.module';
 import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
@@ -50,7 +51,8 @@ import { SpaceAboutComponent } from './space-about.component';
     SpaceAlliancesTableModule,
     NzDrawerModule,
     SpaceNewAllianceModule,
-    WalletAddressModule
+    WalletAddressModule,
+    ShareModule
   ],
   exports: [
     SpaceAboutComponent

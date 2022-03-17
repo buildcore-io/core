@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Out
 import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import { Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
@@ -101,6 +102,10 @@ export class SpaceAboutComponent implements OnDestroy {
     this.spaceAllianceControl.setValue(ally.uid);
     this.reputationWeightControl.setValue(ally.weight);
     this.openAlliance(false);
+  }
+
+  public getShareUrl(space?: Space | null): string {
+    return space?.wenUrlShort || space?.wenUrl || window.location.href;
   }
 
   public ngOnDestroy(): void {
