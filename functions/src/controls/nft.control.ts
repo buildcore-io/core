@@ -27,7 +27,7 @@ function defaultJoiUpdateCreateSchema(): any {
       scheme: ['https']
     }).optional(),
     // On test we allow now.
-    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -60000, 'ms').toDate()).required(),
+    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     url: Joi.string().allow(null, '').uri({

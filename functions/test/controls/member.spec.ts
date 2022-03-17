@@ -50,7 +50,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     const wUpdate: any = testEnv.wrap(updateMember);
     const updateParams = {
       uid: dummyAddress,
-      name: 'abc',
+      name: 'abc' + Math.floor(Math.random() * 1000),
       about: 'He rocks',
       discord: 'adamkun#1233',
       twitter: 'asdasd',
@@ -75,7 +75,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
     const wUpdate: any = testEnv.wrap(updateMember);
     const updateParams = {
       uid: dummyAddress,
-      name: 'abcd',
+      name: 'abcd' + Math.floor(Math.random() * 1000),
     };
 
     walletSpy.mockReturnValue(Promise.resolve({
@@ -98,7 +98,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
 
     const updateParams2 = {
       uid: dummyAddress2,
-      name: 'abcd',
+      name: updateParams.name,
     };
 
     walletSpy.mockReturnValue(Promise.resolve({
