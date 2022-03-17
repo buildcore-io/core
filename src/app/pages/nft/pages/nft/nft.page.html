@@ -316,7 +316,7 @@
                     <span nz-typography class="text-app-gray-400" i18n>On-Chain Record</span>
                     <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)" i18n>Preparing...</p>
                     <div nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center justify-end">
-                        <div class="w-3/5 break-all line-clamp-2">{{ getOnChainInfo(data.orders$ | async) }}</div>
+                        <div class="w-3/5 break-words line-clamp-2">{{ getOnChainInfo(data.orders$ | async) }}</div>
                         <a class="ml-1 underline text-blue-light1" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank" i18n>View</a>
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
@@ -330,7 +330,7 @@
                 <div class="wen-description-item bg-bg-background">
                     <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
                     <div nz-typography class="flex items-center justify-end">
-                        <div class="w-3/5 break-all line-clamp-2" i18n>Shimmer/Mainnet (Tokenization)...SOON.</div>
+                        <div class="w-3/5 break-words line-clamp-2" i18n>Shimmer/Mainnet (Tokenization)...SOON.</div>
 
                         <wen-icon-question-circle
                             class="ml-2.5 text-app-gray-400"
@@ -344,14 +344,14 @@
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
                   <div nz-typography class="flex items-center justify-end">
-                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
+                      <div class="w-3/5 break-words line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
                       <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank" i18n>View</a>
                   </div>
                 </div>
                 <div class="wen-description-item bg-bg-background">
                   <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
                   <div nz-typography class="flex items-center justify-end">
-                      <div class="w-3/5 break-all line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
+                      <div class="w-3/5 break-words line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
                       <a class="ml-1 underline left-16 text-blue-light1" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank" i18n>View</a>
                   </div>
               </div>
@@ -388,7 +388,7 @@
 
         <div class="flex flex-col lg:flex-row">
             <div class="w-full lg:w-max">
-                <h1 class="mb-2 break-all">{{ (data.collection$ | async)?.name || (data.collection$ | async)?.uid }}</h1>
+                <h1 class="mb-2 break-words">{{ (data.collection$ | async)?.name || (data.collection$ | async)?.uid }}</h1>
                 <div class="flex items-center">
                     <div class="mr-3 text-xs font-medium" i18n>by</div>
 

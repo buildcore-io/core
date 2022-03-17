@@ -9,9 +9,11 @@ import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
+import { CalendarIconComponent } from './calendar/calendar.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
+import { CollectionIconComponent } from './collection/collection.component';
 import { CopyIconComponent } from './copy/copy.component';
 import { CrownIconComponent } from './crown/crown.component';
 import { DefaultSpaceIconComponent } from './default-space/default-space.component';
@@ -55,7 +57,6 @@ import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 import { UserPlusIconComponent } from './user-plus/user-plus.component';
 import { WalletIconComponent } from './wallet/wallet.component';
-import { CollectionIconComponent } from './collection/collection.component';
 
 @NgModule({
   declarations: [
@@ -114,7 +115,8 @@ import { CollectionIconComponent } from './collection/collection.component';
     AlertOctagonIconComponent,
     InfoCircleIconComponent,
     UserPlusIconComponent,
-    CollectionIconComponent
+    CollectionIconComponent,
+    CalendarIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -172,7 +174,8 @@ import { CollectionIconComponent } from './collection/collection.component';
     AlertOctagonIconComponent,
     InfoCircleIconComponent,
     UserPlusIconComponent,
-    CollectionIconComponent
+    CollectionIconComponent,
+    CalendarIconComponent
   ],
   imports: [
     CommonModule

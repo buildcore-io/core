@@ -119,14 +119,14 @@ export class ParticipantsPage implements OnInit, OnDestroy {
   }
 
   public getMemberCreatedOnLabel(): string {
-    return 'joined soonaverse on';
+    return $localize`joined soonaverse on`;
   }
 
   public getTitle(): string {
     if (this.selectedListControl.value === this.filterOptions.VOTED) {
-      return 'Voted';
+      return $localize`Voted`;
     } else {
-      return 'Pending';
+      return $localize`Pending`;
     }
   }
 
