@@ -85,7 +85,7 @@ import { DataService } from './services/data.service';
     NzTableModule,
     TruncateModule,
     NzModalModule,
-    NftSaleModule
+    NftSaleModule,
     NgApexchartsModule,
     CollapseModule
   ],
