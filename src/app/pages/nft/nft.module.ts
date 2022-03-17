@@ -7,6 +7,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
+import { NftSaleModule } from '@components/nft/components/nft-sale/nft-sale.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineNftModule } from '@components/timeline-nft/timeline-nft.module';
@@ -84,6 +85,7 @@ import { DataService } from './services/data.service';
     NzTableModule,
     TruncateModule,
     NzModalModule,
+    NftSaleModule
     NgApexchartsModule,
     CollapseModule
   ],

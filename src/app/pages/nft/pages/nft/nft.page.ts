@@ -39,6 +39,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public chartOptions: Partial<ChartOptions> = {};
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
+  public isSaleOpen = true;
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
