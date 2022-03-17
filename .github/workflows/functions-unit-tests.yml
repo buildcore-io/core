@@ -4,6 +4,8 @@ on: push
 
 jobs:
   functions_unit_tests:
+    // disable for now.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
