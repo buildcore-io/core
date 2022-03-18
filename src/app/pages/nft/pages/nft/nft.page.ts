@@ -76,29 +76,6 @@ export class NFTPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef
   ) {
     // none
-    // TODO: Dummy data
-    this.initChart([
-        [
-            new Date("2021-12-03T04:57:39.576Z"),
-            1
-        ],
-        [
-            new Date("2022-02-19T02:55:43.383Z"),
-            201
-        ],
-        [
-            new Date("2022-02-23T06:59:37.177Z"),
-            211
-        ],
-        [
-            new Date("2022-03-06T06:03:51.811Z"),
-            212
-        ],
-        [
-            new Date("2022-03-06T06:04:51.447Z"),
-            222
-        ]
-    ]);
   }
 
   public ngOnInit(): void {
@@ -166,6 +143,15 @@ export class NFTPage implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.data.orders$.pipe(untilDestroyed(this)).subscribe((obj) => {
+          const arr: any = [];
+          obj?.forEach((obj) => {
+            arr.push([obj.order.createdOn?.toDate(), obj.order.payload.amount]);
+          });
+
+          this.initChart(arr);
+    })
   }
 
   public getExplorerLink(link: string): string {
@@ -372,8 +358,6 @@ export class NFTPage implements OnInit, OnDestroy {
     return (!nft.owner && (nft.type === CollectionType.GENERATED || nft.type === CollectionType.SFT));
   }
 
-
-
   public initChart(data: any): void {
     this.chartOptions = {
       series: [
@@ -393,7 +377,7 @@ export class NFTPage implements OnInit, OnDestroy {
       },
       xaxis: {
         type: "datetime",
-        min: (data?.[0]?.[0] || dayjs().subtract(1, 'month').toDate()).getTime(),
+        min: data?.[0]?.[0].getTime(),
         tickAmount: 6
       },
       tooltip: {
@@ -411,6 +395,7 @@ export class NFTPage implements OnInit, OnDestroy {
         }
       }
     };
+
     this.cd.markForCheck();
   }
 

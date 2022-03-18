@@ -175,14 +175,13 @@
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
 
-            <!-- This should be used for timeline -->
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
 
-            <!-- <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">
+            <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">
                 <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [colors]="chartOptions.colors!"
                     [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [markers]="chartOptions.markers!"
                     [stroke]="chartOptions.stroke!" [xaxis]="chartOptions.xaxis!" [tooltip]="chartOptions.tooltip!"></apx-chart>
-            </wen-collapse> -->
+            </wen-collapse>
 
             <!-- <wen-collapse i18n-nzTitle title="Listings / Offers" class="mt-4" [isCollapsed]="false">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
