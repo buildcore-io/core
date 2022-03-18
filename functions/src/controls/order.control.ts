@@ -53,64 +53,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     throw throwInvalidArgument(WenError.collection_must_be_approved);
   }
 
-  if (docCollectionData.access === CollectionAccess.MEMBERS_ONLY) {
-    if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
-      throw throwInvalidArgument(WenError.you_are_not_part_of_space);
-    }
-  }
-
-  if (docCollectionData.access === CollectionAccess.GUARDIANS_ONLY) {
-    if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
-      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-    }
-  }
-
-  if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
-    const includedBadges: string[] = [];
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
-               .where('type', '==', TransactionType.BADGE)
-               .where('member', '==', owner).get();
-    if (qry.size > 0 && docCollectionData.accessAwards?.length) {
-      for (const t of qry.docs) {
-        if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
-          includedBadges.push(t.data().payload.award)
-          break;
-        }
-      }
-    }
-
-    if (docCollectionData.accessAwards.length !== includedBadges.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
-    }
-  }
-
-  if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
-    const includedCollections: string[] = [];
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
-               .where('owner', '==', owner).get();
-    if (qry.size > 0 && docCollectionData.accessCollections?.length) {
-      for (const t of qry.docs) {
-        if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
-          includedCollections.push(t.data().collection);
-          break;
-        }
-      }
-    }
-
-    if (docCollectionData.accessCollections.length !== includedCollections.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
-    }
-  }
-
-  if (docCollectionData.onePerMemberOnly === true) {
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
-      .where('collection', '==', docCollectionData.uid)
-      .where('owner', '==', owner).get();
-    if (qry.size >= 1) {
-      throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
-    }
-  }
-
   // Let's determine if NFT can be indicated or we need to randomly select one.
   let refNft: admin.firestore.DocumentReference;
   let mustBeSold = false;
@@ -156,6 +98,64 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
   // Set data object.
   const docNftData: Nft = docNft.data();
+
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_ONLY) {
+    if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
+      throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.GUARDIANS_ONLY) {
+    if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
+      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
+    const includedBadges: string[] = [];
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
+               .where('type', '==', TransactionType.BADGE)
+               .where('member', '==', owner).get();
+    if (qry.size > 0 && docCollectionData.accessAwards?.length) {
+      for (const t of qry.docs) {
+        if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
+          includedBadges.push(t.data().payload.award)
+          break;
+        }
+      }
+    }
+
+    if (docCollectionData.accessAwards.length !== includedBadges.length) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
+    const includedCollections: string[] = [];
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
+               .where('owner', '==', owner).get();
+    if (qry.size > 0 && docCollectionData.accessCollections?.length) {
+      for (const t of qry.docs) {
+        if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
+          includedCollections.push(t.data().collection);
+          break;
+        }
+      }
+    }
+
+    if (docCollectionData.accessCollections.length !== includedCollections.length) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.onePerMemberOnly === true) {
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
+      .where('collection', '==', docCollectionData.uid)
+      .where('owner', '==', owner).get();
+    if (qry.size >= 1) {
+      throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
+    }
+  }
 
   if (mustBeSold && !docNftData.owner) {
     throw throwInvalidArgument(WenError.generated_spf_nft_must_be_sold_first);

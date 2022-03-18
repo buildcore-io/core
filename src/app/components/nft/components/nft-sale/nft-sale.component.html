@@ -96,7 +96,7 @@
     </div>
 
     <div [ngSwitch]="currentSaleType" class="w-full bg-white rounded-b-2xl">
-        <wen-nft-sale-not-for-sale *ngSwitchCase="saleType.NOT_FOR_SALE"></wen-nft-sale-not-for-sale>
+        <wen-nft-sale-not-for-sale [nft]="nft" (wenOnUpdate)="update($event)" *ngSwitchCase="saleType.NOT_FOR_SALE"></wen-nft-sale-not-for-sale>
         <wen-nft-sale-fixed-price [nft]="nft" *ngSwitchCase="saleType.FIXED_PRICE" (wenOnUpdate)="update($event)"></wen-nft-sale-fixed-price>
         <wen-nft-sale-auction [nft]="nft"  *ngSwitchCase="saleType.AUCTION" (wenOnUpdate)="update($event)"></wen-nft-sale-auction>
     </div>

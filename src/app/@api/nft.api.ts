@@ -43,7 +43,7 @@ export class NftApi extends BaseApi<Nft> {
         return ref.where('payload.nft', '==', nftId).where('type', '==', TransactionType.BILL_PAYMENT).where('payload.royalty', '==', false)
       }
     ).valueChanges().pipe(switchMap(async (obj: any[]) => {
-      const out: SuccesfullOrdersWithFullHistory[] = [];
+      let out: SuccesfullOrdersWithFullHistory[] = [];
       for (const b of obj) {
         const order: DocumentSnapshot<TransactionOrder> = <any>await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());
         const member: DocumentSnapshot<Member> = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
@@ -64,6 +64,11 @@ export class NftApi extends BaseApi<Nft> {
 
         out.push(o);
       }
+
+      // Order from latest.
+      out = out.sort((c) => {
+        return c.order.createdOn!.toMillis() * -1;
+      });
 
       return out;
     }));

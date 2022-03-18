@@ -20,7 +20,7 @@ export class NftSaleFixedPriceComponent implements OnInit {
   set nft(value: Nft|null|undefined) {
     this._nft = value;
     if (this._nft) {
-      this.availableFromControl.setValue(this._nft.availableFrom || '');
+      this.availableFromControl.setValue(this._nft.availableFrom?.toDate() || '');
       this.selectedAccessControl.setValue(this._nft.saleAccess || NftAccess.OPEN);
       this.buyerControl.setValue(this._nft.saleAccessMembers || []);
       if (this._nft.availablePrice) {

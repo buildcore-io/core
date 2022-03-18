@@ -21,8 +21,8 @@
                       <source [src]="(data.nft$ | async)?.media" type="video/mp4">
                       Your browser does not support HTML video.
                     </video>
-                </div>                
-      
+                </div>
+
                 <wen-share
                     class="block mt-5 mb-8"
                     i18n-shareText
@@ -156,9 +156,10 @@
                 </div>
             </div>
 
-            <button class="mt-10" nz-button nzType="default" (click)="sell($event)"
-                    *ngIf="canBeSetForSale(data.nft$ | async, data.collection$ | async)" nzBlock nzSize="large" i18n>
-                Sell NFT
+            <button class="mt-10" nz-button nzType="default" (click)="sell($event)" *ngIf="canSetItForSale(data.nft$ | async)" nzBlock nzSize="large">
+                <span *ngIf="canBeSetForSale(data.nft$ | async, data.collection$ | async)" i18n>Sell NFT</span>
+                <span *ngIf="isAvailableForSale(data.nft$ | async, data.collection$ | async)" i18n>Change Fixed Price</span>
+                <span *ngIf="isAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
             </button>
 
             <button class="mt-10" nz-button nzType="primary" (click)="bid($event)"
