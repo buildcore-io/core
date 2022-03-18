@@ -12,11 +12,11 @@
     >
     <ng-template #nftSaleModalContent>
         <div class="bg-bg-background rounded-2xl">
-            <div class="flex items-start justify-between pt-7 px-6">
+            <div class="flex items-start justify-between px-6 pt-7">
                 <div class="text-2xl font-bold" i18n>List Item for sale</div>
                 <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
             </div>
-    
+
             <ng-container *ngTemplateOutlet="content"></ng-container>
         </div>
     </ng-template>
@@ -38,7 +38,7 @@
 </nz-drawer>
 
 <ng-template #content>
-    <div class="flex flex-col mt-12 lg:flex-row lg:mt-6 px-6">
+    <div class="flex flex-col px-6 mt-12 lg:flex-row lg:mt-6">
         <div class="relative w-full lg:w-72 lg:w-overflow-hidden">
             <img
                 *ngIf="mediaType === 'image'"
@@ -55,7 +55,7 @@
         </div>
         <div class="mt-8 lg:ml-8 lg:mt-0 ">
             <div class="relative flex flex-col w-full h-full">
-                <h3 class="mb-1 text-2xl font-bold truncate">{{ getTitle() }}</h3>
+                <h3 class="mb-1 text-2xl font-bold truncate">{{ nft?.name }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
 
                 <div class="flex items-center mt-2.5">
@@ -70,40 +70,34 @@
                     ></wen-icon-question-circle>
                 </div>
 
-                <div class="px-5 py-3 mt-8 lg:mt-auto bg-white rounded-2xl w-max">
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Total price</div>
-                    <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
-                        <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(nft?.price || 0) }}</div>
-                        <div class="mr-2 font-bold truncate">{{ formatBest(calc(nft?.price || 0, discount())) }}</div>
-                    </div>
-                    <div class="flex items-center mt-2 text-lg" *ngIf="discount() === 1">
+                <div class="px-5 py-3 mt-8 bg-white lg:mt-auto rounded-2xl w-max">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
+                    <div class="flex items-center mt-2 text-lg">
                       <div class="mr-2 font-bold truncate">{{ formatBest(nft?.price || 0) }}</div>
                   </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="flex flex-col lg:flex-row lg:items-center mt-6 px-6 mb-4">
-        <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentSaleType === saleType.NOT_FOR_SALE"
+
+    <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
+        <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentSaleType === saleType.NOT_FOR_SALE"
             (nzCheckedChange)="currentSaleType = saleType.NOT_FOR_SALE">
                 <span i18n>Not for sale</span>
         </nz-tag>
-        <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentSaleType === saleType.FIXED_PRICE"
+        <nz-tag [nzMode]="disableFixedOption ? 'default' : 'checkable'" class="mt-2 w-max" [nzChecked]="currentSaleType === saleType.FIXED_PRICE"
             (nzCheckedChange)="currentSaleType = saleType.FIXED_PRICE">
                 <span i18n>Fixed price</span>
         </nz-tag>
-        <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentSaleType === saleType.AUCTION"
+        <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentSaleType === saleType.AUCTION"
             (nzCheckedChange)="currentSaleType = saleType.AUCTION">
                 <span i18n>Auction</span>
         </nz-tag>
     </div>
 
-    <div [ngSwitch]="currentSaleType" class="bg-white w-full rounded-b-2xl">
+    <div [ngSwitch]="currentSaleType" class="w-full bg-white rounded-b-2xl">
         <wen-nft-sale-not-for-sale *ngSwitchCase="saleType.NOT_FOR_SALE"></wen-nft-sale-not-for-sale>
-
-        <wen-nft-sale-fixed-price *ngSwitchCase="saleType.FIXED_PRICE"></wen-nft-sale-fixed-price>
-
-        <wen-nft-sale-auction *ngSwitchCase="saleType.AUCTION"></wen-nft-sale-auction>
+        <wen-nft-sale-fixed-price [nft]="nft" *ngSwitchCase="saleType.FIXED_PRICE" (wenOnUpdate)="update($event)"></wen-nft-sale-fixed-price>
+        <wen-nft-sale-auction [nft]="nft"  *ngSwitchCase="saleType.AUCTION" (wenOnUpdate)="update($event)"></wen-nft-sale-auction>
     </div>
 </ng-template>

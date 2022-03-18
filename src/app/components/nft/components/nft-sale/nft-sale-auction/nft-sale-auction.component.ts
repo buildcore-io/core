@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
-import { PRICE_UNITS } from '@functions/interfaces/models/nft';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { merge } from 'rxjs';
-import { NftSaleAccess } from '../nft-sale.component';
+import { SaleType, UpdateEvent } from '../nft-sale.component';
 
 @UntilDestroy()
 @Component({
@@ -16,17 +16,59 @@ import { NftSaleAccess } from '../nft-sale.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NftSaleAuctionComponent implements OnInit {
+  @Input()
+  set nft(value: Nft|null|undefined) {
+    this._nft = value;
+    if (this._nft) {
+      this.availableFromControl.setValue(this._nft.auctionFrom || '');
+      this.selectedAccessControl.setValue(this._nft.saleAccess || NftAccess.OPEN);
+      this.buyerControl.setValue(this._nft.saleAccessMembers || []);
+      if (this._nft.availablePrice) {
+        this.buyAvailableControl.setValue(true);
+        if (this._nft.availablePrice >= 1000 * 1000 * 1000) {
+          this.buyPriceControl.setValue(this._nft.availablePrice / 1000 / 1000 / 1000);
+          this.buyUnitControl.setValue(<Units>'Gi');
+        } else {
+          this.buyPriceControl.setValue(this._nft.availablePrice / 1000 / 1000);
+          this.buyUnitControl.setValue(<Units>'Mi');
+        }
+      }
+
+      if (this._nft.auctionFloorPrice) {
+        if (this._nft.auctionFloorPrice >= 1000 * 1000 * 1000) {
+          this.floorPriceControl.setValue(this._nft.auctionFloorPrice / 1000 / 1000 / 1000);
+          this.floorUnitControl.setValue(<Units>'Gi');
+        } else {
+          this.floorPriceControl.setValue(this._nft.auctionFloorPrice / 1000 / 1000);
+          this.floorUnitControl.setValue(<Units>'Mi');
+        }
+      }
+
+      if (this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
+        this.floorPriceControl.disable();
+        this.floorUnitControl.disable();
+        this.availableFromControl.disable();
+        this.selectedAccessControl.disable();
+        this.buyerControl.disable();
+      }
+    }
+  }
+  get nft(): Nft|null|undefined {
+    return this._nft;
+  }
+  @Output() public wenOnUpdate = new EventEmitter<UpdateEvent>();
   public form: FormGroup;
   public floorPriceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
   public floorUnitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
-  public buyPriceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
+  public buyPriceControl: FormControl = new FormControl('');
   public buyUnitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
-  public selectedAccessControl: FormControl = new FormControl(NftSaleAccess.OPEN, Validators.required);
+  public selectedAccessControl: FormControl = new FormControl(NftAccess.OPEN, Validators.required);
   public buyerControl: FormControl = new FormControl('');
   public buyAvailableControl: FormControl = new FormControl(false);
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
+  private _nft?: Nft|null;
 
   constructor() {
     this.form = new FormGroup({
@@ -59,16 +101,15 @@ export class NftSaleAuctionComponent implements OnInit {
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.buyPriceControl.setErrors(errors);
       });
-      
+
     this.selectedAccessControl.valueChanges.pipe(untilDestroyed(this))
       .subscribe(() => {
         switch (this.selectedAccessControl.value) {
-          case NftSaleAccess.OPEN:
-          case NftSaleAccess.MEMBERS_ONLY:
+          case NftAccess.OPEN:
             this.buyerControl.removeValidators(Validators.required);
             this.buyerControl.setErrors(null);
             break;
-          case NftSaleAccess.SPECIFIC_ONLY:
+          case NftAccess.MEMBERS:
             this.buyerControl.addValidators(Validators.required);
             break;
         }
@@ -82,25 +123,43 @@ export class NftSaleAuctionComponent implements OnInit {
 
     return UnitsHelper.formatBest(amount, 2);
   }
-  
+
   public get priceUnits(): Units[] {
     return PRICE_UNITS;
   }
 
   public disabledStartDate(startValue: Date): boolean {
-    // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
+    if (dayjs(startValue).isBefore(dayjs(), 'days')) {
       return true;
     }
 
     return false;
   }
 
-  public get targetAccess(): typeof NftSaleAccess {
-    return NftSaleAccess;
+  public get targetAccess(): typeof NftAccess {
+    return NftAccess;
   }
 
   private getRawPrice(price: number, unit: Units): number {
     return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+  }
+
+  public submit(): void {
+    const up: UpdateEvent = {
+      type: SaleType.FIXED_PRICE,
+      auctionFrom: this.availableFromControl.value,
+      // Missing field for three options 1, 2, 3
+      auctionLengthDays: 3,
+      auctionFloorPrice: this.getRawPrice(this.floorPriceControl.value, this.floorUnitControl.value),
+      access: this.selectedAccessControl.value,
+      accessMembers: this.buyerControl.value
+    };
+
+    if (this.buyAvailableControl.value) {
+      up.availableFrom = this.availableFromControl.value;
+      up.price = this.getRawPrice(this.buyPriceControl.value, this.buyUnitControl.value);
+    }
+
+    this.wenOnUpdate.next(up);
   }
 }

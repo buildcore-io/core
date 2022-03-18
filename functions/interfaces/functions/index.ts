@@ -39,6 +39,7 @@ export const enum WEN_FUNC {
   // NFT functions.
   cNft = "cNft",
   cBatchNft = "cBatchNft",
+  setForSaleNft = "setForSaleNft",
 
   // ORDER functions.
   orderNft = "orderNft",

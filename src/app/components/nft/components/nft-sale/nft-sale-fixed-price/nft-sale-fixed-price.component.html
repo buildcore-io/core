@@ -1,5 +1,5 @@
 <div class="px-6 py-5">
-    <div class="font-bold text-sm" i18n>
+    <div class="text-sm font-bold" i18n>
         Trade info
     </div>
 
@@ -61,17 +61,14 @@
                 <wen-radio [value]="targetAccess.OPEN">
                     <span i18n>Open Sale</span>
                 </wen-radio>
-                <wen-radio [value]="targetAccess.MEMBERS_ONLY">
-                    <span i18n>Space members only</span>
-                </wen-radio>
-                <wen-radio [value]="targetAccess.SPECIFIC_ONLY">
+                <wen-radio [value]="targetAccess.MEMBERS">
                     <span i18n>Specific buyer only</span>
                 </wen-radio>
             </nz-radio-group>
         </nz-form-control>
     </nz-form-item>
 
-    <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.SPECIFIC_ONLY">
+    <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS">
         <nz-form-control>
           <nz-select
             class="w-full"
@@ -94,8 +91,8 @@
         </nz-form-control>
       </nz-form-item>
 
-    <div class="w-full mt-10 flex items-center flex-col text-xs font-medium text-foregrounds-tertiary">
+    <div class="flex flex-col items-center w-full mt-10 text-xs font-medium text-foregrounds-tertiary">
         <div class="mb-3" i18n>Once your listing is complete, you will get a confirmation message.</div>
-        <button nz-button nzType="primary" nzSize="large" [disabled]="form.invalid" i18n>Confirm listing</button>
+        <button nz-button nzType="primary" nzSize="large" [disabled]="form.invalid" (click)="submit()" i18n>Confirm listing</button>
     </div>
 </div>

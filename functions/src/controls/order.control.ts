@@ -174,10 +174,21 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Extra check to make sure owner address is defined.
-  if (docNft.data().owner && !docNft.data().ownerAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address);
+  let prevOwnerAddress: string|undefined = undefined;
+  if (docNft.data().owner) { // &&
+    const refPrevOwner: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(docNft.data().owner);
+    const docPrevOwner: DocumentSnapshotType = await refPrevOwner.get();
+    if (!docPrevOwner.data()?.validatedAddress) {
+      throw throwInvalidArgument(WenError.member_must_have_validated_address);
+    } else {
+      prevOwnerAddress = docPrevOwner.data()?.validatedAddress;
+    }
   } else if (!docSpace.data().validatedAddress) {
     throw throwInvalidArgument(WenError.space_must_have_validated_address);
+  }
+
+  if (docNft.data().owner === owner) {
+    throw throwInvalidArgument(WenError.you_cant_buy_your_nft);
   }
 
   // Validate there isn't any order in progress.
@@ -229,7 +240,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       });
     }
   });
-  let finalPrice = discount < 1 ? Math.ceil(discount * docNftData.price) : docNftData.price;
+  let finalPrice = (discount < 1 && !docNft.data().owner) ? Math.ceil(discount * docNftData.price) : (docNftData.availablePrice || docNftData.price);
   if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
     finalPrice = MIN_AMOUNT_TO_TRANSFER;
   }
@@ -249,7 +260,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       targetAddress: targetAddress.bech32,
       beneficiary: docNft.data().owner ? 'member' : 'space',
       beneficiaryUid: docNft.data().owner || docCollectionData.space,
-      beneficiaryAddress: docNft.data().owner ? docNft.data().ownerAddress : docSpace.data().validatedAddress,
+      beneficiaryAddress: docNft.data().owner ? prevOwnerAddress : docSpace.data().validatedAddress,
       royaltiesFee: docCollectionData.royaltiesFee,
       royaltiesSpace: docCollectionData.royaltiesSpace,
       royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,

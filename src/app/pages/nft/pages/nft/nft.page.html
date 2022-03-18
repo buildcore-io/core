@@ -17,7 +17,7 @@
                     class="object-cover w-full h-full"
                     />
 
-                    <video controls class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                    <video controls autoplay class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
                       <source [src]="(data.nft$ | async)?.media" type="video/mp4">
                       Your browser does not support HTML video.
                     </video>
@@ -49,28 +49,23 @@
                 </div>
             </div>
 
-            <!-- TODO -->
             <div class="w-full p-4 bg-white rounded-xl"
-                *ngIf="true">
+                *ngIf="isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <wen-icon-time></wen-icon-time>
                             <div class="ml-2.5 font-bold" i18n>Sale ends</div>
                         </div>
                         <div class="font-medium">
-                            January 29th, 2022 at 6:53am AEDT
-                            <!-- TODO: Put date here -->
-                            <!-- {{  | date:'long'}} -->
+                          {{ (data.nft$ | async)?.auctionFrom?.toDate() | date:'long'}}
                         </div>
                     </div>
 
-                    <div class="w-full flex items-center justify-between mt-5 space-x-3">
-                        <div class="bg-bg-background py-3 flex items-center justify-center
-                            font-bold rounded-2xl flex-grow">20 hours</div>
-                        <div class="bg-bg-background py-3 flex items-center justify-center
-                            font-bold rounded-2xl flex-grow">20 min</div>
-                        <div class="bg-bg-background py-3 flex items-center justify-center
-                            font-bold rounded-2xl flex-grow">10 sec</div>
+                    <div class="flex items-center justify-between w-full mt-5 space-x-3">
+                         <!-- counter -->
+                        <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">20 hours</div>
+                        <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">20 min</div>
+                        <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">10 sec</div>
                     </div>
             </div>
 
@@ -78,8 +73,8 @@
                 <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
-                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async) < 1">{{data.formatBest((data.nft$ | async)?.price)}}</div>
-                        <div class="text-lg font-bold truncate">{{data.formatBest(calc((data.nft$ | async)?.price, discount(data.collection$ | async)))}}</div>
+                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{data.formatBest(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
+                        <div class="text-lg font-bold truncate">{{data.formatBest(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)))}}</div>
                     </div>
                 </div>
 
@@ -167,26 +162,18 @@
                 </div>
             </div>
 
-            <!-- TODO -->
-            <button class="mt-10" nz-button nzType="default" (click)="sell($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
-                    *ngIf="true" nzBlock nzSize="large" i18n>
+            <button class="mt-10" nz-button nzType="default" (click)="sell($event)"
+                    *ngIf="canBeSetForSale(data.nft$ | async, data.collection$ | async)" nzBlock nzSize="large" i18n>
                 Sell NFT
             </button>
 
-            <!-- TODO -->
-            <button class="mt-10" nz-button nzType="primary" (click)="sell($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
-                    *ngIf="true" nzBlock nzSize="large" i18n>
+            <button class="mt-10" nz-button nzType="primary" (click)="bid($event)"
+                    *ngIf="isAvailableForAuction(data.nft$ | async, data.collection$ | async)" nzBlock nzSize="large" i18n>
                 Place bid
             </button>
 
-            <!-- TODO -->
-            <button class="mt-6" nz-button nzType="default" (click)="sell($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
-                    *ngIf="true" nzBlock nzSize="large" i18n>
-                Buy now
-            </button>
-
-            <button class="mt-10" nz-button nzType="primary" (click)="buy($event)" [disabled]="!(data.collection$ | async)?.approved || !isAvailableForSale(data.nft$ | async, data.collection$ | async)"
-                    *ngIf="!(data.nft$ | async)?.owner" nzBlock nzSize="large" i18n>
+            <button class="mt-10" nz-button nzType="primary" (click)="buy($event)" [disabled]=""
+                    *ngIf="isAvailableForSale(data.nft$ | async, data.collection$ | async)" nzBlock nzSize="large" i18n>
                 Buy now
             </button>
 
@@ -195,20 +182,20 @@
 
             <!-- This should be used for timeline -->
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
-            
-            <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">
+
+            <!-- <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">
                 <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [colors]="chartOptions.colors!"
                     [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [markers]="chartOptions.markers!"
                     [stroke]="chartOptions.stroke!" [xaxis]="chartOptions.xaxis!" [tooltip]="chartOptions.tooltip!"></apx-chart>
-            </wen-collapse>
+            </wen-collapse> -->
 
-            <wen-collapse i18n-nzTitle title="Listings / Offers" class="mt-4" [isCollapsed]="false">
-                <div class="flex flex-col lg:flex-row lg:items-center mt-6 px-6 mb-4">
-                    <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentListingType === listingTypes.LISTING"
+            <!-- <wen-collapse i18n-nzTitle title="Listings / Offers" class="mt-4" [isCollapsed]="false">
+                <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
+                    <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.LISTING"
                         (nzCheckedChange)="currentListingType = listingTypes.LISTING">
                             <span i18n>Listings</span>
                     </nz-tag>
-                    <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentListingType === listingTypes.OFFER"
+                    <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.OFFER"
                         (nzCheckedChange)="currentListingType = listingTypes.OFFER">
                             <span i18n>Offers</span>
                     </nz-tag>
@@ -263,7 +250,7 @@
                         </tr>
                     </tbody>
                 </nz-table>
-            </wen-collapse>
+            </wen-collapse> -->
         </div>
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
@@ -276,7 +263,7 @@
                     class="object-cover w-full h-full"
                     />
 
-                    <video controls class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                    <video controls autoplay class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
                       <source [src]="(data.nft$ | async)?.media" type="video/mp4">
                       Your browser does not support HTML video.
                     </video>
@@ -474,7 +461,7 @@
 >
     <ng-template #prevewNftModalContent>
         <img *ngIf="mediaType === 'image'" [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
-        <video controls class="w-full rounded-3xl" *ngIf="mediaType === 'video'">
+        <video controls autoplay class="w-full rounded-3xl" *ngIf="mediaType === 'video'">
           <source [src]="(data.nft$ | async)?.media" type="video/mp4">
           Your browser does not support HTML video.
         </video>

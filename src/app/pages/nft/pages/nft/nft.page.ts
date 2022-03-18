@@ -39,7 +39,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public chartOptions: Partial<ChartOptions> = {};
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
-  public isSaleOpen = true;
+  public isSaleOpen = false;
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
@@ -215,7 +215,20 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return ((col.total - col.sold) > 0) && col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isBefore(dayjs()) && !nft?.owner;
+    return ((col.total - col.sold) > 0) && col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isBefore(dayjs());
+  }
+
+
+  public canBeSetForSale(nft?: Nft|null, col?: Collection|null): boolean {
+    return (!this.isAvailableForAuction(nft, col) && !this.isAvailableForSale(nft, col) && !!nft?.owner);
+  }
+
+  public isAvailableForAuction(nft?: Nft|null, col?: Collection|null): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs());
   }
 
   public saleNotStartedYet(nft?: Nft|null): boolean {
@@ -226,8 +239,8 @@ export class NFTPage implements OnInit, OnDestroy {
     return dayjs(nft.availableFrom.toDate()).isAfter(dayjs())
   }
 
-  public discount(collection?: Collection|null): number {
-    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation) {
+  public discount(collection?: Collection|null, nft?: Nft|null): number {
+    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation || nft?.owner) {
       return 1;
     }
 
@@ -256,6 +269,16 @@ export class NFTPage implements OnInit, OnDestroy {
     return finalPrice;
   }
 
+  public bid(event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    if (getItem(StorageItem.CheckoutTransaction)) {
+      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
+      return;
+    }
+    this.isCheckoutOpen = true;
+  }
+
   public buy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
@@ -267,14 +290,9 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public sell(event: MouseEvent): void {
-    return;
     event.stopPropagation();
     event.preventDefault();
-    if (getItem(StorageItem.CheckoutTransaction)) {
-      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
-      return;
-    }
-    this.isCheckoutOpen = true;
+    this.isSaleOpen = true;
   }
 
   public copy(): void {
@@ -352,7 +370,7 @@ export class NFTPage implements OnInit, OnDestroy {
     return (!nft.owner && (nft.type === CollectionType.GENERATED || nft.type === CollectionType.SFT));
   }
 
-  
+
 
   public initChart(data: any): void {
     this.chartOptions = {

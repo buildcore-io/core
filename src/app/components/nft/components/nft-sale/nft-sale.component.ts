@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FileApi } from '@api/file.api';
+import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
-import { MIN_AMOUNT_TO_TRANSFER, NftAvailableFromDateMin } from '@functions/interfaces/config';
-import { Collection, CollectionType } from '@functions/interfaces/models';
-import { Nft, PRICE_UNITS } from '@functions/interfaces/models/nft';
+import { Collection } from '@functions/interfaces/models';
+import { Timestamp } from '@functions/interfaces/models/base';
+import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
 import { take } from 'rxjs';
@@ -16,10 +18,16 @@ export enum SaleType {
   AUCTION = 'AUCTION'
 }
 
-export enum NftSaleAccess {
-  OPEN = 0,
-  MEMBERS_ONLY = 1,
-  SPECIFIC_ONLY = 2
+export interface UpdateEvent {
+  nft?: string;
+  type?: SaleType,
+  access?: NftAccess|null,
+  accessMembers?: string[]|null,
+  availableFrom?: Timestamp|null;
+  auctionFrom?: Timestamp|null;
+  price?: number|null;
+  auctionFloorPrice?: number|null;
+  auctionLengthDays?: number|null;
 }
 
 @UntilDestroy()
@@ -30,12 +38,12 @@ export enum NftSaleAccess {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NftSaleComponent {
-  @Input() currentSaleType = SaleType.NOT_FOR_SALE;
   @Input() isOpen = false;
   @Input() collection?: Collection|null;
   @Input()
   set nft(value: Nft|null|undefined) {
     this._nft = value;
+    this.disableFixedOption = false;
     if (this._nft) {
       this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
         if (o.contentType.match('video/.*')) {
@@ -46,6 +54,19 @@ export class NftSaleComponent {
 
         this.cd.markForCheck();
       });
+
+      // Set default sale type.
+      if (this._nft.auctionFrom && this._nft.availableFrom) {
+        if (this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
+          this.disableFixedOption = true;
+        }
+
+        this.currentSaleType = SaleType.AUCTION;
+      } else if (this._nft.availableFrom) {
+        this.currentSaleType = SaleType.FIXED_PRICE;
+      } else {
+        this.currentSaleType = SaleType.NOT_FOR_SALE;
+      }
     }
   }
   get nft(): Nft|null|undefined {
@@ -53,11 +74,15 @@ export class NftSaleComponent {
   }
   @Output() wenOnClose = new EventEmitter<void>();
   public saleType = SaleType;
+  public disableFixedOption = false;
+  public currentSaleType = SaleType.NOT_FOR_SALE;
   public mediaType: 'video'|'image'|undefined;
   private _nft?: Nft|null;
 
   constructor(
     public deviceService: DeviceService,
+    private notification: NotificationService,
+    private nftApi: NftApi,
     private cd: ChangeDetectorRef,
     private fileApi: FileApi,
     private auth: AuthService
@@ -70,49 +95,7 @@ export class NftSaleComponent {
 
   public reset(): void {
     this.isOpen = false;
-    this.currentSaleType = SaleType.NOT_FOR_SALE;
     this.cd.markForCheck();
-  }
-
-  public getTitle(): any {
-    if (!this.nft) {
-      return '';
-    }
-    if (this.nft.type === CollectionType.CLASSIC) {
-      return this.nft.name;
-    } else if (this.nft.type === CollectionType.GENERATED) {
-      return $localize`Generated NFT`;
-    } else if (this.nft.type === CollectionType.SFT) {
-      return $localize`SFT`;
-    }
-  }
-
-  public discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation) {
-      return 1;
-    }
-
-    const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
-    let discount = 1;
-    if (xp > 0) {
-      for (const d of this.collection.discounts) {
-        if (d.xp < xp) {
-          discount = (1 - d.amount);
-        }
-      }
-    }
-
-    return discount;
-  }
-
-  public calc(amount: number, discount: number): number {
-    let finalPrice = Math.ceil(amount * discount);
-    if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
-      finalPrice = MIN_AMOUNT_TO_TRANSFER;
-    }
-
-    finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
-    return finalPrice;
   }
 
   public formatBest(amount: number|undefined): string {
@@ -122,25 +105,51 @@ export class NftSaleComponent {
 
     return UnitsHelper.formatBest(amount, 2);
   }
-  
+
   public get priceUnits(): Units[] {
     return PRICE_UNITS;
   }
 
   public disabledStartDate(startValue: Date): boolean {
-    // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().toDate().getTime()) {
       return true;
     }
 
     return false;
   }
 
-  public get targetAccess(): typeof NftSaleAccess {
-    return NftSaleAccess;
-  }
+  public async update(e: UpdateEvent): Promise<void> {
+    // If fixed we have to unset auction. Auction must not started yet.
+    if (e.type === SaleType.FIXED_PRICE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs())) {
+      e.auctionFloorPrice = null;
+      e.auctionFrom = null;
+      e.auctionLengthDays = null;
+    }  else if (e.type === SaleType.FIXED_PRICE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
+      // We can't change auction params anymore
+      delete e.auctionFloorPrice;
+      delete e.auctionFrom;
+      delete e.auctionLengthDays;
+    }
 
-  private getRawPrice(price: number, unit: Units): number {
-    return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+    // If AUCTION remove/add dates.
+    if (e.type === SaleType.AUCTION && this.nft?.availableFrom && !e.availableFrom) {
+      e.availableFrom = null;
+      e.price = null;
+    }
+
+    // TODO Or if it's coplete reset.
+    if (e.type === SaleType.NOT_FOR_SALE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs())) {
+      e = {
+        type: SaleType.NOT_FOR_SALE
+      };
+    }
+
+    e.nft = this.nft?.uid;
+    delete e.type;
+    await this.auth.sign(e, (sc, finish) => {
+      this.notification.processRequest(this.nftApi.setForSaleNft(sc), 'Submitted.', finish).subscribe(() => {
+        this.close();
+      });
+    });
   }
 }
