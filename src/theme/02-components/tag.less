@@ -1,14 +1,15 @@
 .ant-tag-checkable {
-  @apply h-10 rounded-3xl bg-white text-base font-semibold px-4 leading-10 mr-4;
+  @apply h-10 rounded-3xl bg-white text-base font-semibold px-4 mr-4 border-3;
+  line-height: 2.125rem;   // 2.5rem height - 2 * 3px border
 }
 
 .ant-tag-checkable:active,
 .ant-tag-checkable-checked {
-  @apply border-orange text-app-gray-text bg-white;
+  @apply border-tabs-selected bg-white text-tabs-selected;
 }
 
 .ant-tag-checkable:not(.ant-tag-checkable-checked):hover {
-  @apply text-blue-hover;
+  @apply text-tabs-text-on-hover;
 }
 
 .wen-status-tag {
