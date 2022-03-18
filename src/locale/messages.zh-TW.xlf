@@ -40,7 +40,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="translated">發現</target>
+        <target state="translated">探索</target>
       </trans-unit>
       <trans-unit id="2943097308103842625" datatype="html">
         <source>Create new </source>
@@ -124,7 +124,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">收藏</target>
+        <target state="translated">收藏品</target>
       </trans-unit>
       <trans-unit id="2127032578120864096" datatype="html">
         <source>My Profile</source>
@@ -140,7 +140,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">120,121</context>
         </context-group>
-        <target state="translated">購買還沒完成</target>
+        <target state="translated">購買尚未完成</target>
       </trans-unit>
       <trans-unit id="495479163700936540" datatype="html">
         <source>You have </source>
@@ -148,7 +148,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">122</context>
         </context-group>
-        <target state="translated">你有 </target>
+        <target state="translated">您有 </target>
       </trans-unit>
       <trans-unit id="8911752479560729370" datatype="html">
         <source> to finish your transaction</source>
@@ -156,7 +156,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">122,123</context>
         </context-group>
-        <target state="translated">結束你的交易</target>
+        <target state="translated"> 來結束您的交易</target>
       </trans-unit>
       <trans-unit id="4032615755751666229" datatype="html">
         <source>Open Checkout</source>
@@ -196,7 +196,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="translated"> 收藏 </target>
+        <target state="translated"> 收藏品 </target>
       </trans-unit>
       <trans-unit id="2329263413814244043" datatype="html">
         <source>Connect Metamask</source>
@@ -204,7 +204,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">29,30</context>
         </context-group>
-        <target state="translated">連接到 MetaMask</target>
+        <target state="translated">連接 MetaMask</target>
       </trans-unit>
       <trans-unit id="6007238223618571006" datatype="html">
         <source>Switch to English</source>
@@ -1977,7 +1977,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">105,106</context>
         </context-group>
-        <target state="needs-translation">This is the space that will list the award.</target>
+        <target state="translated">選出要列出獎勵的空間</target>
       </trans-unit>
       <trans-unit id="138719204610397619" datatype="html">
         <source>Reward Info</source>
@@ -2061,7 +2061,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">216,217</context>
         </context-group>
-        <target state="needs-translation">Mint an unique NTT badge.</target>
+        <target state="translated">鑄造一個獨特不可轉移的徽章</target>
       </trans-unit>
       <trans-unit id="3465775377424936239" datatype="html">
         <source> Mint Avatar </source>
@@ -2101,7 +2101,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">254,255</context>
         </context-group>
-        <target state="needs-translation">Guardian approval</target>
+        <target state="translated">管理員核准</target>
       </trans-unit>
       <trans-unit id="944911078022228647" datatype="html">
         <source>The award must be approved by the guardians of the space before it&apos;s active or distributed</source>
@@ -2109,7 +2109,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">260,261</context>
         </context-group>
-        <target state="needs-translation">The award must be approved by the guardians of the space before it's active or distributed</target>
+        <target state="translated">這個獎勵必須在空間管理員核准之後才能激活或分發</target>
       </trans-unit>
       <trans-unit id="3555708348385429459" datatype="html">
         <source>Discord Activity</source>
@@ -2133,7 +2133,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">285,286</context>
         </context-group>
-        <target state="needs-translation">Custom and more</target>
+        <target state="translated">客製或更多</target>
       </trans-unit>
       <trans-unit id="6370171716321321620" datatype="html">
         <source> Create award </source>
@@ -2297,7 +2297,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">58</context>
         </context-group>
-        <target state="needs-translation">Discount for members with XP</target>
+        <target state="translated">折扣給予成員擁有XP</target>
       </trans-unit>
       <trans-unit id="8944543613835375251" datatype="html">
         <source>Selected Badges</source>
@@ -2317,7 +2317,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.ts</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="translated">空間守護者限定</target>
+        <target state="translated">空間管理員限定</target>
       </trans-unit>
       <trans-unit id="5669382204872971170" datatype="html">
         <source>Members of Space Only</source>
@@ -2769,7 +2769,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">All times are reflected in user's timezone. For generated NFT and SFT the price is set here and cannot be changed on the NFT. Price for classic NFT collection is only indicative and can be changed on the NFT.</target>
+        <target state="translated">時間將根據使用者的時區顯示。對於生成型的NFT和SFT價格設定後無法對單個NFT修改，經典NFT收藏品價格是指標性的且可對每個NFT單獨設定。</target>
       </trans-unit>
       <trans-unit id="3751374312807441308" datatype="html">
         <source>Available On is required.</source>
@@ -2781,7 +2781,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Available On is required.</target>
+        <target state="translated">可使用開關必須打開</target>
       </trans-unit>
       <trans-unit id="8351398594800422168" datatype="html">
         <source>Available on</source>
@@ -2809,7 +2809,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">119</context>
         </context-group>
-        <target state="needs-translation"> This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol. </target>
+        <target state="translated"> 版稅 % 將應於NFT初始的鑄造和所有二級銷售上。由於 IOTA 協定的粉塵防禦機制，收取版稅的IOTA地址必須擁有最少1Mi的餘額。 </target>
       </trans-unit>
       <trans-unit id="966263415095000907" datatype="html">
         <source>Royalties - Percentage fee</source>
@@ -2817,7 +2817,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="needs-translation">Royalties - Percentage fee</target>
+        <target state="translated">版稅 - 百分比費用</target>
       </trans-unit>
       <trans-unit id="8794265583214431567" datatype="html">
         <source>Example: 10 % , 20 % , etc..</source>
@@ -2833,7 +2833,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">149</context>
         </context-group>
-        <target state="needs-translation"> Royalties goes to a different space </target>
+        <target state="translated"> 版稅收取到另外一個空間 </target>
       </trans-unit>
       <trans-unit id="9110283274770962928" datatype="html">
         <source>Royalties goes to a different space</source>
@@ -2841,7 +2841,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="needs-translation">Royalties goes to a different space</target>
+        <target state="translated">版稅收取到另外一個空間</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -2857,7 +2857,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">181,182</context>
         </context-group>
-        <target state="needs-translation">Links will be included on the NFT detail. Use account usernames for Twitter and Discord (name#id).</target>
+        <target state="translated">連結將被包含在NFT的訊息上。使用Twitter和Discord (name#id) 的帳戶使用者名稱。</target>
       </trans-unit>
       <trans-unit id="7814705431910246103" datatype="html">
         <source>Invalid URL.</source>
@@ -2945,7 +2945,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">364,365</context>
         </context-group>
-        <target state="needs-translation">This is the space that will be minting the NFT collection. Only spaces with verified wallets show up in the dropdown list. Please make sure you choose the correct space because all funds from the NFT sale will go to this space's verified wallet.</target>
+        <target state="translated">這空間將會鑄造NFT收藏品，只有驗證過錢包的空間才會顯示在下拉選單中。請確保你選擇正確的空間因為所有NFT銷售得到的資金將轉移至這個空間所驗證的錢包。</target>
       </trans-unit>
       <trans-unit id="8631063508569344802" datatype="html">
         <source>Collection Type</source>
@@ -3029,7 +3029,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">489,490</context>
         </context-group>
-        <target state="needs-translation">Category is used when filtering content.</target>
+        <target state="translated">類別用於過濾內容</target>
       </trans-unit>
       <trans-unit id="3290327607648658784" datatype="html">
         <source>Category.</source>
@@ -3053,7 +3053,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">520,521</context>
         </context-group>
-        <target state="needs-translation">Who has access to a given collection.</target>
+        <target state="translated">誰有權限訪問指定的收藏品</target>
       </trans-unit>
       <trans-unit id="7091934018782794031" datatype="html">
         <source>Open Sale</source>
@@ -3069,7 +3069,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">536,537</context>
         </context-group>
-        <target state="needs-translation">Everyone has access to this collection.</target>
+        <target state="translated">所有人都有權限訪問這個收藏品</target>
       </trans-unit>
       <trans-unit id="7084997937034694532" datatype="html">
         <source>Space Guardians Only</source>
@@ -3077,7 +3077,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">541,542</context>
         </context-group>
-        <target state="translated">空間守護者限定</target>
+        <target state="translated">空間管理員限定</target>
       </trans-unit>
       <trans-unit id="5372147367186593242" datatype="html">
         <source>Only Space Guardians can access.</source>
@@ -3085,7 +3085,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">546,547</context>
         </context-group>
-        <target state="translated">只限空間守護者訪問</target>
+        <target state="translated">只限空間管理員訪問</target>
       </trans-unit>
       <trans-unit id="8718332458225136926" datatype="html">
         <source>Space Members Only</source>
@@ -3125,7 +3125,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">573,574</context>
         </context-group>
-        <target state="needs-translation">At least one NFT from Collections</target>
+        <target state="translated">收藏品中至少一個NFT</target>
       </trans-unit>
       <trans-unit id="8127062769761371047" datatype="html">
         <source>Collection Options</source>
@@ -3489,7 +3489,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Get started with the Soonaverse</target>
+        <target state="translated">開始使用 Soonaverse</target>
       </trans-unit>
       <trans-unit id="7733507556239346134" datatype="html">
         <source> Not sure where to start? Find featured spaces and NFT Collections below. </source>
@@ -3561,7 +3561,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">143,144</context>
         </context-group>
-        <target state="needs-translation">StepArticle image</target>
+        <target state="translated">StepArticle圖像</target>
       </trans-unit>
       <trans-unit id="7719648407147871439" datatype="html">
         <source> Voting is essential and it needs to be on-chain and FREE. </source>
@@ -3577,7 +3577,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">165,167</context>
         </context-group>
-        <target state="needs-translation"> By building on the IOTA network we have enshrined a crucial feature of proper DAO management. Feeless, secure voting. Read more about this in our manifesto. </target>
+        <target state="translated"> 通過建立在IOTA網路，我們實現DAO治理的關鍵特徵：無手續費、安全的投票。 請在我們的宣言中閱讀更多資訊。 </target>
       </trans-unit>
       <trans-unit id="8710865889166765986" datatype="html">
         <source> Go there now </source>
@@ -3585,7 +3585,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">177</context>
         </context-group>
-        <target state="needs-translation"> Go there now </target>
+        <target state="translated"> 馬上開始 </target>
       </trans-unit>
       <trans-unit id="7637119562549860678" datatype="html">
         <source>Want to learn more about SoonLabs?</source>
@@ -3733,7 +3733,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
           <context context-type="linenumber">7</context>
         </context-group>
-        <target state="needs-translation">Spaces, awards, proposals or members...</target>
+        <target state="translated">空間、獎勵、提案或成員...</target>
       </trans-unit>
       <trans-unit id="532177016092265275" datatype="html">
         <source>NFT&apos;s</source>
@@ -3861,7 +3861,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/spaces/member-spaces.component.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
-        <target state="needs-translation">(Join space with alliance)</target>
+        <target state="translated">(加入空間聯盟)</target>
       </trans-unit>
       <trans-unit id="6849706234547031644" datatype="html">
         <source>Some files have not been uploaded</source>
@@ -3937,7 +3937,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="translated">當你下面的生成結束請上傳回來</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -3953,7 +3953,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">191,192</context>
         </context-group>
-        <target state="needs-translation">To create multiple classic NFTs, you have to use the web version of Soonaverse.</target>
+        <target state="translated">您需要用網頁版的Soonaverse來生成多個經典型的NFT。</target>
       </trans-unit>
       <trans-unit id="3413004253239957216" datatype="html">
         <source>Single</source>
@@ -4033,7 +4033,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">119,120</context>
         </context-group>
-        <target state="needs-translation">Property name (E.g. Character)</target>
+        <target state="translated">屬性名稱(E.g. Character)</target>
       </trans-unit>
       <trans-unit id="4318027474466108554" datatype="html">
         <source>Value (E.g. Soonanaut)</source>
@@ -4041,7 +4041,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">120,121</context>
         </context-group>
-        <target state="needs-translation">Value (E.g. Soonanaut)</target>
+        <target state="translated">數值(E.g. Soonanaut)</target>
       </trans-unit>
       <trans-unit id="7658667710727308950" datatype="html">
         <source>Property name</source>
@@ -4189,7 +4189,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">334,335</context>
         </context-group>
-        <target state="needs-translation">Select one of your collections to display this NFT.</target>
+        <target state="translated">從您的收藏品中選擇一個來顯示此NFT。</target>
       </trans-unit>
       <trans-unit id="5196839809055021648" datatype="html">
         <source> Create NFT </source>
@@ -4245,7 +4245,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">125</context>
         </context-group>
-        <target state="needs-translation"> Sale hasn't started yet </target>
+        <target state="translated"> 販售尚未開始 </target>
       </trans-unit>
       <trans-unit id="4475033841909436676" datatype="html">
         <source> Collection pending approval </source>
@@ -4261,7 +4261,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">141</context>
         </context-group>
-        <target state="needs-translation"> Collection rejected! </target>
+        <target state="translated"> 拒絕此收藏品！ </target>
       </trans-unit>
       <trans-unit id="4415762310823398581" datatype="html">
         <source> Buy now </source>
@@ -4277,7 +4277,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">184</context>
         </context-group>
-        <target state="needs-translation">Copy to clipboard</target>
+        <target state="translated">複製到剪貼簿</target>
       </trans-unit>
       <trans-unit id="7760222907189648209" datatype="html">
         <source>On-Chain Record</source>
@@ -4349,7 +4349,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">282,283</context>
         </context-group>
-        <target state="needs-translation">by</target>
+        <target state="translated">透過</target>
       </trans-unit>
       <trans-unit id="7569328933686823220" datatype="html">
         <source>Check out nft</source>
@@ -4373,7 +4373,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="needs-translation">Commencing milestone.</target>
+        <target state="translated">開啟里程碑</target>
       </trans-unit>
       <trans-unit id="2793713233329713998" datatype="html">
         <source>Start milestone.</source>
@@ -4405,7 +4405,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">125,126</context>
         </context-group>
-        <target state="needs-translation">Question Title is required.</target>
+        <target state="translated">提問標題是必須的</target>
       </trans-unit>
       <trans-unit id="8908935743208562892" datatype="html">
         <source>Answer Text is required.</source>
@@ -4413,7 +4413,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">169,170</context>
         </context-group>
-        <target state="needs-translation">Answer Text is required.</target>
+        <target state="translated">選項內容是必須的</target>
       </trans-unit>
       <trans-unit id="8639613122350951248" datatype="html">
         <source>Add Choice</source>
@@ -4429,7 +4429,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">287,288</context>
         </context-group>
-        <target state="translated">所有守護者</target>
+        <target state="translated">所有管理員</target>
       </trans-unit>
       <trans-unit id="6783237823517394918" datatype="html">
         <source>All Members</source>
@@ -4473,7 +4473,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">340,341</context>
         </context-group>
-        <target state="needs-translation">XP Reputation - Space</target>
+        <target state="translated">XP 聲望值 - 空間</target>
       </trans-unit>
       <trans-unit id="1171519555154717304" datatype="html">
         <source>XP Reputation - Space + Connection</source>
@@ -4481,7 +4481,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">355,356</context>
         </context-group>
-        <target state="needs-translation">XP Reputation - Space + Connection</target>
+        <target state="translated">XP 聲望值 - 空間 + 連結</target>
       </trans-unit>
       <trans-unit id="5394345820497679692" datatype="html">
         <source>XP Reputation - Selected Badges</source>
@@ -4581,7 +4581,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Pending Guardian Approval</target>
+        <target state="translated">等待管理員批准</target>
       </trans-unit>
       <trans-unit id="3930140803195877687" datatype="html">
         <source> This proposal has not been approved by any Guardian yet. </source>
@@ -4589,7 +4589,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/overview/proposal-vote-action/proposal-vote-action.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="needs-translation"> This proposal has not been approved by any Guardian yet. </target>
+        <target state="translated"> 這個提案尚未被任何管理員批准。 </target>
       </trans-unit>
       <trans-unit id="5848348023107769657" datatype="html">
         <source>Weight</source>
@@ -4597,7 +4597,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation">Weight</target>
+        <target state="translated">權重</target>
       </trans-unit>
       <trans-unit id="9176290966106581322" datatype="html">
         <source>Pending Vote</source>
@@ -4661,7 +4661,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Commence Date</target>
+        <target state="translated">啟始日期</target>
       </trans-unit>
       <trans-unit id="3604386807230411192" datatype="html">
         <source>Start Date</source>
@@ -4685,7 +4685,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">60</context>
         </context-group>
-        <target state="needs-translation">Total Weight</target>
+        <target state="translated">總權重</target>
       </trans-unit>
       <trans-unit id="6500371484241138154" datatype="html">
         <source>Total weight within this proposal for all participants.</source>
@@ -4693,7 +4693,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.html</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="needs-translation">Total weight within this proposal for all participants.</target>
+        <target state="translated">本提案中所有參與者的總權重。</target>
       </trans-unit>
       <trans-unit id="8311924537121416342" datatype="html">
         <source>Export to JSON</source>
@@ -4833,7 +4833,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="needs-translation">joined space on</target>
+        <target state="translated">加入空間於</target>
       </trans-unit>
       <trans-unit id="1635061050904318152" datatype="html">
         <source>Remove Guardian</source>
@@ -4841,7 +4841,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">78,79</context>
         </context-group>
-        <target state="needs-translation">Remove Guardian</target>
+        <target state="translated">移除管理員</target>
       </trans-unit>
       <trans-unit id="6533502590321723240" datatype="html">
         <source>Make Guardian</source>
@@ -4849,7 +4849,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
           <context context-type="linenumber">81,82</context>
         </context-group>
-        <target state="needs-translation">Make Guardian</target>
+        <target state="translated">設置管理員</target>
       </trans-unit>
       <trans-unit id="8187147813334227156" datatype="html">
         <source>Accept Member</source>
@@ -4905,7 +4905,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">32,33</context>
         </context-group>
-        <target state="needs-translation"> No Active Awards </target>
+        <target state="translated"> 沒有正在進行中的獎勵 </target>
       </trans-unit>
       <trans-unit id="1958939778635956613" datatype="html">
         <source>proposal</source>
@@ -4922,8 +4922,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation">Connections between spaces enables members of one space to recognize members of another space's experience
-        points. Established connection turns into alliances.</target>
+        <target state="translated">空間之間的連結使一個空間的成員能夠識別其他空間的聲望值。 建立聯繫來組成聯盟。</target>
       </trans-unit>
       <trans-unit id="8832680940728722211" datatype="html">
         <source>Show All</source>
@@ -4939,7 +4938,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="needs-translation"> Connected spaces that you recognize </target>
+        <target state="translated"> 您已連結且識別的空間 </target>
       </trans-unit>
       <trans-unit id="6841356844516749994" datatype="html">
         <source> New connection </source>
@@ -5015,7 +5014,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">173</context>
         </context-group>
-        <target state="needs-translation">Form a connection</target>
+        <target state="translated">建立連結</target>
       </trans-unit>
       <trans-unit id="3768927257183755959" datatype="html">
         <source>Save</source>
@@ -5039,7 +5038,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">183,184</context>
         </context-group>
-        <target state="needs-translation">Terminate alliance</target>
+        <target state="translated">終止聯盟</target>
       </trans-unit>
       <trans-unit id="4909940849603702774" datatype="html">
         <source> alliance</source>
@@ -5047,7 +5046,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">164,165</context>
         </context-group>
-        <target state="needs-translation"> alliance</target>
+        <target state="translated"> 聯盟</target>
       </trans-unit>
       <trans-unit id="6239646233811361363" datatype="html">
         <source>Space&apos;s Wallet Address</source>
