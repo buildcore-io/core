@@ -315,9 +315,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public getShareUrl(nft?: Nft | null): string {
-    const text = $localize`Check out nft`;
-    const url: string = (nft?.wenUrlShort || nft?.wenUrl || window.location.href);
-    return 'http://twitter.com/share?text=' + text + '&url=' + url + '&hashtags=soonaverse';
+    return nft?.wenUrlShort || nft?.wenUrl || window.location.href;
   }
 
   private notFound(): void {

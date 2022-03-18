@@ -13,12 +13,8 @@
           <context context-type="linenumber">79,80</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
-          <context context-type="linenumber">43</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
-          <context context-type="linenumber">18</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
@@ -210,11 +206,23 @@
         </context-group>
         <target state="translated">Metamask verbinden</target>
       </trans-unit>
+      <trans-unit id="6007238223618571006" datatype="html">
+        <source>Switch to English</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <target state="translated">Auf Englisch umstellen</target>
+      </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
         <target state="translated">Abmelden</target>
       </trans-unit>
@@ -222,7 +230,7 @@
         <source>Powered by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">59,60</context>
         </context-group>
         <target state="translated">Unterstützt von</target>
       </trans-unit>
@@ -246,7 +254,7 @@
         <source>See Docs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
-          <context context-type="linenumber">16</context>
+          <context context-type="linenumber">19</context>
         </context-group>
         <target state="translated">Dokumentation ansehen</target>
       </trans-unit>
@@ -3924,13 +3932,13 @@
         </context-group>
         <target state="translated">Bestehendes CSV hochladen</target>
       </trans-unit>
-      <trans-unit id="7608437179935502715" datatype="html">
-        <source>Upload back once you generate below</source>
+      <trans-unit id="189367192793231292" datatype="html">
+        <source>Upload back once you generate bellow</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate below</target>
+        <target state="translated">Erneut hochladen sobald du unten generiert hast</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
