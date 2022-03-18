@@ -1,4 +1,4 @@
-import { IotaAddress, Timestamp } from '../../interfaces/models/base';
+import { Timestamp } from '../../interfaces/models/base';
 import { BaseRecord, EthAddress } from "./base";
 import { CollectionType } from './collection';
 
@@ -13,17 +13,28 @@ export interface PropStats {
   }
 }
 
+export enum NftAccess {
+  OPEN = 0,
+  MEMBERS = 1
+}
+
+
 export interface Nft extends BaseRecord {
   name: string;
   description: string;
   collection: EthAddress;
   owner?: EthAddress;
-  ownerAddress?: IotaAddress;
   media: string;
   ipfsMedia: string;
   ipfsMetadata: string;
+  saleAccess?: NftAccess,
+  saleAccessMembers?: string[],
   availableFrom: Timestamp;
+  auctionFrom?: Timestamp;
   price: number;
+  availablePrice?: number;
+  auctionFloorPrice?: number;
+  auctionLengthDays?: number;
   type: CollectionType;
   space: string;
   url: string;

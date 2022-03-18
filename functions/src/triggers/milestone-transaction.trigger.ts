@@ -354,7 +354,13 @@ class ProcessingService {
             lockedBy: null,
             hidden: false,
             soldOn: admin.firestore.Timestamp.now(),
-            availableFrom: null
+            availableFrom: null,
+            availablePrice: null,
+            auctionFrom: null,
+            auctionFloorPrice: null,
+            auctionLengthDays: null,
+            saleAccess: null,
+            saleAccessMembers: [],
           },
           action: 'update'
         });

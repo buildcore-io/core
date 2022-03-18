@@ -3,7 +3,7 @@ import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
-import { createBatchNft, createNft } from './controls/nft.control';
+import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control';
 import { orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
@@ -53,6 +53,7 @@ exports[WEN_FUNC.rejectCollection] = rejectCollection;
 
 // NFT Functions
 exports[WEN_FUNC.cNft] = createNft;
+exports[WEN_FUNC.setForSaleNft] = setForSaleNft;
 exports[WEN_FUNC.cBatchNft] = createBatchNft;
 
 // Order functions

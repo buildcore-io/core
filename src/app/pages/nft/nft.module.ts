@@ -7,6 +7,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
+import { NftSaleModule } from '@components/nft/components/nft-sale/nft-sale.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
@@ -16,6 +17,7 @@ import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -84,7 +86,10 @@ import { DataService } from './services/data.service';
     NzTableModule,
     TruncateModule,
     NzModalModule,
-    ShareModule
+    ShareModule,
+    NftSaleModule,
+    NgApexchartsModule,
+    CollapseModule
   ],
   providers: [
     DataService

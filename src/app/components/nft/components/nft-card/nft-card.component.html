@@ -39,7 +39,7 @@
                     <div class="flex-grow w-0">
                       <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
                       <div class="text-sm font-medium truncate">
-                        {{formatBest(applyDiscount(nft?.price))}}
+                        {{formatBest(applyDiscount(nft?.availablePrice || nft?.price))}}
                       </div>
                   </div>
 

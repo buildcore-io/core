@@ -3,11 +3,12 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_AMOUNT_TO_TRANSFER, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { Member } from '../../interfaces/models/member';
+import { Nft, NftAccess } from '../../interfaces/models/nft';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
@@ -15,7 +16,7 @@ import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
-import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionType } from './../../interfaces/models/collection';
 
 function defaultJoiUpdateCreateSchema(): any {
@@ -159,3 +160,102 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
   // Return member.
   return <Member>docNft.data();
 }
+
+function makeAvailableForSaleJoi(): any {
+  return merge(getDefaultParams(), {
+    nft: CommonJoi.uidCheck().required(),
+    price: Joi.number().min(MIN_AMOUNT_TO_TRANSFER).max(MAX_IOTA_AMOUNT),
+    availableFrom: Joi.date().greater(dayjs().add(-600000, 'ms').toDate()),
+    auctionFrom: Joi.bool(),
+    auctionFloorPrice: Joi.number().min(MIN_AMOUNT_TO_TRANSFER).max(MAX_IOTA_AMOUNT),
+    auctionLengthDays: Joi.number().allow(1, 2, 3),
+    access: Joi.number().equal(NftAccess.OPEN, NftAccess.MEMBERS),
+    accessMembers: Joi.when('access', {
+      is: Joi.exist().valid(NftAccess.MEMBERS),
+      then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1),
+    })
+  });
+}
+
+export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
+  minInstances: scale(WEN_FUNC.setForSaleNft),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Nft> => {
+  appCheck(WEN_FUNC.setForSaleNft, context);
+  // Validate auth details before we continue
+  const params: DecodedToken = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const nft: string = params.body.nft.toLowerCase();
+  const schema: ObjectSchema<Member> = Joi.object(makeAvailableForSaleJoi());
+  assertValidation(schema.validate(params.body));
+
+  const docMember: admin.firestore.DocumentSnapshot = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
+  if (!docMember.exists) {
+    throw throwInvalidArgument(WenError.member_does_not_exists);
+  }
+
+  const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(nft);
+  let docNft: admin.firestore.DocumentSnapshot = await refNft.get();
+  if (!docNft.exists) {
+    throw throwInvalidArgument(WenError.nft_does_not_exists);
+  }
+  const nftRecord: Nft = <Nft>docNft.data();
+
+  if (nftRecord.placeholderNft) {
+    throw throwInvalidArgument(WenError.nft_placeholder_cant_be_updated);
+  }
+
+  if (nftRecord.owner !== owner) {
+    throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
+  }
+
+  if (!docMember.data()?.validatedAddress) {
+    throw throwInvalidArgument(WenError.member_must_have_validated_address);
+  }
+
+  if (params.body.availableFrom) {
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+  }
+
+  if (params.body.auctionFrom) {
+    params.body.auctionFrom = dateToTimestamp(params.body.auctionFrom);
+  }
+
+  // Validate if auction already in progress.
+  if (
+    params.body.auctionFrom && nftRecord.auctionFrom &&
+    dayjs(nftRecord.auctionFrom.toDate()).isBefore(dayjs())
+  ) {
+    throw throwInvalidArgument(WenError.nft_auction_already_in_progress);
+  }
+
+  const update: any = {
+    saleAccess: params.body.access || NftAccess.OPEN,
+    saleAccessMembers: params.body.accessMembers || []
+  };
+
+  if (params.body.auctionFrom) {
+    update.auctionFrom = params.body.auctionFrom;
+    update.auctionFloorPrice = parseInt(params.body.auctionFloorPrice);
+    update.auctionLengthDays = parseInt(params.body.auctionLengthDays);
+  } else {
+    update.auctionFrom = null;
+    update.auctionFloorPrice = null;
+    update.auctionLengthDays = null;
+  }
+
+  if (params.body.availableFrom) {
+    update.availableFrom = params.body.availableFrom;
+    update.availablePrice = parseInt(params.body.price);
+  } else {
+    update.availableFrom = null;
+    update.availablePrice = null;
+  }
+
+  await admin.firestore().collection(COL.NFT).doc(nft).update(update);
+
+  // Load latest
+  docNft = await refNft.get();
+
+  // Return member.
+  return <Nft>docNft.data();
+});

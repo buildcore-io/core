@@ -247,7 +247,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation) {
+    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || this.nft?.owner) {
       return 1;
     }
 

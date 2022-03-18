@@ -72,5 +72,9 @@ export const WenError = {
   collection_is_already_rejected: { code: 2063, key: 'Collection is already rejected.' },
   collection_is_past_available_date: { code: 2064, key: 'Collection available from date is in the past already.' },
   nft_date_must_be_after_or_same_with_collection_available_from_date: { code: 2065, key: 'Collection available from date is after NFT available from date.' },
+  you_must_be_the_owner_of_nft: { code: 2066, key: 'You must be the owner of NFT.' },
+  nft_auction_already_in_progress: { code: 2067, key: 'NFT already have auction in progress.' },
+  nft_placeholder_cant_be_updated: { code: 2068, key: 'Can\'t update placeholder NFT.' },
+  you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!'}
 }
 

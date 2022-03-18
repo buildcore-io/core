@@ -31,6 +31,10 @@ export class NftApi extends BaseApi<Nft> {
     return this.request(WEN_FUNC.cBatchNft, req);
   }
 
+  public setForSaleNft(req: WenRequest): Observable<Nft|undefined> {
+    return this.request(WEN_FUNC.setForSaleNft, req);
+  }
+
   public successfullOrders(nftId: string): Observable<SuccesfullOrdersWithFullHistory[]> {
     return this.afs.collection<SuccesfullOrdersWithFullHistory>(
       COL.TRANSACTION,
