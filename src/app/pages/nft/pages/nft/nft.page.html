@@ -17,7 +17,7 @@
                     class="object-cover w-full h-full"
                     />
 
-                    <video controls autoplay class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                    <video controls autoplay loop class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
                       <source [src]="(data.nft$ | async)?.media" type="video/mp4">
                       Your browser does not support HTML video.
                     </video>
@@ -257,7 +257,7 @@
                     class="object-cover w-full h-full"
                     />
 
-                    <video controls autoplay class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
+                    <video controls autoplay loop class="object-cover w-full h-full" *ngIf="mediaType === 'video'">
                       <source [src]="(data.nft$ | async)?.media" type="video/mp4">
                       Your browser does not support HTML video.
                     </video>
@@ -447,7 +447,7 @@
 >
     <ng-template #prevewNftModalContent>
         <img *ngIf="mediaType === 'image'" [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
-        <video controls autoplay class="w-full rounded-3xl" *ngIf="mediaType === 'video'">
+        <video controls autoplay loop class="w-full rounded-3xl" *ngIf="mediaType === 'video'">
           <source [src]="(data.nft$ | async)?.media" type="video/mp4">
           Your browser does not support HTML video.
         </video>
