@@ -8,6 +8,7 @@ import { NftCardModule } from '@components/nft/components/nft-card/nft-card.modu
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TimelineNftModule } from '@components/timeline-nft/timeline-nft.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
@@ -82,7 +83,8 @@ import { DataService } from './services/data.service';
     CollapseModule,
     NzTableModule,
     TruncateModule,
-    NzModalModule
+    NzModalModule,
+    ShareModule
   ],
   providers: [
     DataService
