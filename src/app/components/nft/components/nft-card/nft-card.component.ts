@@ -56,6 +56,7 @@ export class NftCardComponent {
 
   public mediaType: 'video'|'image'|undefined;
   public isCheckoutOpen = false;
+  public isBidOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   private memberApiSubscription?: Subscription;
@@ -78,7 +79,9 @@ export class NftCardComponent {
       this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
       return;
     }
-    this.isCheckoutOpen = true;
+    // @TODO: Change back
+    // this.isCheckoutOpen = true;
+    this.isBidOpen = true;
   }
 
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {
