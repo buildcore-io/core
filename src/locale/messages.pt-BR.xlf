@@ -216,7 +216,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
           <context context-type="linenumber">15</context>
         </context-group>
-        <target state="needs-translation">Switch to English</target>
+        <target state="translated">Mudar para inglês</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -2274,7 +2274,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="needs-translation">Resources</target>
+        <target state="translated">Recursos</target>
       </trans-unit>
       <trans-unit id="7768495123558312657" datatype="html">
         <source>Additional Details</source>
@@ -2282,7 +2282,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">43</context>
         </context-group>
-        <target state="needs-translation">Additional Details</target>
+        <target state="translated">Detalhes Adicionais</target>
       </trans-unit>
       <trans-unit id="8527416462570202128" datatype="html">
         <source> One NFT per member </source>
@@ -2318,7 +2318,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.ts</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="needs-translation">Guardians of Space Only</target>
+        <target state="translated">Apenas Guardiões do Espaço</target>
       </trans-unit>
       <trans-unit id="5669382204872971170" datatype="html">
         <source>Members of Space Only</source>
@@ -2326,7 +2326,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.ts</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">Members of Space Only</target>
+        <target state="translated">Apenas para membros do espaço</target>
       </trans-unit>
       <trans-unit id="4826423340795886750" datatype="html">
         <source>Members With Badge Only</source>
@@ -2334,7 +2334,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.ts</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="needs-translation">Members With Badge Only</target>
+        <target state="translated">Somente Membros do Espaço com Emblema</target>
       </trans-unit>
       <trans-unit id="3720278406302571832" datatype="html">
         <source>Check out collection</source>
@@ -2342,7 +2342,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">Check out collection</target>
+        <target state="translated">Confira a Coleção</target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
@@ -2362,7 +2362,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">136</context>
         </context-group>
-        <target state="needs-translation"> Publish Collection </target>
+        <target state="translated"> Publicar a Coleção </target>
       </trans-unit>
       <trans-unit id="3651331290969818610" datatype="html">
         <source> Reject Collection </source>
@@ -2386,7 +2386,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">146</context>
         </context-group>
-        <target state="needs-translation"> Cancel Collection </target>
+        <target state="translated"> Cancelar Coleção </target>
       </trans-unit>
       <trans-unit id="3509146093668862263" datatype="html">
         <source> Edit Collection </source>
@@ -2406,7 +2406,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">93,94</context>
         </context-group>
-        <target state="needs-translation">Sale Starts </target>
+        <target state="translated">Início da Venda </target>
       </trans-unit>
       <trans-unit id="23518581647153834" datatype="html">
         <source>from</source>
@@ -2414,7 +2414,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">94,95</context>
         </context-group>
-        <target state="needs-translation">from</target>
+        <target state="translated">de</target>
       </trans-unit>
       <trans-unit id="6162691442834560200" datatype="html">
         <source>Items</source>
@@ -3466,7 +3466,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation">Join Us</target>
+        <target state="translated">Junte-se a nós</target>
       </trans-unit>
       <trans-unit id="7563359411248828587" datatype="html">
         <source> Marketplace </source>
@@ -3482,7 +3482,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation"> See Docs </target>
+        <target state="translated"> Ver Documentação </target>
       </trans-unit>
       <trans-unit id="3435164391616018739" datatype="html">
         <source>Get started with the Soonaverse</source>
@@ -3654,7 +3654,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">33,31</context>
         </context-group>
-        <target state="needs-translation">Create your community</target>
+        <target state="translated">Criar sua comunidade</target>
       </trans-unit>
       <trans-unit id="5261937616330500097" datatype="html">
         <source>Feeless, secure, on-chain voting, and “one click” creation tools.</source>
@@ -3662,7 +3662,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="needs-translation">Feeless, secure, on-chain voting, and “one click” creation tools.</target>
+        <target state="translated">Sem taxas, seguro, votação em cadeia e ferramentas de criação de "um clique".</target>
       </trans-unit>
       <trans-unit id="438421362972050396" datatype="html">
         <source>Build reputation and rewards</source>
@@ -3670,7 +3670,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">38,36</context>
         </context-group>
-        <target state="needs-translation">Build reputation and rewards</target>
+        <target state="translated">Construa reputação e recompensas</target>
       </trans-unit>
       <trans-unit id="5040826443870911881" datatype="html">
         <source>Create incentives and build reputation, trust and community engagement.</source>
@@ -3678,7 +3678,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <target state="needs-translation">Create incentives and build reputation, trust and community engagement.</target>
+        <target state="translated">Crie incentivos e contrua reputação, confiança e envolvimento da comunidade.</target>
       </trans-unit>
       <trans-unit id="1975112845913426280" datatype="html">
         <source>Manage, Maintain, Grow</source>
@@ -3686,7 +3686,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">43,41</context>
         </context-group>
-        <target state="needs-translation">Manage, Maintain, Grow</target>
+        <target state="translated">Gerencie, Mantenha, Cresça</target>
       </trans-unit>
       <trans-unit id="7098308974499322879" datatype="html">
         <source>Governance, voting, for both public and private communities.</source>
@@ -3694,7 +3694,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation">Governance, voting, for both public and private communities.</target>
+        <target state="translated">Governaça, votação, tanto em comunidades públicas e privadas.</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
@@ -3938,7 +3938,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="translated">Enviar novamente após você gerar abaixo</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -4358,7 +4358,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.ts</context>
           <context context-type="linenumber">245</context>
         </context-group>
-        <target state="needs-translation">Check out nft</target>
+        <target state="translated">Confira nft</target>
       </trans-unit>
       <trans-unit id="7258226626453998656" datatype="html">
         <source>Start Date is required.</source>
