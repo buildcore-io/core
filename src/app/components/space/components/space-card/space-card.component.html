@@ -7,7 +7,8 @@
         class="object-cover w-full h-full"
       />
 
-      <div class="absolute top-3 right-3 bg-tag-default px-3 py-1.5 font-medium z-10 rounded-lg" i18n>Joined</div>
+      <div *ngIf="(auth.member$ | async)?.spaces?.[space.uid]"
+        class="absolute top-3 right-3 bg-tag-default px-3 py-1.5 font-medium z-10 rounded-lg" i18n>Joined</div>
     </div>
 
     <div class="relative flex flex-col w-full p-5 lg:p-4 lg:h-44">

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FileApi } from '@api/file.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { Space } from "functions/interfaces/models";
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
@@ -13,6 +14,10 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 export class SpaceCardComponent {
   @Input() public space?: Space;
   public path = ROUTER_UTILS.config.space.root;
+
+  constructor(
+    public auth: AuthService
+  ) {}
 
   public get avatarUrl(): string|undefined {
     return this.space?.avatarUrl ? FileApi.getUrl(this.space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
