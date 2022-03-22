@@ -15,6 +15,24 @@
     </a>
 </div>
 
+<nz-card class="mt-4">
+  <div class="flex items-center">
+    <wen-icon-tag class="text-app-gray-400"></wen-icon-tag>
+    <div class="ml-2.5 font-medium">{{ getCategory((data.collection$ | async)?.category) }}</div>
+  </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="The badge you need" class="mt-4">
+  <!-- TODO: make dynamic -->
+  <nz-avatar
+    [nzSrc]="badge | ipfsBadge:filesizes.small"
+    [nzSize]="64"
+    class="bg-white border-gray-400"
+    nzShape="circle"
+  >
+  </nz-avatar>
+</nz-card>
+
 <nz-card i18n-nzTitle nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
     <div class="space-y-5">
         <a *ngIf="(data.collection$ | async)?.url" target="_new"
