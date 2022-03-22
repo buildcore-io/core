@@ -216,7 +216,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
           <context context-type="linenumber">15</context>
         </context-group>
-        <target state="needs-translation">Switch to English</target>
+        <target state="translated">Switch to English</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -2275,7 +2275,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
-        <target state="needs-translation">Resources</target>
+        <target state="translated">Risorse</target>
       </trans-unit>
       <trans-unit id="7768495123558312657" datatype="html">
         <source>Additional Details</source>
@@ -2283,7 +2283,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">43</context>
         </context-group>
-        <target state="needs-translation">Additional Details</target>
+        <target state="translated">Ulteriori dettagli</target>
       </trans-unit>
       <trans-unit id="8527416462570202128" datatype="html">
         <source> One NFT per member </source>
