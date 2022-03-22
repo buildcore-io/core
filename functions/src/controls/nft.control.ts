@@ -237,10 +237,12 @@ export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
     update.auctionFrom = params.body.auctionFrom;
     update.auctionFloorPrice = parseInt(params.body.auctionFloorPrice);
     update.auctionLengthDays = parseInt(params.body.auctionLengthDays);
+    update.auctionHighestBid = 0;
   } else {
     update.auctionFrom = null;
     update.auctionFloorPrice = null;
     update.auctionLengthDays = null;
+    update.auctionHighestBid = null;
   }
 
   if (params.body.availableFrom) {

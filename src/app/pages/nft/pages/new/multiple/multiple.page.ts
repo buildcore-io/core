@@ -10,6 +10,7 @@ import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
+import { environment } from '@env/environment';
 import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -105,7 +106,7 @@ export class MultiplePage implements OnInit {
         }
 
         const d = dayjs(value);
-        return dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime() < d.toDate().getTime();
+        return dayjs().add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms').toDate().getTime() < d.toDate().getTime();
       },
       value: () => this.availableFrom
     },

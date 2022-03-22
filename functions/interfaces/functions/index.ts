@@ -43,6 +43,7 @@ export const enum WEN_FUNC {
 
   // ORDER functions.
   orderNft = "orderNft",
+  openBid = "openBid",
   validateAddress = "validateAddress",
 }
 

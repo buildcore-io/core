@@ -4,7 +4,7 @@ import { addOwner, approveAward, approveParticipant, createAward, participate, r
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
 import { createMember, updateMember } from './controls/member.control';
 import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control';
-import { orderNft, validateAddress } from './controls/order.control';
+import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, voidExpiredOrders } from "./cron";
@@ -58,6 +58,7 @@ exports[WEN_FUNC.cBatchNft] = createBatchNft;
 
 // Order functions
 exports[WEN_FUNC.orderNft] = orderNft;
+exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks

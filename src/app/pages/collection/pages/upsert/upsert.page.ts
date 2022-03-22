@@ -21,6 +21,7 @@ import { NotificationService } from '@core/services/notification';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
+import { environment } from '@env/environment';
 import {
   DISCORD_REGEXP,
   MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT,
@@ -430,7 +431,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
-    if (startValue.getTime() < dayjs().add(NftAvailableFromDateMin.value, 'ms').toDate().getTime()) {
+    if (startValue.getTime() < dayjs().add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms').toDate().getTime()) {
       return true;
     }
 
