@@ -166,7 +166,7 @@ function makeAvailableForSaleJoi(): any {
     nft: CommonJoi.uidCheck().required(),
     price: Joi.number().min(MIN_AMOUNT_TO_TRANSFER).max(MAX_IOTA_AMOUNT),
     availableFrom: Joi.date().greater(dayjs().add(-600000, 'ms').toDate()),
-    auctionFrom: Joi.bool(),
+    auctionFrom: Joi.date().greater(dayjs().add(-600000, 'ms').toDate()),
     auctionFloorPrice: Joi.number().min(MIN_AMOUNT_TO_TRANSFER).max(MAX_IOTA_AMOUNT),
     auctionLengthDays: Joi.number().allow(1, 2, 3),
     access: Joi.number().equal(NftAccess.OPEN, NftAccess.MEMBERS),

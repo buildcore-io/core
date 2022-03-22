@@ -1,16 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { FileApi } from '@api/file.api';
+import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
+import { getBitItemItem, removeBitItemItem, setBitItemItem } from '@core/utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Transaction } from '@functions/interfaces/models';
+import { Collection, CollectionType, Transaction, TransactionType } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
-import { BehaviorSubject, take } from 'rxjs';
+import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -33,7 +35,7 @@ interface TransactionItem {
   styleUrls: ['./nft-bid.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NftBidComponent {
+export class NftBidComponent implements OnInit {
   @Input() currentStep = StepType.CONFIRM;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
@@ -62,33 +64,18 @@ export class NftBidComponent {
 
   @Input() collection?: Collection|null;
   @Output() wenOnClose = new EventEmitter<void>();
-  
+
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
+  public linkedTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public stepType = StepType;
   public isCopied = false;
   public agreeTermsConditions = false;
   public mediaType: 'video'|'image'|undefined;
-  // @TODO: Remove
-  public targetAddress?: string = '123123123123123123123123123123123123123123123123';
+  public targetAddress?: string;
   public targetAmount?: number;
-  public invalidPayment = false;
-  // TODO Remove
-  public transactions: TransactionItem[] = [
-    {date: new Date(), action: 'Bid', amount: 5000000, link: 'https://www.google.com/', uniqueId: '1'},
-    {date: new Date(), action: 'Refund', amount: 5000000, link: 'https://www.google.com/', uniqueId: '2'},
-    {date: new Date(), action: 'Bid', amount: 5000000, link: 'https://www.google.com/', uniqueId: '3'},
-    {date: new Date(), action: 'Refund', amount: 5000000, link: 'https://www.google.com/', uniqueId: '4'},
-    {date: new Date(), action: 'Bid', amount: 5000000, link: 'https://www.google.com/', uniqueId: '5'},
-    {date: new Date(), action: 'Refund', amount: 5000000, link: 'https://www.google.com/', uniqueId: '6'},
-    {date: new Date(), action: 'Bid', amount: 5000000, link: 'https://www.google.com/', uniqueId: '7'},
-    {date: new Date(), action: 'Refund', amount: 5000000, link: 'https://www.google.com/', uniqueId: '8'},
-    {date: new Date(), action: 'Bid', amount: 5000000, link: 'https://www.google.com/', uniqueId: '9'},
-    {date: new Date(), action: 'Refund', amount: 5000000, link: 'https://www.google.com/', uniqueId: '10'},
-    {date: new Date(), action: 'Bid', amount: 5000000, link: 'https://www.google.com/', uniqueId: '11'},
-    {date: new Date(), action: 'Refund', amount: 5000000, link: 'https://www.google.com/', uniqueId: '12'},
-    {date: new Date(), action: 'Bid', amount: 5000000, link: 'https://www.google.com/', uniqueId: '13'}
-  ];
+
+  private transSubscription?: Subscription;
   private _isOpen = false;
   private _nft?: Nft|null;
 
@@ -96,9 +83,83 @@ export class NftBidComponent {
     public deviceService: DeviceService,
     private cd: ChangeDetectorRef,
     private fileApi: FileApi,
+    private notification: NotificationService,
     private auth: AuthService,
+    private orderApi: OrderApi,
     private sanitizer: DomSanitizer
   ) {}
+
+  public ngOnInit(): void {
+    const listeningToTransaction: string[] = [];
+    this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
+      if (val && val.type === TransactionType.ORDER) {
+        this.targetAddress = val.payload.targetAddress;
+        this.targetAmount = val.payload.amount;
+        const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
+        if (expiresOn.isBefore(dayjs())) {
+          // It's expired.
+          removeBitItemItem(val.payload.nft);
+          return;
+        }
+
+        if (val.linkedTransactions?.length > 0) {
+          this.currentStep = StepType.WAIT;
+          // Listen to other transactions.
+          for (const tranId of val.linkedTransactions) {
+            if (listeningToTransaction.indexOf(tranId) > -1) {
+              continue;
+            }
+
+            listeningToTransaction.push(tranId);
+            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe((t: any) => {
+              if (!t) {
+                return;
+              }
+
+              const currentArray = this.linkedTransactions$.value;
+              const exists = currentArray.findIndex((o) => {
+                return o.uid === t.uid;
+              });
+
+              if (exists > -1) {
+                currentArray[exists] = t;
+              } else {
+                currentArray.unshift(t);
+              }
+
+              this.linkedTransactions$.next(currentArray);
+            });
+          }
+        } else if (!val.linkedTransactions) {
+          this.currentStep = StepType.TRANSACTION;
+        }
+
+        this.expiryTicker$.next(expiresOn);
+      }
+
+      this.cd.markForCheck();
+    });
+
+    if (this.nft?.uid && getBitItemItem(this.nft.uid)) {
+      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid)).subscribe(<any>this.transaction$);
+    }
+
+    // Run ticker.
+    const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
+      this.expiryTicker$.next(this.expiryTicker$.value);
+
+      // If it's in the past.
+      if (this.expiryTicker$.value) {
+        const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value);
+        if (expiresOn.isBefore(dayjs())) {
+          this.expiryTicker$.next(null);
+          removeBitItemItem(this.nft!.uid);
+          int.unsubscribe();
+          this.reset();
+        }
+      }
+    });
+  }
 
   public copyAddress() {
     if (!this.isCopied && this.targetAddress) {
@@ -128,7 +189,7 @@ export class NftBidComponent {
     this.currentStep = StepType.CONFIRM;
     this.cd.markForCheck();
   }
-  
+
   public close(): void {
     this.reset();
     this.wenOnClose.next();
@@ -148,34 +209,6 @@ export class NftBidComponent {
     }
   }
 
-  public discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation) {
-      return 1;
-    }
-
-    const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
-    let discount = 1;
-    if (xp > 0) {
-      for (const d of this.collection.discounts) {
-        if (d.xp < xp) {
-          discount = (1 - d.amount);
-        }
-      }
-    }
-
-    return discount;
-  }
-
-  public calc(amount: number, discount: number): number {
-    let finalPrice = Math.ceil(amount * discount);
-    if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
-      finalPrice = MIN_AMOUNT_TO_TRANSFER;
-    }
-
-    finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
-    return finalPrice;
-  }
-
   public fireflyDeepLink(): SafeUrl {
     if (!this.targetAddress || !this.targetAmount) {
       return '';
@@ -192,7 +225,7 @@ export class NftBidComponent {
 
     return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
-  
+
   // TODO
   public isExpired(val?: Transaction | null): boolean {
     return false;
@@ -206,34 +239,23 @@ export class NftBidComponent {
 
   // TODO
   public async proceedWithBid(): Promise<void> {
-    return;
-    // if (!this.collection || !this.nft || !this.agreeTermsConditions) {
-    //   return;
-    // }
+    if (!this.collection || !this.nft || !this.agreeTermsConditions) {
+      return;
+    }
 
-    // const params: any = {
-    //   collection: this.collection.uid
-    // };
+    const params: any = {
+      nft: this.nft.uid
+    };
 
-    // if (this.collection.type === CollectionType.CLASSIC) {
-    //   params.nft = this.nft.uid;
-    // }
-
-    // // If owner is set CollectionType is not relevant.
-    // if (this.nft.owner) {
-    //   params.nft = this.nft.uid;
-    // }
-
-    // await this.auth.sign(params, (sc, finish) => {
-    //   this.notification.processRequest(this.orderApi.orderNft(sc), 'Order created.', finish).subscribe((val: any) => {
-    //     this.transSubscription?.unsubscribe();
-    //     setItem(StorageItem.CheckoutTransaction, val.uid);
-    //     this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
-    //     this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
-    //   });
-    // });
+    await this.auth.sign(params, (sc, finish) => {
+      this.notification.processRequest(this.orderApi.openBid(sc), 'Order created.', finish).subscribe((val: any) => {
+        this.transSubscription?.unsubscribe();
+        setBitItemItem(params.nft, val.uid);
+        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+      });
+    });
   }
-  
+
   public trackByUniqueId(index: number, item: any): number {
     return item.uniqueId;
   }

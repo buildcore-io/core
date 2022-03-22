@@ -31,6 +31,7 @@ export interface Nft extends BaseRecord {
   saleAccessMembers?: string[],
   availableFrom: Timestamp;
   auctionFrom?: Timestamp;
+  auctionHighestBid?: number;
   price: number;
   availablePrice?: number;
   auctionFloorPrice?: number;

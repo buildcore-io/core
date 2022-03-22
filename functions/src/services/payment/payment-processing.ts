@@ -355,7 +355,7 @@ export class ProcessingService {
     let previousHighestPay: TransactionPayment|undefined;
     if (payments.size > 0) {
       // It has been succesfull, let's finalise.
-      previousHighestPay = <TransactionPayment>payments.docs[0];
+      previousHighestPay = <TransactionPayment>payments.docs[0].data();
       if (previousHighestPay.payload.amount < payment.payload.amount) {
         newValidPayment = true;
       }
@@ -375,11 +375,11 @@ export class ProcessingService {
       // Mark as invalid and create credit.
       await this.createCredit(transaction, previousHighestPay, {
         msgId: previousHighestPay.payload.chainReference,
-        from: {
+        to: {
           address: previousHighestPay.payload.targetAddress,
           amount: previousHighestPay.payload.amount
         },
-        to: {
+        from: {
           address: previousHighestPay.payload.sourceAddress,
           amount: previousHighestPay.payload.amount
         }
@@ -387,6 +387,7 @@ export class ProcessingService {
     }
 
     // Update NFT with highest bid.
+    // TODO We've to handle if bid goes over buy now / or someone uses BUY NOW!
     if (newValidPayment) {
       const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
       this.updates.push({

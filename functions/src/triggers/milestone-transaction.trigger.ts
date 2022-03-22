@@ -6,17 +6,6 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { superPump } from '../scale.settings';
 import { ProcessingService } from '../services/payment/payment-processing';
 
-// BIDDING flow
-/*
- // Milestone confirm
-  - once bid is confirmed it's counted for (has payment)
- - another bid can refund smaller bid.
-
- // Cron
- - finds NFT auction that should be closed but are still open
- - closes them and allocate winner
-*/
-
 // Listen for changes in all documents in the 'users' collection
 export const milestoneTransactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 300,

@@ -20,7 +20,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ChartOptions } from '@pages/member/pages/activity/activity.page';
 import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { map, skip, Subscription, take } from 'rxjs';
+import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 export enum ListingType {
@@ -39,11 +39,13 @@ export class NFTPage implements OnInit, OnDestroy {
   public chartOptions: Partial<ChartOptions> = {};
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
+  public isBidOpen = false;
   public isSaleOpen = false;
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
   public currentListingType = ListingType.LISTING;
+  public endsOnTicker$: BehaviorSubject<Timestamp|undefined> = new BehaviorSubject<Timestamp|undefined>(undefined);
   public listingsData = [
     { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
     { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
@@ -107,8 +109,11 @@ export class NFTPage implements OnInit, OnDestroy {
       });
     });
 
+    let lastNftId: undefined|string = undefined;
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
-      if (p) {
+      // TODO Only cause refresh if it's different to previous.
+      if (p && p.uid !== lastNftId) {
+        lastNftId = p.uid;
         this.nftSubscriptions$.forEach((s) => {
           s.unsubscribe();
         });
@@ -130,6 +135,9 @@ export class NFTPage implements OnInit, OnDestroy {
           })).subscribe(this.data.firstNftInCollection$)
         );
       }
+
+      // Sync ticker.
+      this.endsOnTicker$.next(p?.auctionFrom || undefined);
     });
 
     this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
@@ -151,7 +159,11 @@ export class NFTPage implements OnInit, OnDestroy {
           });
 
           this.initChart(arr);
-    })
+    });
+
+    interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
+      this.endsOnTicker$.next(this.endsOnTicker$.value);
+    });
   }
 
   public getExplorerLink(link: string): string {
@@ -229,6 +241,47 @@ export class NFTPage implements OnInit, OnDestroy {
     return dayjs(nft.availableFrom.toDate()).isAfter(dayjs())
   }
 
+  public getAuctionEnd(nft?: Nft|null): dayjs.Dayjs|undefined {
+    if (!nft?.auctionFrom || !nft?.auctionLengthDays) {
+      return;
+    }
+
+    return dayjs(nft.auctionFrom.toDate()).add(nft.auctionLengthDays, 'days');
+  }
+
+  public getAuctionEndHours(nft?: Nft|null): number {
+    const expiresOn = this.getAuctionEnd(nft);
+    if (!expiresOn) {
+      return 0;
+    }
+
+    return expiresOn.diff(dayjs(), 'hour');
+  }
+
+  public getAuctionEndMin(nft?: Nft|null): number {
+    const expiresOn = this.getAuctionEnd(nft);
+    if (!expiresOn) {
+      return 0;
+    }
+
+    let minutes = expiresOn.diff(dayjs(), 'minute');
+    const hours = Math.floor(minutes / 60);
+    minutes = minutes - (hours * 60);
+    return minutes;
+  }
+
+  public getAuctionEndSec(nft?: Nft|null): number {
+    const expiresOn = this.getAuctionEnd(nft);
+    if (!expiresOn) {
+      return 0;
+    }
+
+    let seconds = expiresOn.diff(dayjs(), 'seconds');
+    const minutes = Math.floor(seconds / 60);
+    seconds = seconds - (minutes * 60);
+    return seconds;
+  }
+
   public discount(collection?: Collection|null, nft?: Nft|null): number {
     if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation || nft?.owner) {
       return 1;
@@ -266,7 +319,7 @@ export class NFTPage implements OnInit, OnDestroy {
       this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
       return;
     }
-    this.isCheckoutOpen = true;
+    this.isBidOpen = true;
   }
 
   public buy(event: MouseEvent): void {

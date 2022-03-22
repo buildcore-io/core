@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { IconModule } from '@components/icon/icon.module';
+import { NftBidModule } from '@components/nft/components/nft-bid/nft-bid.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
@@ -64,6 +65,7 @@ import { DataService } from './services/data.service';
     IconModule,
     NzUploadModule,
     MarkDownModule,
+    NftBidModule,
     NftCheckoutModule,
     StripMarkDownModule,
     IpfsAvatarModule,

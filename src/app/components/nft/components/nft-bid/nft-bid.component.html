@@ -74,17 +74,11 @@
 
                 <div class="px-5 py-3 mt-8 lg:mt-auto bg-bg-background rounded-2xl w-max">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current highest bid</div>
-                    <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
-                        <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(getRecord()?.price || 0) }}</div>
-                        <div class="mr-2 font-bold truncate">{{ formatBest(calc(getRecord()?.price || 0, discount())) }}</div>
-                        <!-- <div class="font-medium truncate text-foregrounds-secondary">({{ '$72' }})</div> -->
-                    </div>
-                    <div class="flex items-center mt-2 text-lg" *ngIf="discount() === 1">
-                      <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.price || 0) }}</div>
-                      <!-- <div class="font-medium truncate text-foregrounds-secondary">({{ '$72' }})</div> -->
+                    <div class="flex items-center mt-2 text-lg">
+                      <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.auctionHighestBid || 0) || 'No Bid Yet'}}</div>
                   </div>
                 </div>
-                <div class="mt-2 flex items-center">
+                <div class="flex items-center mt-2">
                     <wen-icon-question-circle
                         [size]="14"
                         class="mr-2 text-app-gray-400"
@@ -117,16 +111,17 @@
 
 <ng-template #confirmTemplate>
     <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
-        <div class="text-xs font-medium text-foregrounds-secondary lg:w-4/5 text-center" i18n>
-            Adress of your desired NTF will be locked for you for 3 minutes. After payment your bid will be
-            locked, if there is a higher bid, you will be refunded imidiately.
+        <div class="text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" >
+            <span i18n>Adress of your desired NTF will be locked for you for </span> {{ nft?.auctionLengthDays }}
+            <span i18n> minutes. After payment your bid will be
+            locked, if there is a higher bid, you will be refunded imidiately.</span>
         </div>
-        <div class="mt-4 text-xs font-medium text-foregrounds-secondary lg:w-4/5 text-center" i18n>
+        <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
             If there is a higher bid, you will be refunded imidiately. If you want to make another bid,
              send higher amount directly to the same address.
         </div>
 
-        <label class="mt-6 w-full lg:ml-6 lg:w-auto" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
+        <label class="w-full mt-6 lg:ml-6 lg:w-auto" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
             <div class="text-base font-medium">
                 <span class="text-app-gray-text mr-0.5" i18n>By checking this box, you agree with</span>
                 <br *ngIf="deviceService.isMobile$ | async" />
@@ -144,21 +139,9 @@
 
 <ng-template #transactionTemplate>
     <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
-        <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex">
-            <!-- TODO -->
-            <!-- <wen-icon-stopwatch class="mr-2 lg:mr-3"></wen-icon-stopwatch>
-            <div class="text-base font-medium">
-                <span *ngIf="!isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
-                <span class="text-alerts-error" *ngIf="!isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
-                <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))" i18n>Expired</span>
-            </div> -->
-        </div>
-
-        <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" i18n-nzMessage nzMessage="We received invalid amount. Try again."></nz-alert>
-
         <div class="w-full px-4 py-3 mt-6 bg-bg-background rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-app-gray-400">
-              <span i18n>Send</span> {{formatBest(calc(getRecord()?.price || 0, discount())) }} <span i18n>IOTA to following address (please restake after!):</span>
+              <span i18n>Send IOTA to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2">
@@ -172,9 +155,9 @@
                 </button>
             </div>
         </div>
-        
-        <div class="mt-4 text-xs font-medium text-foregrounds-secondary lg:w-4/5 text-center" i18n>
-            If there is a higher bid, you will be refunded imidiately. 
+
+        <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+            If there is a higher bid, you will be refunded imidiately.
             If you want to make another bid, send higher amount directly to the same address.
         </div>
 
@@ -205,7 +188,7 @@
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
         <div class="w-full px-4 py-3 mt-8 bg-bg-background rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-app-gray-400">
-              <span i18n>Send</span> {{formatBest(calc(getRecord()?.price || 0, discount())) }} <span i18n>IOTA to following address (please restake after!):</span>
+              <span i18n>Send</span><span i18n> IOTA to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2">
@@ -220,11 +203,11 @@
             </div>
         </div>
 
-        <div class="mt-8 text-sm font-bold w-full px-2" i18n>
+        <div class="w-full px-2 mt-8 text-sm font-bold" i18n>
             Your transactions
         </div>
-        <nz-table class="block h-full mt-4 overflow-y-auto lg:min-h-0 lg:max-h-56 w-full"
-            [nzData]="transactions" [nzShowPagination]="false">
+        <nz-table class="block w-full h-full mt-4 overflow-y-auto lg:min-h-0 lg:max-h-56"
+            [nzData]="(linkedTransactions$ | async) || []" [nzShowPagination]="false">
             <thead>
                 <tr>
                     <th i18n>Sent Date</th>
@@ -237,21 +220,21 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let item of transactions; trackBy: trackByUniqueId">
-                    <td class="text-sm font-medium">{{ item.date | date:'shortDate' }}</td>
-                    <td class="text-sm font-medium">{{ item.date | date:'h:mm:ss' }}</td>
-                    <td class="text-sm font-medium">{{ item.action }}</td>
-                    <td class="text-sm font-medium">{{ formatBest(item.amount) }}</td>
+                <tr *ngFor="let item of (linkedTransactions$ | async); trackBy: trackByUniqueId">
+                    <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'shortDate' }}</td>
+                    <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'h:mm:ss' }}</td>
+                    <td class="text-sm font-medium">{{ item.type }}</td>
+                    <td class="text-sm font-medium">{{ formatBest(item.payload.amount) }}</td>
                     <td class="text-right">
                         <a class="text-sm font-medium underline text-blue-light1"
-                            target="_blank" *ngIf="item.link" [href]="getExplorerLink(item.link)" i18n>Link</a>
+                            target="_blank" *ngIf="item.payload.chainReference" [href]="getExplorerLink(item.payload.chainReference)" i18n>Link</a>
                     </td>
                 </tr>
             </tbody>
         </nz-table>
 
-        <div class="mt-10 text-xs font-medium text-foregrounds-secondary lg:w-4/5 text-center" i18n>
-            If there is a higher bid, you will be refunded imidiately. 
+        <div class="mt-10 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+            If there is a higher bid, you will be refunded imidiately.
             If you want to make another bid, send higher amount directly to the same address.
         </div>
 
