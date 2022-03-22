@@ -1,3 +1,5 @@
+@import './light.less';
+
 // Custom Theming for NG-ZORRO, see https://ng.ant.design/docs/customize-theme/en
 // We want to use tailwindcss as base.
 @root-entry-name: default;
@@ -35,32 +37,32 @@
 @import 'tailwindcss/utilities';
 
 // View all variables: https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/components/style/themes/default.less
-@primary-color: #008AF2;
-// @info-color: @primary-color;
-// @success-color: @green-6;
-@error-color: #F2550C;
-// @highlight-color: @red-5;
-// @warning-color: @gold-6;
-// @normal-color: #d9d9d9;
-@white: #FFFFFF;
-@black: #333333;
-@bg-components: #E4E1D2;
-@processing-color: #F39200;
-@body-background: #F6F5F0;
-@border-color-base: #CAC8BD;
-@component-background: @white;
+
+// Default color 
+@primary-color: @accentPrimary;
+
+@white: #ffffff;
+
+@processing-color: @accentPrimary;
+
+@component-background: @backgroundsPrimary;
+@body-background: @backgroundsSecondary;
+@border-color-base: @inputsBorder;
 
 @font-family: 'Poppins sans-serif';
-@text-color: @black;
-@text-color-secondary: #9F9D93;
-@text-color-tertiary: #E4E1D2;
-@text-color-placeholder: #AAA795;
-@text-color-inverse: @white;
-@icon-color: inherit;
-@icon-color-hover: fade(@black, 75%);
-@heading-color: @black;
-@text-color-dark: fade(@white, 85%);
-@text-color-secondary-dark: fade(@white, 65%);
+@text-color: @foregroundsPrimary;
+// TODO - dark mode
+// @text-color-dark: ;
+@text-color-secondary: @foregroundsSecondary;
+// TODO - dark mode
+// @text-color-secondary-dark: ;
+@text-color-tertiary: @foregroundsTertiary;
+
+@icon-color: @iconsPrimary;
+// TODO - not found in design system
+// @icon-color-hover: ; 
+
+@heading-color: @foregroundsPrimary;
 
 @border-radius-base: 24px;
 @border-radius-lg: 32px;
@@ -78,33 +80,36 @@
 @padding-md: 20px; // small containers and buttons
 @padding-lg: 38px; // containers
 
-@btn-primary-bg: @primary-color;
-@btn-hover-bg: #24A1FF;
-@btn-pressed-bg: #0080E0;
-@btn-disable-bg: tint(@primary-color, 50%);
-@btn-disable-color: @white;
-@btn-disable-border: tint(@primary-color, 50%);
+@btn-primary-color: @buttonsText;
+@btn-primary-bg: @buttonsPrimaryEnabled;
+@btn-disable-bg: @buttonsPrimaryDisabled;
+@btn-disable-color: @buttonsText;
+@btn-disable-border: @buttonsPrimaryDisabled;
 
 @btn-padding-horizontal-base: @padding-md;
 @btn-font-weight: 600;
 @btn-font-size: @font-size-lg;
 
-@btn-default-color: @btn-primary-bg;
-@btn-default-border: @component-background;
+@btn-default-color: @buttonsSecondaryEnabled;
+@btn-default-bg: @buttonsSecondaryBackground;
+@btn-default-border: @buttonsSecondaryBackground;
 
 @select-single-item-height-lg: @height-lg;
-@select-item-active-bg: #EDF8FC;
+@select-item-active-bg: @backgroundsItemHover;
 
 @btn-padding-horizontal-lg: @padding-lg;
 
 @control-padding-horizontal: @padding-md + 4;
 
-// INPUT
+/**
+ * Input
+ */
 @input-height: @height-lg;
-@input-placeholder-color: @text-color-placeholder;
-@input-hover-border-color: #FFC670;
+@input-bg: @inputsBackground;
+@input-placeholder-color: @foregroundsPlaceholder;
+@input-hover-border-color: @inputsBorderFocus;
 // @input-disabled-bg: @disabled-bg;
-// @input-icon-hover-color: fade(@black, 85%);
+// @input-icon-hover-color: fade(@foregroundsPrimary, 85%);
 // @input-disabled-color: @disabled-color;
 
 @border-color-split: transparent;
@@ -113,60 +118,71 @@
 @avatar-size-lg: 120px;
 @avatar-size-sm: 32px;
 
-//Dropdown
+/* 
+ * Dropdown
+ */
 @dropdown-font-size: @font-size-lg;
 @dropdown-line-height: 28px;
 @dropdown-edge-child-vertical-padding: 14px;
 @dropdown-vertical-padding: 11px;
+//  According to the design system, there is no color for selected color
+@dropdown-selected-color: transparent;
+
 
 @card-head-font-size: @font-size-lg + 2;
 
-// Card
-// ---
+/* 
+ * Card
+ */
 @card-head-padding: 24px;
 @card-shadow: none;
 
-// Progress
+/* 
+ * Progress
+ */
 @progress-default-color: @processing-color;
-@progress-remaining-color: @bg-components;
+@progress-remaining-color: @foregroundsTertiary;
 @progress-text-font-size: 12px;
 
-// Table
+/* 
+ * Table
+ */
 @table-header-bg: transparent;
 @table-header-color: @text-color-secondary;
-@table-row-hover-bg: @bg-components;
+@table-row-hover-bg: @backgroundsItemHover;
 @table-padding-vertical: 16px;
 @table-padding-horizontal: 16px;
-@table-border-color: #F5F4EF;
+@table-border-color: @foregroundsSeparator;
 @table-border-radius-base: 0;
 @table-font-size: @font-size-sm;
 @table-header-cell-split-color: transparent;
 
-// Drawer
-// ---
+/* 
+ * Drawer
+ */
 @drawer-header-padding: 48px 48px;
 @drawer-body-padding: 48px;
 @drawer-header-close-size: 78px;
 
-// RADIO
+/* 
+ * Radio
+ */
 @radio-border-width: 2px;
 @radio-size: 24px;
 @radio-dot-size: 12px;
-@radio-dot-color: @white;
-@radio-dot-disabled-color: fade(@black, 40%);
+@radio-dot-color: @foregroundsOnPrimary;
 
-
-// Tooltip
-// ---
-// Tooltip max width
+/* 
+ * Tooltip
+ */
 @tooltip-max-width: 370px;
-// Tooltip text color
-@tooltip-color: @black;
-// Tooltip background color
-@tooltip-bg: @white;
+@tooltip-color: @foregroundsPrimary;
+@tooltip-bg: @backgroundsPrimary;
 @tooltip-arrow-width: 0;
 
-// MODAL
+/* 
+ * Modal
+ */
 @modal-header-padding-vertical: @padding-lg;
 @modal-header-padding-horizontal: @padding-lg;
 @modal-body-padding: 0 @padding-lg 0 @padding-lg;

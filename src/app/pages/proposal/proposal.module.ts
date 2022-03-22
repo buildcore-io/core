@@ -8,6 +8,7 @@ import { MemberCardModule } from '@components/member/components/member-card/memb
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { ProposalAnswerModule } from '@components/proposal/components/proposal-answer/proposal-answer.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from "@components/tabs/tabs.module";
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -102,7 +103,8 @@ import { DataService } from './services/data.service';
     NzDrawerModule,
     ProposalAnswerModule,
     MobileSearchModule,
-    FormsModule
+    FormsModule,
+    ShareModule
   ]
 })
 export class ProposalModule { }

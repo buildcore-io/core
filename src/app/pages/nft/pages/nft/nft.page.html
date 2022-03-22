@@ -21,20 +21,14 @@
                       <source [src]="(data.nft$ | async)?.media" type="video/mp4">
                       Your browser does not support HTML video.
                     </video>
-                </div>
-
-                <div class="flex items-center mt-5 mb-8">
-                    <div class="mr-4 text-xs font-medium text-foregrounds-secondary" i18n>Share</div>
-                    <!-- Used style because ant-design overwrites tailwind's padding -->
-                    <a nz-button nzType="default" nzBlock nzSize="default" target="_new" [href]="getShareUrl()"
-                        class="flex items-center justify-center px-4 py-3 mr-3 text-black w-max" style="padding-top: 0.75rem !important">
-                            <wen-icon-twitter></wen-icon-twitter>
-                    </a>
-                    <button nz-button nzType="default" nzBlock nzSize="default" (click)="copy()"
-                        class="flex items-center justify-center px-4 py-3 text-black w-max">
-                            <wen-icon-link></wen-icon-link>
-                    </button>
-                </div>
+                </div>                
+      
+                <wen-share
+                    class="block mt-5 mb-8"
+                    i18n-shareText
+                    shareText="Check out nft"
+                    [shareUrl]="getShareUrl(data.nft$ | async)">
+                </wen-share>
             </ng-container>
 
             <div class="flex items-center justify-between w-full h-12 p-4 bg-white rounded-xl"
@@ -170,21 +164,13 @@
                     </video>
                 </div>
 
-                <div class="flex flex-col items-center mt-8 lg:flex-row">
-                    <a nz-button nzType="default" nzBlock nzSize="default" target="_new" [href]="getShareUrl(data.nft$ | async)"
-                        class="flex items-center justify-center flex-grow w-full text-black lg:mr-4 lg:w-1/2">
-                            <wen-icon-twitter></wen-icon-twitter>
-                            <div class="ml-2.5 text-xs font-medium" i18n>Share</div>
-                    </a>
-                    <button nz-button nzType="default" nzBlock nzSize="default" (click)="copy()"
-                        class="flex items-center justify-center flex-grow w-full text-black lg:w-1/2">
-                            <wen-icon-copy></wen-icon-copy>
-                            <div class="ml-2.5 text-xs font-medium">
-                                <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
-                                <ng-template #isNotCopied i18n>Copy to clipboard</ng-template>
-                            </div>
-                    </button>
-                </div>
+                <wen-share
+                    *ngIf="deviceService.isDesktop$ | async"
+                    class="block mt-8"
+                    i18n-shareText
+                    shareText="Check out nft"
+                    [shareUrl]="getShareUrl(data.nft$ | async)">
+                </wen-share>
             </ng-container>
 
             <nz-card nzTitle="Owned by" class="mt-8" *ngIf="data.owner$ | async">

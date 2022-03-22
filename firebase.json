@@ -19,10 +19,13 @@
         "**/.*",
         "**/node_modules/**"
       ],
+      "i18n": {
+        "root": "/"
+      },
       "rewrites": [
         {
           "source": "**",
-          "destination": "/index.html"
+          "destination": "/en/index.html"
         }
       ]
     },
@@ -34,10 +37,13 @@
         "**/.*",
         "**/node_modules/**"
       ],
+      "i18n": {
+        "root": "/"
+      },
       "rewrites": [
         {
           "source": "**",
-          "destination": "/index.html"
+          "destination": "/en/index.html"
         }
       ]
     }
