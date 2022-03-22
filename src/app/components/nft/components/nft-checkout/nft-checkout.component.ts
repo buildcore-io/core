@@ -100,8 +100,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private orderApi: OrderApi,
     private nftApi: NftApi,
     private fileApi: FileApi,
-  ) {
-  }
+  ) {}
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -368,9 +367,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       if (this.nft.type === CollectionType.CLASSIC) {
         return this.nft.name;
       } else if (this.nft.type === CollectionType.GENERATED) {
-        return 'Generated NFT';
+        return $localize`Generated NFT`;
       } else if (this.nft.type === CollectionType.SFT) {
-        return 'SFT';
+        return $localize`SFT`;
       }
     } else {
       return this.purchasedNft.name;
