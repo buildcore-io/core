@@ -46,12 +46,6 @@ export class NFTPage implements OnInit, OnDestroy {
   public isNftPreviewOpen = false;
   public currentListingType = ListingType.OFFER;
   public endsOnTicker$: BehaviorSubject<Timestamp|undefined> = new BehaviorSubject<Timestamp|undefined>(undefined);
-  public listingsData = [
-    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
-    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
-    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
-    { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'}
-  ];
   public offersData = [
     { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
     { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
