@@ -4,8 +4,9 @@ import { DEFAULT_TRANSACTION_DELAY, MIN_AMOUNT_TO_TRANSFER } from '../../../inte
 import { Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
-import { serverTime } from "../../utils/dateTime.utils";
+import { Nft } from '../../../interfaces/models/nft';
+import { DEFAULT_AUCTION_DAYS, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 
 interface TransactionMatch {
@@ -83,7 +84,50 @@ export class ProcessingService {
     }
   }
 
-  public async markAsFinalized(transaction: TransactionOrder): Promise<void> {
+  public async markNftAsFinalized(nft: Nft): Promise<void> {
+    if (!nft.auctionFrom) {
+      throw new Error('NFT auctionFrom is no longer defined');
+    }
+
+    const refSource: any = admin.firestore().collection(COL.NFT).doc(nft.uid);
+    // We need to decide on the winner. Last payment thats not invalid and linked to this order should be the winer.
+    const payments: any = await admin.firestore().collection(COL.TRANSACTION)
+                          .where('payload.invalidPayment', '==', false)
+                          .where('createdOn', '>', nft.auctionFrom)
+                          .where('createdOn', '<', dateToTimestamp(dayjs(nft.auctionFrom.toDate()).add(nft.auctionLengthDays || DEFAULT_AUCTION_DAYS, 'days')))
+                          .where('payload.nft', '==', nft.uid).get();
+    if (payments.size > 0) {
+      // It has been succesfull, let's finalise.
+      const pay: TransactionPayment = <TransactionPayment>payments.docs[0].data();
+
+      // Let's get the actual order.
+      const refOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(pay.payload.sourceTransaction);
+      const sfDocOrder: any = await this.transaction.get(refOrder);
+      if (!sfDocOrder.data()) {
+        throw new Error('Unable to find ORDER linked to PAYMENT');
+      }
+
+      await this.markAsReconciled(sfDocOrder.data(), pay.payload.chainReference);
+      await this.createBillPayment(sfDocOrder.data());
+      await this.setNftOwner(sfDocOrder.data(), pay);
+    } else {
+      // Remove auction from THE NFT!
+      this.updates.push({
+        ref: refSource,
+        data: {
+          auctionFrom: null,
+          auctionFloorPrice: null,
+          auctionLengthDays: null,
+          auctionHighestBid: null,
+          auctionHighestBidder: null,
+          auctionHighestTransaction: null
+        },
+        action: 'update'
+      });
+    }
+  }
+
+  public async markAsVoid(transaction: TransactionOrder): Promise<void> {
     const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
     const sfDoc: any = await this.transaction.get(refSource);
     if (transaction.payload.nft) {
@@ -112,34 +156,13 @@ export class ProcessingService {
         const payments: any = await admin.firestore().collection(COL.TRANSACTION)
                               .where('payload.invalidPayment', '==', false)
                               .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
-        if (payments.size > 0) {
-          // It has been succesfull, let's finalise.
-          const pay: TransactionPayment = <TransactionPayment>payments.docs[0];
-          await this.markAsReconciled(transaction, pay.payload.chainReference);
-          await this.createBillPayment(transaction);
-          await this.setNftOwner(transaction, pay);
-        } else {
-
+        if (payments.size === 0) {
           // No orders, we just void.
           const data: any = sfDoc.data();
           data.payload.void = true;
           this.updates.push({
             ref: refSource,
             data: data,
-            action: 'update'
-          });
-
-          // Remove auction from THE NFT!
-          const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
-          this.updates.push({
-            ref: refNft,
-            data: {
-              auctionFrom: null,
-              auctionFloorPrice: null,
-              auctionLengthDays: null,
-              auctionHighestBid: null,
-              auctionHighestBidder: null
-            },
             action: 'update'
           });
         }
@@ -395,7 +418,8 @@ export class ProcessingService {
         ref: refNft,
         data: {
           auctionHighestBid: payment.payload.amount,
-          auctionHighestBidder: payment.member
+          auctionHighestBidder: payment.member,
+          auctionHighestTransaction: payment.uid,
         },
         action: 'update'
       });
@@ -423,11 +447,40 @@ export class ProcessingService {
             auctionLengthDays: null,
             auctionHighestBid: null,
             auctionHighestBidder: null,
+            auctionHighestTransaction: null,
             saleAccess: null,
             saleAccessMembers: [],
           },
           action: 'update'
         });
+
+        if (sfDoc.data().auctionHighestTransaction && transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
+          const refHighTran: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDoc.data().auctionHighestTransaction);
+          const refHighTranDoc: any = await this.transaction.get(refHighTran);
+          if (refHighTranDoc.data()) {
+            const highestPay: TransactionPayment = <TransactionPayment>refHighTranDoc.data();
+            highestPay.payload.invalidPayment = true;
+            this.updates.push({
+              ref: refHighTran,
+              data: highestPay,
+              action: 'update'
+            });
+
+            // Mark as invalid and create credit.
+            await this.createCredit(transaction, highestPay, {
+              msgId: highestPay.payload.chainReference,
+              to: {
+                address: highestPay.payload.targetAddress,
+                amount: highestPay.payload.amount
+              },
+              from: {
+                address: highestPay.payload.sourceAddress,
+                amount: highestPay.payload.amount
+              }
+            });
+
+          }
+        }
       }
 
       // If it's first sale we have to update collection.
@@ -483,7 +536,7 @@ export class ProcessingService {
             const expireDate = dayjs(order.data().payload.expiresOn.toDate());
             let expired = false;
             if (expireDate.isBefore(dayjs(), 'ms')) {
-              await this.markAsFinalized(order.data());
+              await this.markAsVoid(order.data());
               expired = true;
             }
 

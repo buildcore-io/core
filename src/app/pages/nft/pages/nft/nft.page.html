@@ -166,9 +166,9 @@
             </div>
 
             <button class="mt-10" nz-button nzType="default" (click)="sell($event)" *ngIf="canSetItForSale(data.nft$ | async)" nzBlock nzSize="large">
-                <span *ngIf="canBeSetForSale(data.nft$ | async, data.collection$ | async)" i18n>Sell NFT</span>
-                <span *ngIf="isAvailableForSale(data.nft$ | async, data.collection$ | async)" i18n>Change Fixed Price</span>
-                <span *ngIf="isAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
+                <span *ngIf="canBeSetForSale(data.nft$ | async)" i18n>Sell NFT</span>
+                <span *ngIf="!canBeSetForSale(data.nft$ | async) && isAvailableForSale(data.nft$ | async, data.collection$ | async)" i18n>Change Fixed Price</span>
+                <span *ngIf="!canBeSetForSale(data.nft$ | async) && isAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
             </button>
 
             <button class="mt-10" nz-button nzType="primary" (click)="bid($event)"

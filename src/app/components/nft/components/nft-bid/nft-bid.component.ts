@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { getBitItemItem, removeBitItemItem, setBitItemItem } from '@core/utils';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Collection, CollectionType, Transaction, TransactionType } from '@functions/interfaces/models';
@@ -17,15 +19,9 @@ import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 export enum StepType {
   CONFIRM = 'Confirm',
   TRANSACTION = 'Transaction',
-  WAIT = 'Wait'
-}
-
-interface TransactionItem {
-  uniqueId: string;
-  date: Date;
-  action: 'Bid' | 'Refund';
-  amount: number;
-  link?: string
+  WAIT = 'Wait',
+  COMPLETE = 'Complete',
+  EXPIRED = 'Expired'
 }
 
 @UntilDestroy()
@@ -74,6 +70,7 @@ export class NftBidComponent implements OnInit {
   public mediaType: 'video'|'image'|undefined;
   public targetAddress?: string;
   public targetAmount?: number;
+  public path = ROUTER_UTILS.config.nft.root;
 
   private transSubscription?: Subscription;
   private _isOpen = false;
@@ -85,6 +82,7 @@ export class NftBidComponent implements OnInit {
     private fileApi: FileApi,
     private notification: NotificationService,
     private auth: AuthService,
+    private router: Router,
     private orderApi: OrderApi,
     private sanitizer: DomSanitizer
   ) {}
@@ -134,6 +132,14 @@ export class NftBidComponent implements OnInit {
           this.currentStep = StepType.TRANSACTION;
         }
 
+        if (val && val.payload.void === true) {
+          this.currentStep = StepType.EXPIRED;
+        }
+
+        if (val && val.payload.reconciled === true) {
+          this.currentStep = StepType.COMPLETE;
+        }
+
         this.expiryTicker$.next(expiresOn);
       }
 
@@ -178,6 +184,12 @@ export class NftBidComponent implements OnInit {
     }
 
     return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public goToNft(): void {
+    this.router.navigate(['/', this.path, this.nft?.uid]);
+    this.reset();
+    this.wenOnClose.next();
   }
 
   public getRecord(): Nft|null|undefined {
@@ -226,18 +238,6 @@ export class NftBidComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 
-  // TODO
-  public isExpired(val?: Transaction | null): boolean {
-    return false;
-    // if (!val?.createdOn) {
-    //   return false;
-    // }
-
-    // const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    // return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
-  // TODO
   public async proceedWithBid(): Promise<void> {
     if (!this.collection || !this.nft || !this.agreeTermsConditions) {
       return;

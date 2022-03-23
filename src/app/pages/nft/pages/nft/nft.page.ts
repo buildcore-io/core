@@ -221,8 +221,12 @@ export class NFTPage implements OnInit, OnDestroy {
     return !!nft?.owner && nft?.owner === this.auth.member$.value?.uid;
   }
 
-  public canBeSetForSale(nft?: Nft|null, col?: Collection|null): boolean {
-    return (!this.isAvailableForAuction(nft, col) && !this.isAvailableForSale(nft, col) && !!nft?.owner);
+  public canBeSetForSale(nft?: Nft|null): boolean {
+    if (nft?.auctionFrom || nft?.availableFrom) {
+      return false;
+    }
+
+    return !!nft?.owner;
   }
 
   public isAvailableForAuction(nft?: Nft|null, col?: Collection|null): boolean {

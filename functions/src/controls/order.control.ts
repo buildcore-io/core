@@ -18,7 +18,7 @@ import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionAccess, CollectionType } from './../../interfaces/models/collection';
 import { Nft, NftAccess } from './../../interfaces/models/nft';
-import { TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
+import { DEFAULT_AUCTION_DAYS, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
 import { MnemonicService } from './../services/wallet/mnemonic';
 import { AddressDetails, WalletService } from './../services/wallet/wallet';
@@ -442,7 +442,7 @@ export const openBid: functions.CloudFunction<Transaction> = functions.runWith({
       royaltiesFee: docCollectionData.royaltiesFee,
       royaltiesSpace: docCollectionData.royaltiesSpace,
       royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,
-      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(docNft.data().auctionLengthDays || TRANSACTION_AUTO_EXPIRY_MS, 'days')),
+      expiresOn: dateToTimestamp(dayjs(docNft.data().auctionFrom.toDate()).add(docNft.data().auctionLengthDays || DEFAULT_AUCTION_DAYS, 'days')),
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,
       void: false,

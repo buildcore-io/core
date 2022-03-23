@@ -1,5 +1,6 @@
 import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
+export const DEFAULT_AUCTION_DAYS = 3;
 export enum TransactionType {
   BADGE = "BADGE",
   VOTE = "VOTE",
@@ -71,7 +72,7 @@ export interface PaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: OrderTransaction;
+  sourceTransaction: string;
   nft?: EthAddress;
   collection?: EthAddress;
   invalidPayment: boolean;
@@ -87,7 +88,7 @@ export interface BillPaymentTransaction {
   previusOwner?: EthAddress,
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: OrderTransaction;
+  sourceTransaction: string;
   nft?: EthAddress;
   royalty: boolean,
   collection?: EthAddress;
@@ -101,7 +102,7 @@ export interface CreditPaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: OrderTransaction;
+  sourceTransaction: string;
   nft?: EthAddress;
   collection?: EthAddress;
 }

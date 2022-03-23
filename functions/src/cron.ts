@@ -84,7 +84,29 @@ export const voidExpiredOrders: functions.CloudFunction<any> = functions.pubsub.
           const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(t.data().uid);
           const sfDoc: any = await transaction.get(refSource);
           const service: ProcessingService = new ProcessingService(transaction);
-          await service.markAsFinalized(sfDoc.data());
+          await service.markAsVoid(sfDoc.data());
+
+          // This will trigger all update/set.
+          service.submit();
+        });
+    }
+  }
+
+  // Finished.
+  return null;
+});
+
+export const finaliseAuctionNft: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+  const qry = await admin.firestore().collection(COL.NFT)
+                    .where('auctionFrom', '<=', dayjs().toDate()).get();
+
+  if (qry.size > 0) {
+    for (const t of qry.docs) {
+        await admin.firestore().runTransaction(async (transaction) => {
+          const refSource: any = admin.firestore().collection(COL.NFT).doc(t.data().uid);
+          const sfDoc: any = await transaction.get(refSource);
+          const service: ProcessingService = new ProcessingService(transaction);
+          await service.markNftAsFinalized(sfDoc.data());
 
           // This will trigger all update/set.
           service.submit();

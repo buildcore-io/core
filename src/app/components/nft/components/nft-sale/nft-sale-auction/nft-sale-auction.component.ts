@@ -148,7 +148,7 @@ export class NftSaleAuctionComponent implements OnInit {
     const up: UpdateEvent = {
       type: SaleType.FIXED_PRICE,
       auctionFrom: this.availableFromControl.value,
-      // Missing field for three options 1, 2, 3
+      // TODO Missing field for three options 1, 2, 3
       auctionLengthDays: 3,
       auctionFloorPrice: this.getRawPrice(this.floorPriceControl.value, this.floorUnitControl.value),
       access: this.selectedAccessControl.value,
