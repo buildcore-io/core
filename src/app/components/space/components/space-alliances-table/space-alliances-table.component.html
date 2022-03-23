@@ -11,7 +11,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let ally of alliances | slice:0:(size === 'small' ? 3 : alliances.length); trackBy: trackByUid">
-            <td class="flex items-center">
+            <td class="flex items-center" [routerLink]="['/space', ally._record.uid]">
                 <nz-avatar
                     [nzSrc]="previewImageService.getAvatarSize(ally._record.avatarUrl)"
                     class="mr-3 bg-white border-gray-400"
