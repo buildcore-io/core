@@ -583,6 +583,22 @@
         </nz-card>
         <nz-card [nzBordered]="false" i18n-nzTitle nzTitle="Collection Options" >
           <nz-form-item>
+            <label nz-checkbox [formControl]="limitedEditionControl">
+              <div class="flex items-center">
+                <div class="font-medium mr-2.5" i18n>
+                  Limited Edition
+                </div>
+                <i
+                  nz-icon
+                  nzType="info-circle"
+                  class="cursor-pointer text-app-gray-400"
+                  nz-tooltip
+                  nzTooltipTitle="NFT can't be added after approval."
+                ></i>
+              </div>
+            </label>
+          </nz-form-item>
+          <nz-form-item>
             <label nz-checkbox [formControl]="onePerMemberOnlyControl">
               <div class="flex items-center">
                 <div class="font-medium mr-2.5" i18n>

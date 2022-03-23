@@ -108,6 +108,10 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     throw throwInvalidArgument(WenError.collection_is_already_rejected);
   }
 
+  if (collectionData.limitedEdition) {
+    throw throwInvalidArgument(WenError.this_is_limited_addition_collection);
+  }
+
   if (collectionData.type === CollectionType.GENERATED || collectionData.type === CollectionType.SFT) {
     params.price = collectionData.price || 0;
     params.availableFrom = collectionData.availableFrom || collectionData.createdOn;

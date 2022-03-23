@@ -102,6 +102,9 @@ export class UpsertPage implements OnInit, OnDestroy {
   public onePerMemberOnlyControl: FormControl = new FormControl(
     false
   );
+  public limitedEditionControl: FormControl = new FormControl(
+    false
+  );
   public typeControl: FormControl = new FormControl(
     CollectionType.CLASSIC,
     Validators.required,
@@ -170,6 +173,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       discord: this.discordControl,
       bannerUrl: this.bannerUrlControl,
       onePerMemberOnly: this.onePerMemberOnlyControl,
+      limitedEdition: this.limitedEditionControl,
       placeholderUrl: this.placeholderUrlControl,
       category: this.categoryControl,
       discounts: this.discounts,
@@ -223,6 +227,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.categoryControl.setValue(o.category);
               this.selectedAccessControl.setValue(o.access);
               this.onePerMemberOnlyControl.setValue(o.onePerMemberOnly);
+              this.limitedEditionControl.setValue(o.limitedEdition);
               this.discounts.removeAt(0);
               o.discounts.sort((a, b) => {
                 return a.xp - b.xp;
@@ -244,6 +249,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.typeControl.disable();
               this.categoryControl.disable();
               this.onePerMemberOnlyControl.disable();
+              this.limitedEditionControl.disable();
 
               this.cd.markForCheck();
             }
@@ -472,6 +478,7 @@ export class UpsertPage implements OnInit, OnDestroy {
       delete data.price;
       delete data.availableFrom;
       delete data.onePerMemberOnly;
+      delete data.limitedEdition;
     }
 
     delete data.royaltiesSpaceDifferent;

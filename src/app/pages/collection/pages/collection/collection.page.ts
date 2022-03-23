@@ -13,8 +13,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { environment } from '@env/environment';
-import { GLOBAL_DEBOUNCE_TIME, NftAvailableFromDateMin, WEN_NAME } from '@functions/interfaces/config';
+import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from '@functions/interfaces/config';
 import { Award, Collection, CollectionType } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
@@ -314,13 +313,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       return true;
     }
 
-    return (
-      (
-        col.availableFrom.toDate().getTime() < dayjs().add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms').toDate().getTime() &&
-        col.type !== CollectionType.CLASSIC
-      ) ||
-      col.rejected == true
-    );
+    return (col.limitedEdition || col.rejected == true);
   }
 
   public isAvailableTab(): boolean {
