@@ -98,7 +98,7 @@ export const voidExpiredOrders: functions.CloudFunction<any> = functions.pubsub.
 
 export const finaliseAuctionNft: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.NFT)
-                    .where('auctionFrom', '<=', dayjs().toDate()).get();
+                    .where('auctionTo', '<=', dayjs().toDate()).get();
 
   if (qry.size > 0) {
     for (const t of qry.docs) {

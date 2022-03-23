@@ -235,7 +235,7 @@
                     <td class="text-sm font-medium">{{ formatBest(item.payload.amount) }}</td>
                     <td class="text-right">
                         <a class="text-sm font-medium underline text-blue-light1"
-                            target="_blank" *ngIf="item.payload.chainReference" [href]="getExplorerLink(item.payload.chainReference)" i18n>Link</a>
+                            target="_blank" *ngIf="item.payload.chainReference" [href]="getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
                     </td>
                 </tr>
             </tbody>

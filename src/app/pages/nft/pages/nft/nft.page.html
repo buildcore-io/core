@@ -32,14 +32,17 @@
             </ng-container>
 
             <div class="flex items-center justify-between w-full h-12 p-4 bg-white rounded-xl"
-                *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom)">
+                *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom) || isDateInFuture((data.nft$ | async)?.auctionFrom)">
                 <div class="flex items-center mr-8"
                     [ngClass]="{ 'text-alerts-error': false }">
                         <wen-icon-time></wen-icon-time>
                         <div class="ml-2.5 font-bold" i18n>Sale Starts</div>
                 </div>
-                <div class="font-medium">
+                <div class="font-medium" *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom)">
                   {{(data.nft$ | async)?.availableFrom?.toDate() | date:'short'}}
+                </div>
+                <div class="font-medium" *ngIf="isDateInFuture((data.nft$ | async)?.auctionFrom)">
+                  {{(data.nft$ | async)?.auctionFrom?.toDate() | date:'short'}}
                 </div>
             </div>
 
@@ -194,40 +197,11 @@
 
             <!-- <wen-collapse i18n-nzTitle title="Listings / Offers" class="mt-4" [isCollapsed]="false">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
-                    <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.LISTING"
-                        (nzCheckedChange)="currentListingType = listingTypes.LISTING">
-                            <span i18n>Listings</span>
-                    </nz-tag>
                     <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.OFFER"
                         (nzCheckedChange)="currentListingType = listingTypes.OFFER">
                             <span i18n>Offers</span>
                     </nz-tag>
                 </div>
-
-                <nz-table *ngIf="currentListingType === listingTypes.LISTING" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                    [nzData]="listingsData" [nzShowPagination]="false">
-                    <thead>
-                        <tr>
-                            <th i18n>From</th>
-                            <th i18n>Ends on</th>
-                            <th i18n>Type</th>
-                            <th i18n>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of listingsData">
-                            <td>
-                                <nz-avatar nzIcon="user" [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" class="mr-2"
-                                    [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
-                                </nz-avatar>
-                                <span [routerLink]="'/'">@ {{ item.from | truncate:[16]}}</span>
-                            </td>
-                            <td>{{ item.endsOn }}</td>
-                            <td>{{ item.type }}</td>
-                            <td>{{ item.price }}</td>
-                        </tr>
-                    </tbody>
-                </nz-table>
 
                 <nz-table *ngIf="currentListingType === listingTypes.OFFER" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
                     [nzData]="offersData" [nzShowPagination]="false">

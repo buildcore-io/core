@@ -24,7 +24,7 @@ import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 export enum ListingType {
-  LISTING = 0,
+  // LISTING = 0,
   OFFER = 1
 }
 
@@ -44,7 +44,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
-  public currentListingType = ListingType.LISTING;
+  public currentListingType = ListingType.OFFER;
   public endsOnTicker$: BehaviorSubject<Timestamp|undefined> = new BehaviorSubject<Timestamp|undefined>(undefined);
   public listingsData = [
     { avatar: {fileName: "1911",metadata: "QmNV58Uhsi2wDgUsnuFxLdXVSJfs2fQGmxGy7gcowHQPEW",avatar: "bafybeiaa5kvb7ouratukbelczwcxxxdr6bql2qkrqkusei2l5z4ytccuam",original: "bafybeiauwiqc65rkkmv2r6bbmbphj3kflx6y2ldwlg2kldof3zewcbrzuq"}, from: 'ann', endsOn: '4/10/22', type: 'Auction', price: '200Mi'},
@@ -246,11 +246,11 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public getAuctionEnd(nft?: Nft|null): dayjs.Dayjs|undefined {
-    if (!nft?.auctionFrom || !nft?.auctionLength) {
+    if (!nft?.auctionTo) {
       return;
     }
 
-    return dayjs(nft.auctionFrom.toDate()).add(nft.auctionLength, 'ms');
+    return dayjs(nft.auctionTo.toDate());
   }
 
   public getAuctionEndHours(nft?: Nft|null): number {

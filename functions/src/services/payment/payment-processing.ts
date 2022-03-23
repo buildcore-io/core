@@ -116,6 +116,7 @@ export class ProcessingService {
         ref: refSource,
         data: {
           auctionFrom: null,
+          auctionTo: null,
           auctionFloorPrice: null,
           auctionLength: null,
           auctionHighestBid: null,
@@ -443,6 +444,7 @@ export class ProcessingService {
             availableFrom: null,
             availablePrice: null,
             auctionFrom: null,
+            auctionTo: null,
             auctionFloorPrice: null,
             auctionLength: null,
             auctionHighestBid: null,
