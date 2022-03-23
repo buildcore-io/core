@@ -37,7 +37,7 @@ export interface Nft extends BaseRecord {
   price: number;
   availablePrice?: number;
   auctionFloorPrice?: number;
-  auctionLengthDays?: number;
+  auctionLength?: number;
   type: CollectionType;
   space: string;
   url: string;

@@ -6,6 +6,7 @@ import { merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MIN_AMOUNT_TO_TRANSFER, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
+import { TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { Member } from '../../interfaces/models/member';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
@@ -172,7 +173,7 @@ function makeAvailableForSaleJoi(): any {
     availableFrom: Joi.date().greater(dayjs().add(-600000, 'ms').toDate()),
     auctionFrom: Joi.date().greater(dayjs().add(-600000, 'ms').toDate()),
     auctionFloorPrice: Joi.number().min(MIN_AMOUNT_TO_TRANSFER).max(MAX_IOTA_AMOUNT),
-    auctionLengthDays: Joi.number().allow(1, 2, 3),
+    auctionLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS),
     access: Joi.number().equal(NftAccess.OPEN, NftAccess.MEMBERS),
     accessMembers: Joi.when('access', {
       is: Joi.exist().valid(NftAccess.MEMBERS),
@@ -240,7 +241,7 @@ export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
   if (params.body.auctionFrom) {
     update.auctionFrom = params.body.auctionFrom;
     update.auctionFloorPrice = parseInt(params.body.auctionFloorPrice);
-    update.auctionLengthDays = parseInt(params.body.auctionLengthDays);
+    update.auctionLength = parseInt(params.body.auctionLength);
     update.auctionHighestBid = 0;
     update.auctionHighestBidder = null;
     update.auctionHighestTransaction = null;
@@ -248,7 +249,7 @@ export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
   } else {
     update.auctionFrom = null;
     update.auctionFloorPrice = null;
-    update.auctionLengthDays = null;
+    update.auctionLength = null;
     update.auctionHighestBid = null;
     update.auctionHighestBidder = null;
     update.auctionHighestTransaction = null;

@@ -27,7 +27,7 @@ export interface UpdateEvent {
   auctionFrom?: Timestamp|null;
   price?: number|null;
   auctionFloorPrice?: number|null;
-  auctionLengthDays?: number|null;
+  auctionLength?: number|null;
 }
 
 @UntilDestroy()
@@ -123,12 +123,12 @@ export class NftSaleComponent {
     if (e.type === SaleType.FIXED_PRICE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs())) {
       e.auctionFloorPrice = null;
       e.auctionFrom = null;
-      e.auctionLengthDays = null;
+      e.auctionLength = null;
     }  else if (e.type === SaleType.FIXED_PRICE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
       // We can't change auction params anymore
       delete e.auctionFloorPrice;
       delete e.auctionFrom;
-      delete e.auctionLengthDays;
+      delete e.auctionLength;
     }
 
     // If AUCTION remove/add dates.

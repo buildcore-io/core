@@ -1,6 +1,6 @@
 import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
-export const DEFAULT_AUCTION_DAYS = 3;
+export const TRANSACTION_MAX_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000;
 export enum TransactionType {
   BADGE = "BADGE",
   VOTE = "VOTE",

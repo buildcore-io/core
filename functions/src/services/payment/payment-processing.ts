@@ -5,7 +5,7 @@ import { Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft } from '../../../interfaces/models/nft';
-import { DEFAULT_AUCTION_DAYS, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 
@@ -94,7 +94,7 @@ export class ProcessingService {
     const payments: any = await admin.firestore().collection(COL.TRANSACTION)
                           .where('payload.invalidPayment', '==', false)
                           .where('createdOn', '>', nft.auctionFrom)
-                          .where('createdOn', '<', dateToTimestamp(dayjs(nft.auctionFrom.toDate()).add(nft.auctionLengthDays || DEFAULT_AUCTION_DAYS, 'days')))
+                          .where('createdOn', '<', dateToTimestamp(dayjs(nft.auctionFrom.toDate()).add(nft.auctionLength || TRANSACTION_AUTO_EXPIRY_MS, 'ms')))
                           .where('payload.nft', '==', nft.uid).get();
     if (payments.size > 0) {
       // It has been succesfull, let's finalise.
@@ -117,7 +117,7 @@ export class ProcessingService {
         data: {
           auctionFrom: null,
           auctionFloorPrice: null,
-          auctionLengthDays: null,
+          auctionLength: null,
           auctionHighestBid: null,
           auctionHighestBidder: null,
           auctionHighestTransaction: null
@@ -444,7 +444,7 @@ export class ProcessingService {
             availablePrice: null,
             auctionFrom: null,
             auctionFloorPrice: null,
-            auctionLengthDays: null,
+            auctionLength: null,
             auctionHighestBid: null,
             auctionHighestBidder: null,
             auctionHighestTransaction: null,

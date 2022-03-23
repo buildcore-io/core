@@ -246,11 +246,11 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public getAuctionEnd(nft?: Nft|null): dayjs.Dayjs|undefined {
-    if (!nft?.auctionFrom || !nft?.auctionLengthDays) {
+    if (!nft?.auctionFrom || !nft?.auctionLength) {
       return;
     }
 
-    return dayjs(nft.auctionFrom.toDate()).add(nft.auctionLengthDays, 'days');
+    return dayjs(nft.auctionFrom.toDate()).add(nft.auctionLength, 'ms');
   }
 
   public getAuctionEndHours(nft?: Nft|null): number {

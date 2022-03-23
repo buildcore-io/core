@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
@@ -148,8 +149,8 @@ export class NftSaleAuctionComponent implements OnInit {
     const up: UpdateEvent = {
       type: SaleType.FIXED_PRICE,
       auctionFrom: this.availableFromControl.value,
-      // TODO Missing field for three options 1, 2, 3
-      auctionLengthDays: 3,
+      // TODO Implement switch
+      auctionLength: TRANSACTION_AUTO_EXPIRY_MS,
       auctionFloorPrice: this.getRawPrice(this.floorPriceControl.value, this.floorUnitControl.value),
       access: this.selectedAccessControl.value,
       accessMembers: this.buyerControl.value
