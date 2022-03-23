@@ -22,10 +22,10 @@
   </div>
 </nz-card>
 
-<nz-card i18n-nzTitle nzTitle="The badge you need" class="mt-4">
-  <!-- TODO: make dynamic -->
+<nz-card i18n-nzTitle nzTitle="The badges you need" *ngIf="(data.accessBadges$ | async)?.length" class="mt-4 space-x-2">
   <nz-avatar
-    [nzSrc]="badge | ipfsBadge:filesizes.small"
+    *ngFor="let award of (data.accessBadges$ | async); trackBy: trackByUid"
+    [nzSrc]="award.badge.image| ipfsBadge:filesizes.small"
     [nzSize]="64"
     class="bg-white border-gray-400"
     nzShape="circle"
@@ -76,13 +76,4 @@
             <div class="text-xs font-medium">{{ (item.amount * 100) }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
         </div>
     </div>
-</nz-card>
-
-<nz-card i18n-nzTitle nzTitle="Selected Badges" class="mt-8" *ngIf="(data.accessBadges$ | async)?.length">
-  <div class="flex flex-wrap gap-2">
-    <article *ngFor="let a of (data.accessBadges$ | async); trackBy: trackByUid"
-      class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
-      <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
-    </article>
-  </div>
 </nz-card>

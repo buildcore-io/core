@@ -96,7 +96,7 @@
         </nz-card>
       </div>
 
-      <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
+      <div class="mt-4 space-y-4 lg:mt-0 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
         <nz-card [nzBordered]="false">
           <nz-card-meta
             i18n-nzTitle

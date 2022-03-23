@@ -52,7 +52,7 @@
         <router-outlet></router-outlet>
       </div>
     </div>
-    <div class="mt-4 space-y-4 lg:mt-0" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+    <div class="mt-4 space-y-4 lg:mt-0 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
       [ngStyle]="{
         'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
       }">
