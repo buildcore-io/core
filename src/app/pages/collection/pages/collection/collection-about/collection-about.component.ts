@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { Collection, CollectionAccess, DiscountLine } from '@functions/interfaces/models';
+import { enumToArray } from '@core/utils/manipulations.utils';
+import { Categories, Collection, CollectionAccess, DiscountLine } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { DataService } from '../../../services/data.service';
 
 @Component({
@@ -10,6 +12,13 @@ import { DataService } from '../../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionAboutComponent {
+  // TODO: remove
+  public badge = {
+      "fileName": "9234",
+      "original": "bafybeic6ai5uirmgtnimdnauafxqllyczculsjhayzoa25udqnfxcosueu",
+      "metadata": "QmP4xJSZu95NSX8FYvZFYKusW1eRqHkekFw55KS9xBeFL1",
+      "avatar": "bafybeieivvapg72xjl5uoavniztpf5hiyh2iajggcnj7tmk6grzzg7c55e"
+  };
   constructor(
     public data: DataService,
     public deviceService: DeviceService
@@ -19,6 +28,19 @@ export class CollectionAboutComponent {
 
   public get access(): typeof CollectionAccess {
     return CollectionAccess;
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+
+  public getCategory(category?: Categories): string {
+    if (!category) {
+      return '';
+    }
+
+    const categories = enumToArray(Categories);
+    return categories.find(c => c.key === category).value;
   }
 
   public getAccessLabel(access?: CollectionAccess|null): string {
