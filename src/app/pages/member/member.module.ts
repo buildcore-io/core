@@ -29,6 +29,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { NgChartsModule } from 'ng2-charts';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AwardCardModule } from '../../components/award/components/award-card/award-card.module';
 import { TruncateModule } from './../../@core/pipes/truncate/truncate.module';
@@ -85,7 +86,8 @@ import { DataService } from './services/data.service';
     NzSkeletonModule,
     InfiniteScrollModule,
     NzSelectModule,
-    SelectCollectionModule
+    SelectCollectionModule,
+    NgChartsModule
   ],
 })
 export class MemberModule {
