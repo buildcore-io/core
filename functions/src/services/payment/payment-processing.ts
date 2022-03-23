@@ -137,7 +137,8 @@ export class ProcessingService {
               auctionFrom: null,
               auctionFloorPrice: null,
               auctionLengthDays: null,
-              auctionHighestBid: null
+              auctionHighestBid: null,
+              auctionHighestBidder: null
             },
             action: 'update'
           });
@@ -393,7 +394,8 @@ export class ProcessingService {
       this.updates.push({
         ref: refNft,
         data: {
-          auctionHighestBid: payment.payload.amount
+          auctionHighestBid: payment.payload.amount,
+          auctionHighestBidder: payment.member
         },
         action: 'update'
       });
@@ -420,6 +422,7 @@ export class ProcessingService {
             auctionFloorPrice: null,
             auctionLengthDays: null,
             auctionHighestBid: null,
+            auctionHighestBidder: null,
             saleAccess: null,
             saleAccessMembers: [],
           },
