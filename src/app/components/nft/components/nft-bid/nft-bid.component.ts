@@ -96,7 +96,7 @@ export class NftBidComponent implements OnInit {
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
-          removeBitItemItem(val.payload.nft);
+          removeBitItemItem(val.payload.nft + expiresOn.valueOf());
           return;
         }
 
@@ -159,7 +159,7 @@ export class NftBidComponent implements OnInit {
         const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value);
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
-          removeBitItemItem(this.nft!.uid);
+          removeBitItemItem(this.nft!.uid + expiresOn.valueOf());
           int.unsubscribe();
           this.reset();
         }
@@ -250,7 +250,7 @@ export class NftBidComponent implements OnInit {
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.orderApi.openBid(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
-        setBitItemItem(params.nft, val.uid);
+        setBitItemItem(params.nft + this.nft?.auctionTo?.valueOf(), val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
       });
     });

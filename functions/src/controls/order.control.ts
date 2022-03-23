@@ -442,7 +442,7 @@ export const openBid: functions.CloudFunction<Transaction> = functions.runWith({
       royaltiesFee: docCollectionData.royaltiesFee,
       royaltiesSpace: docCollectionData.royaltiesSpace,
       royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,
-      expiresOn: dateToTimestamp(dayjs(docNft.data().auctionFrom.toDate()).add(docNft.data().auctionLength || TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+      expiresOn: docNft.data().auctionTo,
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,
       void: false,

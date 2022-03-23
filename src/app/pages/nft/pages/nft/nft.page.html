@@ -76,12 +76,19 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-5">
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
                         <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{data.formatBest(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
                         <div class="text-lg font-bold truncate">{{data.formatBest(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)))}}</div>
                     </div>
+                </div>
+
+                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
+                  <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current Bid</div>
+                  <div class="flex items-center mt-2">
+                      <div class="text-lg font-bold truncate">{{(data.nft$ | async)?.auctionHighestBid ? data.formatBest((data.nft$ | async)?.auctionHighestBid) : 'No Bid Yet'}}</div>
+                  </div>
                 </div>
 
 
@@ -195,7 +202,7 @@
                     [stroke]="chartOptions.stroke!" [xaxis]="chartOptions.xaxis!" [tooltip]="chartOptions.tooltip!"></apx-chart>
             </wen-collapse>
 
-            <!-- <wen-collapse i18n-nzTitle title="Listings / Offers" class="mt-4" [isCollapsed]="false">
+            <wen-collapse i18n-nzTitle title="Offers" class="mt-4" [isCollapsed]="false" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
                     <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.OFFER"
                         (nzCheckedChange)="currentListingType = listingTypes.OFFER">
@@ -214,7 +221,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of listingsData">
+                        <tr *ngFor="let item of offersData">
                             <td>
                                 <nz-avatar nzIcon="user" [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" class="mr-2"
                                     [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
@@ -227,7 +234,7 @@
                         </tr>
                     </tbody>
                 </nz-table>
-            </wen-collapse> -->
+            </wen-collapse>
         </div>
 
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
