@@ -4,6 +4,7 @@ import { AirBlowIconComponent } from './air-blow/air-blow.component';
 import { AlertOctagonIconComponent } from './alert-octagon/alert-octagon.component';
 import { AngleDownIconComponent } from './angle-down/angle-down.component';
 import { AngleLeftIconComponent } from './angle-left/angle-left.component';
+import { AngleRightSmallIconComponent } from './angle-right-small/angle-right-small.component';
 import { AngleRightIconComponent } from './angle-right/angle-right.component';
 import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
@@ -116,7 +117,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     InfoCircleIconComponent,
     UserPlusIconComponent,
     CollectionIconComponent,
-    CalendarIconComponent
+    CalendarIconComponent,
+    AngleRightSmallIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -175,7 +177,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     InfoCircleIconComponent,
     UserPlusIconComponent,
     CollectionIconComponent,
-    CalendarIconComponent
+    CalendarIconComponent,
+    AngleRightSmallIconComponent
   ],
   imports: [
     CommonModule
