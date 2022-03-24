@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NgApexchartsModule } from 'ng-apexcharts';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
@@ -22,7 +21,6 @@ import { ProposalCardComponent } from './proposal-card.component';
     CommonModule,
     RouterModule,
     TruncateModule,
-    NgApexchartsModule,
     ProposalStatusModule,
     NzAvatarModule,
     NzTagModule,
