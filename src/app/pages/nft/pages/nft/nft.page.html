@@ -52,7 +52,7 @@
                         <div class="flex items-center">
                             <wen-icon-time></wen-icon-time>
                             <div class="ml-2.5 font-bold" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Sale ends</div>
-                            <div class="ml-2.5 font-bold" *ngIf="!auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Finalising...</div>
+                            <div class="ml-2.5 font-bold" *ngIf="!auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Finalising auction...</div>
                         </div>
                         <div class="font-medium" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
                           {{ getAuctionEnd(data.nft$ | async)?.toDate() | date:'long'}}
@@ -183,7 +183,7 @@
             </button>
 
             <button class="mt-10" nz-button nzType="primary" (click)="bid($event)"
-                    *ngIf="isAvailableForAuction(data.nft$ | async, data.collection$ | async)" nzBlock nzSize="large" i18n>
+                    *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" nzBlock nzSize="large" i18n>
                 Place bid
             </button>
 

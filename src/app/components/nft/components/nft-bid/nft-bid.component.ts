@@ -146,8 +146,8 @@ export class NftBidComponent implements OnInit {
       this.cd.markForCheck();
     });
 
-    if (this.nft?.uid && getBitItemItem(this.nft.uid)) {
-      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid)).subscribe(<any>this.transaction$);
+    if (this.nft?.uid && getBitItemItem(this.nft.uid+this.nft.auctionTo?.valueOf())) {
+      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid+this.nft.auctionTo?.valueOf())).subscribe(<any>this.transaction$);
     }
 
     // Run ticker.
