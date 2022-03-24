@@ -46,10 +46,10 @@ export class NFTPage implements OnInit, OnDestroy {
   public isNftPreviewOpen = false;
   public currentListingType = ListingType.OFFER;
   public endsOnTicker$: BehaviorSubject<Timestamp|undefined> = new BehaviorSubject<Timestamp|undefined>(undefined);
-  public offersData = [];
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
+  private offersSubscriptions$: Subscription[] = [];
   constructor(
     public data: DataService,
     public previewImageService: PreviewImageService,
@@ -137,6 +137,15 @@ export class NFTPage implements OnInit, OnDestroy {
         this.collectionSubscriptions$.push(this.spaceApi.listen(p.royaltiesSpace).pipe(untilDestroyed(this)).subscribe(this.data.royaltySpace$));
         if (p.createdBy) {
           this.collectionSubscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.collectionCreator$));
+        }
+
+        if (this.auctionInProgress(this.data.nft$.value, p)) {
+          this.offersSubscriptions$.forEach((s) => {
+            s.unsubscribe();
+          });
+
+          // Resubscribe.
+          this.nftSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.offers$));
         }
       }
     });

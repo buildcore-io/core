@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
+import { environment } from '@env/environment';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
@@ -143,6 +144,10 @@ export class NftSaleAuctionComponent implements OnInit {
 
   private getRawPrice(price: number, unit: Units): number {
     return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+  }
+
+  public isProd(): boolean {
+    return environment.production;
   }
 
   public submit(): void {

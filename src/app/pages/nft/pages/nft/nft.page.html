@@ -51,14 +51,15 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <wen-icon-time></wen-icon-time>
-                            <div class="ml-2.5 font-bold" i18n>Sale ends</div>
+                            <div class="ml-2.5 font-bold" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Sale ends</div>
+                            <div class="ml-2.5 font-bold" *ngIf="!auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Finalising...</div>
                         </div>
-                        <div class="font-medium">
+                        <div class="font-medium" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
                           {{ getAuctionEnd(data.nft$ | async)?.toDate() | date:'long'}}
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="endsOnTicker$ | async">
+                    <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="(endsOnTicker$ | async) && auctionInProgress(data.nft$ | async, data.collection$ | async)">
                          <!-- counter -->
                         <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
                           {{getAuctionEndHours(data.nft$ | async)}}
@@ -203,34 +204,25 @@
             </wen-collapse>
 
             <wen-collapse i18n-nzTitle title="Offers" class="mt-4" [isCollapsed]="false" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
-                    <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.OFFER"
-                        (nzCheckedChange)="currentListingType = listingTypes.OFFER">
-                            <span i18n>Offers</span>
-                    </nz-tag>
-                </div>
-
                 <nz-table *ngIf="currentListingType === listingTypes.OFFER" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                    [nzData]="offersData" [nzShowPagination]="false">
+                    [nzData]="(data.offers$ | async) || []" [nzShowPagination]="false">
                     <thead>
                         <tr>
                             <th i18n>From</th>
-                            <th i18n>Ends on</th>
-                            <th i18n>Type</th>
+                            <th i18n>Bidded on</th>
                             <th i18n>Price</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of offersData">
+                        <tr *ngFor="let item of (data.offers$ | async)">
                             <td>
-                                <nz-avatar nzIcon="user" [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" class="mr-2"
+                                <nz-avatar nzIcon="user" [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
                                     [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
                                 </nz-avatar>
-                                <span [routerLink]="'/'">@ {{ item.from | truncate:[16]}}</span>
+                                <span [routerLink]="'/'">@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
                             </td>
-                            <td>{{ item.endsOn }}</td>
-                            <td>{{ item.type }}</td>
-                            <td>{{ item.price }}</td>
+                            <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
+                            <td>{{ data.formatBest(item.transaction.payload.amount) }}</td>
                         </tr>
                     </tbody>
                 </nz-table>

@@ -1,7 +1,9 @@
 
 <div class="px-6 py-5">
     <div class="text-sm font-bold" i18n>
-        Trade info (3 days bidding)
+        Trade info
+        <span *ngIf="isProd()">(3 days auction)</span>
+        <span *ngIf="!isProd()">(7 minutes auction - TEST)</span>
     </div>
 
     <nz-form-item class="mt-5">
