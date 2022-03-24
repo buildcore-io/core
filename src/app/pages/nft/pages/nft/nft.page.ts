@@ -17,7 +17,6 @@ import { Collection, CollectionType, TransactionBillPayment, TransactionType } f
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { ChartOptions } from '@pages/member/pages/activity/activity.page';
 import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
@@ -36,7 +35,7 @@ export enum ListingType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NFTPage implements OnInit, OnDestroy {
-  public chartOptions: Partial<ChartOptions> = {};
+  public chartOptions: Partial<any> = {};
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
   public isBidOpen = false;
