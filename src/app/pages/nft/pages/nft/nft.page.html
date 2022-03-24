@@ -207,7 +207,22 @@
             </wen-collapse>
 
             <wen-collapse i18n-nzTitle title="Bids" class="mt-4" [isCollapsed]="false" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                <nz-table *ngIf="currentListingType === listingTypes.OFFER" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                <div class="flex flex-col lg:flex-row lg:items-center mt-6 px-6 mb-4">
+                    <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
+                        (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
+                            <span i18n>Current bids</span>
+                    </nz-tag>
+                    <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentListingType === listingTypes.PAST_BIDS"
+                        (nzCheckedChange)="currentListingType = listingTypes.PAST_BIDS">
+                            <span i18n>Past bids</span>
+                    </nz-tag>
+                    <nz-tag nzMode="checkable" class="w-max mt-2" [nzChecked]="currentListingType === listingTypes.MY_TRANSACTIONS"
+                        (nzCheckedChange)="currentListingType = listingTypes.MY_TRANSACTIONS">
+                            <span i18n>My transactions</span>
+                    </nz-tag>
+                </div>
+                
+                <nz-table *ngIf="currentListingType === listingTypes.CURRENT_BIDS" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
                     [nzData]="(data.offers$ | async) || []" [nzShowPagination]="false">
                     <thead>
                         <tr>
