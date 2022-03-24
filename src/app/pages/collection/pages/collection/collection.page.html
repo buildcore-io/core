@@ -7,10 +7,9 @@
     <div class="relative w-auto h-48 mt-8 overflow-hidden lg:h-96 lg:mt-16 rounded-2xl">
         <img [src]="(data.collection$ | async)?.bannerUrl || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full rounded-3xl" />
 
-        <!-- TODO -->
-        <!-- <div class="absolute z-10 py-2.5 px-4 bg-yellow-secondary rounded-br-2xl top-0 left-0 font-medium text-sm text-black">
+        <div *ngIf="(data.collection$ | async)?.limitedEdition" class="absolute z-10 py-2.5 px-4 bg-yellow-secondary rounded-br-2xl top-0 left-0 font-medium text-sm text-black" i18n>
             Limited edition
-        </div> -->
+        </div>
     </div>
 
     <div class="relative w-full mt-6" nz-row [nzGutter]="40">
@@ -58,7 +57,7 @@
                 </a>
 
                 <a *ngIf="data.royaltySpace$ | async"
-                    [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="ml-10 flex items-center justify-between">
+                    [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center justify-between ml-10">
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
                         [nzSize]="32"
@@ -88,7 +87,7 @@
               </div>
             </div>
 
-            <div class="mt-6 lg:mt-3 py-3 w-full flex items-center justify-center bg-tag-blue rounded-2xl">
+            <div class="flex items-center justify-center w-full py-3 mt-6 lg:mt-3 bg-tag-blue rounded-2xl">
                 <wen-icon-time class="text-app-gray-400"></wen-icon-time>
                 <div class="ml-2.5">
                     <span class="font-bold" i18n>Starts in</span>
@@ -98,7 +97,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center mt-4 lg:mt-3 w-full">
+            <div class="flex flex-wrap items-center w-full mt-4 lg:mt-3">
                 <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:w-32 rounded-xl lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
