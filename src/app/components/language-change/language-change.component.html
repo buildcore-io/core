@@ -1,0 +1,19 @@
+<nz-select
+    class="select"
+    nzSize="small"
+    [formControl]="languageControl"
+    [nzSuffixIcon]="suffixIcon"
+    [nzDropdownStyle]="{ 'min-width': '100px' }"
+    >
+    <nz-option
+        *ngFor="let l of languages"
+        i18n-nzLabel
+        [nzLabel]="l"
+        [nzValue]="l"
+    >
+    </nz-option>
+</nz-select>
+
+<ng-template #suffixIcon>
+    <wen-icon-angle-right-small></wen-icon-angle-right-small>
+</ng-template>
