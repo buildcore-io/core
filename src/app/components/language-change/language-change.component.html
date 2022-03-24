@@ -7,9 +7,8 @@
     >
     <nz-option
         *ngFor="let l of languages"
-        i18n-nzLabel
-        [nzLabel]="l"
-        [nzValue]="l"
+        [nzLabel]="l.title"
+        [nzValue]="l.firebase"
     >
     </nz-option>
 </nz-select>

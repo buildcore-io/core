@@ -1,20 +1,31 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { CookieItem, getCookie, setCookie } from '@core/utils/cookie.utils';
+import { Languages } from '@core/utils/language.util';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
-export const Languages = ['EN', 'CS', 'DE', 'ES', 'FR', 'IT', 'JA', 'KO', 'NL', 'PL', 'PT-BR', 'PT-PT'];
-
+@UntilDestroy()
 @Component({
   selector: 'wen-language-change',
   templateUrl: './language-change.component.html',
   styleUrls: ['./language-change.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LanguageChangeComponent {
+export class LanguageChangeComponent implements OnInit {
 
-  public languages = Languages;
-  public languageControl: FormControl;
+  public languages = Object.values(Languages);
+  public languageControl: FormControl = new FormControl('');
 
-  constructor() {
-    this.languageControl = new FormControl(this.languages[0]);
+  ngOnInit(): void {
+    this.languageControl.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((firebaseLang: string) => {
+        setCookie(CookieItem.firebaseLanguageOverride, firebaseLang);
+      });
+
+    const language = getCookie(CookieItem.firebaseLanguageOverride) || this.languages[0].firebase;
+    this.languageControl.setValue(language);
   }
+
+  
 }
