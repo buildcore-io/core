@@ -100,8 +100,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private orderApi: OrderApi,
     private nftApi: NftApi,
     private fileApi: FileApi,
-  ) {
-  }
+  ) {}
 
   public ngOnInit(): void {
     this.receivedTransactions = false;
@@ -110,7 +109,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = val.payload.amount;
-        const expiresOn: dayjs.Dayjs = dayjs(val.createdOn!.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+        const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
           removeItem(StorageItem.CheckoutTransaction);
@@ -247,7 +246,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation) {
+    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || this.nft?.owner) {
       return 1;
     }
 
@@ -368,9 +367,9 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       if (this.nft.type === CollectionType.CLASSIC) {
         return this.nft.name;
       } else if (this.nft.type === CollectionType.GENERATED) {
-        return 'Generated NFT';
+        return $localize`Generated NFT`;
       } else if (this.nft.type === CollectionType.SFT) {
-        return 'SFT';
+        return $localize`SFT`;
       }
     } else {
       return this.purchasedNft.name;

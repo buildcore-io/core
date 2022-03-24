@@ -13,6 +13,8 @@ export class CreateDropdownComponent {
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
   @Input() isAllowedCreation = true;
+  @Input() enableCreateAwardProposal = true;
+  @Input() enableCollection = true;
   @Output() wenOnCreateClick = new EventEmitter<void>();
 
   constructor(

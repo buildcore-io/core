@@ -13,6 +13,8 @@
     <div class="flex justify-between space-x-5">
       <ng-container *ngIf="(routerService.isNewRoute$ | async) === false">
         <wen-create-dropdown
+          [enableCreateAwardProposal]="enableCreateAwardProposal"
+          [enableCollection]="enableCollection"
           [isMemberProfile]="isMemberProfile"
           [isLandingPage]="isLandingPage"
           [isAllowedCreation]="isAllowedCreation"

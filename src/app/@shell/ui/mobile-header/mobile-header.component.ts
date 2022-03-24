@@ -20,6 +20,8 @@ export class MobileHeaderComponent {
   @Input() isLandingPage = false;
   @Input() isAllowedCreation = false;
   @Input() goBackHeader = false;
+  @Input() enableCreateAwardProposal = true;
+  @Input() enableCollection = true;
   @Output() wenOnVisibleChange = new EventEmitter<boolean>();
 
   public homeRoute = ROUTER_UTILS.config.base.home;

@@ -240,8 +240,7 @@
       <nz-avatar nzIcon="user" [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
       </nz-avatar>
-      <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16]
-        }}</span>
+      <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16]}}</span>
     </div>
   </div>
 </nz-card>

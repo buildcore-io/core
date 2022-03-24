@@ -9,6 +9,7 @@ import { NftCardModule } from '@components/nft/components/nft-card/nft-card.modu
 import { RadioModule } from '@components/radio/radio.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { FilterService } from '@pages/market/services/filter.service';
@@ -79,7 +80,8 @@ import { DataService } from './services/data.service';
     NftCardModule,
     InfiniteScrollModule,
     NzToolTipModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    IpfsBadgeModule
   ],
   providers: [
     DataService,

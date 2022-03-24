@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Member, Transaction, TransactionOrder, TransactionType } from '@functions/interfaces/models';
+import { Member, Transaction, TransactionOrder, TransactionPayment, TransactionType } from '@functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -12,6 +12,11 @@ export interface SuccesfullOrdersWithFullHistory {
   newMember: Member;
   order: TransactionOrder;
   transactions: Transaction[];
+}
+
+export interface OffersHistory {
+  member: Member;
+  transaction: TransactionPayment;
 }
 
 @Injectable({
@@ -31,6 +36,10 @@ export class NftApi extends BaseApi<Nft> {
     return this.request(WEN_FUNC.cBatchNft, req);
   }
 
+  public setForSaleNft(req: WenRequest): Observable<Nft|undefined> {
+    return this.request(WEN_FUNC.setForSaleNft, req);
+  }
+
   public successfullOrders(nftId: string): Observable<SuccesfullOrdersWithFullHistory[]> {
     return this.afs.collection<SuccesfullOrdersWithFullHistory>(
       COL.TRANSACTION,
@@ -39,7 +48,7 @@ export class NftApi extends BaseApi<Nft> {
         return ref.where('payload.nft', '==', nftId).where('type', '==', TransactionType.BILL_PAYMENT).where('payload.royalty', '==', false)
       }
     ).valueChanges().pipe(switchMap(async (obj: any[]) => {
-      const out: SuccesfullOrdersWithFullHistory[] = [];
+      let out: SuccesfullOrdersWithFullHistory[] = [];
       for (const b of obj) {
         const order: DocumentSnapshot<TransactionOrder> = <any>await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());
         const member: DocumentSnapshot<Member> = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
@@ -60,6 +69,43 @@ export class NftApi extends BaseApi<Nft> {
 
         out.push(o);
       }
+
+      // Order from latest.
+      out = out.sort((c) => {
+        return c.order.createdOn!.toMillis() * -1;
+      });
+
+      return out;
+    }));
+  }
+
+  public getOffers(nft: Nft): Observable<OffersHistory[]> {
+    return this.afs.collection<OffersHistory>(
+      COL.TRANSACTION,
+      // We limit this to last record only. CreatedOn is always defined part of every record.
+      (ref) => {
+        return ref
+          .where('payload.nft', '==', nft.uid)
+          .where('createdOn', '<', nft.auctionTo?.toDate())
+          .where('createdOn', '>', nft.auctionFrom?.toDate())
+          .where('type', '==', TransactionType.PAYMENT)
+      }
+    ).valueChanges().pipe(switchMap(async (obj: any[]) => {
+      let out: OffersHistory[] = [];
+      for (const b of obj) {
+        const member: DocumentSnapshot<Member> = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
+        const o: OffersHistory = {
+          member: member.data()!,
+          transaction: b
+        };
+
+        out.push(o);
+      }
+
+      // Order from latest.
+      out = out.sort((c) => {
+        return c.transaction.payload.amount * -1;
+      });
 
       return out;
     }));

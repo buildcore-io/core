@@ -1,0 +1,143 @@
+
+<div class="px-6 py-5">
+    <div class="text-sm font-bold" i18n>
+        Trade info
+        <span *ngIf="isProd()">(3 days auction)</span>
+        <span *ngIf="!isProd()">(7 minutes auction - TEST)</span>
+    </div>
+
+    <nz-form-item class="mt-5">
+        <nz-form-control>
+            <nz-input-group nzSize="large" class="relative">
+                <nz-input-number
+                    i18n-nzPlaceHolder
+                    nzPlaceHolder="Floor price"
+                    nzSize="large"
+                    class="w-full"
+                    [nzMin]="0"
+                    [formControl]="floorPriceControl"
+                ></nz-input-number>
+                <i
+                    nz-icon
+                    nzType="info-circle"
+                    class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    nz-tooltip
+                    i18n-nzTooltipTitle
+                    [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"
+                ></i>
+                <div class="absolute transform -translate-y-1/2 right-10 top-1/2">
+                    <button *ngFor="let unit of priceUnits"
+                        nz-button nzShape="circle" nzSize="small"
+                        class="mr-1 wen-secondary"
+                        [ngClass]="{ 'selected': unit === floorUnitControl.value }"
+                        [disabled]="floorUnitControl.disabled"
+                        (click)="floorUnitControl.setValue(unit)">
+                        {{ unit }}
+                    </button>
+                </div>
+            </nz-input-group>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
+            <nz-date-picker
+                class="flex flex-grow"
+                [nzDisabledDate]="disabledStartDate.bind(this)"
+                nzSize="large"
+                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                nzFormat="yyyy-MM-dd HH:mm"
+                [formControl]="availableFromControl"
+                i18n-nzPlaceHolder
+                nzPlaceHolder="Available on"
+            >
+            </nz-date-picker>
+        </nz-form-control>
+    </nz-form-item>
+<!--
+    <nz-form-item>
+        <label nz-checkbox [formControl]="buyAvailableControl">
+            <div class="font-medium" i18n>
+                Buy now price available
+            </div>
+        </label>
+    </nz-form-item>
+
+    <nz-form-item class="mt-8">
+        <nz-form-control>
+            <nz-input-group nzSize="large" class="relative">
+                <nz-input-number
+                    [nzDisabled]="!buyAvailableControl.value"
+                    i18n-nzPlaceHolder
+                    nzPlaceHolder="Floor price"
+                    nzSize="large"
+                    class="w-full"
+                    [nzMin]="0"
+                    [formControl]="buyPriceControl"
+                ></nz-input-number>
+                <i
+                    nz-icon
+                    nzType="info-circle"
+                    class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    nz-tooltip
+                    i18n-nzTooltipTitle
+                    [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"
+                ></i>
+                <div class="absolute transform -translate-y-1/2 right-10 top-1/2">
+                    <button *ngFor="let unit of priceUnits"
+                        nz-button nzShape="circle" nzSize="small"
+                        class="mr-1 wen-secondary"
+                        [ngClass]="{ 'selected': unit === buyUnitControl.value }"
+                        [disabled]="buyUnitControl.disabled || !buyAvailableControl.value"
+                        (click)="buyUnitControl.setValue(unit)">
+                        {{ unit }}
+                    </button>
+                </div>
+            </nz-input-group>
+        </nz-form-control>
+    </nz-form-item> -->
+
+    <nz-form-item class="mt-6">
+        <nz-form-control>
+            <nz-radio-group
+                class="wen-radio-group"
+                [formControl]="selectedAccessControl"
+            >
+                <wen-radio [value]="targetAccess.OPEN">
+                    <span i18n>Open Sale</span>
+                </wen-radio>
+                <wen-radio [value]="targetAccess.MEMBERS">
+                    <span i18n>Specific buyer only</span>
+                </wen-radio>
+            </nz-radio-group>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS">
+        <nz-form-control>
+            <nz-select
+            class="w-full"
+            nzSize="large"
+            nzShowSearch
+            nzAllowClear
+            i18n-nzPlaceHolder
+            nzPlaceHolder="Reserve for specific buyer"
+            [formControl]="buyerControl"
+            >
+            <!-- TODO -->
+            <!-- <nz-option
+                *ngFor="let cc of collectionCategories"
+                i18n-nzLabel
+                [nzLabel]="cc.value"
+                [nzValue]="cc.key"
+            >
+            </nz-option> -->
+            </nz-select>
+        </nz-form-control>
+        </nz-form-item>
+
+    <div class="flex flex-col items-center w-full mt-10 text-xs font-medium text-foregrounds-tertiary">
+        <div class="mb-3" i18n>Once your listing is complete, you will get a confirmation message.</div>
+        <button nz-button nzType="primary" nzSize="large" [disabled]="form.invalid" (click)="submit()" i18n>Confirm listing</button>
+    </div>
+</div>

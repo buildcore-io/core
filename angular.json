@@ -116,9 +116,7 @@
               }
             ],
             "styles": ["src/theme/styles.less"],
-            "scripts": [
-              "node_modules/apexcharts/dist/apexcharts.min.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {

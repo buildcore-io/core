@@ -4,9 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { IconModule } from '@components/icon/icon.module';
+import { NftBidModule } from '@components/nft/components/nft-bid/nft-bid.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
 import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
+import { NftSaleModule } from '@components/nft/components/nft-sale/nft-sale.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
@@ -32,6 +34,7 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NgChartsModule } from 'ng2-charts';
 import { NftRoutingModule } from './nft-routing.module';
 import { MultiplePage } from './pages/new/multiple/multiple.page';
 import { NewPage } from './pages/new/new.page';
@@ -62,6 +65,7 @@ import { DataService } from './services/data.service';
     IconModule,
     NzUploadModule,
     MarkDownModule,
+    NftBidModule,
     NftCheckoutModule,
     StripMarkDownModule,
     IpfsAvatarModule,
@@ -84,7 +88,10 @@ import { DataService } from './services/data.service';
     NzTableModule,
     TruncateModule,
     NzModalModule,
-    ShareModule
+    ShareModule,
+    NftSaleModule,
+    CollapseModule,
+    NgChartsModule
   ],
   providers: [
     DataService

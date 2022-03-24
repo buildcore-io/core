@@ -6,6 +6,8 @@
     >
     <div *nzDrawerContent class="relative h-full min-h-180">
         <wen-mobile-header
+          [enableCreateAwardProposal]="enableCreateAwardProposal"
+          [enableCollection]="enableCollection"
           [isMobileMenuVisible]="isVisible"
           (wenOnVisibleChange)="wenOnVisibleChange($event)"
           [isMemberProfile]="isMemberProfile"

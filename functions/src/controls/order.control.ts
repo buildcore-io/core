@@ -11,14 +11,14 @@ import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
-import { serverTime } from "../utils/dateTime.utils";
+import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionAccess, CollectionType } from './../../interfaces/models/collection';
-import { Nft } from './../../interfaces/models/nft';
-import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';
+import { Nft, NftAccess } from './../../interfaces/models/nft';
+import { TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
 import { MnemonicService } from './../services/wallet/mnemonic';
 import { AddressDetails, WalletService } from './../services/wallet/wallet';
@@ -51,64 +51,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Collection must be approved.
   if (!docCollectionData.approved) {
     throw throwInvalidArgument(WenError.collection_must_be_approved);
-  }
-
-  if (docCollectionData.access === CollectionAccess.MEMBERS_ONLY) {
-    if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
-      throw throwInvalidArgument(WenError.you_are_not_part_of_space);
-    }
-  }
-
-  if (docCollectionData.access === CollectionAccess.GUARDIANS_ONLY) {
-    if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
-      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-    }
-  }
-
-  if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
-    const includedBadges: string[] = [];
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
-               .where('type', '==', TransactionType.BADGE)
-               .where('member', '==', owner).get();
-    if (qry.size > 0 && docCollectionData.accessAwards?.length) {
-      for (const t of qry.docs) {
-        if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
-          includedBadges.push(t.data().payload.award)
-          break;
-        }
-      }
-    }
-
-    if (docCollectionData.accessAwards.length !== includedBadges.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
-    }
-  }
-
-  if (docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
-    const includedCollections: string[] = [];
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
-               .where('owner', '==', owner).get();
-    if (qry.size > 0 && docCollectionData.accessCollections?.length) {
-      for (const t of qry.docs) {
-        if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
-          includedCollections.push(t.data().collection);
-          break;
-        }
-      }
-    }
-
-    if (docCollectionData.accessCollections.length !== includedCollections.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
-    }
-  }
-
-  if (docCollectionData.onePerMemberOnly === true) {
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
-      .where('collection', '==', docCollectionData.uid)
-      .where('owner', '==', owner).get();
-    if (qry.size >= 1) {
-      throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
-    }
   }
 
   // Let's determine if NFT can be indicated or we need to randomly select one.
@@ -157,6 +99,64 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Set data object.
   const docNftData: Nft = docNft.data();
 
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_ONLY) {
+    if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
+      throw throwInvalidArgument(WenError.you_are_not_part_of_space);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.GUARDIANS_ONLY) {
+    if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
+      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
+    const includedBadges: string[] = [];
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
+               .where('type', '==', TransactionType.BADGE)
+               .where('member', '==', owner).get();
+    if (qry.size > 0 && docCollectionData.accessAwards?.length) {
+      for (const t of qry.docs) {
+        if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
+          includedBadges.push(t.data().payload.award)
+          break;
+        }
+      }
+    }
+
+    if (docCollectionData.accessAwards.length !== includedBadges.length) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
+    const includedCollections: string[] = [];
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
+               .where('owner', '==', owner).get();
+    if (qry.size > 0 && docCollectionData.accessCollections?.length) {
+      for (const t of qry.docs) {
+        if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
+          includedCollections.push(t.data().collection);
+          break;
+        }
+      }
+    }
+
+    if (docCollectionData.accessCollections.length !== includedCollections.length) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
+    }
+  }
+
+  if (!docNftData.owner && docCollectionData.onePerMemberOnly === true) {
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
+      .where('collection', '==', docCollectionData.uid)
+      .where('owner', '==', owner).get();
+    if (qry.size >= 1) {
+      throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
+    }
+  }
+
   if (mustBeSold && !docNftData.owner) {
     throw throwInvalidArgument(WenError.generated_spf_nft_must_be_sold_first);
   }
@@ -174,10 +174,21 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Extra check to make sure owner address is defined.
-  if (docNft.data().owner && !docNft.data().ownerAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address);
+  let prevOwnerAddress: string|undefined = undefined;
+  if (docNft.data().owner) { // &&
+    const refPrevOwner: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(docNft.data().owner);
+    const docPrevOwner: DocumentSnapshotType = await refPrevOwner.get();
+    if (!docPrevOwner.data()?.validatedAddress) {
+      throw throwInvalidArgument(WenError.member_must_have_validated_address);
+    } else {
+      prevOwnerAddress = docPrevOwner.data()?.validatedAddress;
+    }
   } else if (!docSpace.data().validatedAddress) {
     throw throwInvalidArgument(WenError.space_must_have_validated_address);
+  }
+
+  if (docNft.data().owner === owner) {
+    throw throwInvalidArgument(WenError.you_cant_buy_your_nft);
   }
 
   // Validate there isn't any order in progress.
@@ -229,7 +240,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       });
     }
   });
-  let finalPrice = discount < 1 ? Math.ceil(discount * docNftData.price) : docNftData.price;
+  let finalPrice = (discount < 1 && !docNft.data().owner) ? Math.ceil(discount * docNftData.price) : (docNftData.availablePrice || docNftData.price);
   if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
     finalPrice = MIN_AMOUNT_TO_TRANSFER;
   }
@@ -249,10 +260,12 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       targetAddress: targetAddress.bech32,
       beneficiary: docNft.data().owner ? 'member' : 'space',
       beneficiaryUid: docNft.data().owner || docCollectionData.space,
-      beneficiaryAddress: docNft.data().owner ? docNft.data().ownerAddress : docSpace.data().validatedAddress,
+      beneficiaryAddress: docNft.data().owner ? prevOwnerAddress : docSpace.data().validatedAddress,
       royaltiesFee: docCollectionData.royaltiesFee,
       royaltiesSpace: docCollectionData.royaltiesSpace,
       royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,
+      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
       void: false,
       chainReference: null,
@@ -320,6 +333,8 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
       targetAddress: targetAddress.bech32,
       beneficiary: isSpaceValidation ? 'space' : 'member',
       beneficiaryUid: isSpaceValidation ? params.body.space : owner,
+      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
       void: false,
       chainReference: null
@@ -328,6 +343,117 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
 
   // Load latest
   const docTrans: DocumentSnapshotType = await refTran.get();
+
+  // Return member.
+  return <Transaction>docTrans.data();
+});
+
+export const openBid: functions.CloudFunction<Transaction> = functions.runWith({
+  minInstances: scale(WEN_FUNC.openBid),
+}).https.onCall(async (req: WenRequest, context: any): Promise<Transaction> => {
+  appCheck(WEN_FUNC.openBid, context);
+  // Validate auth details before we continue
+  const params: DecodedToken = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema: ObjectSchema<any> = Joi.object(merge(getDefaultParams(), {
+    nft: Joi.string().length(ethAddressLength).lowercase().required()
+  }));
+  assertValidation(schema.validate(params.body));
+
+  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
+  if (!docMember.exists) {
+    throw throwInvalidArgument(WenError.member_does_not_exists);
+  }
+  const refNft: admin.firestore.DocumentReference= admin.firestore().collection(COL.NFT).doc(params.body.nft);
+  const docNft: DocumentSnapshotType = await refNft.get();
+  const docNftData: Nft = docNft.data();
+  if (!docNft.exists) {
+    throw throwInvalidArgument(WenError.nft_does_not_exists);
+  }
+
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(docNftData.collection);
+  const docCollection: DocumentSnapshotType = await refCollection.get();
+  const docCollectionData: Collection = docCollection.data();
+  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
+  const docSpace: DocumentSnapshotType = await refSpace.get();
+
+  // Collection must be approved.
+  if (!docCollectionData.approved) {
+    throw throwInvalidArgument(WenError.collection_must_be_approved);
+  }
+
+  if (docNftData.saleAccess === NftAccess.MEMBERS && !(docNftData.saleAccessMembers || []).includes(owner)) {
+    throw throwInvalidArgument(WenError.you_are_not_allowed_member_to_purchase_this_nft);
+  }
+
+  if (!docNftData.auctionFrom) {
+    throw throwInvalidArgument(WenError.nft_not_available_for_sale);
+  }
+
+  if (docNft.data().placeholderNft) {
+    throw throwInvalidArgument(WenError.nft_placeholder_cant_be_purchased);
+  }
+
+  if (docNft.data().owner === owner) {
+    throw throwInvalidArgument(WenError.you_cant_buy_your_nft);
+  }
+
+  // Extra check to make sure owner address is defined.
+  let prevOwnerAddress: string|undefined = undefined;
+  const refPrevOwner: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(docNft.data().owner);
+  const docPrevOwner: DocumentSnapshotType = await refPrevOwner.get();
+  if (!docPrevOwner.data()?.validatedAddress) {
+    throw throwInvalidArgument(WenError.member_must_have_validated_address);
+  } else {
+    prevOwnerAddress = docPrevOwner.data()?.validatedAddress;
+  }
+
+  // Get new target address.
+  const newWallet: WalletService = new WalletService();
+  const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
+  const refRoyaltySpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
+  const docRoyaltySpace: DocumentSnapshotType = await refRoyaltySpace.get();
+
+  // Document does not exists.
+  const tranId: string = getRandomEthAddress();
+  const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+
+  let finalPrice = docNftData.auctionFloorPrice || MIN_AMOUNT_TO_TRANSFER;
+  if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
+    finalPrice = MIN_AMOUNT_TO_TRANSFER;
+  }
+
+  // Remove unwanted decimals.
+  finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
+  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+  await refTran.set(<Transaction>{
+    type: TransactionType.ORDER,
+    uid: tranId,
+    member: owner,
+    space: docCollectionData.space,
+    createdOn: serverTime(),
+    payload: {
+      type: TransactionOrderType.NFT_BID,
+      amount: finalPrice,
+      targetAddress: targetAddress.bech32,
+      beneficiary: docNft.data().owner ? 'member' : 'space',
+      beneficiaryUid: docNft.data().owner || docCollectionData.space,
+      beneficiaryAddress: docNft.data().owner ? prevOwnerAddress : docSpace.data().validatedAddress,
+      royaltiesFee: docCollectionData.royaltiesFee,
+      royaltiesSpace: docCollectionData.royaltiesSpace,
+      royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,
+      expiresOn: docNft.data().auctionTo,
+      reconciled: false,
+      validationType: TransactionValidationType.ADDRESS,
+      void: false,
+      chainReference: null,
+      nft: docNftData.uid,
+      collection: docCollectionData.uid
+    }
+  });
+
+  // Load latest
+  const docTrans = await refTran.get();
 
   // Return member.
   return <Transaction>docTrans.data();

@@ -39,7 +39,7 @@
                     <div class="flex-grow w-0">
                       <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
                       <div class="text-sm font-medium truncate">
-                        {{formatBest(applyDiscount(nft?.price))}}
+                        {{formatBest(applyDiscount(nft?.availablePrice || nft?.price))}}
                       </div>
                   </div>
 
@@ -74,3 +74,4 @@
 </article>
 
 <wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="nft" [collection]="collection" (wenOnClose)="isCheckoutOpen = false"></wen-nft-checkout>
+<wen-nft-bid *ngIf="isBidOpen" [isOpen]="isBidOpen" [nft]="nft" [collection]="collection" (wenOnClose)="isBidOpen = false"></wen-nft-bid>

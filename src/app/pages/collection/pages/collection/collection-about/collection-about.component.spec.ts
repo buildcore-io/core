@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { DataService } from '@pages/collection/services/data.service';
 import { CollectionAboutComponent } from './collection-about.component';
 
@@ -10,7 +11,8 @@ describe('CollectionAboutComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ CollectionAboutComponent ],
-      providers: [DataService]
+      providers: [DataService],
+      imports: [IpfsBadgeModule]
     })
     .compileComponents();
   });

@@ -33,6 +33,8 @@
 
     </div>
     <wen-mobile-menu
+      [enableCreateAwardProposal]="enableCreateAwardProposal"
+      [enableCollection]="enableCollection"
       [isVisible]="isMobileMenuVisible"
       [isMemberProfile]="isMemberProfile"
       [isLandingPage]="isLandingPage"
@@ -63,7 +65,7 @@
           <wen-icon-space icon></wen-icon-space><span i18n>Space</span>
         </wen-menu-item>
         <wen-menu-item [routerLink]="routerService.urlToNewProposal" *ngIf="enableCreateAwardProposal">
-          <wen-icon-check-circle icon></wen-icon-check-circle><span i18n>Proposal</span> 
+          <wen-icon-check-circle icon></wen-icon-check-circle><span i18n>Proposal</span>
         </wen-menu-item>
         <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal">
           <wen-icon-award icon></wen-icon-award><span i18n>Award</span>
