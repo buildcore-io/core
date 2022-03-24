@@ -18,7 +18,6 @@ import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
-import { NgApexchartsModule } from 'ng-apexcharts';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -35,6 +34,7 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NgChartsModule } from 'ng2-charts';
 import { NftRoutingModule } from './nft-routing.module';
 import { MultiplePage } from './pages/new/multiple/multiple.page';
 import { NewPage } from './pages/new/new.page';
@@ -90,8 +90,8 @@ import { DataService } from './services/data.service';
     NzModalModule,
     ShareModule,
     NftSaleModule,
-    NgApexchartsModule,
-    CollapseModule
+    CollapseModule,
+    NgChartsModule
   ],
   providers: [
     DataService

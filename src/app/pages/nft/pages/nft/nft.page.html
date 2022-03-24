@@ -197,10 +197,13 @@
 
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
 
-            <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">
-                <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [colors]="chartOptions.colors!"
-                    [yaxis]="chartOptions.yaxis!" [dataLabels]="chartOptions.dataLabels!" [markers]="chartOptions.markers!"
-                    [stroke]="chartOptions.stroke!" [xaxis]="chartOptions.xaxis!" [tooltip]="chartOptions.tooltip!"></apx-chart>
+            <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">                
+                <div style="display: block;">
+                    <canvas baseChart width="400" height="180"
+                                [data]="lineChartData"
+                                [options]="lineChartOptions"
+                                [type]="lineChartType"></canvas>
+                </div>
             </wen-collapse>
 
             <wen-collapse i18n-nzTitle title="Bids" class="mt-4" [isCollapsed]="false" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">

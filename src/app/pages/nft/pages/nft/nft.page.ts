@@ -17,6 +17,7 @@ import { Collection, CollectionType, TransactionBillPayment, TransactionType } f
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
@@ -35,7 +36,6 @@ export enum ListingType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NFTPage implements OnInit, OnDestroy {
-  public chartOptions: Partial<any> = {};
   public collectionPath: string = ROUTER_UTILS.config.collection.root;
   public isCheckoutOpen = false;
   public isBidOpen = false;
@@ -45,10 +45,32 @@ export class NFTPage implements OnInit, OnDestroy {
   public isNftPreviewOpen = false;
   public currentListingType = ListingType.OFFER;
   public endsOnTicker$: BehaviorSubject<Timestamp|undefined> = new BehaviorSubject<Timestamp|undefined>(undefined);
+  public lineChartType: ChartType = 'line';
+  public lineChartData?: ChartConfiguration['data'];
+  public lineChartOptions: ChartConfiguration['options'] = {
+    elements: {
+      line: {
+        tension: 0
+      }
+    },
+    scales: {
+        xAxis: {
+            ticks: {
+                maxTicksLimit: 10
+            }
+        }
+    },
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  };
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
   private offersSubscriptions$: Subscription[] = [];
+  
   constructor(
     public data: DataService,
     public previewImageService: PreviewImageService,
@@ -440,44 +462,35 @@ export class NFTPage implements OnInit, OnDestroy {
     return (!nft.owner && (nft.type === CollectionType.GENERATED || nft.type === CollectionType.SFT));
   }
 
-  public initChart(data: any): void {
-    this.chartOptions = {
-      series: [
-        {
-          data: data
-        }
-      ],
-      chart: {
-        type: "area",
-        height: 350
-      },
-      dataLabels: {
-        enabled: false
-      },
-      markers: {
-        size: 0
-      },
-      xaxis: {
-        type: "datetime",
-        min: data?.[0]?.[0].getTime(),
-        tickAmount: 6
-      },
-      tooltip: {
-        x: {
-          format: "dd MMM yyyy"
-        }
-      },
-      fill: {
-        type: "gradient",
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.7,
-          opacityTo: 0.9,
-          stops: [0, 100]
-        }
-      }
+  public initChart(data: any[][]): void {
+    const dataToShow: { data: number[], labels: string[]} = {
+      data: [],
+      labels: []
     };
 
+    if (data?.length) {
+      const sortedData = data.sort((a, b) => a[0] - b[0]);
+      for (let i=0; i<sortedData.length; i++) {
+        dataToShow.data.push(sortedData[i][1]);
+        dataToShow.labels.push(dayjs(sortedData[i][0]).format('MMM D'));
+      }
+    }
+
+    this.lineChartData = {
+      datasets: [
+        {
+          data: dataToShow.data,
+          backgroundColor: 'rgba(148,159,177,0.2)',
+          borderColor: 'rgba(148,159,177,1)',
+          pointBackgroundColor: 'rgba(148,159,177,1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+          fill: 'origin'
+        }
+      ],
+      labels: dataToShow.labels
+    };
     this.cd.markForCheck();
   }
 

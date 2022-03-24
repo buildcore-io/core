@@ -14,7 +14,6 @@ import { TimelineBadgesModule } from '@components/timeline-badges/timeline-badge
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
-import { NgApexchartsModule } from "ng-apexcharts";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -55,7 +54,6 @@ import { DataService } from './services/data.service';
     TabsModule,
     IpfsAvatarModule,
     MemberAboutModule,
-    NgApexchartsModule,
     TruncateModule,
     UserRoutingModule,
     NzTagModule,
