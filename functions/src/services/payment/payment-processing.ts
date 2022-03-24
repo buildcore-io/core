@@ -5,9 +5,11 @@ import { Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft } from '../../../interfaces/models/nft';
+import { Notification } from "../../../interfaces/models/notification";
 import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
+import { NotificationService } from '../notification/notification';
 
 interface TransactionMatch {
   msgId: string;
@@ -302,7 +304,7 @@ export class ProcessingService {
     return transOut;
   }
 
-  private async createCredit(order: Transaction, payment: Transaction, tran: TransactionMatch): Promise<Transaction|undefined> {
+  private async createCredit(order: Transaction, payment: Transaction, tran: TransactionMatch, createdOn = serverTime()): Promise<Transaction|undefined> {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
@@ -319,7 +321,7 @@ export class ProcessingService {
         uid: tranId,
         space: order.space,
         member: order.member,
-        createdOn: serverTime(),
+        createdOn: createdOn,
         payload: {
           amount: payment.payload.amount,
           sourceAddress: tran.to.address,
@@ -378,16 +380,24 @@ export class ProcessingService {
                           .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
     let newValidPayment = false;
     let previousHighestPay: TransactionPayment|undefined;
+    const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+    const sfDocNft: any = await this.transaction.get(refNft);
     if (payments.size > 0) {
       // It has been succesfull, let's finalise.
       previousHighestPay = <TransactionPayment>payments.docs[0].data();
-      if (previousHighestPay.payload.amount < payment.payload.amount) {
+      if (
+        previousHighestPay.payload.amount < payment.payload.amount &&
+        payment.payload.amount >= sfDocNft.data().auctionFloorPrice
+      ) {
         newValidPayment = true;
       }
     } else {
-      newValidPayment = true;
+      if (payment.payload.amount >= sfDocNft.data().auctionFloorPrice) {
+        newValidPayment = true;
+      }
     }
 
+    // We need to credit the old payment.
     if (newValidPayment && previousHighestPay) {
       const refPrevPayment: any = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.uid);
       previousHighestPay.payload.invalidPayment = true;
@@ -408,13 +418,11 @@ export class ProcessingService {
           address: previousHighestPay.payload.sourceAddress,
           amount: previousHighestPay.payload.amount
         }
-      });
+      }, dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')));
     }
 
     // Update NFT with highest bid.
-    // TODO We've to handle if bid goes over buy now / or someone uses BUY NOW!
     if (newValidPayment) {
-      const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
       this.updates.push({
         ref: refNft,
         data: {
@@ -423,6 +431,29 @@ export class ProcessingService {
           auctionHighestTransaction: payment.uid,
         },
         action: 'update'
+      });
+
+      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(transaction.member!);
+      const sfDocMember: any = await this.transaction.get(refMember);
+      const bidNotification: Notification = NotificationService.prepareBid(sfDocMember.data(), sfDocNft.data(), payment);
+      const refNotification = await admin.firestore().collection(COL.TRANSACTION).doc(bidNotification.uid);
+      this.updates.push({
+        ref: refNotification,
+        data: bidNotification,
+        action: 'set'
+      });
+    } else {
+      // No valid payment so we credit anyways.
+      await this.createCredit(transaction, payment, {
+        msgId: payment.payload.chainReference,
+        to: {
+          address: payment.payload.targetAddress,
+          amount: payment.payload.amount
+        },
+        from: {
+          address: payment.payload.sourceAddress,
+          amount: payment.payload.amount
+        }
       });
     }
   }

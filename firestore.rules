@@ -15,15 +15,19 @@ service cloud.firestore {
     }
 
     match /collection/{document=**} {
-      allow read;
+      allow read: if true;
     }
 
     match /badges/{document=**} {
-      allow get: if true;
+      allow get;
       allow list: if request.query.limit <= 1;
     }
 
     match /member/{document=**} {
+      allow read;
+    }
+
+    match /notification/{document=**} {
       allow read;
     }
 
