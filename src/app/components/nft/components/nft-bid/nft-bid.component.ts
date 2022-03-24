@@ -11,6 +11,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Collection, CollectionType, Transaction, TransactionType } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
@@ -79,9 +80,9 @@ export class NftBidComponent implements OnInit {
   constructor(
     public deviceService: DeviceService,
     private cd: ChangeDetectorRef,
+    public auth: AuthService,
     private fileApi: FileApi,
     private notification: NotificationService,
-    private auth: AuthService,
     private router: Router,
     private orderApi: OrderApi,
     private sanitizer: DomSanitizer
@@ -258,6 +259,10 @@ export class NftBidComponent implements OnInit {
 
   public trackByUniqueId(index: number, item: any): number {
     return item.uniqueId;
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 
   public getExplorerLink(link: string): string {

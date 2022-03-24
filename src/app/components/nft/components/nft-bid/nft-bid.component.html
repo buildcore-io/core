@@ -72,10 +72,30 @@
                     ></wen-icon-question-circle>
                 </div>
 
-                <div class="px-5 py-3 mt-8 lg:mt-auto bg-bg-background rounded-2xl w-max">
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current highest bid</div>
+                <!-- TODO: Add logic to ngClass and texts -->
+                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max"
+                    [ngClass]="{
+                        'bg-bg-background': false,
+                        'bg-tag-red': true,
+                        'bg-tag-green': false
+                    }">
+                    <div class="text-xs font-medium text-foregrounds-secondary">
+                        <ng-container *ngIf="false" i18n>Current highest bid (10s ago)</ng-container>
+                        <ng-container *ngIf="true" i18n>Current highest bid</ng-container>
+                        <ng-container *ngIf="false" i18n>Your bid is the highest</ng-container>
+                    </div>
                     <div class="flex items-center mt-2 text-lg">
                       <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.auctionHighestBid || 0) || 'No Bid Yet'}}</div>
+                      <!-- TODO: Change auth to the user which should be when someone else bidded -->
+                      <a *ngIf="true" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="ml-6 flex items-center">
+                        <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                            class="border-2 border-app-gray-100 bg-bg-background min-w-8"
+                            [nzSize]="32">
+                        </nz-avatar>
+                        <div class="ml-3 text-base font-medium truncate max-w-20">
+                          @{{ ((auth.member$ | async)?.name || (auth.member$ | async)?.uid) }}
+                        </div>
+                      </a>
                   </div>
                 </div>
                 <div class="flex items-center mt-2">
