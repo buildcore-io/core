@@ -24,8 +24,9 @@ import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 export enum ListingType {
-  // LISTING = 0,
-  OFFER = 1
+  CURRENT_BIDS = 0,
+  PAST_BIDS = 1,
+  MY_TRANSACTIONS = 2
 }
 
 @UntilDestroy()
@@ -43,7 +44,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
-  public currentListingType = ListingType.OFFER;
+  public currentListingType = ListingType.CURRENT_BIDS;
   public endsOnTicker$: BehaviorSubject<Timestamp|undefined> = new BehaviorSubject<Timestamp|undefined>(undefined);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
@@ -54,11 +55,11 @@ export class NFTPage implements OnInit, OnDestroy {
       }
     },
     scales: {
-        xAxis: {
-            ticks: {
-                maxTicksLimit: 10
-            }
+      xAxis: {
+        ticks: {
+          maxTicksLimit: 10
         }
+      }
     },
     plugins: {
       legend: {
@@ -471,7 +472,7 @@ export class NFTPage implements OnInit, OnDestroy {
     if (data?.length) {
       const sortedData = data.sort((a, b) => a[0] - b[0]);
       for (let i=0; i<sortedData.length; i++) {
-        dataToShow.data.push(sortedData[i][1]);
+        dataToShow.data.push(sortedData[i][1] / 1000 / 1000);
         dataToShow.labels.push(dayjs(sortedData[i][0]).format('MMM D'));
       }
     }
