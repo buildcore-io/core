@@ -25,16 +25,16 @@ export class NftSaleAuctionComponent implements OnInit {
       this.availableFromControl.setValue(this._nft.auctionFrom || '');
       this.selectedAccessControl.setValue(this._nft.saleAccess || NftAccess.OPEN);
       this.buyerControl.setValue(this._nft.saleAccessMembers || []);
-      if (this._nft.availablePrice) {
-        this.buyAvailableControl.setValue(true);
-        if (this._nft.availablePrice >= 1000 * 1000 * 1000) {
-          this.buyPriceControl.setValue(this._nft.availablePrice / 1000 / 1000 / 1000);
-          this.buyUnitControl.setValue(<Units>'Gi');
-        } else {
-          this.buyPriceControl.setValue(this._nft.availablePrice / 1000 / 1000);
-          this.buyUnitControl.setValue(<Units>'Mi');
-        }
-      }
+      // if (this._nft.availablePrice) {
+      //   this.buyAvailableControl.setValue(true);
+      //   if (this._nft.availablePrice >= 1000 * 1000 * 1000) {
+      //     this.buyPriceControl.setValue(this._nft.availablePrice / 1000 / 1000 / 1000);
+      //     this.buyUnitControl.setValue(<Units>'Gi');
+      //   } else {
+      //     this.buyPriceControl.setValue(this._nft.availablePrice / 1000 / 1000);
+      //     this.buyUnitControl.setValue(<Units>'Mi');
+      //   }
+      // }
 
       if (this._nft.auctionFloorPrice) {
         if (this._nft.auctionFloorPrice >= 1000 * 1000 * 1000) {
@@ -161,10 +161,10 @@ export class NftSaleAuctionComponent implements OnInit {
       accessMembers: this.buyerControl.value
     };
 
-    if (this.buyAvailableControl.value) {
-      up.availableFrom = this.availableFromControl.value;
-      up.price = this.getRawPrice(this.buyPriceControl.value, this.buyUnitControl.value);
-    }
+    // if (this.buyAvailableControl.value) {
+    //   up.availableFrom = this.availableFromControl.value;
+    //   up.price = this.getRawPrice(this.buyPriceControl.value, this.buyUnitControl.value);
+    // }
 
     this.wenOnUpdate.next(up);
   }

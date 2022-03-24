@@ -176,10 +176,10 @@
                 </div>
             </div>
 
-            <button class="mt-10" nz-button nzType="default" (click)="sell($event)" *ngIf="canSetItForSale(data.nft$ | async)" nzBlock nzSize="large">
+            <button class="mt-10" nz-button nzType="default" (click)="sell($event)" nzBlock nzSize="large">
                 <span *ngIf="canBeSetForSale(data.nft$ | async)" i18n>Sell NFT</span>
-                <span *ngIf="!canBeSetForSale(data.nft$ | async) && isAvailableForSale(data.nft$ | async, data.collection$ | async)" i18n>Change Fixed Price</span>
-                <span *ngIf="!canBeSetForSale(data.nft$ | async) && isAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
+                <span *ngIf="!canBeSetForSale(data.nft$ | async) && willBeAvailableForSale(data.nft$ | async, data.collection$ | async)" i18n>Change Fixed Price</span>
+                <span *ngIf="!canBeSetForSale(data.nft$ | async) && willBeAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
             </button>
 
             <button class="mt-10" nz-button nzType="primary" (click)="bid($event)"
@@ -203,7 +203,7 @@
                     [stroke]="chartOptions.stroke!" [xaxis]="chartOptions.xaxis!" [tooltip]="chartOptions.tooltip!"></apx-chart>
             </wen-collapse>
 
-            <wen-collapse i18n-nzTitle title="Offers" class="mt-4" [isCollapsed]="false" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
+            <wen-collapse i18n-nzTitle title="Bids" class="mt-4" [isCollapsed]="false" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
                 <nz-table *ngIf="currentListingType === listingTypes.OFFER" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
                     [nzData]="(data.offers$ | async) || []" [nzShowPagination]="false">
                     <thead>

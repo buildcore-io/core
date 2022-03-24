@@ -214,6 +214,14 @@ export class NFTPage implements OnInit, OnDestroy {
     return ((col.total - col.sold) > 0) && col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isBefore(dayjs());
   }
 
+  public willBeAvailableForSale(nft?: Nft|null, col?: Collection|null): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isAfter(dayjs());
+  }
+
 
   public canSetItForSale(nft?: Nft|null): boolean {
     return !!nft?.owner && nft?.owner === this.auth.member$.value?.uid;
@@ -233,6 +241,14 @@ export class NFTPage implements OnInit, OnDestroy {
     }
 
     return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs());
+  }
+
+  public willBeAvailableForAuction(nft?: Nft|null, col?: Collection|null): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isAfter(dayjs());
   }
 
   public auctionInProgress(nft?: Nft|null, col?: Collection|null): boolean {
