@@ -91,6 +91,9 @@ module.exports = {
           separator: '#F0EEE6',
           tertiary: '#BCB9A9'
         },
+        red: {
+          primary: '#FF0019'
+        },
         brown: '#A66300',
         pink: '#F20CDF',
         black: '#000000',

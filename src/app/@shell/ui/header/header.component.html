@@ -78,11 +78,13 @@
 
     <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"
       [ngClass]="isMemberProfile ? 'isMember' : ''"></wen-sign-in>
-    <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Coming SOON"
-      nzTooltipPlacement="bottom" *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+    <button nz-button nz-dropdown nzType="default" nzShape="circle" 
+      *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
       [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
-      class="inline-flex items-center justify-center border-0 wen-header-button">
+      class="inline-flex items-center justify-center border-0 wen-header-button relative"
+      (nzVisibleChange)="notificationVisibleChange()">
       <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
+      <div *ngIf="!isReadNotifications()" class="w-2 h-2 bg-red-primary absolute right-2.5 top-2 rounded-full"></div>
     </button>
 
     <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
@@ -98,7 +100,25 @@
     </button>
   </ng-template>
 
-  <nz-dropdown-menu #notificationMenu="nzDropdownMenu"> </nz-dropdown-menu>
+  <nz-dropdown-menu #notificationMenu="nzDropdownMenu">
+    <wen-menu>
+      <div class="px-5 py-4 w-full flex justify-between cursor-pointer "
+        *ngFor="let nt of notificationMessages; trackBy: trackByUid; let first = first"
+        [ngClass]="{
+          'border-t': !first
+        }">
+        <div class="w-2 h-2 bg-orange rounded-full mr-3 mt-2"></div>
+        <div>
+          <div class="font-bold break-words line-clamp-1">
+            {{ nt.title }}
+          </div>
+          <div class="max-w-sm font-medium text-sm text-foregrounds-secondary mt-1 break-words line-clamp-2">
+            {{ nt.content }}
+          </div>
+        </div>
+      </div>
+    </wen-menu>
+  </nz-dropdown-menu>
 
   <nz-dropdown-menu #userMenu="nzDropdownMenu">
     <wen-menu>

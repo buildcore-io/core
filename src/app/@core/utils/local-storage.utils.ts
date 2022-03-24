@@ -4,7 +4,8 @@ export enum StorageItem {
   Theme = 'App/theme',
   VerificationTransaction = 'App/verificationTransaction',
   CheckoutTransaction = 'App/checkoutTransaction',
-  BidTransaction = 'App/bidTransaction-',
+  Notification = 'App/notification',
+  BidTransaction = 'App/bidTransaction-'
 }
 
 export const getItem = (itemName: StorageItem): unknown | null => {
