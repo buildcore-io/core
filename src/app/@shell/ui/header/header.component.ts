@@ -7,7 +7,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
-import { getItem, removeItem, StorageItem } from '@core/utils';
+import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
 import { Collection, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
@@ -45,6 +45,12 @@ export class HeaderComponent implements OnInit {
   public isCheckoutOpen = false;
   public currentCheckoutNft?: Nft;
   public currentCheckoutCollection?: Collection;
+  // TODO: remove
+  public notificationMessages = [
+    { uid: '1', title: '@Adam just offered $20 for BOT#12213', content: 'Your BOT#12213 has received a new bid for 100 Mi from @Adam.00 Mi.' },
+    { uid: '2', title: '@Adam just offered $20 for BOT#12213', content: 'Your BOT#12213 has received a new bid for 100 Mi from @Adam.00 Mi.' },
+    { uid: '3', title: '@Adam just offered $20 for BOT#12213', content: 'Your BOT#12213 has received a new bid for 100 Mi from @Adam.00 Mi.' }
+  ]
   private notificationRef?: NzNotificationRef;
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   private transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
@@ -204,6 +210,10 @@ export class HeaderComponent implements OnInit {
     this.cd.markForCheck();
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private removeCheckoutNotification(removeFromStorage = true): void {
     if (this.notificationRef) {
       this.nzNotification.remove(this.notificationRef.messageId);
@@ -216,6 +226,16 @@ export class HeaderComponent implements OnInit {
       this.currentCheckoutCollection = undefined;
       removeItem(StorageItem.CheckoutTransaction);
     }
+  }
+
+  public notificationVisibleChange(): void {
+    setItem(StorageItem.Notification, this.notificationMessages[this.notificationMessages.length - 1]?.uid);
+    this.cd.markForCheck();
+  }
+
+  public isReadNotifications(): boolean {
+    return this.notificationMessages.length === 0 ||
+      this.notificationMessages[this.notificationMessages.length - 1].uid === getItem(StorageItem.Notification);
   }
 
   public cancelAccessSubscriptions(): void {
