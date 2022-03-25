@@ -2342,7 +2342,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">Check out collection</target>
+        <target state="translated">Découvrez la collection</target>
       </trans-unit>
       <trans-unit id="2003820108458886875" datatype="html">
         <source>About collection</source>
@@ -2810,7 +2810,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">119</context>
         </context-group>
-        <target state="translated"> Ce % de redevances sera appliqué à la fabrication initiale des NFT et à toutes les ventes suivantes. L’adresse IOTA qui recevra des redevances doit toujours avoir un solde minimum de 1 Mi en raison du mécanisme de protection dust du protocole IOTA. </target>
+        <target state="translated"> Ce % de redevances sera appliqué à la fabrication initiale des NFT et à toutes les ventes suivantes. L’adresse IOTA qui recevra des redevances doit toujours avoir un solde minimum de 1 Mi en raison du mécanisme de protection du protocole IOTA. </target>
       </trans-unit>
       <trans-unit id="966263415095000907" datatype="html">
         <source>Royalties - Percentage fee</source>
@@ -2818,7 +2818,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="translated">Royalties - Pourcentage de frais</target>
+        <target state="translated">Redevance - Pourcentage de frais</target>
       </trans-unit>
       <trans-unit id="8794265583214431567" datatype="html">
         <source>Example: 10 % , 20 % , etc..</source>
@@ -2826,7 +2826,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="translated">Exemple: 10 % , 20 % , etc...</target>
+        <target state="translated">Exemple: 10 %, 20 %, etc.</target>
       </trans-unit>
       <trans-unit id="276498727967492175" datatype="html">
         <source> Royalties goes to a different space </source>
@@ -2834,7 +2834,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">149</context>
         </context-group>
-        <target state="translated"> Les royalities vont vers un espace différent </target>
+        <target state="translated"> Les redevances vont vers un espace différent </target>
       </trans-unit>
       <trans-unit id="9110283274770962928" datatype="html">
         <source>Royalties goes to a different space</source>
@@ -2842,7 +2842,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="translated">Les royalities vont vers un espace différent</target>
+        <target state="translated">Les redevances vont vers un espace différent</target>
       </trans-unit>
       <trans-unit id="7565716024468232322" datatype="html">
         <source>Links</source>
@@ -2882,7 +2882,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">212,213</context>
         </context-group>
-        <target state="translated">Connecter votre compte Twitter</target>
+        <target state="translated">Lien vers votre compte Twitter</target>
       </trans-unit>
       <trans-unit id="2647862460775197644" datatype="html">
         <source>Invalid Discord username.</source>
@@ -2898,7 +2898,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">232,233</context>
         </context-group>
-        <target state="translated">Associer votre compte Discord</target>
+        <target state="translated">Lien vers votre compte Discord</target>
       </trans-unit>
       <trans-unit id="5708470610943476504" datatype="html">
         <source>Member discounts</source>
@@ -3938,7 +3938,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="translated">Charger à nouveau une fois que vous avez générez ci-dessous</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
