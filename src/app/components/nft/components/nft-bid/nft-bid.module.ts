@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
+import { RelativeTimeModule } from '@core/pipes/relative-time/relative-time.module';
 import { TimeModule } from '@core/pipes/time/time.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -36,6 +37,7 @@ import { NftBidComponent } from './nft-bid.component';
     CountdownTimeModule,
     NzAlertModule,
     TruncateModule,
+    RelativeTimeModule,
     NzNotificationModule,
     NzTableModule,
     NzAvatarModule,

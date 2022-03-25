@@ -63,16 +63,16 @@ export class NftApi extends BaseApi<Nft> {
         }
 
         // Order transactions by date.
-        o.transactions = o.transactions.sort((c) => {
-          return c.createdOn!.toMillis() * -1;
+        o.transactions = o.transactions.sort((c, b) => {
+          return b.createdOn!.toMillis() - c.createdOn!.toMillis();
         });
 
         out.push(o);
       }
 
       // Order from latest.
-      out = out.sort((c) => {
-        return c.order.createdOn!.toMillis() * -1;
+      out = out.sort((c, b) => {
+        return  b.order.createdOn!.toMillis() - c.order.createdOn!.toMillis();
       });
 
       return out;
@@ -82,7 +82,6 @@ export class NftApi extends BaseApi<Nft> {
   public getOffers(nft: Nft): Observable<OffersHistory[]> {
     return this.afs.collection<OffersHistory>(
       COL.TRANSACTION,
-      // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref) => {
         return ref
           .where('payload.nft', '==', nft.uid)
@@ -103,12 +102,38 @@ export class NftApi extends BaseApi<Nft> {
       }
 
       // Order from latest.
-      out = out.sort((c) => {
-        return c.transaction.payload.amount * -1;
+      out = out.sort((c, b) => {
+        return b.transaction.payload.amount - c.transaction.payload.amount;
       });
 
       return out;
     }));
+  }
+
+  public getMembersBids(member: Member, nft: Nft): Observable<Transaction[]> {
+    return this.afs.collection<Transaction>(
+      COL.TRANSACTION,
+      (ref) => {
+        return ref
+          .where('payload.nft', '==', nft.uid)
+          .where('member', '==', member.uid)
+          .where('createdOn', '<', nft.auctionTo?.toDate())
+          .where('createdOn', '>', nft.auctionFrom?.toDate())
+          .where('type', 'in', [TransactionType.PAYMENT, TransactionType.CREDIT]).orderBy('createdOn', 'desc')
+      }
+    ).valueChanges();
+  }
+
+  public getMembersTransactions(member: Member, nft: Nft): Observable<Transaction[]> {
+    return this.afs.collection<Transaction>(
+      COL.TRANSACTION,
+      (ref) => {
+        return ref
+          .where('payload.nft', '==', nft.uid)
+          .where('member', '==', member.uid)
+          .where('type', 'in', [TransactionType.PAYMENT, TransactionType.CREDIT]).orderBy('createdOn', 'desc')
+      }
+    ).valueChanges();
   }
 
   public topApproved(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {

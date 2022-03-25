@@ -12,14 +12,13 @@ import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
-import { Collection, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Collection, Member, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, debounceTime, firstValueFrom, fromEvent, interval, skip, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";
-import { Member } from './../../../../../functions/interfaces/models/member';
 import { Notification } from './../../../../../functions/interfaces/models/notification';
 import { MemberApi } from './../../../@api/member.api';
 
@@ -57,6 +56,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   private transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
   private subscriptionTransaction$?: Subscription;
+  private subscriptionNotification$?: Subscription;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
@@ -165,7 +165,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     let lastMember: string|undefined;
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m) => {
       if (m && lastMember !== m.uid) {
-        this.notificationApi.top().subscribe(this.notifications$);
+        this.subscriptionNotification$?.unsubscribe();
+        this.subscriptionNotification$ = this.notificationApi.topMember(m.uid).subscribe(this.notifications$);
+        lastMember = m.uid;
       } else if (!m) {
         this.notifications$.next([]);
         lastMember = undefined;
@@ -271,6 +273,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelAccessSubscriptions();
+    this.subscriptionNotification$?.unsubscribe();
     this.subscriptionTransaction$?.unsubscribe();
     this.currentCheckoutNft = undefined;
     this.currentCheckoutCollection = undefined;

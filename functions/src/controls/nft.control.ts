@@ -98,7 +98,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
   }
 
   if (params.availableFrom) {
-    params.availableFrom = dateToTimestamp(params.availableFrom);
+    params.availableFrom = dateToTimestamp(params.availableFrom, true);
   }
 
   if (!collectionData.availableFrom || dayjs(collectionData.availableFrom.toDate()).isAfter(dayjs(params.availableFrom.toDate()), 'minutes')) {
@@ -218,11 +218,11 @@ export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
   }
 
   if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
   }
 
   if (params.body.auctionFrom) {
-    params.body.auctionFrom = dateToTimestamp(params.body.auctionFrom);
+    params.body.auctionFrom = dateToTimestamp(params.body.auctionFrom, true);
   }
 
   // Validate if auction already in progress.

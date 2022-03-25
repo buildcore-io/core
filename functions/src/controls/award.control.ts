@@ -107,7 +107,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
       issued: 0,
       rank: 1,
       completed: false,
-      endDate: dateToTimestamp(params.body.endDate),
+      endDate: dateToTimestamp(params.body.endDate, true),
       createdBy: owner,
       approved: false,
       rejected: false

@@ -108,7 +108,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   await SpaceValidator.hasValidAddress(refSpaceRoyalty);
 
   if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
   }
 
   const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(collectionAddress);
@@ -194,7 +194,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
   }
 
   const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);

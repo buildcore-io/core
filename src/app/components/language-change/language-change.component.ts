@@ -14,18 +14,22 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 export class LanguageChangeComponent implements OnInit {
 
   public languages = Object.values(Languages);
-  public languageControl: FormControl = new FormControl('');
+  public languageControl: FormControl = new FormControl(getCookie(CookieItem.firebaseLanguageOverride) || this.languages[0].firebase);
 
   ngOnInit(): void {
+    let prevLang = this.languageControl.value;
     this.languageControl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((firebaseLang: string) => {
-        setCookie(CookieItem.firebaseLanguageOverride, firebaseLang);
+        if (prevLang !== firebaseLang) {
+          setCookie(CookieItem.firebaseLanguageOverride, firebaseLang);
+          setTimeout(() => {
+            window.location.reload();
+          }, 750);
+          prevLang = firebaseLang;
+        }
       });
-
-    const language = getCookie(CookieItem.firebaseLanguageOverride) || this.languages[0].firebase;
-    this.languageControl.setValue(language);
   }
 
-  
+
 }

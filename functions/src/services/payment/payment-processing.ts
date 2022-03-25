@@ -6,7 +6,7 @@ import { COL, IotaAddress } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
-import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models/transaction';
+import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { NotificationService } from '../notification/notification';
@@ -95,8 +95,9 @@ export class ProcessingService {
     // We need to decide on the winner. Last payment thats not invalid and linked to this order should be the winer.
     const payments: any = await admin.firestore().collection(COL.TRANSACTION)
                           .where('payload.invalidPayment', '==', false)
+                          .where('type', '==', TransactionType.PAYMENT)
                           .where('createdOn', '>', nft.auctionFrom)
-                          .where('createdOn', '<', dateToTimestamp(dayjs(nft.auctionFrom.toDate()).add(nft.auctionLength || TRANSACTION_AUTO_EXPIRY_MS, 'ms')))
+                          .where('createdOn', '<', nft.auctionTo)
                           .where('payload.nft', '==', nft.uid).get();
     if (payments.size > 0) {
       // It has been succesfull, let's finalise.
@@ -155,7 +156,6 @@ export class ProcessingService {
           action: 'update'
         });
       } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
-        // We need to decide on the winner. Last payment thats not invalid and linked to this order should be the winer.
         const payments: any = await admin.firestore().collection(COL.TRANSACTION)
                               .where('payload.invalidPayment', '==', false)
                               .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
@@ -375,13 +375,16 @@ export class ProcessingService {
   }
 
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
-    const payments: any = await admin.firestore().collection(COL.TRANSACTION)
-                          .where('payload.invalidPayment', '==', false)
-                          .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
-    let newValidPayment = false;
-    let previousHighestPay: TransactionPayment|undefined;
     const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
     const sfDocNft: any = await this.transaction.get(refNft);
+    const payments: any = await admin.firestore().collection(COL.TRANSACTION)
+                          .where('payload.invalidPayment', '==', false)
+                          .where('type', '==', TransactionType.PAYMENT)
+                          .where('createdOn', '<', sfDocNft.data().auctionTo)
+                          .where('createdOn', '>', sfDocNft.data().auctionFrom)
+                          .where('payload.nft', '==', transaction.payload.nft).get();
+    let newValidPayment = false;
+    let previousHighestPay: TransactionPayment|undefined;
     if (payments.size > 0) {
       // It has been succesfull, let's finalise.
       previousHighestPay = <TransactionPayment>payments.docs[0].data();
@@ -436,7 +439,7 @@ export class ProcessingService {
       const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(transaction.member!);
       const sfDocMember: any = await this.transaction.get(refMember);
       const bidNotification: Notification = NotificationService.prepareBid(sfDocMember.data(), sfDocNft.data(), payment);
-      const refNotification = await admin.firestore().collection(COL.TRANSACTION).doc(bidNotification.uid);
+      const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
       this.updates.push({
         ref: refNotification,
         data: bidNotification,

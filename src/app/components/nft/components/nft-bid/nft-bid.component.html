@@ -56,10 +56,11 @@
                 <h3 class="mb-1 text-2xl font-bold truncate">{{ getTitle() }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
 
-                <!-- <div class="flex items-center mt-6">
+                <div class="flex items-center mt-6" *ngIf="(expiryTicker$ | async)">
                     <wen-icon-time class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-time>
-                    <div class="font-medium">2 hours left</div>
-                </div> -->
+                    <div class="font-medium"><span i18n>Ends </span>{{ (expiryTicker$ | async) | relativeTime:'from'}}</div>
+                </div>
+
                 <div class="flex items-center mt-2.5">
                     <wen-icon-crown class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-crown>
                     <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
@@ -71,23 +72,19 @@
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."
                     ></wen-icon-question-circle>
                 </div>
-
-                <!-- TODO: Add logic to ngClass and texts -->
                 <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max"
                     [ngClass]="{
-                        'bg-bg-background': false,
-                        'bg-tag-red': true,
-                        'bg-tag-green': false
+                        'bg-bg-background': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
+                        'bg-tag-red': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length,
+                        'bg-tag-green': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)
                     }">
                     <div class="text-xs font-medium text-foregrounds-secondary">
-                        <ng-container *ngIf="false" i18n>Current highest bid (10s ago)</ng-container>
-                        <ng-container *ngIf="true" i18n>Current highest bid</ng-container>
-                        <ng-container *ngIf="false" i18n>Your bid is the highest</ng-container>
+                        <ng-container *ngIf="(getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length" i18n>Current highest bid</ng-container>
+                        <ng-container *ngIf="(auth.member$ | async)?.uid && (getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
                       <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.auctionHighestBid || 0) || 'No Bid Yet'}}</div>
-                      <!-- TODO: Change auth to the user which should be when someone else bidded -->
-                      <a *ngIf="true" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="ml-6 flex items-center">
+                      <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center ml-6">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-app-gray-100 bg-bg-background min-w-8"
                             [nzSize]="32">

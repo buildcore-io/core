@@ -34,8 +34,6 @@
 
             <ng-container *ngIf="!nft?.owner; else ownerBlock">
                 <div class="flex items-center mt-auto" *ngIf="(deviceService.isDesktop$ | async)">
-                    <!-- <wen-icon-dollar class="mr-1 text-app-gray-400"></wen-icon-dollar> -->
-                    <!-- <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div> -->
                     <div class="flex-grow w-0">
                       <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
                       <div class="text-sm font-medium truncate">

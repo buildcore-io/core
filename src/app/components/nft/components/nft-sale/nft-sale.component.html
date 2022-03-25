@@ -85,7 +85,7 @@
             (nzCheckedChange)="currentSaleType = saleType.NOT_FOR_SALE">
                 <span i18n>Not for sale</span>
         </nz-tag>
-        <nz-tag [nzMode]="disableFixedOption ? 'default' : 'checkable'" class="mt-2 w-max" [nzChecked]="currentSaleType === saleType.FIXED_PRICE"
+        <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentSaleType === saleType.FIXED_PRICE"
             (nzCheckedChange)="currentSaleType = saleType.FIXED_PRICE">
                 <span i18n>Fixed price</span>
         </nz-tag>

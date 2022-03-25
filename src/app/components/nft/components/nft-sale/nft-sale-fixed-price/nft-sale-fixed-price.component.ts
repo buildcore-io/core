@@ -33,6 +33,9 @@ export class NftSaleFixedPriceComponent implements OnInit {
         }
       }
     }
+
+    // Temp disabled:
+    this.buyerControl.disable();
   }
   get nft(): Nft|null|undefined {
     return this._nft;

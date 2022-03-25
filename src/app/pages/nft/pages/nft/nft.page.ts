@@ -19,13 +19,15 @@ import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
+import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
 import { DataService } from '../../services/data.service';
+dayjs.extend(isSameOrBefore);
 
 export enum ListingType {
   CURRENT_BIDS = 0,
-  PAST_BIDS = 1,
+  MY_BIDS = 1,
   MY_TRANSACTIONS = 2
 }
 
@@ -44,7 +46,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCopied = false;
   public mediaType: 'video'|'image'|undefined;
   public isNftPreviewOpen = false;
-  public currentListingType = ListingType.CURRENT_BIDS;
+  public currentListingType = ListingType.MY_TRANSACTIONS;
   public endsOnTicker$: BehaviorSubject<Timestamp|undefined> = new BehaviorSubject<Timestamp|undefined>(undefined);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
@@ -70,15 +72,15 @@ export class NFTPage implements OnInit, OnDestroy {
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
-  private offersSubscriptions$: Subscription[] = [];
-  
+  private tranSubscriptions$: Subscription[] = [];
+
   constructor(
     public data: DataService,
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
+    public auth: AuthService,
     private titleService: Title,
     private route: ActivatedRoute,
-    private auth: AuthService,
     private spaceApi: SpaceApi,
     private memberApi: MemberApi,
     private nzNotification: NzNotificationService,
@@ -145,6 +147,10 @@ export class NFTPage implements OnInit, OnDestroy {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );
+
+        if (this.auth.member$.value) {
+          this.nftSubscriptions$.push(this.nftApi.getMembersTransactions(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myTransactions$));
+        }
       }
 
       // Sync ticker.
@@ -162,12 +168,18 @@ export class NFTPage implements OnInit, OnDestroy {
         }
 
         if (this.auctionInProgress(this.data.nft$.value, p)) {
-          this.offersSubscriptions$.forEach((s) => {
+          this.currentListingType = ListingType.CURRENT_BIDS;
+          this.cd.markForCheck();
+
+          this.tranSubscriptions$.forEach((s) => {
             s.unsubscribe();
           });
 
           // Resubscribe.
-          this.nftSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.offers$));
+          this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.allBidTransactions$));
+          if (this.auth.member$.value) {
+            this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myBidTransactions$));
+          }
         }
       }
     });
@@ -183,6 +195,17 @@ export class NFTPage implements OnInit, OnDestroy {
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.endsOnTicker$.next(this.endsOnTicker$.value);
+      if (
+        this.data.nft$.value &&
+        (
+          (this.data.nft$.value.availableFrom && dayjs(this.data.nft$.value.availableFrom.toDate()).diff(dayjs(), 's') === 0) ||
+          (this.data.nft$.value.auctionFrom && dayjs(this.data.nft$.value.auctionFrom.toDate()).diff(dayjs(), 's') === 0)
+        )
+
+      ) {
+        // Delay slightly.
+        this.cd.markForCheck();
+      }
     });
   }
 
@@ -233,7 +256,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return ((col.total - col.sold) > 0) && col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isBefore(dayjs());
+    return ((col.total - col.sold) > 0) && col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isSameOrBefore(dayjs(), 's');
   }
 
   public willBeAvailableForSale(nft?: Nft|null, col?: Collection|null): boolean {
@@ -241,7 +264,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isAfter(dayjs());
+    return col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's');
   }
 
 
@@ -262,7 +285,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isBefore(dayjs());
+    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's');
   }
 
   public willBeAvailableForAuction(nft?: Nft|null, col?: Collection|null): boolean {
@@ -270,7 +293,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isAfter(dayjs());
+    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isAfter(dayjs(), 's');
   }
 
   public auctionInProgress(nft?: Nft|null, col?: Collection|null): boolean {
@@ -280,8 +303,8 @@ export class NFTPage implements OnInit, OnDestroy {
 
     return (
       col.approved === true && !!nft?.auctionFrom && !!nft?.auctionTo &&
-      dayjs(nft.auctionFrom.toDate()).isBefore(dayjs()) &&
-      dayjs(nft.auctionTo.toDate()).isAfter(dayjs())
+      dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's') &&
+      dayjs(nft.auctionTo.toDate()).isAfter(dayjs(), 's')
     );
   }
 
@@ -290,7 +313,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return dayjs(nft.availableFrom.toDate()).isAfter(dayjs())
+    return dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's')
   }
 
   public getAuctionEnd(nft?: Nft|null): dayjs.Dayjs|undefined {
@@ -434,7 +457,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return dayjs(date.toDate()).isAfter(dayjs());
+    return dayjs(date.toDate()).isAfter(dayjs(), 's');
   }
 
   public getTitle(nft?: Nft|null): any {

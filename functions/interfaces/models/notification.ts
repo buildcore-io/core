@@ -5,12 +5,12 @@ export enum NotificationType {
 
 export interface NotificationBidParams {
   member: {
-    id: string,
+    uid: string,
     name: string
   },
   amount: number;
   nft: {
-    id: string,
+    uid: string,
     name: string
   },
 }

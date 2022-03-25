@@ -1,6 +1,7 @@
 import { Member, Transaction } from '../../../interfaces/models';
 import { Nft } from '../../../interfaces/models/nft';
 import { Notification, NotificationType } from "../../../interfaces/models/notification";
+import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
 export class NotificationService {
@@ -11,13 +12,14 @@ export class NotificationService {
       params: {
         amount: tran.payload.amount,
         member: {
-          id: member.uid,
+          uid: member.uid,
           name: member.name || member.uid
         },
         nft: {
-          id: nft.uid,
+          uid: nft.uid,
           name: nft.name || nft.uid
-        }
+        },
+        createdOn: serverTime()
       }
     }
   }

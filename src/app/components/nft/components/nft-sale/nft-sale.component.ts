@@ -43,7 +43,6 @@ export class NftSaleComponent {
   @Input()
   set nft(value: Nft|null|undefined) {
     this._nft = value;
-    this.disableFixedOption = false;
     if (this._nft) {
       this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
         if (o.contentType.match('video/.*')) {
@@ -56,17 +55,15 @@ export class NftSaleComponent {
       });
 
       // Set default sale type.
-      if (this._nft.auctionFrom && this._nft.availableFrom) {
-        if (this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
-          this.disableFixedOption = true;
-        }
-
+      if (this._nft.auctionFrom) {
         this.currentSaleType = SaleType.AUCTION;
       } else if (this._nft.availableFrom) {
         this.currentSaleType = SaleType.FIXED_PRICE;
       } else {
         this.currentSaleType = SaleType.NOT_FOR_SALE;
       }
+
+      this.cd.markForCheck();
     }
   }
   get nft(): Nft|null|undefined {
@@ -74,7 +71,6 @@ export class NftSaleComponent {
   }
   @Output() wenOnClose = new EventEmitter<void>();
   public saleType = SaleType;
-  public disableFixedOption = false;
   public currentSaleType = SaleType.NOT_FOR_SALE;
   public mediaType: 'video'|'image'|undefined;
   private _nft?: Nft|null;

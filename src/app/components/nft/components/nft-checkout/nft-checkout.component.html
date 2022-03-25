@@ -55,11 +55,6 @@
             <div class="relative flex flex-col w-full h-full">
                 <h3 class="mb-1 text-2xl font-bold truncate">{{ getTitle() }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
-
-                <!-- <div class="flex items-center mt-6">
-                    <wen-icon-time class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-time>
-                    <div class="font-medium">2 hours left</div>
-                </div> -->
                 <div class="flex items-center mt-2.5">
                     <wen-icon-crown class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-crown>
                     <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
@@ -77,11 +72,9 @@
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
                         <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
                         <div class="mr-2 font-bold truncate">{{ formatBest(calc(getRecord()?.availablePrice || getRecord()?.price || 0, discount())) }}</div>
-                        <!-- <div class="font-medium truncate text-foregrounds-secondary">({{ '$72' }})</div> -->
                     </div>
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() === 1">
                       <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
-                      <!-- <div class="font-medium truncate text-foregrounds-secondary">({{ '$72' }})</div> -->
                   </div>
                 </div>
             </div>

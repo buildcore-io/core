@@ -98,11 +98,11 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   }
 
   if (params.body.settings?.startDate) {
-    params.body.settings.startDate = dateToTimestamp(params.body.settings.startDate);
+    params.body.settings.startDate = dateToTimestamp(params.body.settings.startDate, true);
   }
 
   if (params.body.settings?.endDate) {
-    params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate);
+    params.body.settings.endDate = dateToTimestamp(params.body.settings.endDate, true);
   }
 
   const refProposal: admin.firestore.DocumentReference = admin.firestore().collection(COL.PROPOSAL).doc(proposalAddress);

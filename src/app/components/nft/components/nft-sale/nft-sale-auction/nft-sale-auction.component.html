@@ -3,7 +3,7 @@
     <div class="text-sm font-bold" i18n>
         Trade info
         <span *ngIf="isProd()">(3 days auction)</span>
-        <span *ngIf="!isProd()">(7 minutes auction - TEST)</span>
+        <span *ngIf="!isProd()">(8 minutes auction - IN TEST ENV)</span>
     </div>
 
     <nz-form-item class="mt-5">
@@ -97,7 +97,7 @@
         </nz-form-control>
     </nz-form-item> -->
 
-    <nz-form-item class="mt-6">
+    <!-- <nz-form-item class="mt-6">
         <nz-form-control>
             <nz-radio-group
                 class="wen-radio-group"
@@ -124,17 +124,16 @@
             nzPlaceHolder="Reserve for specific buyer"
             [formControl]="buyerControl"
             >
-            <!-- TODO -->
-            <!-- <nz-option
+            <nz-option
                 *ngFor="let cc of collectionCategories"
                 i18n-nzLabel
                 [nzLabel]="cc.value"
                 [nzValue]="cc.key"
             >
-            </nz-option> -->
+            </nz-option>
             </nz-select>
         </nz-form-control>
-        </nz-form-item>
+      </nz-form-item> -->
 
     <div class="flex flex-col items-center w-full mt-10 text-xs font-medium text-foregrounds-tertiary">
         <div class="mb-3" i18n>Once your listing is complete, you will get a confirmation message.</div>

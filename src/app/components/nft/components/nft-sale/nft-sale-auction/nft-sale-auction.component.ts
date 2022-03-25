@@ -22,7 +22,7 @@ export class NftSaleAuctionComponent implements OnInit {
   set nft(value: Nft|null|undefined) {
     this._nft = value;
     if (this._nft) {
-      this.availableFromControl.setValue(this._nft.auctionFrom || '');
+      this.availableFromControl.setValue(this._nft.auctionFrom?.toDate() || '');
       this.selectedAccessControl.setValue(this._nft.saleAccess || NftAccess.OPEN);
       this.buyerControl.setValue(this._nft.saleAccessMembers || []);
       // if (this._nft.availablePrice) {
@@ -54,6 +54,9 @@ export class NftSaleAuctionComponent implements OnInit {
         this.buyerControl.disable();
       }
     }
+
+    // Temp disabled:
+    this.buyerControl.disable();
   }
   get nft(): Nft|null|undefined {
     return this._nft;
@@ -155,7 +158,7 @@ export class NftSaleAuctionComponent implements OnInit {
       type: SaleType.FIXED_PRICE,
       auctionFrom: this.availableFromControl.value,
       // TODO Implement switch
-      auctionLength: TRANSACTION_AUTO_EXPIRY_MS,
+      auctionLength: TRANSACTION_AUTO_EXPIRY_MS * 2,
       auctionFloorPrice: this.getRawPrice(this.floorPriceControl.value, this.floorUnitControl.value),
       access: this.selectedAccessControl.value,
       accessMembers: this.buyerControl.value

@@ -97,7 +97,7 @@ export class NftBidComponent implements OnInit {
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
-          removeBitItemItem(val.payload.nft + expiresOn.valueOf());
+          removeBitItemItem(val.payload.nft + this.auth.member$.value?.uid + expiresOn.valueOf());
           return;
         }
 
@@ -147,8 +147,8 @@ export class NftBidComponent implements OnInit {
       this.cd.markForCheck();
     });
 
-    if (this.nft?.uid && getBitItemItem(this.nft.uid+this.nft.auctionTo?.valueOf())) {
-      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid+this.nft.auctionTo?.valueOf())).subscribe(<any>this.transaction$);
+    if (this.nft?.uid && getBitItemItem(this.nft.uid+this.auth.member$.value?.uid+this.nft.auctionTo?.toMillis())) {
+      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid+this.auth.member$.value?.uid+this.nft.auctionTo?.toMillis())).subscribe(<any>this.transaction$);
     }
 
     // Run ticker.
@@ -160,7 +160,7 @@ export class NftBidComponent implements OnInit {
         const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value);
         if (expiresOn.isBefore(dayjs())) {
           this.expiryTicker$.next(null);
-          removeBitItemItem(this.nft!.uid + expiresOn.valueOf());
+          removeBitItemItem(this.nft!.uid + this.auth.member$.value?.uid + expiresOn.valueOf());
           int.unsubscribe();
           this.reset();
         }
@@ -251,7 +251,7 @@ export class NftBidComponent implements OnInit {
     await this.auth.sign(params, (sc, finish) => {
       this.notification.processRequest(this.orderApi.openBid(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
-        setBitItemItem(params.nft + this.nft?.auctionTo?.valueOf(), val.uid);
+        setBitItemItem(params.nft + this.auth.member$.value?.uid + this.nft?.auctionTo?.toMillis(), val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
       });
     });
