@@ -8,8 +8,8 @@ import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Collection, CollectionAccess, CollectionType, Member } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
@@ -155,5 +155,18 @@ export class NftCardComponent {
         className: remaining >= 100 ? 'bg-tag-blue' : 'bg-tag-red'
       };
     }
+  }
+
+  public isDateInFuture(date?: Timestamp|null): boolean {
+    if (!date) {
+      return false;
+    }
+
+    return dayjs(date.toDate()).isAfter(dayjs(), 's');
+  }
+
+  public getDaysLeft(availableFrom?: Timestamp): number {
+    if (!availableFrom) return 0;
+    return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }
 }

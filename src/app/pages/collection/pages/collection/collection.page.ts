@@ -366,6 +366,11 @@ export class CollectionPage implements OnInit, OnDestroy {
     }
   }
 
+  public getDaysLeft(availableFrom?: Timestamp): number {
+    if (!availableFrom) return 0;
+    return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
+  }
+
   public isLoading(arr: any): boolean {
     return arr === undefined;
   }
