@@ -64,9 +64,10 @@ export class NftApi extends BaseApi<Nft> {
           }
 
           // Make sure order price is ovewriten with payment price.
-          // During bidding this can be different to what it was initially.
+          // During bidding this can be different to what it was initially. Date should also be when it was paid.
           if (tran.data()?.type === TransactionType.PAYMENT) {
             o.order.payload.amount = tran.data()?.payload.amount;
+            o.order.createdOn = tran.data()?.createdOn;
           }
         }
 
