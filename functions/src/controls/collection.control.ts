@@ -55,6 +55,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
       amount: Joi.number().min(0.01).max(1).required()
     })).min(0).max(5).optional(),
     onePerMemberOnly: Joi.boolean().required(),
+    limitedEdition: Joi.boolean().optional(),
     discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
     url: Joi.string().allow(null, '').uri({
       scheme: ['https', 'http']
@@ -107,7 +108,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   await SpaceValidator.hasValidAddress(refSpaceRoyalty);
 
   if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
   }
 
   const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(collectionAddress);
@@ -151,8 +152,9 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
       createdBy: creator,
       approved: false,
       rejected: false,
+      limitedEdition: !!params.body.limitedEdition,
       placeholderNft: placeholderNft || null
-    }), URL_PATHS.NFT)));
+    }), URL_PATHS.COLLECTION)));
 
     // Load latest
     docCollection = await refCollection.get();
@@ -180,6 +182,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   delete defaultSchema.availableFrom;
   delete defaultSchema.category;
   delete defaultSchema.onePerMemberOnly;
+  delete defaultSchema.limitedEdition;
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {
     uid: CommonJoi.uidCheck()
   }));
@@ -191,7 +194,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
   }
 
   const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);

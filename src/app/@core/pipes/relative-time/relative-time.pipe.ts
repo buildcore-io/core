@@ -28,12 +28,12 @@ dayjs.updateLocale('en', {
   name: 'relativeTime',
 })
 export class RelativeTime implements PipeTransform {
-  transform(date: dayjs.Dayjs|Timestamp|null): string {
+  transform(date: dayjs.Dayjs|Timestamp|null, type: 'from'|'to' = 'from'): string {
     if (!date) {
       return '';
     }
 
 
-    return dayjs(date.toDate()).fromNow();
+    return type === 'from' ? dayjs(date.toDate()).fromNow() : dayjs(date.toDate()).toNow();
   }
 }

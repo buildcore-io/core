@@ -24,4 +24,8 @@ export class OrderApi extends BaseApi<Nft> {
   public validateAddress(req: WenRequest): Observable<Transaction|undefined> {
     return this.request(WEN_FUNC.validateAddress, req);
   }
+
+  public openBid(req: WenRequest): Observable<Transaction|undefined> {
+    return this.request(WEN_FUNC.openBid, req);
+  }
 }

@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { SuccesfullOrdersWithFullHistory } from "@api/nft.api";
+import { OffersHistory, SuccesfullOrdersWithFullHistory } from "@api/nft.api";
 import { AuthService } from "@components/auth/services/auth.service";
 import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
 import { UnitsHelper } from "@core/utils/units-helper";
-import { Collection, Member, Space } from "functions/interfaces/models";
+import { Collection, Member, Space, Transaction } from "functions/interfaces/models";
 import { Nft } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
 
@@ -20,7 +20,9 @@ export class DataService {
   public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   public collectionCreator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-
+  public myBidTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
+  public allBidTransactions$: BehaviorSubject<OffersHistory[]> = new BehaviorSubject<OffersHistory[]>([]);
+  public myTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
   public constructor(private auth: AuthService) {
     // none.
   }

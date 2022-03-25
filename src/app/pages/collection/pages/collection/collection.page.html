@@ -4,20 +4,11 @@
         </wen-drawer-toggle>
     </ng-container>
 
-    <div class="relative w-auto h-48 mt-8 overflow-hidden lg:h-96 rounded-2xl lg:mt-16">
-        <img [src]="(data.collection$ | async)?.bannerUrl || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full" />
+    <div class="relative w-auto h-48 mt-8 overflow-hidden lg:h-96 lg:mt-16 rounded-2xl">
+        <img [src]="(data.collection$ | async)?.bannerUrl || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full rounded-3xl" />
 
-        <div class="absolute z-10 flex items-center p-2 bg-white rounded-lg top-5 left-5"
-            *ngIf="deviceService.isDesktop$ | async">
-            <nz-avatar
-              [nzSize]="32"
-              [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
-              class="border-app-gray-100 min-w-8 min-h-8"
-              nzShape="circle">
-            </nz-avatar>
-            <a class="ml-3 text-sm font-medium truncate max-w-24" [routerLink]="['/space', (data.space$ | async)?.uid]">
-                {{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}
-            </a>
+        <div *ngIf="(data.collection$ | async)?.limitedEdition" class="absolute z-10 py-2.5 px-4 bg-yellow-secondary rounded-br-2xl top-0 left-0 font-medium text-sm text-black" i18n>
+            Limited edition
         </div>
     </div>
 
@@ -51,37 +42,34 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-8">
-                <a *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace"
-                  [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center mt-2">
-                  <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                    class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                    style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                  </nz-avatar>
-                  <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
-                    @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
-                  </div>
+                <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center justify-between">
+                    <nz-avatar
+                        [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+                        [nzSize]="32"
+                        class="border-2 border-app-gray-100 min-w-8"
+                        nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="ml-3">
+                        <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
+                        <div class="font-medium" i18n>{{ (data.space$ | async)?.name | truncate:[12] }}</div>
+                    </div>
                 </a>
 
-                <a *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace"
-                  [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center mt-2">
-                  <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
-                    class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                    style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                  </nz-avatar>
-                  <div class="ml-3 mr-8 text-base font-medium truncate max-w-24">
-                    {{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}
-                  </div>
+                <a *ngIf="data.royaltySpace$ | async"
+                    [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center justify-between ml-10">
+                    <nz-avatar
+                        [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
+                        [nzSize]="32"
+                        class="border-2 border-app-gray-100 min-w-8"
+                        nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="ml-3">
+                        <div class="text-xs font-medium text-foregrounds-secondary" i18n>Royalties goes to</div>
+                        <div class="font-medium" i18n>{{ (data.royaltySpace$ | async)?.name | truncate:[12] }}</div>
+                    </div>
                 </a>
-
-                <div class="flex items-center mt-4 mr-8 lg:mt-2">
-                    <wen-icon-time></wen-icon-time>
-                    <div class="ml-2.5 font-medium">{{(data.collection$ | async)?.createdOn?.toDate() | date:'short'}}</div>
-                </div>
-
-                <div class="flex items-center mt-4 lg:mt-2">
-                    <wen-icon-tag></wen-icon-tag>
-                    <div class="ml-2.5 font-medium">{{ (data.collection$ | async)?.category }}</div>
-                </div>
             </div>
 
             <div class="flex items-center justify-between w-full h-12 p-4 mt-8 bg-white rounded-xl"
@@ -99,24 +87,34 @@
               </div>
             </div>
 
-            <div class="flex flex-wrap items-center mt-5 lg:mt-3">
-                <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl lg:mt-2">
+            <div class="flex items-center justify-center w-full py-3 mt-6 lg:mt-3 bg-tag-blue rounded-2xl">
+                <wen-icon-time class="text-app-gray-400"></wen-icon-time>
+                <div class="ml-2.5">
+                    <span class="font-bold" i18n>Starts in</span>
+                    <!-- TODO -->
+                    <span class="font-medium"> 7 </span>
+                    <span class="font-medium" i18n>days</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center w-full mt-4 lg:mt-3">
+                <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:w-32 rounded-xl lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
                 </div>
 
-                <div class="flex-grow h-16 px-4 py-3 bg-white lg:flex-grow-0 lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
+                <div class="flex-grow h-16 px-4 py-3 bg-white lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available</div>
                     <div class="text-lg font-bold truncate">{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}</div>
                 </div>
 
-                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
+                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:flex-grow lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
                     <div class="text-lg font-bold truncate">{{formatBest((data.cheapestNft$ | async)?.price)}}</div>
                 </div>
             </div>
 
-            <div class="flex items-center p-5 mt-8 rounded-xl bg-yellow" *ngIf="isAvailableForSale(data.collection$ | async)">
+            <div class="flex items-center p-5 mt-8 rounded-xl bg-yellow-primary" *ngIf="isAvailableForSale(data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-lg font-bold">
                     <span i18n>Sale in progress</span>

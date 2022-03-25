@@ -91,10 +91,16 @@ module.exports = {
           separator: '#F0EEE6',
           tertiary: '#BCB9A9'
         },
+        red: {
+          primary: '#FF0019'
+        },
         brown: '#A66300',
         pink: '#F20CDF',
         black: '#000000',
-        yellow: '#FFEF64',
+        yellow: {
+          primary: '#FFEF64',
+          secondary: '#FFE815'
+        },
         'light-brown': '#C6BF9F'
       },
       spacing: {
@@ -119,7 +125,8 @@ module.exports = {
         80: '20rem',
         128: '32rem',
         160: '40rem',
-        '2/3': '66%'
+        '2/3': '66%',
+        450: '450px'
       },
       width: {
         header: '500px',

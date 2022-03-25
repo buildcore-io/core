@@ -33,6 +33,8 @@
 
     </div>
     <wen-mobile-menu
+      [enableCreateAwardProposal]="enableCreateAwardProposal"
+      [enableCollection]="enableCollection"
       [isVisible]="isMobileMenuVisible"
       [isMemberProfile]="isMemberProfile"
       [isLandingPage]="isLandingPage"
@@ -63,7 +65,7 @@
           <wen-icon-space icon></wen-icon-space><span i18n>Space</span>
         </wen-menu-item>
         <wen-menu-item [routerLink]="routerService.urlToNewProposal" *ngIf="enableCreateAwardProposal">
-          <wen-icon-check-circle icon></wen-icon-check-circle><span i18n>Proposal</span> 
+          <wen-icon-check-circle icon></wen-icon-check-circle><span i18n>Proposal</span>
         </wen-menu-item>
         <wen-menu-item [routerLink]="routerService.urlToNewAward" *ngIf="enableCreateAwardProposal">
           <wen-icon-award icon></wen-icon-award><span i18n>Award</span>
@@ -76,11 +78,13 @@
 
     <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"
       [ngClass]="isMemberProfile ? 'isMember' : ''"></wen-sign-in>
-    <button nz-button nz-dropdown nzType="default" nzShape="circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Coming SOON"
-      nzTooltipPlacement="bottom" *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+    <button nz-button nz-dropdown nzType="default" nzShape="circle"
+      *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
       [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
-      class="inline-flex items-center justify-center border-0 wen-header-button">
+      class="relative inline-flex items-center justify-center border-0 wen-header-button"
+      (nzVisibleChange)="notificationVisibleChange()">
       <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
+      <div *ngIf="!isReadNotifications()" class="w-2 h-2 bg-red-primary absolute right-2.5 top-2 rounded-full"></div>
     </button>
 
     <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
@@ -96,7 +100,29 @@
     </button>
   </ng-template>
 
-  <nz-dropdown-menu #notificationMenu="nzDropdownMenu"> </nz-dropdown-menu>
+  <nz-dropdown-menu #notificationMenu="nzDropdownMenu">
+    <wen-menu>
+      <div class="flex justify-between w-full px-5 py-4 cursor-pointer "
+        *ngFor="let nt of (notifications$ | async); trackBy: trackByUid; let first = first"
+        [ngClass]="{
+          'border-t': !first
+        }">
+        <div class="w-2 h-2 mt-2 mr-3 rounded-full bg-orange"></div>
+        <div>
+          <div class="font-bold break-words line-clamp-1">
+            {{ getNotificationDetails(nt).title }}
+          </div>
+          <div class="max-w-sm mt-1 text-sm font-medium break-words text-foregrounds-secondary line-clamp-2">
+            {{ getNotificationDetails(nt).content }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="(notifications$ | async)?.length === 0" i18n>
+        None.
+      </div>
+    </wen-menu>
+  </nz-dropdown-menu>
 
   <nz-dropdown-menu #userMenu="nzDropdownMenu">
     <wen-menu>

@@ -1,5 +1,6 @@
 import { BaseRecord, EthAddress, FileMetedata, IotaAddress, Timestamp } from './base';
 export const TRANSACTION_AUTO_EXPIRY_MS = 4 * 60 * 1000;
+export const TRANSACTION_MAX_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000;
 export enum TransactionType {
   BADGE = "BADGE",
   VOTE = "VOTE",
@@ -12,8 +13,14 @@ export enum TransactionType {
 
 export enum TransactionOrderType {
   NFT_PURCHASE = "NFT_PURCHASE",
+  NFT_BID = "NFT_BID",
   SPACE_ADDRESS_VALIDATION = "SPACE_ADDRESS_VALIDATION",
   MEMBER_ADDRESS_VALIDATION = "MEMBER_ADDRESS_VALIDATION",
+}
+
+export enum TransactionValidationType {
+  ADDRESS_AND_AMOUNT,
+  ADDRESS
 }
 
 export interface VoteTransaction {
@@ -52,6 +59,8 @@ export interface OrderTransaction {
   royaltiesFee?: number;
   royaltiesSpace?: EthAddress;
   royaltiesSpaceAddress?: IotaAddress;
+  expiresOn: Timestamp;
+  validationType: TransactionValidationType;
   collection?: EthAddress;
 }
 
@@ -63,7 +72,7 @@ export interface PaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: OrderTransaction;
+  sourceTransaction: string;
   nft?: EthAddress;
   collection?: EthAddress;
   invalidPayment: boolean;
@@ -79,7 +88,7 @@ export interface BillPaymentTransaction {
   previusOwner?: EthAddress,
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: OrderTransaction;
+  sourceTransaction: string;
   nft?: EthAddress;
   royalty: boolean,
   collection?: EthAddress;
@@ -93,7 +102,7 @@ export interface CreditPaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: OrderTransaction;
+  sourceTransaction: string;
   nft?: EthAddress;
   collection?: EthAddress;
 }

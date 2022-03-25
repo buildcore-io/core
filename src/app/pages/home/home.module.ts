@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { IconModule } from '@components/icon/icon.module';
+import { LanguageChangeModule } from '@components/language-change/language-change.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { SpaceCardModule } from './../../components/space/components/space-card/space-card.module';
@@ -27,7 +28,8 @@ import { HomePage } from './home.page';
     CollectionCardModule,
     SpaceCardModule,
     NzIconModule,
-    IconModule
+    IconModule,
+    LanguageChangeModule
   ],
 })
 export class HomeModule { }

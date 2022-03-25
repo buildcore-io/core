@@ -28,14 +28,13 @@ import { AngularFireStorageModule, USE_EMULATOR as USE_STORAGE_EMULATOR } from '
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconDefinition } from '@ant-design/icons-angular';
+import { Languages } from '@core/utils/language.util';
 import { environment } from '@env/environment';
 import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
 import { WebShellModule } from '@shell/ft/web-shell.module';
 import { getApp } from 'firebase/app';
 /* eslint-disable */
-import {
-  cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, ko_KR, nl_NL, NZ_I18N, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN, zh_TW
-} from 'ng-zorro-antd/i18n';
+import { NZ_I18N } from 'ng-zorro-antd/i18n';
 /* eslint-enable */
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { CoreModule } from './@core/core.module';
@@ -100,44 +99,7 @@ if (environment.production) {
     provide: NZ_I18N,
     useFactory: (localId: string) => {
       /** keep the same with angular.json/i18n/locales configuration **/
-      switch (localId) {
-        case 'cs':
-          return cs_CZ;
-        case 'de':
-          return de_DE;
-        case 'es':
-          return es_ES;
-        case 'fr':
-          return fr_FR;
-        case 'it':
-          return it_IT;
-        case 'ja':
-          return ja_JP;
-        case 'ko':
-          return ko_KR;
-        case 'nl':
-          return nl_NL;
-        case 'pl':
-          return pl_PL;
-        case 'pt-BR':
-          return pt_BR;
-        case 'pt-PT':
-          return pt_PT;
-        // case 'qu-PE':
-        //   return qu;
-        case 'ru':
-          return ru_RU;
-        case 'tr':
-          return tr_TR;
-        case 'uk':
-          return uk_UA;
-        case 'zh-CN':
-          return zh_CN;
-        case 'zh-TW':
-          return zh_TW;
-        default:
-          return en_GB;
-      }
+      return Languages[localId]?.ngZorro || Languages.en.ngZorro;
       /* eslint-enable */
     },
     deps: [LOCALE_ID]

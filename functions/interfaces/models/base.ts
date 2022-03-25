@@ -25,6 +25,7 @@ export const enum COL {
   NFT = 'nft',
   SPACE = 'space',
   PROPOSAL = 'proposal',
+  NOTIFICATION = 'notification',
   MILESTONE = 'milestone',
   TRANSACTION = 'transaction',
   BADGES = 'badges',
