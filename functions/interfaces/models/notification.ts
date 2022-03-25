@@ -5,7 +5,6 @@ export enum NotificationType {
 
 export interface NotificationBidParams {
   member: {
-    uid: string,
     name: string
   },
   amount: number;

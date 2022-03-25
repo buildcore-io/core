@@ -9,10 +9,10 @@ export class NotificationService {
     return <Notification>{
       uid: getRandomEthAddress(),
       type: NotificationType.NEW_BID,
+      member: member.uid,
       params: {
         amount: tran.payload.amount,
         member: {
-          uid: member.uid,
           name: member.name || member.uid
         },
         nft: {

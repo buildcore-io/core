@@ -304,11 +304,7 @@ export class ProcessingService {
     return transOut;
   }
 
-  private async createCredit(order: Transaction, payment: Transaction, tran: TransactionMatch, createdOn = serverTime()): Promise<Transaction|undefined> {
-    if (order.type !== TransactionType.ORDER) {
-      throw new Error('Order was not provided as transaction.');
-    }
-
+  private async createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Promise<Transaction|undefined> {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
@@ -319,18 +315,18 @@ export class ProcessingService {
       const data: any = <Transaction>{
         type: TransactionType.CREDIT,
         uid: tranId,
-        space: order.space,
-        member: order.member,
+        space: payment.space,
+        member: payment.member,
         createdOn: createdOn,
         payload: {
           amount: payment.payload.amount,
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
           sourceTransaction: payment.uid,
-          nft: order.payload.nft || null,
+          nft: payment.payload.nft || null,
           reconciled: true,
           void: false,
-          collection: order.payload.collection || null,
+          collection: payment.payload.collection || null,
           invalidPayment: payment.payload.invalidPayment
         }
       };
@@ -340,7 +336,9 @@ export class ProcessingService {
         action: 'set'
       });
       transOut = data;
-      this.linkedTransactions.push(tranId);
+      if (setLink) {
+        this.linkedTransactions.push(tranId);
+      }
     }
 
     return transOut;
@@ -411,7 +409,8 @@ export class ProcessingService {
       });
 
       // Mark as invalid and create credit.
-      await this.createCredit(transaction, previousHighestPay, {
+      const sameOwner: boolean = previousHighestPay.member === transaction.member;
+      const credit = await this.createCredit(previousHighestPay, {
         msgId: previousHighestPay.payload.chainReference,
         to: {
           address: previousHighestPay.payload.targetAddress,
@@ -422,6 +421,21 @@ export class ProcessingService {
           amount: previousHighestPay.payload.amount
         }
       }, dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')));
+
+      // We have to set link on the past order.
+      if (!sameOwner) {
+        const refHighTranOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.payload.sourceTransaction);
+        const refHighTranOrderDoc: any = await this.transaction.get(refHighTranOrder);
+        if (refHighTranOrderDoc.data()) {
+          this.updates.push({
+            ref: refHighTranOrder,
+            data: {
+              linkedTransactions: [...(refHighTranOrderDoc.data().linkedTransactions || []), ...[credit!.uid]]
+            },
+            action: 'update'
+          });
+        }
+      }
     }
 
     // Update NFT with highest bid.
@@ -447,7 +461,7 @@ export class ProcessingService {
       });
     } else {
       // No valid payment so we credit anyways.
-      await this.createCredit(transaction, payment, {
+      await this.createCredit(payment, {
         msgId: payment.payload.chainReference,
         to: {
           address: payment.payload.targetAddress,
@@ -503,7 +517,8 @@ export class ProcessingService {
             });
 
             // Mark as invalid and create credit.
-            await this.createCredit(transaction, highestPay, {
+            const sameOwner: boolean = highestPay.member === transaction.member;
+            const credit = await this.createCredit(highestPay, {
               msgId: highestPay.payload.chainReference,
               to: {
                 address: highestPay.payload.targetAddress,
@@ -513,8 +528,21 @@ export class ProcessingService {
                 address: highestPay.payload.sourceAddress,
                 amount: highestPay.payload.amount
               }
-            });
-
+            }, serverTime(), sameOwner);
+            // We have to set link on the past order.
+            if (!sameOwner) {
+              const refHighTranOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(highestPay.payload.sourceTransaction);
+              const refHighTranOrderDoc: any = await this.transaction.get(refHighTranOrder);
+              if (refHighTranOrderDoc.data()) {
+                this.updates.push({
+                  ref: refHighTranOrder,
+                  data: {
+                    linkedTransactions: [...(refHighTranOrderDoc.data().linkedTransactions || []), ...[credit!.uid]]
+                  },
+                  action: 'update'
+                });
+              }
+            }
           }
         }
       }
@@ -610,7 +638,7 @@ export class ProcessingService {
               } else if (order.data().payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
                 // Found transaction, create payment / ( bill payments | credit)
                 const payment = await this.createPayment(order.data(), match);
-                const credit = await this.createCredit(order.data(), payment, match);
+                const credit = await this.createCredit(payment, match);
                 if (credit) {
                   await this.setValidatedAddress(credit, 'space');
                 }
@@ -619,7 +647,7 @@ export class ProcessingService {
               } else if (order.data().payload.type === TransactionOrderType.MEMBER_ADDRESS_VALIDATION) {
                 // Found transaction, create payment / ( bill payments | credit)
                 const payment = await this.createPayment(order.data(), match);
-                const credit = await this.createCredit(order.data(), payment, match);
+                const credit = await this.createCredit(payment, match);
                 if (credit) {
                   await this.setValidatedAddress(credit, 'member');
                 }
@@ -663,7 +691,7 @@ export class ProcessingService {
         to: o
       };
       const payment = await this.createPayment(order, wrongTransaction, true);
-      await this.createCredit(order, payment, wrongTransaction);
+      await this.createCredit(payment, wrongTransaction);
     }
   }
 }

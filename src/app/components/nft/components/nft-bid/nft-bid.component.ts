@@ -93,7 +93,7 @@ export class NftBidComponent implements OnInit {
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
-        this.targetAmount = val.payload.amount;
+        this.targetAmount = this.nft?.auctionHighestBid || val.payload.amount;
         const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
         if (expiresOn.isBefore(dayjs())) {
           // It's expired.
