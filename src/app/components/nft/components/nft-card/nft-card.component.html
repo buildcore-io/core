@@ -23,6 +23,11 @@
                 [ngClass]="getBadgeProperties().className">
                     {{ getBadgeProperties().label }}
             </div>
+
+            <div class="absolute z-10 top-4 right-4"
+                *ngIf="!fullWidth && collection?.access !== targetAccess.OPEN">
+                    <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
+            </div>
         </div>
 
         <div class="relative flex flex-col flex-grow w-full px-4 py-3 lg:py-4">

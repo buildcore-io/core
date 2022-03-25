@@ -27,9 +27,9 @@
                 {{ getStatusProperties().label }}
             </div>
 
-            <div class="absolute z-10 flex items-center justify-center p-2 text-black rounded-full top-5 right-5 bg-alerts-warning"
+            <div class="absolute z-10 top-4 right-4"
                 *ngIf="!fullWidth && collection.access !== targetAccess.OPEN">
-                    <wen-icon-user-plus></wen-icon-user-plus>
+                    <wen-collection-access-badge [type]="collection.access"></wen-collection-access-badge>
             </div>
         </div>
 
