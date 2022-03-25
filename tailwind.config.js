@@ -94,14 +94,18 @@ module.exports = {
         red: {
           primary: '#FF0019'
         },
-        brown: '#A66300',
+        brown: {
+          primary: '#A66300',
+          secondary: '#F4F2E4',
+          light: '#C6BF9F'
+        },
         pink: '#F20CDF',
         black: '#000000',
         yellow: {
           primary: '#FFEF64',
           secondary: '#FFE815'
-        },
-        'light-brown': '#C6BF9F'
+        }
+
       },
       spacing: {
         18: '4.5rem',

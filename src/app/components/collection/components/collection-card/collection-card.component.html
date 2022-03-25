@@ -6,18 +6,23 @@
                 alt=""
                 [src]="(fullWidth ? collection?.bannerUrl : previewImageService.getCollectionSize(collection?.bannerUrl)) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full"
+                [ngClass]="{
+                    'card-smaller-height': !fullWidth && isDateInFuture(collection?.availableFrom)
+                }"
             />
 
-            <div class="absolute top-4 left-4 z-10 rounded-lg bg-white flex items-center px-2.5 py-1.5"
-                *ngIf="!fullWidth">
-                <nz-avatar
-                    class="border-app-gray-100 min-w-6 min-h-6"
-                    [nzSrc]="spaceAvatarUrl"
-                    [nzSize]="24"
-                    nzShape="circle"
-                ></nz-avatar>
-                <div class="text-sm font-medium ml-2.5 max-w-24 truncate">
-                    {{this.space?.name || this.space?.uid}}
+            <div class="absolute top-4 left-4 z-10 rounded-lg bg-white flex items-center justify-center py-1 px-2"
+                *ngIf="isDateInFuture(collection?.availableFrom)">
+                <wen-icon-time class="text-app-gray-400"></wen-icon-time>
+                <div class="ml-2.5 text-xs">
+                    <ng-container *ngIf="getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
+                        <span class="font-bold" i18n>Starts in</span>
+                        <span class="font-medium"> {{ getDaysLeft(collection?.availableFrom) }} </span>
+                        <span class="font-medium" i18n>days</span>
+                    </ng-container>
+                    <ng-template #todayBlock>
+                        <span class="font-bold" i18n>Starts today</span>
+                    </ng-template>
                 </div>
             </div>
 
@@ -31,13 +36,47 @@
                 *ngIf="!fullWidth && collection.access !== targetAccess.OPEN">
                     <wen-icon-user-plus></wen-icon-user-plus>
             </div>
+
+            <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-brown-secondary"
+                *ngIf="!fullWidth && (isDateInFuture(collection?.availableFrom) || collection?.limitedEdition)">
+                <ng-container *ngIf="collection.limitedEdition; else startsBlock">
+                    <div class="font-medium text-sm">Limited edition</div>
+                </ng-container>
+                <ng-template #startsBlock>
+                    <wen-icon-time class="text-app-gray-400"></wen-icon-time>
+                    <div class="ml-2.5 text-xs">
+                        <ng-container *ngIf="getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
+                            <span class="font-bold" i18n>Starts in</span>
+                            <span class="font-medium"> {{ getDaysLeft(collection?.availableFrom) }} </span>
+                            <span class="font-medium" i18n>days</span>
+                        </ng-container>
+                        <ng-template #todayBlock>
+                            <span class="font-bold" i18n>Starts today</span>
+                        </ng-template>
+                    </div>
+                </ng-template>
+                
+            </div>
         </div>
 
-        <div class="relative flex flex-col w-full h-32 px-5">
+        <div class="relative flex flex-col w-full h-40 px-5">
             <h3 class="mt-4 mb-2 text-lg font-bold truncate">{{ collection.name }}</h3>
 
             <div class="text-sm font-medium break-words line-clamp-3">
                 {{ collection.description | stripMarkdown }}
+            </div>
+
+            <div class="absolute flex items-center bottom-4"
+                *ngIf="!fullWidth">
+                <nz-avatar
+                    class="border-app-gray-100 min-w-6 min-h-6"
+                    [nzSrc]="spaceAvatarUrl"
+                    [nzSize]="24"
+                    nzShape="circle"
+                ></nz-avatar>
+                <div class="text-sm font-medium ml-2.5 max-w-24 truncate">
+                    {{this.space?.name || this.space?.uid}}
+                </div>
             </div>
         </div>
     </a>
