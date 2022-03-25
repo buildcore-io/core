@@ -79,9 +79,7 @@ export class NftCardComponent {
       this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
       return;
     }
-    // @TODO: Change back
-    // this.isCheckoutOpen = true;
-    this.isBidOpen = true;
+    this.isCheckoutOpen = true;
   }
 
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {
