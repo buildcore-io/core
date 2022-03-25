@@ -123,10 +123,12 @@ export class NFTPage implements OnInit, OnDestroy {
     });
 
     let lastNftId: undefined|string = undefined;
+    let lastOwner: undefined|string = undefined;
     this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
       // TODO Only cause refresh if it's different to previous.
-      if (p && p.uid !== lastNftId) {
+      if (p && (p.uid !== lastNftId || p.owner !== lastOwner)) {
         lastNftId = p.uid;
+        lastOwner = p.owner;
         this.nftSubscriptions$.forEach((s) => {
           s.unsubscribe();
         });
