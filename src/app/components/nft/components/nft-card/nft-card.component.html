@@ -29,6 +29,11 @@
                 [ngClass]="getBadgeProperties().className">
                     {{ getBadgeProperties().label }}
             </div>
+          
+            <div class="absolute z-10 top-4 right-4"
+                *ngIf="!fullWidth && collection?.access !== targetAccess.OPEN">
+                    <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
+            </div>
             
             <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-brown-secondary"
                 *ngIf="!fullWidth && (isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))">

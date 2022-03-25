@@ -240,7 +240,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">8,10</context>
         </context-group>
-        <target state="translated"> 您找尋的頁面找不到</target>
+        <target state="translated"> 您找尋的頁面不存在 </target>
       </trans-unit>
       <trans-unit id="5342984131662289707" datatype="html">
         <source> Discover Soonaverse </source>
@@ -324,7 +324,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">177,178</context>
         </context-group>
-        <target state="translated">取消</target>
+        <target state="translated"> 取消 </target>
       </trans-unit>
       <trans-unit id="1431600251182607708" datatype="html">
         <source> Connect
@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">338,339</context>
         </context-group>
-        <target state="translated">必須填寫收藏品</target>
+        <target state="translated">必須要有收藏品</target>
       </trans-unit>
       <trans-unit id="924135691635990986" datatype="html">
         <source>Select Collection</source>
@@ -710,7 +710,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">154</context>
         </context-group>
-        <target state="translated">大頭貼</target>
+        <target state="translated">頭像</target>
       </trans-unit>
       <trans-unit id="2458349631370931488" datatype="html">
         <source>Customise your Soonaverse identity.</source>
@@ -726,7 +726,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">34,37</context>
         </context-group>
-        <target state="translated">鑄造一個免費的虛擬替身作為你的頭像。</target>
+        <target state="translated">鑄造一個免費獨特的頭像做為您個人資料的圖像，<x id="LINE_BREAK" ctype="lb"/> 新的高級罕見頭像和收藏品/配件交易功能即將上線。 </target>
       </trans-unit>
       <trans-unit id="7678665112140498921" datatype="html">
         <source>WOW! Looks like yours is the prettiest avatar of all. Congratulations. </source>
@@ -734,7 +734,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="translated">哇! 看起來你獲得最讚的虛擬替身，恭喜啊!</target>
+        <target state="translated">哇！看起來你的頭像是最棒的，恭喜您。 </target>
       </trans-unit>
       <trans-unit id="4399347141966423692" datatype="html">
         <source>Networking</source>
