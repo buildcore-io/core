@@ -56,7 +56,7 @@
                     </div>
                 </a>
 
-                <a *ngIf="data.royaltySpace$ | async"
+                <a *ngIf="(data.royaltySpace$ | async) && (data.collection$ | async)?.royaltiesSpace !== (data.collection$ | async)?.space"
                     [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center justify-between ml-10">
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"

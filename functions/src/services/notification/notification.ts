@@ -18,9 +18,9 @@ export class NotificationService {
         nft: {
           uid: nft.uid,
           name: nft.name || nft.uid
-        },
-        createdOn: serverTime()
-      }
+        }
+      },
+      createdOn: serverTime()
     }
   }
 }
