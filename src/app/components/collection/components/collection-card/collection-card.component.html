@@ -11,7 +11,7 @@
                 }"
             />
 
-            <div class="absolute top-4 left-4 z-10 rounded-lg bg-white flex items-center justify-center py-1 px-2"
+            <div class="absolute z-10 flex items-center justify-center px-2 py-1 bg-white rounded-lg top-4 left-4"
                 *ngIf="isDateInFuture(collection?.availableFrom)">
                 <wen-icon-time class="text-app-gray-400"></wen-icon-time>
                 <div class="ml-2.5 text-xs">
@@ -39,10 +39,9 @@
 
             <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-brown-secondary"
                 *ngIf="!fullWidth && (isDateInFuture(collection?.availableFrom) || collection?.limitedEdition)">
-                <ng-container *ngIf="collection.limitedEdition; else startsBlock">
-                    <div class="font-medium text-sm">Limited edition</div>
-                </ng-container>
-                <ng-template #startsBlock>
+                <div class="text-sm font-medium" i18n>Limited Edition</div>
+                <!-- Seems duplicate .... *ngIf="collection.limitedEdition; else startsBlock" -->
+                <!-- <ng-template #startsBlock>
                     <wen-icon-time class="text-app-gray-400"></wen-icon-time>
                     <div class="ml-2.5 text-xs">
                         <ng-container *ngIf="getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
@@ -54,8 +53,8 @@
                             <span class="font-bold" i18n>Starts today</span>
                         </ng-template>
                     </div>
-                </ng-template>
-                
+                </ng-template> -->
+
             </div>
         </div>
 

@@ -79,7 +79,8 @@
                     <ng-container *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) > 0; else todayBlock">
                         <span class="font-bold" i18n>Starts in</span>
                         <span class="font-medium"> {{ getDaysLeft((data.collection$ | async)?.availableFrom) }} </span>
-                        <span class="font-medium" i18n>days</span>
+                        <span class="font-medium" *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) > 1" i18n>days</span>
+                        <span class="font-medium" *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) === 1" i18n>day</span>
                     </ng-container>
                     <ng-template #todayBlock>
                         <span class="font-bold" i18n>Starts today</span>
