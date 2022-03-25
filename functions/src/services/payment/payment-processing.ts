@@ -111,8 +111,20 @@ export class ProcessingService {
       }
 
       await this.markAsReconciled(sfDocOrder.data(), pay.payload.chainReference);
-      await this.createBillPayment(sfDocOrder.data());
+      await this.createBillPayment(sfDocOrder.data(), pay);
       await this.setNftOwner(sfDocOrder.data(), pay);
+
+      // Update links
+      const refOrderDoc: any = await this.transaction.get(refOrder);
+      if (refOrderDoc.data()) {
+        this.updates.push({
+          ref: refOrder,
+          data: {
+            linkedTransactions: [...(refOrderDoc.data().linkedTransactions || []), ...this.linkedTransactions]
+          },
+          action: 'update'
+        });
+      }
     } else {
       // Remove auction from THE NFT!
       this.updates.push({
@@ -219,15 +231,15 @@ export class ProcessingService {
     return tranData;
   }
 
-  private async createBillPayment(order: Transaction): Promise<Transaction[]> {
+  private async createBillPayment(order: Transaction, payment: Transaction): Promise<Transaction[]> {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
 
     // Calculate royalties.
     const transOut: Transaction[] = [];
-    let royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(order.payload.amount * order.payload.royaltiesFee) : 0;
-    let finalAmt: number = order.payload.amount - royaltyAmt;
+    let royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(payment.payload.amount * order.payload.royaltiesFee) : 0;
+    let finalAmt: number = payment.payload.amount - royaltyAmt;
 
     if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
       finalAmt = finalAmt + royaltyAmt;
@@ -420,7 +432,7 @@ export class ProcessingService {
           address: previousHighestPay.payload.sourceAddress,
           amount: previousHighestPay.payload.amount
         }
-      }, dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')));
+      }, dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')), sameOwner);
 
       // We have to set link on the past order.
       if (!sameOwner) {
@@ -484,6 +496,7 @@ export class ProcessingService {
           ref: refSource,
           data: {
             owner: payment.member,
+            price: payment.payload.amount,
             sold: true,
             locked: false,
             lockedBy: null,
@@ -618,7 +631,7 @@ export class ProcessingService {
                 if (sfDocNft.data().availableFrom !== null) {
                   // Found transaction, create payment / ( bill payments | credit)
                   const payment = await this.createPayment(order.data(), match);
-                  await this.createBillPayment(order.data());
+                  await this.createBillPayment(order.data(), payment);
                   await this.setNftOwner(order.data(), payment);
                   await this.markAsReconciled(order.data(), match.msgId);
                 } else {

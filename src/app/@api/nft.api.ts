@@ -59,7 +59,15 @@ export class NftApi extends BaseApi<Nft> {
         };
         for (const link of o.order.linkedTransactions) {
           const tran: DocumentSnapshot<Transaction> = <any>await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(link).get());
-          o.transactions.push(tran.data()!);
+          if (tran.data()?.payload.invalidPayment === false || tran.data()?.type === TransactionType.BILL_PAYMENT) {
+            o.transactions.push(tran.data()!);
+          }
+
+          // Make sure order price is ovewriten with payment price.
+          // During bidding this can be different to what it was initially.
+          if (tran.data()?.type === TransactionType.PAYMENT) {
+            o.order.payload.amount = tran.data()?.payload.amount;
+          }
         }
 
         // Order transactions by date.
