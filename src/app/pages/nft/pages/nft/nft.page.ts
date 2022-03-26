@@ -258,7 +258,7 @@ export class NFTPage implements OnInit, OnDestroy {
       return false;
     }
 
-    return ((col.total - col.sold) > 0) && col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isSameOrBefore(dayjs(), 's');
+    return (col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isSameOrBefore(dayjs(), 's'));
   }
 
   public willBeAvailableForSale(nft?: Nft|null, col?: Collection|null): boolean {
