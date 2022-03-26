@@ -31,7 +31,7 @@
             </div>
 
             <div class="absolute z-10 top-4 right-4"
-                *ngIf="!fullWidth && collection?.access !== targetAccess.OPEN">
+                *ngIf="!fullWidth && collection?.access !== targetAccess.OPEN && !nft?.owner">
                     <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
             </div>
 
