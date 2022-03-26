@@ -76,14 +76,16 @@
       </wen-menu>
     </nz-dropdown-menu>
 
-    <wen-sign-in *ngIf="(isLoggedIn$ | async) === false"
-      [ngClass]="isMemberProfile ? 'isMember' : ''"></wen-sign-in>
-    <button nz-button nz-dropdown nzType="default" nzShape="circle"
-      *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
-      [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
-      class="relative inline-flex items-center justify-center border-0 wen-header-button"
-      (nzVisibleChange)="notificationVisibleChange()">
+    <wen-sign-in *ngIf="(isLoggedIn$ | async) === false" [ngClass]="isMemberProfile ? 'isMember' : ''"></wen-sign-in>
+
+      <button nz-button nz-dropdown nzType="default" nzShape="circle"
+            *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+            [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
+            class="relative inline-flex items-center justify-center border-0 wen-header-button"
+            (nzVisibleChange)="notificationVisibleChange()">
+
       <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
+
       <div *ngIf="!isReadNotifications()" class="w-2 h-2 bg-red-primary absolute right-2.5 top-2 rounded-full"></div>
     </button>
 
@@ -107,15 +109,15 @@
         [ngClass]="{
           'border-t': !first
         }">
-        <div class="w-2 h-2 mt-2 mr-3 rounded-full bg-orange"></div>
-        <div>
+        <!-- <div class="w-2 h-2 mt-2 mr-3 rounded-full bg-orange"></div> -->
+        <a [routerLink]="['/', 'nft', nt.params.nft.uid]">
           <div class="font-bold break-words line-clamp-1">
             {{ getNotificationDetails(nt).title }}
           </div>
           <div class="max-w-sm mt-1 text-sm font-medium break-words text-foregrounds-secondary line-clamp-2">
             {{ getNotificationDetails(nt).content }}
           </div>
-        </div>
+        </a>
       </div>
 
       <div *ngIf="(notifications$ | async)?.length === 0" i18n>

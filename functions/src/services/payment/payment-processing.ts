@@ -114,6 +114,16 @@ export class ProcessingService {
       await this.createBillPayment(sfDocOrder.data(), pay);
       await this.setNftOwner(sfDocOrder.data(), pay);
 
+      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(sfDocOrder.data().member!);
+      const sfDocMember: any = await this.transaction.get(refMember);
+      const bidNotification: Notification = NotificationService.prepareWinBid(sfDocMember.data(), nft, pay);
+      const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+      this.updates.push({
+        ref: refNotification,
+        data: bidNotification,
+        action: 'set'
+      });
+
       // Update links
       const refOrderDoc: any = await this.transaction.get(refOrder);
       if (refOrderDoc.data()) {
@@ -445,6 +455,17 @@ export class ProcessingService {
               linkedTransactions: [...(refHighTranOrderDoc.data().linkedTransactions || []), ...[credit!.uid]]
             },
             action: 'update'
+          });
+
+          // Notify them.
+          const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(refHighTranOrderDoc.data().member!);
+          const sfDocMember: any = await this.transaction.get(refMember);
+          const bidNotification: Notification = NotificationService.prepareLostBid(sfDocMember.data(), sfDocNft.data(), previousHighestPay);
+          const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+          this.updates.push({
+            ref: refNotification,
+            data: bidNotification,
+            action: 'set'
           });
         }
       }

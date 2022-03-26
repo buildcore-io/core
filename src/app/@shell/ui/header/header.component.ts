@@ -19,7 +19,7 @@ import * as dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, debounceTime, firstValueFrom, fromEvent, interval, skip, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";
-import { Notification } from './../../../../../functions/interfaces/models/notification';
+import { Notification, NotificationType } from './../../../../../functions/interfaces/models/notification';
 import { MemberApi } from './../../../@api/member.api';
 
 const IS_SCROLLED_HEIGHT = 20;
@@ -254,14 +254,38 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public getNotificationDetails(not: Notification): NotificationContent {
-    const titleOffered = $localize`just offered`;
-    const titleFor = $localize`for`;
-    const contentYour = $localize`Your`;
-    const contentReceived = $localize`has received a new bid for`;
+    if (not.type === NotificationType.WIN_BID) {
+      const title = $localize`You won the NFT`;
+      const contentYour = $localize`You are a proud owner of a new NFT. Congratulations!`;
 
-    return {
-      title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + UnitsHelper.formatBest(not.params.amount),
-      content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + UnitsHelper.formatBest(not.params.amount)
+      return {
+        title: title + ' ' + not.params.nft.name,
+        content: contentYour
+      }
+    } else if (not.type === NotificationType.LOST_BID) {
+      const title = $localize`You lost your bid!`;
+      const contentYour = $localize`Your bid on `;
+      const contentReceived = $localize` was outbidded. Try again!`;
+
+      return {
+        title: title,
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived
+      }
+    } else if (not.type === NotificationType.NEW_BID) {
+      const titleOffered = $localize`just offered`;
+      const titleFor = $localize`for`;
+      const contentYour = $localize`Your`;
+      const contentReceived = $localize`has received a new bid for`;
+
+      return {
+        title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + UnitsHelper.formatBest(not.params.amount),
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + UnitsHelper.formatBest(not.params.amount)
+      }
+    } else {
+      return {
+        title: $localize`Unsupported`,
+        content: $localize`This notification is not yet supported in your language`
+      }
     }
   }
 
