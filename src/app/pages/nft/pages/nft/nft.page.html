@@ -94,7 +94,7 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && ((data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ data.formatBest((data.nft$ | async)?.auctionHighestBid || 0) || 'No Bid Yet'}}</div>
+                      <div class="mr-2 font-bold truncate">{{ data.formatBest((data.nft$ | async)?.auctionHighestBid || 0) || data.formatBest((data.nft$ | async)?.auctionFloorPrice)}}</div>
                   </div>
                 </div>
 
