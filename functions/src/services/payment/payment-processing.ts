@@ -483,7 +483,7 @@ export class ProcessingService {
         action: 'update'
       });
 
-      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(sfDocNft.data().owner);
+      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(transaction.member!);
       const sfDocMember: any = await this.transaction.get(refMember);
       const bidNotification: Notification = NotificationService.prepareBid(sfDocMember.data(), sfDocNft.data(), payment);
       const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);

@@ -175,15 +175,33 @@ export class NftApi extends BaseApi<Nft> {
     });
   }
 
+  public topAuction(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['auctionFrom', 'createdOn'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('auctionFrom', '<=', new Date()).where('approved', '==', true);
+    });
+  }
+
   public lowToHighAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'price'], 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date()).where('approved', '==', true);
     });
   }
 
+  public lowToHighAuction(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['auctionFrom', 'auctionHighestBid'], 'asc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('auctionFrom', '<=', new Date()).where('approved', '==', true);
+    });
+  }
+
   public highToLowAvailable(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, ['availableFrom', 'price'], 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('hidden', '==', false).where('availableFrom', '<=', new Date()).where('approved', '==', true);
+    });
+  }
+
+  public highToLowAuction(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
+    return this._query(this.collection, ['auctionFrom', 'auctionHighestBid'], 'desc', lastValue, search, def, (ref: any) => {
+      return ref.where('hidden', '==', false).where('auctionFrom', '<=', new Date()).where('approved', '==', true);
     });
   }
 

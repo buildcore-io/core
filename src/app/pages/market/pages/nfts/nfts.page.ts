@@ -17,6 +17,7 @@ export enum HOT_TAGS {
   ALL = 'All',
   PENDING = 'Pending',
   AVAILABLE = 'Available',
+  AUCTION = 'On Auction',
   OWNED = 'Owned',
   SPACE = 'SPACE'
 }
@@ -32,7 +33,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaceControl: FormControl;
   public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
-  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.OWNED];
+  public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.AUCTION, HOT_TAGS.OWNED];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.AVAILABLE]);
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -107,7 +108,9 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.lowToHighSpace(this.spaceControl.value, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.lowToHighAvailable(last, search);
-      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
+        return this.nftApi.lowToHighAuction(last, search);
+      }  else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.lowToHighOwned(last, search);
       } else {
         return this.nftApi.lowToHigh(last, search);
@@ -117,6 +120,8 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.topSpace(this.spaceControl.value, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.topAvailable(last, search);
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
+        return this.nftApi.topAuction(last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.topOwned(last, search);
       } else {
@@ -127,7 +132,9 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.highToLowSpace(this.spaceControl.value, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.highToLowAvailable(last, search);
-      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      }  else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
+        return this.nftApi.highToLowAuction(last, search);
+      }else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.highToLowOwned(last, search);
       } else {
         return this.nftApi.highToLow(last, search);
