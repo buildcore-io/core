@@ -187,14 +187,14 @@
                 <span *ngIf="!canBeSetForSale(data.nft$ | async) && willBeAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
             </button>
 
-            <span class="mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
+            <span class="block mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
               <button nz-button nzType="primary" (click)="bid($event)" [disabled]="!(auth.member$ | async)?.uid"
                       *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async) && (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
                   Place bid
               </button>
             </span>
 
-            <span class="mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
+            <span class="block mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
               <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(auth.member$ | async)?.uid"
                       *ngIf="isAvailableForSale(data.nft$ | async, data.collection$ | async) && (!(data.nft$ | async)?.owner || (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid)" nzBlock nzSize="large" i18n>
                   Buy now

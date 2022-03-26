@@ -18,7 +18,6 @@ export class MobileHeaderComponent {
   @Input() isMobileMenuVisible = false;
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
-  @Input() isAllowedCreation = false;
   @Input() goBackHeader = false;
   @Input() enableCreateAwardProposal = true;
   @Input() enableCollection = true;

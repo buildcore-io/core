@@ -45,7 +45,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public accessSubscriptions$: Subscription[] = [];
   public isMemberProfile = false;
   public isLandingPage = false;
-  public isAllowedCreation = false;
   public isMobileMenuVisible = false;
   public isScrolled = false;
   public isCheckoutOpen = false;
@@ -80,11 +79,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.cancelAccessSubscriptions();
         this.accessSubscriptions$.push(this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
           this.enableCreateAwardProposal = space.length > 0;
-          this.cd.markForCheck();
-        }));
-
-        this.accessSubscriptions$.push(this.memberApi.topBadges(obj.uid, 'createdOn', undefined, 1).subscribe((badge) => {
-          this.isAllowedCreation = badge.length > 0;
           this.cd.markForCheck();
         }));
 
@@ -244,13 +238,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public notificationVisibleChange(): void {
-    setItem(StorageItem.Notification, this.notifications$.value[this.notifications$.value.length - 1]?.uid);
-    this.cd.markForCheck();
+    setTimeout(() => {
+      setItem(StorageItem.Notification, this.notifications$.value[this.notifications$.value.length - 1]?.uid);
+      this.cd.markForCheck();
+    }, 2500);
   }
 
   public isReadNotifications(): boolean {
     return this.notifications$.value.length === 0 ||
       this.notifications$.value[this.notifications$.value.length - 1].uid === getItem(StorageItem.Notification);
+  }
+
+  public unreadNotificationCount(): number {
+    if (!this.notifications$.value.length) {
+      return 0;
+    }
+
+    if (!getItem(StorageItem.Notification)) {
+      return this.notifications$.value.length;
+    }
+
+    return (this.notifications$.value.indexOf(<any>getItem(StorageItem.Notification)) + 1);
   }
 
   public getNotificationDetails(not: Notification): NotificationContent {

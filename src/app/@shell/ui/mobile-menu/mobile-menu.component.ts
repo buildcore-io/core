@@ -17,7 +17,6 @@ export class MobileMenuComponent {
   @Input() isVisible = false;
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
-  @Input() isAllowedCreation = false;
   @Input() filesizes!: typeof FILE_SIZES;
   @Input() enableCreateAwardProposal = true;
   @Input() enableCollection = true;
