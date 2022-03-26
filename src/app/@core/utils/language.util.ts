@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {
-    cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, ko_KR, nl_NL, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN, zh_TW
+  cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, ko_KR, nl_NL, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN, zh_TW
 } from 'ng-zorro-antd/i18n';
 
 export interface LanguagesType {
@@ -9,7 +9,7 @@ export interface LanguagesType {
         title: string;
         firebase: string;
     }
-} 
+}
 
 export const Languages: LanguagesType = {
     en: {
@@ -65,12 +65,14 @@ export const Languages: LanguagesType = {
     pt_br: {
         ngZorro: pt_BR,
         title: 'PT-BR',
-        firebase: 'pt_BR'
+        // TODO we need to select right country
+        firebase: 'pt'
     },
     pt_pt: {
         ngZorro: pt_PT,
         title: 'PT-PT',
-        firebase: 'pt_PT'
+        // TODO we need to select right country
+        firebase: 'pt'
     },
     ru: {
         ngZorro: ru_RU,
@@ -90,11 +92,13 @@ export const Languages: LanguagesType = {
     zh_cn: {
         ngZorro: zh_CN,
         title: 'ZH-CN',
-        firebase: 'zh_CN'
+        // TODO we need to select right country
+        firebase: 'zh'
     },
     zh_tw: {
         ngZorro: zh_TW,
         title: 'ZH_TW',
-        firebase: 'zh_TW'
+        // TODO we need to select right country
+        firebase: 'zh'
     },
 };
