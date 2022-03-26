@@ -8,7 +8,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
-import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
+import { getItem, getNotificationItem, removeItem, setNotificationItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
@@ -238,27 +238,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public notificationVisibleChange(): void {
+    if (!this.auth.member$.value?.uid) {
+      return;
+    }
+
     setTimeout(() => {
-      setItem(StorageItem.Notification, this.notifications$.value[this.notifications$.value.length - 1]?.uid);
+      setNotificationItem(this.auth.member$.value!.uid, this.notifications$.value[this.notifications$.value.length - 1]?.uid);
       this.cd.markForCheck();
     }, 2500);
   }
 
   public isReadNotifications(): boolean {
-    return this.notifications$.value.length === 0 ||
-      this.notifications$.value[this.notifications$.value.length - 1].uid === getItem(StorageItem.Notification);
+    return !this.auth.member$.value?.uid || this.notifications$.value.length === 0 ||
+      this.notifications$.value[this.notifications$.value.length - 1].uid === getNotificationItem(this.auth.member$.value.uid);
   }
 
   public unreadNotificationCount(): number {
-    if (!this.notifications$.value.length) {
+    if (!this.notifications$.value.length || !this.auth.member$.value?.uid) {
       return 0;
     }
 
-    if (!getItem(StorageItem.Notification)) {
+    if (!getNotificationItem(this.auth.member$.value?.uid)) {
       return this.notifications$.value.length;
     }
 
-    return (this.notifications$.value.indexOf(<any>getItem(StorageItem.Notification)) + 1);
+    return (this.notifications$.value.indexOf(<any>getNotificationItem(this.auth.member$.value?.uid)) + 1);
   }
 
   public getNotificationDetails(not: Notification): NotificationContent {

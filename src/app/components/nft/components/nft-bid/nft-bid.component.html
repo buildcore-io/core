@@ -231,7 +231,7 @@
             Your transactions
         </div>
         <nz-table class="block w-full h-full mt-4 overflow-y-auto lg:min-h-0 lg:max-h-56"
-            [nzData]="(linkedTransactions$ | async) || []" [nzShowPagination]="false">
+            [nzData]="[{}]" [nzShowPagination]="false">
             <thead>
                 <tr>
                     <th i18n>Sent Date</th>

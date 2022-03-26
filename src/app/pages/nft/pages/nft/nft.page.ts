@@ -187,12 +187,12 @@ export class NFTPage implements OnInit, OnDestroy {
     });
 
     this.data.orders$.pipe(untilDestroyed(this)).subscribe((obj) => {
-          const arr: any = [];
-          obj?.forEach((obj) => {
-            arr.push([obj.order.createdOn?.toDate(), obj.order.payload.amount]);
-          });
+        const arr: any = [];
+        obj?.forEach((obj) => {
+          arr.push([obj.order.createdOn?.toDate(), obj.order.payload.amount]);
+        });
 
-          this.initChart(arr);
+        this.initChart(arr);
     });
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
