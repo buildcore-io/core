@@ -9,18 +9,20 @@
 
     <div class="flex justify-between items-center lg:mt-12 w-full">
         <div class="flex items-center w-full lg:w-max">
-            <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-                <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-                    (nzCheckedChange)="handleChange(tag)">
-                    {{ tag }}
-                </nz-tag>
+            <ng-container *ngIf="hotTags?.length">
+                <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
+                    <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
+                        (nzCheckedChange)="handleChange(tag)">
+                        {{ tag }}
+                    </nz-tag>
+                </ng-container>
+    
+                <ng-template #hotTagsMobileBlock>
+                    <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
+                        <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+                    </nz-select>
+                </ng-template>
             </ng-container>
-
-            <ng-template #hotTagsMobileBlock>
-                <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-                    <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
-                </nz-select>
-            </ng-template>
 
             <wen-select-space
                 *ngIf="deviceService.isDesktop$ | async"
