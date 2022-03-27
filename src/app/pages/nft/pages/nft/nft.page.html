@@ -76,7 +76,7 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-5">
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
+                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
                         <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{data.formatBest(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)"
+                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)"
                     [ngClass]="{
                       'bg-tag-red': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.allBidTransactions$ | async)?.length,
                       'bg-tag-green': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
@@ -98,36 +98,7 @@
                   </div>
                 </div>
 
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
-                    <div class="flex items-center mt-2">
-                      <ng-container *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace">
-                        <a [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center w-full">
-                          <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
-                            class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                            style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                          </nz-avatar>
-                          <div class="ml-3 text-base font-medium truncate">
-                            {{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}
-                          </div>
-                        </a>
-                      </ng-container>
-
-                      <ng-container *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace">
-                        <a [routerLink]="['/member', (data.creator$ | async)?.uid]" class="flex items-center w-full">
-                          <nz-avatar [nzSrc]="(data.creator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                            class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                            style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                          </nz-avatar>
-                          <div class="ml-3 text-base font-medium truncate">
-                            @{{((data.creator$ | async)?.name || (data.creator$ | async)?.uid) }}
-                          </div>
-                        </a>
-                      </ng-container>
-                    </div>
-                </div>
-
-                <div class="flex-grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
+                <div class="flex-1 h-20 px-4 py-3 bg-white rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
                     <a class="flex items-center mt-2" [routerLink]="['/space', (data.space$ | async)?.uid]">
                         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
