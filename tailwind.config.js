@@ -127,6 +127,7 @@ module.exports = {
         fit: 'fit-content',
         20: '5rem',
         24: '6rem',
+        40: '10rem',
         80: '20rem',
         128: '32rem',
         160: '40rem',
