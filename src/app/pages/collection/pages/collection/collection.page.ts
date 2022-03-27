@@ -9,6 +9,7 @@ import { MemberApi } from '@api/member.api';
 import { NftApi } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -56,8 +57,8 @@ export class CollectionPage implements OnInit, OnDestroy {
     private nftApi: NftApi,
     private titleService: Title,
     private route: ActivatedRoute,
-    private router: Router
-
+    private router: Router,
+    private cache: CacheService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.filterControl = new FormControl(undefined);
@@ -102,6 +103,20 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
 
       this.data.accessBadges$.next(awards);
+
+      // Get the access collections
+      const collections: Collection[] = [];
+      const allCollections = this.cache.allCollections$.getValue();
+      if (obj.accessCollections?.length) {
+        for (const c of obj.accessCollections) {
+          const collection: Collection|undefined = allCollections.find((col: Collection) => col.uid === c);
+          if (collection) {
+            collections.push(collection);
+          }
+        }
+      }
+
+      this.data.accessCollections$.next(collections);
     });
 
     this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {

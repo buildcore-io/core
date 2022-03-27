@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { Categories, Collection, CollectionAccess, DiscountLine } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
@@ -12,16 +13,10 @@ import { DataService } from '../../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionAboutComponent {
-  // TODO: remove
-  public badge = {
-      "fileName": "9234",
-      "original": "bafybeic6ai5uirmgtnimdnauafxqllyczculsjhayzoa25udqnfxcosueu",
-      "metadata": "QmP4xJSZu95NSX8FYvZFYKusW1eRqHkekFw55KS9xBeFL1",
-      "avatar": "bafybeieivvapg72xjl5uoavniztpf5hiyh2iajggcnj7tmk6grzzg7c55e"
-  };
   constructor(
     public data: DataService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public previewImageService: PreviewImageService
   ) {
     // none.
   }

@@ -98,15 +98,15 @@ module.exports = {
         brown: {
           primary: '#A66300',
           secondary: '#F4F2E4',
-          light: '#C6BF9F'
+          light: '#C6BF9F',
+          lighter: '#FAF9F4'
         },
         pink: '#F20CDF',
         black: '#000000',
         yellow: {
           primary: '#FFEF64',
           secondary: '#FFE815'
-        }
-
+        },
       },
       spacing: {
         18: '4.5rem',
