@@ -177,13 +177,64 @@
 
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
 
-            <wen-collapse i18n-nzTitle title="Price History" class="mt-4" [isCollapsed]="false">
-                <div style="display: block;">
-                    <canvas baseChart width="400" height="180"
-                                [data]="lineChartData"
-                                [options]="lineChartOptions"
-                                [type]="lineChartType"></canvas>
+            <wen-collapse i18n-nzTitle title="Bidding" class="mt-4" [isCollapsed]="true" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async) || (data.myTransactions$ | async)?.length">
+                <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
+                    <nz-tag nzMode="checkable"  *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
+                        (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
+                            <span i18n>Current Bids</span>
+                    </nz-tag>
+                    <nz-tag nzMode="checkable"  *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_BIDS"
+                        (nzCheckedChange)="currentListingType = listingTypes.MY_BIDS">
+                            <span i18n>My Bids</span>
+                    </nz-tag>
+                    <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_TRANSACTIONS"
+                        (nzCheckedChange)="currentListingType = listingTypes.MY_TRANSACTIONS">
+                            <span i18n>My Transactions</span>
+                    </nz-tag>
                 </div>
+  
+                <!-- Current Bids -->
+                <nz-table *ngIf="currentListingType === listingTypes.CURRENT_BIDS" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                    [nzData]="(data.allBidTransactions$ | async) || []" [nzShowPagination]="false">
+                    <thead>
+                        <tr>
+                            <th i18n>Member</th>
+                            <th i18n>Bidded on</th>
+                            <th i18n>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of (data.allBidTransactions$ | async)">
+                            <td>
+                                <nz-avatar nzIcon="user" [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
+                                    [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
+                                </nz-avatar>
+                                <span [routerLink]="'/'">@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
+                            </td>
+                            <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
+                            <td>{{ data.formatBest(item.transaction.payload.amount) }}</td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+  
+                <!-- My bids / My Transactions -->
+                <nz-table *ngIf="currentListingType === listingTypes.MY_TRANSACTIONS || currentListingType === listingTypes.MY_BIDS" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                  [nzData]="((currentListingType === listingTypes.MY_BIDS ? data.myBidTransactions$ : data.myTransactions$) | async) || []" [nzShowPagination]="false">
+                  <thead>
+                      <tr>
+                          <th i18n>Date</th>
+                          <th i18n>Type</th>
+                          <th i18n>Amount</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr *ngFor="let item of ((currentListingType === listingTypes.MY_BIDS ? data.myBidTransactions$ : data.myTransactions$) | async)">
+                          <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
+                          <td>{{ item.type }}</td>
+                          <td>{{ data.formatBest(item.payload.amount) }}</td>
+                      </tr>
+                  </tbody>
+                </nz-table>
             </wen-collapse>
         </div>
 
@@ -211,8 +262,17 @@
                     [shareUrl]="getShareUrl(data.nft$ | async)">
                 </wen-share>
             </ng-container>
+            
+            <wen-collapse i18n-nzTitle title="History" class="mt-8" [isCollapsed]="false">
+                <div style="display: block;">
+                    <canvas baseChart width="400" height="180"
+                                [data]="lineChartData"
+                                [options]="lineChartOptions"
+                                [type]="lineChartType"></canvas>
+                </div>
+            </wen-collapse>
 
-            <nz-card nzTitle="Owned by" class="mt-8" *ngIf="data.owner$ | async">
+            <nz-card nzTitle="Owned by" class="mt-4" *ngIf="data.owner$ | async">
                 <a [routerLink]="['/member', (data.owner$ | async)?.uid]" class="flex items-center">
                     <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                         class="border-2 border-app-gray-100 bg-bg-background min-w-10"
@@ -223,67 +283,6 @@
                     </div>
                 </a>
             </nz-card>
-
-            <wen-collapse i18n-nzTitle title="Transactions" class="mt-4" [isCollapsed]="true" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async) || (data.myTransactions$ | async)?.length">
-              <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
-                  <nz-tag nzMode="checkable"  *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
-                      (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
-                          <span i18n>Current Bids</span>
-                  </nz-tag>
-                  <nz-tag nzMode="checkable"  *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_BIDS"
-                      (nzCheckedChange)="currentListingType = listingTypes.MY_BIDS">
-                          <span i18n>My Bids</span>
-                  </nz-tag>
-                  <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_TRANSACTIONS"
-                      (nzCheckedChange)="currentListingType = listingTypes.MY_TRANSACTIONS">
-                          <span i18n>My Transactions</span>
-                  </nz-tag>
-              </div>
-
-              <!-- Current Bids -->
-              <nz-table *ngIf="currentListingType === listingTypes.CURRENT_BIDS" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                  [nzData]="(data.allBidTransactions$ | async) || []" [nzShowPagination]="false">
-                  <thead>
-                      <tr>
-                          <th i18n>Member</th>
-                          <th i18n>Bidded on</th>
-                          <th i18n>Amount</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr *ngFor="let item of (data.allBidTransactions$ | async)">
-                          <td>
-                              <nz-avatar nzIcon="user" [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
-                                  [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
-                              </nz-avatar>
-                              <span [routerLink]="'/'">@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
-                          </td>
-                          <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
-                          <td>{{ data.formatBest(item.transaction.payload.amount) }}</td>
-                      </tr>
-                  </tbody>
-              </nz-table>
-
-              <!-- My bids / My Transactions -->
-              <nz-table *ngIf="currentListingType === listingTypes.MY_TRANSACTIONS || currentListingType === listingTypes.MY_BIDS" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                [nzData]="((currentListingType === listingTypes.MY_BIDS ? data.myBidTransactions$ : data.myTransactions$) | async) || []" [nzShowPagination]="false">
-                <thead>
-                    <tr>
-                        <th i18n>Date</th>
-                        <th i18n>Type</th>
-                        <th i18n>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of ((currentListingType === listingTypes.MY_BIDS ? data.myBidTransactions$ : data.myTransactions$) | async)">
-                        <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
-                        <td>{{ item.type }}</td>
-                        <td>{{ data.formatBest(item.payload.amount) }}</td>
-                    </tr>
-                </tbody>
-              </nz-table>
-
-            </wen-collapse>
 
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
                 <div class="wen-description-item bg-bg-background">
