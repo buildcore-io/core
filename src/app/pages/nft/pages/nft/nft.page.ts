@@ -99,6 +99,20 @@ export class NFTPage implements OnInit, OnDestroy {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.nft.nft.replace(':', '')];
       if (id) {
         this.listenToNft(id);
+
+        if (obj.b) {
+          // We open checkout with or auction with delay.
+          setTimeout(() => {
+            if (this.isAvailableForAuction(this.data.nft$.value, this.data.collection$.value)) {
+              this.bid();
+              this.cd.markForCheck();
+            } else if (this.isAvailableForSale(this.data.nft$.value, this.data.collection$.value)) {
+              this.buy();
+              this.cd.markForCheck();
+            }
+
+          }, 1500);
+        }
       } else {
         this.notFound();
       }
@@ -389,9 +403,11 @@ export class NFTPage implements OnInit, OnDestroy {
     return finalPrice;
   }
 
-  public bid(event: MouseEvent): void {
-    event.stopPropagation();
-    event.preventDefault();
+  public bid(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
     if (getItem(StorageItem.CheckoutTransaction)) {
       this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
       return;
@@ -399,9 +415,11 @@ export class NFTPage implements OnInit, OnDestroy {
     this.isBidOpen = true;
   }
 
-  public buy(event: MouseEvent): void {
-    event.stopPropagation();
-    event.preventDefault();
+  public buy(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
     if (getItem(StorageItem.CheckoutTransaction)) {
       this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
       return;

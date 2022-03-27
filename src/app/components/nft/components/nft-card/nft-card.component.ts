@@ -1,19 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
-import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Collection, CollectionAccess, CollectionType, Member } from '@functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
@@ -67,7 +66,7 @@ export class NftCardComponent {
     public previewImageService: PreviewImageService,
     private auth: AuthService,
     private cd: ChangeDetectorRef,
-    private nzNotification: NzNotificationService,
+    private router: Router,
     private memberApi: MemberApi,
     private fileApi: FileApi
   ) {}
@@ -75,11 +74,7 @@ export class NftCardComponent {
   public onBuy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
-    if (getItem(StorageItem.CheckoutTransaction)) {
-      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
-      return;
-    }
-    this.isCheckoutOpen = true;
+    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.nft?.uid, { b: 't' }])
   }
 
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {

@@ -10,8 +10,6 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NftBidModule } from '../nft-bid/nft-bid.module';
-import { NftCheckoutModule } from '../nft-checkout/nft-checkout.module';
 import { NftCardComponent } from './nft-card.component';
 
 
@@ -27,12 +25,10 @@ import { NftCardComponent } from './nft-card.component';
     TruncateModule,
     IconModule,
     NzButtonModule,
-    NftCheckoutModule,
     NzNotificationModule,
     NzAvatarModule,
     NzToolTipModule,
     IpfsAvatarModule,
-    NftBidModule,
     CollectionAccessBadgeModule
   ],
   exports:[
