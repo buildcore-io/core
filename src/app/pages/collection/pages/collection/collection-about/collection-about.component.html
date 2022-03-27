@@ -19,14 +19,15 @@
   *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_NFT_FROM_COLLECTION">
   <div class="flex">
     <wen-icon-members-with-nft-from-collection [size]="20" class="text-app-gray-400"></wen-icon-members-with-nft-from-collection>
-    <div class="text-sm font-medium ml-2" i18n>
-      Must hold at least one NFT from each 
+    <div class="ml-2 text-sm font-medium" i18n>
+      Must hold at least one NFT from each
       selected collection
     </div>
   </div>
 
   <div class="flex flex-wrap mt-3">
-    <div class="flex items-center justify-between p-1.5 mt-2 mr-2 bg-brown-lighter rounded-lg"
+    <div class="flex items-center cursor-pointer justify-between p-1.5 mt-2 mr-2 bg-brown-lighter rounded-lg"
+      [routerLink]="['/', 'collection', collection?.uid]"
       *ngFor="let collection of (data.accessCollections$ | async)">
       <nz-avatar
         [nzSrc]="previewImageService.getAvatarSize(collection?.bannerUrl)"

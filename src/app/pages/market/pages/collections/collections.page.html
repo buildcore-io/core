@@ -107,7 +107,7 @@
                         <wen-icon-members-with-badge *ngIf="accessControl.value === accessTypes.MEMBERS_WITH_BADGE" [size]="16" class="text-white"></wen-icon-members-with-badge>
                         <wen-icon-members-with-nft-from-collection *ngIf="accessControl.value === accessTypes.MEMBERS_WITH_NFT_FROM_COLLECTION" [size]="16" class="text-white"></wen-icon-members-with-nft-from-collection>
                     </div>
-                    <div class="ml-2 max-w-40 truncate">
+                    <div class="ml-2 truncate max-w-40">
                         <ng-container *ngIf="accessControl.value === accessTypes.ALL" i18n>All accesses</ng-container>
                         <ng-container *ngIf="accessControl.value === accessTypes.OPEN" i18n>Open sale</ng-container>
                         <ng-container *ngIf="accessControl.value === accessTypes.MEMBERS_ONLY" i18n>Space members only</ng-container>
