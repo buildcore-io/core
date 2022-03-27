@@ -38,7 +38,7 @@
             </div>
 
             <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-brown-secondary"
-                *ngIf="!fullWidth && (isDateInFuture(collection?.availableFrom) || collection?.limitedEdition)">
+                *ngIf="isDateInFuture(collection?.availableFrom) || collection?.limitedEdition">
                 <div class="text-sm font-medium" i18n>Limited Edition</div>
                 <!-- Seems duplicate .... *ngIf="collection.limitedEdition; else startsBlock" -->
                 <!-- <ng-template #startsBlock>

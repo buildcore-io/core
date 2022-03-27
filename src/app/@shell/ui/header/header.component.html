@@ -13,7 +13,11 @@
       [enableCollection]="enableCollection"
       [isLandingPage]="isLandingPage"
       [isMobileMenuVisible]="isMobileMenuVisible"
-      (wenOnVisibleChange)="isMobileMenuVisible = !isMobileMenuVisible">
+      [notifications]="(notifications$ | async) || []"
+      [unreadNotificationCount]="unreadNotificationCount()"
+      [getNotificationDetails]="getNotificationDetails"
+      (wenOnVisibleChange)="isMobileMenuVisible = !isMobileMenuVisible"
+      (wenOnNotificationVisibleChange)="notificationVisibleChange()">
     </wen-mobile-header>
 
     <div class="p-4" *ngIf="!isScrolled">
@@ -77,12 +81,12 @@
 
     <wen-sign-in *ngIf="(isLoggedIn$ | async) === false" [ngClass]="isMemberProfile ? 'isMember' : ''"></wen-sign-in>
 
-      <nz-badge [nzDot]="unreadNotificationCount() > 0">
-        <button nz-button nz-dropdown nzType="default" nzShape="circle"
-              *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
-              [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
-              class="relative inline-flex items-center justify-center border-0 wen-header-button"
-              (nzVisibleChange)="notificationVisibleChange()">
+    <nz-badge [nzDot]="unreadNotificationCount() > 0">
+      <button nz-button nz-dropdown nzType="default" nzShape="circle"
+            *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+            [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
+            class="relative inline-flex items-center justify-center border-0 wen-header-button"
+            (nzVisibleChange)="notificationVisibleChange()">
 
         <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
       </button>

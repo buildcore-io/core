@@ -23,7 +23,7 @@ import { Notification, NotificationType } from './../../../../../functions/inter
 import { MemberApi } from './../../../@api/member.api';
 
 const IS_SCROLLED_HEIGHT = 20;
-interface NotificationContent {
+export interface NotificationContent {
   title: string;
   content: string;
 }

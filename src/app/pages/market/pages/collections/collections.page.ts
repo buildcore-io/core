@@ -36,6 +36,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public spaceControl: FormControl;
   public categoryControl: FormControl;
   public collections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
+  public accessControl: FormControl;
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN_SALE_ONLY, HOT_TAGS.MEMBERS_ONLY];
   public categories: string[] = [AddedCategories.ALL, Categories.ABSTRACT, Categories.ANIMATION, Categories.ART,
                                 Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERACTIVE, Categories.PFP,
@@ -54,6 +55,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.categoryControl = new FormControl(AddedCategories.ALL);
+    this.accessControl = new FormControl(this.accessTypes.ALL);
   }
 
   public ngOnInit(): void {
@@ -209,6 +211,10 @@ export class CollectionsPage implements OnInit, OnDestroy {
 
       return (!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
     }));
+  }
+  
+  public get accessTypes(): typeof CollectionAccess & { ALL: string } {
+    return { ...CollectionAccess, ALL: 'ALL' };
   }
 
   private cancelSubscriptions(): void {

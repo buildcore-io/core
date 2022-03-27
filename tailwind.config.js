@@ -98,15 +98,15 @@ module.exports = {
         brown: {
           primary: '#A66300',
           secondary: '#F4F2E4',
-          light: '#C6BF9F'
+          light: '#C6BF9F',
+          lighter: '#FAF9F4'
         },
         pink: '#F20CDF',
         black: '#000000',
         yellow: {
           primary: '#FFEF64',
           secondary: '#FFE815'
-        }
-
+        },
       },
       spacing: {
         18: '4.5rem',
@@ -127,9 +127,12 @@ module.exports = {
         fit: 'fit-content',
         20: '5rem',
         24: '6rem',
+        40: '10rem',
         80: '20rem',
         128: '32rem',
         160: '40rem',
+        '1/2': '50%',
+        '1/3': '33%',
         '2/3': '66%',
         450: '450px'
       },

@@ -40,6 +40,8 @@ import { MembersIconComponent } from './members/members.component';
 import { MenuIconComponent } from './menu/menu.component';
 import { MoonIconComponent } from './moon/moon.component';
 import { MoreIconComponent } from './more/more.component';
+import { NineDotsIconComponent } from './nine-dots/nine-dots.component';
+import { OpenSaleIconComponent } from './open-sale/open-sale.component';
 import { PercentageIconComponent } from './percentage/percentage.component';
 import { PlusIconComponent } from './plus/plus.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
@@ -126,7 +128,9 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersOnlyIconComponent,
     GuardiansOnlyIconComponent,
     MembersWithBadgeIconComponent,
-    MembersWithNftFromCollectionIconComponent
+    MembersWithNftFromCollectionIconComponent,
+    NineDotsIconComponent,
+    OpenSaleIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -190,7 +194,9 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersOnlyIconComponent,
     GuardiansOnlyIconComponent,
     MembersWithBadgeIconComponent,
-    MembersWithNftFromCollectionIconComponent
+    MembersWithNftFromCollectionIconComponent,
+    NineDotsIconComponent,
+    OpenSaleIconComponent
   ],
   imports: [
     CommonModule

@@ -51,7 +51,7 @@
               Your browser does not support HTML video.
             </video>
         </div>
-        <div class="mt-8 lg:ml-8 lg:mt-0 ">
+        <div class="flex-grow mt-8 lg:ml-8 lg:mt-0">
             <div class="relative flex flex-col w-full h-full">
                 <h3 class="mb-1 text-2xl font-bold truncate">{{ nft?.name }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
@@ -61,7 +61,7 @@
                     <div class="font-medium"><span i18n>Ends </span>{{ (expiryTicker$ | async) | relativeTime:'from'}}</div>
                 </div>
 
-                <div class="flex items-center mt-2.5">
+                <div class="flex items-center mt-2.5 mb-2.5">
                     <wen-icon-crown class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-crown>
                     <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
                     <wen-icon-question-circle
@@ -72,7 +72,7 @@
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."
                     ></wen-icon-question-circle>
                 </div>
-                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max"
+                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
                     [ngClass]="{
                         'bg-bg-background': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
                         'bg-tag-red': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length,
@@ -84,7 +84,7 @@
                     </div>
                     <div class="flex items-center mt-2 text-lg">
                       <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.auctionHighestBid || 0) || formatBest(getRecord()?.auctionFloorPrice)}}</div>
-                      <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center ml-6">
+                      <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-app-gray-100 bg-bg-background min-w-8"
                             [nzSize]="32">
@@ -138,10 +138,10 @@
     <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
         <div class="text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" >
             <span i18n>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be
-            locked, if there is a higher bid, you will be refunded imidiately.</span>
+            locked, if there is a higher bid, you will be refunded immediately.</span>
         </div>
         <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
-            If there is a higher bid, you will be refunded imidiately. If you want to make another bid,
+            If there is a higher bid, you will be refunded immediately. If you want to make another bid,
              send higher amount directly to the same address.
         </div>
 
@@ -181,8 +181,12 @@
         </div>
 
         <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
-            If there is a higher bid, you will be refunded imidiately.
+            If there is a higher bid, you will be refunded immediately.
             If you want to make another bid, send higher amount directly to the same address.
+        </div>
+
+        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+            Do not send funds from an exchange, always use wallets you fully control.
         </div>
 
         <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto">
@@ -258,8 +262,12 @@
         </nz-table>
 
         <div class="mt-10 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
-            If there is a higher bid, you will be refunded imidiately.
+            If there is a higher bid, you will be refunded immediately.
             If you want to make another bid, send higher amount directly to the same address.
+        </div>
+
+        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+            Do not send funds from an exchange, use only a Firefly or TanglePay wallet.
         </div>
 
         <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto">

@@ -4,6 +4,9 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { RouterService } from '@core/services/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy } from '@ngneat/until-destroy';
+import { BehaviorSubject } from 'rxjs';
+import { NotificationContent } from '../header/header.component';
+import { Notification } from './../../../../../functions/interfaces/models/notification';
 
 
 @UntilDestroy()
@@ -21,7 +24,11 @@ export class MobileHeaderComponent {
   @Input() goBackHeader = false;
   @Input() enableCreateAwardProposal = true;
   @Input() enableCollection = true;
+  @Input() notifications: Notification[] = [];
+  @Input() unreadNotificationCount = 0;
+  @Input() getNotificationDetails!: (not: Notification) => NotificationContent;
   @Output() wenOnVisibleChange = new EventEmitter<boolean>();
+  @Output() wenOnNotificationVisibleChange = new EventEmitter<boolean>();
 
   public homeRoute = ROUTER_UTILS.config.base.home;
 
@@ -40,5 +47,13 @@ export class MobileHeaderComponent {
     if(this.isMobileMenuVisible) {
       this.setMobileMenuVisible(false);
     }
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
+  public get isLoggedIn$(): BehaviorSubject<boolean> {
+    return this.auth.isLoggedIn$;
   }
 }

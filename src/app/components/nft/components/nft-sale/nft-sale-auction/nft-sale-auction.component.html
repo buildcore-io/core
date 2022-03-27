@@ -2,8 +2,6 @@
 <div class="px-6 py-5">
     <div class="text-sm font-bold" i18n>
         Trade info
-        <span *ngIf="isProd()">(3 days auction)</span>
-        <span *ngIf="!isProd()">(8 minutes auction - IN TEST ENV)</span>
     </div>
 
     <nz-form-item class="mt-5">
@@ -52,6 +50,27 @@
                 nzPlaceHolder="Available on"
             >
             </nz-date-picker>
+        </nz-form-control>
+    </nz-form-item>
+
+
+    <nz-form-item class="mt-4">
+        <nz-form-control>
+          <nz-select
+            class="w-full"
+            nzSize="large"
+            nzShowSearch
+            nzAllowClear
+            [nzPlaceHolder]="placeholderTpl"
+            [nzDisabled]="true"
+          >
+          </nz-select>
+          <ng-template #placeholderTpl>
+            <div class="flex items-center space-x-4">
+              <wen-icon-time class="text-black"></wen-icon-time>
+              <span i18n>Duration of auction is 3 days</span>
+            </div>
+          </ng-template>
         </nz-form-control>
     </nz-form-item>
 <!--
