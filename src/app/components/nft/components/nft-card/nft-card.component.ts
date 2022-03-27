@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -68,13 +69,15 @@ export class NftCardComponent {
     private cd: ChangeDetectorRef,
     private router: Router,
     private memberApi: MemberApi,
-    private fileApi: FileApi
+    private fileApi: FileApi,
+    private cache: CacheService
   ) {}
 
   public onBuy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
-    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.nft?.uid, { b: 't' }])
+    this.cache.openCheckout = true;
+    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.nft?.uid])
   }
 
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {

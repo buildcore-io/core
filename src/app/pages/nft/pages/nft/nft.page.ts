@@ -7,6 +7,7 @@ import { MemberApi } from '@api/member.api';
 import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, StorageItem } from '@core/utils';
@@ -88,6 +89,7 @@ export class NFTPage implements OnInit, OnDestroy {
     private nftApi: NftApi,
     private fileApi: FileApi,
     private router: Router,
+    private cache: CacheService,
     private cd: ChangeDetectorRef
   ) {
     // none
@@ -100,7 +102,8 @@ export class NFTPage implements OnInit, OnDestroy {
       if (id) {
         this.listenToNft(id);
 
-        if (obj.b) {
+        if (this.cache.openCheckout) {
+          this.cache.openCheckout = false;
           // We open checkout with or auction with delay.
           setTimeout(() => {
             if (this.isAvailableForAuction(this.data.nft$.value, this.data.collection$.value)) {
@@ -110,7 +113,6 @@ export class NFTPage implements OnInit, OnDestroy {
               this.buy();
               this.cd.markForCheck();
             }
-
           }, 1500);
         }
       } else {
@@ -183,20 +185,7 @@ export class NFTPage implements OnInit, OnDestroy {
           this.collectionSubscriptions$.push(this.memberApi.listen(p.createdBy).pipe(untilDestroyed(this)).subscribe(this.data.collectionCreator$));
         }
 
-        if (this.auctionInProgress(this.data.nft$.value, p)) {
-          this.currentListingType = ListingType.CURRENT_BIDS;
-          this.cd.markForCheck();
-
-          this.tranSubscriptions$.forEach((s) => {
-            s.unsubscribe();
-          });
-
-          // Resubscribe.
-          this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.allBidTransactions$));
-          if (this.auth.member$.value) {
-            this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myBidTransactions$));
-          }
-        }
+        this.refreshBids();
       }
     });
 
@@ -222,7 +211,29 @@ export class NFTPage implements OnInit, OnDestroy {
         // Delay slightly.
         this.cd.markForCheck();
       }
+
+      // Make sure we refresh bids once auction is in progress.
+      if (this.tranSubscriptions$.length === 0) {
+        this.refreshBids();
+      }
     });
+  }
+
+  private refreshBids(): void {
+    if (this.auctionInProgress(this.data.nft$.value, this.data.collection$.value)) {
+      this.currentListingType = ListingType.CURRENT_BIDS;
+      this.cd.markForCheck();
+
+      this.tranSubscriptions$.forEach((s) => {
+        s.unsubscribe();
+      });
+      this.tranSubscriptions$ = [];
+      // Resubscribe.
+      this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.allBidTransactions$));
+      if (this.auth.member$.value) {
+        this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myBidTransactions$));
+      }
+    }
   }
 
   public getExplorerLink(link: string): string {

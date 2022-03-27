@@ -12,6 +12,8 @@ export class CacheService {
   public allSpaces$ = new BehaviorSubject<Space[]>([]);
   // TODO This should be ideally removed eventually.
   public allCollections$ = new BehaviorSubject<Collection[]>([]);
+  // We use this instead of optional params to open check after clicking buy now in the NFT card.
+  public openCheckout = false;
   private subscriptions$: Subscription[] = [];
   constructor(
     private spaceApi: SpaceApi,
