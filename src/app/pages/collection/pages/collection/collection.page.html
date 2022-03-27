@@ -41,7 +41,7 @@
                 </button>
             </div>
 
-            <div class="flex flex-wrap items-center mt-8">
+            <div class="flex flex-wrap lg:items-center flex-col lg:flex-row mt-8 w-max">
                 <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center justify-between">
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
@@ -57,7 +57,7 @@
                 </a>
 
                 <a *ngIf="(data.royaltySpace$ | async) && (data.collection$ | async)?.royaltiesSpace !== (data.collection$ | async)?.space"
-                    [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center justify-between ml-10">
+                    [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center justify-between lg:ml-10 mt-4 lg:mt-0">
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
                         [nzSize]="32"
