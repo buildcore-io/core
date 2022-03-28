@@ -92,16 +92,13 @@ export class ProcessingService {
     }
 
     const refSource: any = admin.firestore().collection(COL.NFT).doc(nft.uid);
-    // We need to decide on the winner. Last payment thats not invalid and linked to this order should be the winer.
-    const payments: any = await admin.firestore().collection(COL.TRANSACTION)
-                          .where('payload.invalidPayment', '==', false)
-                          .where('type', '==', TransactionType.PAYMENT)
-                          .where('createdOn', '>', nft.auctionFrom)
-                          .where('createdOn', '<', nft.auctionTo)
-                          .where('payload.nft', '==', nft.uid).get();
-    if (payments.size > 0) {
+    const sfDocNft: any = await this.transaction.get(refSource);
+    if (sfDocNft.data().auctionHighestTransaction) {
+      const previousHighestPayRef: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data().auctionHighestTransaction);
+      const previousHighestPayDoc: any = await this.transaction.get(previousHighestPayRef);
+
       // It has been succesfull, let's finalise.
-      const pay: TransactionPayment = <TransactionPayment>payments.docs[0].data();
+      const pay: TransactionPayment = <TransactionPayment>previousHighestPayDoc.data();
 
       // Let's get the actual order.
       const refOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(pay.payload.sourceTransaction);
