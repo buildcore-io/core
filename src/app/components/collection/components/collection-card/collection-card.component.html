@@ -38,23 +38,8 @@
             </div>
 
             <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-brown-secondary"
-                *ngIf="isDateInFuture(collection?.availableFrom) || collection?.limitedEdition">
+                *ngIf="collection?.limitedEdition">
                 <div class="text-sm font-medium" i18n>Limited Edition</div>
-                <!-- Seems duplicate .... *ngIf="collection.limitedEdition; else startsBlock" -->
-                <!-- <ng-template #startsBlock>
-                    <wen-icon-time class="text-app-gray-400"></wen-icon-time>
-                    <div class="ml-2.5 text-xs">
-                        <ng-container *ngIf="getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
-                            <span class="font-bold" i18n>Starts in</span>
-                            <span class="font-medium"> {{ getDaysLeft(collection?.availableFrom) }} </span>
-                            <span class="font-medium" i18n>days</span>
-                        </ng-container>
-                        <ng-template #todayBlock>
-                            <span class="font-bold" i18n>Starts today</span>
-                        </ng-template>
-                    </div>
-                </ng-template> -->
-
             </div>
         </div>
 
