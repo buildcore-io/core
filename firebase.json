@@ -46,7 +46,7 @@
       "rewrites": [
         {
           "source": "**",
-          "destination": "/en/index.html"
+          "destination": "/localized/en/index.html"
         }
       ]
     },
@@ -85,7 +85,7 @@
       "rewrites": [
         {
           "source": "**",
-          "destination": "/en/index.html"
+          "destination": "/localized/en/index.html"
         }
       ]
     }
