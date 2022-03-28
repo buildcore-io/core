@@ -12,7 +12,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">Discover</target>
+        <target state="translated">Найти</target>
       </trans-unit>
       <trans-unit id="2943097308103842625" datatype="html">
         <source>Create new </source>
@@ -20,7 +20,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="needs-translation">Create new </target>
+        <target state="translated">Создать</target>
       </trans-unit>
       <trans-unit id="8946906119075338535" datatype="html">
         <source>Space</source>
@@ -52,7 +52,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">102,103</context>
         </context-group>
-        <target state="needs-translation">Space</target>
+        <target state="translated">Пространство</target>
       </trans-unit>
       <trans-unit id="2011097393756618787" datatype="html">
         <source>Proposal</source>
@@ -64,7 +64,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation">Proposal</target>
+        <target state="translated">Предложение</target>
       </trans-unit>
       <trans-unit id="8300964821904459557" datatype="html">
         <source>Award</source>
@@ -76,7 +76,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">26,28</context>
         </context-group>
-        <target state="needs-translation">Award</target>
+        <target state="translated">Награда</target>
       </trans-unit>
       <trans-unit id="16823705783062999" datatype="html">
         <source>Collection</source>
@@ -100,7 +100,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Collection</target>
+        <target state="translated">Коллекция</target>
       </trans-unit>
       <trans-unit id="821740044721286718" datatype="html">
         <source> None. </source>
@@ -112,7 +112,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/mobile-header.component.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation"> None. </target>
+        <target state="translated"> Никто не голосовал против. </target>
       </trans-unit>
       <trans-unit id="2127032578120864096" datatype="html">
         <source>My Profile</source>
@@ -120,7 +120,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">137,138</context>
         </context-group>
-        <target state="needs-translation">My Profile</target>
+        <target state="translated">Мой профиль</target>
       </trans-unit>
       <trans-unit id="3462449862263966335" datatype="html">
         <source>Purchase has not been completed</source>
@@ -128,7 +128,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">Purchase has not been completed</target>
+        <target state="translated">Покупка не была завершена</target>
       </trans-unit>
       <trans-unit id="495479163700936540" datatype="html">
         <source>You have </source>
@@ -136,7 +136,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">154</context>
         </context-group>
-        <target state="needs-translation">You have </target>
+        <target state="translated">У вас есть</target>
       </trans-unit>
       <trans-unit id="8911752479560729370" datatype="html">
         <source> to finish your transaction</source>
@@ -144,7 +144,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.html</context>
           <context context-type="linenumber">154,155</context>
         </context-group>
-        <target state="needs-translation"> to finish your transaction</target>
+        <target state="translated"> чтобы завершить транзакцию</target>
       </trans-unit>
       <trans-unit id="4032615755751666229" datatype="html">
         <source>Open Checkout</source>
@@ -160,7 +160,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">270</context>
         </context-group>
-        <target state="needs-translation">You won the NFT</target>
+        <target state="translated">Вы выиграли NFT</target>
       </trans-unit>
       <trans-unit id="653764875284666289" datatype="html">
         <source>You are a proud owner of a new NFT. Congratulations!</source>
@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">271</context>
         </context-group>
-        <target state="needs-translation">You are a proud owner of a new NFT. Congratulations!</target>
+        <target state="translated">Вы гордый владелец нового NFT. Поздравляем!</target>
       </trans-unit>
       <trans-unit id="6237623083700365974" datatype="html">
         <source>You lost your bid!</source>
@@ -176,7 +176,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">278</context>
         </context-group>
-        <target state="needs-translation">You lost your bid!</target>
+        <target state="translated">Ваша ставка проиграла!</target>
       </trans-unit>
       <trans-unit id="443358007732779842" datatype="html">
         <source>Your bid on </source>
@@ -184,7 +184,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">279</context>
         </context-group>
-        <target state="needs-translation">Your bid on </target>
+        <target state="translated">Ваша ставка </target>
       </trans-unit>
       <trans-unit id="5236966869858739780" datatype="html">
         <source> was outbidded. Try again!</source>
@@ -212,7 +212,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">for</target>
+        <target state="translated">для</target>
       </trans-unit>
       <trans-unit id="943610027250970425" datatype="html">
         <source>Your</source>
@@ -220,7 +220,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">289</context>
         </context-group>
-        <target state="needs-translation">Your</target>
+        <target state="translated">Ваш(и)</target>
       </trans-unit>
       <trans-unit id="4977659878080608796" datatype="html">
         <source>has received a new bid for</source>
@@ -236,7 +236,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">298,297</context>
         </context-group>
-        <target state="needs-translation">Unsupported</target>
+        <target state="translated">Недопустимо</target>
       </trans-unit>
       <trans-unit id="5553638450493774694" datatype="html">
         <source>This notification is not yet supported in your language</source>
@@ -244,7 +244,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="needs-translation">This notification is not yet supported in your language</target>
+        <target state="translated">Это сообщение не поддерживается на вашем языке</target>
       </trans-unit>
       <trans-unit id="7130854181625494946" datatype="html">
         <source> Space </source>
@@ -252,7 +252,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation"> Space </target>
+        <target state="translated"> Пространство </target>
       </trans-unit>
       <trans-unit id="7760190548492587697" datatype="html">
         <source> Proposal </source>
@@ -260,7 +260,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation"> Proposal </target>
+        <target state="translated"> Предложение </target>
       </trans-unit>
       <trans-unit id="6501818680037750989" datatype="html">
         <source> Award </source>
@@ -268,7 +268,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
-        <target state="needs-translation"> Award </target>
+        <target state="translated"> Награда </target>
       </trans-unit>
       <trans-unit id="535136730892236523" datatype="html">
         <source> Collection </source>
@@ -276,7 +276,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation"> Collection </target>
+        <target state="translated"> Коллекция </target>
       </trans-unit>
       <trans-unit id="9002287905742257858" datatype="html">
         <source>Connect to your MetaMask wallet</source>
@@ -284,7 +284,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">Connect to your MetaMask wallet</target>
+        <target state="translated">Подключите кошелек MetaMask</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -292,7 +292,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Log out</target>
+        <target state="translated">Выйти</target>
       </trans-unit>
       <trans-unit id="7933384538978087776" datatype="html">
         <source>Powered by</source>
@@ -308,7 +308,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">8,10</context>
         </context-group>
-        <target state="needs-translation"> The page you were looking for was not found </target>
+        <target state="translated"> Страница, которую вы искали, не найдена </target>
       </trans-unit>
       <trans-unit id="5342984131662289707" datatype="html">
         <source> Discover Soonaverse </source>
@@ -316,7 +316,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
-        <target state="needs-translation"> Discover Soonaverse </target>
+        <target state="translated">Путешествуйте по Soonaverse</target>
       </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
@@ -324,7 +324,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">See Docs</target>
+        <target state="translated">См. документацию</target>
       </trans-unit>
       <trans-unit id="5505806772136490162" datatype="html">
         <source>Coming SOON</source>
@@ -344,7 +344,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">291,292</context>
         </context-group>
-        <target state="needs-translation">Coming SOON</target>
+        <target state="translated">Скоро</target>
       </trans-unit>
       <trans-unit id="3612321595619972457" datatype="html">
         <source>Metamask</source>
@@ -352,7 +352,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
-        <target state="needs-translation">Metamask</target>
+        <target state="translated">MetaMask</target>
       </trans-unit>
       <trans-unit id="7137489371050964608" datatype="html">
         <source>Connect to your Metamask wallet</source>
@@ -360,7 +360,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation">Connect to your Metamask wallet</target>
+        <target state="translated">Подключите кошелек MetaMask</target>
       </trans-unit>
       <trans-unit id="9133528864934693149" datatype="html">
         <source>Make sure you select public IOTA EVM Chain in MetaMask.</source>
@@ -368,7 +368,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation">Make sure you select public IOTA EVM Chain in MetaMask.</target>
+        <target state="translated">Убедитесь, что вы выбрали сеть: IOTA EVM в MetaMask.</target>
       </trans-unit>
       <trans-unit id="6970134539747340940" datatype="html">
         <source>Network Name: IOTA EVM</source>
@@ -376,7 +376,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Network Name: IOTA EVM</target>
+        <target state="translated">Название сети: IOTA EVM</target>
       </trans-unit>
       <trans-unit id="1895879371426538757" datatype="html">
         <source>RPC URL: https://evm.wasp.sc.iota.org/</source>
@@ -384,7 +384,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation">RPC URL: https://evm.wasp.sc.iota.org/</target>
+        <target state="translated">URL-адрес RPC: https://evm.wasp.sc.iota.org/</target>
       </trans-unit>
       <trans-unit id="7577690990575717256" datatype="html">
         <source>Chain ID: 1074</source>
@@ -392,7 +392,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
-        <target state="needs-translation">Chain ID: 1074</target>
+        <target state="translated">ID цепочки: 1074</target>
       </trans-unit>
       <trans-unit id="2330577642930707695" datatype="html">
         <source> Cancel </source>
@@ -412,7 +412,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">184,185</context>
         </context-group>
-        <target state="needs-translation"> Cancel </target>
+        <target state="translated"> Отмена </target>
       </trans-unit>
       <trans-unit id="1431600251182607708" datatype="html">
         <source> Connect
@@ -421,7 +421,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in/sign-in.component.html</context>
           <context context-type="linenumber">1,3</context>
         </context-group>
-        <target state="needs-translation"> Connect
+        <target state="translated"> Подключиться
 </target>
       </trans-unit>
       <trans-unit id="2907016025519254862" datatype="html">
@@ -430,7 +430,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-out/sign-out.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Disconnect</target>
+        <target state="translated">Отключить</target>
       </trans-unit>
       <trans-unit id="9217311297628108490" datatype="html">
         <source>Pending
@@ -447,7 +447,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">1,2</context>
         </context-group>
-        <target state="needs-translation">Pending
+        <target state="translated">Подтверждение
 </target>
       </trans-unit>
       <trans-unit id="6390262366094210912" datatype="html">
@@ -465,7 +465,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-status/proposal-status.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Rejected
+        <target state="translated">Отклонено
 </target>
       </trans-unit>
       <trans-unit id="1161299114153631702" datatype="html">
@@ -482,7 +482,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.ts</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="needs-translation">Completed</target>
+        <target state="translated">Завершено</target>
       </trans-unit>
       <trans-unit id="3955868613858648955" datatype="html">
         <source>Available</source>
@@ -506,7 +506,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.ts</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="needs-translation">Available</target>
+        <target state="translated">Доступно</target>
       </trans-unit>
       <trans-unit id="8718332458225136926" datatype="html">
         <source>Space Members Only</source>
@@ -518,7 +518,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">552,553</context>
         </context-group>
-        <target state="needs-translation">Space Members Only</target>
+        <target state="translated">Только для участников пространства</target>
       </trans-unit>
       <trans-unit id="7084997937034694532" datatype="html">
         <source>Space Guardians Only</source>
@@ -530,7 +530,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">541,542</context>
         </context-group>
-        <target state="needs-translation">Space Guardians Only</target>
+        <target state="translated">Только для хранителей пространства</target>
       </trans-unit>
       <trans-unit id="3577366627845290047" datatype="html">
         <source>Space Members with Badge Only</source>
@@ -542,7 +542,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">563,564</context>
         </context-group>
-        <target state="needs-translation">Space Members with Badge Only</target>
+        <target state="translated">Только для участников пространства со Значком</target>
       </trans-unit>
       <trans-unit id="7476114218032668015" datatype="html">
         <source>At least one NFT from Collections</source>
@@ -722,7 +722,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="needs-translation">Member's Wallet Address.</target>
+        <target state="translated">Адрес кошелька пользователя.</target>
       </trans-unit>
       <trans-unit id="4744367994495761400" datatype="html">
         <source>Recently joined spaces</source>
