@@ -392,7 +392,8 @@ export class ProcessingService {
   }
 
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
-    const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+    const refNft: any = admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+    const refPayment: any = admin.firestore().collection(COL.TRANSACTION).doc(payment.uid);
     const sfDocNft: any = await this.transaction.get(refNft);
     let newValidPayment = false;
     let previousHighestPay: TransactionPayment|undefined;
@@ -487,6 +488,14 @@ export class ProcessingService {
         action: 'set'
       });
     } else {
+      // Invalidate payment.
+      payment.payload.invalidPayment = true;
+      this.updates.push({
+        ref: refPayment,
+        data: payment,
+        action: 'update'
+      });
+
       // No valid payment so we credit anyways.
       await this.createCredit(payment, {
         msgId: payment.payload.chainReference,
