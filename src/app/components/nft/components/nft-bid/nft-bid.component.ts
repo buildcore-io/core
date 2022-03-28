@@ -115,7 +115,7 @@ export class NftBidComponent implements OnInit {
                 return;
               }
 
-              const currentArray = this.linkedTransactions$.value;
+              let currentArray = this.linkedTransactions$.value;
               const exists = currentArray.findIndex((o) => {
                 return o.uid === t.uid;
               });
@@ -125,6 +125,11 @@ export class NftBidComponent implements OnInit {
               } else {
                 currentArray.unshift(t);
               }
+
+              // Re-order
+              currentArray = currentArray.sort((c, b) => {
+                return b.createdOn!.toMillis() - c.createdOn!.toMillis();
+              });
 
               this.linkedTransactions$.next(currentArray);
             });

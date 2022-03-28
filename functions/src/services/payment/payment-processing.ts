@@ -397,17 +397,14 @@ export class ProcessingService {
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
     const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
     const sfDocNft: any = await this.transaction.get(refNft);
-    const payments: any = await admin.firestore().collection(COL.TRANSACTION)
-                          .where('payload.invalidPayment', '==', false)
-                          .where('type', '==', TransactionType.PAYMENT)
-                          .where('createdOn', '<', sfDocNft.data().auctionTo)
-                          .where('createdOn', '>', sfDocNft.data().auctionFrom)
-                          .where('payload.nft', '==', transaction.payload.nft).get();
     let newValidPayment = false;
     let previousHighestPay: TransactionPayment|undefined;
-    if (payments.size > 0) {
+    if (sfDocNft.data().auctionHighestTransaction) {
+      const previousHighestPayRef: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data().auctionHighestTransaction);
+      const previousHighestPayDoc: any = await this.transaction.get(previousHighestPayRef);
+
       // It has been succesfull, let's finalise.
-      previousHighestPay = <TransactionPayment>payments.docs[0].data();
+      previousHighestPay = <TransactionPayment>previousHighestPayDoc.data();
       if (
         previousHighestPay.payload.amount < payment.payload.amount &&
         payment.payload.amount >= sfDocNft.data().auctionFloorPrice
