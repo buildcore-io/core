@@ -1,9 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import reHypeStringify from 'rehype-stringify';
-import remarkGfm from 'remark-gfm';
-import remarkParse from 'remark-parse';
-import remarkReHype from 'remark-rehype';
-import { unified } from 'unified';
+import MarkdownIt, { Options } from 'markdown-it';
 
 @Pipe({
   name: 'markdown',
@@ -14,13 +10,11 @@ export class MarkDownPipe implements PipeTransform {
       return '';
     }
 
-    const output = unified()
-                  .use(remarkParse)
-                  .use(remarkGfm)
-                  .use(remarkReHype)
-                  .use(reHypeStringify)
-                  .processSync(str);
-
+    const md = new MarkdownIt({
+      linkify: true,
+      typographer: true
+    } as Options);
+    const output = md.render(str);
     return String(output);
   }
 }
