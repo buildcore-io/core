@@ -28,7 +28,7 @@ import { merge, of, Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SinglePage implements OnInit {
-  public nameControl: FormControl = new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]);
+  public nameControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
   public unitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
