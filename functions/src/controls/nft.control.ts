@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_AMOUNT_TO_TRANSFER, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
@@ -169,10 +169,10 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
 function makeAvailableForSaleJoi(): any {
   return merge(getDefaultParams(), {
     nft: CommonJoi.uidCheck().required(),
-    price: Joi.number().min(MIN_AMOUNT_TO_TRANSFER).max(MAX_IOTA_AMOUNT),
+    price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT),
     availableFrom: Joi.date().greater(dayjs().add(-600000, 'ms').toDate()),
     auctionFrom: Joi.date().greater(dayjs().add(-600000, 'ms').toDate()),
-    auctionFloorPrice: Joi.number().min(MIN_AMOUNT_TO_TRANSFER).max(MAX_IOTA_AMOUNT),
+    auctionFloorPrice: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT),
     auctionLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS),
     access: Joi.number().equal(NftAccess.OPEN, NftAccess.MEMBERS),
     accessMembers: Joi.when('access', {

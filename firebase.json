@@ -13,14 +13,14 @@
   "hosting": [
     {
       "target": "prod",
-      "public": "dist/soonaverse",
+      "public": "dist",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
       ],
       "i18n": {
-        "root": "/"
+        "root": "/localized"
       },
       "headers": [
         {
@@ -52,14 +52,14 @@
     },
     {
       "target": "edge",
-      "public": "dist/soonaverse",
+      "public": "dist",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
       ],
       "i18n": {
-        "root": "/"
+        "root": "/localized"
       },
       "headers": [
         {

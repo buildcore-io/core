@@ -66,7 +66,7 @@ export const Languages: LanguagesType = {
         ngZorro: pt_BR,
         title: 'PT-BR',
         // TODO we need to select right country
-        firebase: 'pt'
+        firebase: 'br'
     },
     pt_pt: {
         ngZorro: pt_PT,
@@ -93,12 +93,12 @@ export const Languages: LanguagesType = {
         ngZorro: zh_CN,
         title: 'ZH-CN',
         // TODO we need to select right country
-        firebase: 'zh'
+        firebase: 'cn'
     },
     zh_tw: {
         ngZorro: zh_TW,
         title: 'ZH_TW',
         // TODO we need to select right country
-        firebase: 'zh'
+        firebase: 'tw'
     },
 };
