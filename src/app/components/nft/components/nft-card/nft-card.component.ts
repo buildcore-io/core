@@ -31,8 +31,9 @@ export class NftCardComponent {
       this.memberApiSubscription.unsubscribe();
     }
     this._nft = value;
-    if (this.nft?.owner) {
-      this.memberApiSubscription = this.memberApi.listen(this.nft.owner).pipe(untilDestroyed(this)).subscribe(this.owner$);
+    const owner = this.nft?.owner || this.nft?.createdBy;
+    if (owner) {
+      this.memberApiSubscription = this.memberApi.listen(owner).pipe(untilDestroyed(this)).subscribe(this.owner$);
     } else {
       this.owner$.next(undefined);
     }
