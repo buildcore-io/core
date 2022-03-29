@@ -112,7 +112,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/mobile-header.component.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation"> None. </target>
+        <target state="translated"> Ninguno. </target>
       </trans-unit>
       <trans-unit id="2127032578120864096" datatype="html">
         <source>My Profile</source>
@@ -160,7 +160,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">270</context>
         </context-group>
-        <target state="needs-translation">You won the NFT</target>
+        <target state="translated">Ganaste el NFT</target>
       </trans-unit>
       <trans-unit id="653764875284666289" datatype="html">
         <source>You are a proud owner of a new NFT. Congratulations!</source>
@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">271</context>
         </context-group>
-        <target state="needs-translation">You are a proud owner of a new NFT. Congratulations!</target>
+        <target state="translated">Eres un orgulloso dueño de un nuevo NFT. ¡Felicidades!</target>
       </trans-unit>
       <trans-unit id="6237623083700365974" datatype="html">
         <source>You lost your bid!</source>
@@ -176,7 +176,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">278</context>
         </context-group>
-        <target state="needs-translation">You lost your bid!</target>
+        <target state="translated">¡Perdiste tu puja!</target>
       </trans-unit>
       <trans-unit id="443358007732779842" datatype="html">
         <source>Your bid on </source>
@@ -184,7 +184,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">279</context>
         </context-group>
-        <target state="needs-translation">Your bid on </target>
+        <target state="translated">Tu puja en </target>
       </trans-unit>
       <trans-unit id="5236966869858739780" datatype="html">
         <source> was outbidded. Try again!</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">280</context>
         </context-group>
-        <target state="needs-translation"> was outbidded. Try again!</target>
+        <target state="translated"> fue superada. ¡Inténtalo de nuevo!</target>
       </trans-unit>
       <trans-unit id="8052677427935411852" datatype="html">
         <source>just offered</source>
@@ -200,7 +200,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">287</context>
         </context-group>
-        <target state="needs-translation">just offered</target>
+        <target state="translated">acaba de ofrecer</target>
       </trans-unit>
       <trans-unit id="8553460997100418147" datatype="html">
         <source>for</source>
@@ -220,7 +220,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">289</context>
         </context-group>
-        <target state="needs-translation">Your</target>
+        <target state="translated">Tu</target>
       </trans-unit>
       <trans-unit id="4977659878080608796" datatype="html">
         <source>has received a new bid for</source>
@@ -228,7 +228,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">290</context>
         </context-group>
-        <target state="needs-translation">has received a new bid for</target>
+        <target state="translated">ha recibido una nueva puja para</target>
       </trans-unit>
       <trans-unit id="6100014811482587071" datatype="html">
         <source>Unsupported</source>
@@ -236,7 +236,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">298,297</context>
         </context-group>
-        <target state="needs-translation">Unsupported</target>
+        <target state="translated">No soportado</target>
       </trans-unit>
       <trans-unit id="5553638450493774694" datatype="html">
         <source>This notification is not yet supported in your language</source>
@@ -244,7 +244,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="needs-translation">This notification is not yet supported in your language</target>
+        <target state="translated">Esta notificación aún no está soportada en tu idioma</target>
       </trans-unit>
       <trans-unit id="7130854181625494946" datatype="html">
         <source> Space </source>
@@ -284,7 +284,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">Connect to your MetaMask wallet</target>
+        <target state="translated">Conectar con tu cartera MetaMask</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
