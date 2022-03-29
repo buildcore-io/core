@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
@@ -8,7 +8,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import { BaseChartDirective } from 'ng2-charts';
 import { map } from "rxjs";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from "./../../services/data.service";
@@ -20,8 +19,6 @@ import { DataService } from "./../../services/data.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityPage implements OnInit {
-  @ViewChild(BaseChartDirective) ngChart?: BaseChartDirective;
-
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public spaceControl: FormControl;
