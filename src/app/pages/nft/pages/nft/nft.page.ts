@@ -106,6 +106,11 @@ export class NFTPage implements OnInit, OnDestroy {
           this.cache.openCheckout = false;
           // We open checkout with or auction with delay.
           setTimeout(() => {
+            // You can't self buy.
+            if (this.auth.member$.value?.uid && this.data.nft$.value?.owner === this.auth.member$.value?.uid) {
+              return;
+            }
+
             if (this.isAvailableForAuction(this.data.nft$.value, this.data.collection$.value)) {
               this.bid();
               this.cd.markForCheck();

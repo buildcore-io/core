@@ -30,7 +30,8 @@ export class NFTsPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public cache: CacheService,
     private data: DataService,
-    private nftApi: NftApi
+    private nftApi: NftApi,
+    private cacheService: CacheService
   ) {
     this.collectionControl = new FormControl(DEFAULT_COLLECTION.value);
     this.filterControl = new FormControl('');
@@ -102,6 +103,16 @@ export class NFTsPage implements OnInit, OnDestroy {
 
     // Merge arrays.
     this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
+  }
+
+  public getCollection(col?: string|null): Collection|undefined {
+    if (!col) {
+      return undefined;
+    }
+
+    return this.cacheService.allCollections$.value.find((d) => {
+      return d.uid === col;
+    });
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {

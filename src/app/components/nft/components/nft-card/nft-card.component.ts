@@ -91,8 +91,15 @@ export class NftCardComponent {
       return false;
     }
 
-    return ((this.collection.total - this.collection.sold) > 0) && this.collection.approved === true &&
-            !!this.nft?.availableFrom && dayjs(this.nft.availableFrom.toDate()).isBefore(dayjs()) && !this.nft?.owner;
+    return (this.collection.approved === true && !!this.nft?.availableFrom && dayjs(this.nft.availableFrom.toDate()).isBefore(dayjs()));
+  }
+
+  public isAvailableForAuction(): boolean {
+    if (!this.collection) {
+      return false;
+    }
+
+    return (this.collection.approved === true && !!this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs()));
   }
 
   private discount(): number {

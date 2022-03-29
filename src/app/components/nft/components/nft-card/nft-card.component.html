@@ -60,48 +60,53 @@
                 {{ collection?.name || '' }}
             </div>
 
-            <ng-container *ngIf="!nft?.owner && isAvailableForSale(); else ownerBlock">
-                <div class="flex items-center mt-auto" *ngIf="(deviceService.isDesktop$ | async)">
-                    <div class="flex-grow w-0">
-                      <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
-                      <div class="text-sm font-medium truncate">
-                        {{formatBest(applyDiscount(nft?.availablePrice || nft?.price))}}
-                      </div>
+            <div class="flex items-center mt-auto" *ngIf="(deviceService.isDesktop$ | async)">
+                <div class="flex-grow w-0" *ngIf="isAvailableForSale()">
+                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
+                  <div class="text-sm font-medium truncate">
+                    {{formatBest(applyDiscount(nft?.availablePrice || nft?.price))}}
                   </div>
-
-                    <span class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
-                        <button nz-button nzType="primary" class="flex items-center justify-center rounded-full p-2" 
-                            [disabled]="!collection?.approved || !isAvailableForSale()"
-                            (click)="onBuy($event)" i18n>
-                                <wen-icon-wallet class="text-white"></wen-icon-wallet>
-                        </button>
-                    </span>
                 </div>
 
-                <span class="w-4/5 mt-2 ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
-                    <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary"
-                        class="flex items-center justify-center rounded-full p-2"  nzSize="small"
-                        [disabled]="!collection?.approved || !isAvailableForSale()"
+                <div class="flex-grow w-0" *ngIf="isAvailableForAuction()">
+                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Current Bid</div>
+                  <div class="text-sm font-medium truncate">
+                    {{formatBest(nft?.auctionHighestBid || nft?.auctionFloorPrice)}}
+                  </div>
+                </div>
+
+                <a class="flex-grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
+                   *ngIf="nft?.owner && !isAvailableForSale() && !isAvailableForAuction()" (click)="$event.stopPropagation()">
+                  <!-- TODO how we show the avatar
+                    <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                          class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                          style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                    </nz-avatar>
+                  -->
+                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
+                  <div class="text-sm font-medium truncate">
+                      @{{((owner$ | async)?.name || (owner$ | async)?.uid) | truncate:[16] }}
+                  </div>
+                </a>
+
+
+                <span class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!isAvailableForSale() && !isAvailableForAuction()) ? 'Not Available' : undefined">
+                    <button nz-button nzType="primary" class="flex items-center justify-center p-2 rounded-full"
+                        [disabled]="!isAvailableForSale() && !isAvailableForAuction()"
                         (click)="onBuy($event)" i18n>
                             <wen-icon-wallet class="text-white"></wen-icon-wallet>
                     </button>
                 </span>
-            </ng-container>
+            </div>
 
-            <ng-template #ownerBlock>
-                <a [routerLink]="['/member', (owner$ | async)?.uid]" class="flex items-center mt-auto" (click)="$event.stopPropagation()">
-                    <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                        class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                        style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                    </nz-avatar>
-                    <div class="flex-grow w-0 ml-2">
-                        <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
-                        <div class="text-sm font-medium truncate">
-                            @{{((owner$ | async)?.name || (owner$ | async)?.uid) }}
-                        </div>
-                    </div>
-                </a>
-            </ng-template>
+            <span class="w-4/5 mt-2 ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!isAvailableForSale() && !isAvailableForAuction()) ? 'Not Available' : undefined">
+                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary"
+                    class="flex items-center justify-center p-2 rounded-full"  nzSize="small"
+                    [disabled]="!isAvailableForSale() && !isAvailableForAuction()"
+                    (click)="onBuy($event)" i18n>
+                        <wen-icon-wallet class="text-white"></wen-icon-wallet>
+                </button>
+            </span>
         </div>
     </a>
 </article>
