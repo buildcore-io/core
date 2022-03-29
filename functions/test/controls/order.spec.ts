@@ -22,8 +22,6 @@ const db = admin.firestore();
 
 describe('Ordering flows', () => {
   let walletSpy: any;
-  const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-  const defaultFromAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
   jest.setTimeout(180000);
   const mocker = (adr: string, params: any) => {
     walletSpy.mockReturnValue(Promise.resolve({
@@ -32,7 +30,7 @@ describe('Ordering flows', () => {
     }));
   }
 
-  const milestoneProcessed = async (nextMilestone: string) => {
+  const milestoneProcessed = async (nextMilestone: string, defTranId: string) => {
     let processed: any = false;
     for (let attempt = 0; attempt < 400; ++attempt) {
         if (attempt > 0) {
@@ -104,6 +102,8 @@ describe('Ordering flows', () => {
     // Create milestone to process my validation.
     const allMil = await db.collection(COL.MILESTONE).get();
     const nextMilestone = (allMil.size + 1).toString();
+    const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
+    const defaultFromAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
     await db.collection(COL.MILESTONE).doc(nextMilestone)
     .collection('transactions').doc(defTranId)
     .set({
@@ -115,7 +115,15 @@ describe('Ordering flows', () => {
       }],
       outputs: outputs
     });
-    return nextMilestone;
+    // Trigger update
+    await db.collection(COL.MILESTONE).doc(nextMilestone)
+    .collection('transactions').doc(defTranId)
+    .update({ complete: true });
+    return {
+      milestone: nextMilestone,
+      tranId: defTranId,
+      fromAdd: defaultFromAddress
+    };
 }
 
   const createCollectionFunc = async (adr: string, params: any) => {
@@ -193,12 +201,12 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Validate member address
     const validationOrderMember: TransactionOrder = await validateMemberAddressFunc(member.uid);
     const nextMilestone2 = await submitMilestoneFunc(validationOrderMember.payload.targetAddress, validationOrderMember.payload.amount);
-    await milestoneProcessed(nextMilestone2);
+    await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
     // Create collection.
     const price = 100;
@@ -218,7 +226,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -249,7 +257,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -263,7 +271,7 @@ describe('Ordering flows', () => {
 
     // Confirm payment.
     const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(nextMilestone3);
+    await milestoneProcessed(nextMilestone3.milestone, nextMilestone3.tranId);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(nft.uid).get();
     expect(member.uid).toBe(nftDbRec.data().owner);
@@ -276,7 +284,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -290,7 +298,7 @@ describe('Ordering flows', () => {
 
     // Confirm payment.
     const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(nextMilestone3);
+    await milestoneProcessed(nextMilestone3.milestone, nextMilestone3.tranId);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(nft.uid).get();
     expect(member.uid).toBe(nftDbRec.data().owner);
@@ -333,7 +341,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -349,7 +357,7 @@ describe('Ordering flows', () => {
 
     // Confirm payment.
     const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(nextMilestone3);
+    await milestoneProcessed(nextMilestone3.milestone, nextMilestone3.tranId);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
     expect(member.uid).toBe(nftDbRec.data().owner);
@@ -362,7 +370,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -377,7 +385,7 @@ describe('Ordering flows', () => {
 
     // Confirm payment.
     const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(nextMilestone3);
+    await milestoneProcessed(nextMilestone3.milestone, nextMilestone3.tranId);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
     expect(member.uid).toBe(nftDbRec.data().owner);
@@ -409,7 +417,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -452,7 +460,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -475,7 +483,7 @@ describe('Ordering flows', () => {
         amount: o.payload.amount,
         address: o.payload.targetAddress
       }]);
-      await milestoneProcessed(nextMilestone3);
+      await milestoneProcessed(nextMilestone3.milestone, nextMilestone3.tranId);
     }
 
     // Validate each owner has the NFTs.
@@ -492,7 +500,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -521,7 +529,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -538,7 +546,7 @@ describe('Ordering flows', () => {
     // Confirm payment.
     const wrongAmount = order.payload.amount * 1.5;
     const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, wrongAmount);
-    await milestoneProcessed(nextMilestone3);
+    await milestoneProcessed(nextMilestone3.milestone, nextMilestone3.tranId);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
     expect(nftDbRec.data().sold).toBe(false);
@@ -551,7 +559,7 @@ describe('Ordering flows', () => {
       const tr: any = await db.collection(COL.TRANSACTION).doc(t).get();
       if (tr.data().type === TransactionType.CREDIT) {
         c++;
-        expect(tr.data().payload.targetAddress).toBe(defaultFromAddress);
+        expect(tr.data().payload.targetAddress).toBe(nextMilestone3.fromAdd);
         expect(tr.data().payload.amount).toBe(wrongAmount);
       }
 
@@ -572,7 +580,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -588,7 +596,7 @@ describe('Ordering flows', () => {
 
     // Confirm payment.
     const nextMilestone3 = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(nextMilestone3);
+    await milestoneProcessed(nextMilestone3.milestone, nextMilestone3.tranId);
 
     const nftDbRec: any = await db.collection(COL.NFT).doc(order.payload.nft).get();
     expect(nftDbRec.data().sold).toBe(true);
@@ -614,7 +622,7 @@ describe('Ordering flows', () => {
     // Validate space address.
     const validationOrder: TransactionOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
-    await milestoneProcessed(nextMilestone);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     // Create collection.
     const price = 100;
@@ -635,7 +643,7 @@ describe('Ordering flows', () => {
 
     // Let's let it expire.
     const nextMilestone2 = await submitMilestoneFunc('abc', 13);
-    await milestoneProcessed(nextMilestone2);
+    await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
     const latestOrder: any = await db.collection(COL.TRANSACTION).doc(order.uid).get();
     expect(latestOrder.data().payload.void).toBe(true);
