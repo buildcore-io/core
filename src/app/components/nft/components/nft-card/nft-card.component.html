@@ -19,9 +19,8 @@
               class="object-cover w-full h-full"
                 [ngClass]="{
                     'card-smaller-height': !fullWidth && (isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))
-                }">
+                }"
               [src]="'/assets/mocks/video_placeholder.jpg'"
-              class="object-cover w-full h-full"
             />
 
             <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || nft?.placeholderNft)"
