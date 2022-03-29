@@ -21,26 +21,26 @@ export enum MemberFilterOptions {
 
 @Injectable()
 export class DataService implements OnDestroy {
-  public space$: BehaviorSubject<SpaceWithAlliances|undefined> = new BehaviorSubject<SpaceWithAlliances|undefined>(undefined);
+  public space$: BehaviorSubject<SpaceWithAlliances | undefined> = new BehaviorSubject<SpaceWithAlliances | undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isPendingMemberWithSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isAllowCollectionCreation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public guardians$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public proposalsDraft$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
-  public proposalsActive$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
-  public proposalsRejected$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
-  public proposalsCompleted$: BehaviorSubject<Proposal[]|undefined> = new BehaviorSubject<Proposal[]|undefined>(undefined);
-  public awardsDraft$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public awardsActive$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public awardsRejected$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public awardsCompleted$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public blockedMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public pendingMembers$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
-  public rejectedCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
-  public pendingCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
-  public availableCollections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
+  public guardians$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(undefined);
+  public proposalsDraft$: BehaviorSubject<Proposal[] | undefined> = new BehaviorSubject<Proposal[] | undefined>(undefined);
+  public proposalsActive$: BehaviorSubject<Proposal[] | undefined> = new BehaviorSubject<Proposal[] | undefined>(undefined);
+  public proposalsRejected$: BehaviorSubject<Proposal[] | undefined> = new BehaviorSubject<Proposal[] | undefined>(undefined);
+  public proposalsCompleted$: BehaviorSubject<Proposal[] | undefined> = new BehaviorSubject<Proposal[] | undefined>(undefined);
+  public awardsDraft$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public awardsActive$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public awardsRejected$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public awardsCompleted$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public members$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(undefined);
+  public blockedMembers$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(undefined);
+  public pendingMembers$: BehaviorSubject<Member[] | undefined> = new BehaviorSubject<Member[] | undefined>(undefined);
+  public rejectedCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
+  public pendingCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
+  public availableCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -85,7 +85,7 @@ export class DataService implements OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.spaceApi.listen(id).subscribe(this.space$));
     this.listenToRelatedRecord(id);
-    let listeningMember: string|undefined;
+    let listeningMember: string | undefined;
     this.auth.member$.subscribe((m?: Member) => {
       if (listeningMember === m?.uid) {
         return;
@@ -211,13 +211,13 @@ export class DataService implements OnDestroy {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public listenMembers(spaceId: string, lastValue?: any, searchIds?: string[]): void {
+  public listenMembers(spaceId: string, lastValue?: number, searchIds?: string[]): void {
     this.subscriptions$.push(this.spaceApi.listenMembers(spaceId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.members$, this.dataStoreMembers, this.dataStoreMembers.length)
     ));
   }
 
-  public listenBlockedMembers(spaceId: string, lastValue?: any, searchIds?: string[]): void {
+  public listenBlockedMembers(spaceId: string, lastValue?: number, searchIds?: string[]): void {
     this.subscriptions$.push(this.spaceApi.listenBlockedMembers(spaceId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.blockedMembers$, this.dataStoreBlockedMembers, this.dataStoreBlockedMembers.length)
     ));
@@ -229,7 +229,7 @@ export class DataService implements OnDestroy {
     ));
   }
 
-  protected store(stream$: BehaviorSubject<any[]|undefined>, store: any[][], page: number, a: any): void {
+  protected store(stream$: BehaviorSubject<any[] | undefined>, store: any[][], page: number, a: any): void {
     if (store[page]) {
       store[page] = a;
     } else {
@@ -269,7 +269,7 @@ export class DataService implements OnDestroy {
     handler.call(this, spaceId, lastValue, searchIds);
   }
 
-  public getPendingMembersCount(members?: Member[]|null): number {
+  public getPendingMembersCount(members?: Member[] | null): number {
     if (!members || !this.isGuardianWithinSpace$.value) {
       return 0;
     }

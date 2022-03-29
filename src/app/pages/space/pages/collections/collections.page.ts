@@ -19,7 +19,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 export class CollectionsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(CollectionFilter.AVAILABLE);
-  public hotTags: { value: CollectionFilter; label: string}[] = [
+  public hotTags: { value: CollectionFilter; label: string }[] = [
     { value: CollectionFilter.PENDING, label: $localize`Pending` },
     { value: CollectionFilter.AVAILABLE, label: $localize`Available` },
     { value: CollectionFilter.REJECTED, label: $localize`Rejected` },
@@ -32,22 +32,22 @@ export class CollectionsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
       if (this.spaceId && val === CollectionFilter.REJECTED) {
         this.data.listenToRejectedCollections(this.spaceId);
-      } else  if (this.spaceId && val === CollectionFilter.AVAILABLE) {
+      } else if (this.spaceId && val === CollectionFilter.AVAILABLE) {
         this.data.listenToAvailableCollections(this.spaceId);
-      } else  if (this.spaceId && val === CollectionFilter.PENDING) {
+      } else if (this.spaceId && val === CollectionFilter.PENDING) {
         this.data.listenToPendingCollections(this.spaceId);
       }
       this.cd.markForCheck();
     });
 
     this.route.parent?.params.subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
@@ -75,7 +75,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
     ]);
   }
 
-  public getList(): BehaviorSubject<Collection[]|undefined> {
+  public getList(): BehaviorSubject<Collection[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.REJECTED) {
       return this.data.rejectedCollections$;
     } else if (this.selectedListControl.value === this.filterOptions.AVAILABLE) {
@@ -91,7 +91,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
     });
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Collection) {
     return item.uid;
   }
 

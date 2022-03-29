@@ -54,7 +54,7 @@ export class OverviewPage implements OnInit {
       // If it's in the past.
       if (this.startDateTicker$.value && dayjs(this.startDateTicker$.value.toDate()).isBefore(dayjs())) {
         int.unsubscribe();
-        this.data.proposal$.next(<Proposal>{...this.data.proposal$.value});
+        this.data.proposal$.next(<Proposal>{ ...this.data.proposal$.value });
       }
     });
   }
@@ -77,7 +77,7 @@ export class OverviewPage implements OnInit {
       uid: this.data.proposal$.value.uid,
       values: [this.voteControl.value]
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.vote(sc), 'Voted.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.proposalApi.vote(sc), 'Voted.', finish).subscribe((val: Proposal | undefined) => {
         // none.
       });
     });

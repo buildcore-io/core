@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Award, Proposal } from '@functions/interfaces/models';
 import { DataService } from "@pages/space/services/data.service";
 
 @Component({
@@ -12,7 +13,7 @@ export class OverviewPage {
     // added.
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Award | Proposal) {
     return item.uid;
   }
 }

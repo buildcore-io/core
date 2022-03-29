@@ -43,7 +43,7 @@ export class NftPreviewComponent {
   @Output() wenOnClose = new EventEmitter<void>();
 
   public space?: Space;
-  public mediaType: 'video'|'image'|undefined;
+  public mediaType: 'video' | 'image' | undefined;
   private _nft: any | null;
 
   constructor(
@@ -54,7 +54,7 @@ export class NftPreviewComponent {
     public cache: CacheService,
     private cd: ChangeDetectorRef,
     private fileApi: FileApi
-  ) {}
+  ) { }
 
   public close(): void {
     this.nft = null;
