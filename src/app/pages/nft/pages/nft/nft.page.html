@@ -365,41 +365,12 @@
                 <div class="flex items-center">
                     <div class="mr-3 text-xs font-medium" i18n>by</div>
 
-                    <ng-container *ngIf="(data.collection$ | async)?.space !== (data.collection$ | async)?.royaltiesSpace">
-                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                          style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                          [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
-                      </nz-avatar>
+                    <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                      style="max-width: 32px; min-width: 32px;" [nzSize]="32"
+                      [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
+                    </nz-avatar>
 
-                      <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
-
-                      <div class="mx-3 text-xs font-medium">/</div>
-
-                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                        style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                        [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)">
-                      </nz-avatar>
-
-                      <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.royaltySpace$ | async)?.name || (data.royaltySpace$ | async)?.uid }}</div>
-                    </ng-container>
-
-                    <ng-container *ngIf="(data.collection$ | async)?.space === (data.collection$ | async)?.royaltiesSpace">
-                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                        style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                        [nzSrc]="(data.collectionCreator$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small">
-                      </nz-avatar>
-
-                      <div class="ml-3 text-base font-medium truncate max-w-24">@{{ (data.collectionCreator$ | async)?.name }}</div>
-
-                      <div class="mx-3 text-xs font-medium">/</div>
-
-                      <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                          style="max-width: 32px; min-width: 32px;" [nzSize]="32"
-                          [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)">
-                      </nz-avatar>
-
-                      <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
-                    </ng-container>
+                    <div class="ml-3 text-base font-medium truncate max-w-24">{{ (data.space$ | async)?.name || (data.space$ | async)?.uid }}</div>
                 </div>
             </div>
 
