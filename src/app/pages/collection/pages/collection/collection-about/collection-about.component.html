@@ -70,6 +70,22 @@
   </nz-avatar>
 </nz-card>
 
+<nz-card i18n-nzTitle nzTitle="The collections you will need" *ngIf="(data.accessCollections$ | async)?.length" class="mt-4 space-x-2">
+  <div class="flex flex-wrap mt-3">
+    <div class="flex items-center cursor-pointer justify-between p-1.5 mt-2 mr-2 bg-brown-lighter rounded-lg"
+        [routerLink]="['/', 'collection', collection?.uid]"
+        *ngFor="let collection of (data.accessCollections$ | async)">
+        <nz-avatar
+          [nzSrc]="previewImageService.getAvatarSize(collection?.bannerUrl)"
+          [nzSize]="24"
+          class="mr-2.5 border-2 border-app-gray-100 min-w-6 min-h-6"
+          nzShape="circle"
+        >
+        </nz-avatar>
+        <div class="text-sm font-medium">{{ collection?.name }}</div>
+    </div>
+  </div>
+</nz-card>
 <nz-card i18n-nzTitle nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
     <div class="space-y-5">
         <a *ngIf="(data.collection$ | async)?.url" target="_new"
