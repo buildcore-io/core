@@ -328,7 +328,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       return true;
     }
 
-    return (col.limitedEdition || col.rejected == true);
+    return ((col.approved == true && col.limitedEdition) || col.rejected == true);
   }
 
   public isAvailableTab(): boolean {
