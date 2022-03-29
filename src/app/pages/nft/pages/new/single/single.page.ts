@@ -10,7 +10,7 @@ import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import { environment } from '@env/environment';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
+import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin } from '@functions/interfaces/config';
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { MAX_PROPERTIES_COUNT, MAX_STATS_COUNT, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -18,8 +18,8 @@ import { DataService } from '@pages/nft/services/data.service';
 import * as dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
-import { merge, of, Subscription } from 'rxjs';
+import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
+import { merge, Observable, of, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -43,6 +43,9 @@ export class SinglePage implements OnInit {
   public previewNft = null;
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
+  public uploadFilter: UploadFilter[] = [];
+  public fileUploadError: string | null = null;
+  public allowedFileFormats = 'jpg/jpeg/png/webp/mp4';
 
   constructor(
     public deviceService: DeviceService,
@@ -124,6 +127,25 @@ export class SinglePage implements OnInit {
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });
+
+    this.uploadFilter = [
+      {
+        name: 'filenameFilter',
+        fn: (fileList: NzUploadFile[]): NzUploadFile[] | Observable<NzUploadFile[]> => {
+          const res: NzUploadFile[] = [];
+          fileList.forEach((file: NzUploadFile) => {
+            res.push(file);
+            if (this.isValidFileName(file.name)) {
+              this.fileUploadError = null;
+            } else {
+              this.fileUploadError = $localize`File name ${file.name} is not valid`;
+            }
+          });
+          this.cd.markForCheck();
+          return res;
+        }
+      }
+    ];
   }
 
   public uploadMediaFile(item: NzUploadXHRArgs): Subscription {
@@ -143,8 +165,9 @@ export class SinglePage implements OnInit {
     if (event.type === 'success') {
       this.mediaControl.setValue(event.file.response);
       this.uploadedFile = event.file;
-    } else {
+    } else if (event.type === 'removed') {
       this.mediaControl.setValue('')
+      this.fileUploadError = null;
     }
   }
 
@@ -161,7 +184,7 @@ export class SinglePage implements OnInit {
       return false;
     }
 
-    return true;
+    return !this.fileUploadError;
   }
 
   private getPropertyForm(): FormGroup {
@@ -302,5 +325,12 @@ export class SinglePage implements OnInit {
 
   public trackByValue(index: number, item: any): number {
     return item.value;
+  }
+
+  private isValidFileName(str: string): boolean {
+    const dotIndex = str.indexOf('.');
+    return dotIndex > -1 &&
+      FILENAME_REGEXP.test(str.substring(0, dotIndex)) &&
+      this.allowedFileFormats.split('/').includes(str.substring(dotIndex + 1));
   }
 }
