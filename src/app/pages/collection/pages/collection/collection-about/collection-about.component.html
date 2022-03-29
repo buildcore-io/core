@@ -15,6 +15,77 @@
     </a>
 </div>
 
+<nz-card class="mt-8" i18n-nzTitle nzTitle="Who can buy?">
+  <div class="flex" *ngIf="(data.collection$ | async)?.access === access.OPEN">
+    <wen-icon-open-sale [size]="20" class="text-app-gray-400"></wen-icon-open-sale>
+    <div class="ml-2 text-sm font-medium" i18n>
+      Open sale
+    </div>
+  </div>
+  <div class="flex" *ngIf="(data.collection$ | async)?.access === access.MEMBERS_ONLY">
+    <wen-icon-members-only [size]="20" class="text-app-gray-400"></wen-icon-members-only>
+    <div class="ml-2 text-sm font-medium" i18n>
+      Space Members Only
+    </div>
+  </div>
+  <div class="flex" *ngIf="(data.collection$ | async)?.access === access.GUARDIANS_ONLY">
+    <wen-icon-guardians-only [size]="20" class="text-app-gray-400"></wen-icon-guardians-only>
+    <div class="ml-2 text-sm font-medium" i18n>
+      Space Guardians Only
+    </div>
+  </div>
+  <div class="flex" *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_BADGE">
+    <wen-icon-members-with-badge [size]="20" class="text-app-gray-400"></wen-icon-members-with-badge>
+    <div class="ml-2 text-sm font-medium" i18n>
+      Space Members with Badge Only
+    </div>
+  </div>
+  <div class="flex" *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_NFT_FROM_COLLECTION">
+    <wen-icon-members-with-nft-from-collection [size]="20" class="text-app-gray-400"></wen-icon-members-with-nft-from-collection>
+    <div class="ml-2 text-sm font-medium" i18n>
+      At least one NFT from Collections
+    </div>
+  </div>
+  <div *ngIf="(data.collection$ | async)?.onePerMemberOnly"
+    class="text-sm font-medium text-foregrounds-secondary ml-7" i18n>
+      (One NFT per member)
+  </div>
+</nz-card>
+
+<nz-card class="mt-4">
+  <div class="flex items-center">
+    <wen-icon-tag class="text-app-gray-400"></wen-icon-tag>
+    <div class="ml-2.5 font-medium">{{ getCategory((data.collection$ | async)?.category) }}</div>
+  </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="The badges you need" *ngIf="(data.accessBadges$ | async)?.length" class="mt-4 space-x-2">
+  <nz-avatar
+    *ngFor="let award of (data.accessBadges$ | async); trackBy: trackByUid"
+    [nzSrc]="award.badge.image| ipfsBadge:filesizes.small"
+    [nzSize]="64"
+    class="bg-white border-gray-400"
+    nzShape="circle"
+  >
+  </nz-avatar>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="The collections you will need" *ngIf="(data.accessCollections$ | async)?.length" class="mt-4 space-x-2">
+  <div class="flex flex-wrap mt-3">
+    <div class="flex items-center cursor-pointer justify-between p-1.5 mt-2 mr-2 bg-brown-lighter rounded-lg"
+        [routerLink]="['/', 'collection', collection?.uid]"
+        *ngFor="let collection of (data.accessCollections$ | async)">
+        <nz-avatar
+          [nzSrc]="previewImageService.getAvatarSize(collection?.bannerUrl)"
+          [nzSize]="24"
+          class="mr-2.5 border-2 border-app-gray-100 min-w-6 min-h-6"
+          nzShape="circle"
+        >
+        </nz-avatar>
+        <div class="text-sm font-medium">{{ collection?.name }}</div>
+    </div>
+  </div>
+</nz-card>
 <nz-card i18n-nzTitle nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
     <div class="space-y-5">
         <a *ngIf="(data.collection$ | async)?.url" target="_new"
@@ -40,31 +111,12 @@
     </div>
 </nz-card>
 
-<nz-card i18n-nzTitle nzTitle="Additional Details" class="mt-8" *ngIf="(data.collection$ | async)?.access !== access.OPEN || (data.collection$ | async)?.discounts?.length">
-    <div class="space-y-5">
-        <div *ngIf="(data.collection$ | async)?.access !== access.OPEN">
-          <nz-tag class="px-2 py-1 text-xs border-none rounded-md">
-            {{ getAccessLabel((data.collection$ | async)?.access) }}
-          </nz-tag>
-        </div>
-        <div *ngIf="(data.collection$ | async)?.onePerMemberOnly === true">
-          <nz-tag class="px-2 py-1 text-xs border-none rounded-md" i18n>
-            One NFT per member
-          </nz-tag>
-        </div>
-        <div *ngFor="let item of sortedDiscounts((data.collection$ | async)?.discounts)"
-            class="flex items-center">
-            <wen-icon-percentage class="mr-3 text-app-gray-400"></wen-icon-percentage>
-            <div class="text-xs font-medium">{{ (item.amount * 100) }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
-        </div>
+<nz-card i18n-nzTitle nzTitle="Member discounts" class="mt-4" *ngIf="(data.collection$ | async)?.discounts?.length">
+  <div class="space-y-2">
+    <div *ngFor="let item of sortedDiscounts((data.collection$ | async)?.discounts)"
+      class="flex items-center">
+        <wen-icon-percentage class="mr-3 text-app-gray-400"></wen-icon-percentage>
+        <div class="text-xs font-medium">{{ (item.amount * 100) }}% <span i18n>Discount for members with XP</span> > {{ item.xp }}</div>
     </div>
-</nz-card>
-
-<nz-card i18n-nzTitle nzTitle="Selected Badges" class="mt-8" *ngIf="(data.accessBadges$ | async)?.length">
-  <div class="flex flex-wrap gap-2">
-    <article *ngFor="let a of (data.accessBadges$ | async); trackBy: trackByUid"
-      class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
-      <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
-    </article>
   </div>
 </nz-card>

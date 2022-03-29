@@ -44,6 +44,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.rejectCollection] = low;
 
   scaleSettings[WEN_FUNC.cNft] = medium;
+  scaleSettings[WEN_FUNC.setForSaleNft] = medium;
   scaleSettings[WEN_FUNC.cBatchNft] = medium;
 
   scaleSettings[WEN_FUNC.orderNft] = superPump;

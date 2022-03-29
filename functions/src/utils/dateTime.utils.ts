@@ -26,6 +26,11 @@ export function uOn<T>(o: T): T {
   })
 };
 
-export function dateToTimestamp(d: any): any {
-  return admin.firestore.Timestamp.fromDate(dayjs(d).toDate());
+export function dateToTimestamp(d: any, onlyDownToMinutes = false): any {
+  let date = dayjs(d);
+  if (onlyDownToMinutes) {
+    date = date.second(0).millisecond(0);
+  }
+
+  return admin.firestore.Timestamp.fromDate(date.toDate());
 }

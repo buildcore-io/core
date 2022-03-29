@@ -8,6 +8,7 @@ import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-c
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -32,6 +33,7 @@ import { HeaderComponent } from './header.component';
     NzToolTipModule,
     NzLayoutModule,
     NzIconModule,
+    NzBadgeModule,
     NzButtonModule,
     NzAvatarModule,
     NzNotificationModule,

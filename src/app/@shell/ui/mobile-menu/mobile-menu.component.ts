@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Inject, Input, LOCALE_ID, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -17,27 +17,15 @@ export class MobileMenuComponent {
   @Input() isVisible = false;
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
-  @Input() isAllowedCreation = false;
   @Input() filesizes!: typeof FILE_SIZES;
+  @Input() enableCreateAwardProposal = true;
+  @Input() enableCollection = true;
   @Output() isVisibleChanged = new EventEmitter<boolean>();
 
   constructor(
     public auth: AuthService,
-    private router: Router,
-    @Inject(LOCALE_ID) private locale: string
+    private router: Router
   ) { }
-
-  public isEnglish(): boolean {
-    return this.locale === 'en';
-  }
-
-  public goToEn(): void {
-    // Force English.
-    document.cookie = "firebase-language-override=en";
-    setTimeout(() => {
-      window.location.href = '//' + window.location.host;
-    }, 100);
-  }
 
   wenOnVisibleChange(isVisible: boolean): void {
     this.isVisible = isVisible;

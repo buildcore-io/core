@@ -1,8 +1,9 @@
+import chance from 'chance';
 import dayjs from "dayjs";
 import * as admin from 'firebase-admin';
 import { WEN_FUNC } from "../../interfaces/functions";
 import { TransactionOrderType, TransactionType } from "../../interfaces/models";
-import { COL } from "../../interfaces/models/base";
+import { COL, SUB_COL } from "../../interfaces/models/base";
 import { Categories, CollectionAccess, CollectionType } from "../../interfaces/models/collection";
 import { serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
@@ -12,6 +13,7 @@ import { approveCollection, createCollection, rejectCollection, updateCollection
 import { createMember } from './../../src/controls/member.control';
 import { validateAddress } from './../../src/controls/order.control';
 import { createSpace } from './../../src/controls/space.control';
+
 const db = admin.firestore();
 
 describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
@@ -51,12 +53,15 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     // Create milestone to process my validation.
     const allMil = await db.collection(COL.MILESTONE).get();
     const nextMilestone = (allMil.size + 1).toString();
+    const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
+    const iotaAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
     await db.collection(COL.MILESTONE).doc(nextMilestone)
-    .collection('transactions').doc('9ae738e06688d9fbdfaf172e80c92e9da3174d541f9cc28503c826fcf679b251')
+    .collection('transactions').doc(defTranId)
     .set({
       createdOn: serverTime(),
+      messageId: 'mes-' + defTranId,
       inputs: [{
-        address: 'iota1qqsye008z79vj9p9ywzw65ed2xn4yxe9zfp9jqgw0gthxydxpa03qx32mhz',
+        address: iotaAddress,
         amount: 123
       }],
       outputs: [{
@@ -64,16 +69,15 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
         amount: order.payload.amount
       }]
     });
-    await db.collection(COL.MILESTONE).doc(nextMilestone).set({ completed: true });
 
     const milestoneProcessed: any = async () => {
       let processed: any = false;
-      for (let attempt = 0; attempt < 20; ++attempt) {
+      for (let attempt = 0; attempt < 400; ++attempt) {
           if (attempt > 0) {
             await new Promise((r) => setTimeout(r, 500));
           }
           try {
-            const unsub: any = await db.collection(COL.MILESTONE).doc(nextMilestone).onSnapshot(async (snap: any) => {
+            const unsub: any = await db.collection(COL.MILESTONE).doc(nextMilestone).collection(SUB_COL.TRANSACTIONS).doc(defTranId).onSnapshot(async (snap: any) => {
               if (snap.data().processed === true) {
                 processed = true;
               }
@@ -110,6 +114,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       space: space.uid,
       royaltiesSpace: space.uid,
+      onePerMemberOnly: false,
       availableFrom: dayjs().add(1, 'hour').toDate(),
       price: 10 * 1000 * 1000
     });
@@ -135,6 +140,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       type: CollectionType.CLASSIC,
       category: Categories.ART,
       access: CollectionAccess.OPEN,
+      onePerMemberOnly: false,
       royaltiesSpace: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),
       price: 10 * 1000 * 1000
@@ -153,6 +159,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       type: CollectionType.CLASSIC,
       category: Categories.ART,
       access: CollectionAccess.OPEN,
+      onePerMemberOnly: false,
       space: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),
       price: 10 * 1000 * 1000
@@ -169,9 +176,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: 'babba',
       royaltiesFee: 0.6,
-      royaltiesSpace: space.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
+      royaltiesSpace: space.uid
     });
     const wrapped: any = testEnv.wrap(updateCollection);
     (<any>expect(wrapped())).rejects.toThrowError(WenError.collection_does_not_exists.key);
@@ -187,9 +192,10 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       type: CollectionType.CLASSIC,
       category: Categories.ART,
       access: CollectionAccess.OPEN,
+      onePerMemberOnly: false,
       space: space.uid,
       royaltiesSpace: space.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
+      availableFrom: dayjs().add(1, 'week').toDate(),
       price: 10 * 1000 * 1000
     });
 
@@ -203,9 +209,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       name: 'Collection A',
       description: '123',
       royaltiesFee: 0.6,
-      royaltiesSpace: space.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
+      royaltiesSpace: space.uid
     });
     const wrapped2: any = testEnv.wrap(updateCollection);
     const returns2 = await wrapped2();
@@ -222,6 +226,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
       access: CollectionAccess.OPEN,
+      onePerMemberOnly: false,
       space: space.uid,
       royaltiesSpace: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),
@@ -252,6 +257,7 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
       royaltiesFee: 0.6,
       type: CollectionType.CLASSIC,
       access: CollectionAccess.OPEN,
+      onePerMemberOnly: false,
       space: space.uid,
       royaltiesSpace: space.uid,
       availableFrom: dayjs().add(1, 'hour').toDate(),

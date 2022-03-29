@@ -13,14 +13,46 @@
     <div class="flex justify-between space-x-5">
       <ng-container *ngIf="(routerService.isNewRoute$ | async) === false">
         <wen-create-dropdown
+          [enableCreateAwardProposal]="enableCreateAwardProposal"
+          [enableCollection]="enableCollection"
           [isMemberProfile]="isMemberProfile"
           [isLandingPage]="isLandingPage"
-          [isAllowedCreation]="isAllowedCreation"
           (wenOnCreateClick)="wenOnCreateClick()"
         ></wen-create-dropdown>
-        <button>
-          <wen-icon-bell></wen-icon-bell>
-        </button>
+        <nz-badge [nzDot]="unreadNotificationCount > 0">
+          <button nz-button nz-dropdown nzType="default" nzShape="circle"
+                *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+                [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
+                class="relative inline-flex items-center justify-center border-0 wen-header-button"
+                (nzVisibleChange)="wenOnNotificationVisibleChange.emit()">
+    
+            <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
+          </button>
+        </nz-badge>
+        <nz-dropdown-menu #notificationMenu="nzDropdownMenu">
+          <wen-menu>
+            <div class="flex justify-between w-full px-5 py-4 cursor-pointer "
+              *ngFor="let nt of notifications; trackBy: trackByUid; let first = first; let index = index;"
+              [ngClass]="{
+                'border-t': !first
+              }">
+              <nz-badge [nzDot]="index < unreadNotificationCount">
+                <a [routerLink]="['/', 'nft', nt.params.nft.uid]">
+                  <div class="font-bold break-words line-clamp-1">
+                    {{ getNotificationDetails(nt).title }}
+                  </div>
+                  <div class="max-w-sm mt-1 text-sm font-medium break-words text-foregrounds-secondary line-clamp-2">
+                    {{ getNotificationDetails(nt).content }}
+                  </div>
+                </a>
+              </nz-badge>
+            </div>
+      
+            <div *ngIf="notifications?.length === 0" i18n>
+              None.
+            </div>
+          </wen-menu>
+        </nz-dropdown-menu>
         <button (click)="setMobileMenuVisible(!isMobileMenuVisible)">
           <wen-icon-close *ngIf="isMobileMenuVisible"></wen-icon-close>
           <wen-icon-menu *ngIf="!isMobileMenuVisible"></wen-icon-menu>

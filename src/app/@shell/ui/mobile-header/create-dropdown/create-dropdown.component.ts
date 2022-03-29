@@ -12,7 +12,8 @@ export class CreateDropdownComponent {
   // TODO Clean up this passing around of inputs. This messy.
   @Input() isMemberProfile = false;
   @Input() isLandingPage = false;
-  @Input() isAllowedCreation = true;
+  @Input() enableCreateAwardProposal = true;
+  @Input() enableCollection = true;
   @Output() wenOnCreateClick = new EventEmitter<void>();
 
   constructor(

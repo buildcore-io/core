@@ -15,9 +15,16 @@
   </a>
 </ng-container>
 
+<wen-share
+  class="block mb-4 p-6 lg:p-0"
+  i18n-shareText
+  shareText="Check out space"
+  [shareUrl]="getShareUrl(data.space$ | async)">
+</wen-share>
+
 <nz-card nzTitle="About">
   <p nz-typography [innerHtml]="(data.space$ | async)?.about | markdown"
-    class="text-base font-medium whitespace-pre-line text-app-gray-text">
+    class="text-base font-medium whitespace-pre-line text-app-gray-text break-words">
   </p>
 </nz-card>
 
@@ -233,8 +240,7 @@
       <nz-avatar nzIcon="user" [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
       </nz-avatar>
-      <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16]
-        }}</span>
+      <span [routerLink]="data.getMemberUrl ? data.getMemberUrl(g.uid) : ''">@ {{ (g.name || g.uid) | truncate:[16]}}</span>
     </div>
   </div>
 </nz-card>

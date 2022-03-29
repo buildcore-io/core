@@ -18,11 +18,13 @@ export class TimelineNftComponent {
   @Input() orders?: SuccesfullOrdersWithFullHistory[] | null;
   @Input() listedBy?: Space | null;
   public isCollapsed = false;
+  public showAll = false;
+  public collapsedEventsCount = 2;
 
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService
-  ) {}
+  ) { }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

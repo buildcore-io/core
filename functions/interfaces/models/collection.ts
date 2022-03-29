@@ -48,6 +48,7 @@ export interface CollectionBase extends BaseRecord {
   twitter: string;
   approved: boolean;
   rejected: boolean;
+  limitedEdition?: boolean;
 }
 
 export interface Collection extends CollectionBase {

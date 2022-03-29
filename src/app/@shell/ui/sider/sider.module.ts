@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { LanguageChangeModule } from '@components/language-change/language-change.module';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -22,6 +23,7 @@ import { ThemeSwitchModule } from './theme-switch/theme-switch.module';
     RouterModule,
     ThemeSwitchModule,
     MenuModule,
+    LanguageChangeModule
   ],
   exports: [SiderComponent]
 })

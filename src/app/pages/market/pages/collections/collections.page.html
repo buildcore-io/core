@@ -10,21 +10,115 @@
         <div class="flex flex-col items-start xl:flex-row xl:items-center">
             <div>
                 <div class="mb-2 text-xs font-medium text-foregrounds-secondary" i18n>NFTs</div>
-                <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-                    <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-                        (nzCheckedChange)="handleChange(tag)">
-                        {{ tag }}
-                    </nz-tag>
-                </ng-container>
-
-                <ng-template #hotTagsMobileBlock>
-                    <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-                        <nz-option *ngFor="let tag of hotTags" i18n-nzLabel [nzLabel]="tag" [nzValue]="tag"></nz-option>
-                    </nz-select>
+                <nz-select
+                    class="w-full lg:w-48"
+                    nzSize="small"
+                    [nzShowSearch]="deviceService.isDesktop$ | async"
+                    [nzCustomTemplate]="selectTpl"
+                    [formControl]="accessControl"
+                    i18n-nzPlaceHolder
+                    nzPlaceHolder="Select Access type"
+                    [nzDropdownStyle]="{ 'min-width': '420px', 'max-width': '100%' }">
+                        <nz-option
+                            nzCustomContent
+                            i18n-nzLabel
+                            nzLabel="All accesses"
+                            [nzValue]="accessTypes.ALL"
+                            >
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
+                                    <wen-icon-nine-dots [size]="16" class="text-black"></wen-icon-nine-dots>
+                                </div>
+                                <div class="ml-4" i18n>All accesses</div>
+                            </div>
+                        </nz-option>
+                        <nz-option
+                            nzCustomContent
+                            i18n-nzLabel
+                            nzLabel="Open sale"
+                            [nzValue]="accessTypes.OPEN"
+                            >
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
+                                    <wen-icon-open-sale [size]="20" class="text-black"></wen-icon-open-sale>
+                                </div>
+                                <div class="ml-4" i18n>Open sale</div>
+                            </div>
+                        </nz-option>
+                        <nz-option
+                            nzCustomContent
+                            i18n-nzLabel
+                            nzLabel="Space members only"
+                            [nzValue]="accessTypes.MEMBERS_ONLY"
+                            >
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
+                                    <wen-icon-members-only [size]="20" class="text-black"></wen-icon-members-only>
+                                </div>
+                                <div class="ml-4" i18n>Space members only</div>
+                            </div>
+                        </nz-option>
+                        <nz-option
+                            nzCustomContent
+                            i18n-nzLabel
+                            nzLabel="Space guardians only"
+                            [nzValue]="accessTypes.GUARDIANS_ONLY"
+                            >
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
+                                    <wen-icon-guardians-only [size]="20" class="text-black"></wen-icon-guardians-only>
+                                </div>
+                                <div class="ml-4" i18n>Space guardians only</div>
+                            </div>
+                        </nz-option>
+                        <nz-option
+                            nzCustomContent
+                            i18n-nzLabel
+                            nzLabel="Space members with badge only"
+                            [nzValue]="accessTypes.MEMBERS_WITH_BADGE"
+                            >
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
+                                    <wen-icon-members-with-badge [size]="20" class="text-black"></wen-icon-members-with-badge>
+                                </div>
+                                <div class="ml-4" i18n>Space members with badge only</div>
+                            </div>
+                        </nz-option>
+                        <nz-option
+                            nzCustomContent
+                            i18n-nzLabel
+                            nzLabel="At least one NFT from collections"
+                            [nzValue]="accessTypes.MEMBERS_WITH_NFT_FROM_COLLECTION"
+                            >
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
+                                    <wen-icon-members-with-nft-from-collection [size]="20" class="text-black"></wen-icon-members-with-nft-from-collection>
+                                </div>
+                                <div class="ml-4" i18n>At least one NFT from collections</div>
+                            </div>
+                        </nz-option>
+                </nz-select>
+                <ng-template #selectTpl let-c>
+                    <div class="flex items-center justify-center p-1.5 bg-orange rounded-full">
+                        <wen-icon-nine-dots *ngIf="accessControl.value === accessTypes.ALL" [size]="16" class="text-white"></wen-icon-nine-dots>
+                        <wen-icon-open-sale *ngIf="accessControl.value === accessTypes.OPEN" [size]="16" class="text-white"></wen-icon-open-sale>
+                        <wen-icon-members-only *ngIf="accessControl.value === accessTypes.MEMBERS_ONLY" [size]="16" class="text-white"></wen-icon-members-only>
+                        <wen-icon-guardians-only *ngIf="accessControl.value === accessTypes.GUARDIANS_ONLY" [size]="16" class="text-white"></wen-icon-guardians-only>
+                        <wen-icon-members-with-badge *ngIf="accessControl.value === accessTypes.MEMBERS_WITH_BADGE" [size]="16" class="text-white"></wen-icon-members-with-badge>
+                        <wen-icon-members-with-nft-from-collection *ngIf="accessControl.value === accessTypes.MEMBERS_WITH_NFT_FROM_COLLECTION" [size]="16" class="text-white"></wen-icon-members-with-nft-from-collection>
+                    </div>
+                    <div class="ml-2 truncate max-w-40">
+                        <ng-container *ngIf="accessControl.value === accessTypes.ALL" i18n>All accesses</ng-container>
+                        <ng-container *ngIf="accessControl.value === accessTypes.OPEN" i18n>Open sale</ng-container>
+                        <ng-container *ngIf="accessControl.value === accessTypes.MEMBERS_ONLY" i18n>Space members only</ng-container>
+                        <ng-container *ngIf="accessControl.value === accessTypes.GUARDIANS_ONLY" i18n>Space guardians only</ng-container>
+                        <ng-container *ngIf="accessControl.value === accessTypes.MEMBERS_WITH_BADGE" i18n>Space members with badge only</ng-container>
+                        <ng-container *ngIf="accessControl.value === accessTypes.MEMBERS_WITH_NFT_FROM_COLLECTION" i18n>At least one NFT from collections</ng-container>
+                    </div>
                 </ng-template>
             </div>
 
-            <div *ngIf="deviceService.isDesktop$ | async">
+            <div *ngIf="deviceService.isDesktop$ | async" class="xl:ml-4">
                 <div class="mt-2 mb-2 text-xs font-medium text-foregrounds-secondary xl:mt-0" i18n>Space</div>
                 <wen-select-space
                     class="block w-44"

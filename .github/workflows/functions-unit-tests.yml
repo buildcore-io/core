@@ -5,7 +5,7 @@ on: push
 jobs:
   functions_unit_tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: functions

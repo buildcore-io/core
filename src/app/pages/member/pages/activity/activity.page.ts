@@ -5,31 +5,13 @@ import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import * as dayjs from 'dayjs';
+import { ChartConfiguration, ChartType } from 'chart.js';
+import dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import {
-  ApexAxisChartSeries,
-  ApexChart, ApexDataLabels, ApexFill, ApexMarkers, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, ChartComponent
-} from "ng-apexcharts";
+import { BaseChartDirective } from 'ng2-charts';
 import { map } from "rxjs";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from "./../../services/data.service";
-
-export type ChartOptions = {
-  series: ApexAxisChartSeries;
-  chart: ApexChart;
-  dataLabels: ApexDataLabels;
-  markers: ApexMarkers;
-  title: ApexTitleSubtitle;
-  fill: ApexFill;
-  yaxis: ApexYAxis;
-  xaxis: ApexXAxis;
-  tooltip: ApexTooltip;
-  stroke: ApexStroke;
-  colors: any;
-  toolbar: any;
-};
-
 @UntilDestroy()
 @Component({
   selector: 'wen-activity',
@@ -38,14 +20,36 @@ export type ChartOptions = {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityPage implements OnInit {
-  @ViewChild("chart", { static: false }) public chart?: ChartComponent;
+  @ViewChild(BaseChartDirective) ngChart?: BaseChartDirective;
 
-  public chartOptions: Partial<ChartOptions> = {};
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;
+  public lineChartType: ChartType = 'line';
 
+  public lineChartData?: ChartConfiguration['data'];
+
+  public lineChartOptions: ChartConfiguration['options'] = {
+    elements: {
+      line: {
+        tension: 0
+      }
+    },
+    scales: {
+        xAxis: {
+            ticks: {
+                maxTicksLimit: 10
+            }
+        }
+    },
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  };
+  
   constructor(
     private cd: ChangeDetectorRef,
     private storageService: StorageService,
@@ -71,23 +75,6 @@ export class ActivityPage implements OnInit {
         });
       })
     ).subscribe((data) => {
-      // Sort by day.
-      data = data?.sort((a, b) => {
-        return a[0] - b[0];
-      });
-
-      if (data && data.length > 0) {
-        let prevDate = data[0][0];
-        let prevAmount = data[0][1];
-        data.forEach((d) => {
-          if (prevDate !== d[0]) {
-            d[1] = d[1] + prevAmount;
-            prevDate = d[0];
-            prevAmount = d[1];
-          }
-        });
-      }
-
       this.initChart(data || []);
     });
 
@@ -152,42 +139,45 @@ export class ActivityPage implements OnInit {
     return ['/', ROUTER_UTILS.config.space.root, spaceId]
   }
 
-  public initChart(data: any): void {
-    this.chartOptions = {
-      series: [
+  public initChart(data: any[][]): void {
+    const dataToShow: { data: number[], labels: string[]} = {
+      data: [],
+      labels: []
+    };
+
+    if (data?.length) {
+      const sortedData = data.sort((a, b) => a[0] - b[0]);
+      const dataMap = data.reduce((acc, cur) => {
+        const key = dayjs(cur[0]).format('DD_MM_YYYY');
+        return { ...acc, [key]: cur };
+      }, {} as any)
+      const dataSize = Math.ceil(dayjs(sortedData[sortedData.length - 1][0]).diff(dayjs(sortedData[0][0]), 'day', true));
+      let sumValue = 0;
+      for (let i=0; i<dataSize; i++) {
+        const date = dayjs(sortedData[0][0]).add(i, 'day').toDate();
+        const key = dayjs(date).format('DD_MM_YYYY');
+        if (dataMap[key]) {
+          sumValue += dataMap[key][1];
+        }
+        dataToShow.data.push(sumValue);
+        dataToShow.labels.push(dayjs(date).format('MMM D'));
+      }
+    }
+
+    this.lineChartData = {
+      datasets: [
         {
-          data: data
+          data: dataToShow.data,
+          backgroundColor: 'rgba(148,159,177,0.2)',
+          borderColor: 'rgba(148,159,177,1)',
+          pointBackgroundColor: 'rgba(148,159,177,1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+          fill: 'origin'
         }
       ],
-      chart: {
-        type: "area",
-        height: 350
-      },
-      dataLabels: {
-        enabled: false
-      },
-      markers: {
-        size: 0
-      },
-      xaxis: {
-        type: "datetime",
-        min: (data?.[0]?.[0] || dayjs().subtract(1, 'month').toDate()).getTime(),
-        tickAmount: 6
-      },
-      tooltip: {
-        x: {
-          format: "dd MMM yyyy"
-        }
-      },
-      fill: {
-        type: "gradient",
-        gradient: {
-          shadeIntensity: 1,
-          opacityFrom: 0.7,
-          opacityTo: 0.9,
-          stops: [0, 100]
-        }
-      }
+      labels: dataToShow.labels
     };
     this.cd.markForCheck();
   }

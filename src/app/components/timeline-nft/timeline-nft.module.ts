@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { CollapseModule } from '@components/collapse/collapse.module';
 import { IconModule } from '@components/icon/icon.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { TimelineNftComponent } from './timeline-nft.component';
@@ -15,11 +16,12 @@ import { TimelineNftComponent } from './timeline-nft.component';
   imports: [
     CommonModule,
     NzAvatarModule,
-    NzCardModule,
     NzPopoverModule,
     NzCollapseModule,
     IconModule,
-    IpfsBadgeModule
+    IpfsBadgeModule,
+    CollapseModule,
+    NzButtonModule
   ],
   exports: [
     TimelineNftComponent

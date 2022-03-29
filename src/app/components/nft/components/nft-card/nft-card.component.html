@@ -9,10 +9,17 @@
                 alt="NFT image"
                 [src]="previewImageService.getNftSize(nft?.media) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full"
+                [ngClass]="{
+                    'card-smaller-height': !fullWidth && (isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))
+                }"
             />
 
             <img
               *ngIf="mediaType === 'video'"
+              class="object-cover w-full h-full"
+                [ngClass]="{
+                    'card-smaller-height': !fullWidth && (isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))
+                }">
               [src]="'/assets/mocks/video_placeholder.jpg'"
               class="object-cover w-full h-full"
             />
@@ -23,54 +30,84 @@
                 [ngClass]="getBadgeProperties().className">
                     {{ getBadgeProperties().label }}
             </div>
+
+            <div class="absolute z-10 top-4 right-4"
+                *ngIf="collection?.access !== targetAccess.OPEN && !nft?.owner">
+                    <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
+            </div>
+
+            <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-brown-secondary"
+                *ngIf="(isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))">
+                <wen-icon-time class="text-app-gray-400"></wen-icon-time>
+                <div class="ml-2.5 text-xs">
+                    <ng-container *ngIf="getDaysLeft(nft?.availableFrom) > 0 || getDaysLeft(nft?.auctionFrom) > 0; else todayBlock">
+                        <span class="font-bold" i18n>Starts in</span>
+                        <span class="font-medium"> {{ getDaysLeft(nft?.availableFrom) > 0 ?
+                            getDaysLeft(nft?.availableFrom) : getDaysLeft(nft?.auctionFrom) }} </span>
+                        <span class="font-medium" *ngIf="(getDaysLeft(nft?.availableFrom) || getDaysLeft(nft?.auctionFrom)) > 1" i18n>days</span>
+                        <span class="font-medium" *ngIf="(getDaysLeft(nft?.availableFrom) || getDaysLeft(nft?.auctionFrom)) === 1" i18n>day</span>
+                    </ng-container>
+                    <ng-template #todayBlock>
+                        <span class="font-bold" i18n>Starts today</span>
+                    </ng-template>
+                </div>
+            </div>
         </div>
 
         <div class="relative flex flex-col flex-grow w-full px-4 py-3 lg:py-4">
             <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
 
-            <div class="mt-1 mb-3 text-sm font-medium break-all line-clamp-2">
+            <div class="mt-1 mb-3 text-sm font-medium break-words line-clamp-2">
                 {{ collection?.name || '' }}
             </div>
 
-            <ng-container *ngIf="!nft?.owner; else ownerBlock">
-                <div class="flex items-center mt-auto" *ngIf="(deviceService.isDesktop$ | async)">
-                    <!-- <wen-icon-dollar class="mr-1 text-app-gray-400"></wen-icon-dollar> -->
-                    <!-- <div class="text-xs font-medium">{{formatBest(applyDiscount(nft?.price))}}</div> -->
-                    <div class="flex-grow w-0">
-                      <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
-                      <div class="text-sm font-medium truncate">
-                        {{formatBest(applyDiscount(nft?.price))}}
-                      </div>
+            <div class="flex items-center mt-auto" *ngIf="(deviceService.isDesktop$ | async)">
+                <div class="flex-grow w-0" *ngIf="isAvailableForSale()">
+                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
+                  <div class="text-sm font-medium truncate">
+                    {{formatBest(applyDiscount(nft?.availablePrice || nft?.price))}}
                   </div>
-
-                    <span class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
-                      <button nz-button nzType="primary" [disabled]="!collection?.approved || !isAvailableForSale()"
-                          (click)="onBuy($event)" i18n>Buy now</button>
-                    </span>
                 </div>
 
-                <span class="w-4/5 mt-2 ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!collection?.approved || !isAvailableForSale()) ? 'Not Available for Sale.' : undefined">
-                  <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary" nzSize="small" [disabled]="!collection?.approved || !isAvailableForSale()"
-                      (click)="onBuy($event)" i18n>Buy now</button>
-                </span>
-            </ng-container>
+                <div class="flex-grow w-0" *ngIf="isAvailableForAuction()">
+                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Current Bid</div>
+                  <div class="text-sm font-medium truncate">
+                    {{formatBest(nft?.auctionHighestBid || nft?.auctionFloorPrice)}}
+                  </div>
+                </div>
 
-            <ng-template #ownerBlock>
-                <a [routerLink]="['/member', (owner$ | async)?.uid]" class="flex items-center mt-auto" (click)="$event.stopPropagation()">
+                <a class="flex-grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
+                   *ngIf="nft?.owner && !isAvailableForSale() && !isAvailableForAuction()" (click)="$event.stopPropagation()">
+                  <!-- TODO how we show the avatar
                     <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                        class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                        style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                          class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                          style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                     </nz-avatar>
-                    <div class="flex-grow w-0 ml-2">
-                        <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
-                        <div class="text-sm font-medium truncate">
-                            @{{((owner$ | async)?.name || (owner$ | async)?.uid) }}
-                        </div>
-                    </div>
+                  -->
+                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
+                  <div class="text-sm font-medium truncate">
+                      @{{((owner$ | async)?.name || (owner$ | async)?.uid) | truncate:[16] }}
+                  </div>
                 </a>
-            </ng-template>
+
+
+                <span class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!isAvailableForSale() && !isAvailableForAuction()) ? 'Not Available' : undefined">
+                    <button nz-button nzType="primary" class="flex items-center justify-center p-2 rounded-full"
+                        [disabled]="!isAvailableForSale() && !isAvailableForAuction()"
+                        (click)="onBuy($event)" i18n>
+                            <wen-icon-wallet class="text-white"></wen-icon-wallet>
+                    </button>
+                </span>
+            </div>
+
+            <span class="w-4/5 mt-2 ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!isAvailableForSale() && !isAvailableForAuction()) ? 'Not Available' : undefined">
+                <button *ngIf="(deviceService.isMobile$ | async)" nz-button nzType="primary"
+                    class="flex items-center justify-center p-2 rounded-full"  nzSize="small"
+                    [disabled]="!isAvailableForSale() && !isAvailableForAuction()"
+                    (click)="onBuy($event)" i18n>
+                        <wen-icon-wallet class="text-white"></wen-icon-wallet>
+                </button>
+            </span>
         </div>
     </a>
 </article>
-
-<wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="nft" [collection]="collection" (wenOnClose)="isCheckoutOpen = false"></wen-nft-checkout>

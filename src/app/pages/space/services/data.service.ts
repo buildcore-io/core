@@ -279,7 +279,6 @@ export class DataService implements OnDestroy {
 
   public resetSubjects(): void {
     // Clean up all streams.
-    this.space$.next(undefined);
     this.guardians$.next(undefined);
     this.proposalsDraft$.next(undefined);
     this.proposalsRejected$.next(undefined);
@@ -342,5 +341,6 @@ export class DataService implements OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
+    this.space$.next(undefined);
   }
 }

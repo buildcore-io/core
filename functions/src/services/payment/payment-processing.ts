@@ -1,0 +1,734 @@
+import dayjs from 'dayjs';
+import * as admin from 'firebase-admin';
+import { DEFAULT_TRANSACTION_DELAY, MIN_AMOUNT_TO_TRANSFER } from '../../../interfaces/config';
+import { Transaction, TransactionOrder } from '../../../interfaces/models';
+import { COL, IotaAddress } from '../../../interfaces/models/base';
+import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
+import { Nft } from '../../../interfaces/models/nft';
+import { Notification } from "../../../interfaces/models/notification";
+import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { getRandomEthAddress } from "../../utils/wallet.utils";
+import { NotificationService } from '../notification/notification';
+
+interface TransactionMatch {
+  msgId: string;
+  from: MilestoneTransactionEntry;
+  to: MilestoneTransactionEntry;
+}
+
+interface TransactionUpdates {
+  ref: any;
+  data: any;
+  action: 'update'|'set'
+}
+
+export class ProcessingService {
+  private transaction: FirebaseFirestore.Transaction;
+  private linkedTransactions: string[] = [];
+  private updates: TransactionUpdates[] = [];
+  constructor(transaction: FirebaseFirestore.Transaction) {
+    this.transaction = transaction;
+  }
+
+  public submit(): void {
+    this.updates.forEach((params) => {
+      if (params.action === 'set') {
+        this.transaction.set(params.ref, params.data);
+      } else {
+        this.transaction.update(params.ref, params.data);
+      }
+    });
+  }
+
+  private findAllOrdersWithAddress(address: IotaAddress): any {
+    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.ORDER).where('payload.targetAddress', '==', address).get();
+  }
+
+  private isMatch(tran: MilestoneTransaction, toAddress: string, amount: number, validationType: TransactionValidationType): TransactionMatch | undefined {
+    let found: TransactionMatch | undefined;
+    const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
+      if (fromAddress && tran.outputs) {
+        for (const o of tran.outputs) {
+
+          // Ignore output that contains input address. Remaining balance.
+          if (tran.inputs.find((i) => {
+            return o.address === i.address;
+          })) {
+            continue;
+          }
+
+          if (o.address === toAddress && (o.amount === amount || validationType === TransactionValidationType.ADDRESS)) {
+            found = {
+              msgId: tran.messageId,
+              from: fromAddress,
+              to: o
+            };
+          }
+        }
+      }
+
+    return found;
+  }
+
+  private async markAsReconciled(transaction: Transaction, chainRef: string): Promise<any> {
+    const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
+    const sfDoc: any = await this.transaction.get(refSource);
+    if (sfDoc.data()) {
+      const data: any = sfDoc.data();
+      data.payload.reconciled = true;
+      data.payload.chainReference = chainRef;
+      this.updates.push({
+        ref: refSource,
+        data: data,
+        action: 'update'
+      });
+    }
+  }
+
+  public async markNftAsFinalized(nft: Nft): Promise<void> {
+    if (!nft.auctionFrom) {
+      throw new Error('NFT auctionFrom is no longer defined');
+    }
+
+    const refSource: any = admin.firestore().collection(COL.NFT).doc(nft.uid);
+    const sfDocNft: any = await this.transaction.get(refSource);
+    if (sfDocNft.data().auctionHighestTransaction) {
+      const previousHighestPayRef: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data().auctionHighestTransaction);
+      const previousHighestPayDoc: any = await this.transaction.get(previousHighestPayRef);
+
+      // It has been succesfull, let's finalise.
+      const pay: TransactionPayment = <TransactionPayment>previousHighestPayDoc.data();
+
+      // Let's get the actual order.
+      const refOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(pay.payload.sourceTransaction);
+      const sfDocOrder: any = await this.transaction.get(refOrder);
+      if (!sfDocOrder.data()) {
+        throw new Error('Unable to find ORDER linked to PAYMENT');
+      }
+
+      await this.markAsReconciled(sfDocOrder.data(), pay.payload.chainReference);
+      await this.createBillPayment(sfDocOrder.data(), pay);
+      await this.setNftOwner(sfDocOrder.data(), pay);
+
+      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(sfDocOrder.data().member!);
+      const sfDocMember: any = await this.transaction.get(refMember);
+      const bidNotification: Notification = NotificationService.prepareWinBid(sfDocMember.data(), nft, pay);
+      const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+      this.updates.push({
+        ref: refNotification,
+        data: bidNotification,
+        action: 'set'
+      });
+
+      // Update links
+      const refOrderDoc: any = await this.transaction.get(refOrder);
+      if (refOrderDoc.data()) {
+        this.updates.push({
+          ref: refOrder,
+          data: {
+            linkedTransactions: [...(refOrderDoc.data().linkedTransactions || []), ...this.linkedTransactions]
+          },
+          action: 'update'
+        });
+      }
+    } else {
+      // Remove auction from THE NFT!
+      this.updates.push({
+        ref: refSource,
+        data: {
+          auctionFrom: null,
+          auctionTo: null,
+          auctionFloorPrice: null,
+          auctionLength: null,
+          auctionHighestBid: null,
+          auctionHighestBidder: null,
+          auctionHighestTransaction: null
+        },
+        action: 'update'
+      });
+    }
+  }
+
+  public async markAsVoid(transaction: TransactionOrder): Promise<void> {
+    const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
+    const sfDoc: any = await this.transaction.get(refSource);
+    if (transaction.payload.nft) {
+      if (transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
+        // Mark as void.
+        const data: any = sfDoc.data();
+        data.payload.void = true;
+        this.updates.push({
+          ref: refSource,
+          data: data,
+          action: 'update'
+        });
+
+        // Unlock NFT.
+        const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+        this.updates.push({
+          ref: refNft,
+          data: {
+            locked: false,
+            lockedBy: null
+          },
+          action: 'update'
+        });
+      } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
+        const payments: any = await admin.firestore().collection(COL.TRANSACTION)
+                              .where('payload.invalidPayment', '==', false)
+                              .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
+        if (payments.size === 0) {
+          // No orders, we just void.
+          const data: any = sfDoc.data();
+          data.payload.void = true;
+          this.updates.push({
+            ref: refSource,
+            data: data,
+            action: 'update'
+          });
+        }
+      }
+    } else {
+      const data: any = sfDoc.data();
+      data.payload.void = true;
+      this.updates.push({
+        ref: refSource,
+        data: data,
+        action: 'update'
+      });
+    }
+  }
+
+  private async createPayment(order: Transaction, tran: TransactionMatch, invalidPayment = false): Promise<Transaction> {
+    if (order.type !== TransactionType.ORDER) {
+      throw new Error('Order was not provided as transaction.');
+    }
+
+    const tranId: string = getRandomEthAddress();
+    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+    const tranData: Transaction = <Transaction>{
+      type: TransactionType.PAYMENT,
+      uid: tranId,
+      member: order.member,
+      space: order.space,
+      createdOn: serverTime(),
+      payload: {
+        // This must be the amount they send. As we're handing both correct amount from order or invalid one.
+        amount: tran.to.amount,
+        sourceAddress: tran.from.address,
+        targetAddress: order.payload.targetAddress,
+        reconciled: true,
+        void: false,
+        sourceTransaction: order.uid,
+        chainReference: tran.msgId,
+        nft: order.payload.nft || null,
+        collection: order.payload.collection || null,
+        invalidPayment: invalidPayment
+      }
+    };
+
+    this.updates.push({
+      ref: refTran,
+      data: tranData,
+      action: 'set'
+    });
+
+    this.linkedTransactions.push(tranId);
+    return tranData;
+  }
+
+  private async createBillPayment(order: Transaction, payment: Transaction): Promise<Transaction[]> {
+    if (order.type !== TransactionType.ORDER) {
+      throw new Error('Order was not provided as transaction.');
+    }
+
+    // Calculate royalties.
+    const transOut: Transaction[] = [];
+    let royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(payment.payload.amount * order.payload.royaltiesFee) : 0;
+    let finalAmt: number = payment.payload.amount - royaltyAmt;
+
+    if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
+      finalAmt = finalAmt + royaltyAmt;
+      royaltyAmt = 0;
+    }
+
+    if (finalAmt > 0) {
+      const tranId: string = getRandomEthAddress();
+      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+      const data: any = <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: tranId,
+        space: order.payload.beneficiary !== 'member' ? order.space : null,
+        member: order.member,
+        createdOn: serverTime(),
+        payload: {
+          amount: finalAmt,
+          sourceAddress: order.payload.targetAddress,
+          previusOwnerEntity: order.payload.beneficiary,
+          previusOwner: order.payload.beneficiaryUid,
+          targetAddress: order.payload.beneficiaryAddress,
+          sourceTransaction: order.uid,
+          nft: order.payload.nft || null,
+          reconciled: true,
+          royalty: false,
+          void: false,
+          collection: order.payload.collection || null
+        }
+      };
+      this.updates.push({
+        ref: refTran,
+        data: data,
+        action: 'set'
+      });
+      transOut.push(data);
+      this.linkedTransactions.push(tranId);
+    }
+
+    // Pay roaylties.
+    if (royaltyAmt > 0) {
+      const tranId: string = getRandomEthAddress();
+      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+      const data: any = <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: tranId,
+        member: order.member,
+        space: order.payload.royaltiesSpace,
+        createdOn: serverTime(),
+        payload: {
+          amount: royaltyAmt,
+          sourceAddress: order.payload.targetAddress,
+          targetAddress: order.payload.royaltiesSpaceAddress,
+          sourceTransaction: order.uid,
+          previusOwnerEntity: order.payload.beneficiary,
+          previusOwner: order.payload.beneficiaryUid,
+          reconciled: true,
+          royalty: true,
+          void: false,
+          // We delay royalty.
+          delay: DEFAULT_TRANSACTION_DELAY,
+          nft: order.payload.nft || null,
+          collection: order.payload.collection || null
+        }
+      };
+      this.updates.push({
+        ref: refTran,
+        data: data,
+        action: 'set'
+      });
+      transOut.push(data);
+      this.linkedTransactions.push(tranId);
+    }
+
+    return transOut;
+  }
+
+  private async createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Promise<Transaction|undefined> {
+    if (payment.type !== TransactionType.PAYMENT) {
+      throw new Error('Payment was not provided as transaction.');
+    }
+    let transOut: Transaction|undefined;
+    if (payment.payload.amount > 0) {
+      const tranId: string = getRandomEthAddress();
+      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+      const data: any = <Transaction>{
+        type: TransactionType.CREDIT,
+        uid: tranId,
+        space: payment.space,
+        member: payment.member,
+        createdOn: createdOn,
+        payload: {
+          amount: payment.payload.amount,
+          sourceAddress: tran.to.address,
+          targetAddress: tran.from.address,
+          sourceTransaction: payment.uid,
+          nft: payment.payload.nft || null,
+          reconciled: true,
+          void: false,
+          collection: payment.payload.collection || null,
+          invalidPayment: payment.payload.invalidPayment
+        }
+      };
+      this.updates.push({
+        ref: refTran,
+        data: data,
+        action: 'set'
+      });
+      transOut = data;
+      if (setLink) {
+        this.linkedTransactions.push(tranId);
+      }
+    }
+
+    return transOut;
+  }
+
+  private async setValidatedAddress(credit: Transaction, type: 'member'|'space'): Promise<void> {
+    if (type === 'member' && credit.member) {
+      const refSource: any = admin.firestore().collection(COL.MEMBER).doc(credit.member);
+      const sfDoc: any = await this.transaction.get(refSource);
+      if (sfDoc.data()) {
+        this.updates.push({
+          ref: refSource,
+          data: {
+            validatedAddress: credit.payload.targetAddress
+          },
+          action: 'update'
+        });
+      }
+    } else if (type === 'space' && credit.space) {
+      const refSource: any = admin.firestore().collection(COL.SPACE).doc(credit.space);
+      const sfDoc: any = await this.transaction.get(refSource);
+      if (sfDoc.data()) {
+        this.updates.push({
+          ref: refSource,
+          data: {
+            validatedAddress: credit.payload.targetAddress
+          },
+          action: 'update'
+        });
+      }
+    }
+  }
+
+  private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
+    const refNft: any = admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+    const refPayment: any = admin.firestore().collection(COL.TRANSACTION).doc(payment.uid);
+    const sfDocNft: any = await this.transaction.get(refNft);
+    let newValidPayment = false;
+    let previousHighestPay: TransactionPayment|undefined;
+    if (sfDocNft.data().auctionHighestTransaction) {
+      const previousHighestPayRef: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data().auctionHighestTransaction);
+      const previousHighestPayDoc: any = await this.transaction.get(previousHighestPayRef);
+
+      // It has been succesfull, let's finalise.
+      previousHighestPay = <TransactionPayment>previousHighestPayDoc.data();
+      if (
+        previousHighestPay.payload.amount < payment.payload.amount &&
+        payment.payload.amount >= sfDocNft.data().auctionFloorPrice
+      ) {
+        newValidPayment = true;
+      }
+    } else {
+      if (payment.payload.amount >= sfDocNft.data().auctionFloorPrice) {
+        newValidPayment = true;
+      }
+    }
+
+    // We need to credit the old payment.
+    if (newValidPayment && previousHighestPay) {
+      const refPrevPayment: any = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.uid);
+      previousHighestPay.payload.invalidPayment = true;
+      this.updates.push({
+        ref: refPrevPayment,
+        data: previousHighestPay,
+        action: 'update'
+      });
+
+      // Mark as invalid and create credit.
+      const sameOwner: boolean = previousHighestPay.member === transaction.member;
+      const credit = await this.createCredit(previousHighestPay, {
+        msgId: previousHighestPay.payload.chainReference,
+        to: {
+          address: previousHighestPay.payload.targetAddress,
+          amount: previousHighestPay.payload.amount
+        },
+        from: {
+          address: previousHighestPay.payload.sourceAddress,
+          amount: previousHighestPay.payload.amount
+        }
+      }, dateToTimestamp(dayjs(payment.createdOn?.toDate()).subtract(1, 's')), sameOwner);
+
+      // We have to set link on the past order.
+      if (!sameOwner) {
+        const refHighTranOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.payload.sourceTransaction);
+        const refHighTranOrderDoc: any = await this.transaction.get(refHighTranOrder);
+        if (refHighTranOrderDoc.data()) {
+          this.updates.push({
+            ref: refHighTranOrder,
+            data: {
+              linkedTransactions: [...(refHighTranOrderDoc.data().linkedTransactions || []), ...[credit!.uid]]
+            },
+            action: 'update'
+          });
+
+          // Notify them.
+          const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(refHighTranOrderDoc.data().member!);
+          const sfDocMember: any = await this.transaction.get(refMember);
+          const bidNotification: Notification = NotificationService.prepareLostBid(sfDocMember.data(), sfDocNft.data(), previousHighestPay);
+          const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+          this.updates.push({
+            ref: refNotification,
+            data: bidNotification,
+            action: 'set'
+          });
+        }
+      }
+    }
+
+    // Update NFT with highest bid.
+    if (newValidPayment) {
+      this.updates.push({
+        ref: refNft,
+        data: {
+          auctionHighestBid: payment.payload.amount,
+          auctionHighestBidder: payment.member,
+          auctionHighestTransaction: payment.uid,
+        },
+        action: 'update'
+      });
+
+      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(transaction.member!);
+      const sfDocMember: any = await this.transaction.get(refMember);
+      const bidNotification: Notification = NotificationService.prepareBid(sfDocMember.data(), sfDocNft.data(), payment);
+      const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+      this.updates.push({
+        ref: refNotification,
+        data: bidNotification,
+        action: 'set'
+      });
+    } else {
+      // Invalidate payment.
+      payment.payload.invalidPayment = true;
+      this.updates.push({
+        ref: refPayment,
+        data: payment,
+        action: 'update'
+      });
+
+      // No valid payment so we credit anyways.
+      await this.createCredit(payment, {
+        msgId: payment.payload.chainReference,
+        to: {
+          address: payment.payload.targetAddress,
+          amount: payment.payload.amount
+        },
+        from: {
+          address: payment.payload.sourceAddress,
+          amount: payment.payload.amount
+        }
+      });
+    }
+  }
+
+  private async setNftOwner(transaction: Transaction, payment: Transaction): Promise<void> {
+    if (payment.member) {
+      const refSource: any = admin.firestore().collection(COL.NFT).doc(payment.payload.nft);
+      const sfDoc: any = await this.transaction.get(refSource);
+      if (sfDoc.data()) {
+        this.updates.push({
+          ref: refSource,
+          data: {
+            owner: payment.member,
+            price: payment.payload.amount,
+            sold: true,
+            locked: false,
+            lockedBy: null,
+            hidden: false,
+            soldOn: admin.firestore.Timestamp.now(),
+            availableFrom: null,
+            availablePrice: null,
+            auctionFrom: null,
+            auctionTo: null,
+            auctionFloorPrice: null,
+            auctionLength: null,
+            auctionHighestBid: null,
+            auctionHighestBidder: null,
+            auctionHighestTransaction: null,
+            saleAccess: null,
+            saleAccessMembers: [],
+          },
+          action: 'update'
+        });
+
+        if (sfDoc.data().auctionHighestTransaction && transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
+          const refHighTran: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDoc.data().auctionHighestTransaction);
+          const refHighTranDoc: any = await this.transaction.get(refHighTran);
+          if (refHighTranDoc.data()) {
+            const highestPay: TransactionPayment = <TransactionPayment>refHighTranDoc.data();
+            highestPay.payload.invalidPayment = true;
+            this.updates.push({
+              ref: refHighTran,
+              data: highestPay,
+              action: 'update'
+            });
+
+            // Mark as invalid and create credit.
+            const sameOwner: boolean = highestPay.member === transaction.member;
+            const credit = await this.createCredit(highestPay, {
+              msgId: highestPay.payload.chainReference,
+              to: {
+                address: highestPay.payload.targetAddress,
+                amount: highestPay.payload.amount
+              },
+              from: {
+                address: highestPay.payload.sourceAddress,
+                amount: highestPay.payload.amount
+              }
+            }, serverTime(), sameOwner);
+            // We have to set link on the past order.
+            if (!sameOwner) {
+              const refHighTranOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(highestPay.payload.sourceTransaction);
+              const refHighTranOrderDoc: any = await this.transaction.get(refHighTranOrder);
+              if (refHighTranOrderDoc.data()) {
+                this.updates.push({
+                  ref: refHighTranOrder,
+                  data: {
+                    linkedTransactions: [...(refHighTranOrderDoc.data().linkedTransactions || []), ...[credit!.uid]]
+                  },
+                  action: 'update'
+                });
+              }
+            }
+          }
+        }
+      }
+
+      // If it's first sale we have to update collection.
+      if (transaction.payload.beneficiary === 'space') {
+        const refCol: any = admin.firestore().collection(COL.COLLECTION).doc(payment.payload.collection);
+        const col: any = await this.transaction.get(refCol);
+        this.updates.push({
+          ref: refCol,
+          data: {
+            sold: admin.firestore.FieldValue.increment(1)
+          },
+          action: 'update'
+        });
+
+        // Let's validate if collection has pending item to sell.
+        if (col.data().placeholderNft && col.data().total === col.data().sold) {
+          const refSource: any = admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft);
+          const sfDoc: any = await this.transaction.get(refSource);
+          if (sfDoc.data()) {
+            this.updates.push({
+              ref: refSource,
+              data: {
+                sold: true,
+                owner: null,
+                availableFrom: null,
+                soldOn: admin.firestore.Timestamp.now(),
+                hidden: false
+              },
+              action: 'update'
+            });
+          }
+        }
+      }
+    }
+  }
+
+  public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
+    // We have to check each output address if there is an order for it.
+    if (tran.outputs?.length) {
+      for (const o of tran.outputs) {
+        // Ignore output that contains input address. Remaining balance.
+        if (tran.inputs.find((i) => {
+          return o.address === i.address;
+        })) {
+          continue;
+        }
+
+        const orders: any = await this.findAllOrdersWithAddress(o.address);
+        if (orders.size > 0) {
+          // Technically there should only be one as address is unique per order.
+          for (const order of orders.docs) {
+            // This happens here on purpose instead of cron to reduce $$$
+            const expireDate = dayjs(order.data().payload.expiresOn.toDate());
+            let expired = false;
+            if (expireDate.isBefore(dayjs(), 'ms')) {
+              await this.markAsVoid(order.data());
+              expired = true;
+            }
+
+            // Let's process this.'
+            const match: TransactionMatch | undefined = this.isMatch(tran, order.data().payload.targetAddress, order.data().payload.amount, order.data().payload.validationType);
+            if (
+              !expired &&
+              order.data().payload.reconciled === false &&
+              order.data().payload.void === false &&
+              match
+            ) {
+              if (order.data().payload.type === TransactionOrderType.NFT_PURCHASE) {
+                const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
+                const sfDocNft: any = await this.transaction.get(refNft);
+                if (sfDocNft.data().availableFrom !== null) {
+                  // Found transaction, create payment / ( bill payments | credit)
+                  const payment = await this.createPayment(order.data(), match);
+                  await this.createBillPayment(order.data(), payment);
+                  await this.setNftOwner(order.data(), payment);
+                  await this.markAsReconciled(order.data(), match.msgId);
+                } else {
+                  // NFT has been purchased by someone else.
+                  await this.processAsInvalid(tran, order.data(), o);
+                }
+              } else if (order.data().payload.type === TransactionOrderType.NFT_BID) {
+                const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
+                const sfDocNft: any = await this.transaction.get(refNft);
+                if (sfDocNft.data().auctionFrom !== null) {
+                  const payment = await this.createPayment(order.data(), match);
+                  await this.addNewBid(order.data(), payment);
+                } else {
+                  // Auction is no longer available.
+                  await this.processAsInvalid(tran, order.data(), o);
+                }
+              } else if (order.data().payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
+                // Found transaction, create payment / ( bill payments | credit)
+                const payment = await this.createPayment(order.data(), match);
+                const credit = await this.createCredit(payment, match);
+                if (credit) {
+                  await this.setValidatedAddress(credit, 'space');
+                }
+
+                await this.markAsReconciled(order.data(), match.msgId);
+              } else if (order.data().payload.type === TransactionOrderType.MEMBER_ADDRESS_VALIDATION) {
+                // Found transaction, create payment / ( bill payments | credit)
+                const payment = await this.createPayment(order.data(), match);
+                const credit = await this.createCredit(payment, match);
+                if (credit) {
+                  await this.setValidatedAddress(credit, 'member');
+                }
+
+                await this.markAsReconciled(order.data(), match.msgId);
+              }
+            } else {
+              // Now process all invalid orders.
+              // Wrong amount, Double payments & Expired orders.
+              await this.processAsInvalid(tran, order.data(), o);
+            }
+
+            // Add linked transaction.
+            const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.data().uid);
+            const sfDoc: any = await this.transaction.get(refSource);
+            if (sfDoc.data()) {
+              this.updates.push({
+                ref: refSource,
+                data: {
+                  linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...this.linkedTransactions]
+                },
+                action: 'update'
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return;
+  }
+
+
+  public async processAsInvalid(tran: MilestoneTransaction, order: TransactionOrder, o: MilestoneTransactionEntry): Promise<void> {
+    const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
+    // if invalid proceed with credit.
+    if (fromAddress) {
+      const wrongTransaction: TransactionMatch = {
+        msgId: tran.messageId,
+        from: fromAddress,
+        to: o
+      };
+      const payment = await this.createPayment(order, wrongTransaction, true);
+      await this.createCredit(payment, wrongTransaction);
+    }
+  }
+}

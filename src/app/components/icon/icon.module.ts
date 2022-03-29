@@ -4,14 +4,17 @@ import { AirBlowIconComponent } from './air-blow/air-blow.component';
 import { AlertOctagonIconComponent } from './alert-octagon/alert-octagon.component';
 import { AngleDownIconComponent } from './angle-down/angle-down.component';
 import { AngleLeftIconComponent } from './angle-left/angle-left.component';
+import { AngleRightSmallIconComponent } from './angle-right-small/angle-right-small.component';
 import { AngleRightIconComponent } from './angle-right/angle-right.component';
 import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
+import { CalendarIconComponent } from './calendar/calendar.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
+import { CollectionIconComponent } from './collection/collection.component';
 import { CopyIconComponent } from './copy/copy.component';
 import { CrownIconComponent } from './crown/crown.component';
 import { DefaultSpaceIconComponent } from './default-space/default-space.component';
@@ -23,16 +26,22 @@ import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
+import { GuardiansOnlyIconComponent } from './guardians-only/guardians-only.component';
 import { InfoCircleIconComponent } from './info-circle/info-circle.component';
 import { InfoIconComponent } from './info/info.component';
 import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { LogOutIconComponent } from './log-out/log-out.component';
 import { MarketIconComponent } from './market/market.component';
+import { MembersOnlyIconComponent } from './members-only/members-only.component';
+import { MembersWithBadgeIconComponent } from './members-with-badge/members-with-badge.component';
+import { MembersWithNftFromCollectionIconComponent } from './members-with-nft-from-collection/members-with-nft-from-collection.component';
 import { MembersIconComponent } from './members/members.component';
 import { MenuIconComponent } from './menu/menu.component';
 import { MoonIconComponent } from './moon/moon.component';
 import { MoreIconComponent } from './more/more.component';
+import { NineDotsIconComponent } from './nine-dots/nine-dots.component';
+import { OpenSaleIconComponent } from './open-sale/open-sale.component';
 import { PercentageIconComponent } from './percentage/percentage.component';
 import { PlusIconComponent } from './plus/plus.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
@@ -55,7 +64,6 @@ import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
 import { UserPlusIconComponent } from './user-plus/user-plus.component';
 import { WalletIconComponent } from './wallet/wallet.component';
-import { CollectionIconComponent } from './collection/collection.component';
 
 @NgModule({
   declarations: [
@@ -114,7 +122,15 @@ import { CollectionIconComponent } from './collection/collection.component';
     AlertOctagonIconComponent,
     InfoCircleIconComponent,
     UserPlusIconComponent,
-    CollectionIconComponent
+    CollectionIconComponent,
+    CalendarIconComponent,
+    AngleRightSmallIconComponent,
+    MembersOnlyIconComponent,
+    GuardiansOnlyIconComponent,
+    MembersWithBadgeIconComponent,
+    MembersWithNftFromCollectionIconComponent,
+    NineDotsIconComponent,
+    OpenSaleIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -172,7 +188,15 @@ import { CollectionIconComponent } from './collection/collection.component';
     AlertOctagonIconComponent,
     InfoCircleIconComponent,
     UserPlusIconComponent,
-    CollectionIconComponent
+    CollectionIconComponent,
+    CalendarIconComponent,
+    AngleRightSmallIconComponent,
+    MembersOnlyIconComponent,
+    GuardiansOnlyIconComponent,
+    MembersWithBadgeIconComponent,
+    MembersWithNftFromCollectionIconComponent,
+    NineDotsIconComponent,
+    OpenSaleIconComponent
   ],
   imports: [
     CommonModule

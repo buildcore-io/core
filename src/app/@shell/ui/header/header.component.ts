@@ -1,26 +1,32 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { NftApi } from '@api/nft.api';
+import { NotificationApi } from '@api/notification.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { RouterService } from '@core/services/router';
-import { getItem, removeItem, StorageItem } from '@core/utils';
+import { getItem, getNotificationItem, removeItem, setNotificationItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { UnitsHelper } from '@core/utils/units-helper';
 import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
-import { Collection, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Collection, Member, TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { NzNotificationRef, NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, debounceTime, firstValueFrom, fromEvent, interval, skip, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../../../functions/interfaces/models/base";
-import { Member } from './../../../../../functions/interfaces/models/member';
+import { Notification, NotificationType } from './../../../../../functions/interfaces/models/notification';
 import { MemberApi } from './../../../@api/member.api';
 
 const IS_SCROLLED_HEIGHT = 20;
+export interface NotificationContent {
+  title: string;
+  content: string;
+}
 
 @UntilDestroy()
 @Component({
@@ -29,7 +35,7 @@ const IS_SCROLLED_HEIGHT = 20;
   styleUrls: ['./header.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('notCompletedNotification', { static: false }) notCompletedNotification!: TemplateRef<any>;
   @ViewChild('emptyIcon', { static: false }) emptyIcon!: TemplateRef<any>;
 
@@ -39,21 +45,23 @@ export class HeaderComponent implements OnInit {
   public accessSubscriptions$: Subscription[] = [];
   public isMemberProfile = false;
   public isLandingPage = false;
-  public isAllowedCreation = false;
   public isMobileMenuVisible = false;
   public isScrolled = false;
   public isCheckoutOpen = false;
   public currentCheckoutNft?: Nft;
   public currentCheckoutCollection?: Collection;
+  public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>([]);
   private notificationRef?: NzNotificationRef;
   public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   private transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
   private subscriptionTransaction$?: Subscription;
+  private subscriptionNotification$?: Subscription;
   constructor(
     private router: Router,
     private memberApi: MemberApi,
     private orderApi: OrderApi,
     private nftApi: NftApi,
+    private notificationApi: NotificationApi,
     private collectionApi: CollectionApi,
     private cd: ChangeDetectorRef,
     private nzNotification: NzNotificationService,
@@ -71,11 +79,6 @@ export class HeaderComponent implements OnInit {
         this.cancelAccessSubscriptions();
         this.accessSubscriptions$.push(this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
           this.enableCreateAwardProposal = space.length > 0;
-          this.cd.markForCheck();
-        }));
-
-        this.accessSubscriptions$.push(this.memberApi.topBadges(obj.uid, 'createdOn', undefined, 1).subscribe((badge) => {
-          this.isAllowedCreation = badge.length > 0;
           this.cd.markForCheck();
         }));
 
@@ -152,6 +155,18 @@ export class HeaderComponent implements OnInit {
         this.removeCheckoutNotification();
       }
     });
+
+    let lastMember: string|undefined;
+    this.auth.member$.pipe(untilDestroyed(this)).subscribe((m) => {
+      if (m && lastMember !== m.uid) {
+        this.subscriptionNotification$?.unsubscribe();
+        this.subscriptionNotification$ = this.notificationApi.topMember(m.uid, undefined, undefined, 25).subscribe(this.notifications$);
+        lastMember = m.uid;
+      } else if (!m) {
+        this.notifications$.next([]);
+        lastMember = undefined;
+      }
+    })
   }
 
   public async onOpenCheckout(): Promise<void> {
@@ -204,6 +219,10 @@ export class HeaderComponent implements OnInit {
     this.cd.markForCheck();
   }
 
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
   private removeCheckoutNotification(removeFromStorage = true): void {
     if (this.notificationRef) {
       this.nzNotification.remove(this.notificationRef.messageId);
@@ -218,6 +237,70 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  public notificationVisibleChange(): void {
+    if (!this.auth.member$.value?.uid) {
+      return;
+    }
+
+    setTimeout(() => {
+      setNotificationItem(this.auth.member$.value!.uid, this.notifications$.value[this.notifications$.value.length - 1]?.uid);
+      this.cd.markForCheck();
+    }, 2500);
+  }
+
+  public isReadNotifications(): boolean {
+    return !this.auth.member$.value?.uid || this.notifications$.value.length === 0 ||
+      this.notifications$.value[this.notifications$.value.length - 1].uid === getNotificationItem(this.auth.member$.value.uid);
+  }
+
+  public unreadNotificationCount(): number {
+    if (!this.notifications$.value.length || !this.auth.member$.value?.uid) {
+      return 0;
+    }
+
+    if (!getNotificationItem(this.auth.member$.value?.uid)) {
+      return this.notifications$.value.length;
+    }
+
+    return (this.notifications$.value.indexOf(<any>getNotificationItem(this.auth.member$.value?.uid)) + 1);
+  }
+
+  public getNotificationDetails(not: Notification): NotificationContent {
+    if (not.type === NotificationType.WIN_BID) {
+      const title = $localize`You won the NFT`;
+      const contentYour = $localize`You are a proud owner of a new NFT. Congratulations!`;
+
+      return {
+        title: title + ' ' + not.params.nft.name,
+        content: contentYour
+      }
+    } else if (not.type === NotificationType.LOST_BID) {
+      const title = $localize`You lost your bid!`;
+      const contentYour = $localize`Your bid on `;
+      const contentReceived = $localize` was outbidded. Try again!`;
+
+      return {
+        title: title,
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived
+      }
+    } else if (not.type === NotificationType.NEW_BID) {
+      const titleOffered = $localize`just offered`;
+      const titleFor = $localize`for`;
+      const contentYour = $localize`Your`;
+      const contentReceived = $localize`has received a new bid for`;
+
+      return {
+        title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + UnitsHelper.formatBest(not.params.amount),
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + UnitsHelper.formatBest(not.params.amount)
+      }
+    } else {
+      return {
+        title: $localize`Unsupported`,
+        content: $localize`This notification is not yet supported in your language`
+      }
+    }
+  }
+
   public cancelAccessSubscriptions(): void {
     this.accessSubscriptions$.forEach((s) => {
       s.unsubscribe();
@@ -226,6 +309,7 @@ export class HeaderComponent implements OnInit {
 
   public ngOnDestroy(): void {
     this.cancelAccessSubscriptions();
+    this.subscriptionNotification$?.unsubscribe();
     this.subscriptionTransaction$?.unsubscribe();
     this.currentCheckoutNft = undefined;
     this.currentCheckoutCollection = undefined;

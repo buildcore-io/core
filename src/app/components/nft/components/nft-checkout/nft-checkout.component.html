@@ -55,11 +55,6 @@
             <div class="relative flex flex-col w-full h-full">
                 <h3 class="mb-1 text-2xl font-bold truncate">{{ getTitle() }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
-
-                <!-- <div class="flex items-center mt-6">
-                    <wen-icon-time class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-time>
-                    <div class="font-medium">2 hours left</div>
-                </div> -->
                 <div class="flex items-center mt-2.5">
                     <wen-icon-crown class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-crown>
                     <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
@@ -75,13 +70,11 @@
                 <div class="px-5 py-3 mt-8 lg:mt-auto bg-bg-background rounded-2xl w-max">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Total price</div>
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
-                        <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(getRecord()?.price || 0) }}</div>
-                        <div class="mr-2 font-bold truncate">{{ formatBest(calc(getRecord()?.price || 0, discount())) }}</div>
-                        <!-- <div class="font-medium truncate text-foregrounds-secondary">({{ '$72' }})</div> -->
+                        <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
+                        <div class="mr-2 font-bold truncate">{{ formatBest(calc(getRecord()?.availablePrice || getRecord()?.price || 0, discount())) }}</div>
                     </div>
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() === 1">
-                      <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.price || 0) }}</div>
-                      <!-- <div class="font-medium truncate text-foregrounds-secondary">({{ '$72' }})</div> -->
+                      <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
                   </div>
                 </div>
             </div>
@@ -145,11 +138,11 @@
 
         <div class="w-full px-4 py-3 mt-6 bg-bg-background rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-app-gray-400">
-              <span i18n>Send</span> {{formatBest(calc(getRecord()?.price || 0, discount())) }} <span i18n>IOTA to following address (please restake after!):</span>
+              <span i18n>Send</span> {{formatBest(calc(getRecord()?.availablePrice || getRecord()?.price || 0, discount())) }} <span i18n>IOTA to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2">
-                <div class="text-base font-medium break-all">
+                <div class="text-base font-medium break-words">
                     {{ targetAddress }}
                 </div>
 
@@ -160,7 +153,11 @@
             </div>
         </div>
 
-        <div class="flex flex-col items-center justify-center w-full mt-8 lg:flex-row lg:w-auto" *ngIf="!isExpired((transaction$ | async))">
+        <div class="mt-6 text-sm font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+            Do not send funds from an exchange, always use wallets you fully control.
+        </div>
+
+        <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto" *ngIf="!isExpired((transaction$ | async))">
             <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
                 class="deep-link">
                 <div class="flex items-center">

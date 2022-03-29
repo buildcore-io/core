@@ -33,7 +33,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
       scheme: ['https']
     }).optional(),
     // On test we allow now.
-    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -60000, 'ms').toDate()).required(),
+    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),
@@ -55,6 +55,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
       amount: Joi.number().min(0.01).max(1).required()
     })).min(0).max(5).optional(),
     onePerMemberOnly: Joi.boolean().required(),
+    limitedEdition: Joi.boolean().optional(),
     discord: Joi.string().allow(null, '').regex(DISCORD_REGEXP).optional(),
     url: Joi.string().allow(null, '').uri({
       scheme: ['https', 'http']
@@ -89,23 +90,23 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   // Temporary. They must have special badge.
-  const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
-    .where('type', '==', TransactionType.BADGE)
-    .where('payload.award', 'in', BADGE_TO_CREATE_COLLECTION)
-    .where('member', '==', creator).get();
-  if (qry.size === 0) {
-    throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+  if (functions.config()?.environment?.type !== 'emulator') {
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BADGE)
+      .where('payload.award', 'in', BADGE_TO_CREATE_COLLECTION)
+      .where('member', '==', creator).get();
+    if (qry.size === 0) {
+      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
+    }
   }
-  // END
-
-
+  
   // Validate royalty space exists
   const refSpaceRoyalty: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.royaltiesSpace);
   await SpaceValidator.spaceExists(refSpaceRoyalty);
   await SpaceValidator.hasValidAddress(refSpaceRoyalty);
 
   if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
   }
 
   const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(collectionAddress);
@@ -149,8 +150,9 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
       createdBy: creator,
       approved: false,
       rejected: false,
+      limitedEdition: !!params.body.limitedEdition,
       placeholderNft: placeholderNft || null
-    }), URL_PATHS.NFT)));
+    }), URL_PATHS.COLLECTION)));
 
     // Load latest
     docCollection = await refCollection.get();
@@ -178,6 +180,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   delete defaultSchema.availableFrom;
   delete defaultSchema.category;
   delete defaultSchema.onePerMemberOnly;
+  delete defaultSchema.limitedEdition;
   const schema: ObjectSchema<Collection> = Joi.object(merge(defaultSchema, {
     uid: CommonJoi.uidCheck()
   }));
@@ -189,7 +192,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   if (params.body.availableFrom) {
-    params.body.availableFrom = dateToTimestamp(params.body.availableFrom);
+    params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);
   }
 
   const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.uid);

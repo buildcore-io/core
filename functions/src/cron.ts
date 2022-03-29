@@ -3,9 +3,10 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL, SUB_COL } from '../../functions/interfaces/models/base';
 import { DEFAULT_TRANSACTION_DELAY, MAX_WALLET_RETRY } from '../interfaces/config';
-import { Collection, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '../interfaces/models';
+import { Collection, TransactionType } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
+import { ProcessingService } from './services/payment/payment-processing';
 
 export const markAwardsAsComplete: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
@@ -75,41 +76,40 @@ export const voidExpiredOrders: functions.CloudFunction<any> = functions.pubsub.
                     .where('type', '==', TransactionType.ORDER)
                     .where('payload.void', '==', false)
                     .where('payload.reconciled', '==', false)
-                    .where('createdOn', '<=', dayjs().subtract(TRANSACTION_AUTO_EXPIRY_MS, 'ms').toDate()).get();
+                    .where('payload.expiresOn', '<=', dayjs().toDate()).get();
 
   if (qry.size > 0) {
     for (const t of qry.docs) {
-        const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(t.data().uid);
         await admin.firestore().runTransaction(async (transaction) => {
-          const updates: any[] = [];
+          const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(t.data().uid);
           const sfDoc: any = await transaction.get(refSource);
-          if (sfDoc.data()) {
-            const data: any = sfDoc.data();
-            data.payload.void = true;
-            updates.push({
-              ref: refSource,
-              data: data
-            });
-          }
+          const service: ProcessingService = new ProcessingService(transaction);
+          await service.markAsVoid(sfDoc.data());
 
-          // We need to unlock NFT.
-          if (sfDoc.data().payload.nft) {
-            const refNft: any = await admin.firestore().collection(COL.NFT).doc(sfDoc.data().payload.nft);
-            const sfDocNft: any = await transaction.get(refNft);
-            if (sfDocNft.data()) {
-              updates.push({
-                ref: refNft,
-                data: {
-                  locked: false,
-                  lockedBy: null
-                }
-              });
-            }
-          }
+          // This will trigger all update/set.
+          service.submit();
+        });
+    }
+  }
 
-          updates.forEach((p) => {
-            transaction.update(p.ref, p.data);
-          });
+  // Finished.
+  return null;
+});
+
+export const finaliseAuctionNft: functions.CloudFunction<any> = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+  const qry = await admin.firestore().collection(COL.NFT)
+                    .where('auctionTo', '<=', dayjs().toDate()).get();
+
+  if (qry.size > 0) {
+    for (const t of qry.docs) {
+        await admin.firestore().runTransaction(async (transaction) => {
+          const refSource: any = admin.firestore().collection(COL.NFT).doc(t.data().uid);
+          const sfDoc: any = await transaction.get(refSource);
+          const service: ProcessingService = new ProcessingService(transaction);
+          await service.markNftAsFinalized(sfDoc.data());
+
+          // This will trigger all update/set.
+          service.submit();
         });
     }
   }

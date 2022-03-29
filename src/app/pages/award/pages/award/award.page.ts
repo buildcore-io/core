@@ -168,7 +168,10 @@ export class AwardPage implements OnInit, OnDestroy {
         this.commentControl.setValue('');
       });
     });
+  }
 
+  public getShareUrl(award?: Award | null): string {
+    return award?.wenUrlShort || award?.wenUrl || window.location.href;
   }
 
   public ngOnDestroy(): void {

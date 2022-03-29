@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
-import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Member } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Collection, CollectionAccess, CollectionType, Member } from '@functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, Subscription, take } from 'rxjs';
 
 @UntilDestroy()
@@ -31,8 +31,9 @@ export class NftCardComponent {
       this.memberApiSubscription.unsubscribe();
     }
     this._nft = value;
-    if (this.nft?.owner) {
-      this.memberApiSubscription = this.memberApi.listen(this.nft.owner).pipe(untilDestroyed(this)).subscribe(this.owner$);
+    const owner = this.nft?.owner || this.nft?.createdBy;
+    if (owner) {
+      this.memberApiSubscription = this.memberApi.listen(owner).pipe(untilDestroyed(this)).subscribe(this.owner$);
     } else {
       this.owner$.next(undefined);
     }
@@ -56,6 +57,7 @@ export class NftCardComponent {
 
   public mediaType: 'video'|'image'|undefined;
   public isCheckoutOpen = false;
+  public isBidOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
   private memberApiSubscription?: Subscription;
@@ -66,19 +68,17 @@ export class NftCardComponent {
     public previewImageService: PreviewImageService,
     private auth: AuthService,
     private cd: ChangeDetectorRef,
-    private nzNotification: NzNotificationService,
+    private router: Router,
     private memberApi: MemberApi,
-    private fileApi: FileApi
+    private fileApi: FileApi,
+    private cache: CacheService
   ) {}
 
   public onBuy(event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
-    if (getItem(StorageItem.CheckoutTransaction)) {
-      this.nzNotification.error('You currently have open order. Pay for it or let it expire.', '');
-      return;
-    }
-    this.isCheckoutOpen = true;
+    this.cache.openCheckout = true;
+    this.router.navigate(['/', ROUTER_UTILS.config.nft.root, this.nft?.uid])
   }
 
   public onImgErrorWeShowPlaceHolderVideo(event: any): any {
@@ -91,12 +91,19 @@ export class NftCardComponent {
       return false;
     }
 
-    return ((this.collection.total - this.collection.sold) > 0) && this.collection.approved === true &&
-            !!this.nft?.availableFrom && dayjs(this.nft.availableFrom.toDate()).isBefore(dayjs()) && !this.nft?.owner;
+    return (this.collection.approved === true && !!this.nft?.availableFrom && dayjs(this.nft.availableFrom.toDate()).isBefore(dayjs()));
+  }
+
+  public isAvailableForAuction(): boolean {
+    if (!this.collection) {
+      return false;
+    }
+
+    return (this.collection.approved === true && !!this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs()));
   }
 
   private discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation) {
+    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || this._nft?.owner) {
       return 1;
     }
     const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
@@ -135,6 +142,10 @@ export class NftCardComponent {
     return FILE_SIZES;
   }
 
+  public get targetAccess(): typeof CollectionAccess {
+    return CollectionAccess;
+  }
+
   public getBadgeProperties(): { label: string; className: string} {
     if (this.nft?.type === CollectionType.CLASSIC) {
       return {
@@ -148,5 +159,18 @@ export class NftCardComponent {
         className: remaining >= 100 ? 'bg-tag-blue' : 'bg-tag-red'
       };
     }
+  }
+
+  public isDateInFuture(date?: Timestamp|null): boolean {
+    if (!date) {
+      return false;
+    }
+
+    return dayjs(date.toDate()).isAfter(dayjs(), 's');
+  }
+
+  public getDaysLeft(availableFrom?: Timestamp): number {
+    if (!availableFrom) return 0;
+    return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }
 }

@@ -6,15 +6,16 @@
     >
     <div *nzDrawerContent class="relative h-full min-h-180">
         <wen-mobile-header
+          [enableCreateAwardProposal]="enableCreateAwardProposal"
+          [enableCollection]="enableCollection"
           [isMobileMenuVisible]="isVisible"
           (wenOnVisibleChange)="wenOnVisibleChange($event)"
           [isMemberProfile]="isMemberProfile"
-          [isLandingPage]="isLandingPage"
-          [isAllowedCreation]="isAllowedCreation">
+          [isLandingPage]="isLandingPage">
         </wen-mobile-header>
 
         <div class="flex items-center justify-between w-full h-16 mt-10 rounded-full bg-tag-default" (click)="onClickProfile()">
-          <div class="ml-2 font-semibold">
+          <div class="ml-2 font-semibold w-full">
             <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
               <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar:filesizes?.small" [nzSize]="48"
                 class="mr-1"></nz-avatar>
@@ -25,26 +26,22 @@
             </ng-container>
 
             <ng-template #notLoggedInBlock>
-                <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="mr-1 border-2 border-app-gray-100"></nz-avatar>
-                <span i18n>Connect Metamask</span>
+              <div class="flex items-center justify-between w-full">
+                <div class="flex items-center">
+                  <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="mr-1 border-2 border-app-gray-100"></nz-avatar>
+                  <div class="ml-3">
+                    <div class="font-semibold">Metamask</div>
+                    <div class="text-xs text-foregrounds-secondary" i18n>Connect to your MetaMask wallet</div>
+                  </div>
+                </div>
+                <wen-icon-plus class="mr-8"></wen-icon-plus>
+              </div>
             </ng-template>
           </div>
-
-          <button class="mr-6">
-            <wen-icon-angle-right></wen-icon-angle-right>
-          </button>
         </div>
 
         <div class="mt-7 w-fit" (click)="wenOnVisibleChange(false)">
           <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
-        </div>
-
-        <div class="mt-10 ml-2">
-          <wen-theme-switch>
-            <div class="flex items-center justify-center w-10 h-10 text-xl rounded-full cursor-pointer" nz-tooltip  i18n-nzTooltipTitle nzTooltipTitle="Switch to English" (click)="goToEn()" *ngIf="!isEnglish()">
-              EN
-            </div>
-          </wen-theme-switch>
         </div>
 
         <div class="absolute flex flex-col items-center justify-between w-full bottom-10">

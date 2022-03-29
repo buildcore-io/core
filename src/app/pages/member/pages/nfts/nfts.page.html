@@ -34,7 +34,7 @@
             </div>
         </nz-card>
 
-        <wen-nft-card class="w-full outline-none lg:w-auto"
+        <wen-nft-card class="w-full outline-none lg:w-auto" [collection]="getCollection(nft.collection)"
             *ngFor="let nft of nft$ | async; trackBy: trackByUid" [nft]="nft" [fullWidth]="(deviceService.isMobile$ | async) || false">
         </wen-nft-card>
     </div>

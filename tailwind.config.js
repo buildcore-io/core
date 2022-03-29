@@ -1,3 +1,15 @@
+const fs = require('fs');
+const lessToJs = require('less-vars-to-js');
+const { kebabCase, mapKeys } = require('lodash');
+
+const lightThemeLess = fs.readFileSync('src/theme/light.less').toString();
+const lightTheme = lessToJs(lightThemeLess, {
+  resolveVariables: true,
+  stripPrefix: true,
+});
+
+const normalizeNames = (theme) => mapKeys(theme, (_, name) => kebabCase(name));
+
 module.exports = {
   prefix: '',
   purge: {
@@ -17,6 +29,10 @@ module.exports = {
     extend: {
       colors: {
         inherit: 'inherit',
+        // Modern definition - shared with less variables used in ng-zorro
+        ...normalizeNames(lightTheme),
+
+        // Obsolete definition - will be removed once we migrate all
         orange: {
           lightest: '#F2C50C',
           light: '#FFA319',
@@ -39,13 +55,14 @@ module.exports = {
         green: {
           dark: '#11A696',
           neon: '#58F218',
-          success: '#8FE46C'
+          success: '#8FE46C',
         },
         'app-gray': {
           text: '#333333',
           100: '#E4E1D2',
           200: '#CAC8BD',
           400: '#9F9D93',
+          500: '#D9D8D0',
           600: '#999999',
           700: '#E6E6E6',
           separator: {
@@ -59,7 +76,7 @@ module.exports = {
           red: '#F9DED2',
           orange: '#FFC670',
           default: '#F6F5F0',
-          black: '#333333'
+          black: '#333333',
         },
         bg: {
           white: '#FFFFFF',
@@ -75,11 +92,21 @@ module.exports = {
           separator: '#F0EEE6',
           tertiary: '#BCB9A9'
         },
-        brown: '#A66300',
+        red: {
+          primary: '#FF0019'
+        },
+        brown: {
+          primary: '#A66300',
+          secondary: '#F4F2E4',
+          light: '#C6BF9F',
+          lighter: '#FAF9F4'
+        },
         pink: '#F20CDF',
         black: '#000000',
-        yellow: '#FFEF64',
-        'light-brown': '#C6BF9F'
+        yellow: {
+          primary: '#FFEF64',
+          secondary: '#FFE815'
+        },
       },
       spacing: {
         18: '4.5rem',
@@ -94,16 +121,20 @@ module.exports = {
         60: '15rem',
         76: '19rem',
         100: '25rem',
-        120: '30rem'
+        120: '30rem',
       },
       maxWidth: {
         fit: 'fit-content',
         20: '5rem',
         24: '6rem',
+        40: '10rem',
         80: '20rem',
         128: '32rem',
         160: '40rem',
-        '2/3': '66%'
+        '1/2': '50%',
+        '1/3': '33%',
+        '2/3': '66%',
+        450: '450px'
       },
       width: {
         header: '500px',
@@ -121,7 +152,7 @@ module.exports = {
       maxHeight: {
         56: '14rem',
         80: '20rem',
-        128: '32rem'
+        128: '32rem',
       },
       height: {
         76: '19rem',
@@ -131,10 +162,13 @@ module.exports = {
         9: '2.25rem',
         10: '2.5rem',
         large: '3rem',
-        40: '10rem'
+        40: '10rem',
+      },
+      borderWidth: {
+        3: '3px',
       },
       dropShadow: {
-        card: '0px 0px 12px rgba(0, 0, 0, 0.08)'
+        card: '0px 0px 12px rgba(0, 0, 0, 0.08)',
       },
       boxShadow: {
         header: '0px 2px 3px #E6E5DE',
@@ -146,7 +180,5 @@ module.exports = {
     },
   },
   variants: {},
-  plugins: [
-    require('@tailwindcss/line-clamp')
-  ],
+  plugins: [require('@tailwindcss/line-clamp')],
 };

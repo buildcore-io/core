@@ -245,9 +245,9 @@
         <nz-card [nzBordered]="false">
           <nz-card-meta
             i18n-nzTitle
-            nzTitle="Member discounts"
+            nzTitle="Discounts"
             i18n-nzDescription
-            [nzDescription]="'Space support an ability to airdrop NFTs to their members for free or at discount. Please note, 1Mi will always be required to purchase NFT.'"
+            nzDescription="The ability to give a discount on NFTs in this collection to your space members/guardians or members who hold certain NFTs. You can apply up to a 100% discount (an airdrop). Use XP > -1 if you don't require members purchasing to have any XP from your space. Please note, 1Mi will always be required to purchase the NFT due to the IOTA protocol's dust protection mechanism."
           >
           </nz-card-meta>
 
@@ -353,7 +353,7 @@
       </div>
 
       <div
-        class="mt-4 space-y-4 lg:mt-0"
+        class="mt-4 space-y-4 lg:mt-0 lg:max-w-450"
         nz-col
         [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
       >
@@ -583,6 +583,22 @@
           </nz-form-item>
         </nz-card>
         <nz-card [nzBordered]="false" i18n-nzTitle nzTitle="Collection Options" >
+          <nz-form-item>
+            <label nz-checkbox [formControl]="limitedEditionControl">
+              <div class="flex items-center">
+                <div class="font-medium mr-2.5" i18n>
+                  Limited Edition
+                </div>
+                <i
+                  nz-icon
+                  nzType="info-circle"
+                  class="cursor-pointer text-app-gray-400"
+                  nz-tooltip
+                  nzTooltipTitle="NFT can't be added after approval."
+                ></i>
+              </div>
+            </label>
+          </nz-form-item>
           <nz-form-item>
             <label nz-checkbox [formControl]="onePerMemberOnlyControl">
               <div class="flex items-center">

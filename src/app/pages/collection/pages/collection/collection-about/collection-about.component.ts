@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { Collection, CollectionAccess, DiscountLine } from '@functions/interfaces/models';
+import { PreviewImageService } from '@core/services/preview-image';
+import { enumToArray } from '@core/utils/manipulations.utils';
+import { Categories, Collection, CollectionAccess, DiscountLine } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { DataService } from '../../../services/data.service';
 
 @Component({
@@ -12,13 +15,27 @@ import { DataService } from '../../../services/data.service';
 export class CollectionAboutComponent {
   constructor(
     public data: DataService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public previewImageService: PreviewImageService
   ) {
     // none.
   }
 
   public get access(): typeof CollectionAccess {
     return CollectionAccess;
+  }
+
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
+  }
+
+  public getCategory(category?: Categories): string {
+    if (!category) {
+      return '';
+    }
+
+    const categories = enumToArray(Categories);
+    return categories.find(c => c.key === category).value;
   }
 
   public getAccessLabel(access?: CollectionAccess|null): string {
