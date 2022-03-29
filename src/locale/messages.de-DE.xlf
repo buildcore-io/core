@@ -284,7 +284,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">Connect to your MetaMask wallet</target>
+        <target state="translated">Mit deiner Metamask-Wallet verbinden</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -1150,7 +1150,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</target>
+        <target state="translated">Die Adresse des gewünschten NFT wird für die gesamte Auktion gesperrt. Nach der Zahlung wird dein Gebot gesperrt, sollte jemand ein höheres Gebot abgeben wird deine Zahlung wieder zurückerstattet.</target>
       </trans-unit>
       <trans-unit id="3086800896118622351" datatype="html">
         <source> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </source>
@@ -1166,7 +1166,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">265,266</context>
         </context-group>
-        <target state="needs-translation"> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </target>
+        <target state="translated"> Wenn ein höheres Gebot vorliegt, wird dir dein Gebot sofort zurückerstattet. Wenn du ein anderes Angebot machen möchtest, sende einen höheren Betrag direkt an die gleiche Adresse. </target>
       </trans-unit>
       <trans-unit id="6309493669385041493" datatype="html">
         <source>By checking this box, you agree with</source>
@@ -1270,7 +1270,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control. </target>
+        <target state="translated"> Senden Sie kein Guthaben von einere Börse aus, verwenden Sie immer Wallets, die du vollständig kontrolliest. </target>
       </trans-unit>
       <trans-unit id="2370778860499758288" datatype="html">
         <source> Firefly </source>
@@ -1406,7 +1406,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">270</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, use only a Firefly or TanglePay wallet. </target>
+        <target state="translated"> Senden Sie kein Guthaben von einer Börse, verwende nur eine Firefly oder TanglePay-Wallet. </target>
       </trans-unit>
       <trans-unit id="7539361169976574107" datatype="html">
         <source>Congratulations you won the NFT.</source>
@@ -1874,7 +1874,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation">Duration of auction is 3 days</target>
+        <target state="translated">Dauer der Auktion ist 3 Tage</target>
       </trans-unit>
       <trans-unit id="6344130224790671592" datatype="html">
         <source>Once your listing is complete, you will get a confirmation message.</source>
@@ -3042,7 +3042,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">Who can buy?</target>
+        <target state="translated">Wer kann es kaufen?</target>
       </trans-unit>
       <trans-unit id="2339843011722287328" datatype="html">
         <source> Must hold at least one NFT from each selected collection </source>
@@ -3050,7 +3050,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation"> Must hold at least one NFT from each selected collection </target>
+        <target state="translated"> Mindestens ein NFT aus jeder ausgewählten Sammlung muss im Besitz sein </target>
       </trans-unit>
       <trans-unit id="5308679100461288789" datatype="html">
         <source>The badges you need</source>
@@ -4464,7 +4464,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation">Select Access type</target>
+        <target state="translated">Zugriffsart auswählen</target>
       </trans-unit>
       <trans-unit id="7030909553405122967" datatype="html">
         <source>All accesses</source>
@@ -4480,7 +4480,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation">All accesses</target>
+        <target state="translated">Kompletter Zugriff</target>
       </trans-unit>
       <trans-unit id="5211757265316579931" datatype="html">
         <source>Open sale</source>
@@ -4496,7 +4496,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">112</context>
         </context-group>
-        <target state="needs-translation">Open sale</target>
+        <target state="translated">Offener Verkauf</target>
       </trans-unit>
       <trans-unit id="8636943636832669533" datatype="html">
         <source>Space members only</source>
@@ -4512,7 +4512,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
-        <target state="needs-translation">Space members only</target>
+        <target state="translated">Nur für Space-Mitglieder</target>
       </trans-unit>
       <trans-unit id="6440237901704041057" datatype="html">
         <source>Space guardians only</source>
@@ -4544,7 +4544,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">115</context>
         </context-group>
-        <target state="needs-translation">Space members with badge only</target>
+        <target state="translated">Nur Space-Mitglieder mit Abzeichen</target>
       </trans-unit>
       <trans-unit id="3384193708202662679" datatype="html">
         <source>At least one NFT from collections</source>
@@ -4560,7 +4560,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">116</context>
         </context-group>
-        <target state="needs-translation">At least one NFT from collections</target>
+        <target state="translated">Mindestens eine NFT aus den Kollektionen</target>
       </trans-unit>
       <trans-unit id="3307506770875420999" datatype="html">
         <source> No collections </source>

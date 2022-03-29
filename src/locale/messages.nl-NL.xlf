@@ -714,7 +714,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="translated">Portemonnee details</target>
+        <target state="translated">Wallet details</target>
       </trans-unit>
       <trans-unit id="469380883757198215" datatype="html">
         <source>Member&apos;s Wallet Address.</source>
@@ -722,7 +722,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">44,45</context>
         </context-group>
-        <target state="translated">Portemonnee adres van lid.</target>
+        <target state="translated">Wallet adres van lid.</target>
       </trans-unit>
       <trans-unit id="4744367994495761400" datatype="html">
         <source>Recently joined spaces</source>
@@ -2442,7 +2442,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="translated">Verifieer portemonnee</target>
+        <target state="translated">Verifieer wallet</target>
       </trans-unit>
       <trans-unit id="5014960004929658159" datatype="html">
         <source>Verified</source>
@@ -3724,7 +3724,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">364,365</context>
         </context-group>
-        <target state="translated">Dit is de groep die de NFT-collectie zal minten. Alleen groepen met geverifieerde portemonnees worden weergegeven in de lijst. Zorg ervoor dat je de juiste groep kiest, omdat alle opbrengsten van de NFT-verkoop naar de geverifieerde portemonnee van deze ruimte zullen gaan.</target>
+        <target state="translated">Dit is de groep die de NFT-collectie zal minten. Alleen groepen met geverifieerde wallets worden weergegeven in de lijst. Zorg ervoor dat je de juiste groep kiest, omdat alle opbrengsten van de NFT-verkoop naar de geverifieerde wallet van deze ruimte zullen gaan.</target>
       </trans-unit>
       <trans-unit id="8631063508569344802" datatype="html">
         <source>Collection Type</source>
@@ -4196,7 +4196,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="translated"> Welkom bij The Soonaverse </target>
+        <target state="translated"> Welkom bij de Soonaverse </target>
       </trans-unit>
       <trans-unit id="6008946950660389197" datatype="html">
         <source> An all-in-one feeless platform for community engagement and DAO creation. Build, vote, earn, learn and let the best ideas win. </source>
@@ -4244,7 +4244,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="translated"> Weet je niet waar je moet beginnen? Vind hieronder aanbevolen groepen en NFT collecties. </target>
+        <target state="translated"> Weet je niet waar je moet beginnen? Hieronder vind je aanbevolen groepen en NFT collecties. </target>
       </trans-unit>
       <trans-unit id="3563942064552758340" datatype="html">
         <source>Trending Collections</source>
@@ -4324,7 +4324,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">165,167</context>
         </context-group>
-        <target state="translated"> Door te bouwen op het IOTA netwerk hebben we een cruciaal kenmerk van goed DAO-beheer verankerd. Zonder extra kosten, veilig stemmen. Lees hier meer over in ons manifest. </target>
+        <target state="translated"> Door te bouwen op het IOTA netwerk hebben we een cruciaal kenmerk van goed DAO-beheer verankerd. Zonder extra kosten, veilig stemmen. Lees hier meer over in ons manifest (Engels). </target>
       </trans-unit>
       <trans-unit id="8710865889166765986" datatype="html">
         <source> Go there now </source>
@@ -6074,7 +6074,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">201,202</context>
         </context-group>
-        <target state="translated">Portemonnee adres van groep</target>
+        <target state="translated">Wallet adres van groep</target>
       </trans-unit>
       <trans-unit id="6801157464178868889" datatype="html">
         <source>Wallet to hold funds for the Space.</source>
@@ -6082,7 +6082,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">203,204</context>
         </context-group>
-        <target state="translated">Portemonnee voor tegoeden van de groep.</target>
+        <target state="translated">Wallet voor tegoeden van de groep.</target>
       </trans-unit>
       <trans-unit id="4712811063517949869" datatype="html">
         <source>Leave Space</source>
@@ -6154,7 +6154,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="translated">Titel en beschrijving zullen opgenomen worden in de groep.</target>
+        <target state="translated">Titel en beschrijving zullen worden opgenomen in de groep.</target>
       </trans-unit>
       <trans-unit id="1408332169640894184" datatype="html">
         <source>Space description</source>

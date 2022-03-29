@@ -112,7 +112,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/mobile-header.component.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation"> None. </target>
+        <target state="translated"> 沒有 </target>
       </trans-unit>
       <trans-unit id="2127032578120864096" datatype="html">
         <source>My Profile</source>
@@ -160,7 +160,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">270</context>
         </context-group>
-        <target state="needs-translation">You won the NFT</target>
+        <target state="translated">您贏得了NFT</target>
       </trans-unit>
       <trans-unit id="653764875284666289" datatype="html">
         <source>You are a proud owner of a new NFT. Congratulations!</source>
@@ -168,7 +168,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">271</context>
         </context-group>
-        <target state="needs-translation">You are a proud owner of a new NFT. Congratulations!</target>
+        <target state="translated">您是這新NFT驕傲的擁有者，恭喜！</target>
       </trans-unit>
       <trans-unit id="6237623083700365974" datatype="html">
         <source>You lost your bid!</source>
@@ -176,7 +176,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">278</context>
         </context-group>
-        <target state="needs-translation">You lost your bid!</target>
+        <target state="translated">您失去您的出價！</target>
       </trans-unit>
       <trans-unit id="443358007732779842" datatype="html">
         <source>Your bid on </source>
@@ -184,7 +184,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">279</context>
         </context-group>
-        <target state="needs-translation">Your bid on </target>
+        <target state="translated">您的出價在 </target>
       </trans-unit>
       <trans-unit id="5236966869858739780" datatype="html">
         <source> was outbidded. Try again!</source>
@@ -192,7 +192,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">280</context>
         </context-group>
-        <target state="needs-translation"> was outbidded. Try again!</target>
+        <target state="translated"> 出價過高，請再試一次！</target>
       </trans-unit>
       <trans-unit id="8052677427935411852" datatype="html">
         <source>just offered</source>
@@ -200,7 +200,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">287</context>
         </context-group>
-        <target state="needs-translation">just offered</target>
+        <target state="translated">剛提供</target>
       </trans-unit>
       <trans-unit id="8553460997100418147" datatype="html">
         <source>for</source>
@@ -220,7 +220,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">289</context>
         </context-group>
-        <target state="needs-translation">Your</target>
+        <target state="translated">您的</target>
       </trans-unit>
       <trans-unit id="4977659878080608796" datatype="html">
         <source>has received a new bid for</source>
@@ -228,7 +228,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">290</context>
         </context-group>
-        <target state="needs-translation">has received a new bid for</target>
+        <target state="translated">剛收到一個新出價</target>
       </trans-unit>
       <trans-unit id="6100014811482587071" datatype="html">
         <source>Unsupported</source>
@@ -236,7 +236,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">298,297</context>
         </context-group>
-        <target state="needs-translation">Unsupported</target>
+        <target state="translated">不支援</target>
       </trans-unit>
       <trans-unit id="5553638450493774694" datatype="html">
         <source>This notification is not yet supported in your language</source>
@@ -244,7 +244,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="needs-translation">This notification is not yet supported in your language</target>
+        <target state="translated">這個通知尚不支援您的語言</target>
       </trans-unit>
       <trans-unit id="7130854181625494946" datatype="html">
         <source> Space </source>
@@ -284,7 +284,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">Connect to your MetaMask wallet</target>
+        <target state="translated">連結到您的MetaMask錢包</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -570,7 +570,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">80,81</context>
         </context-group>
-        <target state="needs-translation">Starts in</target>
+        <target state="translated">開始於</target>
       </trans-unit>
       <trans-unit id="7036284206110282007" datatype="html">
         <source>days</source>
@@ -586,7 +586,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="needs-translation">days</target>
+        <target state="translated">天</target>
       </trans-unit>
       <trans-unit id="4236878889558666744" datatype="html">
         <source>Starts today</source>
@@ -602,7 +602,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">86,87</context>
         </context-group>
-        <target state="needs-translation">Starts today</target>
+        <target state="translated">今天開始</target>
       </trans-unit>
       <trans-unit id="5046636043205843413" datatype="html">
         <source>Limited Edition</source>
@@ -610,7 +610,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">Limited Edition</target>
+        <target state="translated">限量版</target>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
         <source>Pending approval</source>
@@ -1046,7 +1046,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">29,30</context>
         </context-group>
-        <target state="needs-translation">Make a bid</target>
+        <target state="translated">出價</target>
       </trans-unit>
       <trans-unit id="4855584904719347847" datatype="html">
         <source>NFT image</source>
@@ -1074,7 +1074,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="needs-translation">Ends </target>
+        <target state="translated">結束 </target>
       </trans-unit>
       <trans-unit id="1138828998549529161" datatype="html">
         <source>Royalties</source>
@@ -1122,7 +1122,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">93</context>
         </context-group>
-        <target state="needs-translation">Current highest bid</target>
+        <target state="translated">當前最高的出價</target>
       </trans-unit>
       <trans-unit id="523519638239091406" datatype="html">
         <source>Your bid is the highest</source>
@@ -1134,7 +1134,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">94</context>
         </context-group>
-        <target state="needs-translation">Your bid is the highest</target>
+        <target state="translated">您的出價是最高的</target>
       </trans-unit>
       <trans-unit id="2897616024485017156" datatype="html">
         <source> Current price is refreshing in real time</source>
@@ -1142,7 +1142,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="needs-translation"> Current price is refreshing in real time</target>
+        <target state="translated"> 當前的價格是即時更新的</target>
       </trans-unit>
       <trans-unit id="727772125693257505" datatype="html">
         <source>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</source>
@@ -1198,7 +1198,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">159</context>
         </context-group>
-        <target state="needs-translation"> Make a bid </target>
+        <target state="translated"> 出價 </target>
       </trans-unit>
       <trans-unit id="1318981813671388482" datatype="html">
         <source>Send IOTA to following address (please restake after!):</source>
@@ -1206,7 +1206,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">168,169</context>
         </context-group>
-        <target state="needs-translation">Send IOTA to following address (please restake after!):</target>
+        <target state="translated">發送IOTA到下列的地址(結束後請重新質押！)：</target>
       </trans-unit>
       <trans-unit id="2115592966120408375" datatype="html">
         <source>Copied</source>
@@ -1270,7 +1270,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control. </target>
+        <target state="translated"> 不要從交易所發送資金，永遠使用你所掌握的錢包。 </target>
       </trans-unit>
       <trans-unit id="2370778860499758288" datatype="html">
         <source> Firefly </source>
@@ -1334,7 +1334,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">219,220</context>
         </context-group>
-        <target state="needs-translation"> IOTA to following address (please restake after!):</target>
+        <target state="translated"> IOTA到下列的地址(結束後請重新質押！)：</target>
       </trans-unit>
       <trans-unit id="621968232322439820" datatype="html">
         <source> Your transactions </source>
@@ -1342,7 +1342,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">235</context>
         </context-group>
-        <target state="needs-translation"> Your transactions </target>
+        <target state="translated"> 您的交易 </target>
       </trans-unit>
       <trans-unit id="8481211261929080451" datatype="html">
         <source>Sent Date</source>
@@ -1350,7 +1350,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">241,242</context>
         </context-group>
-        <target state="needs-translation">Sent Date</target>
+        <target state="translated">發送日期</target>
       </trans-unit>
       <trans-unit id="8497528947328199741" datatype="html">
         <source>Time</source>
@@ -1358,7 +1358,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">242,243</context>
         </context-group>
-        <target state="needs-translation">Time</target>
+        <target state="translated">時間</target>
       </trans-unit>
       <trans-unit id="9216117865911519658" datatype="html">
         <source>Action</source>
@@ -1366,7 +1366,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">243,244</context>
         </context-group>
-        <target state="needs-translation">Action</target>
+        <target state="translated">執行</target>
       </trans-unit>
       <trans-unit id="6533918067030990396" datatype="html">
         <source>Amount</source>
@@ -1382,7 +1382,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">227,228</context>
         </context-group>
-        <target state="needs-translation">Amount</target>
+        <target state="translated">數量</target>
       </trans-unit>
       <trans-unit id="5612709566632732179" datatype="html">
         <source>Detail</source>
@@ -1390,7 +1390,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">246,247</context>
         </context-group>
-        <target state="needs-translation">Detail</target>
+        <target state="translated">詳情</target>
       </trans-unit>
       <trans-unit id="2981219928115418649" datatype="html">
         <source>Link</source>
@@ -1398,7 +1398,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">259</context>
         </context-group>
-        <target state="needs-translation">Link</target>
+        <target state="translated">連結</target>
       </trans-unit>
       <trans-unit id="7318790902000735587" datatype="html">
         <source> Do not send funds from an exchange, use only a Firefly or TanglePay wallet. </source>
@@ -1406,7 +1406,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">270</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, use only a Firefly or TanglePay wallet. </target>
+        <target state="translated"> 不要從交易所發送資金，請使用Firefly或者TanglePay錢包。 </target>
       </trans-unit>
       <trans-unit id="7539361169976574107" datatype="html">
         <source>Congratulations you won the NFT.</source>
@@ -1414,7 +1414,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">302,303</context>
         </context-group>
-        <target state="needs-translation">Congratulations you won the NFT.</target>
+        <target state="translated">恭喜您贏得NFT。</target>
       </trans-unit>
       <trans-unit id="8528366073079211415" datatype="html">
         <source> Close checkout </source>
@@ -1446,7 +1446,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">325,326</context>
         </context-group>
-        <target state="needs-translation">Bidding is expired. Good luck next time :) </target>
+        <target state="translated">投標已結束，祝您下次好運 :) </target>
       </trans-unit>
       <trans-unit id="8537440199831054052" datatype="html">
         <source>Generated NFT</source>
@@ -1458,7 +1458,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
           <context context-type="linenumber">370</context>
         </context-group>
-        <target state="needs-translation">Generated NFT</target>
+        <target state="translated">生成NFT</target>
       </trans-unit>
       <trans-unit id="7535874439763400390" datatype="html">
         <source>SFT</source>
@@ -1470,7 +1470,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
           <context context-type="linenumber">372</context>
         </context-group>
-        <target state="needs-translation">SFT</target>
+        <target state="translated">半同質化代幣</target>
       </trans-unit>
       <trans-unit id="6320319413541466015" datatype="html">
         <source>day</source>
@@ -1482,7 +1482,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">83,84</context>
         </context-group>
-        <target state="needs-translation">day</target>
+        <target state="translated">天</target>
       </trans-unit>
       <trans-unit id="8894377483833272091" datatype="html">
         <source>Price</source>
@@ -1530,7 +1530,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">75</context>
         </context-group>
-        <target state="needs-translation">Buy now </target>
+        <target state="translated">立刻購買 </target>
       </trans-unit>
       <trans-unit id="5745314848838735502" datatype="html">
         <source>Buy now</source>
@@ -1818,7 +1818,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="needs-translation"> Trade info </target>
+        <target state="translated"> 交易資訊 </target>
       </trans-unit>
       <trans-unit id="6899856777447778605" datatype="html">
         <source>Floor price</source>
@@ -1826,7 +1826,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Floor price</target>
+        <target state="translated">地板價</target>
       </trans-unit>
       <trans-unit id="3751374312807441308" datatype="html">
         <source>Available On is required.</source>
@@ -1874,7 +1874,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation">Duration of auction is 3 days</target>
+        <target state="translated">拍賣期限為三天</target>
       </trans-unit>
       <trans-unit id="6344130224790671592" datatype="html">
         <source>Once your listing is complete, you will get a confirmation message.</source>
@@ -1934,7 +1934,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-not-for-sale/nft-sale-not-for-sale.component.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="needs-translation"> Trade history </target>
+        <target state="translated"> 交易歷史 </target>
       </trans-unit>
       <trans-unit id="2406639896101280043" datatype="html">
         <source> Item is yours and yours only </source>
