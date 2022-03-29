@@ -68,7 +68,7 @@
         </nz-form-control>
     </nz-form-item>
 
-    <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS">
+    <nz-form-item class="mt-4" *ngIf="selectedAccessControl.value === targetAccess.MEMBERS" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="This will be enabled in the next sprint!">
         <nz-form-control>
           <nz-select
             class="w-full"
@@ -79,14 +79,6 @@
             nzPlaceHolder="Reserve for specific buyer"
             [formControl]="buyerControl"
           >
-            <!-- TODO -->
-            <!-- <nz-option
-              *ngFor="let cc of collectionCategories"
-              i18n-nzLabel
-              [nzLabel]="cc.value"
-              [nzValue]="cc.key"
-            >
-            </nz-option> -->
           </nz-select>
         </nz-form-control>
       </nz-form-item>
