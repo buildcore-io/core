@@ -75,18 +75,18 @@
                   </div>
                 </div>
 
-                <a class="flex-grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
+                <a class="flex-grow w-0 flex items-center" [routerLink]="['/member', (owner$ | async)?.uid]"
                    *ngIf="nft?.owner && !isAvailableForSale() && !isAvailableForAuction()" (click)="$event.stopPropagation()">
-                  <!-- TODO how we show the avatar
-                    <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                          class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                          style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                    </nz-avatar>
-                  -->
-                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
-                  <div class="text-sm font-medium truncate">
-                      @{{((owner$ | async)?.name || (owner$ | async)?.uid) | truncate:[16] }}
-                  </div>
+                        <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                            class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                        </nz-avatar>
+                        <div class="ml-2">
+                            <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
+                            <div class="text-sm font-medium truncate">
+                                @{{((owner$ | async)?.name || (owner$ | async)?.uid) | truncate:[10] }}
+                            </div>
+                        </div>
                 </a>
 
 
