@@ -158,7 +158,7 @@ export class NftSaleAuctionComponent implements OnInit {
       type: SaleType.FIXED_PRICE,
       auctionFrom: this.availableFromControl.value,
       // TODO Implement switch
-      auctionLength: TRANSACTION_AUTO_EXPIRY_MS * 2,
+      auctionLength: TRANSACTION_AUTO_EXPIRY_MS * 5,
       auctionFloorPrice: this.getRawPrice(this.floorPriceControl.value, this.floorUnitControl.value),
       access: this.selectedAccessControl.value,
       accessMembers: this.buyerControl.value
