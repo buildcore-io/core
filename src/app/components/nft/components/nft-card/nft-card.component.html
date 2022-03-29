@@ -14,14 +14,15 @@
                 }"
             />
 
-            <video *ngIf="mediaType === 'video'"
-                preload="metadata" controls class="object-cover w-full h-full"
+            <img
+              *ngIf="mediaType === 'video'"
+              class="object-cover w-full h-full"
                 [ngClass]="{
                     'card-smaller-height': !fullWidth && (isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))
                 }">
-              <source [src]="nft?.media + '#t=0.001'" type="video/mp4">
-              Your browser does not support HTML video.
-            </video>
+              [src]="'/assets/mocks/video_placeholder.jpg'"
+              class="object-cover w-full h-full"
+            />
 
             <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || nft?.placeholderNft)"
                 class="absolute top-4 left-4 z-10 rounded-lg bg-white

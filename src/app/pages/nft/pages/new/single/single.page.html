@@ -91,6 +91,7 @@
                           <nz-date-picker
                             class="flex flex-grow"
                             [nzDisabledDate]="disabledStartDate.bind(this)"
+                            [nzDisabledTime]="disabledDateTime.bind(this)"
                             nzSize="large"
                             [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
                             nzFormat="yyyy-MM-dd HH:mm"

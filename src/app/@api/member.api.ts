@@ -66,9 +66,9 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
-  public hasBadge(memberId: EthAddress, badgeId: EthAddress): Observable<boolean> {
+  public hasBadge(memberId: EthAddress, badgeId: EthAddress[]): Observable<boolean> {
     return this._query(COL.TRANSACTION, 'createdOn', 'asc', undefined, undefined, FULL_LIST, (ref: any) => {
-      return ref.where('member', '==', memberId).where('type', '==', TransactionType.BADGE).where('payload.award', '==',badgeId);
+      return ref.where('member', '==', memberId).where('type', '==', TransactionType.BADGE).where('payload.award', 'in', badgeId);
     }).pipe(map((o) => {
       return o.length > 0;
     }));

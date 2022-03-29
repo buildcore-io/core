@@ -38,6 +38,7 @@ import {
 import { PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
+import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   NzUploadChangeParam,
@@ -442,7 +443,32 @@ export class UpsertPage implements OnInit, OnDestroy {
     }
 
     return false;
+  };
+
+  private range(start: number, end: number): number[] {
+    const result: number[] = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
   }
+
+  public disabledDateTime(startValue: Date | Date[]): DisabledTimeConfig {
+    if (
+        !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day') ) {
+      return {
+        nzDisabledHours: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
+        nzDisabledMinutes: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),
+        nzDisabledSeconds: () => []
+      };
+    } else {
+      return {
+        nzDisabledHours: () => [],
+        nzDisabledMinutes: () => [],
+        nzDisabledSeconds: () => []
+      };
+    }
+  };
 
   public formatSubmitData(data: any, mode: 'create' | 'edit' = 'create'): any {
     if (data.price) {

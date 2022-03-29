@@ -93,15 +93,13 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   if (functions.config()?.environment?.type !== 'emulator') {
     const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BADGE)
-      .where('payload.award', '==', BADGE_TO_CREATE_COLLECTION)
+      .where('payload.award', 'in', BADGE_TO_CREATE_COLLECTION)
       .where('member', '==', creator).get();
     if (qry.size === 0) {
       throw throwInvalidArgument(WenError.you_dont_have_required_badge);
     }
-    // END
   }
-
-
+  
   // Validate royalty space exists
   const refSpaceRoyalty: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.royaltiesSpace);
   await SpaceValidator.spaceExists(refSpaceRoyalty);
@@ -320,9 +318,9 @@ export const rejectCollection: functions.CloudFunction<Collection> = functions.r
   await SpaceValidator.spaceExists(refSpace);
   await SpaceValidator.isGuardian(refSpace, member);
 
-
   // Document does not exists.
   await admin.firestore().collection(COL.COLLECTION).doc(params.body.uid).update({
+    approved: false,
     rejected: true
   });
 
