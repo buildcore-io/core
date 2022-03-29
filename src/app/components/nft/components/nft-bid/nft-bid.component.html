@@ -79,6 +79,7 @@
                         'bg-tag-green': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)
                     }">
                     <div class="text-xs font-medium text-foregrounds-secondary">
+                        <ng-container *ngIf="(linkedTransactions$ | async)?.length === 0" i18n>Current bid</ng-container>
                         <ng-container *ngIf="(getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length" i18n>Current highest bid</ng-container>
                         <ng-container *ngIf="(auth.member$ | async)?.uid && (getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>

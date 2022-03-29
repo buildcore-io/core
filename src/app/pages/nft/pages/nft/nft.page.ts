@@ -241,7 +241,7 @@ export class NFTPage implements OnInit, OnDestroy {
     }
   }
 
-  public getExplorerLink(link: string): string {
+  public getExplorerLink(link?: string|null): string {
     return 'https://thetangle.org/search/' + link;
   }
 
