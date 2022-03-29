@@ -311,6 +311,7 @@
                                 [nzLimit]="1"
                                 [nzCustomRequest]="uploadMediaFile.bind(this)"
                                 (nzChange)="uploadMediaChange($event)"
+                                [nzFilter]="uploadFilter"
                                 nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                                 [nzFileList]="uploadedFile ? [uploadedFile] : []"
                                 [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"
@@ -319,8 +320,10 @@
                                     <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                                 </ng-container>
                             </nz-upload>
-                            <div class="text-orange-darkest" *ngIf="mediaControl.invalid && !mediaControl.pristine" i18n>
-                                Media is required.
+                            <div class="text-orange-darkest" *ngIf="fileUploadError || (mediaControl.invalid && !mediaControl.pristine)">
+                                <ng-container *ngIf="(mediaControl.invalid && !mediaControl.pristine)" i18n>Media is required</ng-container>
+                                <br>
+                                <ng-container *ngIf="fileUploadError">{{ fileUploadError }}</ng-container>
                             </div>
                         </nz-form-control>
                     </nz-form-item>

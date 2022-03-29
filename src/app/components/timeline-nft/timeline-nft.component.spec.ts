@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DataService } from '@pages/nft/services/data.service';
+import { MockProvider } from 'ng-mocks';
 import { TimelineNftComponent } from './timeline-nft.component';
 
 
@@ -8,7 +10,8 @@ describe('TimelineNftComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TimelineNftComponent ]
+      declarations: [ TimelineNftComponent ],
+      providers: [ MockProvider(DataService) ]
     })
     .compileComponents();
   });

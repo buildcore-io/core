@@ -1,4 +1,24 @@
 <wen-collapse i18n-title title="Timeline" [isCollapsed]="false" class="overflow-hidden" *ngIf="orders?.length || listedBy">
+  <div *ngIf="nft?.owner && (isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))"
+    class="relative flex items-center mt-3">
+    <div class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2 h-24"></div>
+  
+    <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
+      <wen-icon-check></wen-icon-check>
+    </div>
+  
+    <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
+      <div class="flex items-center">
+        <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+          style="max-width: 40px; min-width: 40px;" [nzSize]="40"></nz-avatar>
+  
+        <div class="ml-6 text-base font-medium">
+          <ng-container *ngIf="isDateInFuture(nft?.availableFrom)" i18n>NFT made available for sale.</ng-container>
+          <ng-container *ngIf="isDateInFuture(nft?.auctionFrom)" i18n>NFT made available for auction.</ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Transactions -->
   <div *ngFor="let t of orders | slice:0:(showAll ? (orders)?.length : collapsedEventsCount); let i = index; trackBy: trackByUid"
     class="relative flex items-center mt-3">
