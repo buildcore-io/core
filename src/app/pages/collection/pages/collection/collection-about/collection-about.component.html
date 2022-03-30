@@ -57,7 +57,7 @@
         [routerLink]="['/', 'collection', collection?.uid]"
         *ngFor="let collection of (data.accessCollections$ | async)">
         <nz-avatar
-          [nzSrc]="previewImageService.getAvatarSize(collection?.bannerUrl)"
+          [nzSrc]="previewImageService.getCollectionSize(collection?.bannerUrl)"
           [nzSize]="24"
           class="mr-2.5 border-2 border-app-gray-100 min-w-6 min-h-6"
           nzShape="circle"
