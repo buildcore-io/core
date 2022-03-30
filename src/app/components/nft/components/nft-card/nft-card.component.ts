@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi, OffersHistory } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
@@ -49,10 +48,6 @@ export class NftCardComponent {
 
         this.cd.markForCheck();
       });
-
-      this.nftApi.getOffers(this.nft)
-        .pipe(untilDestroyed(this))
-        .subscribe(this.allBidTransactions$);
     }
   }
   get nft(): Nft|null|undefined {
@@ -65,7 +60,6 @@ export class NftCardComponent {
   public isBidOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-  public allBidTransactions$: BehaviorSubject<OffersHistory[]> = new BehaviorSubject<OffersHistory[]>([]);
   private memberApiSubscription?: Subscription;
   private _nft?: Nft|null;
 
@@ -77,8 +71,7 @@ export class NftCardComponent {
     private router: Router,
     private memberApi: MemberApi,
     private fileApi: FileApi,
-    private cache: CacheService,
-    private nftApi: NftApi
+    private cache: CacheService
   ) {}
 
   public onBuy(event: MouseEvent): void {
