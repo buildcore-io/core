@@ -27,14 +27,22 @@ interface Output {
 }
 
 export class WalletService {
-  private API_ENDPOINT = "https://svrs.io"; // Mainnet
+  private API_ENDPOINT = ['https://us3.svrs.io', 'https://us4.svrs.io']; // Mainnet
   private API_ENDPOINT_SLAVE = 'https://chrysalis-nodes.iota.org';
   // private API_ENDPOINT = 'https://api.lb-0.h.chrysalis-devnet.iota.cafe';   // DEV NET
   private client: SingleNodeClient;
   private nodeInfo?: INodeInfo;
 
   constructor() {
-    this.client = new SingleNodeClient(this.API_ENDPOINT);
+    let y: number = Math.random();
+    if (y < 0.5) {
+      y = 0
+    } else {
+      y = 1
+    }
+
+    // Random.
+    this.client = new SingleNodeClient(this.API_ENDPOINT[y]);
   }
 
   public async init(): Promise<void> {
