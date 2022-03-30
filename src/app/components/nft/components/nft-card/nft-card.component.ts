@@ -38,8 +38,8 @@ export class NftCardComponent {
       this.owner$.next(undefined);
     }
 
-    if (this._nft) {
-      this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+    if (this.nft) {
+      this.fileApi.getMetadata(this.nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
         if (o.contentType.match('video/.*')) {
           this.mediaType = 'video';
         } else if (o.contentType.match('image/.*')) {

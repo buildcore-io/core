@@ -90,7 +90,11 @@
                       'bg-tag-green': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
                     }">
                     <div class="text-xs font-medium text-foregrounds-secondary">
-                        <ng-container *ngIf="((data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid)" i18n>Current highest bid</ng-container>
+                        <ng-container *ngIf="((data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid)">
+                            <ng-container *ngIf="(data.nft$ | async)?.auctionHighestBid; else minBidBlock" i18n>
+                                Current highest bid</ng-container>
+                            <ng-template #minBidBlock i18n>Min bid</ng-template>
+                        </ng-container>
                         <ng-container *ngIf="(auth.member$ | async)?.uid && ((data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">

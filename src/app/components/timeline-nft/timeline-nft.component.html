@@ -12,9 +12,17 @@
         <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
           style="max-width: 40px; min-width: 40px;" [nzSize]="40"></nz-avatar>
 
-        <div class="ml-6 text-base font-medium">
-          <ng-container *ngIf="nft?.availableFrom" i18n>NFT made available for sale.</ng-container>
-          <ng-container *ngIf="nft?.auctionFrom" i18n>NFT made available for auction.</ng-container>
+        <div class="ml-6">
+          <div class="text-xs font-medium text-gray-400">
+            {{ (nft?.availableFrom || nft?.auctionFrom)?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
+          <div class="text-base font-medium mt-0.5">
+            <ng-container *ngIf="nft?.availableFrom">
+              <span i18n>Listed by</span> @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) | truncate:[10] }}
+            </ng-container>
+            <ng-container *ngIf="!nft?.availableFrom && nft?.auctionFrom">
+              <span i18n>Made available for auction by</span> @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) | truncate:[10] }}
+            </ng-container>
+          </div>
         </div>
       </div>
     </div>

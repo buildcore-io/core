@@ -69,7 +69,10 @@
                 </div>
 
                 <div class="flex-grow w-0" *ngIf="isAvailableForAuction()">
-                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Current Bid</div>
+                  <div class="font-medium text-xxs text-foregrounds-secondary">
+                      <ng-container *ngIf="nft?.auctionHighestBid; else minBidBlock" i18n>Current bid</ng-container>
+                      <ng-template #minBidBlock>Min bid</ng-template>
+                  </div>
                   <div class="text-sm font-medium truncate">
                     {{formatBest(nft?.auctionHighestBid || nft?.auctionFloorPrice)}}
                   </div>
