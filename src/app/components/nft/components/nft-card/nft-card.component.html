@@ -23,7 +23,7 @@
               [src]="'/assets/mocks/video_placeholder.jpg'"
             />
 
-            <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || nft?.placeholderNft)"
+            <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || isAvailableForAuction() || nft?.placeholderNft)"
                 class="absolute top-4 left-4 z-10 rounded-lg bg-white
                     flex items-center justify-center px-3 py-1.5 text-sm font-medium"
                 [ngClass]="getBadgeProperties().className">
@@ -75,7 +75,7 @@
                   </div>
                 </div>
 
-                <a class="flex-grow w-0 flex items-center" [routerLink]="['/member', (owner$ | async)?.uid]"
+                <a class="flex items-center flex-grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
                    *ngIf="nft?.owner && !isAvailableForSale() && !isAvailableForAuction()" (click)="$event.stopPropagation()">
                         <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-app-gray-100 bg-bg-background min-w-10"
