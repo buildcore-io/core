@@ -62,7 +62,7 @@
                     <span i18n>Open Sale</span>
                 </wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS">
-                    <span i18n>Specific member only</span>
+                    <span i18n>Specific member(s) only (Transfer)</span>
                 </wen-radio>
             </nz-radio-group>
         </nz-form-control>
@@ -72,11 +72,15 @@
         <nz-form-control>
           <nz-select
             class="w-full"
+            nzMode="multiple"
             nzSize="large"
+            [nzOptions]="(filteredMembers$ | async) || []"
+            [nzServerSearch]="true"
             nzShowSearch
             nzAllowClear
             i18n-nzPlaceHolder
             nzPlaceHolder="Reserve for specific buyer"
+            (nzOnSearch)="searchMember($event)"
             [formControl]="buyerControl"
           >
           </nz-select>

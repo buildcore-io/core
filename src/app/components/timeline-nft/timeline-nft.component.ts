@@ -4,10 +4,9 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType } from '@functions/interfaces/models';
-import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { DataService } from '@pages/nft/services/data.service';
-import dayjs from 'dayjs';
 
 @Component({
   selector: 'wen-timeline-nft',
@@ -63,13 +62,5 @@ export class TimelineNftComponent {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public isDateInFuture(date?: Timestamp|null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs(), 's');
   }
 }
