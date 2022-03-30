@@ -18,37 +18,53 @@
 <nz-card class="mt-8" i18n-nzTitle nzTitle="Who can buy?">
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.OPEN">
     <wen-icon-open-sale [size]="20" class="text-app-gray-400"></wen-icon-open-sale>
-    <div class="ml-2 text-sm font-medium" i18n>
+    <div class="ml-1.5 text-sm font-medium" i18n>
       Open sale
     </div>
   </div>
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.MEMBERS_ONLY">
     <wen-icon-members-only [size]="20" class="text-app-gray-400"></wen-icon-members-only>
-    <div class="ml-2 text-sm font-medium" i18n>
+    <div class="ml-1.5 text-sm font-medium" i18n>
       Space Members Only
     </div>
   </div>
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.GUARDIANS_ONLY">
     <wen-icon-guardians-only [size]="20" class="text-app-gray-400"></wen-icon-guardians-only>
-    <div class="ml-2 text-sm font-medium" i18n>
+    <div class="ml-1.5 text-sm font-medium" i18n>
       Space Guardians Only
     </div>
   </div>
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_BADGE">
     <wen-icon-members-with-badge [size]="20" class="text-app-gray-400"></wen-icon-members-with-badge>
-    <div class="ml-2 text-sm font-medium" i18n>
+    <div class="ml-1.5 text-sm font-medium" i18n>
       Space Members with Badge Only
     </div>
   </div>
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_NFT_FROM_COLLECTION">
     <wen-icon-members-with-nft-from-collection [size]="20" class="text-app-gray-400"></wen-icon-members-with-nft-from-collection>
-    <div class="ml-2 text-sm font-medium" i18n>
-      At least one NFT from Collections
+    <div class="ml-1.5 text-sm font-medium w-4/5" i18n>
+      Must hold at least one NFT from each selected Collections
     </div>
   </div>
   <div *ngIf="(data.collection$ | async)?.onePerMemberOnly"
     class="text-sm font-medium text-foregrounds-secondary ml-7" i18n>
       (One NFT per member)
+  </div>
+  
+  <div *ngIf="(data.collection$ | async)?.access === access.MEMBERS_WITH_NFT_FROM_COLLECTION"
+    class="flex flex-wrap mt-5">
+    <div class="flex items-center cursor-pointer justify-between p-1.5 mt-2 mr-2 bg-brown-lighter rounded-lg"
+        [routerLink]="['/', 'collection', collection?.uid]"
+        *ngFor="let collection of (data.accessCollections$ | async)">
+        <nz-avatar
+          [nzSrc]="previewImageService.getAvatarSize(collection?.bannerUrl)"
+          [nzSize]="24"
+          class="mr-2.5 border-2 border-app-gray-100 min-w-6 min-h-6"
+          nzShape="circle"
+        >
+        </nz-avatar>
+        <div class="text-sm font-medium">{{ collection?.name }}</div>
+    </div>
   </div>
 </nz-card>
 
@@ -70,22 +86,6 @@
   </nz-avatar>
 </nz-card>
 
-<nz-card i18n-nzTitle nzTitle="The collections you will need" *ngIf="(data.accessCollections$ | async)?.length" class="mt-4 space-x-2">
-  <div class="flex flex-wrap mt-3">
-    <div class="flex items-center cursor-pointer justify-between p-1.5 mt-2 mr-2 bg-brown-lighter rounded-lg"
-        [routerLink]="['/', 'collection', collection?.uid]"
-        *ngFor="let collection of (data.accessCollections$ | async)">
-        <nz-avatar
-          [nzSrc]="previewImageService.getAvatarSize(collection?.bannerUrl)"
-          [nzSize]="24"
-          class="mr-2.5 border-2 border-app-gray-100 min-w-6 min-h-6"
-          nzShape="circle"
-        >
-        </nz-avatar>
-        <div class="text-sm font-medium">{{ collection?.name }}</div>
-    </div>
-  </div>
-</nz-card>
 <nz-card i18n-nzTitle nzTitle="Resources" class="mt-8" *ngIf="(data.collection$ | async)?.url || (data.collection$ | async)?.twitter || (data.collection$ | async)?.discord">
     <div class="space-y-5">
         <a *ngIf="(data.collection$ | async)?.url" target="_new"
