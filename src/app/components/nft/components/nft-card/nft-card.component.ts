@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
+import { NftApi, OffersHistory } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
@@ -38,8 +39,8 @@ export class NftCardComponent {
       this.owner$.next(undefined);
     }
 
-    if (this._nft) {
-      this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+    if (this.nft) {
+      this.fileApi.getMetadata(this.nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
         if (o.contentType.match('video/.*')) {
           this.mediaType = 'video';
         } else if (o.contentType.match('image/.*')) {
@@ -48,6 +49,10 @@ export class NftCardComponent {
 
         this.cd.markForCheck();
       });
+
+      this.nftApi.getOffers(this.nft)
+        .pipe(untilDestroyed(this))
+        .subscribe(this.allBidTransactions$);
     }
   }
   get nft(): Nft|null|undefined {
@@ -60,6 +65,7 @@ export class NftCardComponent {
   public isBidOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
   public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  public allBidTransactions$: BehaviorSubject<OffersHistory[]> = new BehaviorSubject<OffersHistory[]>([]);
   private memberApiSubscription?: Subscription;
   private _nft?: Nft|null;
 
@@ -71,7 +77,8 @@ export class NftCardComponent {
     private router: Router,
     private memberApi: MemberApi,
     private fileApi: FileApi,
-    private cache: CacheService
+    private cache: CacheService,
+    private nftApi: NftApi
   ) {}
 
   public onBuy(event: MouseEvent): void {
