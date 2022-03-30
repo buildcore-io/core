@@ -277,7 +277,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } else if (not.type === NotificationType.LOST_BID) {
       const title = $localize`You lost your bid!`;
       const contentYour = $localize`Your bid on `;
-      const contentReceived = $localize` was outbidded. Try again!`;
+      const contentReceived = $localize` was outbid. Try again!`;
 
       return {
         title: title,
