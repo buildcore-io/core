@@ -150,7 +150,7 @@ export class SinglePage implements OnInit {
 
   public uploadMediaFile(item: NzUploadXHRArgs): Subscription {
     if (!this.auth.member$.value) {
-      const err = 'Member seems to log out during the file upload request.';
+      const err = $localize`Member seems to log out during the file upload request.`;
       this.nzNotification.error(err, '');
       if (item.onError) {
         item.onError(err, item.file);
