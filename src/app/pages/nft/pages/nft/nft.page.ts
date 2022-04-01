@@ -96,7 +96,7 @@ export class NFTPage implements OnInit, OnDestroy {
         titleMarginBottom: 0,
         titleFont: {
           lineHeight: 0
-        },  
+        },
         bodyColor: '#333333',
         bodyFont: {
           weight: '500',
@@ -435,19 +435,17 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public discount(collection?: Collection|null, nft?: Nft|null): number {
-    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation || nft?.owner) {
+    if (!collection?.space || !this.auth.member$.value || nft?.owner) {
       return 1;
     }
 
-    const xp: number = this.auth.member$.value.spaces[collection.space].totalReputation || 0;
+    const xp: number = this.auth.member$.value.spaces?.[collection.space]?.totalReputation || 0;
     let discount = 1;
-    if (xp > 0) {
-      for (const d of collection.discounts.sort((a, b) => {
-        return a.xp - b.xp;
-      })) {
-        if (d.xp < xp) {
-          discount = (1 - d.amount);
-        }
+    for (const d of collection.discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    })) {
+      if (d.xp < xp) {
+        discount = (1 - d.amount);
       }
     }
 
