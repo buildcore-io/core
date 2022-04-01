@@ -171,8 +171,8 @@ export class NFTPage implements OnInit, OnDestroy {
           })).subscribe(this.data.firstNftInCollection$)
         );
 
-        if (this.auth.member$.value) {
-          this.nftSubscriptions$.push(this.nftApi.getMembersTransactions(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myTransactions$));
+        if (this.auth.member$.value && this.data.nft$.value) {
+          this.nftSubscriptions$.push(this.nftApi.getMembersTransactions(this.auth.member$.value, this.data.nft$.value).pipe(untilDestroyed(this)).subscribe(this.data.myTransactions$));
         }
       }
 
@@ -234,9 +234,11 @@ export class NFTPage implements OnInit, OnDestroy {
       });
       this.tranSubscriptions$ = [];
       // Resubscribe.
-      this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.allBidTransactions$));
-      if (this.auth.member$.value) {
-        this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myBidTransactions$));
+      if (this.data.nft$.value) {
+        this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value).pipe(untilDestroyed(this)).subscribe(this.data.allBidTransactions$));
+      }
+      if (this.auth.member$.value && this.data.nft$.value) {
+        this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value).pipe(untilDestroyed(this)).subscribe(this.data.myBidTransactions$));
       }
     }
   }

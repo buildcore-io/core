@@ -46,9 +46,9 @@ export class SpaceNewAllianceComponent {
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     private data: DataService
-  ) {}
+  ) { }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Space) {
     return item.uid;
   }
 }

@@ -100,8 +100,8 @@ export class DataService {
       return (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
     } else {
       let total = 0;
-      if ((<any>proposal?.results)?.questions?.[0].answers) {
-        (<any>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
+      if ((<Proposal>proposal?.results)?.questions?.[0].answers) {
+        (<Proposal>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
           if (b.value === 0 || b.value === 255) {
             return;
           }
@@ -110,7 +110,7 @@ export class DataService {
         });
       }
 
-      const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
         return suba.value === a.value;
       });
 

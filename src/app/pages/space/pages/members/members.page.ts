@@ -5,7 +5,6 @@ import { MemberApi } from "@api/member.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, debounceTime, firstValueFrom, skip, Subscription } from 'rxjs';
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../../functions/interfaces/config';
@@ -173,7 +172,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.', finish).subscribe((val: Space | undefined) => {
+      this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.', finish).subscribe(() => {
         // none
       });
     });
@@ -189,7 +188,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.', finish).subscribe((val: Space | undefined) => {
+      this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.', finish).subscribe(() => {
         // none.
       });
     });
@@ -205,7 +204,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.blockMember(sc), 'Member blocked.', finish).subscribe((val: Space | undefined) => {
+      this.notification.processRequest(this.spaceApi.blockMember(sc), 'Member blocked.', finish).subscribe(() => {
         // none.
       });
     });
@@ -220,7 +219,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.acceptMember(sc), 'Member accepted.', finish).subscribe((val: Space | undefined) => {
+      this.notification.processRequest(this.spaceApi.acceptMember(sc), 'Member accepted.', finish).subscribe(() => {
         // none.
       });
     });
@@ -235,7 +234,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member ignored.', finish).subscribe((val: Space | undefined) => {
+      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member ignored.', finish).subscribe(() => {
         // none.
       });
     });
@@ -250,7 +249,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.unblockMember(sc), 'Member unblocked.', finish).subscribe((val: Space | undefined) => {
+      this.notification.processRequest(this.spaceApi.unblockMember(sc), 'Member unblocked.', finish).subscribe(() => {
         // none.
       });
     });

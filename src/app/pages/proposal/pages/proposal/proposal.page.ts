@@ -178,7 +178,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     }
 
     // ?.results?.questions?.[0].answers[a.value]?.accumulated || 0
-    const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+    const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
       return suba.value === value;
     });
     if (!ans) {
@@ -195,7 +195,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe((val: Proposal | undefined) => {
+      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
       });
     });
@@ -209,7 +209,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe((val: Proposal | undefined) => {
+      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.
       });
     });
@@ -233,7 +233,7 @@ export class ProposalPage implements OnInit, OnDestroy {
       }
     };
     const id = proposal.eventId || 'proposal';
-    const link: any = document.createElement("a");
+    const link: HTMLAnchorElement = document.createElement("a");
     link.download = id + '.json';
     const data: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
     link.href = "data:" + data;

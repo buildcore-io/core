@@ -91,7 +91,7 @@ export class SpaceAboutComponent implements OnDestroy {
         this.spaceApi.setAlliance(sc),
         this.isNewAlliance ? 'Connection established' : 'Connection updated.',
         finish
-      ).subscribe((val: Space | undefined) => {
+      ).subscribe(() => {
         this.closeNewAlliance();
       });
     });

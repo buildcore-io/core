@@ -15,7 +15,7 @@ import { EntityType } from './../../../wallet-address/wallet-address.component';
 })
 export class MemberAboutComponent {
   @Input() avatarSrc?: string;
-  @Input() loggedInMember?: BehaviorSubject<Member|undefined>;
+  @Input() loggedInMember?: BehaviorSubject<Member | undefined>;
 
   public drawerVisible$ = new BehaviorSubject<boolean>(false);
 

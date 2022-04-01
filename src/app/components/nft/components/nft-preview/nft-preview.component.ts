@@ -6,6 +6,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { Space } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import { take } from 'rxjs';
@@ -19,7 +20,7 @@ import { take } from 'rxjs';
 })
 export class NftPreviewComponent {
   @Input()
-  set nft(value: any | null) {
+  set nft(value: Nft | null) {
     this._nft = value;
     const collection = this.cache.allCollections$.getValue().find((collection) => collection.uid === this.nft?.collection);
     const space = this.cache.allSpaces$.getValue().find((space) => space.uid === collection?.space);
@@ -65,7 +66,7 @@ export class NftPreviewComponent {
     return FILE_SIZES;
   }
 
-  public getValues(obj: any): any[] {
+  public getValues(obj: Nft) {
     return Object.values(obj);
   }
 }

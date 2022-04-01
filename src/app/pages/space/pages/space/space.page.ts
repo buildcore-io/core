@@ -115,7 +115,7 @@ export class SpacePage implements OnInit, OnDestroy {
     }, (sc, finish) => {
       this.notification.processRequest(
         this.spaceApi.join(sc), this.data.space$.value?.open ? 'Joined.' : 'Pending Approval', finish
-      ).subscribe((val: Space | undefined) => {
+      ).subscribe(() => {
         // none.
       });
     });
@@ -140,7 +140,7 @@ export class SpacePage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.space$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.', finish).subscribe((val: Space | undefined) => {
+      this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.', finish).subscribe(() => {
         // none
       });
     });

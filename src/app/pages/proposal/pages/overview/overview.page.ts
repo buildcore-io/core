@@ -77,7 +77,7 @@ export class OverviewPage implements OnInit {
       uid: this.data.proposal$.value.uid,
       values: [this.voteControl.value]
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.vote(sc), 'Voted.', finish).subscribe((val: Proposal | undefined) => {
+      this.notification.processRequest(this.proposalApi.vote(sc), 'Voted.', finish).subscribe(() => {
         // none.
       });
     });

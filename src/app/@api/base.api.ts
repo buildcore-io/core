@@ -15,33 +15,33 @@ export interface FbRef {
 export class BaseApi<T> {
   // Collection is always defined on above.
   public collection = '';
-  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {}
+  constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) { }
 
-  public listen(id: string): Observable<T|undefined> {
+  public listen(id: string): Observable<T | undefined> {
     return this.afs.collection<T>(this.collection).doc(id.toLowerCase()).valueChanges();
   }
 
-  public last(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def);
   }
 
-  public top(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def);
   }
 
-  public alphabetical(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  public alphabetical(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query(this.collection, 'name', 'asc', lastValue, search, def);
   }
 
-  public lastByRank(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
+  public lastByRank(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query(this.collection, ['rank', 'createdOn'], 'desc', lastValue, search, def);
   }
 
   protected _query(
     collection: string,
-    orderBy: string|string[] = 'createdOn',
+    orderBy: string | string[] = 'createdOn',
     direction: any = 'desc',
-    lastValue?: any,
+    lastValue?: number,
     search?: string,
     def = DEFAULT_LIST_SIZE,
     refCust?: (subRef: any) => any,
@@ -74,7 +74,7 @@ export class BaseApi<T> {
       return actions.map(a => {
         const data = a.payload.doc.data();
         const doc = a.payload.doc;
-        return {...data, _doc: doc };
+        return { ...data, _doc: doc };
       });
     }));
   }
@@ -83,10 +83,10 @@ export class BaseApi<T> {
   public subCollectionMembers<T>(
     docId: string,
     subCol: SUB_COL,
-    lastValue?: any,
+    lastValue?: number,
     searchIds?: string[],
     manipulateOutput?: (original: any, finObj: any) => any,
-    orderBy: string|string[] = 'createdOn',
+    orderBy: string | string[] = 'createdOn',
     direction: any = 'desc',
     def = DEFAULT_LIST_SIZE,
     refCust?: (subRef: any) => any,
@@ -143,15 +143,15 @@ export class BaseApi<T> {
   protected async getSubRecordsInBatches(col: COL, records: string[]): Promise<any[]> {
     const out: any = [];
     for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {
-        const batchToGet: string[] = records.slice(i, i + WHERE_IN_BATCH);
-        const query: any = await firstValueFrom(this.afs.collection(col, (ref) => {
-          return ref.where('uid', 'in', batchToGet);
-        }).get());
-        if (query.size > 0) {
-          for (const doc of query.docs) {
-            out.push(doc.data());
-          }
+      const batchToGet: string[] = records.slice(i, i + WHERE_IN_BATCH);
+      const query: any = await firstValueFrom(this.afs.collection(col, (ref) => {
+        return ref.where('uid', 'in', batchToGet);
+      }).get());
+      if (query.size > 0) {
+        for (const doc of query.docs) {
+          out.push(doc.data());
         }
+      }
     }
 
     return out;
@@ -162,8 +162,8 @@ export class BaseApi<T> {
     col: COL,
     subCol: SUB_COL,
     memberId: EthAddress,
-    orderBy: string|string[] = 'createdOn',
-    lastValue?: any,
+    orderBy: string | string[] = 'createdOn',
+    lastValue?: number,
     def = DEFAULT_LIST_SIZE,
     refCust?: (subRef: any) => any,
     frRef?: FbRef
@@ -172,7 +172,7 @@ export class BaseApi<T> {
       subCol,
       (ref: any) => {
         const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==',  col);
+        let query: any = ref.where('uid', '==', memberId).where('parentCol', '==', col);
         query = refCust ? refCust(query) : query;
         order.forEach((o) => {
           query = query.orderBy(o, 'desc');
@@ -210,7 +210,7 @@ export class BaseApi<T> {
     }));
   }
 
-  protected request<T>(func: WEN_FUNC, req: any): Observable<T|undefined> {
+  protected request<T>(func: WEN_FUNC, req: any): Observable<T | undefined> {
     const callable = this.fns.httpsCallable(func);
     const data$ = callable(req);
     return data$;
