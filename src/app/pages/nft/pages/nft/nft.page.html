@@ -86,7 +86,7 @@
 
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)"
                     [ngClass]="{
-                      'bg-tag-red': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.allBidTransactions$ | async)?.length,
+                      'bg-tag-red': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.myBidTransactions$ | async)?.length,
                       'bg-tag-green': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
                     }">
                     <div class="text-xs font-medium text-foregrounds-secondary">
