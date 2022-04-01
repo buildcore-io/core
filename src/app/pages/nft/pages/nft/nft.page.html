@@ -210,11 +210,11 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let item of (data.allBidTransactions$ | async)">
-                            <td>
+                            <td [routerLink]="['/member', item.member.uid]" class="cursor-pointer">
                                 <nz-avatar nzIcon="user" [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
                                     [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
                                 </nz-avatar>
-                                <span [routerLink]="'/'">@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
+                                <span>@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
                             </td>
                             <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
                             <td>{{ data.formatBest(item.transaction.payload.amount) }}</td>
