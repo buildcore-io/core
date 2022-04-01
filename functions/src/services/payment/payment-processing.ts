@@ -635,7 +635,7 @@ export class ProcessingService {
           // Technically there should only be one as address is unique per order.
           for (const order of orders.docs) {
             // This happens here on purpose instead of cron to reduce $$$
-            const expireDate = dayjs(order.data().payload.expiresOn.toDate());
+            const expireDate = dayjs(order.data().payload.expiresOn?.toDate());
             let expired = false;
             if (expireDate.isBefore(dayjs(), 'ms')) {
               await this.markAsVoid(order.data());
