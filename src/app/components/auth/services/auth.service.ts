@@ -108,7 +108,7 @@ export class AuthService {
   public async sign(params: any = {}, cb: SignCallback ): Promise<WenRequest|undefined> {
     const sc: WenRequest|undefined|false =  await this.signWithMetamask(undefinedToEmpty(params));
     if (!sc) {
-      this.notification.error('Unable to sign transaction. Please try to reload page.', '');
+      this.notification.error($localize`Unable to sign transaction. Please try to reload page.`, '');
       this.showWalletPopup$.next(WalletStatus.HIDDEN);
       return undefined;
     }
@@ -153,7 +153,7 @@ export class AuthService {
       try {
         try {
           if (!(await provider._metamask.isUnlocked())) {
-            this.notification.error('You must unlock your MetaMask first!', '');
+            this.notification.error($localize`You must unlock your MetaMask first!`, '');
             this.showWalletPopup$.next(WalletStatus.HIDDEN);
             return undefined;
           }
@@ -164,7 +164,7 @@ export class AuthService {
             params: [ { eth_accounts: {} } ]
           });
         } catch(e) {
-          this.notification.error('You must enable access to read your account address.', '');
+          this.notification.error($localize`You must enable access to read your account address.`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;
         }
@@ -186,14 +186,14 @@ export class AuthService {
         }
 
         if (!provider.selectedAddress) {
-          this.notification.error('Please make sure you select address in MetaMask!', '');
+          this.notification.error($localize`Please make sure you select address in MetaMask!`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;
         }
 
         const member: Member|undefined = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
         if (!member) {
-          this.notification.error('Unable to get nonce to authenticate!', '');
+          this.notification.error($localize`Unable to get nonce to authenticate!`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;
         }
@@ -236,9 +236,9 @@ export class AuthService {
     if (!sc) {
       // Missing wallet.
       if (sc === false) {
-        this.notification.success('You have to open Soonaverse in MetaMask app.', '');
+        this.notification.success($localize`You have to open Soonaverse in MetaMask app.`, '');
       } else {
-        this.notification.error('Failed to initialize MetaMask, try to reload page.', '');
+        this.notification.error($localize`Failed to initialize MetaMask, try to reload page.`, '');
       }
       return false;
     }
@@ -312,7 +312,7 @@ export class AuthService {
     return {
       route: [ROUTER_UTILS.config.member.root, memberId],
       icon: UnamusedIconComponent,
-      title: 'My Profile'
+      title: $localize`My Profile`
     };
   }
 }

@@ -66,7 +66,7 @@ export class NavigationService implements OnDestroy {
   public getTitle(): Observable<string> {
     return this.navigationState
       .pipe(
-        map(state => `Back ${state.length > 0 ? state[state.length - 1].text : ''}`)
+        map(state => $localize`Back` + ` ${state.length > 0 ? state[state.length - 1].text : ''}`)
       );
   }
 

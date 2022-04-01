@@ -34,6 +34,12 @@ export class NFTsPage implements OnInit, OnDestroy {
   public spaceControl: FormControl;
   public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.AUCTION, HOT_TAGS.OWNED];
+  public hotTagsLabels: { [key: string]: string } = {
+    [HOT_TAGS.ALL]: $localize`All`,
+    [HOT_TAGS.AVAILABLE]: $localize`Available`,
+    [HOT_TAGS.AUCTION]: $localize`On Auction`,
+    [HOT_TAGS.OWNED]: $localize`Owned`
+  }
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.AVAILABLE]);
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
