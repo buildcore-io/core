@@ -48,7 +48,13 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.listen();
+    // Init listen.
+    if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+      this.listen(this.filter.search$.value);
+    } else {
+      this.listen();
+    }
+
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
         this.listen(this.filter.search$.value);
