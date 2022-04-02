@@ -70,7 +70,11 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
