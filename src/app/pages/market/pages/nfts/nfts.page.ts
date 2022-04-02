@@ -90,7 +90,11 @@ export class NFTsPage implements OnInit, OnDestroy {
     });
 
     // Init listen.
-    this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.selectedTags$.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o.indexOf(HOT_TAGS.SPACE) === -1 && this.spaceControl.value !== DEFAULT_SPACE.value) {
+        this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
+      }
+
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
         this.listen(this.filter.search$.value);
       } else {
