@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { TimelineType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -24,7 +25,7 @@ export class ActivityPage implements OnInit {
   public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;
   public lineChartType: ChartType = 'line';
-  public badges = 'badges';
+  public badges = TimelineType.BADGE;
 
   public lineChartData?: ChartConfiguration['data'];
 

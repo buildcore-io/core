@@ -7,6 +7,7 @@ import { MemberApi } from '@api/member.api';
 import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { TimelineType } from '@components/timeline/timeline.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -51,7 +52,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
-  public nft = 'nft';
+  public nft = TimelineType.NFT;
   public lineChartOptions: ChartConfiguration['options'] = {
     elements: {
       line: {

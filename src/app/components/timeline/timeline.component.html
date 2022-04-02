@@ -1,4 +1,4 @@
-<wen-collapse i18n-title title="Timeline" [isCollapsed]="false" class="overflow-hidden" *ngIf="(orders?.length || listedBy) && componentType === 'nft'">
+<wen-collapse i18n-title title="Timeline" [isCollapsed]="false" class="overflow-hidden" *ngIf="(orders?.length || listedBy) && timelineType === 'nft'">
   <div *ngIf="nft?.owner && (nft?.availableFrom || nft?.auctionFrom)"
     class="relative flex items-center mt-3">
     <div class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2 h-24"></div>
@@ -9,7 +9,7 @@
 
     <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
       <div class="flex items-center">
-        <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+        <nz-avatar [nzSrc]="owner?.currentProfileImage | ipfsAvatar:filesizes.small"
           style="max-width: 40px; min-width: 40px;" [nzSize]="40"></nz-avatar>
 
         <div class="ml-6">
@@ -17,17 +17,16 @@
             {{ (nft?.availableFrom || nft?.auctionFrom)?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
           <div class="text-base font-medium mt-0.5">
             <ng-container *ngIf="nft?.availableFrom">
-              <span i18n>Listed by</span> @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) | truncate:[10] }}
+              <span i18n>Listed by</span> @{{(owner?.name || owner?.uid) | truncate:[10] }}
             </ng-container>
             <ng-container *ngIf="!nft?.availableFrom && nft?.auctionFrom">
-              <span i18n>Made available for auction by</span> @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) | truncate:[10] }}
+              <span i18n>Made available for auction by</span> @{{(owner?.name || owner?.uid) | truncate:[10] }}
             </ng-container>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- Transactions -->
   <div *ngFor="let t of orders | slice:0:(showAll ? (orders)?.length : collapsedEventsCount); let i = index; trackBy: trackByUid"
     class="relative flex items-center mt-3">
     <div *ngIf="i !== 0"
@@ -82,7 +81,6 @@
     </div>
   </div>
 
-  <!-- Orders -->
   <div class="relative flex items-center mt-3" *ngIf="listedBy && (showAll || (orders?.length || 0) < collapsedEventsCount)">
     <div *ngIf="((orders)?.length || 0) > 0"
       class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"></div>
@@ -116,7 +114,7 @@
   </button>
 </wen-collapse>
 
-<nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="badges?.length && componentType === 'badges'">
+<nz-card nzTitle="Timeline" class="overflow-hidden" *ngIf="badges?.length && timelineType === 'badge'">
   <div *ngFor="let t of (badges) | slice:0:(showAllBadges ? (badges)?.length : 3);
       let i = index; trackBy: trackByUid"
       class="relative flex items-center mt-3">
