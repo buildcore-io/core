@@ -185,7 +185,7 @@
             <div class="mt-12 font-medium" [innerHtml]="(data.nft$ | async)?.description| markdown">
             </div>
 
-            <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
+            <wen-timeline class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)" [componentType]="nft"></wen-timeline>
 
             <wen-collapse i18n-nzTitle title="Transactions" class="mt-4" [isCollapsed]="true" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async) || (data.myTransactions$ | async)?.length">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">

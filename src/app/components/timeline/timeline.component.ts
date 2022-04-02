@@ -9,17 +9,20 @@ import { Nft } from '@functions/interfaces/models/nft';
 import { DataService } from '@pages/nft/services/data.service';
 
 @Component({
-  selector: 'wen-timeline-nft',
-  templateUrl: './timeline-nft.component.html',
-  styleUrls: ['./timeline-nft.component.less'],
+  selector: 'wen-timeline',
+  templateUrl: './timeline.component.html',
+  styleUrls: ['./timeline.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TimelineNftComponent {
+export class TimelineComponent {
   @Input() nft?: Nft | null;
   @Input() orders?: SuccesfullOrdersWithFullHistory[] | null;
   @Input() listedBy?: Space | null;
+  @Input() badges?: Transaction[] | null;
+  @Input() componentType: string | undefined = 'nft';
   public isCollapsed = false;
   public showAll = false;
+  public showAllBadges = false;
   public collapsedEventsCount = 2;
 
   constructor(
@@ -32,7 +35,7 @@ export class TimelineNftComponent {
     return FILE_SIZES;
   }
 
-  public formatBest(amount?: number|null): string {
+  public formatBest(amount?: number | null): string {
     if (!amount) {
       return '';
     }

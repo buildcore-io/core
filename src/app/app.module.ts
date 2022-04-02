@@ -78,7 +78,7 @@ const imports: any[] = [
 
 // AppCheck only in production.
 if (environment.production) {
-  imports.push(provideAppCheck(() =>  {
+  imports.push(provideAppCheck(() => {
     const provider = new ReCaptchaV3Provider(environment.captcha);
     return initializeAppCheck(getApp(), { provider, isTokenAutoRefreshEnabled: true });
   }));
@@ -95,18 +95,18 @@ if (environment.production) {
   providers: [
     PerformanceMonitoringService,
     {
-    /* eslint-disable */
-    provide: NZ_I18N,
-    useFactory: (localId: string) => {
-      /** keep the same with angular.json/i18n/locales configuration **/
-      return Languages[localId]?.ngZorro || Languages.en.ngZorro;
-      /* eslint-enable */
+      /* eslint-disable */
+      provide: NZ_I18N,
+      useFactory: (localId: string) => {
+        /** keep the same with angular.json/i18n/locales configuration **/
+        return Languages[localId]?.ngZorro || Languages.en.ngZorro;
+        /* eslint-enable */
+      },
+      deps: [LOCALE_ID]
     },
-    deps: [LOCALE_ID]
-  },
-  { provide: USE_FIRESTORE_EMULATOR, useValue: emulator ? ['localhost', 8080] : undefined },
-  { provide: USE_FUNCTIONS_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined },
-  { provide: USE_STORAGE_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined }
+    { provide: USE_FIRESTORE_EMULATOR, useValue: emulator ? ['localhost', 8080] : undefined },
+    { provide: USE_FUNCTIONS_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined },
+    { provide: USE_STORAGE_EMULATOR, useValue: emulator ? ['localhost', 5001] : undefined }
   ]
 })
 export class AppModule { }

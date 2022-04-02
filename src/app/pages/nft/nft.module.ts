@@ -12,7 +12,7 @@ import { NftSaleModule } from '@components/nft/components/nft-sale/nft-sale.modu
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { TabsModule } from '@components/tabs/tabs.module';
-import { TimelineNftModule } from '@components/timeline-nft/timeline-nft.module';
+import { TimelineModule } from '@components/timeline/timeline.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
@@ -78,7 +78,7 @@ import { DataService } from './services/data.service';
     TabsModule,
     NzTagModule,
     NzAvatarModule,
-    TimelineNftModule,
+    TimelineModule,
     NzToolTipModule,
     NzSkeletonModule,
     TruncateModule,

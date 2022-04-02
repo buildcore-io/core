@@ -24,6 +24,7 @@ export class ActivityPage implements OnInit {
   public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;
   public lineChartType: ChartType = 'line';
+  public badges = 'badges';
 
   public lineChartData?: ChartConfiguration['data'];
 
@@ -34,29 +35,29 @@ export class ActivityPage implements OnInit {
       }
     },
     scales: {
-        xAxis: {
-            ticks: {
-                maxTicksLimit: 10,
-                color: '#959388',
-                font: {
-                  size: 14,
-                  weight: '600',
-                  family: 'Poppins',
-                  lineHeight: '14px'
-                }
-            }
-        },
-        yAxis: {
-          ticks: {
-              color: '#959388',
-              font: {
-                size: 14,
-                weight: '600',
-                family: 'Poppins',
-                lineHeight: '14px'
-              }
+      xAxis: {
+        ticks: {
+          maxTicksLimit: 10,
+          color: '#959388',
+          font: {
+            size: 14,
+            weight: '600',
+            family: 'Poppins',
+            lineHeight: '14px'
           }
         }
+      },
+      yAxis: {
+        ticks: {
+          color: '#959388',
+          font: {
+            size: 14,
+            weight: '600',
+            family: 'Poppins',
+            lineHeight: '14px'
+          }
+        }
+      }
     },
     plugins: {
       legend: {
@@ -71,7 +72,7 @@ export class ActivityPage implements OnInit {
         titleMarginBottom: 0,
         titleFont: {
           lineHeight: 0
-        },  
+        },
         bodyColor: '#333333',
         bodyFont: {
           weight: '500',
@@ -90,7 +91,7 @@ export class ActivityPage implements OnInit {
       }
     }
   };
-  
+
   constructor(
     private cd: ChangeDetectorRef,
     private storageService: StorageService,
@@ -129,7 +130,7 @@ export class ActivityPage implements OnInit {
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
         this.data.refreshBadges(this.getSelectedSpace(), this.spaceForm.value.includeAlliances);
-    });
+      });
 
     let prev: string | undefined;
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
@@ -146,9 +147,9 @@ export class ActivityPage implements OnInit {
     });
   }
 
-  public getTotal(member: Member | null | undefined, what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
+  public getTotal(member: Member | null | undefined, what: 'awardsCompleted' | 'totalReputation'): number { // awardsCompleted
     let total = 0;
-    const space: Space|undefined = this.cache.allSpaces$.value.find((s) => {
+    const space: Space | undefined = this.cache.allSpaces$.value.find((s) => {
       return s.uid === this.spaceForm.value.space;
     });
 
@@ -161,7 +162,7 @@ export class ActivityPage implements OnInit {
           const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
             return s.uid === spaceId;
           });
-          if (allianceSpace && values.enabled === true ) {
+          if (allianceSpace && values.enabled === true) {
             const value: number = member?.spaces?.[allianceSpace.uid]?.[what] || 0;
             total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
           }
@@ -181,7 +182,7 @@ export class ActivityPage implements OnInit {
   }
 
   public initChart(data: any[][]): void {
-    const dataToShow: { data: number[], labels: string[]} = {
+    const dataToShow: { data: number[], labels: string[] } = {
       data: [],
       labels: []
     };
@@ -194,7 +195,7 @@ export class ActivityPage implements OnInit {
       }, {} as any)
       const dataSize = Math.ceil(dayjs(sortedData[sortedData.length - 1][0]).diff(dayjs(sortedData[0][0]), 'day', true));
       let sumValue = 0;
-      for (let i=0; i<dataSize; i++) {
+      for (let i = 0; i < dataSize; i++) {
         const date = dayjs(sortedData[0][0]).add(i, 'day').toDate();
         const key = dayjs(date).format('DD_MM_YYYY');
         if (dataMap[key]) {

@@ -1,23 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DataService } from '@pages/nft/services/data.service';
 import { MockProvider } from 'ng-mocks';
-import { TimelineNftComponent } from './timeline-nft.component';
+import { TimelineComponent } from './timeline.component';
 
 
-describe('TimelineNftComponent', () => {
-  let component: TimelineNftComponent;
-  let fixture: ComponentFixture<TimelineNftComponent>;
+describe('TimelineComponent', () => {
+  let component: TimelineComponent;
+  let fixture: ComponentFixture<TimelineComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TimelineNftComponent ],
-      providers: [ MockProvider(DataService) ]
+      declarations: [TimelineComponent],
+      providers: [MockProvider(DataService)]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TimelineNftComponent);
+    fixture = TestBed.createComponent(TimelineComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
