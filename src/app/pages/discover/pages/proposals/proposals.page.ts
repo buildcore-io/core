@@ -74,6 +74,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    this.proposal$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 

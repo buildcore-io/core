@@ -113,6 +113,8 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    // So we show searching again.
+    this.nfts$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
