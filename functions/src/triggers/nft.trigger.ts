@@ -3,12 +3,11 @@ import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { COL } from '../../interfaces/models/base';
 import { Nft, NftAvailable } from '../../interfaces/models/nft';
-import { low } from '../scale.settings';
+import { medium } from '../scale.settings';
 
 // Listen for changes in all documents in the NFT and update to prepare it for filtering.
 export const nftWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
-  timeoutSeconds: 300,
-  minInstances: low
+  minInstances: medium
 }).firestore.document(COL.NFT + '/{nftId}').onWrite(async (change) => {
   const newValue: Nft = <Nft>change.after.data();
   let update = false;
