@@ -18,17 +18,25 @@ export enum NftAccess {
   MEMBERS = 1
 }
 
+export enum NftAvailable {
+  UNAVAILABLE = 0,
+  SALE = 1,
+  AUCTION = 2,
+  AUCTION_AND_SALE = 3
+}
 
 export interface Nft extends BaseRecord {
   name: string;
   description: string;
   collection: EthAddress;
   owner?: EthAddress;
+  isOwned?: boolean;
   media: string;
   ipfsMedia: string;
   ipfsMetadata: string;
   saleAccess?: NftAccess,
   saleAccessMembers?: string[],
+  available: NftAvailable;
   availableFrom: Timestamp;
   auctionFrom?: Timestamp;
   auctionTo?: Timestamp;
