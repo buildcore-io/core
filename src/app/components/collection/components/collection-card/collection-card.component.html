@@ -3,7 +3,7 @@
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
-                alt=""
+                alt="" loading="lazy"
                 [src]="(fullWidth ? collection?.bannerUrl : previewImageService.getCollectionSize(collection?.bannerUrl)) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full"
                 [ngClass]="{

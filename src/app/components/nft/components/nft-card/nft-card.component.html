@@ -2,7 +2,7 @@
     [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60 h-72 lg:h-99'">
     <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
-            <img
+            <img loading="lazy"
                 *ngIf="mediaType === 'image'"
                 i18n-alt
                 (error)="onImgErrorWeShowPlaceHolderVideo($event)"
@@ -14,7 +14,7 @@
                 }"
             />
 
-            <img
+            <img loading="lazy"
               *ngIf="mediaType === 'video'"
               class="object-cover w-full h-full"
                 [ngClass]="{

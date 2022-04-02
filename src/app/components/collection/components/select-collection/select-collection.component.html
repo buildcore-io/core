@@ -19,7 +19,7 @@
                 [nzValue]="c.value"
                 >
                 <nz-avatar
-                    *ngIf="c?.img"
+                    *ngIf="c?.img && isSelectOpen"
                     [nzSrc]="previewImageService.getCollectionSize(c.img)"
                     [nzSize]="24"
                     class="mr-3 border-2 border-app-gray-100"
@@ -92,7 +92,7 @@
                         'text-orange': opt.value === collectionControl.value
                     }">
                         <div class="mr-2">
-                            <nz-avatar *ngIf="opt?.img"
+                            <nz-avatar *ngIf="opt?.img && isDrawerOpen"
                                 [nzSrc]="previewImageService.getCollectionSize(opt.img)"
                                 [nzSize]="24"
                                 class="mr-3 border-2 border-app-gray-100"

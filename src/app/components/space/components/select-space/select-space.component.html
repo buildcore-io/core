@@ -19,7 +19,7 @@
                 [nzValue]="s.value"
                 >
                 <nz-avatar
-                    *ngIf="s?.img"
+                    *ngIf="s?.img && isSelectOpen"
                     [nzSrc]="previewImageService.getAvatarSize(s.img)"
                     [nzSize]="24"
                     class="mr-3 border-2 border-app-gray-100"
@@ -92,7 +92,7 @@
                         'text-orange': opt.value === spaceControl.value
                     }">
                         <div class="mr-2">
-                            <nz-avatar *ngIf="opt?.img"
+                            <nz-avatar *ngIf="opt?.img && isDrawerOpen"
                                 [nzSrc]="previewImageService.getAvatarSize(opt.img)"
                                 [nzSize]="24"
                                 class="mr-3 border-2 border-app-gray-100"
