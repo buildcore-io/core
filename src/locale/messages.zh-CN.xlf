@@ -209,7 +209,7 @@
           <context context-type="linenumber">288</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
         <target state="translated">为</target>
@@ -2220,7 +2220,7 @@
       <trans-unit id="4233821199291749572" datatype="html">
         <source>Earned Badge</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
         <target state="translated">获得奖章</target>
@@ -2228,7 +2228,7 @@
       <trans-unit id="1351814922314683865" datatype="html">
         <source>with</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
         <target state="translated">和</target>
@@ -2236,11 +2236,11 @@
       <trans-unit id="3517550046701184661" datatype="html">
         <source>Show less</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
         <target state="translated">显示更少</target>
@@ -2248,11 +2248,11 @@
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">87</context>
         </context-group>
         <target state="translated">显示更多</target>
@@ -2260,7 +2260,7 @@
       <trans-unit id="6814295386768519176" datatype="html">
         <source>Timeline</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <target state="translated">时间轴</target>
@@ -2268,7 +2268,7 @@
       <trans-unit id="9074325042294858925" datatype="html">
         <source>Purchased by</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
         <target state="translated">购买者：</target>
@@ -2276,7 +2276,7 @@
       <trans-unit id="2497399796653488268" datatype="html">
         <source>details</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
         <target state="translated">详情</target>
@@ -2284,7 +2284,7 @@
       <trans-unit id="4136129438009397007" datatype="html">
         <source>Invalid</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">45,46</context>
         </context-group>
         <target state="translated">无效的</target>
@@ -2292,7 +2292,7 @@
       <trans-unit id="5674790342225467123" datatype="html">
         <source>Listed by space</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
+          <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">76</context>
         </context-group>
         <target state="translated">上架空间：</target>
