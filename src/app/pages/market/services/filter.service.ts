@@ -8,7 +8,6 @@ export class FilterService {
   public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.RECENT);
   public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
   // public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
-
   public get sortOptions(): typeof SortOptions {
     return SortOptions;
   }
