@@ -24,6 +24,10 @@ export class SpacesPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN];
+  public hotTagsLabels: { [key: string]: string } = {
+    [HOT_TAGS.ALL]: $localize`All`,
+    [HOT_TAGS.OPEN]: $localize`Open`
+  }
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Space[][] = [];
   private subscriptions$: Subscription[] = [];

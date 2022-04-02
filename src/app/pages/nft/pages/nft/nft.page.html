@@ -61,16 +61,22 @@
 
                     <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="(endsOnTicker$ | async) && auctionInProgress(data.nft$ | async, data.collection$ | async)">
                         <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
-                          {{getAuctionEndHours(data.nft$ | async)}}
-                          <span i18n> hours</span>
+                            <div class="mr-1">
+                                {{getAuctionEndHours(data.nft$ | async)}}
+                            </div>
+                            <div i18n>hours</div>
                         </div>
                         <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
-                          {{getAuctionEndMin(data.nft$ | async)}}
-                          <span i18n> min</span>
+                            <div class="mr-1">
+                                {{getAuctionEndMin(data.nft$ | async)}}
+                            </div>
+                            <div i18n>min</div>
                         </div>
                         <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
-                          {{getAuctionEndSec(data.nft$ | async)}}
-                          <span i18n> sec</span>
+                            <div class="mr-1">
+                                {{getAuctionEndSec(data.nft$ | async)}}
+                            </div>
+                            <div i18n>sec</div>
                         </div>
                     </div>
             </div>
@@ -86,7 +92,7 @@
 
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)"
                     [ngClass]="{
-                      'bg-tag-red': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.allBidTransactions$ | async)?.length,
+                      'bg-tag-red': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.myBidTransactions$ | async)?.length,
                       'bg-tag-green': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
                     }">
                     <div class="text-xs font-medium text-foregrounds-secondary">
@@ -210,11 +216,11 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let item of (data.allBidTransactions$ | async)">
-                            <td>
+                            <td [routerLink]="['/member', item.member.uid]" class="cursor-pointer">
                                 <nz-avatar nzIcon="user" [nzSrc]="item.member.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
                                     [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
                                 </nz-avatar>
-                                <span [routerLink]="'/'">@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
+                                <span>@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
                             </td>
                             <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
                             <td>{{ data.formatBest(item.transaction.payload.amount) }}</td>

@@ -151,8 +151,7 @@
           <nz-card-meta
             i18n-nzTitle
             nzTitle="Avatar"
-            i18n-nzDescription
-            [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Your brand is key.'"
+            [nzDescription]="getAvatarCardDescription()"
           >
           </nz-card-meta>
 
@@ -161,7 +160,7 @@
               <nz-form-control
                 [nzValidateStatus]="avatarControl"
                 i18n-nzErrorTip
-                [nzErrorTip]="'Avatar is mandatory'"
+                nzErrorTip="Avatar is mandatory"
               >
                 <nz-upload
                   class="wen-avatar-uploader"
@@ -190,8 +189,7 @@
           <nz-card-meta
             i18n-nzTitle
             nzTitle="Banner"
-            i18n-nzDescription
-            [nzDescription]="editMode ? 'Upload new to replace existing.' : 'Make it personal.'"
+            [nzDescription]="getBannerCardDescription()"
           >
           </nz-card-meta>
 
