@@ -40,7 +40,7 @@ export class NavigationService implements OnDestroy {
       });
   }
 
-  private returnableUrl(): { url: string, text: string }[] {
+  private returnableUrl(): { url: string; text: string }[] {
     return [
       { url: ROUTER_UTILS.config.space.root, text: 'Space' },
       { url: ROUTER_UTILS.config.discover.root, text: 'Discover' },
@@ -52,7 +52,7 @@ export class NavigationService implements OnDestroy {
     ];
   }
 
-  private forwardableUrl(): { url: string, text: string }[] {
+  private forwardableUrl(): { url: string; text: string }[] {
     return [
       { url: `${ROUTER_UTILS.config.collection.root}/${ROUTER_UTILS.config.collection.edit}`, text: 'Collection' },
     ]

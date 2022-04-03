@@ -20,9 +20,9 @@ export enum SaleType {
 
 export interface UpdateEvent {
   nft?: string;
-  type?: SaleType,
-  access?: NftAccess|null,
-  accessMembers?: string[]|null,
+  type?: SaleType;
+  access?: NftAccess|null;
+  accessMembers?: string[]|null;
   availableFrom?: Timestamp|null;
   auctionFrom?: Timestamp|null;
   price?: number|null;

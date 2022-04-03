@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +20,7 @@ import { DataService } from './../../services/data.service';
 @UntilDestroy()
 @Component({
   selector: 'wen-award',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './award.page.html',
   styleUrls: ['./award.page.less']
 })

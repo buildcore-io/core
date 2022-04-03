@@ -24,7 +24,7 @@ export interface ProposalParticipantWithMember extends Member {
   values?: number[];
 
   // Only internal variable.
-  _issuedOn?: Timestamp
+  _issuedOn?: Timestamp;
 }
 
 export interface TransactionWithFullMember extends Transaction {

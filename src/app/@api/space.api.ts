@@ -16,7 +16,7 @@ export interface AllianceExtended extends Alliance {
 export interface SpaceWithAlliances extends Space {
   alliances: {
     [propName: string]: AllianceExtended;
-  }
+  };
 }
 
 @Injectable({

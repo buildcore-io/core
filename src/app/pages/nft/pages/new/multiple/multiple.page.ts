@@ -30,7 +30,7 @@ export interface NFTObject {
     fields?: string[];
     value?: () => any;
     defaultAmount?: number;
-  }
+  };
 }
 
 @UntilDestroy()

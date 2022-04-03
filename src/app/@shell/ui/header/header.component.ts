@@ -74,7 +74,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.member$.pipe(
       untilDestroyed(this)
-    ).subscribe(async(obj) => {
+    ).subscribe((obj) => {
       if (obj?.uid) {
         this.cancelAccessSubscriptions();
         this.accessSubscriptions$.push(this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {

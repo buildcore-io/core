@@ -3,7 +3,9 @@ import { Award, Collection, Member, Space } from "functions/interfaces/models";
 import { Nft } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
 
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService {
   public collectionId?: string;
   public collection$: BehaviorSubject<Collection|undefined> = new BehaviorSubject<Collection|undefined>(undefined);

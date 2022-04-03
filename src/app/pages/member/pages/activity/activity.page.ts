@@ -181,7 +181,7 @@ export class ActivityPage implements OnInit {
   }
 
   public initChart(data: any[][]): void {
-    const dataToShow: { data: number[], labels: string[]} = {
+    const dataToShow: { data: number[]; labels: string[]} = {
       data: [],
       labels: []
     };

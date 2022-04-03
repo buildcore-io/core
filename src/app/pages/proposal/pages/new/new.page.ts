@@ -25,9 +25,9 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 enum TargetGroup {
-  GUARDIANS,
-  MEMBERS,
-  NATIVE
+  GUARDIANS = 0,
+  MEMBERS = 1,
+  NATIVE = 2
 }
 
 @UntilDestroy()
@@ -318,10 +318,10 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
-  public getAnswerTitle(index: number): string { 
+  public getAnswerTitle(index: number): string {
     return $localize`Choice` + ' #' + (index + 1);
   }
-  
+
   public getAwardLabel(award: Award): string {
     return award.name + ' (' + $localize`badge` + ': ' + award.badge.name + ', ' + $localize`id` + ': ' + award.uid.substring(0, 10) + ')';
   }

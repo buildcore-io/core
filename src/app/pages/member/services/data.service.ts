@@ -9,7 +9,9 @@ import { FULL_LIST } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
 
 @UntilDestroy()
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService {
   public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
   public awardsCompleted$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);

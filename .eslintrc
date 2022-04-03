@@ -45,6 +45,14 @@
           "error",
           { "type": "element", "prefix": "wen", "style": "kebab-case" }
         ],
+        "@angular-eslint/contextual-decorator": [2],
+        "@angular-eslint/contextual-lifecycle": [2],
+        "@angular-eslint/no-attribute-decorator": [2],
+        "@angular-eslint/no-lifecycle-call": [2],
+        "@angular-eslint/no-output-native": [2],
+        "@angular-eslint/prefer-on-push-component-change-detection": [2],
+        "@angular-eslint/use-injectable-provided-in": [2],
+        "@angular-eslint/use-lifecycle-interface": [2],
         "new-cap": [
           "error",
           {
@@ -89,6 +97,9 @@
         "comma-spacing": 2,
         "no-multi-spaces": 2,
         "no-multiple-empty-lines": 2,
+        "@typescript-eslint/prefer-enum-initializers": 2,
+        "@typescript-eslint/member-delimiter-style": 2,
+        // "@typescript-eslint/member-ordering": 2,
         // "@typescript-eslint/restrict-plus-operands": 2,
         // "@typescript-eslint/no-unnecessary-condition": 2,
         // Disabled for now.

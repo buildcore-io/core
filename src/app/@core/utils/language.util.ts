@@ -8,7 +8,7 @@ export interface LanguagesType {
     ngZorro: any;
     title: string;
     firebase: string;
-  }
+  };
 }
 
 export const Languages: LanguagesType = {

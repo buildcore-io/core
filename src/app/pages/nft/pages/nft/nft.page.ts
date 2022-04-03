@@ -568,7 +568,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public initChart(data: any[][]): void {
-    const dataToShow: { data: number[], labels: string[] } = {
+    const dataToShow: { data: number[]; labels: string[] } = {
       data: [],
       labels: []
     };

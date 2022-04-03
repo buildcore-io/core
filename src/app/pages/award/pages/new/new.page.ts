@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeviceService } from '@core/services/device';
@@ -20,6 +20,7 @@ import { AuthService } from './../../../../components/auth/services/auth.service
 @UntilDestroy()
 @Component({
   selector: 'wen-new',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './new.page.html',
   styleUrls: ['./new.page.less']
 })

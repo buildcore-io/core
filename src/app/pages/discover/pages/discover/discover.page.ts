@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { NavigationEnd, Router } from '@angular/router';
 import { TabSection } from '@components/tabs/tabs.component';
@@ -12,6 +12,7 @@ import { FilterService } from './../../services/filter.service';
 @UntilDestroy()
 @Component({
   selector: 'wen-discover',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.less']
 })

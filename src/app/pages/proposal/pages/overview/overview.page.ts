@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -15,6 +15,7 @@ import { DataService } from './../../services/data.service';
 @UntilDestroy()
 @Component({
   selector: 'wen-overview',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './overview.page.html',
   styleUrls: ['./overview.page.less']
 })
