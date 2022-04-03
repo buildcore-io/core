@@ -40,7 +40,7 @@ export class SelectCollectionComponent implements OnInit {
     return this._collections;
   }
 
-  public onChange = (v: string | undefined) => undefined;
+  public onChange: (v: string | undefined) => undefined = () => undefined;
   public disabled = false;
   public collectionControl: FormControl = new FormControl('', Validators.required);
   public searchControl: FormControl = new FormControl('', Validators.required);

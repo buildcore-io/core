@@ -17,7 +17,7 @@ describe('MemberSpacesComponent', () => {
         MockProvider(MemberApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

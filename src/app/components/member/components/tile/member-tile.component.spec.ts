@@ -11,7 +11,7 @@ describe('MemberTileComponent', () => {
     spectator = createComponent();
   });
 
-it('write tests', () => {
-  expect(spectator).toBeDefined();
-});
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
+  });
 });

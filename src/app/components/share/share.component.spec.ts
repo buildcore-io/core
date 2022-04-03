@@ -10,7 +10,7 @@ describe('ShareComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ ShareComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

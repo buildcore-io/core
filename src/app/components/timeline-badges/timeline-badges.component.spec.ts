@@ -10,7 +10,7 @@ describe('TimelineComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ TimelineBadgesComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

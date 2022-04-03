@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { Collection, Space } from "functions/interfaces/models";
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -8,7 +8,7 @@ import { SpaceApi } from './../../../@api/space.api';
 @Injectable({
   providedIn: 'root'
 })
-export class CacheService {
+export class CacheService implements OnDestroy {
   public allSpaces$ = new BehaviorSubject<Space[]>([]);
   // TODO This should be ideally removed eventually.
   public allCollections$ = new BehaviorSubject<Collection[]>([]);

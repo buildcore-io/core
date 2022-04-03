@@ -18,7 +18,7 @@ describe('CollectionsPage', () => {
         MockProvider(ActivatedRoute)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

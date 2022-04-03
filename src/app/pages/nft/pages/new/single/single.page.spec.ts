@@ -30,7 +30,7 @@ describe('SinglePage', () => {
         MockProvider(FileApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

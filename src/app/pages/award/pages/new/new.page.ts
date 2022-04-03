@@ -159,7 +159,7 @@ export class NewPage implements OnInit, OnDestroy {
       this.nzNotification.error('', 'No more avatars available');
       return false;
     } else {
-      const results: boolean = await this.auth.mint(result[0].uid);
+      const results: boolean = await this.auth.mint();
       if (results === false) {
         this.nzNotification.error('', 'Unable to mint your badge at the moment. Try again later.');
         return false;

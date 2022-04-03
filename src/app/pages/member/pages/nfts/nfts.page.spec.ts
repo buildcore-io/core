@@ -19,7 +19,7 @@ describe('NFTsPage', () => {
         MockProvider(NftApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

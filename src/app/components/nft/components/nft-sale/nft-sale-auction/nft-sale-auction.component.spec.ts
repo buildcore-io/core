@@ -10,7 +10,7 @@ describe('NftSaleAuctionComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ NftSaleAuctionComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -21,7 +21,7 @@ describe('IOTAAddressComponent', () => {
         MockProvider(OrderApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

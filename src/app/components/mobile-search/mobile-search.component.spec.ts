@@ -10,7 +10,7 @@ describe('MobileSearchComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ MobileSearchComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -21,7 +21,7 @@ describe('CollectionsPage', () => {
         MockProvider(CacheService)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

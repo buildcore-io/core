@@ -59,27 +59,27 @@ export class NFTPage implements OnInit, OnDestroy {
     },
     scales: {
       xAxis: {
-          ticks: {
-              maxTicksLimit: 10,
-              color: '#959388',
-              font: {
-                size: 14,
-                weight: '600',
-                family: 'Poppins',
-                lineHeight: '14px'
-              }
+        ticks: {
+          maxTicksLimit: 10,
+          color: '#959388',
+          font: {
+            size: 14,
+            weight: '600',
+            family: 'Poppins',
+            lineHeight: '14px'
           }
+        }
       },
       yAxis: {
         ticks: {
-            maxTicksLimit: 10,
-            color: '#959388',
-            font: {
-              size: 14,
-              weight: '600',
-              family: 'Poppins',
-              lineHeight: '14px'
-            }
+          maxTicksLimit: 10,
+          color: '#959388',
+          font: {
+            size: 14,
+            weight: '600',
+            family: 'Poppins',
+            lineHeight: '14px'
+          }
         }
       }
     },

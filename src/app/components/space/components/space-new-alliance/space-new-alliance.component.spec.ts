@@ -14,7 +14,7 @@ describe('SpaceNewAllianceComponent', () => {
       declarations: [ SpaceNewAllianceComponent ],
       providers: [MockProvider(DataService), MockProvider(AuthService)]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

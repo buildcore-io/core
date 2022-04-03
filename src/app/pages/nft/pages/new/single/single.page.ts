@@ -310,7 +310,7 @@ export class SinglePage implements OnInit {
     }
 
     await this.auth.sign(this.formatSubmitData({ ...this.nftForm.value }), (sc, finish) => {
-      this.notification.processRequest(this.nftApi.create(sc), 'Created.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.nftApi.create(sc), 'Created.', finish).subscribe(() => {
         this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);
       });
     });

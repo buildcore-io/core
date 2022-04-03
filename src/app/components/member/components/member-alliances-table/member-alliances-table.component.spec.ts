@@ -12,14 +12,14 @@ describe('MemberAlliancesTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MemberAlliancesTableComponent ],
+      declarations: [MemberAlliancesTableComponent],
       providers: [
         MockProvider(SpaceApi),
         MockProvider(CollectionApi),
         MockProvider(CacheService)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

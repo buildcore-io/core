@@ -34,7 +34,7 @@ describe('UpsertPage', () => {
         MockProvider(CacheService)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -15,11 +15,11 @@ export class MarkDownPipe implements PipeTransform {
     }
 
     const output = unified()
-                  .use(remarkParse)
-                  .use(remarkGfm)
-                  .use(remarkReHype)
-                  .use(reHypeStringify)
-                  .processSync(str);
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkReHype)
+      .use(reHypeStringify)
+      .processSync(str);
 
     return String(output);
   }

@@ -8,9 +8,9 @@ describe('MemberReputationModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MemberReputationModalComponent ]
+      declarations: [MemberReputationModalComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -77,13 +77,13 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
     this.selectedAccessControl.valueChanges.pipe(untilDestroyed(this))
       .subscribe(() => {
         switch (this.selectedAccessControl.value) {
-          case NftAccess.OPEN:
-            this.buyerControl.removeValidators(Validators.required);
-            this.buyerControl.setErrors(null);
-            break;
-          case NftAccess.MEMBERS:
-            this.buyerControl.addValidators(Validators.required);
-            break;
+        case NftAccess.OPEN:
+          this.buyerControl.removeValidators(Validators.required);
+          this.buyerControl.setErrors(null);
+          break;
+        case NftAccess.MEMBERS:
+          this.buyerControl.addValidators(Validators.required);
+          break;
         }
       });
 

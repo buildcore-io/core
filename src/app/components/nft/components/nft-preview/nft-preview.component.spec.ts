@@ -16,7 +16,7 @@ describe('NftPreviewComponent', () => {
       declarations: [ NftPreviewComponent ],
       providers: [MockProvider(DataService), MockProvider(AuthService), MockProvider(CacheService), MockProvider(FileApi)]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

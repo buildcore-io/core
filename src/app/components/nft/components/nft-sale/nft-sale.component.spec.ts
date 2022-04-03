@@ -25,7 +25,7 @@ describe('NftSaleComponent', () => {
         MockProvider(NftApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

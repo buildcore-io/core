@@ -13,7 +13,7 @@ describe('TimelineNftComponent', () => {
       declarations: [ TimelineNftComponent ],
       providers: [ MockProvider(DataService) ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

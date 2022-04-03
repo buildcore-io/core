@@ -62,9 +62,9 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || []).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 

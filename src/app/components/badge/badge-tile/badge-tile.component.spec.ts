@@ -7,14 +7,14 @@ describe('BadgeTileComponent', () => {
   let spectator: Spectator<BadgeTileComponent>;
   const createComponent = createComponentFactory({
     component: BadgeTileComponent,
-    imports: [ IpfsBadgeModule ]
+    imports: [IpfsBadgeModule]
   });
 
   beforeEach(() => {
     spectator = createComponent();
   });
 
-it('write tests', () => {
-  expect(spectator).toBeDefined();
-});
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
+  });
 });

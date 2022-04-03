@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CollectionAccessBadgeComponent } from './collection-access-badge.component';
+
 
 describe('CollectionAccessBadgeComponent', () => {
   let component: CollectionAccessBadgeComponent;
@@ -8,9 +8,9 @@ describe('CollectionAccessBadgeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CollectionAccessBadgeComponent ]
+      declarations: [CollectionAccessBadgeComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

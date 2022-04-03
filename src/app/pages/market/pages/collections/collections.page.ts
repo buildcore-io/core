@@ -37,8 +37,8 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public collections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   public accessControl: FormControl;
   public categories: string[] = [AddedCategories.ALL, Categories.ABSTRACT, Categories.ANIMATION, Categories.ART,
-                                Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERACTIVE, Categories.PFP,
-                                Categories.PHOTOGRAPHY, Categories.PIXELART, Categories.SINGLE, Categories.THREE_D ];
+    Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERACTIVE, Categories.PFP,
+    Categories.PHOTOGRAPHY, Categories.PIXELART, Categories.SINGLE, Categories.THREE_D ];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Collection[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -165,9 +165,9 @@ export class CollectionsPage implements OnInit, OnDestroy {
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || []).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 

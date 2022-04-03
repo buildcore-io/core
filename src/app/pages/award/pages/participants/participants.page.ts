@@ -169,7 +169,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       uid: id,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.awardApi.approveParticipant(sc), 'Approve.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.awardApi.approveParticipant(sc), 'Approve.', finish).subscribe(() => {
         // none.
       });
     });

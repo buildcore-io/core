@@ -10,7 +10,7 @@ describe('NewPage', () => {
     await TestBed.configureTestingModule({
       declarations: [ NewPage ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

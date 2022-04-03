@@ -70,9 +70,12 @@
           "newIsCap": true,
           "properties": true
         }],
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "import/extensions": 0,
         "import/no-unresolved": 0,
         "valid-jsdoc": 0,
+        "indent": ["error", 2],
         // Disabled for now.
         "require-jsdoc": 0 // ["error", {
         //   "require": {

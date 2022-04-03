@@ -21,7 +21,7 @@ export class MobileSearchComponent implements OnInit, ControlValueAccessor {
   @Input() value?: string;
   @Input() placeholder = '';
 
-  public onChange = (v: string | undefined) => undefined;
+  public onChange: (v: string | undefined) => undefined = () => undefined;
   public searchControl: FormControl = new FormControl('');
 
   public ngOnInit(): void {
@@ -40,7 +40,7 @@ export class MobileSearchComponent implements OnInit, ControlValueAccessor {
     this.onChange = fn;
   }
 
-  public registerOnTouched(fn: any): void {
+  public registerOnTouched(): void {
     return undefined;
   }
 }

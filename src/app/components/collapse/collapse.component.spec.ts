@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CollapseComponent } from './collapse.component';
+
 
 describe('CollapseComponent', () => {
   let component: CollapseComponent;
@@ -8,9 +8,9 @@ describe('CollapseComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CollapseComponent ]
+      declarations: [CollapseComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

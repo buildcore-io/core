@@ -10,7 +10,7 @@ describe('SelectSpaceComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ SelectSpaceComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

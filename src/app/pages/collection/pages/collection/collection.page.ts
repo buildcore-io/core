@@ -88,7 +88,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
       if (this.auth.member$.value?.uid) {
         this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-                                      .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$);
+          .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$);
       }
 
       // Get badges to show.
@@ -222,9 +222,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-        uid: this.data.collection$.value.uid
+      uid: this.data.collection$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.collectionApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.collectionApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
       });
     });
@@ -246,7 +246,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.collection$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.collectionApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.collectionApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.
       });
     });

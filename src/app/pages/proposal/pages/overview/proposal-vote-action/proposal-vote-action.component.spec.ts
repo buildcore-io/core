@@ -14,7 +14,7 @@ describe('ProposalVoteActionComponent', () => {
       declarations: [ ProposalVoteActionComponent ],
       providers: [MockProvider(AuthService), MockProvider(DataService)]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

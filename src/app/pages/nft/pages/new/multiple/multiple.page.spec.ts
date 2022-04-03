@@ -30,7 +30,7 @@ describe('MultiplePage', () => {
         MockProvider(NftApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

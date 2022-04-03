@@ -15,7 +15,7 @@ describe('NFTsPage', () => {
       declarations: [ NFTsPage ],
       providers: [FilterService, MockProvider(CacheService), MockProvider(NftApi)]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

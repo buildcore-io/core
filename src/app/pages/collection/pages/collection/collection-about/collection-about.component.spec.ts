@@ -14,7 +14,7 @@ describe('CollectionAboutComponent', () => {
       providers: [DataService],
       imports: [IpfsBadgeModule]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

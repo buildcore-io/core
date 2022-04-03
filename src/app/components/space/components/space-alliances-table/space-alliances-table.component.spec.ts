@@ -10,7 +10,7 @@ describe('SpaceAlliancesTableComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ SpaceAlliancesTableComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

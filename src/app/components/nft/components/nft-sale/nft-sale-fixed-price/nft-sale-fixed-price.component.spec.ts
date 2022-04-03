@@ -13,7 +13,7 @@ describe('NftSaleFixedPriceComponent', () => {
       declarations: [ NftSaleFixedPriceComponent ],
       providers: [ MockProvider(MemberApi) ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

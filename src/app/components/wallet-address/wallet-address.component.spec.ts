@@ -10,7 +10,7 @@ describe('WalletAddressComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ WalletAddressComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

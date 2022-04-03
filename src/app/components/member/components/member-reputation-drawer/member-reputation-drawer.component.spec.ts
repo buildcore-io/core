@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MemberReputationDrawerComponent } from './member-reputation-drawer.component';
+
 
 describe('MemberReputationDrawerComponent', () => {
   let component: MemberReputationDrawerComponent;
@@ -8,9 +8,9 @@ describe('MemberReputationDrawerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MemberReputationDrawerComponent ]
+      declarations: [MemberReputationDrawerComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
