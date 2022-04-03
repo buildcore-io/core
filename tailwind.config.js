@@ -2,11 +2,16 @@ const fs = require('fs');
 const lessToJs = require('less-vars-to-js');
 const { kebabCase, mapKeys } = require('lodash');
 
-const lightThemeLess = fs.readFileSync('src/theme/light.less').toString();
-const lightTheme = lessToJs(lightThemeLess, {
+const lessOptions = {
   resolveVariables: true,
   stripPrefix: true,
-});
+};
+
+const lightThemeLess = fs.readFileSync('src/theme/light.less').toString();
+const lightTheme = lessToJs(lightThemeLess, lessOptions);
+
+const darkThemeLess = fs.readFileSync('src/theme/dark.less').toString();
+const darkTheme = lessToJs(darkThemeLess, lessOptions);
 
 const normalizeNames = (theme) => mapKeys(theme, (_, name) => kebabCase(name));
 
@@ -31,6 +36,7 @@ module.exports = {
         inherit: 'inherit',
         // Modern definition - shared with less variables used in ng-zorro
         ...normalizeNames(lightTheme),
+        ...normalizeNames(darkTheme),
 
         // Obsolete definition - will be removed once we migrate all
         orange: {
@@ -67,8 +73,8 @@ module.exports = {
           700: '#E6E6E6',
           separator: {
             light: '#F5F4EF',
-            dark: '#C4C4C4'
-          }
+            dark: '#C4C4C4',
+          },
         },
         tag: {
           blue: '#DCEFF9',
@@ -85,27 +91,27 @@ module.exports = {
         },
         alerts: {
           error: '#D94B08',
-          warning: '#FAE312'
+          warning: '#FAE312',
         },
         foregrounds: {
           secondary: '#959388',
           separator: '#F0EEE6',
-          tertiary: '#BCB9A9'
+          tertiary: '#BCB9A9',
         },
         red: {
-          primary: '#FF0019'
+          primary: '#FF0019',
         },
         brown: {
           primary: '#A66300',
           secondary: '#F4F2E4',
           light: '#C6BF9F',
-          lighter: '#FAF9F4'
+          lighter: '#FAF9F4',
         },
         pink: '#F20CDF',
         black: '#000000',
         yellow: {
           primary: '#FFEF64',
-          secondary: '#FFE815'
+          secondary: '#FFE815',
         },
       },
       spacing: {
@@ -134,12 +140,12 @@ module.exports = {
         '1/2': '50%',
         '1/3': '33%',
         '2/3': '66%',
-        450: '450px'
+        450: '450px',
       },
       width: {
         header: '500px',
         76: '19rem',
-        '3/10': '30%'
+        '3/10': '30%',
       },
       minHeight: {
         6: '1.5rem',
@@ -147,7 +153,7 @@ module.exports = {
         10: '2.5rem',
         24: '6rem',
         76: '19rem',
-        180: '45rem'
+        180: '45rem',
       },
       maxHeight: {
         56: '14rem',
@@ -156,7 +162,7 @@ module.exports = {
       },
       height: {
         76: '19rem',
-        99: '24.75rem'
+        99: '24.75rem',
       },
       borderRadius: {
         9: '2.25rem',
@@ -172,11 +178,11 @@ module.exports = {
       },
       boxShadow: {
         header: '0px 2px 3px #E6E5DE',
-        modal: '0px 2px 32px rgba(0, 0, 0, 0.16)'
+        modal: '0px 2px 32px rgba(0, 0, 0, 0.16)',
       },
       fontSize: {
-        xxs: '0.625rem'
-      }
+        xxs: '0.625rem',
+      },
     },
   },
   variants: {},

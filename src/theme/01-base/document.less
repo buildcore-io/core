@@ -1,15 +1,16 @@
+@import '../light.less';
+@import '../dark.less';
+
 html,
 body {
   @apply h-full;
 }
 
 body {
-  @apply bg-gray-100;
-  @apply text-gray-800;
+  @apply text-foregrounds-primary;
 
   &.dark {
-    @apply bg-gray-800;
-    @apply text-gray-50;
+    @apply text-foregrounds-primary-dark;
   }
 }
 
