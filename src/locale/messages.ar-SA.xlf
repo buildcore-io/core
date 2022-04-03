@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/navigation/navigation.service.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="needs-translation">Back</target>
+        <target state="translated">الرجوع</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -204,7 +204,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">280</context>
         </context-group>
-        <target state="needs-translation"> was outbid. Try again!</target>
+        <target state="translated"> زيدَ عنه! حاول بعرض أكبر!</target>
       </trans-unit>
       <trans-unit id="8052677427935411852" datatype="html">
         <source>just offered</source>
@@ -450,7 +450,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation">Unable to sign transaction. Please try to reload page.</target>
+        <target state="translated">تعذر توقيع المعاملة. الرجاء محاولة إعادة تحميل الصفحة.</target>
       </trans-unit>
       <trans-unit id="4055437571775141299" datatype="html">
         <source>You must unlock your MetaMask first!</source>
@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">156</context>
         </context-group>
-        <target state="needs-translation">You must unlock your MetaMask first!</target>
+        <target state="translated">يجب عليك فتح MetaMask الخاص بك أولاً!</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
@@ -474,7 +474,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="needs-translation">Please make sure you select address in MetaMask!</target>
+        <target state="translated">الرجاء التأكد من اختيار العنوان في MetaMask!</target>
       </trans-unit>
       <trans-unit id="4963418461748546700" datatype="html">
         <source>Unable to get nonce to authenticate!</source>
@@ -498,7 +498,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation">Failed to initialize MetaMask, try to reload page.</target>
+        <target state="translated">فشل تهيئة MetaMask، حاول إعادة تحميل الصفحة.</target>
       </trans-unit>
       <trans-unit id="9217311297628108490" datatype="html">
         <source>Pending
@@ -806,7 +806,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Recently joined spaces</target>
+        <target state="translated">الأفضية المنضمة مؤخرا</target>
       </trans-unit>
       <trans-unit id="1616102757855967475" datatype="html">
         <source>All</source>
@@ -870,7 +870,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">50,51</context>
         </context-group>
-        <target state="needs-translation">Connections</target>
+        <target state="translated">الاتصالات</target>
       </trans-unit>
       <trans-unit id="5466085200395052815" datatype="html">
         <source>Awards</source>
@@ -942,7 +942,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation">Set a display name. This does not change your username.</target>
+        <target state="translated">تعيين اسم العرض. هذا لا يغير اسم المستخدم الخاص بك.</target>
       </trans-unit>
       <trans-unit id="4670052686967204775" datatype="html">
         <source>Display name (optional)</source>
@@ -950,7 +950,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">Display name (optional)</target>
+        <target state="translated">اسم العرض (اختياري)</target>
       </trans-unit>
       <trans-unit id="1726363342938046830" datatype="html">
         <source>About</source>
@@ -958,7 +958,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">About</target>
+        <target state="translated">عن التطبيق</target>
       </trans-unit>
       <trans-unit id="1013259492339547143" datatype="html">
         <source>A brief description of yourself shown on your profile.</source>
@@ -974,7 +974,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Your description (optional)</target>
+        <target state="translated">الوصف (اختياري)</target>
       </trans-unit>
       <trans-unit id="6525109356951792180" datatype="html">
         <source>Avatar</source>
@@ -1022,7 +1022,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Networking</target>
+        <target state="translated">الشبكات</target>
       </trans-unit>
       <trans-unit id="8518289414313197012" datatype="html">
         <source>Invalid Github username.</source>
@@ -1046,7 +1046,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="needs-translation">Type your Github account username</target>
+        <target state="translated">اكتب اسم حسابك في Github</target>
       </trans-unit>
       <trans-unit id="9037477696979809280" datatype="html">
         <source>Invalid Twitter username.</source>
@@ -1062,7 +1062,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">80,81</context>
         </context-group>
-        <target state="needs-translation">Invalid Twitter username.</target>
+        <target state="translated">اسم تويتر غير صالح.</target>
       </trans-unit>
       <trans-unit id="4073392478148771631" datatype="html">
         <source>Type your Twitter account username</source>
@@ -1074,7 +1074,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">87,88</context>
         </context-group>
-        <target state="needs-translation">Type your Twitter account username</target>
+        <target state="translated">اكتب اسم حسابك في تويتر</target>
       </trans-unit>
       <trans-unit id="589863444641052422" datatype="html">
         <source>Only username#1234 format supported.</source>
@@ -1090,7 +1090,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
-        <target state="needs-translation">Type your Discord account username</target>
+        <target state="translated">اكتب اسم حسابك في ديسكورد</target>
       </trans-unit>
       <trans-unit id="4930506384627295710" datatype="html">
         <source>Settings</source>
@@ -1174,7 +1174,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
-        <target state="needs-translation">Royalties</target>
+        <target state="translated">الإتاوات</target>
       </trans-unit>
       <trans-unit id="7856806101502977514" datatype="html">
         <source>Royalties are automatically deducted and paid to artists.</source>
@@ -1194,7 +1194,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">69,70</context>
         </context-group>
-        <target state="needs-translation">Royalties are automatically deducted and paid to artists.</target>
+        <target state="translated">تُخصم الإتاوات تلقائياً وتُدفع للفنانين.</target>
       </trans-unit>
       <trans-unit id="6300210647237660616" datatype="html">
         <source>Current highest bid</source>
@@ -1206,7 +1206,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation">Current highest bid</target>
+        <target state="translated">اعلى عرض حالي</target>
       </trans-unit>
       <trans-unit id="8180434088303661671" datatype="html">
         <source>Min bid</source>
@@ -1218,7 +1218,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
-        <target state="needs-translation">Min bid</target>
+        <target state="translated">أقل عرض مقبول</target>
       </trans-unit>
       <trans-unit id="523519638239091406" datatype="html">
         <source>Your bid is the highest</source>
@@ -1230,7 +1230,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">104</context>
         </context-group>
-        <target state="needs-translation">Your bid is the highest</target>
+        <target state="translated">العرض الخاص بك هو الأعلى</target>
       </trans-unit>
       <trans-unit id="2897616024485017156" datatype="html">
         <source> Current price is refreshing in real time</source>
@@ -1238,7 +1238,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation"> Current price is refreshing in real time</target>
+        <target state="translated"> يتم تحديث السعر الحالي في الوقت الفعلي</target>
       </trans-unit>
       <trans-unit id="727772125693257505" datatype="html">
         <source>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</source>
@@ -1286,7 +1286,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">111,112</context>
         </context-group>
-        <target state="needs-translation">Terms and Conditions</target>
+        <target state="translated">الأحكام والشروط</target>
       </trans-unit>
       <trans-unit id="3201433032746097286" datatype="html">
         <source> Make a bid </source>
@@ -1330,7 +1330,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="needs-translation">Copied</target>
+        <target state="translated">تم النسخ</target>
       </trans-unit>
       <trans-unit id="4323470180912194028" datatype="html">
         <source>Copy</source>
@@ -1354,7 +1354,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/wallet-address.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
-        <target state="needs-translation">Copy</target>
+        <target state="translated">نسخ</target>
       </trans-unit>
       <trans-unit id="6093950867355046066" datatype="html">
         <source> Do not send funds from an exchange, always use wallets you fully control. </source>
@@ -1366,7 +1366,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control. </target>
+        <target state="translated"> لا ترسل الأموال من متجر ، استخدم فقط محفظتك الخاصة. </target>
       </trans-unit>
       <trans-unit id="2370778860499758288" datatype="html">
         <source> Firefly </source>
@@ -1438,7 +1438,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">239</context>
         </context-group>
-        <target state="needs-translation"> Your transactions </target>
+        <target state="translated"> عملياتك </target>
       </trans-unit>
       <trans-unit id="8481211261929080451" datatype="html">
         <source>Sent Date</source>
@@ -1462,7 +1462,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">247,248</context>
         </context-group>
-        <target state="needs-translation">Action</target>
+        <target state="translated">عملية</target>
       </trans-unit>
       <trans-unit id="6533918067030990396" datatype="html">
         <source>Amount</source>
@@ -1518,7 +1518,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">274</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, use only a Firefly or TanglePay wallet. </target>
+        <target state="translated"> لا ترسل الأموال من متجر ، استخدم فقط محفظة Firefly أو TanglePay. </target>
       </trans-unit>
       <trans-unit id="7539361169976574107" datatype="html">
         <source>Congratulations you won the NFT.</source>
@@ -1526,7 +1526,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">306,307</context>
         </context-group>
-        <target state="needs-translation">Congratulations you won the NFT.</target>
+        <target state="translated">تهانينا على الفوز بـ NFT.</target>
       </trans-unit>
       <trans-unit id="8528366073079211415" datatype="html">
         <source> Close checkout </source>
@@ -1538,7 +1538,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">238</context>
         </context-group>
-        <target state="needs-translation"> Close checkout </target>
+        <target state="translated"> إغلاق الدفع </target>
       </trans-unit>
       <trans-unit id="535977460003741771" datatype="html">
         <source> Show my NFT </source>
@@ -1570,7 +1570,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
           <context context-type="linenumber">370</context>
         </context-group>
-        <target state="needs-translation">Generated NFT</target>
+        <target state="translated">الNFT المنشأ</target>
       </trans-unit>
       <trans-unit id="7535874439763400390" datatype="html">
         <source>SFT</source>
@@ -1582,7 +1582,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
           <context context-type="linenumber">372</context>
         </context-group>
-        <target state="needs-translation">SFT</target>
+        <target state="translated">SFT</target>
       </trans-unit>
       <trans-unit id="6320319413541466015" datatype="html">
         <source>day</source>
@@ -1642,7 +1642,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">73</context>
         </context-group>
-        <target state="needs-translation">Current bid</target>
+        <target state="translated">العرض الحالي</target>
       </trans-unit>
       <trans-unit id="5383011891382211495" datatype="html">
         <source>Owned by</source>
@@ -1685,7 +1685,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">29,30</context>
         </context-group>
-        <target state="needs-translation">Checkout</target>
+        <target state="translated">إتمام الشراء</target>
       </trans-unit>
       <trans-unit id="3521411922357728471" datatype="html">
         <source>Total price</source>
@@ -1733,7 +1733,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">133,134</context>
         </context-group>
-        <target state="needs-translation">Expired</target>
+        <target state="translated">انتهت مدة الصلاحية</target>
       </trans-unit>
       <trans-unit id="4871765403323848538" datatype="html">
         <source>We received invalid amount. Try again.</source>
@@ -1741,7 +1741,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">137</context>
         </context-group>
-        <target state="needs-translation">We received invalid amount. Try again.</target>
+        <target state="translated">تلقينا مبلغ غير صالح. حاول مرة أخرى.</target>
       </trans-unit>
       <trans-unit id="2448339751576066057" datatype="html">
         <source>IOTA to following address (please restake after!):</source>
@@ -1773,7 +1773,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">204</context>
         </context-group>
-        <target state="needs-translation"> Transaction history </target>
+        <target state="translated"> سجل العمليات </target>
       </trans-unit>
       <trans-unit id="425557118450087391" datatype="html">
         <source> Validating your transaction... </source>
@@ -1801,7 +1801,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
-        <target state="needs-translation">Preview</target>
+        <target state="translated">معاينة</target>
       </trans-unit>
       <trans-unit id="5637997436989246922" datatype="html">
         <source>Sale Starts</source>
@@ -1813,7 +1813,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation">Sale Starts</target>
+        <target state="translated">يبدأ البيع</target>
       </trans-unit>
       <trans-unit id="4629255373567370412" datatype="html">
         <source>Current price</source>
@@ -1829,7 +1829,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">86,87</context>
         </context-group>
-        <target state="needs-translation">Current price</target>
+        <target state="translated">السعر الحالي</target>
       </trans-unit>
       <trans-unit id="7071470734400948493" datatype="html">
         <source>Author</source>
@@ -1837,7 +1837,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">68,69</context>
         </context-group>
-        <target state="needs-translation">Author</target>
+        <target state="translated">المؤلف</target>
       </trans-unit>
       <trans-unit id="7596769783947942591" datatype="html">
         <source>Migrate</source>
@@ -1849,7 +1849,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">324,325</context>
         </context-group>
-        <target state="needs-translation">Migrate</target>
+        <target state="translated">نقل</target>
       </trans-unit>
       <trans-unit id="8315498121193062276" datatype="html">
         <source>Shimmer/Mainnet (Tokenization)...SOON.</source>
@@ -1861,7 +1861,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">326,328</context>
         </context-group>
-        <target state="needs-translation">Shimmer/Mainnet (Tokenization)...SOON.</target>
+        <target state="translated">Shimmer/Mainnet (التوكين) قريباً.</target>
       </trans-unit>
       <trans-unit id="809642350371086523" datatype="html">
         <source>The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice.</source>
@@ -1885,7 +1885,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">338,339</context>
         </context-group>
-        <target state="needs-translation">IPFS Metadata</target>
+        <target state="translated">بيانات تعريف IPFS</target>
       </trans-unit>
       <trans-unit id="6114133845791044682" datatype="html">
         <source> Preparing... </source>
@@ -1897,7 +1897,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">122</context>
         </context-group>
-        <target state="needs-translation"> Preparing... </target>
+        <target state="translated"> إعداد... </target>
       </trans-unit>
       <trans-unit id="163617933164027990" datatype="html">
         <source>IPFS Image</source>
@@ -1909,7 +1909,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">345,346</context>
         </context-group>
-        <target state="needs-translation">IPFS Image</target>
+        <target state="translated">صورة IPFS</target>
       </trans-unit>
       <trans-unit id="9073868935709862564" datatype="html">
         <source>NFT Image</source>
@@ -1925,7 +1925,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">15,16</context>
         </context-group>
-        <target state="needs-translation">NFT Image</target>
+        <target state="translated">صورة NFT</target>
       </trans-unit>
       <trans-unit id="1689990966993952052" datatype="html">
         <source> Trade info </source>
@@ -1937,7 +1937,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation"> Trade info </target>
+        <target state="translated"> معلومات التجارة </target>
       </trans-unit>
       <trans-unit id="6899856777447778605" datatype="html">
         <source>Floor price</source>
@@ -1945,7 +1945,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Floor price</target>
+        <target state="translated">أدنى سعر مقبول</target>
       </trans-unit>
       <trans-unit id="3751374312807441308" datatype="html">
         <source>Available On is required.</source>
@@ -1985,7 +1985,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">100,101</context>
         </context-group>
-        <target state="needs-translation">Available on</target>
+        <target state="translated">متوفر في</target>
       </trans-unit>
       <trans-unit id="1487616168779684166" datatype="html">
         <source>Various auction length coming next sprint once community have a vote!</source>
@@ -2037,7 +2037,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">532,533</context>
         </context-group>
-        <target state="needs-translation">Open Sale</target>
+        <target state="translated">البيع مفتوح</target>
       </trans-unit>
       <trans-unit id="3941627922243942610" datatype="html">
         <source>Specific member(s) only (Transfer)</source>
@@ -2061,7 +2061,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-not-for-sale/nft-sale-not-for-sale.component.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="needs-translation"> Trade history </target>
+        <target state="translated"> سجل التجارة </target>
       </trans-unit>
       <trans-unit id="2406639896101280043" datatype="html">
         <source> Item is yours and yours only </source>
@@ -2085,7 +2085,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-not-for-sale/nft-sale-not-for-sale.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Stop sale!</target>
+        <target state="translated">إيقاف البيع!</target>
       </trans-unit>
       <trans-unit id="6220492706081128873" datatype="html">
         <source>List Item for sale</source>
@@ -2105,7 +2105,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">86,87</context>
         </context-group>
-        <target state="needs-translation">Not for sale</target>
+        <target state="translated">ليس للبيع</target>
       </trans-unit>
       <trans-unit id="4668399393309435986" datatype="html">
         <source>Fixed price</source>
@@ -2113,7 +2113,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Fixed price</target>
+        <target state="translated">سعر محدد</target>
       </trans-unit>
       <trans-unit id="2109630812434101777" datatype="html">
         <source>Auction</source>
@@ -2121,7 +2121,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">94,95</context>
         </context-group>
-        <target state="needs-translation">Auction</target>
+        <target state="translated">مزاد علني</target>
       </trans-unit>
       <trans-unit id="1809847784604950003" datatype="html">
         <source>Donut graph coming SOON.</source>
@@ -2365,7 +2365,7 @@
           <context context-type="sourcefile">src/app/components/timeline-badges/timeline-badges.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">with</target>
+        <target state="translated">مع</target>
       </trans-unit>
       <trans-unit id="3517550046701184661" datatype="html">
         <source>Show less</source>
@@ -2377,7 +2377,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">114</context>
         </context-group>
-        <target state="needs-translation">Show less</target>
+        <target state="translated">عرض أقل</target>
       </trans-unit>
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
@@ -2389,7 +2389,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">115</context>
         </context-group>
-        <target state="needs-translation">Show more</target>
+        <target state="translated">عرض المزيد</target>
       </trans-unit>
       <trans-unit id="6814295386768519176" datatype="html">
         <source>Timeline</source>
@@ -2397,7 +2397,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Timeline</target>
+        <target state="translated">الخط الزمني</target>
       </trans-unit>
       <trans-unit id="3954692067786091142" datatype="html">
         <source>Listed by</source>
@@ -2421,7 +2421,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <target state="needs-translation">Purchased by</target>
+        <target state="translated">تم شراؤه من لدن</target>
       </trans-unit>
       <trans-unit id="2497399796653488268" datatype="html">
         <source>details</source>
@@ -2429,7 +2429,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="needs-translation">details</target>
+        <target state="translated">تفاصيل</target>
       </trans-unit>
       <trans-unit id="4136129438009397007" datatype="html">
         <source>Invalid</source>
@@ -2437,7 +2437,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="needs-translation">Invalid</target>
+        <target state="translated">غير صالح</target>
       </trans-unit>
       <trans-unit id="5674790342225467123" datatype="html">
         <source>Listed by space</source>
@@ -2453,7 +2453,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">Bill (owner)</target>
+        <target state="translated">فاتورة (المالك)</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -2461,7 +2461,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="needs-translation">Bill (royalty)</target>
+        <target state="translated">الفاتورة (الإتاوات)</target>
       </trans-unit>
       <trans-unit id="272934122656341350" datatype="html">
         <source>Credit</source>
@@ -2469,7 +2469,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="needs-translation">Credit</target>
+        <target state="translated">الرصيد</target>
       </trans-unit>
       <trans-unit id="4892553839051604445" datatype="html">
         <source>Payment</source>
@@ -2477,7 +2477,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="needs-translation">Payment</target>
+        <target state="translated">الدفع</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -2485,7 +2485,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">Order</target>
+        <target state="translated">الترتيب</target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -2493,7 +2493,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">12,13</context>
         </context-group>
-        <target state="needs-translation">Generate address</target>
+        <target state="translated">إنشاء العنوان</target>
       </trans-unit>
       <trans-unit id="8296987453705264149" datatype="html">
         <source>Make transaction</source>
@@ -2501,7 +2501,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">33,34</context>
         </context-group>
-        <target state="needs-translation">Make transaction</target>
+        <target state="translated">إجراء العملية</target>
       </trans-unit>
       <trans-unit id="6630180502031778606" datatype="html">
         <source>Wait for confirmation</source>
@@ -2509,7 +2509,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Wait for confirmation</target>
+        <target state="translated">في انتظار التأكيد</target>
       </trans-unit>
       <trans-unit id="1902234206836707099" datatype="html">
         <source>Confirmed</source>
@@ -2517,7 +2517,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">78,79</context>
         </context-group>
-        <target state="needs-translation">Confirmed</target>
+        <target state="translated">تم التأكيد</target>
       </trans-unit>
       <trans-unit id="677609986720469055" datatype="html">
         <source>You will be asked to send funds to the new IOTA address for the verification process. The address you send funds from will be linked to your </source>
@@ -2533,7 +2533,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">space</target>
+        <target state="translated">فضاء</target>
       </trans-unit>
       <trans-unit id="7813000971625481835" datatype="html">
         <source>profile</source>
@@ -2557,7 +2557,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation"> Generate new address </target>
+        <target state="translated"> إنشاء عنوان جديد </target>
       </trans-unit>
       <trans-unit id="8339972866659886806" datatype="html">
         <source>Send a small </source>
