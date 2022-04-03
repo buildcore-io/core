@@ -53,7 +53,7 @@ export class SpacePage implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Space');
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.data.listenToSpace(id);
       } else {
@@ -73,7 +73,7 @@ export class SpacePage implements OnInit, OnDestroy {
     this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
   }
 
-  public get member$(): BehaviorSubject<Member|undefined> {
+  public get member$(): BehaviorSubject<Member | undefined> {
     return this.auth.member$;
   }
 
@@ -85,7 +85,7 @@ export class SpacePage implements OnInit, OnDestroy {
     return url ? FileApi.getUrl(url, 'space_banner', FILE_SIZES.large) : undefined;
   }
 
-  public get avatarUrl$(): Observable<string|undefined> {
+  public get avatarUrl$(): Observable<string | undefined> {
     return this.data.space$.pipe(
       map((space: Space | undefined) => {
         return space?.avatarUrl ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
@@ -93,7 +93,7 @@ export class SpacePage implements OnInit, OnDestroy {
     );
   }
 
-  public get bannerUrl$(): Observable<string|undefined> {
+  public get bannerUrl$(): Observable<string | undefined> {
     return this.data.space$.pipe(
       map((space: Space | undefined) => {
         return space?.bannerUrl ? FileApi.getUrl(space.bannerUrl, 'space_banner', FILE_SIZES.large) : undefined;
@@ -115,7 +115,7 @@ export class SpacePage implements OnInit, OnDestroy {
     }, (sc, finish) => {
       this.notification.processRequest(
         this.spaceApi.join(sc), this.data.space$.value?.open ? 'Joined.' : 'Pending Approval', finish
-      ).subscribe((val: any) => {
+      ).subscribe(() => {
         // none.
       });
     });
@@ -140,7 +140,7 @@ export class SpacePage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.space$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.leave(sc), 'Leaved.', finish).subscribe(() => {
         // none
       });
     });

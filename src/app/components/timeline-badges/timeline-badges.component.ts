@@ -16,13 +16,13 @@ export class TimelineBadgesComponent {
 
   constructor(
     public deviceService: DeviceService
-  ) {}
+  ) { }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Transaction) {
     return item.uid;
   }
 }

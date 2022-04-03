@@ -21,7 +21,7 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 })
 export class MemberCardComponent implements OnDestroy {
   @Input()
-  public set selectedSpace(value: Space |  string | undefined) {
+  public set selectedSpace(value: Space | string | undefined) {
     this._selectedSpace = typeof value === 'string' ?
       this.cache.allSpaces$.getValue().find((s) => s.uid === value) : value;
     this.refreshBadges();
@@ -47,7 +47,7 @@ export class MemberCardComponent implements OnDestroy {
     return this._includeAlliances;
   }
 
-  public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
+  public badges$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<Transaction[] | undefined>(undefined);
   public totalVisibleBadges = 6;
   public path = ROUTER_UTILS.config.member.root;
   public isReputationVisible = false;
@@ -76,41 +76,46 @@ export class MemberCardComponent implements OnDestroy {
           .subscribe(this.badges$);
       } else {
         this.badges$.next(undefined);
-        const allBadges: string[] = [...(this.member?.spaces?.[this.selectedSpace!.uid]?.badges || [])];
-        if (this.includeAlliances) {
-          for (const [spaceId] of Object.entries(this.selectedSpace?.alliances || {})) {
-            allBadges.push(...(this.member.spaces?.[spaceId]?.badges || []));
+        if (this.selectedSpace) {
+          const allBadges: string[] = [...(this.member?.spaces?.[this.selectedSpace.uid]?.badges || [])];
+          if (this.includeAlliances) {
+            for (const [spaceId] of Object.entries(this.selectedSpace?.alliances || {})) {
+              allBadges.push(...(this.member.spaces?.[spaceId]?.badges || []));
+            }
           }
+
+          // Let's get first 6 badges.
+          const finalBadgeTransactions: Transaction[] = [];
+          for (const tran of allBadges.slice(0, this.totalVisibleBadges)) {
+            const obj: Transaction | undefined = await firstValueFrom(this.tranApi.listen(tran));
+            if (obj) {
+              finalBadgeTransactions.push(obj);
+            }
+          }
+
+          this.badges$.next(finalBadgeTransactions);
         }
 
-        // Let's get first 6 badges.
-        const finalBadgeTransactions: Transaction[] = [];
-        for (const tran of allBadges.slice(0, this.totalVisibleBadges)) {
-          const obj: Transaction | undefined = await firstValueFrom(this.tranApi.listen(tran));
-          if (obj) {
-            finalBadgeTransactions.push(obj);
-          }
-        }
-
-        this.badges$.next(finalBadgeTransactions);
       }
     }
   }
 
-  public getTotal(what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
+  public getTotal(what: 'awardsCompleted' | 'totalReputation'): number { // awardsCompleted
     let total = 0;
     if (!this.selectedSpace) {
       total = this.member?.[what] || 0;
     } else {
-      total = this.member?.spaces?.[this.selectedSpace!.uid]?.[what] || 0;
-      if (this.includeAlliances) {
-        for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
-          const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
-            return s.uid === spaceId;
-          });
-          if (allianceSpace && values.enabled === true ) {
-            const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
-            total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
+      if (this.selectedSpace) {
+        total = this.member?.spaces?.[this.selectedSpace.uid]?.[what] || 0;
+        if (this.includeAlliances) {
+          for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
+            const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
+              return s.uid === spaceId;
+            });
+            if (allianceSpace && values.enabled === true) {
+              const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
+              total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
+            }
           }
         }
       }

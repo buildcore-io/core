@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { copyToClipboard } from '@core/utils/tools.utils';
-import { BaseRecord } from '@functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-share',
@@ -17,14 +16,13 @@ export class ShareComponent {
   constructor(
     public deviceService: DeviceService,
     private cd: ChangeDetectorRef
-  ) {}
-  
+  ) { }
 
-  public getShareUrl(item?: BaseRecord | null): string {
-    const url: string = (item?.wenUrlShort || item?.wenUrl || window.location.href);
+
+  public getShareUrl(): string {
     return 'http://twitter.com/share?text=' + this.shareText + '&url=' + this.shareUrl + '&hashtags=soonaverse';
   }
-  
+
   public copy(): void {
     if (!this.isCopied) {
       copyToClipboard(window.location.href);

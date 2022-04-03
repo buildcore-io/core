@@ -19,7 +19,7 @@ import { DataService } from "./../../services/data.service";
 export class AwardsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(AwardFilter.ACTIVE);
-  public hotTags: { value: AwardFilter; label: string}[] = [
+  public hotTags: { value: AwardFilter; label: string }[] = [
     { value: AwardFilter.DRAFT, label: $localize`Pending` },
     { value: AwardFilter.ACTIVE, label: $localize`Active` },
     { value: AwardFilter.COMPLETED, label: $localize`Completed` },
@@ -33,11 +33,11 @@ export class AwardsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     public data: DataService,
     public deviceService: DeviceService
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
@@ -49,16 +49,16 @@ export class AwardsPage implements OnInit, OnDestroy {
     this.selectedListControl.valueChanges.pipe(untilDestroyed(this)).subscribe((val) => {
       if (this.spaceId && val === AwardFilter.COMPLETED) {
         this.data.listenToCompletedAwards(this.spaceId);
-      } else  if (this.spaceId && val === AwardFilter.REJECTED) {
+      } else if (this.spaceId && val === AwardFilter.REJECTED) {
         this.data.listenToRejectedAwards(this.spaceId);
-      } else  if (this.spaceId && val === AwardFilter.DRAFT) {
+      } else if (this.spaceId && val === AwardFilter.DRAFT) {
         this.data.listenToDraftAwards(this.spaceId);
       }
       this.cd.markForCheck();
     });
   }
 
-  public getList(): BehaviorSubject<Award[]|undefined> {
+  public getList(): BehaviorSubject<Award[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.ACTIVE) {
       return this.data.awardsActive$;
     } else if (this.selectedListControl.value === this.filterOptions.DRAFT) {
@@ -87,7 +87,7 @@ export class AwardsPage implements OnInit, OnDestroy {
     return AwardFilter;
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Award) {
     return item.uid;
   }
 

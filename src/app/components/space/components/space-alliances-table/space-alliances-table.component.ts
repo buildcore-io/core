@@ -20,7 +20,7 @@ export class SpaceAlliancesTableComponent {
     public previewImageService: PreviewImageService
   ) { }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: AllianceExtended) {
     return item.uid;
   }
 }

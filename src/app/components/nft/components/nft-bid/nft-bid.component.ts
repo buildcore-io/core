@@ -41,7 +41,7 @@ export class NftBidComponent implements OnInit {
     return this._isOpen;
   }
   @Input()
-  set nft(value: Nft|null|undefined) {
+  set nft(value: Nft | null | undefined) {
     this._nft = value;
     if (this._nft) {
       this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
@@ -55,27 +55,27 @@ export class NftBidComponent implements OnInit {
       });
     }
   }
-  get nft(): Nft|null|undefined {
+  get nft(): Nft | null | undefined {
     return this._nft;
   }
 
-  @Input() collection?: Collection|null;
+  @Input() collection?: Collection | null;
   @Output() wenOnClose = new EventEmitter<void>();
 
-  public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
+  public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
   public linkedTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
   public stepType = StepType;
   public isCopied = false;
   public agreeTermsConditions = false;
-  public mediaType: 'video'|'image'|undefined;
+  public mediaType: 'video' | 'image' | undefined;
   public targetAddress?: string;
   public targetAmount?: number;
   public path = ROUTER_UTILS.config.nft.root;
 
   private transSubscription?: Subscription;
   private _isOpen = false;
-  private _nft?: Nft|null;
+  private _nft?: Nft | null;
 
   constructor(
     public deviceService: DeviceService,
@@ -86,7 +86,7 @@ export class NftBidComponent implements OnInit {
     private router: Router,
     private orderApi: OrderApi,
     private sanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     const listeningToTransaction: string[] = [];
@@ -94,13 +94,15 @@ export class NftBidComponent implements OnInit {
       if (val && val.type === TransactionType.ORDER) {
         this.targetAddress = val.payload.targetAddress;
         this.targetAmount = this.nft?.auctionHighestBid || val.payload.amount;
-        const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn!.toDate());
-        if (expiresOn.isBefore(dayjs())) {
-          // It's expired.
-          removeBitItemItem(val.payload.nft + this.auth.member$.value?.uid + expiresOn.valueOf());
-          return;
+        if (val.payload.expiresOn) {
+          const expiresOn: dayjs.Dayjs = dayjs(val.payload.expiresOn.toDate());
+          if (expiresOn.isBefore(dayjs())) {
+            // It's expired.
+            removeBitItemItem(val.payload.nft + this.auth.member$.value?.uid + expiresOn.valueOf());
+            return;
+          }
+          this.expiryTicker$.next(expiresOn);
         }
-
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = StepType.WAIT;
           // Listen to other transactions.
@@ -110,7 +112,7 @@ export class NftBidComponent implements OnInit {
             }
 
             listeningToTransaction.push(tranId);
-            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe((t: any) => {
+            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe((t: Transaction | undefined) => {
               if (!t) {
                 return;
               }
@@ -145,15 +147,13 @@ export class NftBidComponent implements OnInit {
         if (val && val.payload.reconciled === true) {
           this.currentStep = StepType.COMPLETE;
         }
-
-        this.expiryTicker$.next(expiresOn);
       }
 
       this.cd.markForCheck();
     });
 
-    if (this.nft?.uid && getBitItemItem(this.nft.uid+this.auth.member$.value?.uid+this.nft.auctionTo?.toMillis())) {
-      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid+this.auth.member$.value?.uid+this.nft.auctionTo?.toMillis())).subscribe(<any>this.transaction$);
+    if (this.nft?.uid && getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())) {
+      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())).subscribe(<any>this.transaction$);
     }
 
     // Run ticker.
@@ -184,7 +184,7 @@ export class NftBidComponent implements OnInit {
     }
   }
 
-  public formatBest(amount: number|undefined): string {
+  public formatBest(amount: number | undefined): string {
     if (!amount) {
       return '';
     }
@@ -198,7 +198,7 @@ export class NftBidComponent implements OnInit {
     this.wenOnClose.next();
   }
 
-  public getRecord(): Nft|null|undefined {
+  public getRecord(): Nft | null | undefined {
     return this.nft;
   }
 
@@ -233,7 +233,7 @@ export class NftBidComponent implements OnInit {
     }
 
     return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-           '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
+      '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
   }
 
   public tanglePayDeepLink(): SafeUrl {

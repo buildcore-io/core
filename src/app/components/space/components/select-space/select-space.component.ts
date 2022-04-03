@@ -24,7 +24,7 @@ export const DEFAULT_SPACE: SelectSpaceOption = {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      multi:true,
+      multi: true,
       useExisting: SelectSpaceComponent
     }
   ]
@@ -45,7 +45,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
     return this._spaces;
   }
 
-  public onChange = (v: string | undefined) => undefined;
+  public onChange = () => undefined;
   public disabled = false;
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public searchControl: FormControl = new FormControl('', Validators.required);
@@ -58,13 +58,13 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
     private cd: ChangeDetectorRef,
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.spaceControl.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe((value: string) => {
-        this.onChange(value);
+      .subscribe(() => {
+        this.onChange();
         this.isSelectOpen = false;
         this.isDrawerOpen = false;
         this.cd.markForCheck();
@@ -78,7 +78,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
       });
   }
 
-  public registerOnChange(fn: (v: string | undefined) => undefined): void {
+  public registerOnChange(fn: () => undefined): void {
     this.onChange = fn;
   }
 
@@ -95,7 +95,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
     this.cd.markForCheck();
   }
 
-  public trackByValue(index: number, item: any): number {
+  public trackByValue(index: number, item: SelectSpaceOption) {
     return item.value;
   }
 

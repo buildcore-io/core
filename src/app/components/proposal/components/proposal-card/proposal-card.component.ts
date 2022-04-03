@@ -18,7 +18,7 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 export class ProposalCardComponent implements OnChanges, OnDestroy {
   @Input() proposal?: Proposal;
   @Input() fullWidth?: boolean;
-  public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
+  public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public path = ROUTER_UTILS.config.proposal.root;
   private subscriptions$: Subscription[] = [];
 
@@ -26,13 +26,13 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
     private spaceApi: SpaceApi,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService
-  ) {}
+  ) { }
 
   public getProgressForTwo(a: ProposalAnswer[]): number[] {
     if (this.proposal?.type === ProposalType.NATIVE) {
       let total = 0;
-      if ((<any>this.proposal?.results)?.questions?.[0].answers) {
-        (<any>this.proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
+      if ((<Proposal>this.proposal?.results)?.questions?.[0].answers) {
+        (<Proposal>this.proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
           if (b.value === 0 || b.value === 255) {
             return;
           }
@@ -41,10 +41,10 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
         });
       }
 
-      const ans1: any = (<any>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      const ans1: any = (<Proposal>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
         return suba.value === 1;
       });
-      const ans2: any = (<any>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      const ans2: any = (<Proposal>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
         return suba.value === 2;
       });
 

@@ -32,7 +32,7 @@ export class AwardApi extends BaseApi<Award> {
     super(afs, fns);
   }
 
-  public listen(id: EthAddress): Observable<Award|undefined> {
+  public listen(id: EthAddress): Observable<Award | undefined> {
     return super.listen(id);
   }
 
@@ -59,36 +59,36 @@ export class AwardApi extends BaseApi<Award> {
     ).valueChanges();
   }
 
-  public listenOwners(award: string, lastValue?: any): Observable<Member[]> {
+  public listenOwners(award: string, lastValue?: number): Observable<Member[]> {
     return this.subCollectionMembers(award, SUB_COL.OWNERS, lastValue);
   }
 
-  public lastActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public lastActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query(this.collection, 'endDate', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
     });
   }
 
-  public topActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public topActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query(this.collection, 'endDate', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
     });
   }
 
-  public lastCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public lastCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('completed', '==', true).where('approved', '==', true);
     });
   }
 
-  public topCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
+  public topCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
     return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('completed', '==', true).where('approved', '==', true);
     });
   }
 
   // TODO: Fix typings.
-  public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: any, searchIds?: string[]): Observable<any> {
+  public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: number, searchIds?: string[]): Observable<any> {
     return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, searchIds, (original, finObj) => {
       finObj.comment = original.comment;
       finObj.participatedOn = original.createdOn;
@@ -100,7 +100,7 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   // TODO: Fix typings.
-  public listenIssuedParticipants<AwardParticipantWithMember>(award: string, lastValue?: any, searchIds?: string[]): Observable<any> {
+  public listenIssuedParticipants<AwardParticipantWithMember>(award: string, lastValue?: number, searchIds?: string[]): Observable<any> {
     return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, searchIds, (original, finObj) => {
       finObj.comment = original.comment;
       finObj.participatedOn = original.createdOn;
@@ -123,23 +123,23 @@ export class AwardApi extends BaseApi<Award> {
     );
   }
 
-  public create(req: WenRequest): Observable<Award|undefined> {
+  public create(req: WenRequest): Observable<Award | undefined> {
     return this.request(WEN_FUNC.cAward, req);
   }
 
-  public participate(req: WenRequest): Observable<Award|undefined> {
+  public participate(req: WenRequest): Observable<Award | undefined> {
     return this.request(WEN_FUNC.participateAward, req);
   }
 
-  public approveParticipant(req: WenRequest): Observable<Award|undefined> {
+  public approveParticipant(req: WenRequest): Observable<Award | undefined> {
     return this.request(WEN_FUNC.aParticipantAward, req);
   }
 
-  public approve(req: WenRequest): Observable<Award|undefined> {
+  public approve(req: WenRequest): Observable<Award | undefined> {
     return this.request(WEN_FUNC.aAward, req);
   }
 
-  public reject(req: WenRequest): Observable<Award|undefined> {
+  public reject(req: WenRequest): Observable<Award | undefined> {
     return this.request(WEN_FUNC.rAward, req);
   }
 }

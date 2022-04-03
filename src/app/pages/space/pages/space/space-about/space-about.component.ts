@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Out
 import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
-import { Space } from '@functions/interfaces/models';
+import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import { Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
-import { SpaceApi } from '../../../../../@api/space.api';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
-import { AllianceExtended, SpaceWithAlliances } from './../../../../../@api/space.api';
+import { AllianceExtended, SpaceApi, SpaceWithAlliances } from './../../../../../@api/space.api';
 import { CacheService } from './../../../../../@core/services/cache/cache.service';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
 
@@ -48,7 +47,7 @@ export class SpaceAboutComponent implements OnDestroy {
   }
 
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Member) {
     return item.uid;
   }
 
@@ -68,7 +67,7 @@ export class SpaceAboutComponent implements OnDestroy {
     this.isNewAllianceOpen = false;
   }
 
-  public getSortedAlliances(space?: SpaceWithAlliances|null): AllianceExtended[] {
+  public getSortedAlliances(space?: SpaceWithAlliances | null): AllianceExtended[] {
     if (!space) {
       return [];
     }
@@ -92,7 +91,7 @@ export class SpaceAboutComponent implements OnDestroy {
         this.spaceApi.setAlliance(sc),
         this.isNewAlliance ? 'Connection established' : 'Connection updated.',
         finish
-      ).subscribe((val: any) => {
+      ).subscribe(() => {
         this.closeNewAlliance();
       });
     });
