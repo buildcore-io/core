@@ -6,7 +6,7 @@ describe('TimelineComponent', () => {
   let component: TimelineBadgesComponent;
   let fixture: ComponentFixture<TimelineBadgesComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ TimelineBadgesComponent ]
     })

@@ -76,7 +76,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async (val) => {
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async(val) => {
       // We need reset old values.
       this.resetDataStore();
       this.resetSubjects();

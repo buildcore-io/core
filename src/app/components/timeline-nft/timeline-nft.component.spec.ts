@@ -8,7 +8,7 @@ describe('TimelineNftComponent', () => {
   let component: TimelineNftComponent;
   let fixture: ComponentFixture<TimelineNftComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ TimelineNftComponent ],
       providers: [ MockProvider(DataService) ]

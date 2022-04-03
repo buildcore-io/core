@@ -163,7 +163,7 @@ export class AuthService {
             method: "eth_requestAccounts",
             params: [{ eth_accounts: {} }]
           });
-        } catch(e) {
+        } catch (e) {
           this.notification.error($localize`You must enable access to read your account address.`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;

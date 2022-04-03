@@ -124,7 +124,7 @@ export class SinglePage implements OnInit {
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = Number(this.priceControl.value) * (<Units>this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+        const value = Number(this.priceControl.value) * (<Units> this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });

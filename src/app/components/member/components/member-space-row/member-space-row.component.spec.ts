@@ -6,7 +6,7 @@ describe('MemberSpaceRowComponent', () => {
   let component: MemberSpaceRowComponent;
   let fixture: ComponentFixture<MemberSpaceRowComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [MemberSpaceRowComponent]
     })

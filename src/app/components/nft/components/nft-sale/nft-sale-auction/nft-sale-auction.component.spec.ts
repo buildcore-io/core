@@ -6,7 +6,7 @@ describe('NftSaleAuctionComponent', () => {
   let component: NftSaleAuctionComponent;
   let fixture: ComponentFixture<NftSaleAuctionComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ NftSaleAuctionComponent ]
     })

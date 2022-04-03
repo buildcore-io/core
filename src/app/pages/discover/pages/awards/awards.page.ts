@@ -135,7 +135,7 @@ export class AwardsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.award$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.award$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

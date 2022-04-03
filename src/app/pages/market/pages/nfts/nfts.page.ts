@@ -150,7 +150,7 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.highToLowAvailable(last, search);
       }  else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
         return this.nftApi.highToLowAuction(last, search);
-      }else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.highToLowOwned(last, search);
       } else {
         return this.nftApi.highToLow(last, search);
@@ -206,7 +206,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.nfts$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.nfts$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

@@ -31,8 +31,8 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
   public getProgressForTwo(a: ProposalAnswer[]): number[] {
     if (this.proposal?.type === ProposalType.NATIVE) {
       let total = 0;
-      if ((<Proposal>this.proposal?.results)?.questions?.[0].answers) {
-        (<Proposal>this.proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
+      if ((<Proposal> this.proposal?.results)?.questions?.[0].answers) {
+        (<Proposal> this.proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
           if (b.value === 0 || b.value === 255) {
             return;
           }
@@ -41,10 +41,10 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
         });
       }
 
-      const ans1: any = (<Proposal>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      const ans1: any = (<Proposal> this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
         return suba.value === 1;
       });
-      const ans2: any = (<Proposal>this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      const ans2: any = (<Proposal> this.proposal?.results)?.questions?.[0].answers.find((suba: any) => {
         return suba.value === 2;
       });
 

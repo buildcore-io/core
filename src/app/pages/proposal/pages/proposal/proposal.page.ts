@@ -102,7 +102,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     });
 
     // Once we get proposal get space.
-    this.data.proposal$.pipe(skip(1), first()).subscribe(async (p) => {
+    this.data.proposal$.pipe(skip(1), first()).subscribe(async(p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         if (p.createdBy) {

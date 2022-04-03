@@ -153,7 +153,7 @@ export class NftBidComponent implements OnInit {
     });
 
     if (this.nft?.uid && getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())) {
-      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())).subscribe(<any>this.transaction$);
+      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())).subscribe(<any> this.transaction$);
     }
 
     // Run ticker.
@@ -257,7 +257,7 @@ export class NftBidComponent implements OnInit {
       this.notification.processRequest(this.orderApi.openBid(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         setBitItemItem(params.nft + this.auth.member$.value?.uid + this.nft?.auctionTo?.toMillis(), val.uid);
-        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
       });
     });
   }

@@ -9,7 +9,7 @@ describe('ProposalVoteActionComponent', () => {
   let component: ProposalVoteActionComponent;
   let fixture: ComponentFixture<ProposalVoteActionComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ ProposalVoteActionComponent ],
       providers: [MockProvider(AuthService), MockProvider(DataService)]

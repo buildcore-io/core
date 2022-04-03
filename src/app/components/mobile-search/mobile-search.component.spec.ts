@@ -6,7 +6,7 @@ describe('MobileSearchComponent', () => {
   let component: MobileSearchComponent;
   let fixture: ComponentFixture<MobileSearchComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ MobileSearchComponent ]
     })

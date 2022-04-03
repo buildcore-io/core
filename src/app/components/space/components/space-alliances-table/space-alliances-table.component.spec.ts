@@ -6,7 +6,7 @@ describe('SpaceAlliancesTableComponent', () => {
   let component: SpaceAlliancesTableComponent;
   let fixture: ComponentFixture<SpaceAlliancesTableComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ SpaceAlliancesTableComponent ]
     })

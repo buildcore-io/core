@@ -6,7 +6,7 @@ describe('CollapseComponent', () => {
   let component: CollapseComponent;
   let fixture: ComponentFixture<CollapseComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [CollapseComponent]
     })

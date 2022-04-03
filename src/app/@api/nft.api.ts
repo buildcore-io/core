@@ -47,18 +47,18 @@ export class NftApi extends BaseApi<Nft> {
       (ref) => {
         return ref.where('payload.nft', '==', nftId).where('type', '==', TransactionType.BILL_PAYMENT).where('payload.royalty', '==', false)
       }
-    ).valueChanges().pipe(switchMap(async (obj: any[]) => {
+    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
       let out: SuccesfullOrdersWithFullHistory[] = [];
       for (const b of obj) {
-        const order: DocumentSnapshot<TransactionOrder> = <any>await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());
-        const member: DocumentSnapshot<Member> = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
+        const order: DocumentSnapshot<TransactionOrder> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());
+        const member: DocumentSnapshot<Member> = <any> await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
         const o: SuccesfullOrdersWithFullHistory = {
           newMember: member.data()!,
           order: order.data()!,
           transactions: []
         };
         for (const link of o.order.linkedTransactions) {
-          const tran: DocumentSnapshot<Transaction> = <any>await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(link).get());
+          const tran: DocumentSnapshot<Transaction> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(link).get());
           if ((tran.data()?.payload.void !== true && tran.data()?.payload.invalidPayment !== true) || tran.data()?.type === TransactionType.BILL_PAYMENT) {
             o.transactions.push(tran.data()!);
 
@@ -98,10 +98,10 @@ export class NftApi extends BaseApi<Nft> {
           .where('createdOn', '>', nft.auctionFrom?.toDate())
           .where('type', '==', TransactionType.PAYMENT)
       }
-    ).valueChanges().pipe(switchMap(async (obj: any[]) => {
+    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
       let out: OffersHistory[] = [];
       for (const b of obj) {
-        const member: DocumentSnapshot<Member> = <any>await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
+        const member: DocumentSnapshot<Member> = <any> await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
         const o: OffersHistory = {
           member: member.data()!,
           transaction: b

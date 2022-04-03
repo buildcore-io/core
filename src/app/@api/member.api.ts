@@ -102,7 +102,7 @@ export class MemberApi extends BaseApi<Member> {
         return ref.where('uid', '==', memberId).where('parentCol', '==', COL.SPACE);
       }
     );
-    return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
+    return ref.valueChanges().pipe(switchMap(async(obj: SpaceMember[]) => {
       const out: Space[] = [];
       const subRecords: Space[] = await this.getSubRecordsInBatches(COL.SPACE, obj.map((o) => {
         return o.parentId;
@@ -129,7 +129,7 @@ export class MemberApi extends BaseApi<Member> {
         return ref.where('uid', '==', memberId).where('parentCol', '==', COL.SPACE);
       }
     );
-    return ref.valueChanges().pipe(switchMap(async (obj: SpaceGuardian[]) => {
+    return ref.valueChanges().pipe(switchMap(async(obj: SpaceGuardian[]) => {
       const out: Space[] = [];
       const subRecords: Space[] = await this.getSubRecordsInBatches(COL.SPACE, obj.map((o) => {
         return o.parentId;

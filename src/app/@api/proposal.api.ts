@@ -97,7 +97,7 @@ export class ProposalApi extends BaseApi<Proposal> {
       (ref) => {
         return ref.where('payload.proposalId', '==', proposalId).where('type', '==', TransactionType.VOTE).limit(DEFAULT_LIST_SIZE)
       }
-    ).valueChanges().pipe(switchMap(async (obj: any[]) => {
+    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
       const out: TransactionWithFullMember[] = [];
       const subRecords: Transaction[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.member;

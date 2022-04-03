@@ -6,7 +6,7 @@ describe('MemberReputationDrawerComponent', () => {
   let component: MemberReputationDrawerComponent;
   let fixture: ComponentFixture<MemberReputationDrawerComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [MemberReputationDrawerComponent]
     })

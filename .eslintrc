@@ -70,12 +70,23 @@
           "newIsCap": true,
           "properties": true
         }],
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "import/extensions": 0,
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/no-non-null-assertion": 0,
+        // "import/extensions": 0,
         "import/no-unresolved": 0,
         "valid-jsdoc": 0,
         "indent": ["error", 2],
+        "no-invalid-this": 2,
+        "use-isnan": 2,
+        "@typescript-eslint/await-thenable": 2,
+        // "@typescript-eslint/no-floating-promises": 2,
+        "@typescript-eslint/no-misused-new": 2,
+        "@typescript-eslint/no-use-before-define": 2,
+        "keyword-spacing": 2,
+        "space-before-blocks": 2,
+        "space-before-function-paren": ["error", "never"],
+        // "@typescript-eslint/restrict-plus-operands": 2,
+        // "@typescript-eslint/no-unnecessary-condition": 2,
         // Disabled for now.
         "require-jsdoc": 0 // ["error", {
         //   "require": {

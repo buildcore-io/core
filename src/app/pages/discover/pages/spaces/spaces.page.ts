@@ -131,7 +131,7 @@ export class SpacesPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.spaces$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.spaces$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

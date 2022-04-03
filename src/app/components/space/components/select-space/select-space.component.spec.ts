@@ -6,7 +6,7 @@ describe('SelectSpaceComponent', () => {
   let component: SelectSpaceComponent;
   let fixture: ComponentFixture<SelectSpaceComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ SelectSpaceComponent ]
     })

@@ -6,7 +6,7 @@ describe('MemberReputationModalComponent', () => {
   let component: MemberReputationModalComponent;
   let fixture: ComponentFixture<MemberReputationModalComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [MemberReputationModalComponent]
     })

@@ -6,7 +6,7 @@ describe('LanguageChangeComponent', () => {
   let component: LanguageChangeComponent;
   let fixture: ComponentFixture<LanguageChangeComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [LanguageChangeComponent]
     })

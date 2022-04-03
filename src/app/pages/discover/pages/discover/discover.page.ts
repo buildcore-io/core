@@ -47,7 +47,7 @@ export class DiscoverPage implements OnInit, OnDestroy {
     this.router.events
       .pipe(untilDestroyed(this))
       .subscribe((obj) => {
-        if(obj instanceof NavigationEnd) {
+        if (obj instanceof NavigationEnd) {
           this.setSelectedSection();
         }
       });

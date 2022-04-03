@@ -6,7 +6,7 @@ describe('SelectCollectionComponent', () => {
   let component: SelectCollectionComponent;
   let fixture: ComponentFixture<SelectCollectionComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [SelectCollectionComponent]
     })

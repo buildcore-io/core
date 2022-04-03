@@ -6,7 +6,7 @@ describe('CollectionAccessBadgeComponent', () => {
   let component: CollectionAccessBadgeComponent;
   let fixture: ComponentFixture<CollectionAccessBadgeComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [CollectionAccessBadgeComponent]
     })

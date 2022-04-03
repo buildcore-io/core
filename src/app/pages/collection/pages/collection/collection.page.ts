@@ -75,7 +75,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async (obj: Collection|undefined) => {
+    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async(obj: Collection|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -119,7 +119,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       this.data.accessCollections$.next(collections);
     });
 
-    this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {
+    this.data.collection$.pipe(skip(1), first()).subscribe(async(p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         if (p.royaltiesSpace) {
@@ -360,7 +360,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.data.nft$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.data.nft$.pipe(map(() => {
       if (!this.data.dataStore[this.data.dataStore.length - 1]) {
         return true;
       }

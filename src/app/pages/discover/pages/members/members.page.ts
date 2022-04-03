@@ -186,7 +186,7 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.members$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.members$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

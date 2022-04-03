@@ -10,7 +10,7 @@ describe('MemberAlliancesTableComponent', () => {
   let component: MemberAlliancesTableComponent;
   let fixture: ComponentFixture<MemberAlliancesTableComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [MemberAlliancesTableComponent],
       providers: [

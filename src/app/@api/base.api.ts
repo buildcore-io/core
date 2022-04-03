@@ -65,7 +65,8 @@ export class BaseApi<T> {
         return query;
       }
     );
-    return ref?.snapshotChanges().pipe(map((actions) => {
+
+    return ref.snapshotChanges().pipe(map((actions) => {
       // We need cursor.
       return actions.map(a => {
         const data = a.payload.doc.data();
@@ -108,7 +109,7 @@ export class BaseApi<T> {
       return query;
     });
 
-    return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
+    return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
       const out: T[] = [];
       const subRecords: T[] = await this.getSubRecordsInBatches(COL.MEMBER, obj.map((o) => {
         return o.uid;
@@ -183,7 +184,7 @@ export class BaseApi<T> {
         return query;
       }
     );
-    return ref.valueChanges().pipe(switchMap(async (obj: any[]) => {
+    return ref.valueChanges().pipe(switchMap(async(obj: any[]) => {
       const out: any[] = [];
       const subRecords: T[] = await this.getSubRecordsInBatches(col, obj.map((o) => {
         return o.parentId;

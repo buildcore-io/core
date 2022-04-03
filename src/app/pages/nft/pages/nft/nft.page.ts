@@ -190,7 +190,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
     let lastNftId: undefined | string = undefined;
     let lastOwner: undefined | string = undefined;
-    this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
+    this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async(p) => {
       // TODO Only cause refresh if it's different to previous.
       if (p && (p.uid !== lastNftId || p.owner !== lastOwner)) {
         lastNftId = p.uid;
@@ -225,7 +225,7 @@ export class NFTPage implements OnInit, OnDestroy {
       this.endsOnTicker$.next(p?.auctionFrom || undefined);
     });
 
-    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
+    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async(p) => {
       if (p) {
         this.collectionSubscriptions$.forEach((s) => {
           s.unsubscribe();

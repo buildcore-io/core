@@ -8,7 +8,7 @@ describe('CollectionAboutComponent', () => {
   let component: CollectionAboutComponent;
   let fixture: ComponentFixture<CollectionAboutComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ CollectionAboutComponent ],
       providers: [DataService],
