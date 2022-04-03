@@ -19,8 +19,8 @@
                 [nzValue]="c.value"
                 >
                 <nz-avatar
-                    *ngIf="c?.img"
-                    [nzSrc]="previewImageService.getAvatarSize(c.img)"
+                    *ngIf="c?.img && isSelectOpen"
+                    [nzSrc]="previewImageService.getCollectionSize(c.img)"
                     [nzSize]="24"
                     class="mr-3 border-2 border-app-gray-100"
                     nzShape="circle"
@@ -34,7 +34,7 @@
             <div class="flex items-center overflow-x-hidden">
                 <div class="mr-3">
                     <nz-avatar *ngIf="getCollection(c.nzValue)?.img; else defaultAvatar"
-                        [nzSrc]="previewImageService.getAvatarSize(getCollection(c.nzValue)?.img)"
+                        [nzSrc]="previewImageService.getCollectionSize(getCollection(c.nzValue)?.img)"
                         [nzSize]="24"
                         class="border-2 border-app-gray-100 min-w-6 min-h-6"
                         nzShape="circle"
@@ -92,8 +92,8 @@
                         'text-orange': opt.value === collectionControl.value
                     }">
                         <div class="mr-2">
-                            <nz-avatar *ngIf="opt?.img"
-                                [nzSrc]="previewImageService.getAvatarSize(opt.img)"
+                            <nz-avatar *ngIf="opt?.img && isDrawerOpen"
+                                [nzSrc]="previewImageService.getCollectionSize(opt.img)"
                                 [nzSize]="24"
                                 class="mr-3 border-2 border-app-gray-100"
                                 nzShape="circle"

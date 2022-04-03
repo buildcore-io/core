@@ -33,10 +33,6 @@ export class BaseApi<T> {
     return this._query(this.collection, 'name', 'asc', lastValue, search, def);
   }
 
-  public lastByRank(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
-    return this._query(this.collection, ['rank', 'createdOn'], 'desc', lastValue, search, def);
-  }
-
   protected _query(
     collection: string,
     orderBy: string | string[] = 'createdOn',

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
@@ -8,7 +8,6 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import { BaseChartDirective } from 'ng2-charts';
 import { map } from "rxjs";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from "./../../services/data.service";
@@ -20,8 +19,6 @@ import { DataService } from "./../../services/data.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityPage implements OnInit {
-  @ViewChild(BaseChartDirective) ngChart?: BaseChartDirective;
-
   public activeOptionButton = "all";
   public spaceForm: FormGroup;
   public spaceControl: FormControl;
@@ -39,13 +36,57 @@ export class ActivityPage implements OnInit {
     scales: {
         xAxis: {
             ticks: {
-                maxTicksLimit: 10
+                maxTicksLimit: 10,
+                color: '#959388',
+                font: {
+                  size: 14,
+                  weight: '600',
+                  family: 'Poppins',
+                  lineHeight: '14px'
+                }
             }
+        },
+        yAxis: {
+          ticks: {
+              color: '#959388',
+              font: {
+                size: 14,
+                weight: '600',
+                family: 'Poppins',
+                lineHeight: '14px'
+              }
+          }
         }
     },
     plugins: {
       legend: {
         display: false
+      },
+      tooltip: {
+        xAlign: 'center',
+        yAlign: 'bottom',
+        backgroundColor: '#fff',
+        titleColor: 'rgba(0,0,0,0)',
+        titleSpacing: 0,
+        titleMarginBottom: 0,
+        titleFont: {
+          lineHeight: 0
+        },  
+        bodyColor: '#333333',
+        bodyFont: {
+          weight: '500',
+          family: 'Poppins',
+          size: 16,
+          lineHeight: '28px'
+        },
+        bodyAlign: 'center',
+        bodySpacing: 0,
+        borderColor: 'rgba(0, 0, 0, 0.2)',
+        borderWidth: 1,
+        footerMarginTop: 0,
+        caretPadding: 16,
+        caretSize: 2,
+        displayColors: false
       }
     }
   };
@@ -168,12 +209,12 @@ export class ActivityPage implements OnInit {
       datasets: [
         {
           data: dataToShow.data,
-          backgroundColor: 'rgba(148,159,177,0.2)',
-          borderColor: 'rgba(148,159,177,1)',
-          pointBackgroundColor: 'rgba(148,159,177,1)',
+          backgroundColor: '#FCFBF9',
+          borderColor: '#F39200',
+          pointBackgroundColor: '#F39200',
           pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+          pointHoverBackgroundColor: '#333333',
+          pointHoverBorderColor: '#fff',
           fill: 'origin'
         }
       ],

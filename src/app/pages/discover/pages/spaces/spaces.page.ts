@@ -24,6 +24,10 @@ export class SpacesPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
   public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN];
+  public hotTagsLabels: { [key: string]: string } = {
+    [HOT_TAGS.ALL]: $localize`All`,
+    [HOT_TAGS.OPEN]: $localize`Open`
+  }
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Space[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -38,7 +42,11 @@ export class SpacesPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
@@ -69,6 +77,7 @@ export class SpacesPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    this.spaces$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 

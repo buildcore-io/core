@@ -15,7 +15,7 @@ import { debounceTime, filter } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements OnInit {
-  public showSideBar$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public showSideBar$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   constructor(
     private themeService: ThemeService,
     private router: Router,

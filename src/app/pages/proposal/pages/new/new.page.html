@@ -1,5 +1,5 @@
 <wen-content [showBackButton]="(deviceService.isDesktop$ | async) || false">
-  <h1 class="mt-7" i18 n>New Proposal</h1>
+  <h1 class="mt-7" i18n>New Proposal</h1>
 
   <form nz-form nzLayout="vertical" [formGroup]="proposalForm">
     <div class="py-4" nz-row [nzGutter]="24">
@@ -13,14 +13,17 @@
       >
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Proposal info"
-          nzDescription="Title and description will be included on the Proposal. Start and end dates determine the duration of the Proposal."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Proposal info"
+            i18n-nzDescription
+            nzDescription="Title and description will be included on the Proposal. Start and end dates determine the duration of the Proposal."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
               <input
                 nz-input
+                i18n-placeholder
                 placeholder="Title"
                 nzSize="large"
                 [formControl]="nameControl"
@@ -37,6 +40,7 @@
                   [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
                   nzFormat="yyyy-MM-dd HH:mm"
                   [formControl]="startControl"
+                  i18n-nzPlaceHolder
                   nzPlaceHolder="Start"
                   (nzOnOpenChange)="handleStartOpenChange($event)"
                 >
@@ -53,6 +57,7 @@
                   [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
                   nzFormat="yyyy-MM-dd HH:mm"
                   [formControl]="endControl"
+                  i18n-nzPlaceHolder
                   nzPlaceHolder="End"
                 ></nz-date-picker>
               </nz-form-control>
@@ -67,6 +72,7 @@
                     nzSize="large"
                     [nzMin]="(lastMilestone$ | async)?.cmi || 0"
                     [formControl]="milestoneIndexCommenceControl"
+                    i18n-nzPlaceHolder
                     nzPlaceHolder="Commencing milestone"
                   >
                   </nz-input-number>
@@ -80,6 +86,7 @@
                     nzSize="large"
                     [nzMin]="milestoneIndexCommenceControl.value"
                     [formControl]="milestoneIndexStartControl"
+                    i18n-nzPlaceHolder
                     nzPlaceHolder="Start milestone"
                   >
                 </nz-input-number>
@@ -93,6 +100,7 @@
                     nzSize="large"
                     [nzMin]="milestoneIndexStartControl.value"
                     [formControl]="milestoneIndexEndControl"
+                    i18n-nzPlaceHolder
                     nzPlaceHolder="End milestone"
                   >
                   </nz-input-number>
@@ -105,6 +113,7 @@
               <textarea
                 nz-input
                 nzSize="large"
+                i18n-placeholder
                 placeholder="Proposal description"
                 rows="4"
                 [formControl]="additionalInfoControl"
@@ -114,10 +123,12 @@
         </nz-card>
         <nz-card [nzBordered]="false">
           <nz-card-meta class="mb-4"
-          nzTitle="Question Info"
-          nzDescription="Title and description will only be displayed for this question."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Question Info"
+            i18n-nzDescription
+            nzDescription="Title and description will only be displayed for this question."
+          >
+          </nz-card-meta>
           <ng-container
             *ngFor="let question of questions.controls; let i = index"
           >
@@ -125,6 +136,7 @@
               <nz-form-control i18n-nzErrorTip nzErrorTip="Question Title is required.">
                 <input
                   nz-input
+                  i18n-placeholder
                   placeholder="Question Title"
                   nzSize="large"
                   [formControl]="gForm(question, 'text')"
@@ -136,6 +148,7 @@
               <nz-form-control>
                 <textarea
                   nz-input
+                  i18n-placeholder
                   placeholder="Question description"
                   nzSize="large"
                   rows="4"
@@ -160,7 +173,8 @@
               [nzExtra]="actionsTpl"
             >
             <nz-card-meta
-            [nzTitle]="'Choice #' + (ii + 1)"
+            [nzTitle]="getAnswerTitle(ii)"
+            i18n-nzDescription
             nzDescription="Text and description for each individual answer."
           >
           </nz-card-meta>
@@ -169,6 +183,7 @@
                   <nz-form-control i18n-nzErrorTip nzErrorTip="Answer Text is required.">
                     <input
                       nz-input
+                      i18n-placeholder
                       placeholder="Answer Text"
                       nzSize="large"
                       [formControl]="gForm(answer, 'text')"
@@ -179,6 +194,7 @@
                   <nz-form-control>
                     <textarea
                       nz-input
+                      i18n-placeholder
                       placeholder="Answer description"
                       nzSize="large"
                       rows="4"
@@ -222,7 +238,9 @@
       <div class="mt-4 space-y-4 lg:mt-0 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'">
         <nz-card [nzBordered]="false">
           <nz-card-meta
+            i18n-nzTitle
             nzTitle="Space Info"
+            i18n-nzDescription
             nzDescription="This is the space that will list the proposal."
           >
           </nz-card-meta>
@@ -256,7 +274,7 @@
               <ng-template #placeholderTpl>
                 <div class="flex items-center space-x-4">
                   <wen-icon-globe class="text-app-gray-text"></wen-icon-globe>
-                  <span>Select a space</span>
+                  <span i18n>Select a space</span>
                 </div>
               </ng-template>
               <ng-template #selectTpl let-s>
@@ -270,15 +288,16 @@
         </nz-card>
         <nz-card [nzBordered]="false">
           <nz-card-meta
-          nzTitle="Proposal Setup"
-          nzDescription="Defines who has access to the proposal and what is the voting method."
-        >
-        </nz-card-meta>
+            i18n-nzTitle
+            nzTitle="Proposal Setup"
+            i18n-nzDescription
+            nzDescription="Defines who has access to the proposal and what is the voting method."
+          >
+          </nz-card-meta>
           <nz-form-item class="mt-4">
             <nz-form-control>
-              <nz-form-label class="text-sm font-medium text-app-gray-600"
-                >Target Participants</nz-form-label
-              ><br />
+              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n>Target Participants</nz-form-label>
+              <br/>
               <nz-radio-group
                 class="wen-radio-group"
                 [formControl]="selectedGroupControl"
@@ -289,6 +308,7 @@
                       class="inline-block"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Only guardians can vote on this proposal"
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
@@ -298,6 +318,7 @@
                       class="inline-block"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="All members can vote on this proposal"
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
@@ -308,6 +329,7 @@
                       class="inline-block"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="All IOTA token holders can vote."
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
@@ -316,9 +338,8 @@
           </nz-form-item>
           <nz-form-item *ngIf="selectedGroupControl.value !== targetGroups.NATIVE">
             <nz-form-control>
-              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n
-                >Voting Type</nz-form-label
-              ><br />
+              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n>Voting Type</nz-form-label>
+              <br/>
               <nz-radio-group
                 class="wen-radio-group"
                 [formControl]="subTypeControl"
@@ -329,6 +350,7 @@
                       class="inline-block"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Each member of the space gets one vote"
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
@@ -342,6 +364,7 @@
                       class="inline-block"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space"
                     >
                     </wen-icon-question-circle>
@@ -357,6 +380,7 @@
                       class="inline-block"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Votes are weighted based on total amount of XP a member has in the space & connections"
                     >
                     </wen-icon-question-circle>
@@ -372,6 +396,7 @@
                       class="inline-block"
                       nz-tooltip
                       nzTooltipPlacement="right"
+                      i18n-nzTooltipTitle
                       nzTooltipTitle="Votes are weighted based on total amount of XP a member has for selected badges"
                     >
                     </wen-icon-question-circle>
@@ -383,6 +408,7 @@
         </nz-card>
         <nz-card
           [nzBordered]="false"
+          i18n-nzTitle
           nzTitle="Reputation Options"
           *ngIf="subTypeControl.value === subTypes.REPUTATION_BASED_ON_AWARDS || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE || subTypeControl.value === subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
         >
@@ -393,6 +419,7 @@
                   nzSize="large"
                   [nzMin]="defaultMinWeight.value"
                   [formControl]="defaultMinWeight"
+                  i18n-nzPlaceHolder
                   nzPlaceHolder="Set Minimum Weight">
                 </nz-input-number>
               </nz-input-group>
@@ -407,12 +434,13 @@
                 nzAllowClear
                 [nzMaxTagCount]="9"
                 nzMode="multiple"
+                i18n-nzPlaceHolder
                 nzPlaceHolder="Select Badge"
                 [formControl]="votingAwardControl"
               >
                 <nz-option
                   *ngFor="let a of awards$ | async; trackBy: trackByUid"
-                  [nzLabel]="a.name + ' (badge: ' + a.badge.name + ', id: ' + (a.uid | truncate:[10]) + ')'"
+                  [nzLabel]="getAwardLabel(a)"
                   [nzValue]="a.uid"
                 ></nz-option>
               </nz-select>

@@ -2,7 +2,7 @@
     [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60 h-72 lg:h-99'">
     <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
-            <img
+            <img loading="lazy"
                 *ngIf="mediaType === 'image'"
                 i18n-alt
                 (error)="onImgErrorWeShowPlaceHolderVideo($event)"
@@ -14,7 +14,7 @@
                 }"
             />
 
-            <img
+            <img loading="lazy"
               *ngIf="mediaType === 'video'"
               class="object-cover w-full h-full"
                 [ngClass]="{
@@ -23,7 +23,7 @@
               [src]="'/assets/mocks/video_placeholder.jpg'"
             />
 
-            <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || nft?.placeholderNft)"
+            <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || isAvailableForAuction() || nft?.placeholderNft)"
                 class="absolute top-4 left-4 z-10 rounded-lg bg-white
                     flex items-center justify-center px-3 py-1.5 text-sm font-medium"
                 [ngClass]="getBadgeProperties().className">
@@ -69,24 +69,27 @@
                 </div>
 
                 <div class="flex-grow w-0" *ngIf="isAvailableForAuction()">
-                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Current Bid</div>
+                  <div class="font-medium text-xxs text-foregrounds-secondary">
+                      <ng-container *ngIf="nft?.auctionHighestBid; else minBidBlock" i18n>Current bid</ng-container>
+                      <ng-template #minBidBlock>Min bid</ng-template>
+                  </div>
                   <div class="text-sm font-medium truncate">
                     {{formatBest(nft?.auctionHighestBid || nft?.auctionFloorPrice)}}
                   </div>
                 </div>
 
-                <a class="flex-grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
+                <a class="flex items-center flex-grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
                    *ngIf="nft?.owner && !isAvailableForSale() && !isAvailableForAuction()" (click)="$event.stopPropagation()">
-                  <!-- TODO how we show the avatar
-                    <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                          class="border-2 border-app-gray-100 bg-bg-background min-w-10"
-                          style="max-width: 32px; min-width: 32px;" [nzSize]="32">
-                    </nz-avatar>
-                  -->
-                  <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
-                  <div class="text-sm font-medium truncate">
-                      @{{((owner$ | async)?.name || (owner$ | async)?.uid) | truncate:[16] }}
-                  </div>
+                        <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
+                            class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            style="max-width: 32px; min-width: 32px;" [nzSize]="32">
+                        </nz-avatar>
+                        <div class="ml-2">
+                            <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
+                            <div class="text-sm font-medium truncate">
+                                @{{((owner$ | async)?.name || (owner$ | async)?.uid) | truncate:[10] }}
+                            </div>
+                        </div>
                 </a>
 
 

@@ -173,6 +173,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     throw throwInvalidArgument(WenError.nft_placeholder_cant_be_purchased);
   }
 
+  if (docNftData.owner && docNftData.saleAccess === NftAccess.MEMBERS && !(docNftData.saleAccessMembers || []).includes(owner)) {
+    throw throwInvalidArgument(WenError.you_are_not_allowed_member_to_purchase_this_nft);
+  }
+
   // Extra check to make sure owner address is defined.
   let prevOwnerAddress: string|undefined = undefined;
   if (docNft.data().owner) { // &&
@@ -213,9 +217,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Calculate discount.
   const dataMember: Member = docMember.data();
   let discount = 1;
+
   // We must apply discount.
-  if (docCollectionData.discounts?.length && dataMember.spaces?.[docCollectionData.space]?.totalReputation) {
-    const membersXp: number = dataMember.spaces[docCollectionData.space].totalReputation || 0;
+  if (docCollectionData.discounts?.length) {
+    const membersXp: number = dataMember.spaces?.[docCollectionData.space]?.totalReputation || 0;
     for (const d of docCollectionData.discounts.sort((a, b) => {
       return a.xp - b.xp;
     })) {

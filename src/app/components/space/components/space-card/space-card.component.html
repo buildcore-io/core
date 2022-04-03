@@ -1,7 +1,7 @@
 <article class="w-full bg-white lg:w-76 lg:h-76 rounded-2xl wen-card" *ngIf="space">
   <a class="text-current hover:text-current" [routerLink]="['/', this.path, space.uid]">
-    <div class="w-full h-32 overflow-hidden rounded-2xl relative">
-      <img
+    <div class="relative w-full h-32 overflow-hidden rounded-2xl">
+      <img loading="lazy"
         alt=""
         [src]="bannerUrl || '/assets/mocks/no_banner.jpg'"
         class="object-cover w-full h-full"

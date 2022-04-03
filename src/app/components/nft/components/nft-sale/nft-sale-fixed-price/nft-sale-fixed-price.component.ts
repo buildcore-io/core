@@ -1,11 +1,14 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MemberApi } from '@api/member.api';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { Member } from '@functions/interfaces/models';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
-import { merge } from 'rxjs';
+import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
+import { BehaviorSubject, map, merge, Subscription } from 'rxjs';
 import { SaleType, UpdateEvent } from '../nft-sale.component';
 
 @UntilDestroy()
@@ -15,7 +18,7 @@ import { SaleType, UpdateEvent } from '../nft-sale.component';
   styleUrls: ['./nft-sale-fixed-price.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NftSaleFixedPriceComponent implements OnInit {
+export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   @Input()
   set nft(value: Nft|null|undefined) {
     this._nft = value;
@@ -33,9 +36,6 @@ export class NftSaleFixedPriceComponent implements OnInit {
         }
       }
     }
-
-    // Temp disabled:
-    this.buyerControl.disable();
   }
   get nft(): Nft|null|undefined {
     return this._nft;
@@ -49,9 +49,13 @@ export class NftSaleFixedPriceComponent implements OnInit {
   public buyerControl: FormControl = new FormControl('');
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
+  public filteredMembers$: BehaviorSubject<NzSelectOptionInterface[]> = new BehaviorSubject<NzSelectOptionInterface[]>([]);
   private _nft?: Nft|null;
+  private memberSubscription?: Subscription;
 
-  constructor() {
+  constructor(
+    private memberApi: MemberApi
+  ) {
     this.form = new FormGroup({
       price: this.priceControl,
       unit: this.unitControl,
@@ -82,6 +86,21 @@ export class NftSaleFixedPriceComponent implements OnInit {
             break;
         }
       });
+
+    // Load initial members.
+    this.subscribeMemberList('a');
+  }
+
+  private subscribeMemberList(search?: string): void {
+    this.memberSubscription?.unsubscribe();
+    this.memberSubscription = this.memberApi.alphabetical(undefined, search)?.pipe(map((members: Member[]) => {
+      return members.map((m: Member) => {
+        return {
+          label: '@' + m.name || m.uid,
+          value: m.uid
+        };
+      });
+    })).subscribe(this.filteredMembers$);
   }
 
   private getRawPrice(price: number, unit: Units): number {
@@ -112,6 +131,12 @@ export class NftSaleFixedPriceComponent implements OnInit {
     return NftAccess;
   }
 
+  public searchMember(v: string): void {
+    if (v) {
+      this.subscribeMemberList(v);
+    }
+  }
+
   public submit(): void {
     this.wenOnUpdate.next({
       type: SaleType.FIXED_PRICE,
@@ -120,5 +145,9 @@ export class NftSaleFixedPriceComponent implements OnInit {
       access: this.selectedAccessControl.value,
       accessMembers: this.buyerControl.value
     });
+  }
+
+  public ngOnDestroy(): void {
+    this.memberSubscription?.unsubscribe();
   }
 }

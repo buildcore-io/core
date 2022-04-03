@@ -34,6 +34,12 @@ export class NFTsPage implements OnInit, OnDestroy {
   public spaceControl: FormControl;
   public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.AVAILABLE, HOT_TAGS.AUCTION, HOT_TAGS.OWNED];
+  public hotTagsLabels: { [key: string]: string } = {
+    [HOT_TAGS.ALL]: $localize`All`,
+    [HOT_TAGS.AVAILABLE]: $localize`Available`,
+    [HOT_TAGS.AUCTION]: $localize`On Auction`,
+    [HOT_TAGS.OWNED]: $localize`Owned`
+  }
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.AVAILABLE]);
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -64,7 +70,11 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
@@ -80,7 +90,11 @@ export class NFTsPage implements OnInit, OnDestroy {
     });
 
     // Init listen.
-    this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.selectedTags$.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o.indexOf(HOT_TAGS.SPACE) === -1 && this.spaceControl.value !== DEFAULT_SPACE.value) {
+        this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
+      }
+
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
         this.listen(this.filter.search$.value);
       } else {
@@ -99,6 +113,8 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    // So we show searching again.
+    this.nfts$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 

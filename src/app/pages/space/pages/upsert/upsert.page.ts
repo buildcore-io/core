@@ -104,7 +104,7 @@ export class UpsertPage implements OnInit {
 
   public uploadFile(type: 'space_avatar' | 'space_banner', item: NzUploadXHRArgs): Subscription {
     if (!this.auth.member$.value) {
-      const err = 'Member seems to log out during the file upload request.';
+      const err = $localize`Member seems to log out during the file upload request.`;
       this.nzNotification.error(err, '');
       if (item.onError) {
         item.onError(err, item.file);
@@ -162,5 +162,13 @@ export class UpsertPage implements OnInit {
         this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
       });
     });
+  }
+
+  public getAvatarCardDescription(): string {
+    return this.editMode ? $localize`Upload new to replace existing.` : $localize`Your brand is key.`;
+  }
+
+  public getBannerCardDescription(): string {
+    return this.editMode ? $localize`Upload new to replace existing.` : $localize`Make it personal.`;
   }
 }

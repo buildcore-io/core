@@ -4,7 +4,7 @@ import { DEFAULT_TRANSACTION_DELAY, MIN_AMOUNT_TO_TRANSFER } from '../../../inte
 import { Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
-import { Nft } from '../../../interfaces/models/nft';
+import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
 import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
@@ -520,7 +520,8 @@ export class ProcessingService {
           ref: refSource,
           data: {
             owner: payment.member,
-            price: payment.payload.amount,
+            // If it's to specific member price stays the same.
+            price: sfDoc.data().saleAccess === NftAccess.MEMBERS ? sfDoc.data().price : payment.payload.amount,
             sold: true,
             locked: false,
             lockedBy: null,
@@ -634,7 +635,7 @@ export class ProcessingService {
           // Technically there should only be one as address is unique per order.
           for (const order of orders.docs) {
             // This happens here on purpose instead of cron to reduce $$$
-            const expireDate = dayjs(order.data().payload.expiresOn.toDate());
+            const expireDate = dayjs(order.data().payload.expiresOn?.toDate());
             let expired = false;
             if (expireDate.isBefore(dayjs(), 'ms')) {
               await this.markAsVoid(order.data());

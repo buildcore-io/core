@@ -39,7 +39,11 @@ export class AwardsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
@@ -70,6 +74,7 @@ export class AwardsPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    this.award$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 

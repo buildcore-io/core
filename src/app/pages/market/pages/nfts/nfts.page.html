@@ -14,13 +14,13 @@
                 <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
                     <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
                         (nzCheckedChange)="handleChange(tag)">
-                        {{ tag }}
+                        {{ hotTagsLabels[tag] }}
                     </nz-tag>
                 </ng-container>
 
                 <ng-template #hotTagsMobileBlock>
                     <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-                        <nz-option *ngFor="let tag of hotTags" [nzLabel]="tag" [nzValue]="tag"></nz-option>
+                        <nz-option *ngFor="let tag of hotTags" [nzLabel]="hotTagsLabels[tag]" [nzValue]="tag"></nz-option>
                     </nz-select>
                 </ng-template>
             </div>

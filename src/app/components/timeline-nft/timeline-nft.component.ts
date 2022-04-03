@@ -6,6 +6,7 @@ import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType } from '@functions/interfaces/models';
 import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
+import { DataService } from '@pages/nft/services/data.service';
 
 @Component({
   selector: 'wen-timeline-nft',
@@ -23,6 +24,7 @@ export class TimelineNftComponent {
 
   constructor(
     public deviceService: DeviceService,
+    public data: DataService,
     public previewImageService: PreviewImageService
   ) { }
 
@@ -41,16 +43,16 @@ export class TimelineNftComponent {
   public getTitle(tt: Transaction): string {
     if (tt.type === TransactionType.BILL_PAYMENT) {
       if (tt.payload.royalty === false) {
-        return 'Bill (owner)';
+        return $localize`Bill (owner)`;
       } else {
-        return 'Bill (royalty)';
+        return $localize`Bill (royalty)`;
       }
     } else if (tt.type === TransactionType.CREDIT) {
-      return 'Credit';
+      return $localize`Credit`;
     } else if (tt.type === TransactionType.PAYMENT) {
-      return 'Payment';
+      return $localize`Payment`;
     } else {
-      return 'Order';
+      return $localize`Order`;
     }
   }
 

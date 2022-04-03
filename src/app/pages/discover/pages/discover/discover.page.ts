@@ -39,7 +39,9 @@ export class DiscoverPage implements OnInit, OnDestroy {
     this.filter.filterControl.setValue(this.filter.search$.value);
     this.filter.filterControl.valueChanges.pipe(
       debounceTime(FilterService.DEBOUNCE_TIME)
-    ).subscribe(this.filter.search$);
+    ).subscribe((val) => {
+      this.filter.search$.next(val);
+    });
 
     this.setSelectedSection();
     this.router.events

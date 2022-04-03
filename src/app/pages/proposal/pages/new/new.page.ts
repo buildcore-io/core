@@ -316,7 +316,14 @@ export class NewPage implements OnInit, OnDestroy {
         this.router.navigate([ROUTER_UTILS.config.proposal.root, val?.uid])
       });
     });
+  }
 
+  public getAnswerTitle(index: number): string { 
+    return $localize`Choice` + ' #' + (index + 1);
+  }
+  
+  public getAwardLabel(award: Award): string {
+    return award.name + ' (' + $localize`badge` + ': ' + award.badge.name + ', ' + $localize`id` + ': ' + award.uid.substring(0, 10) + ')';
   }
 
   private cancelSubscriptions(): void {

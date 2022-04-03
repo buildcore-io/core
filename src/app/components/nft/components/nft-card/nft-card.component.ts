@@ -38,8 +38,8 @@ export class NftCardComponent {
       this.owner$.next(undefined);
     }
 
-    if (this._nft) {
-      this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+    if (this.nft) {
+      this.fileApi.getMetadata(this.nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
         if (o.contentType.match('video/.*')) {
           this.mediaType = 'video';
         } else if (o.contentType.match('image/.*')) {
@@ -103,18 +103,16 @@ export class NftCardComponent {
   }
 
   private discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || this._nft?.owner) {
+    if (!this.collection?.space || !this.auth.member$.value || this._nft?.owner) {
       return 1;
     }
-    const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
+    const xp: number = this.auth.member$.value.spaces?.[this.collection.space]?.totalReputation || 0;
     let discount = 1;
-    if (xp > 0) {
-      for (const d of this.collection.discounts.sort((a, b) => {
-        return a.xp - b.xp;
-      })) {
-        if (d.xp < xp) {
-          discount = (1 - d.amount);
-        }
+    for (const d of this.collection.discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    })) {
+      if (d.xp < xp) {
+        discount = (1 - d.amount);
       }
     }
 
@@ -147,7 +145,12 @@ export class NftCardComponent {
   }
 
   public getBadgeProperties(): { label: string; className: string} {
-    if (this.nft?.type === CollectionType.CLASSIC) {
+    if (this.nft?.owner) {
+      return {
+        label: $localize`Available`,
+        className: 'bg-tag-green'
+      };
+    } else if (this.nft?.type === CollectionType.CLASSIC) {
       return {
         label: $localize`New NFT`,
         className: 'bg-tag-green'

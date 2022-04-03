@@ -59,14 +59,59 @@ export class NFTPage implements OnInit, OnDestroy {
     },
     scales: {
       xAxis: {
+          ticks: {
+              maxTicksLimit: 10,
+              color: '#959388',
+              font: {
+                size: 14,
+                weight: '600',
+                family: 'Poppins',
+                lineHeight: '14px'
+              }
+          }
+      },
+      yAxis: {
         ticks: {
-          maxTicksLimit: 10
+            maxTicksLimit: 10,
+            color: '#959388',
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
         }
       }
     },
     plugins: {
       legend: {
         display: false
+      },
+      tooltip: {
+        xAlign: 'center',
+        yAlign: 'bottom',
+        backgroundColor: '#fff',
+        titleColor: 'rgba(0,0,0,0)',
+        titleSpacing: 0,
+        titleMarginBottom: 0,
+        titleFont: {
+          lineHeight: 0
+        },
+        bodyColor: '#333333',
+        bodyFont: {
+          weight: '500',
+          family: 'Poppins',
+          size: 16,
+          lineHeight: '28px'
+        },
+        bodyAlign: 'center',
+        bodySpacing: 0,
+        borderColor: 'rgba(0, 0, 0, 0.2)',
+        borderWidth: 1,
+        footerMarginTop: 0,
+        caretPadding: 16,
+        caretSize: 2,
+        displayColors: false
       }
     }
   };
@@ -391,20 +436,18 @@ export class NFTPage implements OnInit, OnDestroy {
     return seconds;
   }
 
-  public discount(collection?: Collection | null, nft?: Nft | null): number {
-    if (!collection?.space || !this.auth.member$.value?.spaces?.[collection.space]?.totalReputation || nft?.owner) {
+  public discount(collection?: Collection|null, nft?: Nft|null): number {
+    if (!collection?.space || !this.auth.member$.value || nft?.owner) {
       return 1;
     }
 
-    const xp: number = this.auth.member$.value.spaces[collection.space].totalReputation || 0;
+    const xp: number = this.auth.member$.value.spaces?.[collection.space]?.totalReputation || 0;
     let discount = 1;
-    if (xp > 0) {
-      for (const d of collection.discounts.sort((a, b) => {
-        return a.xp - b.xp;
-      })) {
-        if (d.xp < xp) {
-          discount = (1 - d.amount);
-        }
+    for (const d of collection.discounts.sort((a, b) => {
+      return a.xp - b.xp;
+    })) {
+      if (d.xp < xp) {
+        discount = (1 - d.amount);
       }
     }
 
@@ -542,12 +585,12 @@ export class NFTPage implements OnInit, OnDestroy {
       datasets: [
         {
           data: dataToShow.data,
-          backgroundColor: 'rgba(148,159,177,0.2)',
-          borderColor: 'rgba(148,159,177,1)',
-          pointBackgroundColor: 'rgba(148,159,177,1)',
+          backgroundColor: '#FCFBF9',
+          borderColor: '#F39200',
+          pointBackgroundColor: '#F39200',
           pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+          pointHoverBackgroundColor: '#333333',
+          pointHoverBorderColor: '#fff',
           fill: 'origin'
         }
       ],

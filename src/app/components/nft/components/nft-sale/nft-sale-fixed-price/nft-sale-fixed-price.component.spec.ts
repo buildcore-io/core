@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MemberApi } from '@api/member.api';
+import { MockProvider } from 'ng-mocks';
 import { NftSaleFixedPriceComponent } from './nft-sale-fixed-price.component';
+
 
 describe('NftSaleFixedPriceComponent', () => {
   let component: NftSaleFixedPriceComponent;
@@ -8,7 +10,8 @@ describe('NftSaleFixedPriceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NftSaleFixedPriceComponent ]
+      declarations: [ NftSaleFixedPriceComponent ],
+      providers: [ MockProvider(MemberApi) ]
     })
     .compileComponents();
   });
