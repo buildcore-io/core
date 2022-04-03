@@ -5,7 +5,6 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { CollapseComponent } from './collapse.component';
 
 
-
 @NgModule({
   declarations: [
     CollapseComponent

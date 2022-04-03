@@ -6,5 +6,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./linkedin.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LinkedinIconComponent  {
+export class LinkedinIconComponent {
 }

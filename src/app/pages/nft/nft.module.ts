@@ -43,7 +43,6 @@ import { NFTPage } from './pages/nft/nft.page';
 import { DataService } from './services/data.service';
 
 
-
 @NgModule({
   declarations: [
     NFTPage,

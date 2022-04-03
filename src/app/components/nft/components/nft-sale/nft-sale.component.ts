@@ -120,7 +120,7 @@ export class NftSaleComponent {
       e.auctionFloorPrice = null;
       e.auctionFrom = null;
       e.auctionLength = null;
-    }  else if (e.type === SaleType.FIXED_PRICE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
+    } else if (e.type === SaleType.FIXED_PRICE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isAfter(dayjs())) {
       // We can't change auction params anymore
       delete e.auctionFloorPrice;
       delete e.auctionFrom;

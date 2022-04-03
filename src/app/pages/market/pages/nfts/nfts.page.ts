@@ -126,7 +126,7 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.lowToHighAvailable(last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
         return this.nftApi.lowToHighAuction(last, search);
-      }  else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.lowToHighOwned(last, search);
       } else {
         return this.nftApi.lowToHigh(last, search);
@@ -148,7 +148,7 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.highToLowSpace(this.spaceControl.value, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.highToLowAvailable(last, search);
-      }  else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
         return this.nftApi.highToLowAuction(last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.highToLowOwned(last, search);

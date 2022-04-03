@@ -7,7 +7,6 @@ import { IpfsBadgeModule } from './../../@core/pipes/ipfs-badge/ipfs-badge.modul
 import { BadgeTileComponent } from './badge-tile/badge-tile.component';
 
 
-
 @NgModule({
   declarations: [
     BadgeTileComponent

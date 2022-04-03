@@ -9,7 +9,6 @@ import { MemberAlliancesTableModule } from '../member-alliances-table/member-all
 import { MemberReputationModalComponent } from './member-reputation-modal.component';
 
 
-
 @NgModule({
   declarations: [
     MemberReputationModalComponent

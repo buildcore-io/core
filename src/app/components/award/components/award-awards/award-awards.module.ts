@@ -7,7 +7,6 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { AwardAwardsComponent } from './award-awards.component';
 
 
-
 @NgModule({
   declarations: [
     AwardAwardsComponent

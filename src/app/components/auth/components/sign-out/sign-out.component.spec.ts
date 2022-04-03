@@ -13,7 +13,7 @@ describe('SignOutComponent', () => {
   let spectator: Spectator<SignOutComponent>;
   const createComponent = createRoutingFactory({
     component: SignOutComponent,
-    imports: [NzAvatarModule, NzTypographyModule, IconModule,],
+    imports: [NzAvatarModule, NzTypographyModule, IconModule, ],
     declarations: [MockComponent(MenuItemComponent)],
     providers: [
       MockProvider(AuthService),

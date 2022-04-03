@@ -9,7 +9,6 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { AwardInfoComponent } from './award-info.component';
 
 
-
 @NgModule({
   declarations: [
     AwardInfoComponent

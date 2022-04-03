@@ -21,7 +21,6 @@ import { NftSaleFixedPriceComponent } from './nft-sale-fixed-price/nft-sale-fixe
 import { NftSaleAuctionComponent } from './nft-sale-auction/nft-sale-auction.component';
 
 
-
 @NgModule({
   declarations: [
     NftSaleComponent,

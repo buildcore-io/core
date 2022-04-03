@@ -11,7 +11,6 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { SelectCollectionComponent } from './select-collection.component';
 
 
-
 @NgModule({
   declarations: [
     SelectCollectionComponent
