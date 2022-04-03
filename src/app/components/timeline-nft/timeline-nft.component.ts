@@ -32,7 +32,7 @@ export class TimelineNftComponent {
     return FILE_SIZES;
   }
 
-  public formatBest(amount?: number|null): string {
+  public formatBest(amount?: number | null): string {
     if (!amount) {
       return '';
     }
@@ -60,7 +60,7 @@ export class TimelineNftComponent {
     return 'https://thetangle.org/search/' + link;
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: any) {
     return item.uid;
   }
 }

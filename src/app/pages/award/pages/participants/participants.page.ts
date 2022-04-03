@@ -28,12 +28,12 @@ enum FilterOptions {
 export class ParticipantsPage implements OnInit, OnDestroy {
   public awardId?: string;
   public selectedListControl: FormControl = new FormControl(FilterOptions.PENDING);
-  public pendingParticipants$: BehaviorSubject<AwardParticipantWithMember[]|undefined> = new BehaviorSubject<AwardParticipantWithMember[]|undefined>(undefined);
-  public issuedParticipants$: BehaviorSubject<AwardParticipantWithMember[]|undefined> = new BehaviorSubject<AwardParticipantWithMember[]|undefined>(undefined);
-  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public pendingParticipants$: BehaviorSubject<AwardParticipantWithMember[] | undefined> = new BehaviorSubject<AwardParticipantWithMember[] | undefined>(undefined);
+  public issuedParticipants$: BehaviorSubject<AwardParticipantWithMember[] | undefined> = new BehaviorSubject<AwardParticipantWithMember[] | undefined>(undefined);
+  public search$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
   public filterControl: FormControl = new FormControl(undefined);
   public overTenRecords = false;
-  public hotTags: { value: FilterOptions; label: string}[] = [
+  public hotTags: { value: FilterOptions; label: string }[] = [
     { value: FilterOptions.PENDING, label: $localize`Pending` },
     { value: FilterOptions.ISSUED, label: $localize`Issued` }
   ];
@@ -57,7 +57,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.awardId = id;
@@ -148,7 +148,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     ));
   }
 
-  protected store(stream$: BehaviorSubject<any[]|undefined>, store: any[][], page: number, a: any): void {
+  protected store(stream$: BehaviorSubject<any[] | undefined>, store: any[][], page: number, a: any): void {
     if (store[page]) {
       store[page] = a;
     } else {
@@ -184,7 +184,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     return FilterOptions;
   }
 
-  public getList(): BehaviorSubject<AwardParticipantWithMember[]|undefined> {
+  public getList(): BehaviorSubject<AwardParticipantWithMember[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.PENDING) {
       return this.pendingParticipants$;
     } else {

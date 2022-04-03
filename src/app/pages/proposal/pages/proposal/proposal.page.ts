@@ -64,7 +64,7 @@ export class ProposalPage implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Proposal');
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
       if (id) {
         this.listenToProposal(id);
       } else {
@@ -73,7 +73,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     });
 
     // If we're unable to find the space we take the user out as well.
-    this.data.proposal$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Proposal|undefined) => {
+    this.data.proposal$.pipe(skip(1), untilDestroyed(this)).subscribe((obj: Proposal | undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -86,7 +86,7 @@ export class ProposalPage implements OnInit, OnDestroy {
 
       if (this.auth.member$.value?.uid) {
         this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-                                      .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
+          .pipe(untilDestroyed(this)).subscribe(this.isGuardianWithinSpace$);
       }
 
       if (obj.type !== ProposalType.NATIVE && this.sections.length === 1) {
@@ -113,7 +113,7 @@ export class ProposalPage implements OnInit, OnDestroy {
         const awards: Award[] = [];
         if (p.settings.awards?.length) {
           for (const a of p.settings.awards) {
-            const award: Award|undefined = await firstValueFrom(this.awardApi.listen(a));
+            const award: Award | undefined = await firstValueFrom(this.awardApi.listen(a));
             if (award) {
               awards.push(award);
             }
@@ -168,20 +168,20 @@ export class ProposalPage implements OnInit, OnDestroy {
     return this.data.guardians$.value.filter(e => e.uid === memberId).length > 0;
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Award) {
     return item.uid;
   }
 
-  public formatBest(proposal: Proposal|null|undefined, value: number): string {
+  public formatBest(proposal: Proposal | null | undefined, value: number): string {
     if (!proposal) {
       return '';
     }
 
     // ?.results?.questions?.[0].answers[a.value]?.accumulated || 0
-    const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+    const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
       return suba.value === value;
     });
-    if(!ans) {
+    if (!ans) {
       return '';
     }
     return UnitsHelper.formatBest(ans.accumulated);
@@ -193,9 +193,9 @@ export class ProposalPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-        uid: this.data.proposal$.value.uid
+      uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.proposalApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
       });
     });
@@ -209,31 +209,31 @@ export class ProposalPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.proposal$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.proposalApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.
       });
     });
   }
 
   public exportNativeEvent(): void {
-    const proposal: Proposal|undefined = this.data.proposal$.value;
+    const proposal: Proposal | undefined = this.data.proposal$.value;
     if (!proposal) {
       return;
     }
 
     const obj: any = {
-        name: proposal.name,
-        additionalInfo: proposal.additionalInfo || '',
-        milestoneIndexCommence: proposal.settings.milestoneIndexCommence,
-        milestoneIndexStart: proposal.settings.milestoneIndexStart,
-        milestoneIndexEnd: proposal.settings.milestoneIndexEnd,
-        payload: {
-            type: 0,
-            questions: proposal.questions
-        }
+      name: proposal.name,
+      additionalInfo: proposal.additionalInfo || '',
+      milestoneIndexCommence: proposal.settings.milestoneIndexCommence,
+      milestoneIndexStart: proposal.settings.milestoneIndexStart,
+      milestoneIndexEnd: proposal.settings.milestoneIndexEnd,
+      payload: {
+        type: 0,
+        questions: proposal.questions
+      }
     };
     const id = proposal.eventId || 'proposal';
-    const link: any = document.createElement("a");
+    const link: HTMLAnchorElement = document.createElement("a");
     link.download = id + '.json';
     const data: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
     link.href = "data:" + data;

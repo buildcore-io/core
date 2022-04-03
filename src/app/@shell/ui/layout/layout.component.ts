@@ -28,15 +28,15 @@ export class LayoutComponent implements OnInit {
     ]).pipe(
       untilDestroyed(this),
       debounceTime(LAYOUT_CHANGE_DEBOUNCE_TIME),
-      filter(([event, _]: [any, boolean]) => {
+      filter(([event]: [any, boolean]) => {
         return !event?.routerEvent || (event.routerEvent instanceof NavigationEnd || event.routerEvent instanceof NavigationCancel);
       })
     ).subscribe(() => {
-        if (this.router.url === '/' || this.deviceService.isMobile$.getValue()) {
-          this.showSideBar$.next(false);
-        } else {
-          this.showSideBar$.next(true);
-        }
-      });
+      if (this.router.url === '/' || this.deviceService.isMobile$.getValue()) {
+        this.showSideBar$.next(false);
+      } else {
+        this.showSideBar$.next(true);
+      }
+    });
   }
 }

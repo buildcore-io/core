@@ -24,7 +24,7 @@ import { DataService, MemberFilterOptions } from "./../../services/data.service"
 export class MembersPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(MemberFilterOptions.ACTIVE);
-  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public search$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
   public filterControl: FormControl = new FormControl(undefined);
   public overTenRecords = false;
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
@@ -52,7 +52,7 @@ export class MembersPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
@@ -104,7 +104,7 @@ export class MembersPage implements OnInit, OnDestroy {
     this.onScroll();
   }
 
-  public customCreatedOn(member?: Member): any {
+  public customCreatedOn(member?: Member) {
     return () => {
       return member?._subColObj?.createdOn;
     }
@@ -123,7 +123,7 @@ export class MembersPage implements OnInit, OnDestroy {
     return this.data.guardians$.value.filter(e => e.uid === memberId).length > 0;
   }
 
-  public getList(): BehaviorSubject<Member[]|undefined> {
+  public getList(): BehaviorSubject<Member[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.PENDING) {
       return this.data.pendingMembers$;
     } else if (this.selectedListControl.value === this.filterOptions.BLOCKED) {
@@ -172,7 +172,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.setGuardian(sc), 'Member made a guardian.', finish).subscribe(() => {
         // none
       });
     });
@@ -188,7 +188,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.removeGuardian(sc), 'Member removed as guardian.', finish).subscribe(() => {
         // none.
       });
     });
@@ -204,7 +204,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.blockMember(sc), 'Member blocked.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.blockMember(sc), 'Member blocked.', finish).subscribe(() => {
         // none.
       });
     });
@@ -219,7 +219,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.acceptMember(sc), 'Member accepted.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.acceptMember(sc), 'Member accepted.', finish).subscribe(() => {
         // none.
       });
     });
@@ -234,7 +234,7 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member ignored.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.rejectMember(sc), 'Member ignored.', finish).subscribe(() => {
         // none.
       });
     });
@@ -249,13 +249,13 @@ export class MembersPage implements OnInit, OnDestroy {
       uid: this.spaceId,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.unblockMember(sc), 'Member unblocked.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.unblockMember(sc), 'Member unblocked.', finish).subscribe(() => {
         // none.
       });
     });
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Member) {
     return item.uid;
   }
 

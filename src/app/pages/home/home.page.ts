@@ -52,14 +52,18 @@ export class HomePage implements OnInit {
     private router: Router,
     private collectionApi: CollectionApi,
     private spaceApi: SpaceApi
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.spaceApi.last(undefined, undefined, 3).pipe(untilDestroyed(this)).subscribe(this.spaces$);
     this.collectionApi.last(undefined, undefined, 3).pipe(untilDestroyed(this)).subscribe(this.collection$);
   }
 
-  public trackByUid(index: number, item: any): number {
+  public onClickChangeTheme(theme: ThemeList): void {
+    this.themeService.setTheme(theme);
+  }
+
+  public trackByUid(index: number, item: Space | Collection) {
     return item.uid;
   }
 

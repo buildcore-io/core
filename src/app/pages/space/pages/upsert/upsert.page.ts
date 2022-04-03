@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
@@ -91,7 +92,7 @@ export class UpsertPage implements OnInit {
     this.uploadChange('space_banner', event);
   }
 
-  private uploadChange(type: 'space_avatar'|'space_banner', event: NzUploadChangeParam): void {
+  private uploadChange(type: 'space_avatar' | 'space_banner', event: NzUploadChangeParam): void {
     if (event.type === 'success') {
       if (type === 'space_avatar') {
         this.avatarControl.setValue(event.file.response);
@@ -101,7 +102,7 @@ export class UpsertPage implements OnInit {
     }
   }
 
-  public uploadFile(type: 'space_avatar'|'space_banner', item: NzUploadXHRArgs): Subscription {
+  public uploadFile(type: 'space_avatar' | 'space_banner', item: NzUploadXHRArgs): Subscription {
     if (!this.auth.member$.value) {
       const err = $localize`Member seems to log out during the file upload request.`;
       this.nzNotification.error(err, '');
@@ -141,7 +142,7 @@ export class UpsertPage implements OnInit {
       return;
     }
     await this.auth.sign(this.spaceForm.value, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.create(sc), 'Created.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.create(sc), 'Created.', finish).subscribe((val: Space | undefined) => {
         this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
       });
     });
@@ -157,7 +158,7 @@ export class UpsertPage implements OnInit {
         uid: this.spaceId
       }
     }, (sc, finish) => {
-      this.notification.processRequest(this.spaceApi.save(sc), 'Saved.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.spaceApi.save(sc), 'Saved.', finish).subscribe((val: Space | undefined) => {
         this.router.navigate([ROUTER_UTILS.config.space.root, val?.uid]);
       });
     });

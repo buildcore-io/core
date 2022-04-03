@@ -21,46 +21,46 @@ export class MemberApi extends BaseApi<Member> {
     super(afs, fns);
   }
 
-  public listen(id: EthAddress): Observable<Member|undefined> {
+  public listen(id: EthAddress): Observable<Member | undefined> {
     return super.listen(id);
   }
 
-  public last(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+  public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
       return linkedEntity ? ref.where('linkedEntities', 'array-contains', linkedEntity) : ref;
     });
   }
 
-  public top(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
+  public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE, linkedEntity?: number): Observable<Member[]> {
     return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return linkedEntity ? ref.where('linkedEntities', 'array-contains', linkedEntity) : ref;
     });
   }
 
-  public topSpaces(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
+  public topSpaces(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
     return this.topParent(COL.SPACE, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def);
   }
 
-  public pendingSpaces(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
+  public pendingSpaces(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
     return this.topParent(COL.SPACE, SUB_COL.KNOCKING_MEMBERS, memberId, orderBy, lastValue, def);
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsPending(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
+  public topAwardsPending(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Award[]> {
     return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
       return ref.where('completed', '==', false);
     });
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topAwardsCompleted(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Award[]> {
+  public topAwardsCompleted(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Award[]> {
     return this.topParent(COL.AWARD, SUB_COL.PARTICIPANTS, memberId, orderBy, lastValue, def, (ref: any) => {
       return ref.where('completed', '==', true);
     });
   }
 
   // TODO We need to tweak this to make sure don't filter locally.
-  public topProposals(memberId: EthAddress, orderBy: string|string[] = 'createdOn', lastValue?: any, def = FULL_LIST): Observable<Proposal[]> {
+  public topProposals(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = FULL_LIST): Observable<Proposal[]> {
     return this.topParent(COL.PROPOSAL, SUB_COL.MEMBERS, memberId, orderBy, lastValue, def, undefined, (obj: any) => {
       return (obj.settings.endDate?.toDate() && dayjs(obj.settings.endDate.toDate()).isAfter(dayjs(new Date())));
     });
@@ -74,7 +74,7 @@ export class MemberApi extends BaseApi<Member> {
     }));
   }
 
-  public topBadges(memberId: string, orderBy: string|string[] = 'createdOn', lastValue?: any, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
+  public topBadges(memberId: string, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
     return this.afs.collection<Transaction>(
       COL.TRANSACTION,
       (ref) => {
@@ -99,7 +99,7 @@ export class MemberApi extends BaseApi<Member> {
     const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
       SUB_COL.MEMBERS,
       (ref: any) => {
-        return ref.where('uid', '==', memberId).where('parentCol', '==',  COL.SPACE);
+        return ref.where('uid', '==', memberId).where('parentCol', '==', COL.SPACE);
       }
     );
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceMember[]) => {
@@ -126,7 +126,7 @@ export class MemberApi extends BaseApi<Member> {
     const ref: AngularFirestoreCollectionGroup<SpaceGuardian> = this.afs.collectionGroup<SpaceGuardian>(
       SUB_COL.GUARDIANS,
       (ref: any) => {
-        return ref.where('uid', '==', memberId).where('parentCol', '==',  COL.SPACE);
+        return ref.where('uid', '==', memberId).where('parentCol', '==', COL.SPACE);
       }
     );
     return ref.valueChanges().pipe(switchMap(async (obj: SpaceGuardian[]) => {
@@ -149,11 +149,11 @@ export class MemberApi extends BaseApi<Member> {
     }));
   }
 
-  public createIfNotExists(address: string): Observable<Member|undefined> {
+  public createIfNotExists(address: string): Observable<Member | undefined> {
     return this.request(WEN_FUNC.cMemberNotExists, address);
   }
 
-  public updateMember(req: WenRequest): Observable<Member|undefined> {
+  public updateMember(req: WenRequest): Observable<Member | undefined> {
     return this.request(WEN_FUNC.uMember, req);
   }
 }

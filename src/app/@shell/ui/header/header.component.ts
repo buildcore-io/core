@@ -52,8 +52,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public currentCheckoutCollection?: Collection;
   public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>([]);
   private notificationRef?: NzNotificationRef;
-  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
-  private transaction$: BehaviorSubject<TransactionOrder|undefined> = new BehaviorSubject<TransactionOrder|undefined>(undefined);
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs | null> = new BehaviorSubject<dayjs.Dayjs | null>(null);
+  private transaction$: BehaviorSubject<TransactionOrder | undefined> = new BehaviorSubject<TransactionOrder | undefined>(undefined);
   private subscriptionTransaction$?: Subscription;
   private subscriptionNotification$?: Subscription;
   constructor(
@@ -156,7 +156,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
     });
 
-    let lastMember: string|undefined;
+    let lastMember: string | undefined;
     this.auth.member$.pipe(untilDestroyed(this)).subscribe((m) => {
       if (m && lastMember !== m.uid) {
         this.subscriptionNotification$?.unsubscribe();
@@ -219,7 +219,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Notification) {
     return item.uid;
   }
 
@@ -243,7 +243,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     setTimeout(() => {
-      setNotificationItem(this.auth.member$.value!.uid, this.notifications$.value[this.notifications$.value.length - 1]?.uid);
+      if (this.auth.member$.value) {
+        setNotificationItem(this.auth.member$.value.uid, this.notifications$.value[this.notifications$.value.length - 1]?.uid);
+      }
       this.cd.markForCheck();
     }, 2500);
   }
@@ -262,7 +264,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return this.notifications$.value.length;
     }
 
-    return (this.notifications$.value.indexOf(<any>getNotificationItem(this.auth.member$.value?.uid)) + 1);
+    return (this.notifications$.value.indexOf(<Notification>getNotificationItem(this.auth.member$.value?.uid)) + 1);
   }
 
   public getNotificationDetails(not: Notification): NotificationContent {

@@ -22,7 +22,7 @@ import { DataService } from '../../services/data.service';
 export class NFTsPage implements OnInit, OnDestroy {
   public collectionControl: FormControl;
   public filterControl: FormControl;
-  public nft$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
+  public nft$: BehaviorSubject<Nft[] | undefined> = new BehaviorSubject<Nft[] | undefined>(undefined);
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -72,8 +72,8 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Nft[]> {
-    if (this.collectionControl.value !== DEFAULT_COLLECTION.value) {
-      return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value!.uid, last, search);
+    if (this.collectionControl.value !== DEFAULT_COLLECTION.value && this.data.member$.value) {
+      return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value.uid, last, search);
     } else {
       return this.nftApi.topMember(this.data.member$.value!.uid, last, search);
     }
@@ -106,7 +106,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
   }
 
-  public getCollection(col?: string|null): Collection|undefined {
+  public getCollection(col?: string | null): Collection | undefined {
     if (!col) {
       return undefined;
     }
@@ -134,9 +134,9 @@ export class NFTsPage implements OnInit, OnDestroy {
     return (list || [])
       .filter((o) => o.rejected !== true)
       .map((o) => ({
-          label: o.name || o.uid,
-          value: o.uid,
-          img: o.bannerUrl
+        label: o.name || o.uid,
+        value: o.uid,
+        img: o.bannerUrl
       }));
   }
 

@@ -4,8 +4,7 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Proposal } from "functions/interfaces/models";
 import { map, Observable, of, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
-import { Timestamp } from './../../../functions/interfaces/models/base';
+import { COL, EthAddress, SUB_COL, Timestamp, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
 import { ProposalMember } from './../../../functions/interfaces/models/proposal';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
@@ -41,29 +40,29 @@ export class ProposalApi extends BaseApi<Proposal> {
     super(afs, fns);
   }
 
-  public listen(id: EthAddress): Observable<Proposal|undefined> {
+  public listen(id: EthAddress): Observable<Proposal | undefined> {
     return super.listen(id);
   }
 
-  public lastActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public lastActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query(this.collection, 'settings.endDate', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
     });
   }
 
-  public topActive(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public topActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query(this.collection, 'settings.endDate', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
     });
   }
 
-  public lastCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public lastCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query(this.collection, 'settings.endDate', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
     });
   }
 
-  public topCompleted(lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
+  public topCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
     return this._query(this.collection, 'settings.endDate', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
     });
@@ -127,8 +126,8 @@ export class ProposalApi extends BaseApi<Proposal> {
       // We limit this to last record only. CreatedOn is always defined part of every record.
       (ref) => {
         return ref.where('payload.proposalId', '==', proposalId)
-                  .where('member', '==', memberId)
-                  .where('type', '==', TransactionType.VOTE).orderBy('createdOn', 'desc').limit(DEFAULT_LIST_SIZE)
+          .where('member', '==', memberId)
+          .where('type', '==', TransactionType.VOTE).orderBy('createdOn', 'desc').limit(DEFAULT_LIST_SIZE)
       }
     ).valueChanges();
   }
@@ -145,7 +144,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     );
   }
 
-  public listenPendingMembers(proposalId: string, lastValue?: any, searchIds?: string[], orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
+  public listenPendingMembers(proposalId: string, lastValue?: number, searchIds?: string[], orderBy: string | string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
     return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
       finObj.voted = original.voted;
       finObj._issuedOn = original.createdOn;
@@ -156,7 +155,7 @@ export class ProposalApi extends BaseApi<Proposal> {
     });
   }
 
-  public listenVotedMembers(proposalId: string, lastValue?: any, searchIds?: string[], orderBy: string|string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
+  public listenVotedMembers(proposalId: string, lastValue?: number, searchIds?: string[], orderBy: string | string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
     return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
       finObj.voted = original.voted;
       finObj._issuedOn = original.createdOn;
@@ -167,19 +166,19 @@ export class ProposalApi extends BaseApi<Proposal> {
     });
   }
 
-  public create(req: WenRequest): Observable<Proposal|undefined> {
+  public create(req: WenRequest): Observable<Proposal | undefined> {
     return this.request(WEN_FUNC.cProposal, req);
   }
 
-  public approve(req: WenRequest): Observable<Proposal|undefined> {
+  public approve(req: WenRequest): Observable<Proposal | undefined> {
     return this.request(WEN_FUNC.aProposal, req);
   }
 
-  public reject(req: WenRequest): Observable<Proposal|undefined> {
+  public reject(req: WenRequest): Observable<Proposal | undefined> {
     return this.request(WEN_FUNC.rProposal, req);
   }
 
-  public vote(req: WenRequest): Observable<Proposal|undefined> {
+  public vote(req: WenRequest): Observable<Proposal | undefined> {
     return this.request(WEN_FUNC.voteOnProposal, req);
   }
 }

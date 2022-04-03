@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AuthService } from '@components/auth/services/auth.service';
+import { Transaction } from '@functions/interfaces/models';
 import { BehaviorSubject } from 'rxjs';
 import { DataService } from './../../services/data.service';
 
@@ -18,7 +19,7 @@ export class BadgesPage {
     return this.auth.isLoggedIn$;
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Transaction) {
     return item.uid;
   }
 }
