@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/navigation/navigation.service.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="needs-translation">Back</target>
+        <target state="translated">返回</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -204,7 +204,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">280</context>
         </context-group>
-        <target state="needs-translation"> was outbid. Try again!</target>
+        <target state="translated"> 已出高價，請再試一次！</target>
       </trans-unit>
       <trans-unit id="8052677427935411852" datatype="html">
         <source>just offered</source>
@@ -450,7 +450,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation">Unable to sign transaction. Please try to reload page.</target>
+        <target state="translated">無法簽署交易。請再刷新頁面。</target>
       </trans-unit>
       <trans-unit id="4055437571775141299" datatype="html">
         <source>You must unlock your MetaMask first!</source>
@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">156</context>
         </context-group>
-        <target state="needs-translation">You must unlock your MetaMask first!</target>
+        <target state="translated">您必須先解鎖MetaMask！</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
@@ -466,7 +466,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">167</context>
         </context-group>
-        <target state="needs-translation">You must enable access to read your account address.</target>
+        <target state="translated">您必須允許閱讀帳戶地址權限。</target>
       </trans-unit>
       <trans-unit id="9030101964674216890" datatype="html">
         <source>Please make sure you select address in MetaMask!</source>
@@ -474,7 +474,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="needs-translation">Please make sure you select address in MetaMask!</target>
+        <target state="translated">請確認您是在Metamask選擇地址！</target>
       </trans-unit>
       <trans-unit id="4963418461748546700" datatype="html">
         <source>Unable to get nonce to authenticate!</source>
@@ -490,7 +490,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">239</context>
         </context-group>
-        <target state="needs-translation">You have to open Soonaverse in MetaMask app.</target>
+        <target state="translated">您需要在Metamask內開啟Soonaverse。</target>
       </trans-unit>
       <trans-unit id="9186218670020875251" datatype="html">
         <source>Failed to initialize MetaMask, try to reload page.</source>
@@ -498,7 +498,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation">Failed to initialize MetaMask, try to reload page.</target>
+        <target state="translated">無法初始化MetaMask，請刷新頁面。</target>
       </trans-unit>
       <trans-unit id="9217311297628108490" datatype="html">
         <source>Pending
@@ -1218,7 +1218,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
-        <target state="needs-translation">Min bid</target>
+        <target state="translated">最低出價</target>
       </trans-unit>
       <trans-unit id="523519638239091406" datatype="html">
         <source>Your bid is the highest</source>
@@ -1642,7 +1642,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">73</context>
         </context-group>
-        <target state="needs-translation">Current bid</target>
+        <target state="translated">當前出價</target>
       </trans-unit>
       <trans-unit id="5383011891382211495" datatype="html">
         <source>Owned by</source>
@@ -2476,7 +2476,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="needs-translation">Payment</target>
+        <target state="translated">付款</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -3248,7 +3248,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation"> Open sale </target>
+        <target state="translated"> 公開發售 </target>
       </trans-unit>
       <trans-unit id="7892451944202995046" datatype="html">
         <source> Space Members Only </source>
@@ -3256,7 +3256,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation"> Space Members Only </target>
+        <target state="translated"> 僅限成員 </target>
       </trans-unit>
       <trans-unit id="2601510202253646556" datatype="html">
         <source> Space Guardians Only </source>
@@ -3264,7 +3264,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation"> Space Guardians Only </target>
+        <target state="translated"> 僅限管理員 </target>
       </trans-unit>
       <trans-unit id="7245342326288833398" datatype="html">
         <source> Space Members with Badge Only </source>
@@ -3272,7 +3272,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation"> Space Members with Badge Only </target>
+        <target state="translated"> 獎章限定 </target>
       </trans-unit>
       <trans-unit id="4041633029622034196" datatype="html">
         <source> Must hold at least one NFT from each selected Collections </source>
@@ -3280,7 +3280,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation"> Must hold at least one NFT from each selected Collections </target>
+        <target state="translated"> 必須在各系列中，至少持有一款NFT </target>
       </trans-unit>
       <trans-unit id="1486015525220675253" datatype="html">
         <source> (One NFT per member) </source>
@@ -3288,7 +3288,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation"> (One NFT per member) </target>
+        <target state="translated"> (每名成員僅能有一個NFT) </target>
       </trans-unit>
       <trans-unit id="5308679100461288789" datatype="html">
         <source>The badges you need</source>
@@ -3312,7 +3312,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">114</context>
         </context-group>
-        <target state="needs-translation">Member discounts</target>
+        <target state="translated">會員折扣</target>
       </trans-unit>
       <trans-unit id="286131029974964251" datatype="html">
         <source>Discount for members with XP</source>
@@ -4162,7 +4162,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">106</context>
         </context-group>
-        <target state="needs-translation">Member seems to log out during the file upload request.</target>
+        <target state="translated">成員似乎在文件上傳請求期間登出。</target>
       </trans-unit>
       <trans-unit id="5393811378729556993" datatype="html">
         <source>My Overview</source>
@@ -4858,7 +4858,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.ts</context>
           <context context-type="linenumber">40,37</context>
         </context-group>
-        <target state="needs-translation">On Auction</target>
+        <target state="translated">拍賣中</target>
       </trans-unit>
       <trans-unit id="6985267139889676910" datatype="html">
         <source>Owned</source>
@@ -5358,7 +5358,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.ts</context>
           <context context-type="linenumber">141</context>
         </context-group>
-        <target state="needs-translation">File name <x id="PH" equiv-text="file.name"/> is not valid</target>
+        <target state="translated">文件名稱<x id="PH" equiv-text="file.name"/>無效</target>
       </trans-unit>
       <trans-unit id="6728111234977276519" datatype="html">
         <source>NFT</source>
@@ -5402,7 +5402,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="needs-translation">hours</target>
+        <target state="translated">小時</target>
       </trans-unit>
       <trans-unit id="3901733599428143571" datatype="html">
         <source>min</source>
@@ -5410,7 +5410,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="needs-translation">min</target>
+        <target state="translated">分鐘</target>
       </trans-unit>
       <trans-unit id="8444840466573361504" datatype="html">
         <source>sec</source>
@@ -5418,7 +5418,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation">sec</target>
+        <target state="translated">秒</target>
       </trans-unit>
       <trans-unit id="2912430443657619562" datatype="html">
         <source> Current highest bid</source>
@@ -5426,7 +5426,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">101</context>
         </context-group>
-        <target state="needs-translation"> Current highest bid</target>
+        <target state="translated"> 當前最高出價</target>
       </trans-unit>
       <trans-unit id="4746722232761824042" datatype="html">
         <source> Sale ended </source>
@@ -5638,7 +5638,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="needs-translation">New Proposal</target>
+        <target state="translated">新提案</target>
       </trans-unit>
       <trans-unit id="7803836174893864003" datatype="html">
         <source>Proposal info</source>
@@ -5658,7 +5658,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation">Title and description will be included on the Proposal. Start and end dates determine the duration of the Proposal.</target>
+        <target state="translated">標題和描述將包含在提案內。起始與結束時間將決定提案持續時間。</target>
       </trans-unit>
       <trans-unit id="7258226626453998656" datatype="html">
         <source>Start Date is required.</source>
@@ -5674,7 +5674,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">45</context>
         </context-group>
-        <target state="needs-translation">Start</target>
+        <target state="translated">開始</target>
       </trans-unit>
       <trans-unit id="2551196215874055869" datatype="html">
         <source>Commencing milestone.</source>
@@ -5738,7 +5738,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">117,118</context>
         </context-group>
-        <target state="needs-translation">Proposal description</target>
+        <target state="translated">提案說明</target>
       </trans-unit>
       <trans-unit id="5374034773931099277" datatype="html">
         <source>Question Info</source>
@@ -5754,7 +5754,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="needs-translation">Title and description will only be displayed for this question.</target>
+        <target state="translated">標題和描述將僅顯示於此問題。</target>
       </trans-unit>
       <trans-unit id="8987139299655955589" datatype="html">
         <source>Question Title is required.</source>
@@ -5770,7 +5770,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Question Title</target>
+        <target state="translated">問題標題</target>
       </trans-unit>
       <trans-unit id="1295423322835568747" datatype="html">
         <source>Question description</source>
@@ -5778,7 +5778,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">Question description</target>
+        <target state="translated">問題描述</target>
       </trans-unit>
       <trans-unit id="6213924357616789681" datatype="html">
         <source>Text and description for each individual answer.</source>
@@ -5826,7 +5826,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">244,245</context>
         </context-group>
-        <target state="needs-translation">This is the space that will list the proposal.</target>
+        <target state="translated">將由此空間刊出提案。</target>
       </trans-unit>
       <trans-unit id="6241175755376438916" datatype="html">
         <source>Proposal Setup</source>
@@ -5834,7 +5834,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">292,293</context>
         </context-group>
-        <target state="needs-translation">Proposal Setup</target>
+        <target state="translated">提案設定</target>
       </trans-unit>
       <trans-unit id="3068808787718249318" datatype="html">
         <source>Defines who has access to the proposal and what is the voting method.</source>
@@ -5842,7 +5842,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">294,295</context>
         </context-group>
-        <target state="needs-translation">Defines who has access to the proposal and what is the voting method.</target>
+        <target state="translated">確認誰有此提案的訪問權限，以及投票方法。</target>
       </trans-unit>
       <trans-unit id="1956426485429089025" datatype="html">
         <source>Target Participants</source>
@@ -5850,7 +5850,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="needs-translation">Target Participants</target>
+        <target state="translated">目標參與者</target>
       </trans-unit>
       <trans-unit id="4014485883731431399" datatype="html">
         <source>All Guardians</source>
@@ -5866,7 +5866,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">312,313</context>
         </context-group>
-        <target state="needs-translation">Only guardians can vote on this proposal</target>
+        <target state="translated">僅管理員可對此提案投票</target>
       </trans-unit>
       <trans-unit id="6783237823517394918" datatype="html">
         <source>All Members</source>
@@ -5882,7 +5882,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">322,323</context>
         </context-group>
-        <target state="needs-translation">All members can vote on this proposal</target>
+        <target state="translated">所有成員可對此提案投票</target>
       </trans-unit>
       <trans-unit id="1673434496808626695" datatype="html">
         <source>IOTA Token Holders</source>
@@ -5898,7 +5898,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">333,334</context>
         </context-group>
-        <target state="needs-translation">All IOTA token holders can vote.</target>
+        <target state="translated">所有IOTA持有者可投票。</target>
       </trans-unit>
       <trans-unit id="2815746757024794057" datatype="html">
         <source>Voting Type</source>
@@ -5926,7 +5926,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">354,355</context>
         </context-group>
-        <target state="needs-translation">Each member of the space gets one vote</target>
+        <target state="translated">每位成員可投一票</target>
       </trans-unit>
       <trans-unit id="5703711514129531242" datatype="html">
         <source>XP Reputation - Space</source>
@@ -5942,7 +5942,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">368,369</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has in the space</target>
+        <target state="translated">投票是基於一名成員在空間中的總XP量加權。</target>
       </trans-unit>
       <trans-unit id="1171519555154717304" datatype="html">
         <source>XP Reputation - Space + Connection</source>
@@ -5990,7 +5990,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">423,424</context>
         </context-group>
-        <target state="needs-translation">Set Minimum Weight</target>
+        <target state="translated">設定最低權重</target>
       </trans-unit>
       <trans-unit id="4343784064275297555" datatype="html">
         <source>Select Badge</source>
@@ -5998,7 +5998,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">438,439</context>
         </context-group>
-        <target state="needs-translation">Select Badge</target>
+        <target state="translated">選擇徽章</target>
       </trans-unit>
       <trans-unit id="7518498657175852149" datatype="html">
         <source> Create Proposal </source>
@@ -6014,7 +6014,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">322</context>
         </context-group>
-        <target state="needs-translation">Choice</target>
+        <target state="translated">選擇</target>
       </trans-unit>
       <trans-unit id="6471529095373327893" datatype="html">
         <source>badge</source>
@@ -6022,7 +6022,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">326</context>
         </context-group>
-        <target state="needs-translation">badge</target>
+        <target state="translated">徽章</target>
       </trans-unit>
       <trans-unit id="3625859417927520024" datatype="html">
         <source>id</source>
@@ -6763,7 +6763,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">163,164</context>
         </context-group>
-        <target state="needs-translation">Avatar is mandatory</target>
+        <target state="translated">必須有頭像</target>
       </trans-unit>
       <trans-unit id="6932048807565988787" datatype="html">
         <source> Create space </source>
@@ -6791,7 +6791,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">171</context>
         </context-group>
-        <target state="needs-translation">Upload new to replace existing.</target>
+        <target state="translated">上傳更新以替換現有。</target>
       </trans-unit>
       <trans-unit id="5504845184624630235" datatype="html">
         <source>Your brand is key.</source>
@@ -6807,7 +6807,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">171</context>
         </context-group>
-        <target state="needs-translation">Make it personal.</target>
+        <target state="translated">設為個人。</target>
       </trans-unit>
     </body>
   </file>
