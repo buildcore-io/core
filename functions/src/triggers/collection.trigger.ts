@@ -4,12 +4,12 @@ import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { Collection } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
-import { low } from '../scale.settings';
+import { medium } from '../scale.settings';
 
 // Listen for changes in all documents in the 'users' collection
 export const collectionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   timeoutSeconds: 300,
-  minInstances: low
+  minInstances: medium
 }).firestore.document(COL.COLLECTION + '/{collectionId}').onWrite(async (change) => {
   const newValue: Collection = <Collection>change.after.data();
   const previousValue: Collection = <Collection>change.before.data();

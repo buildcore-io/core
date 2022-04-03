@@ -5,7 +5,7 @@ export const low = (functions.config()?.environment?.type === 'prod') ? 1 : 1;
 export const medium = (functions.config()?.environment?.type === 'prod') ? 3 : 2;
 export const important = (functions.config()?.environment?.type === 'prod') ? 6 : 2;
 export const pump = (functions.config()?.environment?.type === 'prod') ? 9 : 2;
-export const superPump = (functions.config()?.environment?.type === 'prod') ? 100 : 2;
+export const superPump = (functions.config()?.environment?.type === 'prod') ? 60 : 2;
 
 export function scale(func: WEN_FUNC): number {
   const scaleSettings: any = {};
