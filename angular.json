@@ -29,6 +29,10 @@
           "code": "en"
         },
         "locales": {
+          "ar": {
+            "translation": "src/locale/messages.ar.xlf",
+            "baseHref": ""
+          },
           "cs": {
             "translation": "src/locale/messages.cs-CZ.xlf",
             "baseHref": ""
@@ -147,6 +151,10 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "ar": {
+              "localize": ["ar"],
+              "i18nMissingTranslation": "warning"
             },
             "cs": {
               "localize": ["cs"],

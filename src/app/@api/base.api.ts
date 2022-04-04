@@ -66,7 +66,7 @@ export class BaseApi<T> {
       }
     );
 
-    return ref.snapshotChanges().pipe(map((actions) => {
+    return ref?.snapshotChanges().pipe(map((actions) => {
       // We need cursor.
       return actions.map(a => {
         const data = a.payload.doc.data();

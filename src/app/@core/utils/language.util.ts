@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {
-  cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, ko_KR, nl_NL, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN, zh_TW
+  ar_EG, cs_CZ, de_DE, en_GB, es_ES, fr_FR, it_IT, ja_JP, ko_KR, nl_NL, pl_PL, pt_BR, pt_PT, ru_RU, tr_TR, uk_UA, zh_CN, zh_TW
 } from 'ng-zorro-antd/i18n';
 
 export interface LanguagesType {
@@ -16,6 +16,11 @@ export const Languages: LanguagesType = {
     ngZorro: en_GB,
     title: 'EN',
     firebase: 'en'
+  },
+  ar: {
+    ngZorro: ar_EG,
+    title: 'AR',
+    firebase: 'ar'
   },
   cs: {
     ngZorro: cs_CZ,
