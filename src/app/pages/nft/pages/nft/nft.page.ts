@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
+import { NftApi, OffersHistory, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
@@ -14,7 +14,7 @@ import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from '@functions/interfaces/config';
-import { Collection, CollectionType, TransactionBillPayment, TransactionType } from '@functions/interfaces/models';
+import { Collection, CollectionType, Transaction, TransactionBillPayment, TransactionType } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -217,7 +217,13 @@ export class NFTPage implements OnInit, OnDestroy {
         );
 
         if (this.auth.member$.value) {
-          this.nftSubscriptions$.push(this.nftApi.getMembersTransactions(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myTransactions$));
+          this.data.myTransactionsLoading$.next(false);
+          this.nftSubscriptions$.push(this.nftApi.getMembersTransactions(this.auth.member$.value, this.data.nft$.value!)
+            .pipe(untilDestroyed(this))
+            .subscribe((value: Transaction[]) => {
+              this.data.myTransactions$.next(value);
+              this.data.myTransactionsLoading$.next(true);
+            }));
         }
       }
 
@@ -279,9 +285,23 @@ export class NFTPage implements OnInit, OnDestroy {
       });
       this.tranSubscriptions$ = [];
       // Resubscribe.
-      this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.allBidTransactions$));
+
+      this.data.allBidTransactionsLoading$.next(true);
+      this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!)
+        .pipe(untilDestroyed(this))
+        .subscribe((value: OffersHistory[]) => {
+          this.data.allBidTransactions$.next(value);
+          this.data.allBidTransactionsLoading$.next(false);
+        }));
+
       if (this.auth.member$.value) {
-        this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!).pipe(untilDestroyed(this)).subscribe(this.data.myBidTransactions$));
+        this.data.myBidTransactionsLoading$.next(true);
+        this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!)
+          .pipe(untilDestroyed(this))
+          .subscribe((value: Transaction[]) => {
+            this.data.myBidTransactions$.next(value);
+            this.data.myBidTransactionsLoading$.next(false);
+          }));
       }
     }
   }
