@@ -109,7 +109,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     throw throwInvalidArgument(WenError.collection_is_already_rejected);
   }
 
-  if (collectionData.limitedEdition) {
+  if (collectionData.approved === true && collectionData.limitedEdition) {
     throw throwInvalidArgument(WenError.this_is_limited_addition_collection);
   }
 
@@ -127,6 +127,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
       uid: nftAddress,
       locked: false,
       price: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
+      availablePrice: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
       position: collectionData.total + 1,
       lockedBy: null,
       ipfsMedia: null,

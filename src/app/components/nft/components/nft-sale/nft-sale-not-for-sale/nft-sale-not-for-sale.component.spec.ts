@@ -6,11 +6,11 @@ describe('NftSaleNotForSaleComponent', () => {
   let component: NftSaleNotForSaleComponent;
   let fixture: ComponentFixture<NftSaleNotForSaleComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ NftSaleNotForSaleComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

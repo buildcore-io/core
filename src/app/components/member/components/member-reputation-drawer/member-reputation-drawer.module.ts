@@ -8,7 +8,6 @@ import { MemberAlliancesTableModule } from '../member-alliances-table/member-all
 import { MemberReputationDrawerComponent } from './member-reputation-drawer.component';
 
 
-
 @NgModule({
   declarations: [
     MemberReputationDrawerComponent

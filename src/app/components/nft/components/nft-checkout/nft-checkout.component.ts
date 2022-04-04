@@ -125,7 +125,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
             }
 
             listeningToTransaction.push(tranId);
-            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
+            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any> this.transaction$);
           }
         } else if (!val.linkedTransactions) {
           this.currentStep = StepType.TRANSACTION;
@@ -191,7 +191,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     });
 
     if (getItem(StorageItem.CheckoutTransaction)) {
-      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.CheckoutTransaction)).subscribe(<any>this.transaction$);
+      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.CheckoutTransaction)).subscribe(<any> this.transaction$);
     }
 
     // Run ticker.
@@ -246,17 +246,15 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   }
 
   public discount(): number {
-    if (!this.collection?.space || !this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || this.nft?.owner) {
+    if (!this.collection?.space || !this.auth.member$.value || this.nft?.owner) {
       return 1;
     }
 
-    const xp: number = this.auth.member$.value.spaces[this.collection.space].totalReputation || 0;
+    const xp: number = this.auth.member$.value?.spaces?.[this.collection.space]?.totalReputation || 0;
     let discount = 1;
-    if (xp > 0) {
-      for (const d of this.collection.discounts) {
-        if (d.xp < xp) {
-          discount = (1 - d.amount);
-        }
+    for (const d of this.collection.discounts) {
+      if (d.xp < xp) {
+        discount = (1 - d.amount);
       }
     }
 
@@ -352,7 +350,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       this.notification.processRequest(this.orderApi.orderNft(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.CheckoutTransaction, val.uid);
-        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
     });

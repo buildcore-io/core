@@ -9,7 +9,6 @@ import { CollectionAccessBadgeModule } from '../collection-access-badge/collecti
 import { CollectionCardComponent } from './collection-card.component';
 
 
-
 @NgModule({
   declarations: [
     CollectionCardComponent

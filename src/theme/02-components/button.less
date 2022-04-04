@@ -22,13 +22,28 @@ a.ant-btn {
   vertical-align: baseline;
 }
 
-.ant-btn-primary:focus {
-  background-color: @buttonsPrimaryPressed;
-  border-color: @buttonsPrimaryPressed;
-}
-
 .ant-btn {
   font-size: @font-size-lg;
+  @apply inline-flex place-items-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
+  
+  &:hover {
+    @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;
+  }
+
+  &:active,
+  &:focus {
+    @apply text-buttons-secondary-pressed dark:text-buttons-secondary-pressed-dark;
+  }
+}
+
+
+.ant-btn-primary {
+  @apply bg-buttons-primary-enabled;
+
+  &:active,
+  &:focus {
+    @apply bg-buttons-primary-pressed dark:bg-buttons-primary-pressed-dark border-buttons-primary-pressed dark:border-buttons-primary-pressed-dark;
+  }
 }
 
 .ant-btn-lg {
@@ -56,8 +71,6 @@ a.ant-btn {
   }
 }
 
-
-
 // sort by button
 .wen-sort-button {
   .ant-select-selector {
@@ -69,10 +82,6 @@ a.ant-btn {
     display: flex;
     align-items: center;
   }
-}
-
-.wen-back-button {
-  @apply inline-flex px-6 font-semibold bg-white border-white place-items-center hover:text-blue-hover hover:border-white focus:border-white focus:text-blue-pressed rounded-3xl;
 }
 
 .ant-select-dropdown {

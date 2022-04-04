@@ -15,7 +15,7 @@ describe('SinglePage', () => {
   let component: SinglePage;
   let fixture: ComponentFixture<SinglePage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ SinglePage ],
       providers: [
@@ -30,7 +30,7 @@ describe('SinglePage', () => {
         MockProvider(FileApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

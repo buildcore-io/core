@@ -6,6 +6,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   styleUrls: ['./moon.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MoonIconComponent{
+export class MoonIconComponent {
   @Input() stroke = 'currentColor';
 }

@@ -7,19 +7,21 @@ import { Collection, Member, Space, Transaction } from "functions/interfaces/mod
 import { Nft } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
 
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService {
   public nftId?: string;
-  public nft$: BehaviorSubject<Nft|undefined> = new BehaviorSubject<Nft|undefined>(undefined);
-  public collection$: BehaviorSubject<Collection|undefined> = new BehaviorSubject<Collection|undefined>(undefined);
-  public topNftWithinCollection$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
-  public firstNftInCollection$: BehaviorSubject<Nft|undefined> = new BehaviorSubject<Nft|undefined>(undefined);
-  public orders$: BehaviorSubject<SuccesfullOrdersWithFullHistory[]|undefined> = new BehaviorSubject<SuccesfullOrdersWithFullHistory[]|undefined>(undefined);
-  public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
-  public royaltySpace$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
-  public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-  public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-  public collectionCreator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  public nft$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(undefined);
+  public collection$: BehaviorSubject<Collection | undefined> = new BehaviorSubject<Collection | undefined>(undefined);
+  public topNftWithinCollection$: BehaviorSubject<Nft[] | undefined> = new BehaviorSubject<Nft[] | undefined>(undefined);
+  public firstNftInCollection$: BehaviorSubject<Nft | undefined> = new BehaviorSubject<Nft | undefined>(undefined);
+  public orders$: BehaviorSubject<SuccesfullOrdersWithFullHistory[] | undefined> = new BehaviorSubject<SuccesfullOrdersWithFullHistory[] | undefined>(undefined);
+  public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
+  public royaltySpace$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
+  public creator$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
+  public owner$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
+  public collectionCreator$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
   public myBidTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
   public myBidTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public allBidTransactions$: BehaviorSubject<OffersHistory[]> = new BehaviorSubject<OffersHistory[]>([]);
@@ -55,8 +57,8 @@ export class DataService {
         return o.rejected !== true && o.createdBy === this.auth.member$.value.uid;
       })
       .map((o) => ({
-          label: o.name || o.uid,
-          value: o.uid
+        label: o.name || o.uid,
+        value: o.uid
       }));
   }
 
@@ -66,9 +68,9 @@ export class DataService {
     }
 
     const final: any[] = [];
-    for (const v of Object.values(obj).sort(function(a: any, b: any){
-      if(a.label < b.label) { return -1; }
-      if(a.label > b.label) { return 1; }
+    for (const v of Object.values(obj).sort(function(a: any, b: any) {
+      if (a.label < b.label) { return -1; }
+      if (a.label > b.label) { return 1; }
       return 0;
     })) {
       final.push(v);
@@ -77,7 +79,7 @@ export class DataService {
     return final;
   }
 
-  public formatBest(amount?: number|null): string {
+  public formatBest(amount?: number | null): string {
     if (!amount) {
       return '';
     }

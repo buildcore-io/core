@@ -11,12 +11,12 @@ describe('NftPreviewComponent', () => {
   let component: NftPreviewComponent;
   let fixture: ComponentFixture<NftPreviewComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ NftPreviewComponent ],
       providers: [MockProvider(DataService), MockProvider(AuthService), MockProvider(CacheService), MockProvider(FileApi)]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

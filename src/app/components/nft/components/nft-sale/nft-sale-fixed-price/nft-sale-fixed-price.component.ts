@@ -69,7 +69,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = this.getRawPrice(Number(this.priceControl.value), <Units>this.unitControl.value);
+        const value = this.getRawPrice(Number(this.priceControl.value), <Units> this.unitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });
@@ -77,13 +77,13 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
     this.selectedAccessControl.valueChanges.pipe(untilDestroyed(this))
       .subscribe(() => {
         switch (this.selectedAccessControl.value) {
-          case NftAccess.OPEN:
-            this.buyerControl.removeValidators(Validators.required);
-            this.buyerControl.setErrors(null);
-            break;
-          case NftAccess.MEMBERS:
-            this.buyerControl.addValidators(Validators.required);
-            break;
+        case NftAccess.OPEN:
+          this.buyerControl.removeValidators(Validators.required);
+          this.buyerControl.setErrors(null);
+          break;
+        case NftAccess.MEMBERS:
+          this.buyerControl.addValidators(Validators.required);
+          break;
         }
       });
 

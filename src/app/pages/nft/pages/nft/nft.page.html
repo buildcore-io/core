@@ -10,7 +10,7 @@
 
             <ng-container *ngIf="deviceService.isMobile$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl">
-                    <img (click)="isNftPreviewOpen = true"
+                    <img loading="eager" (click)="isNftPreviewOpen = true"
                     *ngIf="mediaType === 'image'"
                     alt="NFT Image" i18n-alt
                     [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
@@ -61,16 +61,22 @@
 
                     <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="(endsOnTicker$ | async) && auctionInProgress(data.nft$ | async, data.collection$ | async)">
                         <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
-                          {{getAuctionEndHours(data.nft$ | async)}}
-                          <span i18n> hours</span>
+                            <div class="mr-1">
+                                {{getAuctionEndHours(data.nft$ | async)}}
+                            </div>
+                            <div i18n>hours</div>
                         </div>
                         <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
-                          {{getAuctionEndMin(data.nft$ | async)}}
-                          <span i18n> min</span>
+                            <div class="mr-1">
+                                {{getAuctionEndMin(data.nft$ | async)}}
+                            </div>
+                            <div i18n>min</div>
                         </div>
                         <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
-                          {{getAuctionEndSec(data.nft$ | async)}}
-                          <span i18n> sec</span>
+                            <div class="mr-1">
+                                {{getAuctionEndSec(data.nft$ | async)}}
+                            </div>
+                            <div i18n>sec</div>
                         </div>
                     </div>
             </div>
@@ -265,7 +271,7 @@
         <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
             <ng-container *ngIf="deviceService.isDesktop$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl">
-                    <img (click)="isNftPreviewOpen = true"
+                    <img loading="eager" (click)="isNftPreviewOpen = true"
                     *ngIf="mediaType === 'image'"
                     alt="NFT Image"
                     [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'"
@@ -442,7 +448,7 @@
     [nzBodyStyle]="{ padding: '0' }"
 >
     <ng-template #prevewNftModalContent>
-        <img *ngIf="mediaType === 'image'" [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
+        <img loading="eager" *ngIf="mediaType === 'image'" [src]="(data.nft$ | async)?.media || '/assets/mocks/no_banner.jpg'" class="w-full rounded-3xl" />
         <video controls autoplay loop class="w-full rounded-3xl" *ngIf="mediaType === 'video'">
           <source [src]="(data.nft$ | async)?.media" type="video/mp4">
           Your browser does not support HTML video.

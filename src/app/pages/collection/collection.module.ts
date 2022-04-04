@@ -39,7 +39,6 @@ import { UpsertPage } from './pages/upsert/upsert.page';
 import { DataService } from './services/data.service';
 
 
-
 @NgModule({
   declarations: [
     CollectionPage,

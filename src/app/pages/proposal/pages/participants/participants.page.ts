@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { } from '@angular/compiler';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
@@ -20,18 +21,19 @@ enum ParticipantFilterOptions {
 @UntilDestroy()
 @Component({
   selector: 'wen-participants',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './participants.page.html',
   styleUrls: ['./participants.page.less']
 })
 export class ParticipantsPage implements OnInit, OnDestroy {
-  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public search$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
   public filterControl: FormControl = new FormControl(undefined);
   public overTenRecords = false;
   public static DEBOUNCE_TIME = GLOBAL_DEBOUNCE_TIME;
   public selectedListControl: FormControl = new FormControl(ParticipantFilterOptions.PENDING);
-  public membersPending$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
-  public membersVoted$: BehaviorSubject<ProposalParticipantWithMember[]|undefined> = new BehaviorSubject<ProposalParticipantWithMember[]|undefined>(undefined);
-  public hotTags: { value: ParticipantFilterOptions; label: string}[] = [
+  public membersPending$: BehaviorSubject<ProposalParticipantWithMember[] | undefined> = new BehaviorSubject<ProposalParticipantWithMember[] | undefined>(undefined);
+  public membersVoted$: BehaviorSubject<ProposalParticipantWithMember[] | undefined> = new BehaviorSubject<ProposalParticipantWithMember[] | undefined>(undefined);
+  public hotTags: { value: ParticipantFilterOptions; label: string }[] = [
     { value: ParticipantFilterOptions.PENDING, label: $localize`Pending Vote` },
     { value: ParticipantFilterOptions.VOTED, label: $localize`Voted` }
   ];
@@ -58,7 +60,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.proposal.proposal.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.proposalId = id;
@@ -76,7 +78,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async (val) => {
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async(val) => {
       // We need reset old values.
       this.resetDataStore();
       this.resetSubjects();
@@ -110,7 +112,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  public getList(): BehaviorSubject<ProposalParticipantWithMember[]|undefined> {
+  public getList(): BehaviorSubject<ProposalParticipantWithMember[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.VOTED) {
       return this.membersVoted$;
     } else {
@@ -146,7 +148,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     this.onParticipantScroll(this.proposalId, this.selectedListControl.value, searchIds);
   }
 
-  protected store(stream$: BehaviorSubject<any[]|undefined>, store: any[][], page: number, a: any): void {
+  protected store(stream$: BehaviorSubject<any[] | undefined>, store: any[][], page: number, a: any): void {
     if (store[page]) {
       store[page] = a;
     } else {
@@ -188,13 +190,13 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     ));
   }
 
-  public listenPendingMembers(proposalId: string, lastValue?: any, searchIds?: string[]): void {
+  public listenPendingMembers(proposalId: string, lastValue?: number, searchIds?: string[]): void {
     this.subscriptions$.push(this.proposalApi.listenPendingMembers(proposalId, lastValue, searchIds).subscribe(
       this.store.bind(this, this.membersPending$, this.dataStorePendingMembers, this.dataStorePendingMembers.length)
     ));
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: ProposalParticipantWithMember) {
     return item.uid;
   }
 

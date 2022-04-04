@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeviceService } from '@core/services/device';
@@ -20,6 +20,7 @@ import { AuthService } from './../../../../components/auth/services/auth.service
 @UntilDestroy()
 @Component({
   selector: 'wen-new',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './new.page.html',
   styleUrls: ['./new.page.less']
 })
@@ -159,7 +160,7 @@ export class NewPage implements OnInit, OnDestroy {
       this.nzNotification.error('', 'No more avatars available');
       return false;
     } else {
-      const results: boolean = await this.auth.mint(result[0].uid);
+      const results: boolean = await this.auth.mint();
       if (results === false) {
         this.nzNotification.error('', 'Unable to mint your badge at the moment. Try again later.');
         return false;

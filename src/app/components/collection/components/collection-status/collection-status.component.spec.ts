@@ -6,14 +6,14 @@ describe('CollectionStatusComponent', () => {
   let spectator: Spectator<CollectionStatusComponent>;
   const createComponent = createComponentFactory({
     component: CollectionStatusComponent,
-    imports: [ DateTagModule ]
+    imports: [DateTagModule]
   });
 
   beforeEach(() => {
     spectator = createComponent();
   });
 
-it('write tests', () => {
-  expect(spectator).toBeDefined();
-});
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
+  });
 });

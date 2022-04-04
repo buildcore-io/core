@@ -9,7 +9,7 @@ describe('MemberSpacesComponent', () => {
   let component: MemberSpacesComponent;
   let fixture: ComponentFixture<MemberSpacesComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ MemberSpacesComponent ],
       providers: [
@@ -17,7 +17,7 @@ describe('MemberSpacesComponent', () => {
         MockProvider(MemberApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

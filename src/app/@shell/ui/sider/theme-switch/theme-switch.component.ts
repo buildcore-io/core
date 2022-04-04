@@ -22,6 +22,7 @@ export class ThemeSwitchComponent {
   }
 
   onClickChangeTheme(theme: ThemeList): void {
+    // Switching not enabled yet
     this.themeService.setTheme(theme);
   }
 }

@@ -30,7 +30,7 @@ export interface NFTObject {
     fields?: string[];
     value?: () => any;
     defaultAmount?: number;
-  }
+  };
 }
 
 @UntilDestroy()
@@ -56,12 +56,12 @@ export class MultiplePage implements OnInit {
   public uploadErrors: string[] = [];
   public imagesLimit = 500;
   private usedFileNames = new Set<string>();
-  public nftObject:  NFTObject = {
+  public nftObject: NFTObject = {
     media: {
       label: 'media',
       required: true,
       validate: (value: string) => {
-        if (!value)  return false;
+        if (!value) return false;
         if (this.usedFileNames.has(value)) {
           return false;
         }
@@ -101,7 +101,7 @@ export class MultiplePage implements OnInit {
           return true;
         }
 
-        if(!value || !dayjs(value).isValid())  {
+        if (!value || !dayjs(value).isValid()) {
           return false;
         }
 
@@ -149,7 +149,7 @@ export class MultiplePage implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(() => {
         this.reset();
-        const finObj: Collection|undefined = this.cache.allCollections$.value.find((subO: any) => {
+        const finObj: Collection | undefined = this.cache.allCollections$.value.find((subO: any) => {
           return subO.uid === this.collectionControl.value;
         });
         if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
@@ -232,14 +232,14 @@ export class MultiplePage implements OnInit {
             return { ...acc, [key]: newObj };
           }, {});
 
-        const filteredObj =
-          Object.keys(obj)
-            .filter((key: string) => obj[key].label && obj[key].value);
+      const filteredObj =
+        Object.keys(obj)
+          .filter((key: string) => obj[key].label && obj[key].value);
 
-        if (filteredObj.length > 0) {
-          res.properties = filteredObj.reduce((acc: any, key: string) =>
-            ({ ...acc, [obj[key].label.replace(/\s/g, '').toLowerCase()]: obj[key] }), {});
-        }
+      if (filteredObj.length > 0) {
+        res.properties = filteredObj.reduce((acc: any, key: string) =>
+          ({ ...acc, [obj[key].label.replace(/\s/g, '').toLowerCase()]: obj[key] }), {});
+      }
     }
 
     if (data.stat && data.stat.length > 0) {
@@ -278,7 +278,7 @@ export class MultiplePage implements OnInit {
     return res;
   }
 
-  public beforeCSVUpload(file: NzUploadFile) : boolean | Observable<boolean> {
+  public beforeCSVUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
     this.nftErrors = [];
     this.usedFileNames.clear();
@@ -323,7 +323,7 @@ export class MultiplePage implements OnInit {
             .map((nft: any) =>
               Object.keys(nft)
                 .reduce((acc: any, key: string) => {
-                  const fieldKey =  Object.keys(this.nftObject).find((k) => key.startsWith(this.nftObject[k].label)) || '';
+                  const fieldKey = Object.keys(this.nftObject).find((k) => key.startsWith(this.nftObject[k].label)) || '';
                   const value = nft[key];
                   return this.nftObject[fieldKey]?.fields ?
                     { ...acc, [fieldKey]: [...(acc[fieldKey] || []), { [key]: value }] } :
@@ -336,7 +336,7 @@ export class MultiplePage implements OnInit {
     })
     return false;
   }
-  public beforeImagesUpload(file: NzUploadFile) : boolean | Observable<boolean> {
+  public beforeImagesUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
     return this.uploadedFiles.length < this.imagesLimit;
   }
@@ -355,7 +355,7 @@ export class MultiplePage implements OnInit {
         .filter(item => !item.value || !item.value())
         .map(item => item.fields ?
           [...Array(item.defaultAmount).keys()]
-            .map((num: number) => (item?.fields || []).map(f => `${item.label}.${f}${num+1}`)) :
+            .map((num: number) => (item?.fields || []).map(f => `${item.label}.${f}${num + 1}`)) :
           [item.label])
         .flat(Infinity)] as string[];
 
@@ -378,7 +378,7 @@ export class MultiplePage implements OnInit {
     if (!this.nfts?.length) return;
 
     await this.auth.sign(this.nfts, (sc, finish) => {
-      this.notification.processRequest(this.nftApi.batchCreate(sc), 'Created.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.nftApi.batchCreate(sc), 'Created.', finish).subscribe(() => {
         this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);
       });
     });
@@ -388,7 +388,7 @@ export class MultiplePage implements OnInit {
     return item.name;
   }
 
-  public removeNft(index: number): void  {
+  public removeNft(index: number): void {
     this.nfts = this.nfts.filter((nft: any, i: number) => i !== index);
     this.nftErrors = this.nftErrors.filter((nftError: any, i: number) => i !== index);
   }

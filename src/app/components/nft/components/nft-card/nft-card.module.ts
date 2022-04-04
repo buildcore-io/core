@@ -13,7 +13,6 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftCardComponent } from './nft-card.component';
 
 
-
 @NgModule({
   declarations: [
     NftCardComponent

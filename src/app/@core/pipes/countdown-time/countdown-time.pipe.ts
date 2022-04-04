@@ -12,7 +12,7 @@ export class CountdownTime implements PipeTransform {
       return '';
     }
 
-    const midnight: dayjs.Dayjs = dayjs((new Date()).setHours(0,0,0,0));
+    const midnight: dayjs.Dayjs = dayjs((new Date()).setHours(0, 0, 0, 0));
     const difInSec: number = dayjs(date.toDate()).diff(dayjs(), 'second');
     return difInSec > 0 ? midnight.add(difInSec, 'second').format('mm:ss') : 'expired';
   }

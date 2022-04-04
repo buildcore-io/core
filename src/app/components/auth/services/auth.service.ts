@@ -44,7 +44,7 @@ export enum WalletStatus {
 export class AuthService {
   public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!getItem(StorageItem.Auth));
   public showWalletPopup$: BehaviorSubject<WalletStatus> = new BehaviorSubject<WalletStatus>(WalletStatus.HIDDEN);
-  public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
   public desktopMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   public mobileMenuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>([]);
   private memberSubscription$?: Subscription;
@@ -105,8 +105,8 @@ export class AuthService {
     return this.isLoggedIn$.getValue();
   }
 
-  public async sign(params: any = {}, cb: SignCallback ): Promise<WenRequest|undefined> {
-    const sc: WenRequest|undefined|false =  await this.signWithMetamask(undefinedToEmpty(params));
+  public async sign(params: any = {}, cb: SignCallback): Promise<WenRequest | undefined> {
+    const sc: WenRequest | undefined | false = await this.signWithMetamask(undefinedToEmpty(params));
     if (!sc) {
       this.notification.error($localize`Unable to sign transaction. Please try to reload page.`, '');
       this.showWalletPopup$.next(WalletStatus.HIDDEN);
@@ -141,12 +141,12 @@ export class AuthService {
     }
   }
 
-  public async mint(_ipfsCid: string): Promise<boolean> {
+  public async mint(): Promise<boolean> {
     // TODO waiting for stable EVM to plug it into our SC.
     return true;
   }
 
-  private async signWithMetamask(params: any = {}): Promise<WenRequest|undefined|false> {
+  private async signWithMetamask(params: any = {}): Promise<WenRequest | undefined | false> {
     this.showWalletPopup$.next(WalletStatus.ACTIVE);
     const provider: any = await detectEthereumProvider();
     if (provider) {
@@ -161,9 +161,9 @@ export class AuthService {
           // Make sure account is always selected.
           await provider.request({
             method: "eth_requestAccounts",
-            params: [ { eth_accounts: {} } ]
+            params: [{ eth_accounts: {} }]
           });
-        } catch(e) {
+        } catch (e) {
           this.notification.error($localize`You must enable access to read your account address.`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;
@@ -178,7 +178,7 @@ export class AuthService {
             });
 
             // TODO Unable to detect if users decides to ADD network but not switch to IT
-          } catch(e) {
+          } catch (e) {
             // If we fail we force user to do it manually.
             this.showWalletPopup$.next(WalletStatus.WRONG_CHAIN);
             return;
@@ -191,7 +191,7 @@ export class AuthService {
           return undefined;
         }
 
-        const member: Member|undefined = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
+        const member: Member | undefined = await firstValueFrom(this.memberApi.createIfNotExists(provider.selectedAddress));
         if (!member) {
           this.notification.error($localize`Unable to get nonce to authenticate!`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
@@ -211,7 +211,7 @@ export class AuthService {
           signature: signature,
           body: params
         }
-      } catch(e) {
+      } catch (e) {
         this.showWalletPopup$.next(WalletStatus.HIDDEN);
         return undefined;
       }
@@ -232,7 +232,7 @@ export class AuthService {
   }
 
   public async signIn(): Promise<boolean> {
-    const sc: WenRequest|undefined|false = await this.signWithMetamask({});
+    const sc: WenRequest | undefined | false = await this.signWithMetamask({});
     if (!sc) {
       // Missing wallet.
       if (sc === false) {

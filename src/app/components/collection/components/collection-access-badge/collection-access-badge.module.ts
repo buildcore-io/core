@@ -5,7 +5,6 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { CollectionAccessBadgeComponent } from './collection-access-badge.component';
 
 
-
 @NgModule({
   declarations: [
     CollectionAccessBadgeComponent

@@ -34,29 +34,29 @@ export class ActivityPage implements OnInit {
       }
     },
     scales: {
-        xAxis: {
-            ticks: {
-                maxTicksLimit: 10,
-                color: '#959388',
-                font: {
-                  size: 14,
-                  weight: '600',
-                  family: 'Poppins',
-                  lineHeight: '14px'
-                }
-            }
-        },
-        yAxis: {
-          ticks: {
-              color: '#959388',
-              font: {
-                size: 14,
-                weight: '600',
-                family: 'Poppins',
-                lineHeight: '14px'
-              }
+      xAxis: {
+        ticks: {
+          maxTicksLimit: 10,
+          color: '#959388',
+          font: {
+            size: 14,
+            weight: '600',
+            family: 'Poppins',
+            lineHeight: '14px'
           }
         }
+      },
+      yAxis: {
+        ticks: {
+          color: '#959388',
+          font: {
+            size: 14,
+            weight: '600',
+            family: 'Poppins',
+            lineHeight: '14px'
+          }
+        }
+      }
     },
     plugins: {
       legend: {
@@ -129,7 +129,7 @@ export class ActivityPage implements OnInit {
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
         this.data.refreshBadges(this.getSelectedSpace(), this.spaceForm.value.includeAlliances);
-    });
+      });
 
     let prev: string | undefined;
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
@@ -181,7 +181,7 @@ export class ActivityPage implements OnInit {
   }
 
   public initChart(data: any[][]): void {
-    const dataToShow: { data: number[], labels: string[]} = {
+    const dataToShow: { data: number[]; labels: string[]} = {
       data: [],
       labels: []
     };

@@ -36,7 +36,7 @@ export class ThemeService implements OnDestroy {
     this.clearThemes();
     setItem(StorageItem.Theme, theme);
     this.theme$.next(theme);
-
+    
     this.document.body.classList.add(theme);
   }
 

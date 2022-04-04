@@ -62,15 +62,19 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || []).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 
   public ngOnInit(): void {
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
@@ -86,7 +90,11 @@ export class NFTsPage implements OnInit, OnDestroy {
     });
 
     // Init listen.
-    this.selectedTags$.pipe(untilDestroyed(this)).subscribe(() => {
+    this.selectedTags$.pipe(untilDestroyed(this)).subscribe((o) => {
+      if (o.indexOf(HOT_TAGS.SPACE) === -1 && this.spaceControl.value !== DEFAULT_SPACE.value) {
+        this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
+      }
+
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
         this.listen(this.filter.search$.value);
       } else {
@@ -105,6 +113,8 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    // So we show searching again.
+    this.nfts$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
@@ -116,7 +126,7 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.lowToHighAvailable(last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
         return this.nftApi.lowToHighAuction(last, search);
-      }  else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.lowToHighOwned(last, search);
       } else {
         return this.nftApi.lowToHigh(last, search);
@@ -138,9 +148,9 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.highToLowSpace(this.spaceControl.value, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.highToLowAvailable(last, search);
-      }  else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
         return this.nftApi.highToLowAuction(last, search);
-      }else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.highToLowOwned(last, search);
       } else {
         return this.nftApi.highToLow(last, search);
@@ -196,7 +206,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.nfts$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.nfts$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

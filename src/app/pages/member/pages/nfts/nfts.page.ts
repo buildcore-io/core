@@ -9,7 +9,7 @@ import { Collection } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ParticipantsPage } from '@pages/proposal/pages/participants/participants.page';
-import { BehaviorSubject, debounceTime, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, map, Observable, of, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -22,7 +22,7 @@ import { DataService } from '../../services/data.service';
 export class NFTsPage implements OnInit, OnDestroy {
   public collectionControl: FormControl;
   public filterControl: FormControl;
-  public nft$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
+  public nft$: BehaviorSubject<Nft[] | undefined> = new BehaviorSubject<Nft[] | undefined>(undefined);
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
 
@@ -59,6 +59,7 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    this.nft$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
@@ -71,10 +72,12 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public getHandler(last?: any, search?: string): Observable<Nft[]> {
-    if (this.collectionControl.value !== DEFAULT_COLLECTION.value) {
-      return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value!.uid, last, search);
+    if (this.collectionControl.value !== DEFAULT_COLLECTION.value && this.data.member$.value) {
+      return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value.uid, last, search);
+    } else if (this.data.member$.value) {
+      return this.nftApi.topMember(this.data.member$.value.uid, last, search);
     } else {
-      return this.nftApi.topMember(this.data.member$.value!.uid, last, search);
+      return of([]);
     }
   }
 
@@ -105,7 +108,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
   }
 
-  public getCollection(col?: string|null): Collection|undefined {
+  public getCollection(col?: string | null): Collection | undefined {
     if (!col) {
       return undefined;
     }
@@ -116,7 +119,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.nft$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.nft$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }
@@ -133,9 +136,9 @@ export class NFTsPage implements OnInit, OnDestroy {
     return (list || [])
       .filter((o) => o.rejected !== true)
       .map((o) => ({
-          label: o.name || o.uid,
-          value: o.uid,
-          img: o.bannerUrl
+        label: o.name || o.uid,
+        value: o.uid,
+        img: o.bannerUrl
       }));
   }
 

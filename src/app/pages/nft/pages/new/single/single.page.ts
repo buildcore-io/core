@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -90,7 +91,7 @@ export class SinglePage implements OnInit {
 
   public ngOnInit(): void {
     this.collectionControl.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
-      const finObj: Collection|undefined = this.cache.allCollections$.value.find((subO: any) => {
+      const finObj: Collection | undefined = this.cache.allCollections$.value.find((subO: any) => {
         return subO.uid === o;
       });
 
@@ -123,7 +124,7 @@ export class SinglePage implements OnInit {
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = Number(this.priceControl.value) * (<Units>this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+        const value = Number(this.priceControl.value) * (<Units> this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });
@@ -213,7 +214,7 @@ export class SinglePage implements OnInit {
 
   public disabledDateTime(startValue: Date | Date[]): DisabledTimeConfig {
     if (
-        !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day') ) {
+      !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day')) {
       return {
         nzDisabledHours: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
         nzDisabledMinutes: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),
@@ -229,7 +230,7 @@ export class SinglePage implements OnInit {
   };
 
   public addProperty(): void {
-    if (this.properties.controls.length < MAX_PROPERTIES_COUNT){
+    if (this.properties.controls.length < MAX_PROPERTIES_COUNT) {
       this.properties.push(this.getPropertyForm());
     }
   }
@@ -246,7 +247,7 @@ export class SinglePage implements OnInit {
   }
 
   public addStat(): void {
-    if (this.stats.controls.length < MAX_STATS_COUNT){
+    if (this.stats.controls.length < MAX_STATS_COUNT) {
       this.stats.push(this.getStatForm());
     }
   }
@@ -308,8 +309,8 @@ export class SinglePage implements OnInit {
       return;
     }
 
-    await this.auth.sign(this.formatSubmitData({...this.nftForm.value}), (sc, finish) => {
-      this.notification.processRequest(this.nftApi.create(sc), 'Created.', finish).subscribe((val: any) => {
+    await this.auth.sign(this.formatSubmitData({ ...this.nftForm.value }), (sc, finish) => {
+      this.notification.processRequest(this.nftApi.create(sc), 'Created.', finish).subscribe(() => {
         this.router.navigate([ROUTER_UTILS.config.collection.root, this.collectionControl.value]);
       });
     });
@@ -320,10 +321,10 @@ export class SinglePage implements OnInit {
       return;
     }
 
-    this.previewNft = this.formatSubmitData({...this.nftForm.value});
+    this.previewNft = this.formatSubmitData({ ...this.nftForm.value });
   }
 
-  public trackByValue(index: number, item: any): number {
+  public trackByValue(index: number, item: SelectCollectionOption) {
     return item.value;
   }
 

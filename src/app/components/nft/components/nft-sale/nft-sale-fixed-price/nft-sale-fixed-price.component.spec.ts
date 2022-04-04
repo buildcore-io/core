@@ -8,12 +8,12 @@ describe('NftSaleFixedPriceComponent', () => {
   let component: NftSaleFixedPriceComponent;
   let fixture: ComponentFixture<NftSaleFixedPriceComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ NftSaleFixedPriceComponent ],
       providers: [ MockProvider(MemberApi) ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

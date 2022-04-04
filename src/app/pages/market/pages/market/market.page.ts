@@ -37,20 +37,20 @@ export class MarketPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Marketplace');
-    
     this.filterControl.setValue(this.filter.search$.value);
-
     this.filterControl.valueChanges.pipe(
       debounceTime(GLOBAL_DEBOUNCE_TIME),
       untilDestroyed(this)
-    ).subscribe(this.filter.search$);
+    ).subscribe((val) => {
+      this.filter.search$.next(val);
+    });
 
     this.setSelectedSection();
 
     this.router.events
       .pipe(untilDestroyed(this))
       .subscribe((obj) => {
-        if(obj instanceof NavigationEnd) {
+        if (obj instanceof NavigationEnd) {
           this.setSelectedSection();
         }
       });

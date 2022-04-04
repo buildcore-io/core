@@ -37,8 +37,8 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public collections$: BehaviorSubject<Collection[]|undefined> = new BehaviorSubject<Collection[]|undefined>(undefined);
   public accessControl: FormControl;
   public categories: string[] = [AddedCategories.ALL, Categories.ABSTRACT, Categories.ANIMATION, Categories.ART,
-                                Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERACTIVE, Categories.PFP,
-                                Categories.PHOTOGRAPHY, Categories.PIXELART, Categories.SINGLE, Categories.THREE_D ];
+    Categories.COLLECTIBLE, Categories.GENERATIVE, Categories.INTERACTIVE, Categories.PFP,
+    Categories.PHOTOGRAPHY, Categories.PIXELART, Categories.SINGLE, Categories.THREE_D ];
   public selectedTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([HOT_TAGS.ALL]);
   private dataStore: Collection[][] = [];
   private subscriptions$: Subscription[] = [];
@@ -58,7 +58,11 @@ export class CollectionsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.listen();
+      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+        this.listen(this.filter.search$.value);
+      } else {
+        this.listen();
+      }
     });
 
     this.filter.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val: any) => {
@@ -121,6 +125,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
 
   private listen(search?: string): void {
     this.cancelSubscriptions();
+    this.collections$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined, search).subscribe(this.store.bind(this, 0)));
   }
 
@@ -160,9 +165,9 @@ export class CollectionsPage implements OnInit, OnDestroy {
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || []).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 
@@ -204,7 +209,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.collections$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.collections$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

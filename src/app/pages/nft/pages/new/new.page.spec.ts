@@ -6,11 +6,11 @@ describe('NewPage', () => {
   let component: NewPage;
   let fixture: ComponentFixture<NewPage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ NewPage ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

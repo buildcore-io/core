@@ -56,10 +56,10 @@ export class WalletAddressComponent {
 
   public getModalWidth(): string {
     switch (this.type) {
-      case AddressType.IOTA:
-        return '760px';
-      default:
-        return '760px';
+    case AddressType.IOTA:
+      return '760px';
+    default:
+      return '760px';
     }
   }
 }

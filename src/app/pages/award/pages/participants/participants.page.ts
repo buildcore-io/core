@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { } from '@angular/compiler';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
@@ -22,18 +23,19 @@ enum FilterOptions {
 @UntilDestroy()
 @Component({
   selector: 'wen-participants',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './participants.page.html',
   styleUrls: ['./participants.page.less']
 })
 export class ParticipantsPage implements OnInit, OnDestroy {
   public awardId?: string;
   public selectedListControl: FormControl = new FormControl(FilterOptions.PENDING);
-  public pendingParticipants$: BehaviorSubject<AwardParticipantWithMember[]|undefined> = new BehaviorSubject<AwardParticipantWithMember[]|undefined>(undefined);
-  public issuedParticipants$: BehaviorSubject<AwardParticipantWithMember[]|undefined> = new BehaviorSubject<AwardParticipantWithMember[]|undefined>(undefined);
-  public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);
+  public pendingParticipants$: BehaviorSubject<AwardParticipantWithMember[] | undefined> = new BehaviorSubject<AwardParticipantWithMember[] | undefined>(undefined);
+  public issuedParticipants$: BehaviorSubject<AwardParticipantWithMember[] | undefined> = new BehaviorSubject<AwardParticipantWithMember[] | undefined>(undefined);
+  public search$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
   public filterControl: FormControl = new FormControl(undefined);
   public overTenRecords = false;
-  public hotTags: { value: FilterOptions; label: string}[] = [
+  public hotTags: { value: FilterOptions; label: string }[] = [
     { value: FilterOptions.PENDING, label: $localize`Pending` },
     { value: FilterOptions.ISSUED, label: $localize`Issued` }
   ];
@@ -57,7 +59,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.award.award.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.awardId = id;
@@ -75,19 +77,20 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async (val) => {
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val) => {
       // We need reset old values.
       this.resetParticipantsList();
       this.overTenRecords = false;
       if (val && val.length > 0) {
-        const obj: Member[] = await firstValueFrom(this.memberApi.last(undefined, val));
-        const ids: string[] = obj.map((o) => {
-          return o.uid;
-        });
+        firstValueFrom(this.memberApi.last(undefined, val)).then((obj: Member[]) => {
+          const ids: string[] = obj.map((o) => {
+            return o.uid;
+          });
 
-        // Top 10 records only supported
-        this.overTenRecords = ids.length > 10;
-        this.onScroll(ids.slice(0, 10));
+          // Top 10 records only supported
+          this.overTenRecords = ids.length > 10;
+          this.onScroll(ids.slice(0, 10));
+        });
       } else {
 
         // Show normal list again.
@@ -148,7 +151,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     ));
   }
 
-  protected store(stream$: BehaviorSubject<any[]|undefined>, store: any[][], page: number, a: any): void {
+  protected store(stream$: BehaviorSubject<any[] | undefined>, store: any[][], page: number, a: any): void {
     if (store[page]) {
       store[page] = a;
     } else {
@@ -169,7 +172,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       uid: id,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.awardApi.approveParticipant(sc), 'Approve.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.awardApi.approveParticipant(sc), 'Approve.', finish).subscribe(() => {
         // none.
       });
     });
@@ -184,7 +187,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     return FilterOptions;
   }
 
-  public getList(): BehaviorSubject<AwardParticipantWithMember[]|undefined> {
+  public getList(): BehaviorSubject<AwardParticipantWithMember[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.PENDING) {
       return this.pendingParticipants$;
     } else {

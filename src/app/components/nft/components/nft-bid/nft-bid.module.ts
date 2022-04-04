@@ -19,7 +19,6 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftBidComponent } from './nft-bid.component';
 
 
-
 @NgModule({
   declarations: [
     NftBidComponent

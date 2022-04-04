@@ -88,7 +88,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
             }
 
             listeningToTransaction.push(tranId);
-            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
+            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any> this.transaction$);
           }
         } else if (!val.linkedTransactions) {
           this.currentStep = StepType.TRANSACTION;
@@ -133,7 +133,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     });
 
     if (getItem(StorageItem.VerificationTransaction)) {
-      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.VerificationTransaction)).subscribe(<any>this.transaction$);
+      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.VerificationTransaction)).subscribe(<any> this.transaction$);
     }
 
     // Run ticker.
@@ -245,7 +245,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       this.notification.processRequest(this.orderApi.validateAddress(sc), 'Validation requested.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.VerificationTransaction, val.uid);
-        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
     });

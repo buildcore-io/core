@@ -23,24 +23,24 @@ export class NavigationService implements OnDestroy {
 
   public watchPathHistory(): void {
     this.subsRouter$ = this.router.events
-    .pipe(filter((evt: any) => evt instanceof RoutesRecognized), pairwise())
-    .subscribe((events: RoutesRecognized[]) => {
-      const prevUrl = events[0].urlAfterRedirects;
-      const targetUrl = events[1].urlAfterRedirects;
-      this.returnableUrl().forEach((o) => {
-        if (prevUrl.startsWith('/' + o.url) && !targetUrl.startsWith('/' + o.url)) {
-          this.pushState({ text: o.text, url: prevUrl.split('/') });
-        }
+      .pipe(filter((evt: any) => evt instanceof RoutesRecognized), pairwise())
+      .subscribe((events: RoutesRecognized[]) => {
+        const prevUrl = events[0].urlAfterRedirects;
+        const targetUrl = events[1].urlAfterRedirects;
+        this.returnableUrl().forEach((o) => {
+          if (prevUrl.startsWith('/' + o.url) && !targetUrl.startsWith('/' + o.url)) {
+            this.pushState({ text: o.text, url: prevUrl.split('/') });
+          }
+        });
+        this.forwardableUrl().forEach((o) => {
+          if (!prevUrl.startsWith('/' + o.url) && targetUrl.startsWith('/' + o.url)) {
+            this.pushState({ text: o.text, url: prevUrl.split('/') });
+          }
+        });
       });
-      this.forwardableUrl().forEach((o) => {
-        if (!prevUrl.startsWith('/' + o.url) && targetUrl.startsWith('/' + o.url)) {
-          this.pushState({ text: o.text, url: prevUrl.split('/') });
-        }
-      });
-    });
   }
 
-  private returnableUrl(): {url: string, text: string}[] {
+  private returnableUrl(): { url: string; text: string }[] {
     return [
       { url: ROUTER_UTILS.config.space.root, text: 'Space' },
       { url: ROUTER_UTILS.config.discover.root, text: 'Discover' },
@@ -52,7 +52,7 @@ export class NavigationService implements OnDestroy {
     ];
   }
 
-  private forwardableUrl(): {url: string, text: string}[] {
+  private forwardableUrl(): { url: string; text: string }[] {
     return [
       { url: `${ROUTER_UTILS.config.collection.root}/${ROUTER_UTILS.config.collection.edit}`, text: 'Collection' },
     ]

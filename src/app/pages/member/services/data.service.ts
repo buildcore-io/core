@@ -9,13 +9,15 @@ import { FULL_LIST } from './../../../@api/base.api';
 import { TransactionApi } from './../../../@api/transaction.api';
 
 @UntilDestroy()
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService {
-  public member$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-  public awardsCompleted$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public awardsPending$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public badges$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
-  public space$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
+  public member$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
+  public awardsCompleted$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public awardsPending$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public badges$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<Transaction[] | undefined>(undefined);
+  public space$: BehaviorSubject<Space[] | undefined> = new BehaviorSubject<Space[] | undefined>(undefined);
   public lastLoadedMemberId?: string;
   public subscriptions$: Subscription[] = [];
 
@@ -43,23 +45,23 @@ export class DataService {
       } else {
         this.lastLoadedMemberId = undefined;
         this.badges$.next(undefined);
-        const allBadges: string[] = [...(this.member$.value.spaces?.[selectedSpace!.uid]?.badges || [])];
-        if (includeAlliances) {
-          for (const [spaceId] of Object.entries(selectedSpace?.alliances || {})) {
-            allBadges.push(...(this.member$.value.spaces?.[spaceId]?.badges || []));
+        if (selectedSpace) {
+          const allBadges: string[] = [...(this.member$.value.spaces?.[selectedSpace.uid]?.badges || [])];
+          if (includeAlliances) {
+            for (const [spaceId] of Object.entries(selectedSpace?.alliances || {})) {
+              allBadges.push(...(this.member$.value.spaces?.[spaceId]?.badges || []));
+            }
           }
-        }
-
-        // Let's get first 6 badges.
-        const finalBadgeTransactions: Transaction[] = [];
-        for (const tran of allBadges) {
-          const obj: Transaction | undefined = await firstValueFrom(this.tranApi.listen(tran));
-          if (obj) {
-            finalBadgeTransactions.push(obj);
+          // Let's get first 6 badges.
+          const finalBadgeTransactions: Transaction[] = [];
+          for (const tran of allBadges) {
+            const obj: Transaction | undefined = await firstValueFrom(this.tranApi.listen(tran));
+            if (obj) {
+              finalBadgeTransactions.push(obj);
+            }
           }
+          this.badges$.next(finalBadgeTransactions);
         }
-
-        this.badges$.next(finalBadgeTransactions);
       }
     }
   }

@@ -7,14 +7,14 @@ describe('AwardStatusComponent', () => {
   let spectator: Spectator<AwardStatusComponent>;
   const createComponent = createComponentFactory({
     component: AwardStatusComponent,
-    imports: [ DateTagModule ]
+    imports: [DateTagModule]
   });
 
   beforeEach(() => {
     spectator = createComponent();
   });
 
-it('write tests', () => {
-  expect(spectator).toBeDefined();
-});
+  it('write tests', () => {
+    expect(spectator).toBeDefined();
+  });
 });

@@ -9,17 +9,19 @@ import { Milestone } from './../../../../../functions/interfaces/models/mileston
 import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../functions/interfaces/models/proposal';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService {
-  public proposal$: BehaviorSubject<Proposal|undefined> = new BehaviorSubject<Proposal|undefined>(undefined);
-  public space$: BehaviorSubject<Space|undefined> = new BehaviorSubject<Space|undefined>(undefined);
-  public badges$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public creator$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
-  public transactions$: BehaviorSubject<TransactionWithFullMember[]|undefined> = new BehaviorSubject<TransactionWithFullMember[]|undefined>(undefined);
-  public currentMembersVotes$: BehaviorSubject<Transaction[]|undefined> = new BehaviorSubject<Transaction[]|undefined>(undefined);
-  public canVote$: BehaviorSubject<boolean|undefined> = new BehaviorSubject<boolean|undefined>(false);
-  public guardians$: BehaviorSubject<SpaceGuardian[]|undefined> = new BehaviorSubject<SpaceGuardian[]|undefined>(undefined);
-  public lastMilestone$: BehaviorSubject<Milestone|undefined> = new BehaviorSubject<Milestone|undefined>(undefined);
+  public proposal$: BehaviorSubject<Proposal | undefined> = new BehaviorSubject<Proposal | undefined>(undefined);
+  public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
+  public badges$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public creator$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
+  public transactions$: BehaviorSubject<TransactionWithFullMember[] | undefined> = new BehaviorSubject<TransactionWithFullMember[] | undefined>(undefined);
+  public currentMembersVotes$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<Transaction[] | undefined>(undefined);
+  public canVote$: BehaviorSubject<boolean | undefined> = new BehaviorSubject<boolean | undefined>(false);
+  public guardians$: BehaviorSubject<SpaceGuardian[] | undefined> = new BehaviorSubject<SpaceGuardian[] | undefined>(undefined);
+  public lastMilestone$: BehaviorSubject<Milestone | undefined> = new BehaviorSubject<Milestone | undefined>(undefined);
   constructor() {
     // none.
   }
@@ -36,11 +38,11 @@ export class DataService {
     this.canVote$.next(false);
   }
 
-  public isMemberVote(type: ProposalType|undefined): boolean {
+  public isMemberVote(type: ProposalType | undefined): boolean {
     return (type === ProposalType.MEMBERS);
   }
 
-  public isNativeVote(type: ProposalType|undefined): boolean {
+  public isNativeVote(type: ProposalType | undefined): boolean {
     return (type === ProposalType.NATIVE);
   }
 
@@ -52,7 +54,7 @@ export class DataService {
     return (Array.isArray(arr) && arr.length === 0);
   }
 
-  public isComplete(proposal?: Proposal|null): boolean {
+  public isComplete(proposal?: Proposal | null): boolean {
     if (!proposal || this.isNativeVote(proposal.type)) {
       return false;
     }
@@ -60,7 +62,7 @@ export class DataService {
     return (dayjs(proposal.settings.endDate.toDate()).isBefore(dayjs()) && !!proposal?.approved);
   }
 
-  public isInProgress(proposal?: Proposal|null): boolean {
+  public isInProgress(proposal?: Proposal | null): boolean {
     if (!proposal || this.isNativeVote(proposal.type) || proposal.rejected) {
       return false;
     }
@@ -68,7 +70,7 @@ export class DataService {
     return (!this.isComplete(proposal) && !this.isPending(proposal) && !!proposal.approved);
   }
 
-  public isInProgressIgnoreStatus(proposal?: Proposal|null): boolean {
+  public isInProgressIgnoreStatus(proposal?: Proposal | null): boolean {
     if (!proposal || this.isNativeVote(proposal.type)) {
       return false;
     }
@@ -76,7 +78,7 @@ export class DataService {
     return (!this.isComplete(proposal) && !this.isPending(proposal));
   }
 
-  public isPending(proposal?: Proposal|null): boolean {
+  public isPending(proposal?: Proposal | null): boolean {
     if (!proposal || this.isNativeVote(proposal.type) || !proposal.approved) {
       return false;
     }
@@ -84,11 +86,11 @@ export class DataService {
     return (dayjs(proposal.settings.startDate.toDate()).isAfter(dayjs()));
   }
 
-  public getProgressWithTotalWeight(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
-    return  (proposal?.results?.answers?.[a.value] || 0) / (proposal?.results?.total || 1) * 100;
+  public getProgressWithTotalWeight(proposal: Proposal | null | undefined, a: ProposalAnswer): number {
+    return (proposal?.results?.answers?.[a.value] || 0) / (proposal?.results?.total || 1) * 100;
   }
 
-  public getProgress(proposal: Proposal|null|undefined, a: ProposalAnswer): number {
+  public getProgress(proposal: Proposal | null | undefined, a: ProposalAnswer): number {
     if (proposal?.type === ProposalType.MEMBERS) {
       let total = 0;
       if (proposal?.results?.answers) {
@@ -97,11 +99,11 @@ export class DataService {
         });
       }
 
-      return  (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
+      return (proposal?.results?.answers?.[a.value] || 0) / (total) * 100;
     } else {
       let total = 0;
-      if ((<any>proposal?.results)?.questions?.[0].answers) {
-        (<any>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
+      if ((<Proposal>proposal?.results)?.questions?.[0].answers) {
+        (<Proposal>proposal?.results)?.questions?.[0].answers.forEach((b: any) => {
           if (b.value === 0 || b.value === 255) {
             return;
           }
@@ -110,15 +112,15 @@ export class DataService {
         });
       }
 
-      const ans: any = (<any>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
+      const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
         return suba.value === a.value;
       });
 
-      return  (ans?.accumulated || 0) / (total) * 100;
+      return (ans?.accumulated || 0) / (total) * 100;
     }
   }
 
-  public getVotingTypeText(subType: ProposalSubType|undefined): string {
+  public getVotingTypeText(subType: ProposalSubType | undefined): string {
     if (subType === ProposalSubType.ONE_ADDRESS_ONE_VOTE) {
       return 'IOTA Address Vote';
     } else if (subType === ProposalSubType.ONE_MEMBER_ONE_VOTE) {
@@ -133,7 +135,7 @@ export class DataService {
       return '';
     }
   }
-  public getCommenceDate(proposal?: Proposal|null): Date|null {
+  public getCommenceDate(proposal?: Proposal | null): Date | null {
     if (!proposal) {
       return null;
     }
@@ -145,7 +147,7 @@ export class DataService {
     }
   }
 
-  public getStartDate(proposal?: Proposal|null): Date|null {
+  public getStartDate(proposal?: Proposal | null): Date | null {
     if (!proposal) {
       return null;
     }
@@ -157,7 +159,7 @@ export class DataService {
     }
   }
 
-  public getEndDate(proposal?: Proposal|null): Date|null {
+  public getEndDate(proposal?: Proposal | null): Date | null {
     if (!proposal) {
       return null;
     }
@@ -169,7 +171,7 @@ export class DataService {
     }
   }
 
-  private calcDateBasedOnMilestone(proposal: Proposal, f: 'milestoneIndexStart'|'milestoneIndexEnd'|'milestoneIndexCommence'): Date|null  {
+  private calcDateBasedOnMilestone(proposal: Proposal, f: 'milestoneIndexStart' | 'milestoneIndexEnd' | 'milestoneIndexCommence'): Date | null {
     if (!this.lastMilestone$.value || !proposal.settings?.[f]) {
       return null;
     }
@@ -179,7 +181,7 @@ export class DataService {
     return dayjs().add(diff, 'seconds').toDate();
   }
 
-  public findAnswerText(qs: ProposalQuestion[]|undefined, values: number[]): string {
+  public findAnswerText(qs: ProposalQuestion[] | undefined, values: number[]): string {
     let text = '';
     qs?.forEach((q: ProposalQuestion) => {
       q.answers.forEach((a) => {

@@ -6,11 +6,11 @@ describe('WalletAddressComponent', () => {
   let component: WalletAddressComponent;
   let fixture: ComponentFixture<WalletAddressComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ WalletAddressComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

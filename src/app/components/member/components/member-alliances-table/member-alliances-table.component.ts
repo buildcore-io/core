@@ -24,27 +24,27 @@ export class MemberAlliancesTableComponent implements OnInit {
   @Input() member?: Member | null;
   @Input() tableClasses = '';
   public memberWithinSpace: {
-    [propName: string]: boolean
+    [propName: string]: boolean;
   } = {};
   constructor(
     public previewImageService: PreviewImageService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef,
     private cache: CacheService
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.checkIfMembersWithinSpace();
   }
 
-  public getTotal(what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
+  public getTotal(what: 'awardsCompleted' | 'totalReputation'): number { // awardsCompleted
     let total = 0;
     total = this.member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0;
     for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
       const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
         return s.uid === spaceId;
       });
-      if (allianceSpace && values.enabled === true ) {
+      if (allianceSpace && values.enabled === true) {
         const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
         total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
       }
@@ -79,28 +79,32 @@ export class MemberAlliancesTableComponent implements OnInit {
         allianceSpace &&
         values.enabled === true
       ) {
-        out.push({
-          uid: allianceSpace.uid,
-          avatar: allianceSpace.avatarUrl,
-          name: allianceSpace.name || allianceSpace.uid,
-          totalAwards: this.member!.spaces?.[allianceSpace.uid]?.awardsCompleted || 0,
-          totalXp: Math.trunc(((this.member!.spaces?.[allianceSpace.uid]?.totalReputation) || 0) * values.weight)
-        });
+        if (this.member) {
+          out.push({
+            uid: allianceSpace.uid,
+            avatar: allianceSpace.avatarUrl,
+            name: allianceSpace.name || allianceSpace.uid,
+            totalAwards: this.member.spaces?.[allianceSpace.uid]?.awardsCompleted || 0,
+            totalXp: Math.trunc(((this.member.spaces?.[allianceSpace.uid]?.totalReputation) || 0) * values.weight)
+          });
+        }
       }
     }
 
-    out.push({
-      uid: this.selectedSpace!.uid,
-      avatar: this.selectedSpace!.avatarUrl,
-      name: this.selectedSpace!.name || this.selectedSpace!.uid,
-      totalAwards: this.member!.spaces?.[this.selectedSpace!.uid]?.awardsCompleted || 0,
-      totalXp: this.member!.spaces?.[this.selectedSpace!.uid]?.totalReputation || 0
-    });
+    if (this.member && this.selectedSpace) {
+      out.push({
+        uid: this.selectedSpace.uid,
+        avatar: this.selectedSpace.avatarUrl,
+        name: this.selectedSpace.name || this.selectedSpace.uid,
+        totalAwards: this.member.spaces?.[this.selectedSpace.uid]?.awardsCompleted || 0,
+        totalXp: this.member.spaces?.[this.selectedSpace.uid]?.totalReputation || 0
+      });
+    }
 
     return out;
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Member) {
     return item.uid;
   }
 }

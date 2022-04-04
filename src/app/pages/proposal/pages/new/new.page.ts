@@ -25,9 +25,9 @@ import { NavigationService } from './../../../../@core/services/navigation/navig
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
 enum TargetGroup {
-  GUARDIANS,
-  MEMBERS,
-  NATIVE
+  GUARDIANS = 0,
+  MEMBERS = 1,
+  NATIVE = 2
 }
 
 @UntilDestroy()
@@ -57,8 +57,8 @@ export class NewPage implements OnInit, OnDestroy {
   public proposalForm: FormGroup;
   @ViewChild('endDatePicker') public endDatePicker!: NzDatePickerComponent;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
-  public awards$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
-  public lastMilestone$: BehaviorSubject<Milestone|undefined> = new BehaviorSubject<Milestone|undefined>(undefined);
+  public awards$: BehaviorSubject<Award[] | undefined> = new BehaviorSubject<Award[] | undefined>(undefined);
+  public lastMilestone$: BehaviorSubject<Milestone | undefined> = new BehaviorSubject<Milestone | undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsAwards$?: Subscription;
   private answersIndex = 0;
@@ -154,7 +154,7 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Award | Space) {
     return item.uid;
   }
 
@@ -173,7 +173,7 @@ export class NewPage implements OnInit, OnDestroy {
     return TargetGroup;
   }
 
-  public getDateBasedOnMilestone(milestoneValue: number): Date|undefined  {
+  public getDateBasedOnMilestone(milestoneValue: number): Date | undefined {
     if (!this.lastMilestone$.value || !this.lastMilestone$.value.cmi) {
       return undefined;
     }
@@ -318,10 +318,10 @@ export class NewPage implements OnInit, OnDestroy {
     });
   }
 
-  public getAnswerTitle(index: number): string { 
+  public getAnswerTitle(index: number): string {
     return $localize`Choice` + ' #' + (index + 1);
   }
-  
+
   public getAwardLabel(award: Award): string {
     return award.name + ' (' + $localize`badge` + ': ' + award.badge.name + ', ' + $localize`id` + ': ' + award.uid.substring(0, 10) + ')';
   }

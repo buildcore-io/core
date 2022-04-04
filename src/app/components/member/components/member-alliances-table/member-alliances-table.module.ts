@@ -6,7 +6,6 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { MemberAlliancesTableComponent } from './member-alliances-table.component';
 
 
-
 @NgModule({
   declarations: [
     MemberAlliancesTableComponent

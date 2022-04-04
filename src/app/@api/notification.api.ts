@@ -15,7 +15,7 @@ export class NotificationApi extends BaseApi<Notification> {
     super(afs, fns);
   }
 
-  public topMember(memberUid: string, lastValue?: any, search?: string, def = DEFAULT_LIST_SIZE): Observable<Notification[]> {
+  public topMember(memberUid: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Notification[]> {
     return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('member', '==', memberUid);
     });

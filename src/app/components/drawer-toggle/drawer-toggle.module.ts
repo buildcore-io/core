@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { DrawerToggleComponent } from './drawer-toggle.component';
 
 
-
 @NgModule({
   declarations: [
     DrawerToggleComponent

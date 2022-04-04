@@ -12,7 +12,6 @@ import { IOTAAddressComponent } from './iota-address/iota-address.component';
 import { WalletAddressComponent } from './wallet-address.component';
 
 
-
 @NgModule({
   declarations: [
     WalletAddressComponent,

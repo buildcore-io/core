@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +20,7 @@ import { DataService } from './../../services/data.service';
 @UntilDestroy()
 @Component({
   selector: 'wen-award',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './award.page.html',
   styleUrls: ['./award.page.less']
 })
@@ -74,13 +75,13 @@ export class AwardPage implements OnInit, OnDestroy {
       });
       if (this.auth.member$.value?.uid) {
         this.memberSubscriptions$.push(this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
+          .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$));
 
         this.memberSubscriptions$.push(this.awardApi.isMemberParticipant(obj.uid, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.data.isParticipantWithinAward$));
+          .pipe(untilDestroyed(this)).subscribe(this.data.isParticipantWithinAward$));
 
         this.memberSubscriptions$.push(this.spaceApi.isMemberWithinSpace(obj.space, this.auth.member$.value.uid)
-                                  .pipe(untilDestroyed(this)).subscribe(this.data.isLoggedInMemberWithinSpace$));
+          .pipe(untilDestroyed(this)).subscribe(this.data.isLoggedInMemberWithinSpace$));
 
       }
     });
@@ -130,9 +131,9 @@ export class AwardPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-        uid: this.data.award$.value.uid
+      uid: this.data.award$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.awardApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.awardApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
       });
     });
@@ -146,7 +147,7 @@ export class AwardPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.award$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.awardApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.awardApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.
       });
     });

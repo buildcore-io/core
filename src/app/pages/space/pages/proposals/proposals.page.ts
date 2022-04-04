@@ -19,7 +19,7 @@ import { DataService } from "./../../services/data.service";
 export class ProposalsPage implements OnInit, OnDestroy {
   public spaceId?: string;
   public selectedListControl: FormControl = new FormControl(ProposalFilter.ACTIVE);
-  public hotTags: { value: ProposalFilter; label: string}[] = [
+  public hotTags: { value: ProposalFilter; label: string }[] = [
     { value: ProposalFilter.DRAFT, label: $localize`Pending` },
     { value: ProposalFilter.ACTIVE, label: $localize`Active` },
     { value: ProposalFilter.COMPLETED, label: $localize`Completed` },
@@ -33,11 +33,11 @@ export class ProposalsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public data: DataService,
     public deviceService: DeviceService
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.route.parent?.params.subscribe((obj) => {
-      const id: string|undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
+      const id: string | undefined = obj?.[ROUTER_UTILS.config.space.space.replace(':', '')];
       if (id) {
         this.cancelSubscriptions();
         this.spaceId = id;
@@ -62,7 +62,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
     });
   }
 
-  public getList(): BehaviorSubject<Proposal[]|undefined> {
+  public getList(): BehaviorSubject<Proposal[] | undefined> {
     if (this.selectedListControl.value === this.filterOptions.ACTIVE) {
       return this.data.proposalsActive$;
     } else if (this.selectedListControl.value === this.filterOptions.DRAFT) {
@@ -99,7 +99,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(index: number, item: Proposal) {
     return item.uid;
   }
 

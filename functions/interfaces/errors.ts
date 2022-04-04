@@ -77,6 +77,6 @@ export const WenError = {
   nft_placeholder_cant_be_updated: { code: 2068, key: 'Can\'t update placeholder NFT.' },
   you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!'},
   you_are_not_allowed_member_to_purchase_this_nft: { code: 2070, key: 'You are not allowed member to purchase this NFT!'},
-  this_is_limited_addition_collection: { code: 2071, key: 'Collection is limited addition. No NFT can be added after approval.' },
+  this_is_limited_addition_collection: { code: 2071, key: 'Collection is limited edition. No NFT can be added after approval.' },
 }
 

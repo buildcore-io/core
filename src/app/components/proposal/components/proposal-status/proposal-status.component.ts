@@ -54,7 +54,7 @@ export class ProposalStatusComponent implements OnInit {
 
     if (this.isNativeVote(this.proposal.type)) {
       return (
-              this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexEnd &&
+        this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexEnd &&
               this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexStart &&
               !this.proposal.rejected
       );
@@ -69,13 +69,13 @@ export class ProposalStatusComponent implements OnInit {
 
   public isCommencing(): boolean {
     if (
-        !this.proposal || !this.proposal.approved || this.proposal.rejected || !this.lastMilestone$.value) {
+      !this.proposal || !this.proposal.approved || this.proposal.rejected || !this.lastMilestone$.value) {
       return false;
     }
 
     if (this.isNativeVote(this.proposal.type)) {
       return (
-              this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexStart &&
+        this.lastMilestone$.value?.cmi < this.proposal.settings.milestoneIndexStart &&
               this.lastMilestone$.value?.cmi > this.proposal.settings.milestoneIndexCommence &&
               !this.proposal.rejected
       );

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { NavigationEnd, Router } from '@angular/router';
 import { TabSection } from '@components/tabs/tabs.component';
@@ -12,6 +12,7 @@ import { FilterService } from './../../services/filter.service';
 @UntilDestroy()
 @Component({
   selector: 'wen-discover',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.less']
 })
@@ -39,13 +40,15 @@ export class DiscoverPage implements OnInit, OnDestroy {
     this.filter.filterControl.setValue(this.filter.search$.value);
     this.filter.filterControl.valueChanges.pipe(
       debounceTime(FilterService.DEBOUNCE_TIME)
-    ).subscribe(this.filter.search$);
+    ).subscribe((val) => {
+      this.filter.search$.next(val);
+    });
 
     this.setSelectedSection();
     this.router.events
       .pipe(untilDestroyed(this))
       .subscribe((obj) => {
-        if(obj instanceof NavigationEnd) {
+        if (obj instanceof NavigationEnd) {
           this.setSelectedSection();
         }
       });

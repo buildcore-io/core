@@ -15,7 +15,6 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftCheckoutComponent } from './nft-checkout.component';
 
 
-
 @NgModule({
   declarations: [
     NftCheckoutComponent
