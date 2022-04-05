@@ -3,6 +3,7 @@ import { OffersHistory, SuccesfullOrdersWithFullHistory } from "@api/nft.api";
 import { AuthService } from "@components/auth/services/auth.service";
 import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
 import { UnitsHelper } from "@core/utils/units-helper";
+import dayjs from "dayjs";
 import { Collection, Member, Space, Transaction } from "functions/interfaces/models";
 import { Nft } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
@@ -85,5 +86,70 @@ export class DataService {
     }
 
     return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public auctionInProgress(nft?: Nft | null, col?: Collection | null): boolean {
+    if (!col) {
+      return false;
+    }
+
+    return (
+      col.approved === true && !!nft?.auctionFrom && !!nft?.auctionTo &&
+      dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's') &&
+      dayjs(nft.auctionTo.toDate()).isAfter(dayjs(), 's')
+    );
+  }
+
+  public getAuctionEnd(nft?: Nft | null): dayjs.Dayjs | undefined {
+    if (!nft?.auctionTo) {
+      return;
+    }
+
+    return dayjs(nft.auctionTo.toDate());
+  }
+
+  public getAuctionEndDays(nft?: Nft | null): number {
+    const expiresOn = this.getAuctionEnd(nft);
+    if (!expiresOn) {
+      return 0;
+    }
+
+    return expiresOn.diff(dayjs(), 'days');
+  }
+
+  public getAuctionEndHours(nft?: Nft | null): number {
+    const expiresOn = this.getAuctionEnd(nft);
+    if (!expiresOn) {
+      return 0;
+    }
+
+    let hours = expiresOn.diff(dayjs(), 'hour');
+    const days = Math.floor(hours / 24);
+    hours = hours - (days * 24);
+    return hours;
+  }
+
+  public getAuctionEndMin(nft?: Nft | null): number {
+    const expiresOn = this.getAuctionEnd(nft);
+    if (!expiresOn) {
+      return 0;
+    }
+
+    let minutes = expiresOn.diff(dayjs(), 'minute');
+    const hours = Math.floor(minutes / 60);
+    minutes = minutes - (hours * 60);
+    return minutes;
+  }
+
+  public getAuctionEndSec(nft?: Nft | null): number {
+    const expiresOn = this.getAuctionEnd(nft);
+    if (!expiresOn) {
+      return 0;
+    }
+
+    let seconds = expiresOn.diff(dayjs(), 'seconds');
+    const minutes = Math.floor(seconds / 60);
+    seconds = seconds - (minutes * 60);
+    return seconds;
   }
 }
