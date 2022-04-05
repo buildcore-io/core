@@ -3,10 +3,12 @@ import { OffersHistory, SuccesfullOrdersWithFullHistory } from "@api/nft.api";
 import { AuthService } from "@components/auth/services/auth.service";
 import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
 import { UnitsHelper } from "@core/utils/units-helper";
-import dayjs from "dayjs";
+import * as dayjs from 'dayjs';
+import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { Collection, Member, Space, Transaction } from "functions/interfaces/models";
 import { Nft } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
+dayjs.extend(isSameOrBefore);
 
 @Injectable({
   providedIn: 'any'
