@@ -39,7 +39,7 @@
 
 <ng-template #content>
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-10" *ngIf="nft">
-        <div class="flex-grow w-full lg:w-1/2 lg:mr-10">
+        <div class="grow w-full lg:w-1/2 lg:mr-10">
             <h1 class="mt-2">{{ nft.name }}</h1>
 
             <div class="flex items-center justify-between w-full h-12 p-4 mt-5 bg-white rounded-xl"
@@ -55,7 +55,7 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-5">
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
                         <div class="text-lg font-bold truncate">{{ data.formatBest(nft.price) }}</div>
@@ -64,7 +64,7 @@
                 </div>
 
 
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
                     <div class="flex items-center mt-2">
                       <a [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
@@ -79,7 +79,7 @@
                     </div>
                 </div>
 
-                <div class="flex-grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
                     <a class="flex items-center mt-2" [routerLink]="['/space', space?.uid]">
                         <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
@@ -141,7 +141,7 @@
             </wen-collapse>
         </div>
 
-        <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
+        <div class="grow w-full max-w-screen-sm lg:w-1/2">
             <div class="relative w-full overflow-hidden rounded-2xl">
                 <img
                     *ngIf="mediaType === 'image'"

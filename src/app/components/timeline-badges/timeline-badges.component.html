@@ -3,10 +3,10 @@
         let i = index; trackBy: trackByUid"
         class="relative flex items-center mt-3">
         <div *ngIf="i !== 0" #timelineLine
-            class="absolute w-0.5 h-full bg-app-gray-100 left-3 transform -translate-x-1/2 -translate-y-1/2"></div>
+            class="absolute w-0.5 h-full bg-app-gray-100 left-3 -translate-x-1/2 -translate-y-1/2"></div>
 
         <div *ngIf="i < ((badges)?.length || 0) - 1" #timelineLine
-            class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"
+            class="absolute w-0.5 bg-app-gray-100 left-3 -translate-x-1/2 translate-y-1/2"
             [ngClass]="!showAllBadges && ((badges)?.length || 0) > 3 && i === 2 ? 'h-96' : 'h-1/2'"></div>
 
         <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">

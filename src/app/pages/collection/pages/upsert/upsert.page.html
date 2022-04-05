@@ -70,13 +70,13 @@
                   <i
                     nz-icon
                     nzType="info-circle"
-                    class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
                   ></i>
                   <div
-                    class="absolute transform -translate-y-1/2 right-10 top-1/2"
+                    class="absolute -translate-y-1/2 right-10 top-1/2"
                   >
                     <button
                       *ngFor="let unit of priceUnits"
@@ -101,7 +101,7 @@
                 nzErrorTip="Available On is required."
               >
                 <nz-date-picker
-                  class="flex flex-grow"
+                  class="flex grow"
                   [nzDisabledDate]="disabledStartDate.bind(this)"
                   [nzDisabledTime]="disabledDateTime.bind(this)"
                   nzSize="large"
@@ -135,7 +135,7 @@
                 <i
                   nz-icon
                   nzType="info-circle"
-                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                  class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
                   nz-tooltip
                   i18n-nzTooltipTitle
                   nzTooltipTitle="Example: 10 % , 20 % , etc.."
@@ -257,7 +257,7 @@
                 class="flex items-center justify-between mt-4"
                 *ngFor="let discount of discounts.controls; let i = index"
               >
-                <nz-input-group nzAddOnBefore="XP >" class="flex-grow w-1/2">
+                <nz-input-group nzAddOnBefore="XP >" class="grow w-1/2">
                   <input
                     type="text"
                     nz-input
@@ -268,7 +268,7 @@
 
                 <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
 
-                <div class="flex items-center flex-grow w-1/2">
+                <div class="flex items-center grow w-1/2">
                   <nz-input-number
                     class="w-full max-w-80"
                     [nzMin]="0"

@@ -66,7 +66,7 @@
           <nz-avatar [nzSrc]="previewImageService.getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10"
             nzShape="circle">
           </nz-avatar>
-          <span class="flex-grow pl-2" [ngClass]="{
+          <span class="grow pl-2" [ngClass]="{
             'truncate': deviceService.isDesktop$ | async
           }">{{ s.name }}</span>
           <wen-icon-angle-left class="flex rotate-180"></wen-icon-angle-left>

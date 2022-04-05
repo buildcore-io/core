@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true">
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-10">
-        <div class="flex-grow w-full mt-10 lg:w-1/2 lg:mr-10">
+        <div class="grow w-full mt-10 lg:w-1/2 lg:mr-10">
             <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>NFT</nz-tag>
             <wen-collection-status [collection]="data.collection$ | async" *ngIf="!(data.nft$ | async )?.owner"></wen-collection-status>
             <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="(data.nft$ | async )?.owner" i18n>Owned</nz-tag>
@@ -60,19 +60,19 @@
                     </div>
 
                     <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="(endsOnTicker$ | async) && auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                        <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
+                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
                             <div class="mr-1">
                                 {{getAuctionEndHours(data.nft$ | async)}}
                             </div>
                             <div i18n>hours</div>
                         </div>
-                        <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
+                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
                             <div class="mr-1">
                                 {{getAuctionEndMin(data.nft$ | async)}}
                             </div>
                             <div i18n>min</div>
                         </div>
-                        <div class="flex items-center justify-center flex-grow py-3 font-bold bg-bg-background rounded-2xl">
+                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
                             <div class="mr-1">
                                 {{getAuctionEndSec(data.nft$ | async)}}
                             </div>
@@ -258,7 +258,7 @@
             </wen-collapse>
         </div>
 
-        <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
+        <div class="grow w-full max-w-screen-sm lg:w-1/2">
             <ng-container *ngIf="deviceService.isDesktop$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl">
                     <img loading="eager" (click)="isNftPreviewOpen = true"

@@ -3,7 +3,7 @@
     <span class="cursor-pointer" (click)="isCollapsed = !isCollapsed">{{title}}</span>
   </ng-template>
     <wen-icon-angle-down
-        class="absolute transition transform cursor-pointer top-7 right-7"
+        class="absolute transition cursor-pointer top-7 right-7"
         [ngClass]="{ 'rotate-180': !isCollapsed }"
         (click)="isCollapsed = !isCollapsed">
     </wen-icon-angle-down>

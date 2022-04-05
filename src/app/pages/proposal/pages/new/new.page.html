@@ -30,11 +30,11 @@
               />
             </nz-form-control>
           </nz-form-item>
-          <div class="flex flex-grow space-x-4" *ngIf="selectedGroupControl.value !== targetGroups.NATIVE">
+          <div class="flex grow space-x-4" *ngIf="selectedGroupControl.value !== targetGroups.NATIVE">
             <nz-form-item class="w-full">
               <nz-form-control i18n-nzErrorTip nzErrorTip="Start Date is required.">
                 <nz-date-picker
-                  class="flex flex-grow"
+                  class="flex grow"
                   nzSize="large"
                   [nzDisabledDate]="disabledStartDate.bind(this)"
                   [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
@@ -50,7 +50,7 @@
             <nz-form-item class="w-full">
               <nz-form-control i18n-nzErrorTip nzErrorTip="End Date is required.">
                 <nz-date-picker
-                  class="flex flex-grow"
+                  class="flex grow"
                   nzSize="large"
                   #endDatePicker
                   [nzDisabledDate]="disabledEndDate.bind(this)"

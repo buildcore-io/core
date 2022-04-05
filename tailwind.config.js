@@ -17,15 +17,11 @@ const normalizeNames = (theme) => mapKeys(theme, (_, name) => kebabCase(name));
 
 module.exports = {
   prefix: '',
-  purge: {
-    enabled: process.env.TAILWIND_MODE === 'build',
-    content: ['./src/**/*.{html,ts}', './projects/**/*.{html,ts}'],
-  },
+  content: ['./src/**/*.{html,ts}', './projects/**/*.{html,ts}'],
   darkMode: 'class',
   theme: {
     fontFamily: {
-      display: ['Poppins', 'sans-serif'],
-      body: ['Poppins', 'sans-serif'],
+      display: ['Poppins', 'sans-serif']
     },
     container: {
       center: true,
@@ -185,6 +181,5 @@ module.exports = {
       },
     },
   },
-  variants: {},
   plugins: [require('@tailwindcss/line-clamp')],
 };
