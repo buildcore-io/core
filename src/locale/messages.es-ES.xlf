@@ -82,7 +82,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">26,28</context>
+          <context context-type="linenumber">26,27</context>
         </context-group>
         <target state="translated">Premio</target>
       </trans-unit>
@@ -170,7 +170,7 @@
         <source>You won the NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">270</context>
+          <context context-type="linenumber">272</context>
         </context-group>
         <target state="translated">Ganaste el NFT</target>
       </trans-unit>
@@ -178,7 +178,7 @@
         <source>You are a proud owner of a new NFT. Congratulations!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">271</context>
+          <context context-type="linenumber">273</context>
         </context-group>
         <target state="translated">Eres un orgulloso dueño de un nuevo NFT. ¡Felicidades!</target>
       </trans-unit>
@@ -186,7 +186,7 @@
         <source>You lost your bid!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">278</context>
+          <context context-type="linenumber">280</context>
         </context-group>
         <target state="translated">¡Perdiste tu puja!</target>
       </trans-unit>
@@ -194,7 +194,7 @@
         <source>Your bid on </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">279</context>
+          <context context-type="linenumber">281</context>
         </context-group>
         <target state="translated">Tu puja en </target>
       </trans-unit>
@@ -202,7 +202,7 @@
         <source> was outbid. Try again!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">280</context>
+          <context context-type="linenumber">282</context>
         </context-group>
         <target state="translated"> fue superada. ¡Inténtalo de nuevo!</target>
       </trans-unit>
@@ -210,7 +210,7 @@
         <source>just offered</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">287</context>
+          <context context-type="linenumber">289</context>
         </context-group>
         <target state="translated">acaba de ofrecer</target>
       </trans-unit>
@@ -218,7 +218,7 @@
         <source>for</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">288</context>
+          <context context-type="linenumber">290</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
@@ -230,7 +230,7 @@
         <source>Your</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">289</context>
+          <context context-type="linenumber">291</context>
         </context-group>
         <target state="translated">Tu</target>
       </trans-unit>
@@ -238,7 +238,7 @@
         <source>has received a new bid for</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">290</context>
+          <context context-type="linenumber">292</context>
         </context-group>
         <target state="translated">ha recibido una nueva puja para</target>
       </trans-unit>
@@ -246,7 +246,7 @@
         <source>Unsupported</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">298,297</context>
+          <context context-type="linenumber">300,299</context>
         </context-group>
         <target state="translated">No soportado</target>
       </trans-unit>
@@ -254,7 +254,7 @@
         <source>This notification is not yet supported in your language</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
-          <context context-type="linenumber">299</context>
+          <context context-type="linenumber">301</context>
         </context-group>
         <target state="translated">Esta notificación aún no está soportada en tu idioma</target>
       </trans-unit>
@@ -334,7 +334,7 @@
         <source>See Docs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="linenumber">28,29</context>
         </context-group>
         <target state="translated">Mira la documentación</target>
       </trans-unit>
@@ -342,7 +342,7 @@
         <source>Coming SOON</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/@shell/ui/sider/sider.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">35,36</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
@@ -414,7 +414,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">154,155</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
@@ -422,7 +422,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
-          <context context-type="linenumber">184,185</context>
+          <context context-type="linenumber">184</context>
         </context-group>
         <target state="translated"> Cancelar </target>
       </trans-unit>
@@ -568,7 +568,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
-          <context context-type="linenumber">152,151</context>
+          <context context-type="linenumber">150,149</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
@@ -756,11 +756,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.html</context>
-          <context context-type="linenumber">23</context>
+          <context context-type="linenumber">22,23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.html</context>
-          <context context-type="linenumber">23</context>
+          <context context-type="linenumber">22,23</context>
         </context-group>
         <target state="translated">Buscar</target>
       </trans-unit>
@@ -880,7 +880,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.ts</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
@@ -972,7 +972,7 @@
         <source>Your description (optional)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
-          <context context-type="linenumber">22,23</context>
+          <context context-type="linenumber">22</context>
         </context-group>
         <target state="translated">Tu descripción (opcional)</target>
       </trans-unit>
@@ -1492,7 +1492,7 @@
         <source>Link</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
-          <context context-type="linenumber">263</context>
+          <context context-type="linenumber">262,263</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
@@ -1500,7 +1500,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">230</context>
+          <context context-type="linenumber">229,230</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
@@ -1508,7 +1508,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">254</context>
+          <context context-type="linenumber">253,254</context>
         </context-group>
         <target state="translated">Enlace</target>
       </trans-unit>
@@ -1568,7 +1568,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
-          <context context-type="linenumber">370</context>
+          <context context-type="linenumber">368</context>
         </context-group>
         <target state="translated">NFT generado</target>
       </trans-unit>
@@ -1580,7 +1580,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
-          <context context-type="linenumber">372</context>
+          <context context-type="linenumber">370</context>
         </context-group>
         <target state="translated">SFT</target>
       </trans-unit>
@@ -1671,7 +1671,7 @@
         <source>New NFT</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.ts</context>
-          <context context-type="linenumber">157,156</context>
+          <context context-type="linenumber">155,154</context>
         </context-group>
         <target state="translated">Nuevo NFT</target>
       </trans-unit>
@@ -1923,7 +1923,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">15,16</context>
+          <context context-type="linenumber">15</context>
         </context-group>
         <target state="translated">Imagen NFT</target>
       </trans-unit>
@@ -1993,7 +1993,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">57</context>
         </context-group>
-        <target state="needs-translation">Various auction length coming next sprint once community have a vote!</target>
+        <target state="translated">Varias longitudes de subastas vendrán en el siguiente sprint una vez que la comunidad haya votado!</target>
       </trans-unit>
       <trans-unit id="8998035935912313478" datatype="html">
         <source>Duration of auction is 3 days</source>
@@ -2045,7 +2045,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">65,66</context>
         </context-group>
-        <target state="needs-translation">Specific member(s) only (Transfer)</target>
+        <target state="translated">Solo miembro(s) específicos (Transferir)</target>
       </trans-unit>
       <trans-unit id="967760480943683200" datatype="html">
         <source>Reserve for specific buyer</source>
@@ -2405,7 +2405,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="needs-translation">Listed by</target>
+        <target state="translated">Añadido por</target>
       </trans-unit>
       <trans-unit id="2565998990420679638" datatype="html">
         <source>Made available for auction by</source>
@@ -2413,7 +2413,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Made available for auction by</target>
+        <target state="translated">Puesto en subasta por</target>
       </trans-unit>
       <trans-unit id="9074325042294858925" datatype="html">
         <source>Purchased by</source>
@@ -2453,7 +2453,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">Bill (owner)</target>
+        <target state="translated">Factura (propietario)</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -2461,7 +2461,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="needs-translation">Bill (royalty)</target>
+        <target state="translated">Factura (regalía)</target>
       </trans-unit>
       <trans-unit id="272934122656341350" datatype="html">
         <source>Credit</source>
@@ -2469,7 +2469,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="needs-translation">Credit</target>
+        <target state="translated">Crédito</target>
       </trans-unit>
       <trans-unit id="4892553839051604445" datatype="html">
         <source>Payment</source>
@@ -2477,7 +2477,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="needs-translation">Payment</target>
+        <target state="translated">Pago</target>
       </trans-unit>
       <trans-unit id="220550782947016929" datatype="html">
         <source>Order</source>
@@ -2485,7 +2485,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">Order</target>
+        <target state="translated">Pedido</target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -2779,7 +2779,7 @@
         <source> Submit </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
-          <context context-type="linenumber">151,152</context>
+          <context context-type="linenumber">151</context>
         </context-group>
         <target state="translated"> Enviar </target>
       </trans-unit>
@@ -2787,11 +2787,11 @@
         <source>Overview</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">29</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
@@ -2803,11 +2803,11 @@
         <source>Participants</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.ts</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.ts</context>
-          <context context-type="linenumber">93</context>
+          <context context-type="linenumber">94</context>
         </context-group>
         <target state="translated">Participantes</target>
       </trans-unit>
@@ -3171,11 +3171,11 @@
         <source> No Participants </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.html</context>
-          <context context-type="linenumber">59,60</context>
+          <context context-type="linenumber">59</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.html</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">44</context>
         </context-group>
         <target state="translated"> No participantes </target>
       </trans-unit>
@@ -3183,7 +3183,7 @@
         <source> Reward </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.html</context>
-          <context context-type="linenumber">71,72</context>
+          <context context-type="linenumber">71</context>
         </context-group>
         <target state="translated"> Recompensa </target>
       </trans-unit>
@@ -3199,11 +3199,11 @@
         <source>Pending</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">129</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.ts</context>
@@ -3223,7 +3223,7 @@
         <source>Issued</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">40</context>
         </context-group>
         <target state="translated">Emitido</target>
       </trans-unit>
@@ -3249,7 +3249,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation"> Open sale </target>
+        <target state="translated"> Abrir venta </target>
       </trans-unit>
       <trans-unit id="7892451944202995046" datatype="html">
         <source> Space Members Only </source>
@@ -3257,7 +3257,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation"> Space Members Only </target>
+        <target state="translated"> Solo miembros del espacio </target>
       </trans-unit>
       <trans-unit id="2601510202253646556" datatype="html">
         <source> Space Guardians Only </source>
@@ -3265,7 +3265,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation"> Space Guardians Only </target>
+        <target state="translated"> Solo guardianes del espacio </target>
       </trans-unit>
       <trans-unit id="7245342326288833398" datatype="html">
         <source> Space Members with Badge Only </source>
@@ -3273,7 +3273,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation"> Space Members with Badge Only </target>
+        <target state="translated"> Solo miembros del espacio con insignia </target>
       </trans-unit>
       <trans-unit id="4041633029622034196" datatype="html">
         <source> Must hold at least one NFT from each selected Collections </source>
@@ -3281,7 +3281,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation"> Must hold at least one NFT from each selected Collections </target>
+        <target state="translated"> Debe poseer al menos un NFT de cada colección seleccionada </target>
       </trans-unit>
       <trans-unit id="1486015525220675253" datatype="html">
         <source> (One NFT per member) </source>
@@ -3289,7 +3289,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation"> (One NFT per member) </target>
+        <target state="translated"> (Un NFT por miembro) </target>
       </trans-unit>
       <trans-unit id="5308679100461288789" datatype="html">
         <source>The badges you need</source>
@@ -3313,7 +3313,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">114</context>
         </context-group>
-        <target state="needs-translation">Member discounts</target>
+        <target state="translated">Descuento para miembros</target>
       </trans-unit>
       <trans-unit id="286131029974964251" datatype="html">
         <source>Discount for members with XP</source>
@@ -3431,7 +3431,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ce$ | async)?.name | truncate:[12] }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ce$ | async)?.name | truncate:[12] }}"/></target>
       </trans-unit>
       <trans-unit id="5455232222395776593" datatype="html">
         <source>Royalties goes to</source>
@@ -3625,7 +3625,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/collections/collections.page.html</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">37,38</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/collections/collections.page.html</context>
@@ -4157,13 +4157,13 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.ts</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
-          <context context-type="linenumber">106</context>
+          <context context-type="linenumber">107</context>
         </context-group>
-        <target state="needs-translation">Member seems to log out during the file upload request.</target>
+        <target state="translated">El miembro parece haber cerrado la sesión durante la subida de archivos.</target>
       </trans-unit>
       <trans-unit id="5393811378729556993" datatype="html">
         <source>My Overview</source>
@@ -4201,7 +4201,7 @@
         <source>Discover Spaces</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/dashboard/dashboard.page.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">25,26</context>
         </context-group>
         <target state="translated">Descubre Espacios</target>
       </trans-unit>
@@ -4269,15 +4269,15 @@
         <source> No Awards </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/awards/awards.page.html</context>
-          <context context-type="linenumber">54,55</context>
+          <context context-type="linenumber">54</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/awards/awards.page.html</context>
-          <context context-type="linenumber">19,20</context>
+          <context context-type="linenumber">19</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/awards/awards.page.html</context>
-          <context context-type="linenumber">35,36</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <target state="translated"> Sin Premios </target>
       </trans-unit>
@@ -4325,7 +4325,7 @@
         <source>Spaces</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.ts</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">21</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
@@ -4337,7 +4337,7 @@
         <source>Collections</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.ts</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">22</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/market/pages/market/market.page.ts</context>
@@ -4353,7 +4353,7 @@
         <source>Proposals</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.ts</context>
-          <context context-type="linenumber">23</context>
+          <context context-type="linenumber">24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
@@ -4365,7 +4365,7 @@
         <source>Members</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/discover/discover.page.ts</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
@@ -4405,11 +4405,11 @@
         <source> No Members </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/members/members.page.html</context>
-          <context context-type="linenumber">66,67</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/members/members.page.html</context>
-          <context context-type="linenumber">58,59</context>
+          <context context-type="linenumber">58</context>
         </context-group>
         <target state="translated"> Sin Miembros </target>
       </trans-unit>
@@ -4425,11 +4425,11 @@
         <source> No Proposals </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/proposals/proposals.page.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/proposals/proposals.page.html</context>
-          <context context-type="linenumber">35,36</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <target state="translated"> Aún no hay Propuestas </target>
       </trans-unit>
@@ -4437,7 +4437,7 @@
         <source> No Spaces </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.html</context>
-          <context context-type="linenumber">56,57</context>
+          <context context-type="linenumber">56</context>
         </context-group>
         <target state="translated"> Sin Espacios </target>
       </trans-unit>
@@ -4447,7 +4447,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Open</target>
+        <target state="translated">Abrir</target>
       </trans-unit>
       <trans-unit id="6605589104672584220" datatype="html">
         <source> Welcome to The Soonaverse </source>
@@ -4477,7 +4477,7 @@
         <source> Marketplace </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">31,32</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <target state="translated"> Mercado </target>
       </trans-unit>
@@ -4501,7 +4501,7 @@
         <source> Not sure where to start? Find featured spaces and NFT Collections below. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">54,55</context>
+          <context context-type="linenumber">54</context>
         </context-group>
         <target state="translated"> ¿No estás seguro de dónde empezar? Encuentre espacios destacados y Colecciones de NFTs a continuación. </target>
       </trans-unit>
@@ -4637,7 +4637,7 @@
         <source>Terms</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">296</context>
+          <context context-type="linenumber">295,296</context>
         </context-group>
         <target state="translated">Términos</target>
       </trans-unit>
@@ -4859,7 +4859,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.ts</context>
           <context context-type="linenumber">40,37</context>
         </context-group>
-        <target state="needs-translation">On Auction</target>
+        <target state="translated">En subasta</target>
       </trans-unit>
       <trans-unit id="6985267139889676910" datatype="html">
         <source>Owned</source>
@@ -4869,7 +4869,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">6,8</context>
+          <context context-type="linenumber">6,7</context>
         </context-group>
         <target state="translated">Poseído</target>
       </trans-unit>
@@ -5327,7 +5327,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">324</context>
         </context-group>
-        <target state="needs-translation">Media is required</target>
+        <target state="translated">Se requiere Media</target>
       </trans-unit>
       <trans-unit id="9199594040130693701" datatype="html">
         <source>Select one of your collections to display this NFT.</source>
@@ -5357,9 +5357,9 @@
         <source>File name <x id="PH" equiv-text="file.name"/> is not valid</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.ts</context>
-          <context context-type="linenumber">141</context>
+          <context context-type="linenumber">142</context>
         </context-group>
-        <target state="needs-translation">File name <x id="PH" equiv-text="file.name"/> is not valid</target>
+        <target state="translated">El nombre de archivo <x id="PH" equiv-text="file.name"/> no es válido</target>
       </trans-unit>
       <trans-unit id="6728111234977276519" datatype="html">
         <source>NFT</source>
@@ -5403,7 +5403,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="needs-translation">hours</target>
+        <target state="translated">horas</target>
       </trans-unit>
       <trans-unit id="3901733599428143571" datatype="html">
         <source>min</source>
@@ -5411,7 +5411,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="needs-translation">min</target>
+        <target state="translated">min</target>
       </trans-unit>
       <trans-unit id="8444840466573361504" datatype="html">
         <source>sec</source>
@@ -5419,7 +5419,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation">sec</target>
+        <target state="translated">seg</target>
       </trans-unit>
       <trans-unit id="2912430443657619562" datatype="html">
         <source> Current highest bid</source>
@@ -5427,7 +5427,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">101</context>
         </context-group>
-        <target state="needs-translation"> Current highest bid</target>
+        <target state="translated"> Puja más alta actual</target>
       </trans-unit>
       <trans-unit id="4746722232761824042" datatype="html">
         <source> Sale ended </source>
@@ -5581,15 +5581,15 @@
         <source>View</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">314</context>
+          <context context-type="linenumber">313,314</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">342</context>
+          <context context-type="linenumber">341,342</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">349</context>
+          <context context-type="linenumber">348,349</context>
         </context-group>
         <target state="translated">Ver</target>
       </trans-unit>
@@ -5629,7 +5629,7 @@
         <source>by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">387,388</context>
+          <context context-type="linenumber">386,388</context>
         </context-group>
         <target state="translated">por</target>
       </trans-unit>
@@ -5639,7 +5639,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="needs-translation">New Proposal</target>
+        <target state="translated">Nueva propuesta</target>
       </trans-unit>
       <trans-unit id="7803836174893864003" datatype="html">
         <source>Proposal info</source>
@@ -5659,7 +5659,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation">Title and description will be included on the Proposal. Start and end dates determine the duration of the Proposal.</target>
+        <target state="translated">Título y descripción se incluirán en la Propuesta. Las fechas de inicio y fin determinan la duración de la Propuesta.</target>
       </trans-unit>
       <trans-unit id="7258226626453998656" datatype="html">
         <source>Start Date is required.</source>
@@ -5675,7 +5675,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">45</context>
         </context-group>
-        <target state="needs-translation">Start</target>
+        <target state="translated">Iniciar</target>
       </trans-unit>
       <trans-unit id="2551196215874055869" datatype="html">
         <source>Commencing milestone.</source>
@@ -5691,7 +5691,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="needs-translation">Commencing milestone</target>
+        <target state="translated">Hito inicial</target>
       </trans-unit>
       <trans-unit id="2793713233329713998" datatype="html">
         <source>Start milestone.</source>
@@ -5707,7 +5707,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Start milestone</target>
+        <target state="translated">Iniciar hito</target>
       </trans-unit>
       <trans-unit id="8083446854633867417" datatype="html">
         <source>End milestone.</source>
@@ -5723,7 +5723,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">End milestone</target>
+        <target state="translated">Finalizar hito</target>
       </trans-unit>
       <trans-unit id="351136863252723542" datatype="html">
         <source>Proposal description is required.</source>
@@ -5739,7 +5739,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">117,118</context>
         </context-group>
-        <target state="needs-translation">Proposal description</target>
+        <target state="translated">Descripción de la propuesta</target>
       </trans-unit>
       <trans-unit id="5374034773931099277" datatype="html">
         <source>Question Info</source>
@@ -5747,7 +5747,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">127,128</context>
         </context-group>
-        <target state="needs-translation">Question Info</target>
+        <target state="translated">Información de la pregunta</target>
       </trans-unit>
       <trans-unit id="8442760427417850891" datatype="html">
         <source>Title and description will only be displayed for this question.</source>
@@ -5755,7 +5755,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="needs-translation">Title and description will only be displayed for this question.</target>
+        <target state="translated">El título y la descripción sólo se mostrarán para esta pregunta.</target>
       </trans-unit>
       <trans-unit id="8987139299655955589" datatype="html">
         <source>Question Title is required.</source>
@@ -5771,7 +5771,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Question Title</target>
+        <target state="translated">Título de la pregunta</target>
       </trans-unit>
       <trans-unit id="1295423322835568747" datatype="html">
         <source>Question description</source>
@@ -5779,7 +5779,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">Question description</target>
+        <target state="translated">Descripción de la pregunta</target>
       </trans-unit>
       <trans-unit id="6213924357616789681" datatype="html">
         <source>Text and description for each individual answer.</source>
@@ -5787,7 +5787,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">178,179</context>
         </context-group>
-        <target state="needs-translation">Text and description for each individual answer.</target>
+        <target state="translated">Texto y descripción por cada respuesta individual.</target>
       </trans-unit>
       <trans-unit id="8908935743208562892" datatype="html">
         <source>Answer Text is required.</source>
@@ -5803,7 +5803,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">187,188</context>
         </context-group>
-        <target state="needs-translation">Answer Text</target>
+        <target state="translated">Responder texto</target>
       </trans-unit>
       <trans-unit id="7684925695381964056" datatype="html">
         <source>Answer description</source>
@@ -5811,7 +5811,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">198,199</context>
         </context-group>
-        <target state="needs-translation">Answer description</target>
+        <target state="translated">Descripción de la respuesta</target>
       </trans-unit>
       <trans-unit id="8639613122350951248" datatype="html">
         <source>Add Choice</source>
@@ -5827,7 +5827,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">244,245</context>
         </context-group>
-        <target state="needs-translation">This is the space that will list the proposal.</target>
+        <target state="translated">Este es el espacio que incluirá la propuesta.</target>
       </trans-unit>
       <trans-unit id="6241175755376438916" datatype="html">
         <source>Proposal Setup</source>
@@ -5835,7 +5835,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">292,293</context>
         </context-group>
-        <target state="needs-translation">Proposal Setup</target>
+        <target state="translated">Configuración de propuesta</target>
       </trans-unit>
       <trans-unit id="3068808787718249318" datatype="html">
         <source>Defines who has access to the proposal and what is the voting method.</source>
@@ -5843,7 +5843,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">294,295</context>
         </context-group>
-        <target state="needs-translation">Defines who has access to the proposal and what is the voting method.</target>
+        <target state="translated">Define quién tiene acceso a la propuesta y cuál es el método de votación.</target>
       </trans-unit>
       <trans-unit id="1956426485429089025" datatype="html">
         <source>Target Participants</source>
@@ -5851,7 +5851,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">299</context>
         </context-group>
-        <target state="needs-translation">Target Participants</target>
+        <target state="translated">Participantes a los que va dirigido</target>
       </trans-unit>
       <trans-unit id="4014485883731431399" datatype="html">
         <source>All Guardians</source>
@@ -5867,7 +5867,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">312,313</context>
         </context-group>
-        <target state="needs-translation">Only guardians can vote on this proposal</target>
+        <target state="translated">Solo los guardianes pueden votar en esta propuesta</target>
       </trans-unit>
       <trans-unit id="6783237823517394918" datatype="html">
         <source>All Members</source>
@@ -5883,7 +5883,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">322,323</context>
         </context-group>
-        <target state="needs-translation">All members can vote on this proposal</target>
+        <target state="translated">Todos los miembros pueden votar en esta propuesta</target>
       </trans-unit>
       <trans-unit id="1673434496808626695" datatype="html">
         <source>IOTA Token Holders</source>
@@ -5899,7 +5899,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">333,334</context>
         </context-group>
-        <target state="needs-translation">All IOTA token holders can vote.</target>
+        <target state="translated">Todos los poseedores de IOTA pueden votar.</target>
       </trans-unit>
       <trans-unit id="2815746757024794057" datatype="html">
         <source>Voting Type</source>
@@ -5927,7 +5927,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">354,355</context>
         </context-group>
-        <target state="needs-translation">Each member of the space gets one vote</target>
+        <target state="translated">Cada miembro del espacio tiene un voto</target>
       </trans-unit>
       <trans-unit id="5703711514129531242" datatype="html">
         <source>XP Reputation - Space</source>
@@ -5943,7 +5943,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">368,369</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has in the space</target>
+        <target state="translated">Los votos son ponderados en base a la cantidad total de XP que un miembro tiene en el espacio</target>
       </trans-unit>
       <trans-unit id="1171519555154717304" datatype="html">
         <source>XP Reputation - Space + Connection</source>
@@ -5959,7 +5959,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">384,385</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has in the space &amp; connections</target>
+        <target state="translated">Los votos son ponderados en función de la cantidad total de XP que un miembro tiene en el espacio &amp; conexiones</target>
       </trans-unit>
       <trans-unit id="5394345820497679692" datatype="html">
         <source>XP Reputation - Selected Badges</source>
@@ -5975,7 +5975,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">400,401</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has for selected badges</target>
+        <target state="translated">Los votos están ponderados en función de la cantidad total de XP que un miembro tiene para las insignias seleccionadas</target>
       </trans-unit>
       <trans-unit id="8616735366662008176" datatype="html">
         <source>Reputation Options</source>
@@ -5983,7 +5983,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">412,413</context>
         </context-group>
-        <target state="needs-translation">Reputation Options</target>
+        <target state="translated">Opciones de reputación</target>
       </trans-unit>
       <trans-unit id="6227891212656837777" datatype="html">
         <source>Set Minimum Weight</source>
@@ -5991,7 +5991,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">423,424</context>
         </context-group>
-        <target state="needs-translation">Set Minimum Weight</target>
+        <target state="translated">Establecer peso mínimo</target>
       </trans-unit>
       <trans-unit id="4343784064275297555" datatype="html">
         <source>Select Badge</source>
@@ -5999,7 +5999,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">438,439</context>
         </context-group>
-        <target state="needs-translation">Select Badge</target>
+        <target state="translated">Seleccionar insignia</target>
       </trans-unit>
       <trans-unit id="7518498657175852149" datatype="html">
         <source> Create Proposal </source>
@@ -6015,7 +6015,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">322</context>
         </context-group>
-        <target state="needs-translation">Choice</target>
+        <target state="translated">Opción</target>
       </trans-unit>
       <trans-unit id="6471529095373327893" datatype="html">
         <source>badge</source>
@@ -6023,7 +6023,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">326</context>
         </context-group>
-        <target state="needs-translation">badge</target>
+        <target state="translated">insignia</target>
       </trans-unit>
       <trans-unit id="3625859417927520024" datatype="html">
         <source>id</source>
@@ -6031,7 +6031,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">326</context>
         </context-group>
-        <target state="needs-translation">id</target>
+        <target state="translated">id</target>
       </trans-unit>
       <trans-unit id="2933071059791349572" datatype="html">
         <source>Final Results</source>
@@ -6057,11 +6057,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">127</context>
+          <context context-type="linenumber">129</context>
         </context-group>
         <target state="translated">Votado</target>
       </trans-unit>
@@ -6141,7 +6141,7 @@
         <source>Pending Vote</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <target state="translated">Voto Pendiente</target>
       </trans-unit>
@@ -6149,7 +6149,7 @@
         <source>joined soonaverse on</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">124</context>
         </context-group>
         <target state="translated">se unió a Soonaverse en</target>
       </trans-unit>
@@ -6261,7 +6261,7 @@
         <source> Voting instructions </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <target state="translated"> Instrucciones para votar </target>
       </trans-unit>
@@ -6437,7 +6437,7 @@
         <source> No Active Proposals </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
-          <context context-type="linenumber">11,12</context>
+          <context context-type="linenumber">11</context>
         </context-group>
         <target state="translated"> No hay Propuestas Activas </target>
       </trans-unit>
@@ -6453,7 +6453,7 @@
         <source> No Active Awards </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
-          <context context-type="linenumber">32,33</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <target state="translated"> No hay Premios Activos </target>
       </trans-unit>
@@ -6507,11 +6507,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
-          <context context-type="linenumber">88,89</context>
+          <context context-type="linenumber">88</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
-          <context context-type="linenumber">117,118</context>
+          <context context-type="linenumber">117</context>
         </context-group>
         <target state="translated"> Nueva conexión </target>
       </trans-unit>
@@ -6527,7 +6527,7 @@
         <source> Close </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
-          <context context-type="linenumber">120,121</context>
+          <context context-type="linenumber">120</context>
         </context-group>
         <target state="translated"> Cerrar </target>
       </trans-unit>
@@ -6635,7 +6635,7 @@
         <source>About space</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
-          <context context-type="linenumber">3</context>
+          <context context-type="linenumber">5,6</context>
         </context-group>
         <target state="translated">Acerca del espacio</target>
       </trans-unit>
@@ -6643,11 +6643,11 @@
         <source> Join Space </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
-          <context context-type="linenumber">25,26</context>
+          <context context-type="linenumber">53</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
-          <context context-type="linenumber">53,54</context>
+          <context context-type="linenumber">113,114</context>
         </context-group>
         <target state="translated"> Unirse al Espacio </target>
       </trans-unit>
@@ -6655,11 +6655,11 @@
         <source> Edit Space </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">77</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
-          <context context-type="linenumber">66,67</context>
+          <context context-type="linenumber">139</context>
         </context-group>
         <target state="translated"> Editar Espacio </target>
       </trans-unit>
@@ -6765,7 +6765,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">163,164</context>
         </context-group>
-        <target state="needs-translation">Avatar is mandatory</target>
+        <target state="translated">El avatar es obligatorio</target>
       </trans-unit>
       <trans-unit id="6932048807565988787" datatype="html">
         <source> Create space </source>
@@ -6787,29 +6787,29 @@
         <source>Upload new to replace existing.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
-          <context context-type="linenumber">167</context>
+          <context context-type="linenumber">168</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">172</context>
         </context-group>
-        <target state="needs-translation">Upload new to replace existing.</target>
+        <target state="translated">Subir nuevo para reemplazar existente.</target>
       </trans-unit>
       <trans-unit id="5504845184624630235" datatype="html">
         <source>Your brand is key.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
-          <context context-type="linenumber">167</context>
+          <context context-type="linenumber">168</context>
         </context-group>
-        <target state="needs-translation">Your brand is key.</target>
+        <target state="translated">Tu marca es clave.</target>
       </trans-unit>
       <trans-unit id="7599513045034313396" datatype="html">
         <source>Make it personal.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">172</context>
         </context-group>
-        <target state="needs-translation">Make it personal.</target>
+        <target state="translated">Hacerlo personal.</target>
       </trans-unit>
     </body>
   </file>
