@@ -45,7 +45,7 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
     return this._spaces;
   }
 
-  public onChange = () => undefined;
+  public onChange: (v: string | undefined) => undefined = () => undefined;
   public disabled = false;
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public searchControl: FormControl = new FormControl('', Validators.required);
@@ -63,8 +63,8 @@ export class SelectSpaceComponent implements OnInit, ControlValueAccessor {
   public ngOnInit(): void {
     this.spaceControl.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        this.onChange();
+      .subscribe((value: string) => {
+        this.onChange(value);
         this.isSelectOpen = false;
         this.isDrawerOpen = false;
         this.cd.markForCheck();
