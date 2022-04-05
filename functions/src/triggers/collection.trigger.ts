@@ -13,7 +13,7 @@ export const collectionWrite: functions.CloudFunction<Change<DocumentSnapshot>> 
 }).firestore.document(COL.COLLECTION + '/{collectionId}').onWrite(async (change) => {
   const newValue: Collection = <Collection>change.after.data();
   const previousValue: Collection = <Collection>change.before.data();
-  if ((newValue.approved == true && previousValue.approved === false)  || (newValue.rejected == true && previousValue.rejected === false)) {
+  if ((newValue.approved !== previousValue.approved)  || (newValue.rejected !== previousValue.rejected)) {
     const data: any = await admin.firestore().collection(COL.NFT).where('collection', '==', newValue.uid).get();
     for (const nft of data.docs) {
       const refSource: any = admin.firestore().collection(COL.NFT).doc(nft.data().uid);
