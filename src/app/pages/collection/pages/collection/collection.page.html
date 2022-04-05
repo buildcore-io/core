@@ -76,15 +76,8 @@
                 *ngIf="isDateInFuture((data.collection$ | async)?.availableFrom)">
                 <wen-icon-time class="text-app-gray-400"></wen-icon-time>
                 <div class="ml-2.5">
-                    <ng-container *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) > 0; else todayBlock">
-                        <span class="font-bold" i18n>Starts in</span>
-                        <span class="font-medium"> {{ getDaysLeft((data.collection$ | async)?.availableFrom) }} </span>
-                        <span class="font-medium" *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) > 1" i18n>days</span>
-                        <span class="font-medium" *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) === 1" i18n>day</span>
-                    </ng-container>
-                    <ng-template #todayBlock>
-                        <span class="font-bold" i18n>Starts today</span>
-                    </ng-template>
+                    <span class="font-bold" i18n>Starts at</span>
+                    <span class="font-medium"> {{ (data.collection$ | async)?.availableFrom?.toDate() | date:'medium' }}</span>
                 </div>
             </div>
 
