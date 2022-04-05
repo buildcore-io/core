@@ -1,7 +1,7 @@
 <wen-collapse i18n-title title="Timeline" [isCollapsed]="false" class="overflow-hidden" *ngIf="orders?.length || listedBy">
   <div *ngIf="nft?.owner && (nft?.availableFrom || nft?.auctionFrom)"
     class="relative flex items-center mt-3">
-    <div class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2 h-24"></div>
+    <div class="absolute w-0.5 bg-app-gray-100 left-3 -translate-x-1/2 translate-y-1/2 h-24"></div>
 
     <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
       <wen-icon-check></wen-icon-check>
@@ -31,9 +31,9 @@
   <div *ngFor="let t of orders | slice:0:(showAll ? (orders)?.length : collapsedEventsCount); let i = index; trackBy: trackByUid"
     class="relative flex items-center mt-3">
     <div *ngIf="i !== 0"
-      class="absolute w-0.5 h-full bg-app-gray-100 left-3 transform -translate-x-1/2 -translate-y-1/2"></div>
+      class="absolute w-0.5 h-full bg-app-gray-100 left-3 -translate-x-1/2 -translate-y-1/2"></div>
 
-    <div class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"
+    <div class="absolute w-0.5 bg-app-gray-100 left-3 -translate-x-1/2 translate-y-1/2"
       [ngClass]="i === 0 ? (!isCollapsed ? 'h-24' : 'h-36') : 'h-full'"></div>
 
     <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
@@ -85,7 +85,7 @@
   <!-- Orders -->
   <div class="relative flex items-center mt-3" *ngIf="listedBy && (showAll || (orders?.length || 0) < collapsedEventsCount)">
     <div *ngIf="((orders)?.length || 0) > 0"
-      class="absolute w-0.5 bg-app-gray-100 left-3 transform -translate-x-1/2 translate-y-1/2"></div>
+      class="absolute w-0.5 bg-app-gray-100 left-3 -translate-x-1/2 translate-y-1/2"></div>
 
     <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
       <wen-icon-check></wen-icon-check>

@@ -18,12 +18,12 @@
                 <i
                     nz-icon
                     nzType="info-circle"
-                    class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"
                 ></i>
-                <div class="absolute transform -translate-y-1/2 right-10 top-1/2">
+                <div class="absolute -translate-y-1/2 right-10 top-1/2">
                     <button *ngFor="let unit of priceUnits"
                         nz-button nzShape="circle" nzSize="small"
                         class="mr-1 wen-secondary"
@@ -40,7 +40,7 @@
     <nz-form-item>
         <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
             <nz-date-picker
-                class="flex flex-grow"
+                class="flex grow"
                 [nzDisabledDate]="disabledStartDate.bind(this)"
                 nzSize="large"
                 [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
@@ -97,12 +97,12 @@
                 <i
                     nz-icon
                     nzType="info-circle"
-                    class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"
                 ></i>
-                <div class="absolute transform -translate-y-1/2 right-10 top-1/2">
+                <div class="absolute -translate-y-1/2 right-10 top-1/2">
                     <button *ngFor="let unit of priceUnits"
                         nz-button nzShape="circle" nzSize="small"
                         class="mr-1 wen-secondary"

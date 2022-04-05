@@ -89,17 +89,17 @@
             </div>
 
             <div class="flex flex-wrap items-center w-full mt-4 lg:mt-3">
-                <div class="flex-grow h-16 px-4 py-3 mr-3 bg-white lg:w-32 rounded-xl lg:mt-2">
+                <div class="grow h-16 px-4 py-3 mr-3 bg-white lg:w-32 rounded-xl lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
                 </div>
 
-                <div class="flex-grow h-16 px-4 py-3 bg-white lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
+                <div class="grow h-16 px-4 py-3 bg-white lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available</div>
                     <div class="text-lg font-bold truncate">{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}</div>
                 </div>
 
-                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:flex-grow lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
+                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:grow lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
                     <div class="text-lg font-bold truncate">{{formatBest((data.cheapestNft$ | async)?.price)}}</div>
                 </div>
