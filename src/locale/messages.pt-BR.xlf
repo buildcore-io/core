@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/navigation/navigation.service.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="needs-translation">Back</target>
+        <target state="translated">Voltar</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -180,7 +180,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">273</context>
         </context-group>
-        <target state="needs-translation">You are a proud owner of a new NFT. Congratulations!</target>
+        <target state="translated">Você é o dono de um novo NFT. Parabéns!</target>
       </trans-unit>
       <trans-unit id="6237623083700365974" datatype="html">
         <source>You lost your bid!</source>
@@ -248,7 +248,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">300,299</context>
         </context-group>
-        <target state="needs-translation">Unsupported</target>
+        <target state="translated">Incompatível</target>
       </trans-unit>
       <trans-unit id="5553638450493774694" datatype="html">
         <source>This notification is not yet supported in your language</source>
@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">156</context>
         </context-group>
-        <target state="needs-translation">You must unlock your MetaMask first!</target>
+        <target state="translated">Desbloqueie o MetaMask antes de continuar!</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
@@ -686,7 +686,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">Limited Edition</target>
+        <target state="translated">Edição Limitada</target>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
         <source>Pending approval</source>
@@ -1218,7 +1218,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
-        <target state="needs-translation">Min bid</target>
+        <target state="translated">Oferta mín</target>
       </trans-unit>
       <trans-unit id="523519638239091406" datatype="html">
         <source>Your bid is the highest</source>
@@ -1294,7 +1294,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">163</context>
         </context-group>
-        <target state="needs-translation"> Make a bid </target>
+        <target state="translated"> Fazer oferta </target>
       </trans-unit>
       <trans-unit id="1318981813671388482" datatype="html">
         <source>Send IOTA to following address (please restake after!):</source>
@@ -1438,7 +1438,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">239</context>
         </context-group>
-        <target state="needs-translation"> Your transactions </target>
+        <target state="translated"> Suas transações </target>
       </trans-unit>
       <trans-unit id="8481211261929080451" datatype="html">
         <source>Sent Date</source>
@@ -1478,7 +1478,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">242,243</context>
         </context-group>
-        <target state="needs-translation">Amount</target>
+        <target state="translated">Quantidade</target>
       </trans-unit>
       <trans-unit id="5612709566632732179" datatype="html">
         <source>Detail</source>
