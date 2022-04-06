@@ -65,7 +65,7 @@ let totalBilRoy = 0;
 let totalCreditCount = 0;
 let totalCreditPay = 0;
 let totalOrderCount = 0;
-db.collection('transaction').orderBy('createdOn', 'asc').onSnapshot(querySnapshot => {
+db.collection('transaction').orderBy('createdOn', 'desc').limit(1).onSnapshot(querySnapshot => {
   querySnapshot.docChanges().forEach(async (t) => {
     // Get user name
     const member: any = await db.collection('member').doc(t.doc.data().member).get();

@@ -27,11 +27,11 @@ db.collection('collection').get().then(async (snapshot) => {
 
         if (Object.keys(update).length > 0) {
           i++;
-          db.collection('nft').doc(nft.data().uid).update(update);
+          // db.collection('nft').doc(nft.data().uid).update(update);
 
           if (i > 500) {
             // Wait for two seconds every 500 records.
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            // await new Promise(resolve => setTimeout(resolve, 10000));
             i = 0;
           }
         }
