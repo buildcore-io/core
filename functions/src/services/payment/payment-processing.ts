@@ -638,81 +638,83 @@ export class ProcessingService {
             const orderData: any = admin.firestore().collection(COL.TRANSACTION).doc(o.data().uid);
             const order: any = await this.transaction.get(orderData);
 
-            // This happens here on purpose instead of cron to reduce $$$
-            const expireDate = dayjs(order.data().payload.expiresOn?.toDate());
-            let expired = false;
-            if (expireDate.isBefore(dayjs(), 'ms')) {
-              await this.markAsVoid(order.data());
-              expired = true;
-            }
+            if (order.data()) {
+              // This happens here on purpose instead of cron to reduce $$$
+              const expireDate = dayjs(order.data().payload.expiresOn?.toDate());
+              let expired = false;
+              if (expireDate.isBefore(dayjs(), 'ms')) {
+                await this.markAsVoid(order.data());
+                expired = true;
+              }
 
-            // Let's process this.'
-            const match: TransactionMatch | undefined = this.isMatch(tran, order.data().payload.targetAddress, order.data().payload.amount, order.data().payload.validationType);
-            if (
-              !expired &&
-              order.data().payload.reconciled === false &&
-              order.data().payload.void === false &&
-              match
-            ) {
-              if (order.data().payload.type === TransactionOrderType.NFT_PURCHASE) {
-                const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
-                const sfDocNft: any = await this.transaction.get(refNft);
-                if (sfDocNft.data().availableFrom !== null) {
+              // Let's process this.'
+              const match: TransactionMatch | undefined = this.isMatch(tran, order.data().payload.targetAddress, order.data().payload.amount, order.data().payload.validationType);
+              if (
+                !expired &&
+                order.data().payload.reconciled === false &&
+                order.data().payload.void === false &&
+                match
+              ) {
+                if (order.data().payload.type === TransactionOrderType.NFT_PURCHASE) {
+                  const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
+                  const sfDocNft: any = await this.transaction.get(refNft);
+                  if (sfDocNft.data().availableFrom !== null) {
+                    // Found transaction, create payment / ( bill payments | credit)
+                    const payment = await this.createPayment(order.data(), match);
+                    await this.createBillPayment(order.data(), payment);
+                    await this.setNftOwner(order.data(), payment);
+                    await this.markAsReconciled(order.data(), match.msgId);
+                  } else {
+                    // NFT has been purchased by someone else.
+                    await this.processAsInvalid(tran, order.data(), o);
+                  }
+                } else if (order.data().payload.type === TransactionOrderType.NFT_BID) {
+                  const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
+                  const sfDocNft: any = await this.transaction.get(refNft);
+                  if (sfDocNft.data().auctionFrom !== null) {
+                    const payment = await this.createPayment(order.data(), match);
+                    await this.addNewBid(order.data(), payment);
+                  } else {
+                    // Auction is no longer available.
+                    await this.processAsInvalid(tran, order.data(), o);
+                  }
+                } else if (order.data().payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
                   // Found transaction, create payment / ( bill payments | credit)
                   const payment = await this.createPayment(order.data(), match);
-                  await this.createBillPayment(order.data(), payment);
-                  await this.setNftOwner(order.data(), payment);
+                  const credit = await this.createCredit(payment, match);
+                  if (credit) {
+                    await this.setValidatedAddress(credit, 'space');
+                  }
+
                   await this.markAsReconciled(order.data(), match.msgId);
-                } else {
-                  // NFT has been purchased by someone else.
-                  await this.processAsInvalid(tran, order.data(), o);
-                }
-              } else if (order.data().payload.type === TransactionOrderType.NFT_BID) {
-                const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
-                const sfDocNft: any = await this.transaction.get(refNft);
-                if (sfDocNft.data().auctionFrom !== null) {
+                } else if (order.data().payload.type === TransactionOrderType.MEMBER_ADDRESS_VALIDATION) {
+                  // Found transaction, create payment / ( bill payments | credit)
                   const payment = await this.createPayment(order.data(), match);
-                  await this.addNewBid(order.data(), payment);
-                } else {
-                  // Auction is no longer available.
-                  await this.processAsInvalid(tran, order.data(), o);
-                }
-              } else if (order.data().payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
-                // Found transaction, create payment / ( bill payments | credit)
-                const payment = await this.createPayment(order.data(), match);
-                const credit = await this.createCredit(payment, match);
-                if (credit) {
-                  await this.setValidatedAddress(credit, 'space');
-                }
+                  const credit = await this.createCredit(payment, match);
+                  if (credit) {
+                    await this.setValidatedAddress(credit, 'member');
+                  }
 
-                await this.markAsReconciled(order.data(), match.msgId);
-              } else if (order.data().payload.type === TransactionOrderType.MEMBER_ADDRESS_VALIDATION) {
-                // Found transaction, create payment / ( bill payments | credit)
-                const payment = await this.createPayment(order.data(), match);
-                const credit = await this.createCredit(payment, match);
-                if (credit) {
-                  await this.setValidatedAddress(credit, 'member');
+                  await this.markAsReconciled(order.data(), match.msgId);
                 }
-
-                await this.markAsReconciled(order.data(), match.msgId);
+              } else {
+                // Now process all invalid orders.
+                // Wrong amount, Double payments & Expired orders.
+                await this.processAsInvalid(tran, order.data(), o);
               }
-            } else {
-              // Now process all invalid orders.
-              // Wrong amount, Double payments & Expired orders.
-              await this.processAsInvalid(tran, order.data(), o);
-            }
 
-            // Add linked transaction.
-            const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.data().uid);
-            const sfDoc: any = await this.transaction.get(refSource);
-            if (sfDoc.data()) {
-              this.updates.push({
-                ref: refSource,
-                data: {
-                  linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...this.linkedTransactions]
-                },
-                action: 'update'
-              });
+              // Add linked transaction.
+              const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.data().uid);
+              const sfDoc: any = await this.transaction.get(refSource);
+              if (sfDoc.data()) {
+                this.updates.push({
+                  ref: refSource,
+                  data: {
+                    linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...this.linkedTransactions]
+                  },
+                  action: 'update'
+                });
+              }
             }
           }
         }
