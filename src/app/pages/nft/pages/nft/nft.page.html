@@ -31,62 +31,12 @@
                 </wen-share>
             </ng-container>
 
-            <div class="flex items-center justify-between w-full h-12 p-4 bg-white rounded-xl"
-                *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom) || isDateInFuture((data.nft$ | async)?.auctionFrom)">
-                <div class="flex items-center mr-8"
-                    [ngClass]="{ 'text-alerts-error': false }">
-                        <wen-icon-time></wen-icon-time>
-                        <div class="ml-2.5 font-bold" i18n>Sale Starts</div>
-                </div>
-                <div class="font-medium" *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom)">
-                  {{(data.nft$ | async)?.availableFrom?.toDate() | date:'long'}}
-                </div>
-                <div class="font-medium" *ngIf="isDateInFuture((data.nft$ | async)?.auctionFrom)">
-                  {{(data.nft$ | async)?.auctionFrom?.toDate() | date:'long'}}
-                </div>
-            </div>
-
-            <div class="w-full p-4 bg-white rounded-xl"
-                *ngIf="isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <wen-icon-time class="text-app-gray-400"></wen-icon-time>
-                            <div class="ml-2.5 font-bold" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Sale ends</div>
-                            <div class="ml-2.5 font-bold" *ngIf="!data.auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Finalising auction...</div>
-                        </div>
-                        <div class="font-medium" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                          {{ data.getAuctionEnd(data.nft$ | async)?.toDate() | date:'long'}}
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="(endsOnTicker$ | async) && data.auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl"
-                            *ngIf="data.getAuctionEndDays(data.nft$ | async) > 0">
-                            <div class="mr-1">
-                                {{data.getAuctionEndDays(data.nft$ | async)}}
-                            </div>
-                            <div i18n>days</div>
-                        </div>
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
-                            <div class="mr-1">
-                                {{data.getAuctionEndHours(data.nft$ | async)}}
-                            </div>
-                            <div i18n>hours</div>
-                        </div>
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
-                            <div class="mr-1">
-                                {{data.getAuctionEndMin(data.nft$ | async)}}
-                            </div>
-                            <div i18n>min</div>
-                        </div>
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
-                            <div class="mr-1">
-                                {{data.getAuctionEndSec(data.nft$ | async)}}
-                            </div>
-                            <div i18n>sec</div>
-                        </div>
-                    </div>
-            </div>
+            <wen-nft-countdown
+                class="my-5"
+                wrapperClassName="bg-white"
+                tabClassName="bg-bg-background"
+                size="large">
+            </wen-nft-countdown>
 
             <div class="flex flex-wrap items-center mt-5">
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">

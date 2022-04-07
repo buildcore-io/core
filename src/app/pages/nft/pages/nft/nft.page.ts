@@ -500,14 +500,6 @@ export class NFTPage implements OnInit, OnDestroy {
     return ListingType;
   }
 
-  public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs(), 's');
-  }
-
   public getTitle(nft?: Nft | null): any {
     if (!nft) {
       return '';

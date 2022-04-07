@@ -16,6 +16,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NftCountdownModule } from '../nft-countdown/nft-countdown.module';
 import { NftBidComponent } from './nft-bid.component';
 
 
@@ -40,7 +41,8 @@ import { NftBidComponent } from './nft-bid.component';
     NzNotificationModule,
     NzTableModule,
     NzAvatarModule,
-    IpfsAvatarModule
+    IpfsAvatarModule,
+    NftCountdownModule
   ],
   exports: [
     NftBidComponent

@@ -73,48 +73,12 @@
                     ></wen-icon-question-circle>
                 </div>
 
-                
-
-                <div class="w-full p-4 bg-bg-background rounded-xl my-5">
-                        <div class="flex">
-                            <wen-icon-time class="text-app-gray-400 mt-1"></wen-icon-time>
-                            <div class="ml-2.5">
-                                <div class="font-bold" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Sale ends</div>
-                                <div class="font-bold" *ngIf="!data.auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Finalising auction...</div>
-                                <div class="font-medium" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                                    {{ data.getAuctionEnd(data.nft$ | async)?.toDate() | date:'long'}}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between w-full mt-4 space-x-2" *ngIf="(endsOnTicker$ | async) && data.auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                            <div class="flex items-center justify-center grow py-3 font-bold bg-white rounded-2xl"
-                                *ngIf="data.getAuctionEndDays(data.nft$ | async) > 0">
-                                <div>
-                                    {{data.getAuctionEndDays(data.nft$ | async)}}
-                                </div>
-                                <div i18n>d</div>
-                            </div>
-                            <div class="flex items-center justify-center grow py-3 font-bold bg-white rounded-2xl">
-                                <div>
-                                    {{data.getAuctionEndHours(data.nft$ | async)}}
-                                </div>
-                                <div i18n>h</div>
-                            </div>
-                            <div class="flex items-center justify-center grow py-3 font-bold bg-white rounded-2xl">
-                                <div>
-                                    {{data.getAuctionEndMin(data.nft$ | async)}}
-                                </div>
-                                <div i18n>m</div>
-                            </div>
-                            <div class="flex items-center justify-center grow py-3 font-bold bg-white rounded-2xl">
-                                <div>
-                                    {{data.getAuctionEndSec(data.nft$ | async)}}
-                                </div>
-                                <div i18n>s</div>
-                            </div>
-                        </div>
-                </div>
+                <wen-nft-countdown
+                    class="my-5"
+                    wrapperClassName="bg-bg-background"
+                    tabClassName="bg-white"
+                    size="small">
+                </wen-nft-countdown>
 
                 <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
                     [ngClass]="{
