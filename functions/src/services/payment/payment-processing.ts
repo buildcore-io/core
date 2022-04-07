@@ -633,7 +633,11 @@ export class ProcessingService {
         const orders: any = await this.findAllOrdersWithAddress(o.address);
         if (orders.size > 0) {
           // Technically there should only be one as address is unique per order.
-          for (const order of orders.docs) {
+          for (const o of orders.docs) {
+            // Let's read the ORDER so we lock it for read. This is important to avoid concurent processes.
+            const orderData: any = admin.firestore().collection(COL.TRANSACTION).doc(o.data().uid);
+            const order: any = await this.transaction.get(orderData);
+
             // This happens here on purpose instead of cron to reduce $$$
             const expireDate = dayjs(order.data().payload.expiresOn?.toDate());
             let expired = false;
