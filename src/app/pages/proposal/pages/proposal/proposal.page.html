@@ -20,7 +20,7 @@
           <span>{{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}</span>
         </a>
 
-        <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>Proposal</nz-tag>
+        <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Proposal</nz-tag>
         <wen-proposal-status [proposal]="data.proposal$ | async"></wen-proposal-status>
       </div>
 
@@ -28,7 +28,7 @@
 
       <div class="flex items-center space-x-10">
         <div class="flex items-center">
-          <i nz-icon nzType="calendar" class="pr-2 text-lg text-app-gray-400" nzTheme="outline"></i>
+          <i nz-icon nzType="calendar" class="pr-2 text-lg text-foregrounds-secondary dark:text-foregrounds-secondary-dark" nzTheme="outline"></i>
           <span>{{(data.proposal$ | async)?.createdOn?.toDate() | date:'short'}}</span>
         </div>
         <div [routerLink]="['member', (data.creator$ | async)?.uid]">
@@ -40,7 +40,7 @@
       </div>
       <wen-tabs class="block w-screen mt-12 -ml-5 lg:w-max lg:ml-0" [tabs]="sections"></wen-tabs>
 
-      <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-app-gray-100"></div>
+      <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"></div>
       <div class="w-full py-12">
         <router-outlet></router-outlet>
       </div>
@@ -91,7 +91,7 @@
       <nz-card i18n-nzTitle nzTitle="Selected Badges" *ngIf="(data.badges$ | async)?.length">
         <div class="flex flex-wrap gap-2">
           <article *ngFor="let a of (data.badges$ | async); trackBy: trackByUid"
-            class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-bg-background rounded-2xl">
+            class="flex flex-col items-center justify-center p-3 w-28 h-28 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <wen-badge-tile [metadata]="a.badge.image" [name]="a.badge.name"></wen-badge-tile>
           </article>
         </div>

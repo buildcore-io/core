@@ -37,7 +37,7 @@
       [formControl]="voteControl">
       <nz-card *ngFor="let a of q.answers" class="block mt-4"
         [ngClass]="{
-          'border-2 border-solid border-orange': a.value === voteControl.value
+          'border-2 border-solid border-accent-primary dark:border-accent-primary-dark': a.value === voteControl.value
         }">
           <wen-proposal-answer 
             [answer]="a">

@@ -2,11 +2,11 @@
   <ng-container *nzModalContent>
     <div class="flex">
       <button nz-button (click)="onClickSignIn()" *ngIf="(auth.showWalletPopup$ | async) === 1"
-      class="flex w-full h-auto gap-6 p-6 mt-10 border border-app-gray-200 hover:border-app-gray-400 focus:border-app-gray-400 rounded-large">
-        <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="border-2 border-app-gray-100"></nz-avatar>
-        <div class="flex flex-col items-start text-app-gray-text">
+      class="flex w-full h-auto gap-6 p-6 mt-10 border border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary dark:border-foregrounds-secondary-dark rounded-large">
+        <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"></nz-avatar>
+        <div class="flex flex-col items-start text-foregrounds-primary dark:text-foregrounds-primary-dark">
           <span i18n>Metamask</span>
-          <small class="font-medium text-app-gray-400" i18n>Connect to your Metamask wallet</small>
+          <small class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Connect to your Metamask wallet</small>
         </div>
       </button>
 
@@ -27,7 +27,7 @@
   </ng-container>
 
   <div class="text-center" [ngClass]="(auth.showWalletPopup$ | async) === 2 ? 'pt-24' : ''" *nzModalFooter>
-    <button nz-button nzType="text" class="text-blue-light1" (click)="handleCancel()" i18n>
+    <button nz-button nzType="text" class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="handleCancel()" i18n>
       Cancel
     </button>
   </div>

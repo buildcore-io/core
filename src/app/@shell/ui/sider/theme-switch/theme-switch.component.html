@@ -15,7 +15,7 @@
     <div (click)="onClickChangeTheme(theme.Light)"
       class="flex items-center justify-center w-10 h-10 rounded-full"
       [ngClass]="{
-        'bg-orange': (currentTheme$ | async) === theme.Light
+        'bg-accent-primary dark:bg-accent-primary-dark': (currentTheme$ | async) === theme.Light
       }">
       <wen-icon-sun> </wen-icon-sun>
     </div>
@@ -23,7 +23,7 @@
     <div (click)="onClickChangeTheme(theme.Dark)"
       class="flex items-center justify-center w-10 h-10 rounded-full"
       [ngClass]="{
-        'bg-orange': (currentTheme$ | async) === theme.Dark
+        'bg-accent-primary dark:bg-accent-primary-dark': (currentTheme$ | async) === theme.Dark
       }">
       <wen-icon-moon> </wen-icon-moon>
     </div>

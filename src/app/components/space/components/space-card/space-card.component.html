@@ -8,12 +8,12 @@
       />
 
       <div *ngIf="(auth.member$ | async)?.spaces?.[space.uid]"
-        class="absolute top-3 right-3 bg-tag-default px-3 py-1.5 font-medium z-10 rounded-lg" i18n>Joined</div>
+        class="absolute top-3 right-3 bg-tags-regular dark:bg-tags-regular-dark px-3 py-1.5 font-medium z-10 rounded-lg" i18n>Joined</div>
     </div>
 
     <div class="relative flex flex-col w-full p-5 lg:p-4 lg:h-44">
         <nz-avatar
-          class="absolute top-0 -translate-y-1/2 bg-white border-2 border-app-gray-100 left-4"
+          class="absolute top-0 -translate-y-1/2 bg-white border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark left-4"
           [nzSrc]="avatarUrl"
           nzShape="circle"
         ></nz-avatar>
@@ -23,7 +23,7 @@
 
       <p class="grow shrink min-h-0 py-3 overflow-hidden text-sm font-medium lg:py-2">{{ space.about | stripMarkdown | truncate:[110]}}</p>
 
-      <div class="inline-flex gap-2 text-sm font-medium text-app-gray-400">
+      <div class="inline-flex gap-2 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
         <wen-icon-members></wen-icon-members>
         {{ space.totalMembers }} <span i18n>members</span></div>
     </div>
