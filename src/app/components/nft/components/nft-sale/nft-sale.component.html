@@ -11,7 +11,7 @@
     [nzWidth]="760"
     >
     <ng-template #nftSaleModalContent>
-        <div class="bg-bg-background rounded-2xl">
+        <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <div class="flex items-start justify-between px-6 pt-7">
                 <div class="text-2xl font-bold" i18n>List Item for sale</div>
                 <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
@@ -59,11 +59,11 @@
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
 
                 <div class="flex items-center mt-2.5 mb-2.5">
-                    <wen-icon-crown class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-crown>
+                    <wen-icon-crown class="mr-2.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" [size]="20"></wen-icon-crown>
                     <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
                     <wen-icon-question-circle
                         [size]="20"
-                        class="ml-1.5 text-app-gray-400"
+                        class="ml-1.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                         nz-tooltip
                         i18n-nzTooltipTitle
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."

@@ -1,10 +1,10 @@
-<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="isPending()" i18n>Pending
+<nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark" *ngIf="isPending()" i18n>Pending
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="proposal?.rejected" i18n>Rejected
+<nz-tag class="wen-status-tag bg-tags-closed dark:bg-tags-closed-dark border-tags-closed dark:border-tags-closed-dark" *ngIf="proposal?.rejected" i18n>Rejected
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-orange border-tag-orange" *ngIf="isCommencing()" i18n>Commencing
+<nz-tag class="wen-status-tag bg-inputs-border-focus dark:bg-inputs-border-focus-dark border-inputs-border-focus dark:border-inputs-border-focus-dark" *ngIf="isCommencing()" i18n>Commencing
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" *ngIf="isInProgress()" i18n>
+<nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="isInProgress()" i18n>
   In-Progress</nz-tag>
-<nz-tag class="wen-status-tag bg-tag-green border-tag-red" *ngIf="isComplete()" i18n>Completed
+<nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-closed dark:border-tags-closed-dark" *ngIf="isComplete()" i18n>Completed
 </nz-tag>

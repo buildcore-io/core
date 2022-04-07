@@ -55,17 +55,17 @@ export class CollectionCardComponent {
     if (this.collection?.approved !== true && this.collection?.rejected !== true) {
       return {
         label: $localize`Pending approval`,
-        className: 'bg-tag-blue'
+        className: 'bg-tags-commencing dark:bg-tags-commencing-dark'
       };
     } else if (this.collection?.approved) {
       return {
         label: $localize`Available`,
-        className: 'bg-tag-green'
+        className: 'bg-tags-available dark:bg-tags-available-dark'
       };
     } else {
       return {
         label: $localize`Rejected`,
-        className: 'bg-tag-red'
+        className: 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
   }

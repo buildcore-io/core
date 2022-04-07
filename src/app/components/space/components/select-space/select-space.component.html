@@ -22,7 +22,7 @@
                     *ngIf="s?.img && isSelectOpen"
                     [nzSrc]="previewImageService.getAvatarSize(s.img)"
                     [nzSize]="24"
-                    class="mr-3 border-2 border-app-gray-100"
+                    class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                     nzShape="circle"
                 >
                 </nz-avatar>
@@ -36,7 +36,7 @@
                     <nz-avatar *ngIf="getSpace(s.nzValue)?.img; else defaultAvatar"
                         [nzSrc]="previewImageService.getAvatarSize(getSpace(s.nzValue)?.img)"
                         [nzSize]="24"
-                        class="border-2 border-app-gray-100 min-w-6 min-h-6"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6 min-h-6"
                         nzShape="circle"
                     >
                     </nz-avatar>
@@ -77,25 +77,25 @@
                 <wen-icon-erase *ngIf="searchControl.value" (click)="searchControl.setValue('')" class="cursor-pointer"></wen-icon-erase>
             </div>
 
-            <div class="w-full h-px mt-2 mb-2 bg-app-gray-100"></div>
+            <div class="w-full h-px mt-2 mb-2 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"></div>
 
             <div *ngIf="shownSpaces.length === 0 && spaces.length > 0"
-                class="flex items-center justify-center text-xs font-medium min-h-24 text-app-gray-400">
+                class="flex items-center justify-center text-xs font-medium min-h-24 text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <span i18n>No results for</span> "{{ searchControl.value }}"
             </div>
 
             <div class="overflow-x-hidden overflow-y-hidden lg:max-h-56" style="max-height: calc(100% - 40)">
                 <div *ngFor="let opt of shownSpaces; trackBy: trackByValue"
-                    class="flex items-center mt-4 cursor-pointer lg:mt-5 hover:text-orange whitespace-nowrap"
+                    class="flex items-center mt-4 cursor-pointer lg:mt-5 hover:text-accent-primary dark:text-accent-primary-dark whitespace-nowrap"
                     (click)="spaceControl.setValue(opt.value)"
                     [ngClass]="{
-                        'text-orange': opt.value === spaceControl.value
+                        'text-accent-primary dark:text-accent-primary-dark': opt.value === spaceControl.value
                     }">
                         <div class="mr-2">
                             <nz-avatar *ngIf="opt?.img && isDrawerOpen"
                                 [nzSrc]="previewImageService.getAvatarSize(opt.img)"
                                 [nzSize]="24"
-                                class="mr-3 border-2 border-app-gray-100"
+                                class="mr-3 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"
                                 nzShape="circle"
                             >
                             </nz-avatar>

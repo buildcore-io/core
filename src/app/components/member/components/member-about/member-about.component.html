@@ -26,15 +26,15 @@
     *ngIf="(data.member$ | async)?.github || (data.member$ | async)?.twitter || (data.member$ | async)?.discord">
     <a *ngIf="(data.member$ | async)?.github" nz-button nzType="link" target="new"
       [href]="'https://github.com/' + (data.member$ | async)!.github">
-      <wen-icon-github class="text-app-gray-text hover:text-blue-hover"></wen-icon-github>
+      <wen-icon-github class="text-foregrounds-primary dark:text-foregrounds-primary-dark hover:text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark"></wen-icon-github>
     </a>
     <a *ngIf="(data.member$ | async)?.twitter" nz-button nzType="link" target="new"
       [href]="'https://twitter.com/' + (data.member$ | async)!.twitter">
-      <wen-icon-twitter class="text-app-gray-text hover:text-blue-hover"></wen-icon-twitter>
+      <wen-icon-twitter class="text-foregrounds-primary dark:text-foregrounds-primary-dark hover:text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark"></wen-icon-twitter>
     </a>
     <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new" nz-tooltip
       [nzTooltipTitle]="(data.member$ | async)!.discord">
-      <wen-icon-discord class="text-app-gray-text hover:text-blue-hover"></wen-icon-discord>
+      <wen-icon-discord class="text-foregrounds-primary dark:text-foregrounds-primary-dark hover:text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark"></wen-icon-discord>
     </a>
   </div>
 
@@ -44,7 +44,7 @@
         i18n-nzTooltipTitle nzTooltipTitle="Member's Wallet Address.">
       </wen-icon-question-circle>
     </h3>
-    <wen-wallet-address class="block p-3 rounded-2xl bg-bg-background" [entityType]="walletAddressEntities.MEMBER"
+    <wen-wallet-address class="block p-3 rounded-2xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" [entityType]="walletAddressEntities.MEMBER"
       [entity]="(data.member$ | async)"
       [enableVerification]="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
     </wen-wallet-address>
@@ -53,7 +53,7 @@
   <div class="mt-10 text-left">
     <h3 class="flex items-center justify-between">
       <span i18n>Recently joined spaces</span>
-      <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-blue-light1 whitespace-nowrap"
+      <a class="flex items-center ml-6 text-xs font-semibold cursor-pointer text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark whitespace-nowrap"
         [routerLink]="['/member', (data.member$ | async)?.uid, 'spaces']">
         <span i18n>All</span>
         <wen-icon-angle-right></wen-icon-angle-right>
@@ -61,7 +61,7 @@
     </h3>
     <div class="flex flex-wrap gap-2">
       <article *ngFor="let s of (data.space$ | async) | slice:0:4; trackBy: trackByUid"
-        class="flex flex-col items-center justify-center w-full p-3 lg:h-16 bg-bg-background rounded-2xl">
+        class="flex flex-col items-center justify-center w-full p-3 lg:h-16 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
         <a class="flex items-center justify-between w-full" [routerLink]="['/space', s.uid]">
           <nz-avatar [nzSrc]="previewImageService.getAvatarSize(s.avatarUrl)" class="bg-white border-gray-400 min-w-10"
             nzShape="circle">
@@ -74,7 +74,7 @@
       </article>
 
       <article *ngIf="!(data.space$ | async)?.length"
-        class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
+        class="flex flex-col items-center justify-center w-full h-16 p-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
         <span i18n>No Contribution Yet.</span>
       </article>
     </div>
@@ -89,7 +89,7 @@
       </article>
 
       <article *ngIf="(data.badges$ | async)?.length === 0"
-        class="flex flex-col items-center justify-center w-full h-16 p-3 bg-bg-background rounded-2xl text-app-gray-400">
+        class="flex flex-col items-center justify-center w-full h-16 p-3 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
         <span i18n>No badges</span>
       </article>
     </div>
