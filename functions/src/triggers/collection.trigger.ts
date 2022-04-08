@@ -13,17 +13,23 @@ export const collectionWrite: functions.CloudFunction<Change<DocumentSnapshot>> 
 }).firestore.document(COL.COLLECTION + '/{collectionId}').onWrite(async (change) => {
   const newValue: Collection = <Collection>change.after.data();
   const previousValue: Collection = <Collection>change.before.data();
-  if ((newValue.approved !== previousValue.approved)  || (newValue.rejected !== previousValue.rejected)) {
+  if ((newValue.approved !== previousValue.approved) || (newValue.rejected !== previousValue.rejected)) {
     const data: any = await admin.firestore().collection(COL.NFT).where('collection', '==', newValue.uid).get();
     for (const nft of data.docs) {
-      const refSource: any = admin.firestore().collection(COL.NFT).doc(nft.data().uid);
+      // Run update.
       await admin.firestore().runTransaction(async (transaction) => {
+        // NFT latest.
+        const refSource: any = admin.firestore().collection(COL.NFT).doc(nft.data().uid);
         const sfDoc: any = await transaction.get(refSource);
         if (sfDoc.data()) {
+          // Collection latest.
+          const refSourceColl: any = admin.firestore().collection(COL.COLLECTION).doc(sfDoc.data().collection);
+          const sfDocColl: any = await transaction.get(refSourceColl);
+
           // Update.
           transaction.update(refSource, {
-            approved: newValue.approved,
-            rejected: newValue.rejected
+            approved: sfDocColl.data().approved,
+            rejected: sfDocColl.data().rejected
           });
         }
       });
