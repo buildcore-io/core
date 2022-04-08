@@ -633,10 +633,10 @@ export class ProcessingService {
         const orders: any = await this.findAllOrdersWithAddress(o.address);
         if (orders.size > 0) {
           // Technically there should only be one as address is unique per order.
-          for (const o of orders.docs) {
+          for (const ord of orders.docs) {
             // Let's read the ORDER so we lock it for read. This is important to avoid concurent processes.
-            const orderData: any = admin.firestore().collection(COL.TRANSACTION).doc(o.data().uid);
-            const order: any = await this.transaction.get(orderData);
+            const orderRef: any = admin.firestore().collection(COL.TRANSACTION).doc(ord.data().uid);
+            const order: any = await this.transaction.get(orderRef);
 
             if (order.data()) {
               // This happens here on purpose instead of cron to reduce $$$
@@ -704,17 +704,13 @@ export class ProcessingService {
               }
 
               // Add linked transaction.
-              const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(order.data().uid);
-              const sfDoc: any = await this.transaction.get(refSource);
-              if (sfDoc.data()) {
-                this.updates.push({
-                  ref: refSource,
-                  data: {
-                    linkedTransactions: [...(sfDoc.data().linkedTransactions || []), ...this.linkedTransactions]
-                  },
-                  action: 'update'
-                });
-              }
+              this.updates.push({
+                ref: orderRef,
+                data: {
+                  linkedTransactions: [...(order.data().linkedTransactions || []), ...this.linkedTransactions]
+                },
+                action: 'update'
+              });
             }
           }
         }
