@@ -26,8 +26,8 @@
                             [nzValue]="accessTypes.ALL"
                             >
                             <div class="flex items-center">
-                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
-                                    <wen-icon-nine-dots [size]="16" class="text-black"></wen-icon-nine-dots>
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full">
+                                    <wen-icon-nine-dots [size]="16" class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-nine-dots>
                                 </div>
                                 <div class="ml-4" i18n>All accesses</div>
                             </div>
@@ -39,8 +39,8 @@
                             [nzValue]="accessTypes.OPEN"
                             >
                             <div class="flex items-center">
-                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
-                                    <wen-icon-open-sale [size]="20" class="text-black"></wen-icon-open-sale>
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full">
+                                    <wen-icon-open-sale [size]="20" class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-open-sale>
                                 </div>
                                 <div class="ml-4" i18n>Open sale</div>
                             </div>
@@ -52,8 +52,8 @@
                             [nzValue]="accessTypes.MEMBERS_ONLY"
                             >
                             <div class="flex items-center">
-                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
-                                    <wen-icon-members-only [size]="20" class="text-black"></wen-icon-members-only>
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full">
+                                    <wen-icon-members-only [size]="20" class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-members-only>
                                 </div>
                                 <div class="ml-4" i18n>Space members only</div>
                             </div>
@@ -65,8 +65,8 @@
                             [nzValue]="accessTypes.GUARDIANS_ONLY"
                             >
                             <div class="flex items-center">
-                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
-                                    <wen-icon-guardians-only [size]="20" class="text-black"></wen-icon-guardians-only>
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full">
+                                    <wen-icon-guardians-only [size]="20" class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-guardians-only>
                                 </div>
                                 <div class="ml-4" i18n>Space guardians only</div>
                             </div>
@@ -78,8 +78,8 @@
                             [nzValue]="accessTypes.MEMBERS_WITH_BADGE"
                             >
                             <div class="flex items-center">
-                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
-                                    <wen-icon-members-with-badge [size]="20" class="text-black"></wen-icon-members-with-badge>
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full">
+                                    <wen-icon-members-with-badge [size]="20" class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-members-with-badge>
                                 </div>
                                 <div class="ml-4" i18n>Space members with badge only</div>
                             </div>
@@ -91,15 +91,15 @@
                             [nzValue]="accessTypes.MEMBERS_WITH_NFT_FROM_COLLECTION"
                             >
                             <div class="flex items-center">
-                                <div class="flex items-center justify-center p-1.5 border-2 border-text-app-gray-500 rounded-full">
-                                    <wen-icon-members-with-nft-from-collection [size]="20" class="text-black"></wen-icon-members-with-nft-from-collection>
+                                <div class="flex items-center justify-center p-1.5 border-2 border-text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full">
+                                    <wen-icon-members-with-nft-from-collection [size]="20" class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-members-with-nft-from-collection>
                                 </div>
                                 <div class="ml-4" i18n>At least one NFT from collections</div>
                             </div>
                         </nz-option>
                 </nz-select>
                 <ng-template #selectTpl let-c>
-                    <div class="flex items-center justify-center p-1.5 bg-orange rounded-full">
+                    <div class="flex items-center justify-center p-1.5 bg-accent-primary dark:bg-accent-primary-dark rounded-full">
                         <wen-icon-nine-dots *ngIf="accessControl.value === accessTypes.ALL" [size]="16" class="text-white"></wen-icon-nine-dots>
                         <wen-icon-open-sale *ngIf="accessControl.value === accessTypes.OPEN" [size]="16" class="text-white"></wen-icon-open-sale>
                         <wen-icon-members-only *ngIf="accessControl.value === accessTypes.MEMBERS_ONLY" [size]="16" class="text-white"></wen-icon-members-only>
@@ -192,7 +192,7 @@
 
         <nz-card class="w-76" *ngIf="isEmpty(collections$ | async)">
             <div class="flex flex-col justify-center text-center h-36">
-                <span class="leading-7 text-app-gray-400" i18n>
+                <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     No collections
                 </span>
             </div>

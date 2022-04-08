@@ -23,7 +23,7 @@
     </wen-mobile-search>
   </div>
 
-  <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-6 bg-app-gray-100"></div>
+  <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-6 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"></div>
 
   <router-outlet></router-outlet>
 </wen-content>

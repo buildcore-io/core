@@ -1,12 +1,12 @@
 <nz-card i18n-nzTitle nzTitle="Detailed Info" class="block">
-    <div class="wen-description-item bg-bg-background">
-      <span nz-typography class="text-app-gray-400" i18n>Badges used / available</span>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+      <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Badges used / available</span>
       <p nz-typography>
         {{(data.award$ | async)?.issued}} / {{(data.award$ | async)?.badge?.count}}
       </p>
     </div>
-    <div class="wen-description-item bg-bg-background">
-      <span nz-typography class="text-app-gray-400" i18n>End Date</span>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+      <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>End Date</span>
       <p nz-typography>
         {{(data.award$ | async)?.endDate?.toDate() | date:'short'}}
       </p>
