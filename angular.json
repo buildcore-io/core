@@ -30,7 +30,7 @@
         },
         "locales": {
           "ar": {
-            "translation": "src/locale/messages.ar.xlf",
+            "translation": "src/locale/messages.ar-EG.xlf",
             "baseHref": ""
           },
           "cs": {
@@ -47,6 +47,10 @@
           },
           "fr": {
             "translation": "src/locale/messages.fr-FR.xlf",
+            "baseHref": ""
+          },
+          "hu": {
+            "translation": "src/locale/messages.hu-HU.xlf",
             "baseHref": ""
           },
           "it": {
@@ -170,6 +174,10 @@
             },
             "fr": {
               "localize": ["fr"],
+              "i18nMissingTranslation": "warning"
+            },
+            "hu": {
+              "localize": ["hu"],
               "i18nMissingTranslation": "warning"
             },
             "it": {
