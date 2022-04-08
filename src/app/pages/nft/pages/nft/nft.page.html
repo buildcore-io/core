@@ -31,55 +31,12 @@
                 </wen-share>
             </ng-container>
 
-            <div class="flex items-center justify-between w-full h-12 p-4 bg-white rounded-xl"
-                *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom) || isDateInFuture((data.nft$ | async)?.auctionFrom)">
-                <div class="flex items-center mr-8"
-                    [ngClass]="{ 'text-alerts-error': false }">
-                        <wen-icon-time></wen-icon-time>
-                        <div class="ml-2.5 font-bold" i18n>Sale Starts</div>
-                </div>
-                <div class="font-medium" *ngIf="isDateInFuture((data.nft$ | async)?.availableFrom)">
-                  {{(data.nft$ | async)?.availableFrom?.toDate() | date:'long'}}
-                </div>
-                <div class="font-medium" *ngIf="isDateInFuture((data.nft$ | async)?.auctionFrom)">
-                  {{(data.nft$ | async)?.auctionFrom?.toDate() | date:'long'}}
-                </div>
-            </div>
-
-            <div class="w-full p-4 bg-white rounded-xl"
-                *ngIf="isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <wen-icon-time></wen-icon-time>
-                            <div class="ml-2.5 font-bold" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Sale ends</div>
-                            <div class="ml-2.5 font-bold" *ngIf="!auctionInProgress(data.nft$ | async, data.collection$ | async)" i18n>Finalising auction...</div>
-                        </div>
-                        <div class="font-medium" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                          {{ getAuctionEnd(data.nft$ | async)?.toDate() | date:'long'}}
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="(endsOnTicker$ | async) && auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-                            <div class="mr-1">
-                                {{getAuctionEndHours(data.nft$ | async)}}
-                            </div>
-                            <div i18n>hours</div>
-                        </div>
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-                            <div class="mr-1">
-                                {{getAuctionEndMin(data.nft$ | async)}}
-                            </div>
-                            <div i18n>min</div>
-                        </div>
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-                            <div class="mr-1">
-                                {{getAuctionEndSec(data.nft$ | async)}}
-                            </div>
-                            <div i18n>sec</div>
-                        </div>
-                    </div>
-            </div>
+            <wen-nft-countdown
+                class="my-5"
+                wrapperClassName="bg-white"
+                tabClassName="bg-bg-background"
+                size="large">
+            </wen-nft-countdown>
 
             <div class="flex flex-wrap items-center mt-5">
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
@@ -90,7 +47,7 @@
                     </div>
                 </div>
 
-                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)"
+                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)"
                     [ngClass]="{
                       'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.myBidTransactions$ | async)?.length,
                       'bg-tags-available dark:bg-tags-available-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
@@ -170,7 +127,7 @@
 
             <span class="block mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
               <button nz-button nzType="primary" (click)="bid($event)" [disabled]="!(auth.member$ | async)?.uid"
-                      *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async) && (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+                      *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async) && (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
                   Place bid
               </button>
             </span>
@@ -187,13 +144,13 @@
 
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
 
-            <wen-collapse i18n-nzTitle title="Transactions" class="mt-4" [isCollapsed]="true" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async) || (data.myTransactions$ | async)?.length">
+            <wen-collapse i18n-nzTitle title="Transactions" class="mt-4" [isCollapsed]="true" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async) || (data.myTransactions$ | async)?.length">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
-                    <nz-tag nzMode="checkable"  *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
+                    <nz-tag nzMode="checkable" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
                         (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
                             <span i18n>Current Bids</span>
                     </nz-tag>
-                    <nz-tag nzMode="checkable" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_BIDS"
+                    <nz-tag nzMode="checkable" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_BIDS"
                         (nzCheckedChange)="currentListingType = listingTypes.MY_BIDS">
                             <span i18n>My Bids</span>
                     </nz-tag>
@@ -438,7 +395,7 @@
 
 <wen-nft-checkout *ngIf="isCheckoutOpen" [isOpen]="isCheckoutOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (wenOnClose)="isCheckoutOpen = false"></wen-nft-checkout>
 <wen-nft-sale *ngIf="isSaleOpen" [isOpen]="isSaleOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (wenOnClose)="isSaleOpen = false"></wen-nft-sale>
-<wen-nft-bid *ngIf="isBidOpen" [isOpen]="isBidOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" (wenOnClose)="isBidOpen = false"></wen-nft-bid>
+<wen-nft-bid *ngIf="isBidOpen" [isOpen]="isBidOpen" [nft]="data.nft$ | async" [collection]="data.collection$ | async" [endsOnTicker$]="endsOnTicker$" (wenOnClose)="isBidOpen = false"></wen-nft-bid>
 
 <nz-modal nzWidth="min(100vw - 50px, 100vh - 50px)"
     [nzVisible]="isNftPreviewOpen"

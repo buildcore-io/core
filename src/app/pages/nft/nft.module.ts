@@ -7,6 +7,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { NftBidModule } from '@components/nft/components/nft-bid/nft-bid.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
+import { NftCountdownModule } from '@components/nft/components/nft-countdown/nft-countdown.module';
 import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
 import { NftSaleModule } from '@components/nft/components/nft-sale/nft-sale.module';
 import { RadioModule } from '@components/radio/radio.module';
@@ -90,7 +91,8 @@ import { DataService } from './services/data.service';
     ShareModule,
     NftSaleModule,
     CollapseModule,
-    NgChartsModule
+    NgChartsModule,
+    NftCountdownModule
   ],
   providers: [
     DataService

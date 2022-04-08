@@ -11,9 +11,10 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Collection, CollectionType, Transaction, TransactionType } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from '@pages/nft/services/data.service';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 
@@ -60,6 +61,7 @@ export class NftBidComponent implements OnInit {
   }
 
   @Input() collection?: Collection | null;
+  @Input() endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   @Output() wenOnClose = new EventEmitter<void>();
 
   public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
@@ -79,8 +81,9 @@ export class NftBidComponent implements OnInit {
 
   constructor(
     public deviceService: DeviceService,
-    private cd: ChangeDetectorRef,
     public auth: AuthService,
+    public data: DataService,
+    private cd: ChangeDetectorRef,
     private fileApi: FileApi,
     private notification: NotificationService,
     private router: Router,

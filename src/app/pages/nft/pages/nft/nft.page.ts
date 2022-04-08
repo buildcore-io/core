@@ -276,7 +276,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   private refreshBids(): void {
-    if (this.auctionInProgress(this.data.nft$.value, this.data.collection$.value)) {
+    if (this.data.auctionInProgress(this.data.nft$.value, this.data.collection$.value)) {
       this.currentListingType = ListingType.CURRENT_BIDS;
       this.cd.markForCheck();
 
@@ -395,65 +395,12 @@ export class NFTPage implements OnInit, OnDestroy {
     return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isAfter(dayjs(), 's');
   }
 
-  public auctionInProgress(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return (
-      col.approved === true && !!nft?.auctionFrom && !!nft?.auctionTo &&
-      dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's') &&
-      dayjs(nft.auctionTo.toDate()).isAfter(dayjs(), 's')
-    );
-  }
-
   public saleNotStartedYet(nft?: Nft | null): boolean {
     if (!nft) {
       return false;
     }
 
     return dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's')
-  }
-
-  public getAuctionEnd(nft?: Nft | null): dayjs.Dayjs | undefined {
-    if (!nft?.auctionTo) {
-      return;
-    }
-
-    return dayjs(nft.auctionTo.toDate());
-  }
-
-  public getAuctionEndHours(nft?: Nft | null): number {
-    const expiresOn = this.getAuctionEnd(nft);
-    if (!expiresOn) {
-      return 0;
-    }
-
-    return expiresOn.diff(dayjs(), 'hour');
-  }
-
-  public getAuctionEndMin(nft?: Nft | null): number {
-    const expiresOn = this.getAuctionEnd(nft);
-    if (!expiresOn) {
-      return 0;
-    }
-
-    let minutes = expiresOn.diff(dayjs(), 'minute');
-    const hours = Math.floor(minutes / 60);
-    minutes = minutes - (hours * 60);
-    return minutes;
-  }
-
-  public getAuctionEndSec(nft?: Nft | null): number {
-    const expiresOn = this.getAuctionEnd(nft);
-    if (!expiresOn) {
-      return 0;
-    }
-
-    let seconds = expiresOn.diff(dayjs(), 'seconds');
-    const minutes = Math.floor(seconds / 60);
-    seconds = seconds - (minutes * 60);
-    return seconds;
   }
 
   public discount(collection?: Collection|null, nft?: Nft|null): number {
@@ -551,14 +498,6 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public get listingTypes(): typeof ListingType {
     return ListingType;
-  }
-
-  public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs(), 's');
   }
 
   public getTitle(nft?: Nft | null): any {

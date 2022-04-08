@@ -72,6 +72,14 @@
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."
                     ></wen-icon-question-circle>
                 </div>
+
+                <wen-nft-countdown
+                    class="my-5"
+                    wrapperClassName="bg-bg-background"
+                    tabClassName="bg-white"
+                    size="small">
+                </wen-nft-countdown>
+
                 <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
                     [ngClass]="{
                         'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
