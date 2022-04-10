@@ -1791,7 +1791,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ownTitle(data.nft$ | async) }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ownTitle(data.nft$ | async) }}"/></target>
       </trans-unit>
       <trans-unit id="3616191027804458021" datatype="html">
         <source>d</source>
@@ -1799,7 +1799,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">d</target>
+        <target state="translated">d</target>
       </trans-unit>
       <trans-unit id="8398233202919865612" datatype="html">
         <source>h</source>
@@ -1807,7 +1807,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="needs-translation">h</target>
+        <target state="translated">h</target>
       </trans-unit>
       <trans-unit id="3370839803061654054" datatype="html">
         <source>hours</source>
@@ -1823,7 +1823,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">m</target>
+        <target state="translated">m</target>
       </trans-unit>
       <trans-unit id="3901733599428143571" datatype="html">
         <source>min</source>
@@ -1839,7 +1839,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">50</context>
         </context-group>
-        <target state="needs-translation">s</target>
+        <target state="translated">s</target>
       </trans-unit>
       <trans-unit id="8444840466573361504" datatype="html">
         <source>sec</source>
