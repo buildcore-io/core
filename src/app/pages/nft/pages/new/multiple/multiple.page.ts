@@ -19,7 +19,7 @@ import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
-import { merge, Observable, of, Subscription } from 'rxjs';
+import { filter, map, merge, Observable, of, Subscription } from 'rxjs';
 import { StepType } from '../new.page';
 
 export interface NFTObject {
@@ -55,6 +55,7 @@ export class MultiplePage implements OnInit {
   public uploadFilter: UploadFilter[] = [];
   public uploadErrors: string[] = [];
   public imagesLimit = 500;
+  public collection?: Collection;
   private usedFileNames = new Set<string>();
   public nftObject: NFTObject = {
     media: {
@@ -146,15 +147,17 @@ export class MultiplePage implements OnInit {
 
   public ngOnInit(): void {
     merge(this.collectionControl.valueChanges, this.cache.allCollections$)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
+      .pipe(
+        map(() => this.cache.allCollections$.value.find((subO: any) => subO.uid === this.collectionControl.value)),
+        filter((col: Collection | undefined) => !!col && (col !== this.collection)),
+        untilDestroyed(this)
+      )
+      .subscribe((col: Collection | undefined) => {
         this.reset();
-        const finObj: Collection | undefined = this.cache.allCollections$.value.find((subO: any) => {
-          return subO.uid === this.collectionControl.value;
-        });
-        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
-          this.price = (finObj.price || 0);
-          this.availableFrom = (finObj.availableFrom || finObj.createdOn).toDate();
+        this.collection = col;
+        if (this.collection && (this.collection.type === CollectionType.GENERATED || this.collection.type === CollectionType.SFT)) {
+          this.price = (this.collection.price || 0);
+          this.availableFrom = (this.collection.availableFrom || this.collection.createdOn).toDate();
         } else {
           this.price = null;
           this.availableFrom = null;
@@ -409,6 +412,9 @@ export class MultiplePage implements OnInit {
     this.nfts = [];
     this.nftErrors = [];
     this.usedFileNames.clear();
+    this.uploadedFiles = [];
+    this.uploadFilter = [];
+    this.uploadErrors = [];
   }
 
   private isValidFileName(str: string): boolean {
