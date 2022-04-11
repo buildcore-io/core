@@ -20,7 +20,7 @@
     <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(nft$ | async)">
       {{ ((nft$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
     </p>
-    <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+    <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
 
         <nz-skeleton *ngIf="isLoading(nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -34,7 +34,7 @@
             </div>
         </nz-card>
 
-        <wen-nft-card class="w-full outline-none lg:w-auto" [collection]="getCollection(nft.collection)"
+        <wen-nft-card class="w-full h-full outline-none" [collection]="getCollection(nft.collection)"
             *ngFor="let nft of nft$ | async; trackBy: trackByUid" [nft]="nft" [fullWidth]="(deviceService.isMobile$ | async) || false">
         </wen-nft-card>
     </div>

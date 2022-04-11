@@ -184,7 +184,7 @@
     <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(collections$ | async)">
       {{ ((collections$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>collections</span>
     </p>
-    <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+    <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
 
         <nz-skeleton *ngIf="isLoading(collections$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -198,7 +198,7 @@
             </div>
         </nz-card>
 
-        <wen-collection-card class="outline-none"
+        <wen-collection-card class="outline-none w-full h-full"
             *ngFor="let collection of collections$ | async; trackBy: trackByUid" [collection]="collection"
             [fullWidth]="(deviceService.isMobile$ | async) || false">
         </wen-collection-card>

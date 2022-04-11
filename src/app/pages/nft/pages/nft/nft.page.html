@@ -365,7 +365,7 @@
         </div>
 
         <div class="mt-10 lg:grid place-items-start">
-            <div class="flex flex-wrap gap-2 mb-10">
+            <div class="wen-cards-wrapper mb-10">
                 <nz-skeleton *ngIf="isLoading(data.topNftWithinCollection$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
                     [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
@@ -378,14 +378,17 @@
                 </nz-card>
 
                 <!-- Place holder NFT MUST be always first -->
-                <wen-nft-card *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNftInCollection$ | async)" [collection]="(data.collection$ | async)"
-                  [nft]="(data.firstNftInCollection$ | async)">
+                <wen-nft-card *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNftInCollection$ | async)"
+                    class="w-full h-full outline-none"
+                    [collection]="(data.collection$ | async)"
+                    [nft]="(data.firstNftInCollection$ | async)">
                 </wen-nft-card>
 
                 <ng-container *ngFor="let nft of data.topNftWithinCollection$ | async; trackBy: trackByUid">
                   <wen-nft-card [collection]="(data.collection$ | async)"
-                      *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNftInCollection$ | async)?.uid)"
-                      [nft]="nft">
+                        class="w-full h-full outline-none"
+                        *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNftInCollection$ | async)?.uid)"
+                        [nft]="nft">
                   </wen-nft-card>
                 </ng-container>
             </div>

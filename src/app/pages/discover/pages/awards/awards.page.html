@@ -42,7 +42,7 @@
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(award$ | async)">
     {{ ((award$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '')}} awards
   </p>
-  <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
 
     <nz-skeleton *ngIf="isLoading(award$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -56,7 +56,7 @@
       </div>
     </nz-card>
 
-    <wen-award-card class="w-full outline-none lg:w-auto" *ngFor="let award of award$ | async; trackBy: trackByUid" [award]="award">
+    <wen-award-card class="w-full h-full outline-none" *ngFor="let award of award$ | async; trackBy: trackByUid" [award]="award">
     </wen-award-card>
   </div>
 </div>

@@ -1,4 +1,4 @@
-<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-44' : 'w-full lg:w-76 lg:h-76'" *ngIf="award">
+<article class="p-4 bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-44' : 'w-full h-76'" *ngIf="award">
   <a class="relative block w-full h-full" [ngClass]="fullWidth ? 'lg:flex' : ''" [routerLink]="['/', this.path, award.uid]">
     <div class="relative flex flex-col" [ngStyle]="{ width: (deviceService.isDesktop$ | async) && fullWidth ? 'calc(100% - 300px)' : '100%' }"
       [ngClass]="fullWidth ? 'h-auto' : 'lg:h-40'">

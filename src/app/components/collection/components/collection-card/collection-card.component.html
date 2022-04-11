@@ -1,5 +1,4 @@
-<article class="bg-white rounded-2xl wen-card"
-    [ngClass]="fullWidth ? 'w-full' : 'w-76'" *ngIf="collection">
+<article class="w-full bg-white rounded-2xl wen-card"  *ngIf="collection">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img

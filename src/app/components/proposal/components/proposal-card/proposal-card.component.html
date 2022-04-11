@@ -1,4 +1,4 @@
-<article class="w-full bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-auto p-6' : 'lg:w-76 lg:h-76 p-4'"
+<article class="bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-auto p-6' : 'w-full h-76 p-4'"
   *ngIf="proposal">
   <a class="relative block w-full h-full text-current hover:text-current" [routerLink]="['/', this.path, proposal.uid]">
     <wen-icon-angle-left class="absolute flex rotate-180 right-6" *ngIf="fullWidth && (deviceService.isDesktop$ | async)"></wen-icon-angle-left>
