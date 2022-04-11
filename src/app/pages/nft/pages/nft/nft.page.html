@@ -1,6 +1,6 @@
 <wen-content [showBackButton]="true">
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-10">
-        <div class="grow w-full mt-10 lg:w-1/2 lg:mr-10">
+        <div class="w-full mt-10 grow lg:w-1/2 lg:mr-10">
             <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>NFT</nz-tag>
             <wen-collection-status [collection]="data.collection$ | async" *ngIf="!(data.nft$ | async )?.owner"></wen-collection-status>
             <nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="(data.nft$ | async )?.owner" i18n>Owned</nz-tag>
@@ -60,19 +60,19 @@
                     </div>
 
                     <div class="flex items-center justify-between w-full mt-5 space-x-3" *ngIf="(endsOnTicker$ | async) && auctionInProgress(data.nft$ | async, data.collection$ | async)">
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
+                        <div class="flex items-center justify-center py-3 font-bold grow bg-bg-background rounded-2xl">
                             <div class="mr-1">
                                 {{getAuctionEndHours(data.nft$ | async)}}
                             </div>
                             <div i18n>hours</div>
                         </div>
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
+                        <div class="flex items-center justify-center py-3 font-bold grow bg-bg-background rounded-2xl">
                             <div class="mr-1">
                                 {{getAuctionEndMin(data.nft$ | async)}}
                             </div>
                             <div i18n>min</div>
                         </div>
-                        <div class="flex items-center justify-center grow py-3 font-bold bg-bg-background rounded-2xl">
+                        <div class="flex items-center justify-center py-3 font-bold grow bg-bg-background rounded-2xl">
                             <div class="mr-1">
                                 {{getAuctionEndSec(data.nft$ | async)}}
                             </div>
@@ -187,7 +187,8 @@
 
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
 
-            <wen-collapse i18n-nzTitle title="Transactions" class="mt-4" [isCollapsed]="true" *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)">
+            <wen-collapse i18n-nzTitle title="Bidding"
+                class="mt-4" [isCollapsed]="true">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
                     <nz-tag nzMode="checkable"  *ngIf="auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
                         (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
@@ -215,7 +216,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <nz-skeleton *ngIf="data.allBidTransactionsLoading$ | async; else allBidTransactionsBlock"  class="" 
+                        <nz-skeleton *ngIf="data.allBidTransactionsLoading$ | async; else allBidTransactionsBlock"  class=""
                             [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                             [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                         <ng-template #allBidTransactionsBlock>
@@ -243,7 +244,7 @@
 
                 <!-- Past bids -->
                 <nz-table *ngIf="!!(data.nft$ | async) && currentListingType === listingTypes.PAST_BIDS" class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                  [nzData]="(data.myBidTransactions$ | async) || []" [nzShowPagination]="false" [nzNoResult]="noPastBids">
+                  [nzData]="(data.pastBidTransactions$ | async) || []" [nzShowPagination]="false" [nzNoResult]="noPastBids">
                   <thead>
                       <tr>
                           <th i18n>Date</th>
@@ -253,12 +254,11 @@
                       </tr>
                   </thead>
                   <tbody>
-                    <!-- TODO -->
-                    <nz-skeleton *ngIf="data.myBidTransactionsLoading$ | async; else myBidTransactionsBlock"  class="" 
+                    <nz-skeleton *ngIf="data.pastBidTransactionsLoading$ | async; else pastBidTransactionsBlock"  class=""
                             [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                             [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
-                    <ng-template #myBidTransactionsBlock>
-                        <tr *ngFor="let item of data.myBidTransactions$ | async">
+                    <ng-template #pastBidTransactionsBlock>
+                        <tr *ngFor="let item of data.pastBidTransactions$ | async">
                             <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                             <td>{{ item.type }}</td>
                             <td>{{ data.formatBest(item.payload.amount) }}</td>
@@ -287,7 +287,7 @@
                       </tr>
                   </thead>
                   <tbody>
-                    <nz-skeleton *ngIf="data.myBidTransactionsLoading$ | async; else myBidTransactionsBlock"  class="" 
+                    <nz-skeleton *ngIf="data.myBidTransactionsLoading$ | async; else myBidTransactionsBlock"  class=""
                             [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                             [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #myBidTransactionsBlock>
@@ -305,12 +305,12 @@
                 </nz-table>
 
                 <ng-template #noMyBiddings>
-                    <div class="text-sm font-medium text-foregrounds-tertiary" i18n>You have no active biddings</div>
+                    <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no records.</div>
                 </ng-template>
             </wen-collapse>
         </div>
 
-        <div class="grow w-full max-w-screen-sm lg:w-1/2">
+        <div class="w-full max-w-screen-sm grow lg:w-1/2">
             <ng-container *ngIf="deviceService.isDesktop$ | async">
                 <div class="relative w-full overflow-hidden cursor-pointer rounded-2xl">
                     <img loading="eager" (click)="isNftPreviewOpen = true"

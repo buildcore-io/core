@@ -217,6 +217,17 @@ export class NFTPage implements OnInit, OnDestroy {
         );
       }
 
+      if (this.auth.member$.value && this.data.nft$.value) {
+        this.data.pastBidTransactionsLoading$.next(true);
+        this.nftSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!)
+          .pipe(untilDestroyed(this))
+          .subscribe((value: Transaction[]) => {
+            this.currentListingType = ListingType.PAST_BIDS;
+            this.data.pastBidTransactions$.next(value);
+            this.data.pastBidTransactionsLoading$.next(false);
+          }));
+      }
+
       // Sync ticker.
       this.endsOnTicker$.next(p?.auctionFrom || undefined);
     });
@@ -284,10 +295,10 @@ export class NFTPage implements OnInit, OnDestroy {
             this.data.allBidTransactions$.next(value);
             this.data.allBidTransactionsLoading$.next(false);
           }));
-          
+
         if (this.auth.member$.value) {
           this.data.myBidTransactionsLoading$.next(true);
-          this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!)
+          this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!, true)
             .pipe(untilDestroyed(this))
             .subscribe((value: Transaction[]) => {
               this.data.myBidTransactions$.next(value);

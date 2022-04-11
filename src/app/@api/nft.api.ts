@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Member, Transaction, TransactionOrder, TransactionPayment, TransactionType } from '@functions/interfaces/models';
+import { Member, Transaction, TransactionOrder, TransactionOrderType, TransactionPayment, TransactionType } from '@functions/interfaces/models';
 import { firstValueFrom, Observable, switchMap } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, WenRequest } from '../../../functions/interfaces/models/base';
@@ -119,30 +119,46 @@ export class NftApi extends BaseApi<Nft> {
     }));
   }
 
-  public getMembersBids(member: Member, nft: Nft): Observable<Transaction[]> {
+  public getMembersBids(member: Member, nft: Nft, currentAuction = false): Observable<Transaction[]> {
     return this.afs.collection<Transaction>(
       COL.TRANSACTION,
       (ref) => {
-        return ref
+        ref = <any>ref
           .where('payload.nft', '==', nft.uid)
-          .where('member', '==', member.uid)
-          .where('createdOn', '<', nft.auctionTo?.toDate())
-          .where('createdOn', '>', nft.auctionFrom?.toDate())
-          .where('type', 'in', [TransactionType.PAYMENT, TransactionType.CREDIT]).orderBy('createdOn', 'desc')
-      }
-    ).valueChanges();
-  }
+          .where('member', '==', member.uid);
 
-  public getMembersTransactions(member: Member, nft: Nft): Observable<Transaction[]> {
-    return this.afs.collection<Transaction>(
-      COL.TRANSACTION,
-      (ref) => {
-        return ref
-          .where('payload.nft', '==', nft.uid)
-          .where('member', '==', member.uid)
-          .where('type', 'in', [TransactionType.PAYMENT, TransactionType.CREDIT]).orderBy('createdOn', 'desc')
+        if (currentAuction) {
+          ref = <any>ref.where('createdOn', '<', nft.auctionTo?.toDate()).where('createdOn', '>', nft.auctionFrom?.toDate());
+        }
+
+        return ref.where('type', 'in', [TransactionType.PAYMENT, TransactionType.CREDIT]).orderBy('createdOn', 'desc')
       }
-    ).valueChanges();
+    ).valueChanges().pipe(switchMap(async(obj: any[]) => {
+      let out: Transaction[] = [];
+      for (const b of obj) {
+        // TODO Retrieve in parallel.
+        const tran: DocumentSnapshot<any> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());
+        // If payment we have to got to order
+        let tran2: DocumentSnapshot<TransactionOrder>|undefined = undefined;
+        if (tran.data()?.type === TransactionType.PAYMENT) {
+          tran2 = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(tran.data()?.payload.sourceTransaction).get());
+        }
+
+        if (
+          tran.data()?.payload.type === TransactionOrderType.NFT_BID ||
+          tran2?.data()?.payload.type === TransactionOrderType.NFT_BID
+        ) {
+          out.push(b);
+        }
+      }
+
+      // Order from latest.
+      out = out.sort((c, b) => {
+        return b.payload.createdOn - c.payload.createdOn;
+      });
+
+      return out;
+    }));
   }
 
   public topApproved(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
