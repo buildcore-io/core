@@ -1,6 +1,6 @@
 <div class="flex items-center justify-between" *ngIf="!address">
     <div class="flex items-center">
-        <wen-icon-wallet class="mr-3 text-app-gray-400"></wen-icon-wallet>
+        <wen-icon-wallet class="mr-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-wallet>
         <span class="text-xs font-medium text-alerts-error" i18n>Not verified</span>
         <div class="flex items-center justify-center w-4 h-4 ml-2 rounded-full bg-alerts-error">
             <wen-icon-close class="text-white" [size]="12"></wen-icon-close>
@@ -11,12 +11,12 @@
 
 <div class="flex items-center justify-between h-10 verified-wrapper" *ngIf="address">
     <div class="flex items-center">
-        <wen-icon-wallet class="mr-3 text-app-gray-400"></wen-icon-wallet>
-        <div class="text-xs font-medium text-black truncate w-44">{{address}}</div>
+        <wen-icon-wallet class="mr-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-wallet>
+        <div class="text-xs font-medium text-accent-secondary dark:text-accent-secondary-dark truncate w-44">{{address}}</div>
     </div>
     <div class="items-center hidden lg:flex verified-info">
-        <div class="text-xs font-medium text-green-success" i18n>Verified</div>
-        <div class="flex items-center justify-center w-4 h-4 ml-2 rounded-full bg-green-success">
+        <div class="text-xs font-medium text-alerts-success dark:text-alerts-success-dark" i18n>Verified</div>
+        <div class="flex items-center justify-center w-4 h-4 ml-2 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
             <wen-icon-check class="text-white" [size]="8"></wen-icon-check>
         </div>
     </div>

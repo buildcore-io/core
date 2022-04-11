@@ -57,26 +57,49 @@
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
 
                 <div class="flex items-center mt-6" *ngIf="(expiryTicker$ | async)">
-                    <wen-icon-time class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-time>
+                    <wen-icon-time class="mr-2.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" [size]="20"></wen-icon-time>
                     <div class="font-medium"><span i18n>Ends </span>{{ (expiryTicker$ | async) | relativeTime:'from'}}</div>
                 </div>
 
                 <div class="flex items-center mt-2.5 mb-2.5">
-                    <wen-icon-crown class="mr-2.5 text-app-gray-400" [size]="20"></wen-icon-crown>
+                    <wen-icon-crown class="mr-2.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" [size]="20"></wen-icon-crown>
                     <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
                     <wen-icon-question-circle
                         [size]="20"
-                        class="ml-1.5 text-app-gray-400"
+                        class="ml-1.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                         nz-tooltip
                         i18n-nzTooltipTitle
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."
                     ></wen-icon-question-circle>
                 </div>
+
+                <a *ngIf="royaltySpace && (royaltySpace?.uid !== collection?.space)"
+                    [routerLink]="['/space', royaltySpace?.uid]" class="flex items-center justify-between mb-2.5 w-max">
+                    <nz-avatar
+                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace?.avatarUrl)"
+                        [nzSize]="24"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
+                        nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="ml-3 text-xs font-medium">
+                        <div class="text-foregrounds-secondary" i18n>Royalties goes to</div>
+                        <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
+                    </div>
+                </a>
+
+                <wen-nft-countdown
+                    class="my-5"
+                    wrapperClassName="bg-bg-background"
+                    tabClassName="bg-white"
+                    size="small">
+                </wen-nft-countdown>
+
                 <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
                     [ngClass]="{
-                        'bg-bg-background': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
-                        'bg-tag-red': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length,
-                        'bg-tag-green': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)
+                        'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
+                        'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length,
+                        'bg-tags-available dark:bg-tags-available-dark': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)
                     }">
                     <div class="text-xs font-medium text-foregrounds-secondary">
                         <ng-container *ngIf="!(linkedTransactions$ | async)?.length">
@@ -90,7 +113,7 @@
                       <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.auctionHighestBid || 0) || formatBest(getRecord()?.auctionFloorPrice)}}</div>
                       <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                            class="border-2 border-app-gray-100 bg-bg-background min-w-8"
+                            class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
                             [nzSize]="32">
                         </nz-avatar>
                         <div class="ml-3 text-base font-medium truncate max-w-20">
@@ -102,7 +125,7 @@
                 <div class="flex items-center mt-2">
                     <wen-icon-question-circle
                         [size]="14"
-                        class="mr-2 text-app-gray-400"
+                        class="mr-2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                         nz-tooltip
                         i18n-nzTooltipTitle
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."
@@ -151,9 +174,9 @@
 
         <label class="w-full mt-6 lg:ml-6 lg:w-auto" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
             <div class="text-base font-medium">
-                <span class="text-app-gray-text mr-0.5" i18n>By checking this box, you agree with</span>
+                <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark mr-0.5" i18n>By checking this box, you agree with</span>
                 <br *ngIf="deviceService.isMobile$ | async" />
-                <a href="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ" target="_new" class="inline underline text-blue-light1"
+                <a href="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ" target="_new" class="inline underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                     (click)="$event.stopPropagation()" i18n>Terms and Conditions</a>
             </div>
         </label>
@@ -167,8 +190,8 @@
 
 <ng-template #transactionTemplate>
     <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
-        <div class="w-full px-4 py-3 mt-6 bg-bg-background rounded-2xl">
-            <div class="text-xs font-medium text-app-gray-400">
+        <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               <span i18n>Send IOTA to following address (please restake after!):</span>
             </div>
 
@@ -198,7 +221,7 @@
                 class="deep-link">
                 <div class="flex items-center">
                     <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                    <div class="text-app-gray-text" i18n>
+                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                         Firefly
                     </div>
                 </div>
@@ -207,7 +230,7 @@
                 class="deep-link">
                 <div class="flex items-center">
                     <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                    <div class="text-app-gray-text" i18n>
+                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                         Tanglepay
                     </div>
                 </div>
@@ -218,8 +241,8 @@
 
 <ng-template #waitTemplate>
     <div class="flex flex-col items-center justify-between h-full lg:justify-start">
-        <div class="w-full px-4 py-3 mt-8 bg-bg-background rounded-2xl">
-            <div class="text-xs font-medium text-app-gray-400">
+        <div class="w-full px-4 py-3 mt-8 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               <span i18n>Send</span><span i18n> IOTA to following address (please restake after!):</span>
             </div>
 
@@ -258,7 +281,7 @@
                     <td class="text-sm font-medium">{{ item.type }}</td>
                     <td class="text-sm font-medium">{{ formatBest(item.payload.amount) }}</td>
                     <td class="text-right">
-                        <a class="text-sm font-medium underline text-blue-light1"
+                        <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                             target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
                     </td>
                 </tr>
@@ -279,7 +302,7 @@
                 class="deep-link">
                 <div class="flex items-center">
                     <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                    <div class="text-app-gray-text" i18n>
+                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                         Firefly
                     </div>
                 </div>
@@ -288,7 +311,7 @@
                 class="deep-link">
                 <div class="flex items-center">
                     <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                    <div class="text-app-gray-text" i18n>
+                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                         Tanglepay
                     </div>
                 </div>
@@ -300,7 +323,7 @@
 <ng-template #completeTemplate>
   <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
       <div class="flex lg:items-center">
-          <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-success">
+          <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
               <wen-icon-check class="text-white"></wen-icon-check>
           </div>
           <div class="ml-3.5 text-lg font-medium" i18n>Congratulations you won the NFT.</div>
@@ -323,7 +346,7 @@
 <ng-template #expiredTemplate>
   <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
       <div class="flex lg:items-center">
-          <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-success">
+          <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
               <wen-icon-check class="text-white"></wen-icon-check>
           </div>
           <div class="ml-3.5 text-lg font-medium" i18n>Bidding is expired. Good luck next time :) </div>

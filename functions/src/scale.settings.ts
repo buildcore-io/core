@@ -5,17 +5,17 @@ export const low = (functions.config()?.environment?.type === 'prod') ? 1 : 1;
 export const medium = (functions.config()?.environment?.type === 'prod') ? 3 : 2;
 export const important = (functions.config()?.environment?.type === 'prod') ? 6 : 2;
 export const pump = (functions.config()?.environment?.type === 'prod') ? 9 : 2;
-export const superPump = (functions.config()?.environment?.type === 'prod') ? 100 : 2;
+export const superPump = (functions.config()?.environment?.type === 'prod') ? 40 : 2;
 
 export function scale(func: WEN_FUNC): number {
   const scaleSettings: any = {};
-  scaleSettings[WEN_FUNC.cMemberNotExists] = pump;
-  scaleSettings[WEN_FUNC.uMember] = important;
+  scaleSettings[WEN_FUNC.cMemberNotExists] = important;
+  scaleSettings[WEN_FUNC.uMember] = medium;
 
   // Space functions.
-  scaleSettings[WEN_FUNC.cSpace] = medium;
+  scaleSettings[WEN_FUNC.cSpace] = low;
   scaleSettings[WEN_FUNC.uSpace] = low;
-  scaleSettings[WEN_FUNC.joinSpace] = important;
+  scaleSettings[WEN_FUNC.joinSpace] = medium;
   scaleSettings[WEN_FUNC.leaveSpace] = low;
   scaleSettings[WEN_FUNC.addGuardianSpace] = low;
   scaleSettings[WEN_FUNC.removeGuardianSpace] = low;
@@ -47,8 +47,8 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.setForSaleNft] = medium;
   scaleSettings[WEN_FUNC.cBatchNft] = medium;
 
-  scaleSettings[WEN_FUNC.orderNft] = superPump;
-  scaleSettings[WEN_FUNC.validateAddress] = superPump;
+  scaleSettings[WEN_FUNC.orderNft] = pump;
+  scaleSettings[WEN_FUNC.validateAddress] = medium;
 
   return scaleSettings[func] || low;
 }

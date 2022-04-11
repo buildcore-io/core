@@ -149,9 +149,12 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   if (!docNftData.owner && docCollectionData.onePerMemberOnly === true) {
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
-      .where('collection', '==', docCollectionData.uid)
-      .where('owner', '==', owner).get();
+    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', owner)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.royalty', '==', false)
+      .where('payload.collection', '==', docCollectionData.uid)
+      .where('payload.previusOwnerEntity', '==', 'space').get();
     if (qry.size >= 1) {
       throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
     }

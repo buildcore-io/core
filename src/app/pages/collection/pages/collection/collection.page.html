@@ -7,7 +7,7 @@
     <div class="relative w-auto h-48 mt-8 overflow-hidden lg:h-96 lg:mt-16 rounded-2xl">
         <img [src]="(data.collection$ | async)?.bannerUrl || '/assets/mocks/no_banner.jpg'" class="object-cover w-full h-full rounded-3xl" />
 
-        <div *ngIf="(data.collection$ | async)?.limitedEdition" class="absolute z-10 py-2.5 px-4 bg-yellow-secondary rounded-br-2xl top-0 left-0 font-medium text-sm text-black" i18n>
+        <div *ngIf="(data.collection$ | async)?.limitedEdition" class="absolute z-10 py-2.5 px-4 bg-alerts-warning dark:bg-alerts-warning-dark rounded-br-2xl top-0 left-0 font-medium text-sm text-accent-secondary dark:text-accent-secondary-dark" i18n>
             Limited edition
         </div>
     </div>
@@ -16,7 +16,7 @@
         <div class="flex-auto p-0 my-0 ml-5 -mr-5 lg:mx-0 lg:px-5" [ngStyle]="{
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
             }">
-            <nz-tag class="wen-status-tag bg-tag-blue border-tag-blue" i18n>Collection</nz-tag>
+            <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Collection</nz-tag>
             <wen-collection-status [collection]="data.collection$ | async"></wen-collection-status>
 
             <h1 class="mt-3 mb-0 lg:mt-2">{{ (data.collection$ | async)?.name }}</h1>
@@ -46,7 +46,7 @@
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
                         [nzSize]="32"
-                        class="border-2 border-app-gray-100 min-w-8"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-8"
                         nzShape="circle"
                     >
                     </nz-avatar>
@@ -61,7 +61,7 @@
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
                         [nzSize]="32"
-                        class="border-2 border-app-gray-100 min-w-8"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-8"
                         nzShape="circle"
                     >
                     </nz-avatar>
@@ -72,19 +72,12 @@
                 </a>
             </div>
 
-            <div class="flex items-center justify-center w-full py-3 mt-6 lg:mt-3 bg-tag-blue rounded-2xl"
+            <div class="flex items-center justify-center w-full py-3 mt-6 lg:mt-3 bg-tags-commencing dark:bg-tags-commencing-dark rounded-2xl"
                 *ngIf="isDateInFuture((data.collection$ | async)?.availableFrom)">
-                <wen-icon-time class="text-app-gray-400"></wen-icon-time>
+                <wen-icon-time class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-time>
                 <div class="ml-2.5">
-                    <ng-container *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) > 0; else todayBlock">
-                        <span class="font-bold" i18n>Starts in</span>
-                        <span class="font-medium"> {{ getDaysLeft((data.collection$ | async)?.availableFrom) }} </span>
-                        <span class="font-medium" *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) > 1" i18n>days</span>
-                        <span class="font-medium" *ngIf="getDaysLeft((data.collection$ | async)?.availableFrom) === 1" i18n>day</span>
-                    </ng-container>
-                    <ng-template #todayBlock>
-                        <span class="font-bold" i18n>Starts today</span>
-                    </ng-template>
+                    <span class="font-bold" i18n>Starts at</span>
+                    <span class="font-medium"> {{ (data.collection$ | async)?.availableFrom?.toDate() | date:'medium' }}</span>
                 </div>
             </div>
 
@@ -105,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center p-5 mt-8 rounded-xl bg-yellow-primary" *ngIf="isAvailableForSale(data.collection$ | async)">
+            <div class="flex items-center p-5 mt-8 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark" *ngIf="isAvailableForSale(data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-lg font-bold">
                     <span i18n>Sale in progress</span>
@@ -154,7 +147,7 @@
         </div>
     </nz-drawer>
 
-    <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-app-gray-separator-dark lg:mt-12"></div>
+    <div class="w-screen h-px mt-16 mb-8 -ml-4 lg:-ml-20 xl:w-full xl:ml-0 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark lg:mt-12"></div>
 
     <div class="flex items-center justify-between">
         <nz-input-group
@@ -175,7 +168,7 @@
     </div>
 
 
-    <div class="w-full h-px mt-8 mb-6 bg-app-gray-700" *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"></div>
+    <div class="w-full h-px mt-8 mb-6 bg-foregrounds-secondary dark:bg-foregrounds-secondary-dark" *ngIf="!(data.collection$ | async)?.rejected && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"></div>
 
     <div class="flex items-end justify-between">
         <div class="flex items-center mt-6 lg:mt-12 lg:mt-8">
@@ -228,7 +221,7 @@
         <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(data.nft$ | async)">
           {{ getTotalNfts(data.nft$ | async, data.collection$ | async) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
         </p>
-        <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             (scrolled)="onScroll()">
 
             <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -236,7 +229,7 @@
 
             <nz-card class="w-76" *ngIf="isEmpty(data.nft$ | async) && !((data.collection$ | async)?.placeholderNft && (data.firstNft$ | async))">
                 <div class="flex flex-col justify-center text-center h-36">
-                    <span class="leading-7 text-app-gray-400" i18n>
+                    <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         No NFTs
                     </span>
                 </div>
@@ -245,11 +238,12 @@
             <!-- Place holder NFT MUST be always first -->
             <wen-nft-card
               *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNft$ | async)" [collection]="(data.collection$ | async)"
+              class="w-full h-full outline-none"
               [nft]="(data.firstNft$ | async)">
             </wen-nft-card>
 
             <ng-container *ngFor="let nft of data.nft$ | async; trackBy: trackByUid">
-              <wen-nft-card [collection]="(data.collection$ | async)"
+              <wen-nft-card [collection]="(data.collection$ | async)" class="w-full h-full outline-none"
                   *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNft$ | async)?.uid)"
                   [nft]="nft">
               </wen-nft-card>

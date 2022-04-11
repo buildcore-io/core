@@ -18,95 +18,111 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
   memory: "512MB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const newValue: Transaction = <Transaction>change.after.data();
-  if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
-    return;
-  }
-
-  if (
-      // Either not on chain yet or there was an error.
-      (!newValue.payload.walletReference?.chainReference || newValue.payload.walletReference.error) &&
-      // Not payment yet or at least one count happen to avoid loop
-      (!newValue.payload.walletReference || (newValue.payload.walletReference.count > 0 && newValue.payload.walletReference.count <= MAX_WALLET_RETRY))
-    ) {
-    const walletService: WalletService = new WalletService();
-    const walletResponse: WalletResult = newValue.payload.walletReference || {
-      createdOn: serverTime(),
-      processedOn: serverTime(),
-      confirmed: false,
-      chainReferences: [],
-      count: 0
-    };
-
-    // Reset defaults.
-    walletResponse.error = null;
-    walletResponse.chainReference = null;
-
-    // Delay because it's retry.
-    if (walletResponse.count > 0) {
-      await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY)));
-    } else if (newValue.payload.delay > 0) { // Standard Delay required.
-      await new Promise(resolve => setTimeout(resolve, newValue.payload.delay));
+  // Let's wrap this into a transaction.
+  await admin.firestore().runTransaction(async (transaction) => {
+    if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
+      return;
     }
 
-    const details: any = {};
-    details.tranId = newValue.uid;
-    details.network = (functions.config()?.environment?.type === 'prod') ? 'soon' : 'wen';
-    if (newValue.type === TransactionType.BILL_PAYMENT) {
-      details.payment = true;
+    const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(newValue.uid);
+    const sfDoc: any = await transaction.get(refSource);
+    if (!sfDoc.data()) {
+      return;
+    }
 
-      // Once space can own NFT this will be expanded.
-      if (newValue.member) {
-        details.previousOwner = newValue.payload.previusOwner;
-        details.previousOnwerEntity = newValue.payload.previusOwnerEntity;
-        details.owner = newValue.member;
-        details.ownerEntity = 'member';
-      }
-      if (newValue.payload.royalty) {
-        details.royalty = newValue.payload.royalty;
-      }
-      if (newValue.payload.collection) {
-        details.collection = newValue.payload.collection;
-      }
-      if (newValue.payload.nft) {
-        details.nft = newValue.payload.nft;
+    // Data object.
+    const tranData: Transaction = sfDoc.data();
 
-        // Get NFT details.
-        const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(newValue.payload.nft);
-        const docNftData: Nft = <Nft>(await refNft.get()).data();
-        if (docNftData) {
-          details.ipfs = docNftData.ipfsMetadata;
+    if (
+        // Either not on chain yet or there was an error.
+        (!tranData.payload.walletReference?.chainReference || tranData.payload.walletReference.error) &&
+        // Not payment yet or at least one count happen to avoid loop
+        (!tranData.payload.walletReference || (tranData.payload.walletReference.count > 0 && tranData.payload.walletReference.count <= MAX_WALLET_RETRY))
+      ) {
+      const walletService: WalletService = new WalletService();
+      const walletResponse: WalletResult = tranData.payload.walletReference || {
+        createdOn: serverTime(),
+        processedOn: serverTime(),
+        confirmed: false,
+        chainReferences: [],
+        count: 0
+      };
+
+      // Reset defaults.
+      walletResponse.error = null;
+      walletResponse.chainReference = null;
+
+      // Delay because it's retry.
+      if (walletResponse.count > 0) {
+        await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY)));
+      } else if (tranData.payload.delay > 0) { // Standard Delay required.
+        await new Promise(resolve => setTimeout(resolve, tranData.payload.delay));
+      }
+
+      const details: any = {};
+      details.tranId = tranData.uid;
+      details.network = (functions.config()?.environment?.type === 'prod') ? 'soon' : 'wen';
+      if (tranData.type === TransactionType.BILL_PAYMENT) {
+        details.payment = true;
+
+        // Once space can own NFT this will be expanded.
+        if (tranData.member) {
+          details.previousOwner = tranData.payload.previusOwner;
+          details.previousOnwerEntity = tranData.payload.previusOwnerEntity;
+          details.owner = tranData.member;
+          details.ownerEntity = 'member';
+        }
+        if (tranData.payload.royalty) {
+          details.royalty = tranData.payload.royalty;
+        }
+        if (tranData.payload.collection) {
+          details.collection = tranData.payload.collection;
+        }
+        if (tranData.payload.nft) {
+          details.nft = tranData.payload.nft;
+
+          // Get NFT details.
+          const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(tranData.payload.nft);
+          const docNftData: Nft = <Nft>(await refNft.get()).data();
+          if (docNftData && docNftData.ipfsMedia) {
+            details.ipfsMedia = docNftData.ipfsMedia;
+          }
+          if (docNftData && docNftData.ipfsMetadata) {
+            details.ipfsMetadata = docNftData.ipfsMetadata;
+          }
         }
       }
-    }
 
-    if (newValue.type === TransactionType.CREDIT) {
-      details.refund = true;
-      if (newValue.member) {
-        details.member = newValue.member;
-      } else if (newValue.space) {
-        details.space = newValue.space;
+      if (tranData.type === TransactionType.CREDIT) {
+        details.refund = true;
+        if (tranData.member) {
+          details.member = tranData.member;
+        } else if (tranData.space) {
+          details.space = tranData.space;
+        }
       }
-    }
-    try {
-      walletResponse.chainReference = await walletService.sendFromGenesis(
-        await walletService.getIotaAddressDetails(await MnemonicService.get(newValue.payload.sourceAddress)),
-        newValue.payload.targetAddress,
-        newValue.payload.amount,
+      try {
+        walletResponse.chainReference = await walletService.sendFromGenesis(
+          await walletService.getIotaAddressDetails(await MnemonicService.get(tranData.payload.sourceAddress)),
+          tranData.payload.targetAddress,
+          tranData.payload.amount,
 
-        // TODO What we want to add to tangle.
-        JSON.stringify(details)
-      );
-    } catch (e: any) {
-      walletResponse.error = e.toString();
-    }
+          // TODO What we want to add to tangle.
+          JSON.stringify(details)
+        );
+      } catch (e: any) {
+        walletResponse.error = e.toString();
+      }
 
-    // Set wallet reference.
-    walletResponse.count = walletResponse.count + 1;
-    walletResponse.processedOn = serverTime();
-    newValue.payload.walletReference = walletResponse;
-    return change.after.ref.set(newValue, {merge: true});
-  } else {
-    console.log('Nothing to process.');
-    return;
-  }
+      // Set wallet reference.
+      walletResponse.count = walletResponse.count + 1;
+      walletResponse.processedOn = serverTime();
+      tranData.payload.walletReference = walletResponse;
+      transaction.update(refSource, tranData);
+    } else {
+      console.log('Nothing to process.');
+    }
+  });
+
+  return;
 });

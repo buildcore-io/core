@@ -1,4 +1,4 @@
-<article class="w-full bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-auto p-6' : 'lg:w-76 lg:h-76 p-4'"
+<article class="bg-white rounded-2xl wen-card" [ngClass]="fullWidth ? 'w-auto h-80 lg:h-auto p-6' : 'w-full h-76 p-4'"
   *ngIf="proposal">
   <a class="relative block w-full h-full text-current hover:text-current" [routerLink]="['/', this.path, proposal.uid]">
     <wen-icon-angle-left class="absolute flex rotate-180 right-6" *ngIf="fullWidth && (deviceService.isDesktop$ | async)"></wen-icon-angle-left>
@@ -6,7 +6,7 @@
       <h3 class="max-w-md mt-2 mb-2 text-lg font-bold lg:truncate">{{ proposal.name || proposal.uid }}</h3>
       <div class="flex items-center w-full space-x-4" *ngIf="deviceService.isDesktop$ | async">
         <nz-avatar [nzSrc]="previewImageService.getAvatarSize((space$ | async)?.avatarUrl)"
-          class="border-2 border-app-gray-100 bg-bg-background min-w-10" nzShape="circle">
+          class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10" nzShape="circle">
         </nz-avatar>
         <p nz-typography class="truncate">{{ (space$ | async)?.name || (space$ | async)?.uid}}</p>
       </div>
@@ -47,7 +47,7 @@
 
       <div class="flex flex-wrap mt-4 space-y-4 lg:inline-flex lg:space-y-0 lg:flex-nowrap">
         <wen-proposal-status [proposal]="proposal"></wen-proposal-status>
-        <nz-tag class="flex items-center wen-status-tag bg-tag-default border-tag-default"
+        <nz-tag class="flex items-center wen-status-tag bg-tags-regular dark:bg-tags-regular-dark border-tags-regular dark:border-tags-regular-dark"
           *ngIf="proposal?.settings?.endDate">
           <i nz-icon class="pr-2" nzType="clock-circle"></i>
           <span>{{proposal?.settings?.endDate.toDate() | date:"short"}}</span>

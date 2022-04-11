@@ -1,13 +1,13 @@
 <wen-collapse i18n-title title="Timeline" [isCollapsed]="false" class="overflow-hidden" *ngIf="orders?.length || listedBy">
   <div *ngIf="nft?.owner && (nft?.availableFrom || nft?.auctionFrom)"
     class="relative flex items-center mt-3">
-    <div class="absolute w-0.5 bg-app-gray-100 left-3 -translate-x-1/2 translate-y-1/2 h-24"></div>
+    <div class="absolute w-0.5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 translate-y-1/2 h-24"></div>
 
-    <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
+    <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-accent-primary dark:bg-accent-primary-dark">
       <wen-icon-check></wen-icon-check>
     </div>
 
-    <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
+    <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark rounded-large">
       <div class="flex items-center">
         <nz-avatar [nzSrc]="(data.owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
           style="max-width: 40px; min-width: 40px;" [nzSize]="40"></nz-avatar>
@@ -31,16 +31,16 @@
   <div *ngFor="let t of orders | slice:0:(showAll ? (orders)?.length : collapsedEventsCount); let i = index; trackBy: trackByUid"
     class="relative flex items-center mt-3">
     <div *ngIf="i !== 0"
-      class="absolute w-0.5 h-full bg-app-gray-100 left-3 -translate-x-1/2 -translate-y-1/2"></div>
+      class="absolute w-0.5 h-full bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 -translate-y-1/2"></div>
 
-    <div class="absolute w-0.5 bg-app-gray-100 left-3 -translate-x-1/2 translate-y-1/2"
+    <div class="absolute w-0.5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 translate-y-1/2"
       [ngClass]="i === 0 ? (!isCollapsed ? 'h-24' : 'h-36') : 'h-full'"></div>
 
-    <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
+    <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-accent-primary dark:bg-accent-primary-dark">
       <wen-icon-check></wen-icon-check>
     </div>
 
-    <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
+    <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark rounded-large">
       <div class="flex items-center w-full">
         <nz-avatar [nzSrc]="t.newMember.currentProfileImage| ipfsBadge:filesizes.small"
           class="bg-white border-gray-400 min-w-10 min-h-10" nzShape="circle">
@@ -58,7 +58,7 @@
                 <ng-template #lineTpl>
                   <span i18n>Purchased by</span> @{{t.newMember.name || t.newMember.uid}}
                   <span i18n>for</span> {{formatBest(t.order.payload.amount)}}
-                  <a class="inline text-sm underline text-blue-light1">{{isCollapsed ? 'hide' : 'see'}} <span i18n>details</span></a>
+                  <a class="inline text-sm underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark">{{isCollapsed ? 'hide' : 'see'}} <span i18n>details</span></a>
                 </ng-template>
 
                 <div class="overflow-y-auto max-h-24">
@@ -66,7 +66,7 @@
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{tt.createdOn?.toDate() | date:
                       "short"}}</div>
 
-                    <a class="absolute text-sm font-medium underline left-32 text-blue-light1" target="_new"
+                    <a class="absolute text-sm font-medium underline left-32 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_new"
                       [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)">{{getTitle(tt)}}</a>
 
                     <span class="absolute text-sm font-medium text-red-500 left-56"
@@ -85,13 +85,13 @@
   <!-- Orders -->
   <div class="relative flex items-center mt-3" *ngIf="listedBy && (showAll || (orders?.length || 0) < collapsedEventsCount)">
     <div *ngIf="((orders)?.length || 0) > 0"
-      class="absolute w-0.5 bg-app-gray-100 left-3 -translate-x-1/2 translate-y-1/2"></div>
+      class="absolute w-0.5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 translate-y-1/2"></div>
 
-    <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-orange">
+    <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-accent-primary dark:bg-accent-primary-dark">
       <wen-icon-check></wen-icon-check>
     </div>
 
-    <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-app-gray-100 rounded-large">
+    <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark rounded-large">
       <div class="flex items-center">
         <nz-avatar [nzSrc]="previewImageService.getAvatarSize(listedBy.avatarUrl)"
           class="bg-white border-gray-400 min-w-10 min-h-10" nzShape="circle">

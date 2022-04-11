@@ -17,7 +17,7 @@
         size="small">
       </wen-select-space>
 
-      <label class="text-base font-medium lg:ml-6 text-app-gray-text"
+      <label class="text-base font-medium lg:ml-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
         nz-checkbox formControlName="includeAlliances"
         [nzDisabled]="spaceForm.value.space === defaultSpace.value">
           <span i18n>Include connections </span>
@@ -54,7 +54,7 @@
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">
     {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>members</span>
   </p>
-  <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
 
     <nz-skeleton *ngIf="isLoading(members$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -62,13 +62,13 @@
 
     <nz-card class="w-76" *ngIf="isEmpty(members$ | async)">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400" i18n>
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Members
         </span>
       </div>
     </nz-card>
 
-    <wen-member-card class="relative w-full outline-none lg:w-auto"
+    <wen-member-card class="relative w-full h-full outline-none"
       *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member" [includeAlliances]="spaceForm.value.includeAlliances"
       [selectedSpace]="spaceForm.value.space === defaultSpace.value ? undefined : spaceForm.value.space">
     </wen-member-card>

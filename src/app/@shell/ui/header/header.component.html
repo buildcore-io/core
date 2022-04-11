@@ -7,7 +7,7 @@
       [ngClass]="{
         '-translate-y-full -top-1 ': !isScrolled && (routerService.isHomeRoute$ | async),
         'shadow-none': !isScrolled && ((routerService.isHomeRoute$ | async) === false),
-        'bg-tag-default': routerService.isNewRoute$ | async
+        'bg-tags-regular dark:bg-tags-regular-dark': routerService.isNewRoute$ | async
       }"
       [isMemberProfile]="isMemberProfile"
       [enableCollection]="enableCollection"
@@ -24,9 +24,9 @@
       <nz-badge [nzDot]="unreadNotificationCount() > 0">
         <button nz-button nz-dropdown nzType="default" nzShape="circle"
           nzTooltipPlacement="bottom" [nzDropdownMenu]="notificationMenu"
-          [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
+          [ngClass]="isMemberProfile ? 'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark hover:bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark' : ''"
           class="inline-flex items-center justify-center border-0 wen-header-button">
-          <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
+          <wen-icon-bell class="text-foregrounds-primary dark:text-foregrounds-primary-dark"></wen-icon-bell>
         </button>
       </nz-badge>
 
@@ -84,16 +84,16 @@
     <nz-badge [nzDot]="unreadNotificationCount() > 0">
       <button nz-button nz-dropdown nzType="default" nzShape="circle"
             *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
-            [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
+            [ngClass]="isMemberProfile ? 'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark hover:bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark' : ''"
             class="relative inline-flex items-center justify-center border-0 wen-header-button"
             (nzVisibleChange)="notificationVisibleChange()">
 
-        <wen-icon-bell class="text-app-gray-text"></wen-icon-bell>
+        <wen-icon-bell class="text-foregrounds-primary dark:text-foregrounds-primary-dark"></wen-icon-bell>
       </button>
     </nz-badge>
 
     <button nz-button nz-dropdown nzShape="round" nzTrigger="click" nzSize="default" [nzDropdownMenu]="userMenu"
-      [ngClass]="isMemberProfile ? 'bg-bg-background hover:bg-bg-background' : ''"
+      [ngClass]="isMemberProfile ? 'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark hover:bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark' : ''"
       class="inline-flex items-center h-16 gap-3 pl-2 font-bold border-0 wen-header-button" *ngIf="isLoggedIn$ | async">
       <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="48"
       class="mr-1"></nz-avatar>

@@ -6,6 +6,7 @@ import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.m
 import { TimeModule } from '@core/pipes/time/time.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
@@ -32,7 +33,8 @@ import { NftCheckoutComponent } from './nft-checkout.component';
     CountdownTimeModule,
     NzAlertModule,
     TruncateModule,
-    NzNotificationModule 
+    NzNotificationModule,
+    NzAvatarModule
   ],
   exports: [
     NftCheckoutComponent

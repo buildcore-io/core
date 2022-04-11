@@ -1,5 +1,5 @@
-<article class="bg-white rounded-2xl wen-card"
-    [ngClass]="fullWidth ? 'w-full' : 'w-40 lg:w-60 h-72 lg:h-99'">
+<article class="bg-white rounded-2xl w-full wen-card"
+    [ngClass]="fullWidth ? '' : 'h-72 lg:h-99'">
     <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
             <img loading="lazy"
@@ -35,9 +35,9 @@
                     <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
             </div>
 
-            <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-brown-secondary"
+            <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-icons-secondary dark:bg-icons-secondary-dark"
                 *ngIf="(isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))">
-                <wen-icon-time class="text-app-gray-400"></wen-icon-time>
+                <wen-icon-time class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-time>
                 <div class="ml-2.5 text-xs">
                     <ng-container *ngIf="getDaysLeft(nft?.availableFrom) > 0 || getDaysLeft(nft?.auctionFrom) > 0; else todayBlock">
                         <span class="font-bold" i18n>Starts in</span>
@@ -81,7 +81,7 @@
                 <a class="flex items-center grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
                    *ngIf="nft?.owner && !isAvailableForSale() && !isAvailableForAuction()" (click)="$event.stopPropagation()">
                         <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                            class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                            class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
                             style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                         </nz-avatar>
                         <div class="ml-2">

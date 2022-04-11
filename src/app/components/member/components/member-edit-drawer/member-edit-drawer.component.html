@@ -4,7 +4,7 @@
     <form class="-mt-16 space-y-12" nz-form nzLayout="vertical" [formGroup]="memberForm">
       <nz-form-item>
         <h4 nz-typography class="pt-4 mb-1" i18n>Display Name</h4>
-        <span nz-typography class="mb-6 text-app-gray-400" i18n>Set a display name. This does not change your
+        <span nz-typography class="mb-6 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Set a display name. This does not change your
           username.</span>
         <nz-form-control>
           <nz-input-group [nzPrefix]="prefixName" nzSize="large">
@@ -16,7 +16,7 @@
 
       <nz-form-item>
         <h4 nz-typography class="pt-4 mb-1" i18n>About</h4>
-        <span nz-typography class="mb-6 whitespace-pre-line text-app-gray-400" i18n>A brief description of yourself shown on your profile.</span>
+        <span nz-typography class="mb-6 whitespace-pre-line text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>A brief description of yourself shown on your profile.</span>
         <nz-form-control nzSize="large">
           <nz-textarea-count [nzMaxCharacterCount]="maxAboutCharacters">
             <textarea nz-input i18n-placeholder placeholder="Your description (optional)" rows="4"
@@ -27,9 +27,9 @@
 
       <nz-form-item>
         <h4 nz-typography class="pt-4 mb-1" i18n>Avatar</h4>
-        <span nz-typography class="mb-6 text-app-gray-400" i18n>Customise your Soonaverse identity.</span>
-        <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="!currentProfileImageControl.value">
-          <nz-avatar class="border-2 border-app-gray-100 min-w-max" [nzSize]="48" nzSrc="/assets/mocks/no_avatar.png">
+        <span nz-typography class="mb-6 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Customise your Soonaverse identity.</span>
+        <div class="flex p-4 space-x-4 bg-backgrounds-item-hover dark:bg-backgrounds-item-hover-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="!currentProfileImageControl.value">
+          <nz-avatar class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-max" [nzSize]="48" nzSrc="/assets/mocks/no_avatar.png">
           </nz-avatar>
           <span i18n>Mint a free unique avatar for your profile picture.
             <br /><br />
@@ -37,8 +37,8 @@
           </span>
           <button nz-button nzSize="small" nzType="primary" type="button" (click)="mint()">Mint Avatar</button>
         </div>
-        <div class="flex p-4 space-x-4 bg-blue-dropbg text-app-gray-text" *ngIf="currentProfileImageControl.value">
-          <nz-avatar class="border-2 border-app-gray-100 min-w-max" [nzSize]="48"
+        <div class="flex p-4 space-x-4 bg-backgrounds-item-hover dark:bg-backgrounds-item-hover-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="currentProfileImageControl.value">
+          <nz-avatar class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-max" [nzSize]="48"
             [nzSrc]="currentProfileImageControl.value | ipfsAvatar:filesizes.small"></nz-avatar>
           <span i18n>WOW! Looks like yours is the prettiest avatar of all. Congratulations.
           </span>

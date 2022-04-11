@@ -70,7 +70,7 @@
                   <i
                     nz-icon
                     nzType="info-circle"
-                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
@@ -115,7 +115,7 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n>Royalty</nz-form-label>
+              <nz-form-label class="text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalty</nz-form-label>
               <span class="ant-card-meta-description" i18n>
                 This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol.
               </span><br />
@@ -135,7 +135,7 @@
                 <i
                   nz-icon
                   nzType="info-circle"
-                  class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                  class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   nz-tooltip
                   i18n-nzTooltipTitle
                   nzTooltipTitle="Example: 10 % , 20 % , etc.."
@@ -152,7 +152,7 @@
                   <i
                     nz-icon
                     nzType="info-circle"
-                    class="cursor-pointer text-app-gray-400"
+                    class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     nzTooltipTitle="Royalties goes to a different space"
@@ -439,7 +439,7 @@
                     <span class="pl-2 text-xs">jpeg/png</span>
                   </ng-container>
                 </nz-upload>
-                <div class="text-orange-darkest" *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine" i18n>
+                <div class="text-accent-primary dark:text-accent-primary-darkest" *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine" i18n>
                   Banner is required.
                 </div>
               </nz-form-control>
@@ -474,7 +474,7 @@
                               <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                           </ng-container>
                       </nz-upload>
-                      <div class="text-orange-darkest" *ngIf="placeholderUrlControl.invalid && !placeholderUrlControl.pristine" i18n>
+                      <div class="text-accent-primary dark:text-accent-primary-darkest" *ngIf="placeholderUrlControl.invalid && !placeholderUrlControl.pristine" i18n>
                         Placeholder is required.
                       </div>
                   </nz-form-control>
@@ -592,7 +592,7 @@
                 <i
                   nz-icon
                   nzType="info-circle"
-                  class="cursor-pointer text-app-gray-400"
+                  class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   nz-tooltip
                   nzTooltipTitle="NFT can't be added after approval."
                 ></i>
@@ -608,7 +608,7 @@
                 <i
                   nz-icon
                   nzType="info-circle"
-                  class="cursor-pointer text-app-gray-400"
+                  class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   nz-tooltip
                   nzTooltipTitle="One NFT per Member Only"
                 ></i>

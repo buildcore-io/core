@@ -24,7 +24,7 @@ a.ant-btn {
 
 .ant-btn {
   font-size: @font-size-lg;
-  @apply inline-flex place-items-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
+  @apply inline-flex place-items-center justify-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
   
   &:hover {
     @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;
@@ -55,11 +55,11 @@ a.ant-btn {
 }
 
 .wen-secondary {
-  @apply text-app-gray-text hover:border-orange;
+  @apply text-foregrounds-primary dark:text-foregrounds-primary-dark hover:border-accent-primary dark:border-accent-primary-dark;
 
   &:active,
   &:focus {
-    @apply bg-orange border-orange text-white;
+    @apply bg-accent-primary dark:bg-accent-primary-dark border-accent-primary dark:border-accent-primary-dark text-white;
 
     path {
       stroke: white;
@@ -67,7 +67,7 @@ a.ant-btn {
   }
 
   &.selected {
-    @apply bg-orange border-orange text-white;
+    @apply bg-accent-primary dark:bg-accent-primary-dark border-accent-primary dark:border-accent-primary-dark text-white;
   }
 }
 
@@ -91,12 +91,12 @@ a.ant-btn {
 }
 
 .wen-header-button {
-  @apply text-app-gray-text hover:border-orange border border-solid hover:text-app-gray-text;
+  @apply text-foregrounds-primary dark:text-foregrounds-primary-dark hover:border-accent-primary dark:border-accent-primary-dark border border-solid hover:text-foregrounds-primary dark:text-foregrounds-primary-dark;
 
   outline: @input-hover-border-color;
 
   &:focus {
-    @apply border-orange text-app-gray-text;
+    @apply border-accent-primary dark:border-accent-primary-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
 
     outline: 1px solid @input-hover-border-color;
   }
@@ -104,12 +104,12 @@ a.ant-btn {
 
 .isMember {
   .wen-header-button {
-    @apply bg-bg-background hover:bg-bg-background;
+    @apply bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark hover:bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark;
   }
 }
 
 .ant-popover-inner-content {
-  @apply text-black font-medium text-xs leading-4 px-2 py-1;
+  @apply text-accent-secondary dark:text-accent-secondary-dark font-medium text-xs leading-4 px-2 py-1;
 }
 
 .ant-btn-sm {

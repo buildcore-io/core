@@ -67,7 +67,7 @@
                                 <i
                                   nz-icon
                                   nzType="info-circle"
-                                  class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                                  class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                                   nz-tooltip
                                   i18n-nzTooltipTitle
                                   [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
@@ -145,7 +145,7 @@
                                 [formControl]="gForm(property, 'value')"
                             />
 
-                            <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeProperty(i)"></wen-icon-trash>
+                            <wen-icon-trash class="cursor-pointer text-accent-primary dark:text-accent-primary-darkest" (click)="removeProperty(i)"></wen-icon-trash>
 
                             </div>
                             <div class="my-4 separator"></div>
@@ -158,7 +158,7 @@
                                 <div class="text-xs font-bold">
                                     <span i18n>Property</span> #0{{ i + 1 }}
                                 </div>
-                                <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeProperty(i)"></wen-icon-trash>
+                                <wen-icon-trash class="cursor-pointer text-accent-primary dark:text-accent-primary-darkest" (click)="removeProperty(i)"></wen-icon-trash>
                             </div>
 
                             <div class="mt-2 mb-5 separator"></div>
@@ -237,7 +237,7 @@
                                     [formControl]="gForm(stat, 'value')"
                                 />
 
-                                <wen-icon-trash class="cursor-pointer grow text-orange-darkest" (click)="removeStat(i)"></wen-icon-trash>
+                                <wen-icon-trash class="cursor-pointer grow text-accent-primary dark:text-accent-primary-darkest" (click)="removeStat(i)"></wen-icon-trash>
                             </div>
 
                             <div class="my-4 separator"></div>
@@ -250,7 +250,7 @@
                                 <div class="text-xs font-bold">
                                     <span i18n>Stat</span> #0{{ i + 1 }}
                                 </div>
-                                <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeStat(i)"></wen-icon-trash>
+                                <wen-icon-trash class="cursor-pointer text-accent-primary dark:text-accent-primary-darkest" (click)="removeStat(i)"></wen-icon-trash>
                             </div>
 
                             <div class="mt-2 mb-5 separator"></div>
@@ -320,7 +320,7 @@
                                     <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                                 </ng-container>
                             </nz-upload>
-                            <div class="text-orange-darkest" *ngIf="fileUploadError || (mediaControl.invalid && !mediaControl.pristine)">
+                            <div class="text-accent-primary dark:text-accent-primary-darkest" *ngIf="fileUploadError || (mediaControl.invalid && !mediaControl.pristine)">
                                 <ng-container *ngIf="(mediaControl.invalid && !mediaControl.pristine)" i18n>Media is required</ng-container>
                                 <br>
                                 <ng-container *ngIf="fileUploadError">{{ fileUploadError }}</ng-container>

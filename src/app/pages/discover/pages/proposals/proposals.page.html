@@ -43,7 +43,7 @@
     {{ ((proposal$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>proposals</span>
   </p>
 
-  <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
 
     <nz-skeleton *ngIf="isLoading(proposal$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -51,13 +51,13 @@
 
     <nz-card class="w-76" *ngIf="isEmpty((proposal$ | async))">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400" i18n>
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Proposals
         </span>
       </div>
     </nz-card>
 
-    <wen-proposal-card class="w-full outline-none lg:w-auto" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid"
+    <wen-proposal-card class="w-full outline-none" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid"
       [proposal]="proposal">
     </wen-proposal-card>
   </div>

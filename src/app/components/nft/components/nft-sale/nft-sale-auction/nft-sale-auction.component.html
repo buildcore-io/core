@@ -18,7 +18,7 @@
                 <i
                     nz-icon
                     nzType="info-circle"
-                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"
@@ -67,7 +67,7 @@
           </nz-select>
           <ng-template #placeholderTpl>
             <div class="flex items-center space-x-4">
-              <wen-icon-time class="text-black"></wen-icon-time>
+              <wen-icon-time class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-time>
               <span i18n>Duration of auction is 3 days</span>
             </div>
           </ng-template>
@@ -97,7 +97,7 @@
                 <i
                     nz-icon
                     nzType="info-circle"
-                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + formatBest(minimumPrice) + ' and Maximum price is ' + formatBest(maximumPrice)"

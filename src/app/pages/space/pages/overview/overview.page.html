@@ -7,7 +7,7 @@
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.proposalsActive$ | async)">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400" i18n>
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Active Proposals
         </span>
         <!-- <button nz-button nzType="primary" class="self-center w-48" [routerLink]="['/discover', 'spaces']">Discover
@@ -28,7 +28,7 @@
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.awardsActive$ | async)">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400" i18n>
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Active Awards
         </span>
       </div>
