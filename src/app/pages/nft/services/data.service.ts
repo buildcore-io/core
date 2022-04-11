@@ -26,12 +26,12 @@ export class DataService {
   public creator$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
   public owner$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
   public collectionCreator$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
+  public pastBidTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
+  public pastBidTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public myBidTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
   public myBidTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public allBidTransactions$: BehaviorSubject<OffersHistory[]> = new BehaviorSubject<OffersHistory[]>([]);
   public allBidTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public myTransactions$: BehaviorSubject<Transaction[]> = new BehaviorSubject<Transaction[]>([]);
-  public myTransactionsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public constructor(private auth: AuthService) {
     // none.
   }

@@ -28,8 +28,8 @@ dayjs.extend(isSameOrBefore);
 
 export enum ListingType {
   CURRENT_BIDS = 0,
-  MY_BIDS = 1,
-  MY_TRANSACTIONS = 2
+  PAST_BIDS = 1,
+  MY_BIDS = 2
 }
 
 @UntilDestroy()
@@ -47,7 +47,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCopied = false;
   public mediaType: 'video' | 'image' | undefined;
   public isNftPreviewOpen = false;
-  public currentListingType = ListingType.MY_TRANSACTIONS;
+  public currentListingType = ListingType.MY_BIDS;
   public endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
@@ -215,16 +215,17 @@ export class NFTPage implements OnInit, OnDestroy {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );
+      }
 
-        if (this.auth.member$.value && this.data.nft$.value) {
-          this.data.myTransactionsLoading$.next(false);
-          this.nftSubscriptions$.push(this.nftApi.getMembersTransactions(this.auth.member$.value, this.data.nft$.value)
-            .pipe(untilDestroyed(this))
-            .subscribe((value: Transaction[]) => {
-              this.data.myTransactions$.next(value);
-              this.data.myTransactionsLoading$.next(true);
-            }));
-        }
+      if (this.auth.member$.value && this.data.nft$.value) {
+        this.data.pastBidTransactionsLoading$.next(true);
+        this.nftSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!)
+          .pipe(untilDestroyed(this))
+          .subscribe((value: Transaction[]) => {
+            this.currentListingType = ListingType.PAST_BIDS;
+            this.data.pastBidTransactions$.next(value);
+            this.data.pastBidTransactionsLoading$.next(false);
+          }));
       }
 
       // Sync ticker.
@@ -294,10 +295,10 @@ export class NFTPage implements OnInit, OnDestroy {
             this.data.allBidTransactions$.next(value);
             this.data.allBidTransactionsLoading$.next(false);
           }));
-          
+
         if (this.auth.member$.value) {
           this.data.myBidTransactionsLoading$.next(true);
-          this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!)
+          this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!, true)
             .pipe(untilDestroyed(this))
             .subscribe((value: Transaction[]) => {
               this.data.myBidTransactions$.next(value);
