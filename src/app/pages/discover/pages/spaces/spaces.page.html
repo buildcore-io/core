@@ -44,7 +44,7 @@
   <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(spaces$ | async)">
     {{ ((spaces$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} spaces
   </p>
-  <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
 
     <nz-skeleton *ngIf="isLoading(spaces$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -58,7 +58,7 @@
       </div>
     </nz-card>
 
-    <wen-space-card class="w-full outline-none lg:w-auto" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s">
+    <wen-space-card class="w-full h-full outline-none" *ngFor="let s of spaces$ | async; trackBy: trackByUid" [space]="s">
     </wen-space-card>
   </div>
 </div>

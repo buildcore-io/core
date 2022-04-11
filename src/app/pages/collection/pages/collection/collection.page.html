@@ -221,7 +221,7 @@
         <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(data.nft$ | async)">
           {{ getTotalNfts(data.nft$ | async, data.collection$ | async) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
         </p>
-        <div class="flex flex-wrap gap-6 mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             (scrolled)="onScroll()">
 
             <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
@@ -238,11 +238,12 @@
             <!-- Place holder NFT MUST be always first -->
             <wen-nft-card
               *ngIf="(data.collection$ | async)?.placeholderNft && (data.firstNft$ | async)" [collection]="(data.collection$ | async)"
+              class="w-full h-full outline-none"
               [nft]="(data.firstNft$ | async)">
             </wen-nft-card>
 
             <ng-container *ngFor="let nft of data.nft$ | async; trackBy: trackByUid">
-              <wen-nft-card [collection]="(data.collection$ | async)"
+              <wen-nft-card [collection]="(data.collection$ | async)" class="w-full h-full outline-none"
                   *ngIf="!(data.collection$ | async)?.placeholderNft || ((data.collection$ | async)?.placeholderNft && nft.uid !== (data.firstNft$ | async)?.uid)"
                   [nft]="nft">
               </wen-nft-card>

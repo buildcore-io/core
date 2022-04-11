@@ -4,15 +4,15 @@
 
     <div *ngIf="!isEmpty(pendingSpaces$ | async) && !isLoading(pendingSpaces$ | async)">
       <h3 i18n>Pending Membership Requests</h3>
-      <div class="flex flex-wrap gap-6 mb-10">
-        <wen-space-card class="w-full outline-none lg:w-auto" *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid"
+      <div class="wen-cards-wrapper mb-10">
+        <wen-space-card class="w-full h-full outline-none" *ngFor="let space of pendingSpaces$ | async; trackBy: trackByUid"
           [space]="space"></wen-space-card>
       </div>
     </div>
 
     <div>
       <h3 i18n>Your spaces</h3>
-      <div class="flex flex-wrap gap-6 mb-10">
+      <div class="wen-cards-wrapper mb-10">
 
         <nz-skeleton *ngIf="isLoading(spaces$ | async)" class="p-4 bg-white pt-28 rounded-2xl w-76 h-76" [nzActive]="true"
           [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 3, width: 100 }"></nz-skeleton>
@@ -27,7 +27,7 @@
           </div>
         </nz-card>
 
-        <wen-space-card class="w-full outline-none lg:w-auto" *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space">
+        <wen-space-card class="w-full h-full outline-none" *ngFor="let space of spaces$ | async; trackBy: trackByUid" [space]="space">
         </wen-space-card>
       </div>
     </div>
@@ -38,8 +38,8 @@
           <i nz-icon nzType="right" nzTheme="outline"></i>
         </a> -->
       </h3>
-      <div class="flex flex-wrap gap-6 mb-10">
-        <wen-award-card class="w-full outline-none lg:w-fit" *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award">
+      <div class="wen-cards-wrapper mb-10">
+        <wen-award-card class="w-full h-full outline-none" *ngFor="let award of awards$ | async; trackBy: trackByUid" [award]="award">
         </wen-award-card>
       </div>
     </div>
@@ -50,8 +50,8 @@
           <i nz-icon nzType="right" nzTheme="outline"></i>
         </a> -->
       </h3>
-      <div class="flex flex-wrap gap-6 mb-10">
-        <wen-proposal-card class="w-full outline-none lg:w-fit" *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
+      <div class="wen-cards-wrapper mb-10">
+        <wen-proposal-card class="w-full h-full outline-none" *ngFor="let proposal of proposals$ | async; trackBy: trackByUid"
           [proposal]="proposal">
         </wen-proposal-card>
       </div>

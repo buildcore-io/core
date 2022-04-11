@@ -34,6 +34,10 @@ module.exports = {
         ...normalizeNames(lightTheme),
         ...normalizeNames(darkTheme)
       },
+      screens: {
+        '3xl': '1600px',
+        '4xl': '1920px'
+      },
       spacing: {
         18: '4.5rem',
         75: '18.75rem',
