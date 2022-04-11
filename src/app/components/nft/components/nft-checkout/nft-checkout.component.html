@@ -55,7 +55,7 @@
             <div class="relative flex flex-col w-full h-full">
                 <h3 class="mb-1 text-2xl font-bold truncate">{{ getTitle() }}</h3>
                 <div class="text-xl font-medium">{{ collection?.name }}</div>
-                <div class="flex items-center mt-2.5">
+                <div class="flex items-center mt-2.5 mb-2.5">
                     <wen-icon-crown class="mr-2.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" [size]="20"></wen-icon-crown>
                     <div class="font-medium">{{((collection?.royaltiesFee || 0) * 100)}}% <span i18n>Royalties</span></div>
                     <wen-icon-question-circle
@@ -66,6 +66,21 @@
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."
                     ></wen-icon-question-circle>
                 </div>
+
+                <a *ngIf="royaltySpace && (royaltySpace?.uid !== collection?.space)"
+                    [routerLink]="['/space', royaltySpace?.uid]" class="flex items-center justify-between mb-2.5 w-max">
+                    <nz-avatar
+                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace?.avatarUrl)"
+                        [nzSize]="24"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
+                        nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="ml-3 text-xs font-medium">
+                        <div class="text-foregrounds-secondary" i18n>Royalties goes to</div>
+                        <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
+                    </div>
+                </a>
 
                 <div class="px-5 py-3 mt-8 lg:mt-auto bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl w-max">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Total price</div>

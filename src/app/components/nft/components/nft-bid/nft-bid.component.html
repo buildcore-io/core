@@ -73,6 +73,21 @@
                     ></wen-icon-question-circle>
                 </div>
 
+                <a *ngIf="royaltySpace && (royaltySpace?.uid !== collection?.space)"
+                    [routerLink]="['/space', royaltySpace?.uid]" class="flex items-center justify-between mb-2.5 w-max">
+                    <nz-avatar
+                        [nzSrc]="previewImageService.getAvatarSize(royaltySpace?.avatarUrl)"
+                        [nzSize]="24"
+                        class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6"
+                        nzShape="circle"
+                    >
+                    </nz-avatar>
+                    <div class="ml-3 text-xs font-medium">
+                        <div class="text-foregrounds-secondary" i18n>Royalties goes to</div>
+                        <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
+                    </div>
+                </a>
+
                 <wen-nft-countdown
                     class="my-5"
                     wrapperClassName="bg-bg-background"
