@@ -41,7 +41,7 @@
                 </button>
             </div>
 
-            <div class="flex flex-wrap lg:items-center flex-col lg:flex-row mt-8 w-max">
+            <div class="flex flex-col flex-wrap mt-8 lg:items-center lg:flex-row w-max">
                 <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center justify-between">
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
@@ -57,7 +57,7 @@
                 </a>
 
                 <a *ngIf="(data.royaltySpace$ | async) && (data.collection$ | async)?.royaltiesSpace !== (data.collection$ | async)?.space"
-                    [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center justify-between lg:ml-10 mt-4 lg:mt-0">
+                    [routerLink]="['/space', (data.royaltySpace$ | async)?.uid]" class="flex items-center justify-between mt-4 lg:ml-10 lg:mt-0">
                     <nz-avatar
                         [nzSrc]="previewImageService.getAvatarSize((data.royaltySpace$ | async)?.avatarUrl)"
                         [nzSize]="32"
@@ -82,13 +82,13 @@
             </div>
 
             <div class="flex flex-wrap items-center w-full mt-4 lg:mt-3">
-                <div class="grow h-16 px-4 py-3 mr-3 bg-white lg:w-32 rounded-xl lg:mt-2">
+                <div class="h-16 px-4 py-3 mr-3 bg-white grow lg:w-32 rounded-xl lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
                 </div>
 
-                <div class="grow h-16 px-4 py-3 bg-white lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available</div>
+                <div class="h-16 px-4 py-3 bg-white grow lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
+                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available to mint</div>
                     <div class="text-lg font-bold truncate">{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}</div>
                 </div>
 
@@ -221,7 +221,7 @@
         <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(data.nft$ | async)">
           {{ getTotalNfts(data.nft$ | async, data.collection$ | async) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
         </p>
-        <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        <div class="mb-10 wen-cards-wrapper" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             (scrolled)="onScroll()">
 
             <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"

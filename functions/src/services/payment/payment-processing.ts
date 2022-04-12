@@ -598,7 +598,7 @@ export class ProcessingService {
         });
 
         // Let's validate if collection has pending item to sell.
-        if (col.data().placeholderNft && col.data().total === col.data().sold) {
+        if (col.data().placeholderNft && col.data().total === (col.data().sold + 1)) {
           const refSource: any = admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft);
           const sfDoc: any = await this.transaction.get(refSource);
           if (sfDoc.data()) {
