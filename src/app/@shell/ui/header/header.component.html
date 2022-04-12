@@ -3,7 +3,7 @@
 
   <ng-container *ngIf="deviceService.isMobile$ | async; else isDesktop">
     <wen-mobile-header
-      class="absolute top-0 z-10 w-full p-4 transition-transform duration-300 -translate-y-1 bg-white shadow-header"
+      class="absolute top-0 z-10 w-full p-4 transition-transform duration-300 -translate-y-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark shadow-header"
       [ngClass]="{
         '-translate-y-full -top-1 ': !isScrolled && (routerService.isHomeRoute$ | async),
         'shadow-none': !isScrolled && ((routerService.isHomeRoute$ | async) === false),

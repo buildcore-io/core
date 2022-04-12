@@ -70,7 +70,7 @@
                     ></wen-icon-question-circle>
                 </div>
 
-                <div class="px-5 py-3 mt-8 bg-white lg:mt-auto rounded-2xl w-max">
+                <div class="px-5 py-3 mt-8 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:mt-auto rounded-2xl w-max">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2 text-lg">
                       <div class="mr-2 font-bold truncate">{{ formatBest(nft?.price || 0) }}</div>
@@ -95,7 +95,7 @@
         </nz-tag>
     </div>
 
-    <div [ngSwitch]="currentSaleType" class="w-full bg-white rounded-b-2xl">
+    <div [ngSwitch]="currentSaleType" class="w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-b-2xl">
         <wen-nft-sale-not-for-sale [nft]="nft" (wenOnUpdate)="update($event)" *ngSwitchCase="saleType.NOT_FOR_SALE"></wen-nft-sale-not-for-sale>
         <wen-nft-sale-fixed-price [nft]="nft" *ngSwitchCase="saleType.FIXED_PRICE" (wenOnUpdate)="update($event)"></wen-nft-sale-fixed-price>
         <wen-nft-sale-auction [nft]="nft"  *ngSwitchCase="saleType.AUCTION" (wenOnUpdate)="update($event)"></wen-nft-sale-auction>

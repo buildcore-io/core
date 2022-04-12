@@ -186,7 +186,7 @@
     <wen-nft-preview [nft]="previewNft" (wenOnClose)="previewNft = null"></wen-nft-preview>
 </ng-container>
 
-<div *ngIf="deviceService.isMobile$ | async" class="flex p-4 mt-6 bg-white rounded-2xl text-foregrounds-secondary">
+<div *ngIf="deviceService.isMobile$ | async" class="flex p-4 mt-6 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl text-foregrounds-secondary">
     <wen-icon-info-circle></wen-icon-info-circle>
     <div class="ml-3" i18n>To create multiple classic NFTs, you have to use the web version of Soonaverse.</div>
 </div>

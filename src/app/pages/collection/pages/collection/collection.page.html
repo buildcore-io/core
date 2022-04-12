@@ -82,17 +82,17 @@
             </div>
 
             <div class="flex flex-wrap items-center w-full mt-4 lg:mt-3">
-                <div class="h-16 px-4 py-3 mr-3 bg-white grow lg:w-32 rounded-xl lg:mt-2">
+                <div class="h-16 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark grow lg:w-32 rounded-xl lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Items</div>
                     <div class="text-lg font-bold truncate">{{ (data.collection$ | async)?.total || 0}}</div>
                 </div>
 
-                <div class="h-16 px-4 py-3 bg-white grow lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
+                <div class="h-16 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark grow lg:w-32 rounded-xl lg:mr-3 lg:mt-2">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Available to mint</div>
                     <div class="text-lg font-bold truncate">{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}}</div>
                 </div>
 
-                <div class="w-full h-16 px-4 py-3 mt-5 bg-white lg:grow lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
+                <div class="w-full h-16 px-4 py-3 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
                     <div class="text-lg font-bold truncate">{{formatBest((data.cheapestNft$ | async)?.price)}}</div>
                 </div>
@@ -153,7 +153,7 @@
         <nz-input-group
             nzSize="default" [nzPrefix]="prefixIconSearch"
             class="w-full border-none shadow-none outline-0 lg:w-96" nzSearch>
-            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
+            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base bg-inputs-background dark:bg-inputs-background-dark" [formControl]="filterControl"/>
         </nz-input-group>
         <ng-template #prefixIconSearch>
             <i nz-icon nzType="search" class="text-xl"></i>
@@ -224,7 +224,7 @@
         <div class="mb-10 wen-cards-wrapper" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             (scrolled)="onScroll()">
 
-            <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+            <nz-skeleton *ngIf="isLoading(data.nft$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
                 [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
             <nz-card class="w-76" *ngIf="isEmpty(data.nft$ | async) && !((data.collection$ | async)?.placeholderNft && (data.firstNft$ | async))">

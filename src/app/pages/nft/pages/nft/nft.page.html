@@ -33,13 +33,13 @@
           
             <wen-nft-countdown
                 class="my-5"
-                wrapperClassName="bg-white"
+                wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
                 tabClassName="bg-bg-background"
                 size="large">
             </wen-nft-countdown>
 
             <div class="flex flex-wrap items-center mt-5">
-                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
+                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
                         <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{data.formatBest(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
 
-                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-white rounded-xl" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)"
+                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)"
                     [ngClass]="{
                       'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.myBidTransactions$ | async)?.length,
                       'bg-tags-available dark:bg-tags-available-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
@@ -65,7 +65,7 @@
                   </div>
                 </div>
 
-                <div class="flex-1 h-20 px-4 py-3 bg-white rounded-xl">
+                <div class="flex-1 h-20 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
                     <a class="flex items-center mt-2" [routerLink]="['/space', (data.space$ | async)?.uid]">
                         <nz-avatar class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
@@ -406,7 +406,7 @@
 
         <div class="mt-10 lg:grid place-items-start">
             <div class="wen-cards-wrapper mb-10">
-                <nz-skeleton *ngIf="isLoading(data.topNftWithinCollection$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+                <nz-skeleton *ngIf="isLoading(data.topNftWithinCollection$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
                     [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
                 <nz-card class="w-76" *ngIf="isEmpty(data.topNftWithinCollection$ | async)">

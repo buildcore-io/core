@@ -8,7 +8,7 @@
           username.</span>
         <nz-form-control>
           <nz-input-group [nzPrefix]="prefixName" nzSize="large">
-            <input nz-input i18n-placeholder placeholder="Display name (optional)" [formControl]="nameControl" />
+            <input nz-input i18n-placeholder placeholder="Display name (optional)" [formControl]="nameControl" class="bg-inputs-background dark:bg-inputs-background-dark" />
             <ng-template #prefixName>@</ng-template>
           </nz-input-group>
         </nz-form-control>
@@ -37,7 +37,7 @@
           </span>
           <button nz-button nzSize="small" nzType="primary" type="button" (click)="mint()">Mint Avatar</button>
         </div>
-        <div class="flex p-4 space-x-4 bg-backgrounds-item-hover dark:bg-backgrounds-item-hover-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="currentProfileImageControl.value">
+        <div class="flex p-4 space-x-4 bg-accent-selected dark:bg-accent-selected-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="currentProfileImageControl.value">
           <nz-avatar class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-max" [nzSize]="48"
             [nzSrc]="currentProfileImageControl.value | ipfsAvatar:filesizes.small"></nz-avatar>
           <span i18n>WOW! Looks like yours is the prettiest avatar of all. Congratulations.
@@ -51,6 +51,7 @@
           <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Github username.">
             <nz-input-group [nzPrefix]="prefixGithub" nzSize="large">
               <input type="text" nz-input i18n-placeholder placeholder="Type your Github account username"
+                class="bg-inputs-background dark:bg-inputs-background-dark"
                 [formControl]="githubControl" />
               <ng-template #prefixGithub>
                 <wen-icon-github></wen-icon-github>
@@ -63,6 +64,7 @@
           <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid Twitter username.">
             <nz-input-group [nzPrefix]="prefixTwitter" nzSize="large">
               <input type="text" nz-input i18n-placeholder placeholder="Type your Twitter account username"
+                class="bg-inputs-background dark:bg-inputs-background-dark"
                 [formControl]="twitterControl" />
               <ng-template #prefixTwitter>
                 <wen-icon-twitter></wen-icon-twitter>
@@ -75,6 +77,7 @@
           <nz-form-control i18n-nzErrorTip nzErrorTip="Only username#1234 format supported.">
             <nz-input-group [nzPrefix]="prefixDiscord" nzSize="large">
               <input type="text" nz-input i18n-placeholder placeholder="Type your Discord account username"
+                class="bg-inputs-background dark:bg-inputs-background-dark"
                 [formControl]="discordControl" />
               <ng-template #prefixDiscord>
                 <wen-icon-discord></wen-icon-discord>

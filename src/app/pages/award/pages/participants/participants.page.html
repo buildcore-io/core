@@ -36,7 +36,7 @@
       <nz-input-group *ngIf="deviceService.isDesktop$ | async"
         nzSize="large" [nzPrefix]="prefixIconSearch" class="ml-8 border-none shadow-none outline-0 w-72"
         nzSearch>
-        <input type="text" nz-input i18n-placeholder placeholder="Find Participant" class="text-base"  [formControl]="filterControl"/>
+        <input type="text" nz-input i18n-placeholder placeholder="Find Participant" class="text-base bg-inputs-background dark:bg-inputs-background-dark"  [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
@@ -50,7 +50,7 @@
     <!-- TODO Do we need dress this baby up? -->
     <nz-alert nzType="warning" i18n-nzMessage nzMessage="Showing only few top records..." *ngIf="overTenRecords && data.isEmpty(getList()  | async) === false"></nz-alert>
 
-    <nz-skeleton *ngIf="data.isLoading(getList() | async)"  class="p-4 bg-white rounded-2xl" [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+    <nz-skeleton *ngIf="data.isLoading(getList() | async)"  class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true" [nzAvatar]="{ size: 'default' }"
       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(getList()  | async)">

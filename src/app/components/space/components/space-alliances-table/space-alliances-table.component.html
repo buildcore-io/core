@@ -14,7 +14,7 @@
             <td class="flex items-center cursor-pointer" [routerLink]="['/space', ally._record.uid]">
                 <nz-avatar
                     [nzSrc]="previewImageService.getAvatarSize(ally._record.avatarUrl)"
-                    class="mr-3 bg-white border-gray-400"
+                    class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-gray-400"
                     nzShape="circle"
                     [nzSize]="32"
                 >
@@ -53,7 +53,7 @@
             <div class="flex items-center">
                 <nz-avatar
                     [nzSrc]="previewImageService.getAvatarSize(ally._record.avatarUrl)"
-                    class="mr-3 bg-white border-gray-400 min-w-8"
+                    class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-gray-400 min-w-8"
                     nzShape="circle"
                     [nzSize]="32"
                 >

@@ -1,6 +1,6 @@
 <ng-container *ngIf="deviceService.isMobile$ | async">
   <div class="flex items-center mt-5 ml-6">
-    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="bg-white border-2 border-gray-400 min-w-10" nzShape="circle">
+    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-2 border-gray-400 min-w-10" nzShape="circle">
     </nz-avatar>
     <h1 class="w-2/3 mb-0 ml-4 text-2xl">{{ (data.space$ | async)?.name }}</h1>
   </div>
@@ -111,7 +111,7 @@
         (wenOnAllianceEdit)="onAllianceEdit($event)">
       </wen-space-alliances-table>
 
-      <div class="absolute bottom-0 z-10 flex items-center w-full bg-white" #spaceAlliancesActions>
+      <div class="absolute bottom-0 z-10 flex items-center w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark" #spaceAlliancesActions>
         <button *ngIf="(data.isGuardianWithinSpace$ | async)" nz-button nzType="primary" nzSize="small" i18n
           (click)="openAlliance()">
           New connection
@@ -175,7 +175,7 @@
         [reputationWeightControl]="reputationWeightControl">
       </wen-space-new-alliance>
 
-      <div class="z-10 flex items-center w-full bg-white">
+      <div class="z-10 flex items-center w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
         <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()">
           <ng-container *ngIf="isNewAlliance; else mobileSaveAlliance" i18n>Form a connection</ng-container>
           <ng-template #mobileSaveAlliance i18n>Save</ng-template>

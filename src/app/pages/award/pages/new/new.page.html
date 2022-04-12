@@ -209,7 +209,7 @@
           </nz-card-meta>
 
           <div
-            class="flex p-4 mt-4 space-x-4 bg-backgrounds-item-hover dark:bg-backgrounds-item-hover-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+            class="flex p-4 mt-4 space-x-4 bg-accent-selected dark:bg-accent-selected-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
             *ngIf="!imageControl.value"
           >
             <wen-icon-award></wen-icon-award>
@@ -227,7 +227,7 @@
           </div>
 
           <div
-            class="flex p-4 space-x-4 bg-backgrounds-item-hover dark:bg-backgrounds-item-hover-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
+            class="flex p-4 space-x-4 bg-accent-selected dark:bg-accent-selected-dark text-foregrounds-primary dark:text-foregrounds-primary-dark"
             *ngIf="imageControl.value"
           >
             <nz-avatar
@@ -251,7 +251,7 @@
             <nz-form-control>
               <nz-radio-group class="wen-radio-group" [formControl]="typeControl">
                 <wen-radio [value]="types.PARTICIPATE_AND_APPROVE">
-                  <span class="inline-flex items-center"><span i18n>Guardian approval</span>
+                  <span class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"><span i18n>Guardian approval</span>
                     <wen-icon-question-circle
                       class="inline-block h-max"
                       nz-tooltip
@@ -262,7 +262,7 @@
                     </wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="types.DISCORD_ACTIVITY" [disabled]="true">
-                  <span class="inline-flex items-center"><span i18n>Discord Activity</span>
+                  <span class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"><span i18n>Discord Activity</span>
                     <wen-icon-question-circle
                       class="inline-block h-max"
                       nz-tooltip
@@ -272,7 +272,7 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="types.GITHUB_ACTIVITY" [disabled]="true">
-                  <span class="inline-flex items-center"><span i18n>Github Activity</span>
+                  <span class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"><span i18n>Github Activity</span>
                     <wen-icon-question-circle
                       class="inline-block h-max"
                       nz-tooltip
@@ -282,7 +282,7 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="types.CUSTOM" [disabled]="true">
-                  <span class="inline-flex items-center"><span i18n>Custom and more</span>
+                  <span class="inline-flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"><span i18n>Custom and more</span>
                     <wen-icon-question-circle
                       class="inline-block h-max"
                       nz-tooltip

@@ -42,7 +42,7 @@
         <div class="grow w-full lg:w-1/2 lg:mr-10">
             <h1 class="mt-2">{{ nft.name }}</h1>
 
-            <div class="flex items-center justify-between w-full h-12 p-4 mt-5 bg-white rounded-xl"
+            <div class="flex items-center justify-between w-full h-12 p-4 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl"
                 *ngIf="nft?.availableFrom">
                 <div class="flex items-center mr-8"
                     [ngClass]="{ 'text-alerts-error': false }">
@@ -55,7 +55,7 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-5">
-                <div class="grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
                         <div class="text-lg font-bold truncate">{{ data.formatBest(nft.price) }}</div>
@@ -64,7 +64,7 @@
                 </div>
 
 
-                <div class="grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
                     <div class="flex items-center mt-2">
                       <a [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
@@ -79,7 +79,7 @@
                     </div>
                 </div>
 
-                <div class="grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
                     <a class="flex items-center mt-2" [routerLink]="['/space', space?.uid]">
                         <nz-avatar class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"

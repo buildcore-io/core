@@ -14,7 +14,7 @@
       }">
       <div class="mb-8 space-x-3">
         <a [routerLink]="['/space', (data.space$ | async)?.uid]">
-          <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)" class="mr-3 bg-white border-2 border-gray-400"
+          <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)" class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-2 border-gray-400"
             nzShape="circle">
           </nz-avatar>
           <span>{{((data.space$ | async)?.name || (data.space$ | async)?.uid) }}</span>

@@ -303,7 +303,7 @@
                 [formControl]="selectedGroupControl"
               >
                 <wen-radio [value]="targetGroups.GUARDIANS"
-                  ><span><span i18n>All Guardians</span>
+                  ><span class="flex items-center"><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>All Guardians</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -313,7 +313,7 @@
                     ></wen-icon-question-circle> </span
                 ></wen-radio>
                 <wen-radio [value]="targetGroups.MEMBERS"
-                  ><span><span i18n>All Members</span>
+                  ><span class="flex items-center"><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>All Members</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -324,7 +324,7 @@
                 ></wen-radio>
 
                 <wen-radio *ngIf="!isProd" [value]="targetGroups.NATIVE"
-                  ><span><span i18n>IOTA Token Holders</span>
+                  ><span class="flex items-center"><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>IOTA Token Holders</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -345,7 +345,7 @@
                 [formControl]="subTypeControl"
               >
                 <wen-radio [value]="subTypes.ONE_MEMBER_ONE_VOTE">
-                  <span><span i18n>Member - One Vote</span>
+                  <span class="flex items-center"><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Member - One Vote</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -358,8 +358,8 @@
                   class="flex"
                   [value]="subTypes.REPUTATION_BASED_ON_SPACE"
                 >
-                  <p class="max-w-xs pr-2">
-                    <span i18n>XP Reputation - Space</span>
+                  <p class="max-w-xs pr-2 flex items-center">
+                    <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>XP Reputation - Space</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -374,8 +374,8 @@
                   class="flex"
                   [value]="subTypes.REPUTATION_BASED_ON_SPACE_WITH_ALLIANCE"
                 >
-                  <p class="max-w-xs pr-2">
-                    <span i18n>XP Reputation - Space + Connection</span>
+                  <p class="max-w-xs pr-2 flex items-center">
+                    <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>XP Reputation - Space + Connection</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip
@@ -390,8 +390,8 @@
                   class="flex"
                   [value]="subTypes.REPUTATION_BASED_ON_AWARDS"
                 >
-                  <p class="max-w-xs">
-                    <span i18n>XP Reputation - Selected Badges</span>
+                  <p class="max-w-xs flex items-center">
+                    <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>XP Reputation - Selected Badges</span>
                     <wen-icon-question-circle
                       class="inline-block"
                       nz-tooltip

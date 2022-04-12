@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <h3 i18n>Active Proposals</h3>
 
-    <nz-skeleton *ngIf="data.isLoading(data.proposalsActive$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+    <nz-skeleton *ngIf="data.isLoading(data.proposalsActive$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.proposalsActive$ | async)">
@@ -23,7 +23,7 @@
   <div class="space-y-4">
     <h3 class="mb-5 lg:mb-6" i18n>Active Awards</h3>
 
-    <nz-skeleton *ngIf="data.isLoading(data.awardsActive$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+    <nz-skeleton *ngIf="data.isLoading(data.awardsActive$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.awardsActive$ | async)">

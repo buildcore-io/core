@@ -26,7 +26,7 @@
       </button>
     </div>
 
-    <nz-skeleton *ngIf="data.isLoading(getList() | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+    <nz-skeleton *ngIf="data.isLoading(getList() | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(getList() | async)">

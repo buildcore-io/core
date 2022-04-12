@@ -9,7 +9,7 @@
     <nz-input-group
         nzSize="small" [nzPrefix]="prefixIconSearch"
         class="w-full mt-4 border-none shadow-none outline-0 lg:w-60 lg:mt-0" nzSearch>
-            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base" [formControl]="filterControl"/>
+            <input type="text" nz-input i18n-placeholder placeholder="Find item" class="text-base bg-inputs-background dark:bg-inputs-background-dark" [formControl]="filterControl"/>
     </nz-input-group>
     <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
@@ -23,7 +23,7 @@
     <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
 
-        <nz-skeleton *ngIf="isLoading(nft$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+        <nz-skeleton *ngIf="isLoading(nft$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
             [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
         <nz-card class="w-76" *ngIf="isEmpty(nft$ | async)">
