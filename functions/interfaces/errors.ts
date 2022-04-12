@@ -78,5 +78,6 @@ export const WenError = {
   you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!'},
   you_are_not_allowed_member_to_purchase_this_nft: { code: 2070, key: 'You are not allowed member to purchase this NFT!'},
   this_is_limited_addition_collection: { code: 2071, key: 'Collection is limited edition. No NFT can be added after approval.' },
+  royalty_fees_can_only_be_reduced: { code: 2072, key: 'Royalty fees can only be reduced.' },
 }
 
