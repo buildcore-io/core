@@ -1,4 +1,4 @@
-<article class="bg-white rounded-2xl w-full wen-card"
+<article class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-full wen-card"
     [ngClass]="fullWidth ? '' : 'h-72 lg:h-99'">
     <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
@@ -24,7 +24,7 @@
             />
 
             <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || isAvailableForAuction() || nft?.placeholderNft)"
-                class="absolute top-4 left-4 z-10 rounded-lg bg-white
+                class="absolute top-4 left-4 z-10 rounded-lg bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark
                     flex items-center justify-center px-3 py-1.5 text-sm font-medium"
                 [ngClass]="getBadgeProperties().className">
                     {{ getBadgeProperties().label }}

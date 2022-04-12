@@ -1,4 +1,4 @@
-<article class="w-full bg-white rounded-2xl wen-card"  *ngIf="collection">
+<article class="w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card"  *ngIf="collection">
     <a class="text-current hover:text-current" [routerLink]="['/', this.path, collection.uid]">
         <div class="relative w-full overflow-hidden h-44 rounded-2xl">
             <img
@@ -10,7 +10,7 @@
                 }"
             />
 
-            <div class="absolute z-10 flex items-center justify-center px-2 py-1 bg-white rounded-lg top-4 left-4"
+            <div class="absolute z-10 flex items-center justify-center px-2 py-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-lg top-4 left-4"
                 *ngIf="isDateInFuture(collection?.availableFrom)">
                 <wen-icon-time class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-time>
                 <div class="ml-2.5 text-xs">
@@ -43,7 +43,7 @@
         </div>
 
         <div class="relative flex flex-col w-full h-40 px-5">
-            <h3 class="mt-4 mb-2 text-lg font-bold truncate">{{ collection.name }}</h3>
+            <h3 class="mt-4 mb-2 text-lg font-bold truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ collection.name }}</h3>
 
             <div class="text-sm font-medium break-words line-clamp-3">
                 {{ collection.description | stripMarkdown }}

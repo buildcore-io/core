@@ -45,7 +45,7 @@
   <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
     (scrolled)="onScroll()">
 
-    <nz-skeleton *ngIf="isLoading(award$ | async)" class="p-4 bg-white rounded-2xl w-76 h-76" [nzActive]="true"
+    <nz-skeleton *ngIf="isLoading(award$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
     <nz-card class="w-76" *ngIf="isEmpty(award$ | async)">
