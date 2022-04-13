@@ -11,7 +11,8 @@ import { BehaviorSubject } from 'rxjs';
 import { SpaceApi } from './../../@api/space.api';
 
 export interface StepArticle {
-  img: string;
+  imgLight: string;
+  imgDark: string;
   title: string;
   description: string;
 }
@@ -29,17 +30,20 @@ export class HomePage implements OnInit {
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
   public stepArticles: StepArticle[] = [
     {
-      img: '/assets/mocks/build_dao_banner.jpg',
+      imgLight: '/assets/mocks/build_dao_banner.jpg',
+      imgDark: '/assets/mocks/build_dao_banner_dark.jpg',
       title: $localize`Create your community`,
       description: $localize`Feeless, secure, on-chain voting, and “one click” creation tools.`
     },
     {
-      img: '/assets/mocks/manage_dao_banner.jpg',
+      imgLight: '/assets/mocks/manage_dao_banner.jpg',
+      imgDark: '/assets/mocks/manage_dao_banner_dark.png',
       title: $localize`Build reputation and rewards`,
       description: $localize`Create incentives and build reputation, trust and community engagement.`
     },
     {
-      img: '/assets/mocks/own_dao_banner.jpg',
+      imgLight: '/assets/mocks/own_dao_banner.jpg',
+      imgDark: '/assets/mocks/own_dao_banner_dark.jpg',
       title: $localize`Manage, Maintain, Grow`,
       description: $localize`Governance, voting, for both public and private communities.`
     }
@@ -47,8 +51,8 @@ export class HomePage implements OnInit {
 
   constructor(
     public deviceService: DeviceService,
+    public themeService: ThemeService,
     private auth: AuthService,
-    private themeService: ThemeService,
     private router: Router,
     private collectionApi: CollectionApi,
     private spaceApi: SpaceApi
