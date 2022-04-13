@@ -10,6 +10,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { ThemeList, ThemeService } from '@core/services/theme';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
@@ -22,7 +23,8 @@ import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, map, skip, Subscription, take } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
 dayjs.extend(isSameOrBefore);
 
@@ -51,70 +53,7 @@ export class NFTPage implements OnInit, OnDestroy {
   public endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
-  public lineChartOptions: ChartConfiguration['options'] = {
-    elements: {
-      line: {
-        tension: 0
-      }
-    },
-    scales: {
-      xAxis: {
-        ticks: {
-          maxTicksLimit: 10,
-          color: '#959388',
-          font: {
-            size: 14,
-            weight: '600',
-            family: 'Poppins',
-            lineHeight: '14px'
-          }
-        }
-      },
-      yAxis: {
-        ticks: {
-          maxTicksLimit: 10,
-          color: '#959388',
-          font: {
-            size: 14,
-            weight: '600',
-            family: 'Poppins',
-            lineHeight: '14px'
-          }
-        }
-      }
-    },
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        xAlign: 'center',
-        yAlign: 'bottom',
-        backgroundColor: '#fff',
-        titleColor: 'rgba(0,0,0,0)',
-        titleSpacing: 0,
-        titleMarginBottom: 0,
-        titleFont: {
-          lineHeight: 0
-        },
-        bodyColor: '#333333',
-        bodyFont: {
-          weight: '500',
-          family: 'Poppins',
-          size: 16,
-          lineHeight: '28px'
-        },
-        bodyAlign: 'center',
-        bodySpacing: 0,
-        borderColor: 'rgba(0, 0, 0, 0.2)',
-        borderWidth: 1,
-        footerMarginTop: 0,
-        caretPadding: 16,
-        caretSize: 2,
-        displayColors: false
-      }
-    }
-  };
+  public lineChartOptions?: ChartConfiguration['options'] = {}
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
@@ -135,7 +74,8 @@ export class NFTPage implements OnInit, OnDestroy {
     private fileApi: FileApi,
     private router: Router,
     private cache: CacheService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private themeService: ThemeService
   ) {
     // none
   }
@@ -246,14 +186,42 @@ export class NFTPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.orders$.pipe(untilDestroyed(this)).subscribe((obj) => {
-      const arr: any = [];
-      obj?.forEach((obj) => {
-        arr.push([obj.order.createdOn?.toDate(), obj.order.payload.amount]);
-      });
+    combineLatest([this.data.orders$, this.themeService.theme$])
+      .pipe(
+        filter(([obj, theme]) => !!obj && !!theme),
+        untilDestroyed(this)
+      )
+      .subscribe(([obj, theme]) => {
+        const arr: any = [];
+        obj?.forEach((obj) => {
+          arr.push([obj.order.createdOn?.toDate(), obj.order.payload.amount]);
+        });
 
-      this.initChart(arr);
-    });
+        switch (theme) {
+        case ThemeList.Light:
+          this.setLineChartOptions('#959388', '#fff', '#333333');
+          this.initChart(arr, {
+            backgroundColor: '#FCFBF9',
+            borderColor: '#F39200',
+            pointBackgroundColor: '#F39200',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#333333',
+            pointHoverBorderColor: '#fff'
+          });
+          break;
+        case ThemeList.Dark:
+          this.setLineChartOptions('#959388', '#fff', '#333333');
+          this.initChart(arr, {
+            backgroundColor: '#FCFBF9',
+            borderColor: '#F39200',
+            pointBackgroundColor: '#F39200',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#333333',
+            pointHoverBorderColor: '#fff'
+          });
+          break;
+        }
+      });
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.endsOnTicker$.next(this.endsOnTicker$.value);
@@ -527,7 +495,75 @@ export class NFTPage implements OnInit, OnDestroy {
     return (!nft.owner && (nft.type === CollectionType.GENERATED || nft.type === CollectionType.SFT));
   }
 
-  public initChart(data: any[][]): void {
+  private setLineChartOptions(axisColor: string, tooltipColor: string, tooltipBackgroundColor: string): void {
+    this.lineChartOptions = {
+      elements: {
+        line: {
+          tension: 0
+        }
+      },
+      scales: {
+        xAxis: {
+          ticks: {
+            maxTicksLimit: 10,
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        },
+        yAxis: {
+          ticks: {
+            maxTicksLimit: 10,
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          xAlign: 'center',
+          yAlign: 'bottom',
+          backgroundColor: tooltipBackgroundColor,
+          titleColor: 'rgba(0,0,0,0)',
+          titleSpacing: 0,
+          titleMarginBottom: 0,
+          titleFont: {
+            lineHeight: 0
+          },
+          bodyColor: tooltipColor,
+          bodyFont: {
+            weight: '500',
+            family: 'Poppins',
+            size: 16,
+            lineHeight: '28px'
+          },
+          bodyAlign: 'center',
+          bodySpacing: 0,
+          borderColor: 'rgba(0, 0, 0, 0.2)',
+          borderWidth: 1,
+          footerMarginTop: 0,
+          caretPadding: 16,
+          caretSize: 2,
+          displayColors: false
+        }
+      }
+    };
+    this.cd.markForCheck();
+  }
+
+  private initChart(data: any[][], colorOptions: object): void {
     const dataToShow: { data: number[]; labels: string[] } = {
       data: [],
       labels: []
@@ -545,13 +581,8 @@ export class NFTPage implements OnInit, OnDestroy {
       datasets: [
         {
           data: dataToShow.data,
-          backgroundColor: '#FCFBF9',
-          borderColor: '#F39200',
-          pointBackgroundColor: '#F39200',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#333333',
-          pointHoverBorderColor: '#fff',
-          fill: 'origin'
+          fill: 'origin',
+          ...colorOptions
         }
       ],
       labels: dataToShow.labels

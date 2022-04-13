@@ -1,6 +1,3 @@
-a.ant-btn {
-  -webkit-appearance: none;
-}
 
 .ant-btn:disabled {
   opacity: 0.5;
@@ -24,25 +21,34 @@ a.ant-btn {
 
 .ant-btn {
   font-size: @font-size-lg;
-  @apply inline-flex place-items-center justify-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
-  
-  &:hover {
-    @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;
-  }
-
-  &:active,
-  &:focus {
-    @apply text-buttons-secondary-pressed dark:text-buttons-secondary-pressed-dark;
-  }
+  @apply inline-flex place-items-center justify-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-buttons-text dark:text-buttons-text-dark;
 }
 
 
 .ant-btn-primary {
-  @apply bg-buttons-primary-enabled;
+  @apply bg-buttons-primary-enabled dark:bg-buttons-primary-enabled-dark text-foregrounds-on-primary;
+
+  &:hover {
+    @apply bg-buttons-primary-on-hover dark:bg-buttons-primary-on-hover-dark text-foregrounds-on-primary;
+  }
 
   &:active,
   &:focus {
-    @apply bg-buttons-primary-pressed dark:bg-buttons-primary-pressed-dark border-buttons-primary-pressed dark:border-buttons-primary-pressed-dark;
+    @apply bg-buttons-primary-pressed dark:bg-buttons-primary-pressed-dark border-buttons-primary-pressed;
+  }
+}
+
+a.ant-btn {
+  -webkit-appearance: none;
+  @apply py-0 bg-buttons-tertiary-enabled text-textlink-enabled !important;
+
+  &:hover {
+    @apply text-textlink-on-hover;
+  }
+
+  &:active,
+  &:focus {
+    @apply text-textlink-pressed;
   }
 }
 

@@ -7,3 +7,11 @@
 .ant-checkbox {
     @apply text-foregrounds-primary dark:text-foregrounds-primary-dark;
 }
+
+.ant-checkbox-wrapper {
+    @apply text-foregrounds-primary dark:text-foregrounds-primary-dark;
+    
+    .ant-checkbox-disabled + span {
+        @apply text-foregrounds-secondary dark:text-foregrounds-secondary-dark;
+    }
+}

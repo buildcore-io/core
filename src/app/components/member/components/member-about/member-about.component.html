@@ -8,10 +8,10 @@
     <h3 class="max-w-full mx-4 text-left break-words whitespace-pre-wrap">@ {{ (data.member$ | async)?.name ||
       ((data.member$ | async)?.uid | truncate:[12]) }}</h3>
     <div *ngIf="(data.member$ | async)?.uid === (loggedInMember | async)?.uid">
-      <a nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
+      <button nz-button nzSize="default" nzShape="circle" nzType="primary" (click)="openDrawer()"
         class="ml-4 text-center text-current">
-        <i nz-icon class="text-white" nzType="edit"></i>
-      </a>
+        <i nz-icon nzType="edit" class="text-white"></i>
+      </button>
       <wen-member-edit-drawer [isDesktop]="(deviceService.isDesktop$ | async) === true"
         *ngIf="(drawerVisible$ | async) || false" (wenOnClose)="closeDrawer()">
       </wen-member-edit-drawer>
