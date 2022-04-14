@@ -25,7 +25,7 @@
 
             <div *ngIf="!fullWidth && collection?.approved && (isAvailableForSale() || isAvailableForAuction() || nft?.placeholderNft)"
                 class="absolute top-4 left-4 z-10 rounded-lg bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark
-                    flex items-center justify-center px-3 py-1.5 text-sm font-medium"
+                    flex items-center justify-center px-3 py-1.5 text-sm font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
                 [ngClass]="getBadgeProperties().className">
                     {{ getBadgeProperties().label }}
             </div>
@@ -35,7 +35,7 @@
                     <wen-collection-access-badge [type]="collection?.access || targetAccess.OPEN"></wen-collection-access-badge>
             </div>
 
-            <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-icons-secondary dark:bg-icons-secondary-dark"
+            <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                 *ngIf="(isDateInFuture(nft?.availableFrom) || isDateInFuture(nft?.auctionFrom))">
                 <wen-icon-time class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-time>
                 <div class="ml-2.5 text-xs">
@@ -56,14 +56,14 @@
         <div class="relative flex flex-col grow w-full px-4 py-3 lg:py-4">
             <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
 
-            <div class="mt-1 mb-3 text-sm font-medium break-words line-clamp-2">
+            <div class="mt-1 mb-3 text-sm font-medium break-words line-clamp-2 text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 {{ collection?.name || '' }}
             </div>
 
             <div class="flex items-center mt-auto">
                 <div class="grow w-0" *ngIf="isAvailableForSale()">
                   <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
-                  <div class="text-sm font-medium truncate">
+                  <div class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">
                     {{formatBest(applyDiscount(nft?.availablePrice || nft?.price))}}
                   </div>
                 </div>
@@ -73,7 +73,7 @@
                       <ng-container *ngIf="nft?.auctionHighestBid; else minBidBlock" i18n>Current bid</ng-container>
                       <ng-template #minBidBlock>Min bid</ng-template>
                   </div>
-                  <div class="text-sm font-medium truncate">
+                  <div class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">
                     {{formatBest(nft?.auctionHighestBid || nft?.auctionFloorPrice)}}
                   </div>
                 </div>
@@ -86,7 +86,7 @@
                         </nz-avatar>
                         <div class="ml-2">
                             <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Owned by</div>
-                            <div class="text-sm font-medium truncate">
+                            <div class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">
                                 @{{((owner$ | async)?.name || (owner$ | async)?.uid) | truncate:[10] }}
                             </div>
                         </div>

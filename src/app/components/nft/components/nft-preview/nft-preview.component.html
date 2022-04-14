@@ -98,11 +98,11 @@
             <wen-collapse title="System info" class="mt-8">
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
                     <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Migrate</span>
-                    <p nz-typography class="flex items-center w-3/5 lg:w-1/2">
+                    <p nz-typography class="flex items-center w-3/5 lg:w-1/2 text-foregrounds-primary dark:text-foregrounds-primary-dark">
                         <span i18n>Shimmer/Mainnet (Tokenization)...SOON.</span>
 
                         <wen-icon-question-circle
-                            class="ml-2.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                            class="ml-2.5"
                             nz-tooltip
                             i18n-nzTooltipTitle
                             nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
@@ -112,13 +112,13 @@
 
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
                     <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Metadata</span>
-                    <p nz-typography i18n>
+                    <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                         Preparing...
                     </p>
                 </div>
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
                   <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Image</span>
-                  <p nz-typography i18n>
+                  <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                       Preparing...
                   </p>
               </div>
@@ -128,7 +128,7 @@
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let prop of getValues(nft.properties)">
                         <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ prop.label }}</span>
-                        <p nz-typography>{{ prop.value }}</p>
+                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ prop.value }}</p>
                 </div>
             </wen-collapse>
 
@@ -136,7 +136,7 @@
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let stat of getValues(nft.stats)">
                         <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ stat.label }}</span>
-                        <p nz-typography>{{ stat.value }}</p>
+                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ stat.value }}</p>
                 </div>
             </wen-collapse>
         </div>

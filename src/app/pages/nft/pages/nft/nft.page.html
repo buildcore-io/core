@@ -314,12 +314,12 @@
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
                     <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>On-Chain Record</span>
-                    <p nz-typography class="flex items-center" *ngIf="!getOnChainInfo(data.orders$ | async)" i18n>Preparing...</p>
-                    <div nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex items-center justify-end">
+                    <p nz-typography class="flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="!getOnChainInfo(data.orders$ | async)" i18n>Preparing...</p>
+                    <div nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
                         <div class="w-3/5 break-words line-clamp-2">{{ getOnChainInfo(data.orders$ | async) }}</div>
                         <a class="ml-1 underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank" i18n>View</a>
                         <wen-icon-question-circle
-                            class="ml-2.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                            class="ml-2.5"
                             nz-tooltip
                             i18n-nzTooltipTitle
                             nzTooltipTitle="View all of the transaction details of this NFT on the Tangle"
@@ -329,11 +329,11 @@
 
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
                     <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Migrate</span>
-                    <div nz-typography class="flex items-center justify-end">
+                    <div nz-typography class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
                         <div class="w-3/5 break-words line-clamp-2" i18n>Shimmer/Mainnet (Tokenization)...SOON.</div>
 
                         <wen-icon-question-circle
-                            class="ml-2.5 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
+                            class="ml-2.5"
                             nz-tooltip
                             i18n-nzTooltipTitle
                             nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
@@ -343,16 +343,16 @@
 
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
                   <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Metadata</span>
-                  <div nz-typography class="flex items-center justify-end">
+                  <div nz-typography class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
                       <div class="w-3/5 break-words line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
-                      <a class="ml-1 underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank" i18n>View</a>
+                      <a class="ml-1 underline left-16" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank" i18n>View</a>
                   </div>
                 </div>
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
                   <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Image</span>
-                  <div nz-typography class="flex items-center justify-end">
+                  <div nz-typography class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
                       <div class="w-3/5 break-words line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
-                      <a class="ml-1 underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank" i18n>View</a>
+                      <a class="ml-1 underline left-16" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank" i18n>View</a>
                   </div>
               </div>
             </wen-collapse>
@@ -361,7 +361,7 @@
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let prop of data.getPropStats((data.nft$ | async)?.properties)">
                         <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ prop.label }}</span>
-                        <p nz-typography>{{ prop.value }}</p>
+                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ prop.value }}</p>
                 </div>
             </wen-collapse>
 
@@ -369,7 +369,7 @@
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let stat of data.getPropStats((data.nft$ | async)?.stats)">
                         <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ stat.label }}</span>
-                        <p nz-typography>{{ stat.value }}</p>
+                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ stat.value }}</p>
                 </div>
             </wen-collapse>
         </div>
@@ -401,7 +401,8 @@
                 </div>
             </div>
 
-            <div class="mt-10 text-sm font-medium lg:mt-2 lg:ml-10" [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
+            <div class="mt-10 text-sm font-medium lg:mt-2 lg:ml-10 text-foregrounds-primary dark:text-foregrounds-primary-dark"
+                [innerHtml]="(data.collection$ | async)?.description | stripMarkdown"></div>
         </div>
 
         <div class="mt-10 lg:grid place-items-start">

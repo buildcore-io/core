@@ -15,7 +15,7 @@
         <div class="ml-6">
           <div class="text-xs font-medium text-gray-400">
             {{ (nft?.availableFrom || nft?.auctionFrom)?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
-          <div class="text-base font-medium mt-0.5">
+          <div class="text-base font-medium mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
             <ng-container *ngIf="nft?.availableFrom">
               <span i18n>Listed by</span> @{{((data.owner$ | async)?.name || (data.owner$ | async)?.uid) | truncate:[10] }}
             </ng-container>
@@ -49,7 +49,7 @@
         <div class="w-full ml-6">
           <div class="text-xs font-medium text-gray-400">
             {{ t.order.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
-          <div class="text-base font-medium mt-0.5">
+          <div class="text-base font-medium mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
 
             <nz-collapse nzGhost>
               <nz-collapse-panel [nzHeader]="lineTpl" [nzActive]="false" [nzShowArrow]="false"
@@ -100,7 +100,7 @@
         <div class="ml-6">
           <div class="text-xs font-medium text-gray-400">
             {{ nft?.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
-          <div class="text-base font-medium mt-0.5">
+          <div class="text-base font-medium mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
             <span i18n>Listed by space</span> {{listedBy.name || listedBy.uid}}
           </div>
         </div>

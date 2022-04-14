@@ -10,7 +10,7 @@
                 }"
             />
 
-            <div class="absolute z-10 flex items-center justify-center px-2 py-1 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-lg top-4 left-4"
+            <div class="absolute z-10 flex items-center justify-center px-2 py-1 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-lg top-4 left-4"
                 *ngIf="isDateInFuture(collection?.availableFrom)">
                 <wen-icon-time class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-time>
                 <div class="ml-2.5 text-xs">
@@ -36,7 +36,7 @@
                     <wen-collection-access-badge [type]="collection.access"></wen-collection-access-badge>
             </div>
 
-            <div class="absolute bottom-0 flex items-center justify-center w-full py-1 bg-icons-secondary dark:bg-icons-secondary-dark"
+            <div class="absolute bottom-0 flex items-center justify-center w-full py-0 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                 *ngIf="collection?.limitedEdition">
                 <div class="text-sm font-medium" i18n>Limited Edition</div>
             </div>
