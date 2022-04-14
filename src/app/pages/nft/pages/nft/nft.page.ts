@@ -199,24 +199,24 @@ export class NFTPage implements OnInit, OnDestroy {
 
         switch (theme) {
         case ThemeList.Light:
-          this.setLineChartOptions('#959388', '#fff', '#333333');
+          this.setLineChartOptions('#959388', '#fff', '#333');
           this.initChart(arr, {
             backgroundColor: '#FCFBF9',
             borderColor: '#F39200',
             pointBackgroundColor: '#F39200',
             pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#333333',
+            pointHoverBackgroundColor: '#333',
             pointHoverBorderColor: '#fff'
           });
           break;
         case ThemeList.Dark:
-          this.setLineChartOptions('#959388', '#fff', '#333333');
+          this.setLineChartOptions('#6A6962', '#333', '#fff');
           this.initChart(arr, {
-            backgroundColor: '#FCFBF9',
+            backgroundColor: '#232323',
             borderColor: '#F39200',
             pointBackgroundColor: '#F39200',
             pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#333333',
+            pointHoverBackgroundColor: '#333',
             pointHoverBorderColor: '#fff'
           });
           break;

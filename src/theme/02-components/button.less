@@ -40,7 +40,7 @@
 
 a.ant-btn {
   -webkit-appearance: none;
-  @apply py-0 bg-buttons-tertiary-enabled text-textlink-enabled !important;
+  @apply py-0  bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-buttons-text dark:text-buttons-text-dark !important;
 
   &:hover {
     @apply text-textlink-on-hover;
@@ -61,11 +61,15 @@ a.ant-btn {
 }
 
 .wen-secondary {
-  @apply text-foregrounds-primary dark:text-foregrounds-primary-dark hover:border-accent-primary dark:border-accent-primary-dark;
+  @apply text-buttons-secondary-enabled dark:text-buttons-secondary-enabled-dark bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark;
+
+  &:hover {
+    @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;
+  }
 
   &:active,
   &:focus {
-    @apply bg-accent-primary dark:bg-accent-primary-dark border-accent-primary dark:border-accent-primary-dark text-white;
+    @apply text-buttons-secondary-pressed dark:text-buttons-secondary-pressed-dark;
 
     path {
       stroke: white;

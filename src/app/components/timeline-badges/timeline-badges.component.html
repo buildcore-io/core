@@ -25,7 +25,7 @@
                 <div class="ml-6">
                     <div class="text-xs font-medium text-gray-400">
                         {{ t.createdOn?.toDate() | date: (deviceService.isDesktop$ | async) ? "medium" : "mediumDate" }}</div>
-                    <div class="text-base font-medium mt-0.5">
+                    <div class="text-base font-medium mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
                         <span i18n>Earned Badge</span> {{t.payload.name}} <span i18n>with</span> {{t.payload.xp}}XP</div>
                 </div>
             </div>
