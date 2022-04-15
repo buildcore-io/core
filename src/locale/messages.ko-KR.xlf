@@ -1649,7 +1649,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">100,101</context>
         </context-group>
-        <target state="needs-translation"><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></target>
+        <target state="translated"><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
@@ -1791,7 +1791,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ownTitle(data.nft$ | async) }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ownTitle(data.nft$ | async) }}"/></target>
       </trans-unit>
       <trans-unit id="3616191027804458021" datatype="html">
         <source>d</source>
@@ -1799,7 +1799,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">d</target>
+        <target state="translated">날짜</target>
       </trans-unit>
       <trans-unit id="8398233202919865612" datatype="html">
         <source>h</source>
@@ -1807,7 +1807,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="needs-translation">h</target>
+        <target state="translated">시간</target>
       </trans-unit>
       <trans-unit id="3370839803061654054" datatype="html">
         <source>hours</source>
@@ -1823,7 +1823,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">m</target>
+        <target state="translated">분</target>
       </trans-unit>
       <trans-unit id="3901733599428143571" datatype="html">
         <source>min</source>
@@ -1839,7 +1839,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">50</context>
         </context-group>
-        <target state="needs-translation">s</target>
+        <target state="translated">초</target>
       </trans-unit>
       <trans-unit id="8444840466573361504" datatype="html">
         <source>sec</source>
@@ -4635,7 +4635,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">143,144</context>
         </context-group>
-        <target state="needs-translation">StepArticle image</target>
+        <target state="translated">단계 문서 이미지</target>
       </trans-unit>
       <trans-unit id="7719648407147871439" datatype="html">
         <source> Voting is essential and it needs to be on-chain and FREE. </source>
@@ -5151,7 +5151,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate bellow</target>
+        <target state="translated">아래를 생성하면 다시 업로드하세요.</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -5447,7 +5447,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">248,249</context>
         </context-group>
-        <target state="needs-translation">Check out nft</target>
+        <target state="translated">Nft 확인하기</target>
       </trans-unit>
       <trans-unit id="2912430443657619562" datatype="html">
         <source> Current highest bid</source>
@@ -5659,7 +5659,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">353,355</context>
         </context-group>
-        <target state="needs-translation">by</target>
+        <target state="translated">by</target>
       </trans-unit>
       <trans-unit id="7725404141462651854" datatype="html">
         <source>New Proposal</source>
@@ -5987,7 +5987,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">384,385</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has in the space &amp; connections</target>
+        <target state="translated">투표는 해당 스페이스에서 회원이 보유한 총 XP 양에 따라 가중치가 부여됩니다.</target>
       </trans-unit>
       <trans-unit id="5394345820497679692" datatype="html">
         <source>XP Reputation - Selected Badges</source>
@@ -6179,7 +6179,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="needs-translation">joined soonaverse on</target>
+        <target state="translated">의 수나버스에 가입하셨습니다.</target>
       </trans-unit>
       <trans-unit id="835836004237796752" datatype="html">
         <source>Voter</source>
@@ -6311,7 +6311,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">117,118</context>
         </context-group>
-        <target state="needs-translation">Check out proposal</target>
+        <target state="translated">제안서 확인하기</target>
       </trans-unit>
       <trans-unit id="4969998148307889901" datatype="html">
         <source>Current Results</source>
@@ -6836,7 +6836,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="needs-translation">Make it personal.</target>
+        <target state="translated">개인용으로 만들기</target>
       </trans-unit>
     </body>
   </file>
