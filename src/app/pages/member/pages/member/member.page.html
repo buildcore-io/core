@@ -11,7 +11,7 @@
       </h1>
 
       <button *ngIf="(deviceService.isMobile$ | async) && ((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
-        nz-button nzType="default" nzBlock nzSize="small" class="w-max"
+        nz-button nzType="default" nzSize="small" class="w-max"
         (click)="isAboutMemberVisible = true" i18n>Profile info</button>
     </div>
 

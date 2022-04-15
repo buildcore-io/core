@@ -3,7 +3,7 @@
     <div class="flex">
       <button nz-button (click)="onClickSignIn()" *ngIf="(auth.showWalletPopup$ | async) === 1"
       class="flex w-full h-auto gap-6 p-6 mt-10 border border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary dark:border-foregrounds-secondary-dark rounded-large">
-        <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"></nz-avatar>
+        <nz-avatar nzSrc="assets/metamask.svg" [nzSize]="48" class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"></nz-avatar>
         <div class="flex flex-col items-start text-foregrounds-primary dark:text-foregrounds-primary-dark">
           <span i18n>Metamask</span>
           <small class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Connect to your Metamask wallet</small>

@@ -17,7 +17,7 @@
             <div class="flex items-center">
                 <nz-avatar
                     [nzSrc]="t?.payload.image | ipfsBadge:filesizes.small"
-                    class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-gray-400 min-w-10 min-h-10"
+                    class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10"
                     nzShape="circle"
                 >
                 </nz-avatar>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <button nz-button nzType="primary" class="self-center block w-48 mx-auto mt-6"
+    <button nz-button nzType="primary" class="self-center w-48 mx-auto mt-6" nzBlock
         *ngIf="((badges)?.length || 0) > 3"
         (click)="showAllBadges = !showAllBadges">        
         <ng-container *ngIf="showAllBadges; else showMoreBlock" i18n>Show less</ng-container>

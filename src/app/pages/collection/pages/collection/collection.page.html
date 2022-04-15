@@ -36,7 +36,7 @@
                     Cancel Collection
                 </button>
 
-                <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+                <button nz-button class="wen-secondary" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
                     Edit Collection
                 </button>
             </div>
@@ -128,7 +128,7 @@
                 Cancel Collection
             </button>
 
-            <button nz-button nzType="default" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+            <button nz-button class="wen-secondary" (click)="edit()" *ngIf="(data.creator$ | async)?.uid === (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
                 Edit Collection
             </button>
 

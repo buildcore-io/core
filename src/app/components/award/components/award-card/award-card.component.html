@@ -15,7 +15,7 @@
     <div class="bottom-0 flex flex-col w-full h-28 lg:relative">
       <div class="inline-flex items-center space-x-3" [ngClass]="fullWidth ? 'lg:justify-end' : ''">
         <nz-avatar [nzSrc]="award.badge.image | ipfsBadge:filesizes.small"
-          class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-gray-400" nzShape="circle"></nz-avatar>
+          class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark" nzShape="circle"></nz-avatar>
         <nz-tag class="wen-xp-tag">{{award.badge.xp / award.badge.count}} XP</nz-tag>
         <wen-icon-angle-left class="flex rotate-180" *ngIf="fullWidth && (deviceService.isDesktop$ | async)"></wen-icon-angle-left>
       </div>

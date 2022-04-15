@@ -191,7 +191,7 @@
                 </div>
 
                 <button nz-button *ngIf="properties.controls.length < maxPropertyCount"
-                    nzType="link" class="flex items-center pl-0 mt-3" (click)="addProperty()">
+                    class="flex items-center mt-3 wen-secondary" (click)="addProperty()">
                     <wen-icon-plus class="mr-0.5"></wen-icon-plus>
                     <span i18n>Add property</span>
                 </button>
@@ -282,7 +282,7 @@
                 </div>
 
                 <button nz-button *ngIf="stats.controls.length < maxStatCount"
-                nzType="link" class="flex items-center pl-0 mt-3" (click)="addStat()">
+                    class="flex items-center mt-3 wen-secondary" (click)="addStat()">
                     <wen-icon-plus class="mr-0.5"></wen-icon-plus>
                     <span i18n>Add stat</span>
                 </button>

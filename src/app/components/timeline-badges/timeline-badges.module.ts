@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { TimelineBadgesComponent } from './timeline-badges.component';
 
@@ -15,7 +16,8 @@ import { TimelineBadgesComponent } from './timeline-badges.component';
     NzAvatarModule,
     NzCardModule,
     IconModule,
-    IpfsBadgeModule
+    IpfsBadgeModule,
+    NzButtonModule
   ],
   exports: [
     TimelineBadgesComponent
