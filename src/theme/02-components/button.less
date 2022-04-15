@@ -21,9 +21,20 @@
 
 .ant-btn {
   font-size: @font-size-lg;
-  @apply inline-flex place-items-center justify-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-buttons-text dark:text-buttons-text-dark;
+  @apply inline-flex place-items-center justify-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark dark:border-none;
+  
+  > * {
+    @apply text-inherit;
+  }
+
+  &:not([nztype="default"]) {
+    @apply text-buttons-text dark:text-buttons-text-dark;
+  }
 }
 
+.ant-btn.ant-btn-block {
+  @apply block;
+}
 
 .ant-btn-primary {
   @apply bg-buttons-primary-enabled dark:bg-buttons-primary-enabled-dark text-foregrounds-on-primary;
@@ -40,7 +51,11 @@
 
 a.ant-btn {
   -webkit-appearance: none;
-  @apply py-0  bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-buttons-text dark:text-buttons-text-dark !important;
+  @apply py-0;
+}
+
+a.ant-btn&:not([nztype="default"]) {
+  @apply text-textlink-enabled dark:text-textlink-enabled-dark;
 
   &:hover {
     @apply text-textlink-on-hover;
@@ -50,6 +65,10 @@ a.ant-btn {
   &:focus {
     @apply text-textlink-pressed;
   }
+
+  &:not(.ant-btn-block) {
+    @apply bg-transparent dark:bg-transparent;
+  }
 }
 
 .ant-btn-lg {
@@ -58,10 +77,15 @@ a.ant-btn {
 
 .ant-btn-dangerous {
   border-color: transparent;
+  @apply border-transparent bg-buttons-destructive dark:bg-buttons-destructive;
+
+  &:hover {
+    @apply bg-buttons-destructive dark:bg-buttons-destructive;
+  }
 }
 
 .wen-secondary {
-  @apply text-buttons-secondary-enabled dark:text-buttons-secondary-enabled-dark bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark;
+  @apply text-buttons-secondary-enabled dark:text-buttons-secondary-enabled-dark bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark border-none !important;
 
   &:hover {
     @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;

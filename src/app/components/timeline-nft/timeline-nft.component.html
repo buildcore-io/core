@@ -43,7 +43,7 @@
     <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark rounded-large">
       <div class="flex items-center w-full">
         <nz-avatar [nzSrc]="t.newMember.currentProfileImage| ipfsBadge:filesizes.small"
-          class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-gray-400 min-w-10 min-h-10" nzShape="circle">
+          class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10" nzShape="circle">
         </nz-avatar>
 
         <div class="w-full ml-6">
@@ -94,7 +94,7 @@
     <div class="flex items-center justify-between w-full p-3 border lg:p-5 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark rounded-large">
       <div class="flex items-center">
         <nz-avatar [nzSrc]="previewImageService.getAvatarSize(listedBy.avatarUrl)"
-          class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-gray-400 min-w-10 min-h-10" nzShape="circle">
+          class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10 min-h-10" nzShape="circle">
         </nz-avatar>
 
         <div class="ml-6">
@@ -108,7 +108,7 @@
     </div>
   </div>
 
-  <button nz-button nzType="primary" class="self-center block w-48 mx-auto mt-6"
+  <button nz-button nzType="primary" nzBlock class="self-center w-48 mx-auto mt-6"
       *ngIf="((orders)?.length || 0) > (listedBy ? collapsedEventsCount - 1 : collapsedEventsCount)"
       (click)="showAll = !showAll">
       <ng-container *ngIf="showAll; else showMoreBlock" i18n>Show less</ng-container>

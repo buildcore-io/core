@@ -1,6 +1,7 @@
 <div class="relative w-6 h-6 overflow-hidden cursor-pointer rounded-2xl" *ngIf="deviceService.isDesktop$ | async; else isMobileBlock">
   <div
-    class="absolute flex flex-col justify-between w-full h-16 overflow-visible transition-transform duration-1000 ease-in-out t-0 l-0 wrapper"
+    class="absolute flex flex-col justify-between w-full h-16 overflow-visible
+      transition-transform duration-1000 ease-in-out t-0 l-0 wrapper text-icons-primary dark:text-icons-primary-dark"
     [ngClass]="{
       'rotate-180': (currentTheme$ | async) === theme.Light
     }"
