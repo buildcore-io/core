@@ -369,13 +369,13 @@ export class NftApi extends BaseApi<Nft> {
 
   public topMember(member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, 'updatedOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('owner', '==', member);
+      return ref.where('hidden', '==', false).where('owner', '==', member);
     });
   }
 
   public topMemberByCollection(collection: string, member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Nft[]> {
     return this._query(this.collection, 'updatedOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('owner', '==', member).where('collection', '==', collection);
+      return ref.where('hidden', '==', false).where('owner', '==', member).where('collection', '==', collection);
     });
   }
 }
