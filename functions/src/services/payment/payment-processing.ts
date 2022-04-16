@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
-import { DEFAULT_TRANSACTION_DELAY, MIN_AMOUNT_TO_TRANSFER } from '../../../interfaces/config';
+import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
@@ -306,7 +306,7 @@ export class ProcessingService {
           royalty: true,
           void: false,
           // We delay royalty.
-          delay: DEFAULT_TRANSACTION_DELAY,
+          delay: ROYALTY_TRANSACTION_DELAY,
           nft: order.payload.nft || null,
           collection: order.payload.collection || null
         }

@@ -11,7 +11,7 @@ service cloud.firestore {
     }
 
     match /nft/{document=**} {
-      allow read;
+      allow read: if resource.data.hidden == false;
     }
 
     match /collection/{document=**} {
@@ -76,6 +76,5 @@ service cloud.firestore {
       // Orders can't be searched, user must know the exact order.
       allow list: if resource.data.type != 'ORDER';
     }
-
   }
 }

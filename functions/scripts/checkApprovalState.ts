@@ -31,7 +31,7 @@ db.collection('collection').get().then(async (snapshot) => {
 
           if (i > 500) {
             // Wait for two seconds every 500 records.
-            // await new Promise(resolve => setTimeout(resolve, 10000));
+            // await new Promise(resolve => setTimeout(resolve, 3000));
             i = 0;
           }
         }
