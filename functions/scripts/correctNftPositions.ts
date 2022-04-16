@@ -13,9 +13,8 @@ db.collection('collection').get().then(async (snapshot) => {
       let i = 0;
       let position = 0;
       for (const nft of snapshot2.docs) {
-        position++;
         i++;
-        console.log(col.data().name, '\t', nft.data().uid, '\t', position);
+        console.log(col.data().name, '\t', nft.data().uid, '\t',  nft.data().position, '\t', position);
         db.collection('nft').doc(nft.data().uid).update({
           position: position
         });
@@ -25,6 +24,8 @@ db.collection('collection').get().then(async (snapshot) => {
           await new Promise(resolve => setTimeout(resolve, 3000));
           i = 0;
         }
+
+        position++;
       }
     });
   }
