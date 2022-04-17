@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
-import { DEFAULT_TRANSACTION_DELAY, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Nft } from '../../interfaces/models/nft';
@@ -18,7 +18,6 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
   memory: "512MB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const newValue: Transaction = <Transaction>change.after.data();
-  const DEF_WALLET_PAY_IN_PROGRESS = 'payment-in-progress-';
   const WALLET_PAY_IN_PROGRESS = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
   if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
     return;
@@ -74,10 +73,12 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
     return;
   }
 
-  // Delay because it's retry.
-  if (tranData.payload.walletReference.count > 1) {
-    await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY)));
-  } else if (tranData.payload.delay > 0) { // Standard Delay required.
+  // Delay because it's retry --- this is no longer required.
+  // if (tranData.payload.walletReference.count > 1) {
+  //   await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY)));
+  // } else
+
+  if (tranData.payload.delay > 0) { // Standard Delay required.
     await new Promise(resolve => setTimeout(resolve, tranData.payload.delay));
   }
 
