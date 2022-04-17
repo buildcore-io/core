@@ -365,7 +365,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   public saleNotStartedYet(nft?: Nft | null): boolean {
-    if (!nft) {
+    if (!nft || !nft.availableFrom) {
       return false;
     }
 
