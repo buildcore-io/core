@@ -1,17 +1,13 @@
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
 import { merge } from 'lodash';
 import { URL_PATHS, WEN_PROD_ADDRESS, WEN_TEST_ADDRESS } from '../../interfaces/config';
+import { isProdEnv } from './config.utils';
 
 export const serverTime = () => admin.firestore.Timestamp.now();
 
 export function cOn<T>(o: T, path: URL_PATHS): T {
-  let url: string = WEN_TEST_ADDRESS;
-  if (functions.config()?.environment?.type === 'prod') {
-    url = WEN_PROD_ADDRESS;
-  }
-
+  const url: string = isProdEnv ? WEN_PROD_ADDRESS : WEN_TEST_ADDRESS;
   return uOn(merge(o, {
     wenUrl: url + path + '/' + (<any>o).uid,
     createdOn: serverTime(),

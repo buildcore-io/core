@@ -12,6 +12,7 @@ import { Member } from '../../interfaces/models/member';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -29,7 +30,7 @@ function defaultJoiUpdateCreateSchema(): any {
       scheme: ['https']
     }).optional(),
     // On test we allow now.
-    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
+    availableFrom: Joi.date().greater(dayjs().add(isProdEnv ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     url: Joi.string().allow(null, '').uri({
@@ -255,7 +256,7 @@ export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
   if (params.body.auctionFrom) {
     update.auctionFrom = params.body.auctionFrom;
     update.auctionTo = dateToTimestamp(dayjs(params.body.auctionFrom.toDate()).add(parseInt(params.body.auctionLength), 'ms')),
-    update.auctionFloorPrice = parseInt(params.body.auctionFloorPrice);
+      update.auctionFloorPrice = parseInt(params.body.auctionFloorPrice);
     update.auctionLength = parseInt(params.body.auctionLength);
     update.auctionHighestBid = 0;
     update.auctionHighestBidder = null;

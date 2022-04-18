@@ -9,6 +9,7 @@ import { Nft } from '../../interfaces/models/nft';
 import { superPump } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
 import { WalletService } from "../services/wallet/wallet";
+import { isProdEnv } from '../utils/config.utils';
 import { serverTime } from "../utils/dateTime.utils";
 
 // Listen for changes in all documents in the 'users' collection
@@ -85,7 +86,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
   // Prepare NFT details.
   const details: any = {};
   details.tranId = tranData.uid;
-  details.network = (functions.config()?.environment?.type === 'prod') ? 'soon' : 'wen';
+  details.network = isProdEnv ? 'soon' : 'wen';
   if (tranData.type === TransactionType.BILL_PAYMENT) {
     details.payment = true;
 
