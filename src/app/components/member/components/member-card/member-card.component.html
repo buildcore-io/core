@@ -8,12 +8,12 @@
           [nzSrc]="member?.currentProfileImage | ipfsAvatar:filesizes.small"></nz-avatar>
         <h5 nz-typography class="m-auto truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ member.name ? '@' + member.name : member.uid }}</h5>
         <nz-tag *ngIf="role && (deviceService.isDesktop$ | async)" class="wen-status-tag"
-          [ngClass]="role === 'Member' ? 'bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark' : 'bg-accent-secondary dark:bg-accent-secondary-dark border-accent-secondary dark:border-accent-secondary-dark text-white'">
+          [ngClass]="role === 'Member' ? 'bg-tags-member dark:bg-tags-member-dark border-tags-member dark:border-tags-member-dark text-foregrounds-primary dark:text-foregrounds-primary-dark' : 'bg-tags-guardian dark:bg-tags-guardian-dark border-tags-guardian dark:border-tags-guardian-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark'">
           {{ role }}</nz-tag>
       </a>
       <div class="flex items-center mt-4 lg:mt-0">
         <nz-tag *ngIf="role && (deviceService.isMobile$ | async)" class="wen-status-tag h-6 lg:h-8 px-1 lg:px-3 py-0 lg:py-2 text=xs lg:text-sm"
-          [ngClass]="role === 'Member' ? 'bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark' : 'bg-accent-secondary dark:bg-accent-secondary-dark border-accent-secondary dark:border-accent-secondary-dark text-white'">
+          [ngClass]="role === 'Member' ? 'bg-tags-member dark:bg-tags-member-dark border-tags-member dark:border-tags-member-dark text-foregrounds-primary dark:text-foregrounds-primary-dark' : 'bg-tags-guardian dark:bg-tags-guardian-dark border-tags-guardian dark:border-tags-guardian-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark'">
           {{ role }}</nz-tag>
 
         <span nz-typography class="truncate lg:mt-3 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" [ngClass]="fullWidth ? 'text-xs lg:text-base' : 'text-xs'">

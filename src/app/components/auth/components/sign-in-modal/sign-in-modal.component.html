@@ -1,7 +1,7 @@
 <nz-modal [nzVisible]="((auth.showWalletPopup$ | async) || 0) > 0" nzClosable="false">
   <ng-container *nzModalContent>
     <div class="flex">
-      <button nz-button (click)="onClickSignIn()" *ngIf="(auth.showWalletPopup$ | async) === 1"
+      <button nz-button nzType="default" (click)="onClickSignIn()" *ngIf="(auth.showWalletPopup$ | async) === 1"
       class="flex w-full h-auto gap-6 p-6 mt-10 border border-inputs-border dark:border-inputs-border-dark hover:border-foregrounds-secondary dark:border-foregrounds-secondary-dark focus:border-foregrounds-secondary dark:border-foregrounds-secondary-dark rounded-large">
         <nz-avatar nzSrc="assets/metamask.svg" [nzSize]="48" class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"></nz-avatar>
         <div class="flex flex-col items-start text-foregrounds-primary dark:text-foregrounds-primary-dark">
@@ -27,7 +27,7 @@
   </ng-container>
 
   <div class="text-center" [ngClass]="(auth.showWalletPopup$ | async) === 2 ? 'pt-24' : ''" *nzModalFooter>
-    <button nz-button nzType="text" class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="handleCancel()" i18n>
+    <button nz-button nzType="text" nzType="default"  class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="handleCancel()" i18n>
       Cancel
     </button>
   </div>

@@ -161,7 +161,7 @@
                     {{ targetAddress }}
                 </div>
 
-                <button nz-button nzBlock nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
+                <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
                     <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
                     <ng-template #isNotCopied i18n>Copy</ng-template>
                 </button>
@@ -247,14 +247,14 @@
             <div class="ml-3.5 text-lg font-medium" i18n>Transaction complete. Congratulations.</div>
         </div>
 
-        <div class="flex items-center w-full mt-8 lg:w-auto">
+        <div class="flex items-center flex-col lg:flex-row w-full mt-8 lg:w-auto">
             <button nz-button nzType="primary"
-                nzSize="large" class="w-full lg:mr-4" i18n (click)="close()">
+                nzSize="large" class="w-full lg:mr-2" i18n (click)="close()">
                 Close checkout
             </button>
 
-            <button nz-button nzType="link" (click)="goToNft()"
-                nzSize="small" class="w-full mb-6 lg:mb-0" i18n (click)="null">
+            <button nz-button nzType="default" (click)="goToNft()"
+                nzSize="large" class="w-full mb-6 lg:mb-0 lg:mt-1" i18n (click)="null">
                 Show my NFT
             </button>
         </div>
