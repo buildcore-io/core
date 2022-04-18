@@ -1,8 +1,10 @@
 <main class="mx-auto mb-32 lg:mb-40 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-  <div class="w-full wen-home-vector" [ngStyle]="{
-    'background-image': 'url(' + ((themeService.theme$ | async) === theme.Light ? '/assets/mocks/soonaverse_banner.jpg' : '/assets/mocks/soonaverse_banner_dark.png') + ')'
+  <div class="w-full relative wen-home-vector" [ngStyle]="{
+    'background-image': 'url(' + ((themeService.theme$ | async) === theme.Light ? '/assets/mocks/soonaverse_banner.jpg' : '/assets/mocks/soonaverse_banner_dark.jpg') + ')'
   }">
-    <div class="container px-8">
+    <div *ngIf="(themeService.theme$ | async) === theme.Dark"
+      class="absolute top-0 left-0 w-full h-full dark:bg-backgrounds-secondary-dark opacity-40"></div>
+    <div class="container px-8 relative z-10">
       <h1 class="pt-64 mb-6 text-3xl text-white lg:w-6/12 lg:pt-24 lg:text-6xl xl:pt-52" i18n>
         Welcome to The Soonaverse
       </h1>

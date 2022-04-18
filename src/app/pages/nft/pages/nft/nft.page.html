@@ -79,7 +79,7 @@
             </div>
 
 
-            <div class="flex items-center p-5 mt-6 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark" *ngIf="(data.nft$ | async)?.placeholderNft && isAvailableForSale(data.nft$ | async, data.collection$ | async)">
+            <div class="flex items-center p-5 mt-6 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary dark:text-foregrounds-primary" *ngIf="(data.nft$ | async)?.placeholderNft && isAvailableForSale(data.nft$ | async, data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-base font-bold">
                     <span>{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}} </span>
@@ -88,7 +88,7 @@
             </div>
 
             <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !saleNotStartedYet(data.nft$ | async)"
-                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl">
+                class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
                     Sale ended
@@ -96,7 +96,7 @@
             </div>
 
             <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner && saleNotStartedYet(data.nft$ | async)"
-                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl">
+                class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
                     Sale hasn't started yet
@@ -104,7 +104,7 @@
             </div>
 
             <div *ngIf="!(data.collection$ | async)?.approved"
-                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl">
+                class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
                     Collection pending approval
@@ -112,7 +112,7 @@
             </div>
 
             <div *ngIf="(data.collection$ | async)?.rejected === true"
-                class="flex items-center w-full px-5 py-4 mt-12 text-white bg-red-300 rounded-xl">
+                class="flex items-center w-full px-5 py-4 mt-12 bg-red-300 rounded-xl text-foregrounds-primary dark:text-foregrounds-primary">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
                     Collection rejected!
