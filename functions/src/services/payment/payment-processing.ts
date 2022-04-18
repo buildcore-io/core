@@ -20,7 +20,7 @@ interface TransactionMatch {
 interface TransactionUpdates {
   ref: any;
   data: any;
-  action: 'update'|'set'
+  action: 'update' | 'set'
 }
 
 export class ProcessingService {
@@ -48,25 +48,25 @@ export class ProcessingService {
   private isMatch(tran: MilestoneTransaction, toAddress: string, amount: number, validationType: TransactionValidationType): TransactionMatch | undefined {
     let found: TransactionMatch | undefined;
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
-      if (fromAddress && tran.outputs) {
-        for (const o of tran.outputs) {
+    if (fromAddress && tran.outputs) {
+      for (const o of tran.outputs) {
 
-          // Ignore output that contains input address. Remaining balance.
-          if (tran.inputs.find((i) => {
-            return o.address === i.address;
-          })) {
-            continue;
-          }
+        // Ignore output that contains input address. Remaining balance.
+        if (tran.inputs.find((i) => {
+          return o.address === i.address;
+        })) {
+          continue;
+        }
 
-          if (o.address === toAddress && (o.amount === amount || validationType === TransactionValidationType.ADDRESS)) {
-            found = {
-              msgId: tran.messageId,
-              from: fromAddress,
-              to: o
-            };
-          }
+        if (o.address === toAddress && (o.amount === amount || validationType === TransactionValidationType.ADDRESS)) {
+          found = {
+            msgId: tran.messageId,
+            from: fromAddress,
+            to: o
+          };
         }
       }
+    }
 
     return found;
   }
@@ -176,8 +176,8 @@ export class ProcessingService {
         });
       } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
         const payments: any = await admin.firestore().collection(COL.TRANSACTION)
-                              .where('payload.invalidPayment', '==', false)
-                              .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
+          .where('payload.invalidPayment', '==', false)
+          .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
         if (payments.size === 0) {
           // No orders, we just void.
           const data: any = sfDoc.data();
@@ -323,11 +323,11 @@ export class ProcessingService {
     return transOut;
   }
 
-  private async createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Promise<Transaction|undefined> {
+  private async createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Promise<Transaction | undefined> {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
-    let transOut: Transaction|undefined;
+    let transOut: Transaction | undefined;
     if (payment.payload.amount > 0) {
       const tranId: string = getRandomEthAddress();
       const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
@@ -363,7 +363,7 @@ export class ProcessingService {
     return transOut;
   }
 
-  private async setValidatedAddress(credit: Transaction, type: 'member'|'space'): Promise<void> {
+  private async setValidatedAddress(credit: Transaction, type: 'member' | 'space'): Promise<void> {
     if (type === 'member' && credit.member) {
       const refSource: any = admin.firestore().collection(COL.MEMBER).doc(credit.member);
       const sfDoc: any = await this.transaction.get(refSource);
@@ -396,7 +396,7 @@ export class ProcessingService {
     const refPayment: any = admin.firestore().collection(COL.TRANSACTION).doc(payment.uid);
     const sfDocNft: any = await this.transaction.get(refNft);
     let newValidPayment = false;
-    let previousHighestPay: TransactionPayment|undefined;
+    let previousHighestPay: TransactionPayment | undefined;
     if (sfDocNft.data().auctionHighestTransaction) {
       const previousHighestPayRef: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data().auctionHighestTransaction);
       const previousHighestPayDoc: any = await this.transaction.get(previousHighestPayRef);
@@ -526,7 +526,7 @@ export class ProcessingService {
             locked: false,
             lockedBy: null,
             hidden: false,
-            soldOn: admin.firestore.Timestamp.now(),
+            soldOn: serverTime(),
             availableFrom: null,
             availablePrice: null,
             auctionFrom: null,
@@ -608,7 +608,7 @@ export class ProcessingService {
                 sold: true,
                 owner: null,
                 availableFrom: null,
-                soldOn: admin.firestore.Timestamp.now(),
+                soldOn: serverTime(),
                 hidden: false
               },
               action: 'update'

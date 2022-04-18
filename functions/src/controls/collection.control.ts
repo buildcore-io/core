@@ -9,7 +9,7 @@ import { TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { scale } from "../scale.settings";
-import { cOn, dateToTimestamp, uOn } from "../utils/dateTime.utils";
+import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
@@ -132,7 +132,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
         approved: false,
         rejected: false,
         sold: true,
-        soldOn: admin.firestore.Timestamp.now(),
+        soldOn: serverTime(),
         owner: null,
         space: params.body.space,
         type: params.body.type,

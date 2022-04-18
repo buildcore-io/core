@@ -5,6 +5,7 @@ import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { superPump } from '../scale.settings';
 import { ProcessingService } from '../services/payment/payment-processing';
+import { serverTime } from '../utils/dateTime.utils';
 
 // Listen for changes in all documents in the 'users' collection
 export const milestoneTransactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
@@ -27,8 +28,8 @@ export const milestoneTransactionWrite: functions.CloudFunction<Change<DocumentS
     // Mark milestone as processed.
     return change.after.ref.set({
       processed: true,
-      processedOn: admin.firestore.Timestamp.now()
-    }, {merge: true});
+      processedOn: serverTime()
+    }, { merge: true });
   } else {
     console.log('Nothing to process.');
     return;

@@ -4,7 +4,7 @@ import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { Transaction, TransactionType, WalletResult } from '../../interfaces/models';
-import { COL } from '../../interfaces/models/base';
+import { COL, Timestamp } from '../../interfaces/models/base';
 import { Nft } from '../../interfaces/models/nft';
 import { superPump } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
@@ -35,12 +35,12 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
     const tranData: Transaction = sfDoc.data();
 
     if (
-        !(tranData.payload.walletReference?.chainReference && tranData.payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS)) &&
-        // Either not on chain yet or there was an error.
-        (!tranData.payload.walletReference?.chainReference || tranData.payload.walletReference.error) &&
-        // Not payment yet or at least one count happen to avoid loop
-        (!tranData.payload.walletReference || (tranData.payload.walletReference.count > 0 && tranData.payload.walletReference.count <= MAX_WALLET_RETRY))
-      ) {
+      !(tranData.payload.walletReference?.chainReference && tranData.payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS)) &&
+      // Either not on chain yet or there was an error.
+      (!tranData.payload.walletReference?.chainReference || tranData.payload.walletReference.error) &&
+      // Not payment yet or at least one count happen to avoid loop
+      (!tranData.payload.walletReference || (tranData.payload.walletReference.count > 0 && tranData.payload.walletReference.count <= MAX_WALLET_RETRY))
+    ) {
       const walletResponse: WalletResult = tranData.payload.walletReference || {
         createdOn: serverTime(),
         processedOn: serverTime(),
@@ -55,7 +55,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
 
       // Set wallet reference.
       walletResponse.count = walletResponse.count + 1;
-      walletResponse.processedOn = serverTime();
+      walletResponse.processedOn = serverTime() as Timestamp;
       tranData.payload.walletReference = walletResponse;
       transaction.update(refSource, tranData);
     } else {
