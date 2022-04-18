@@ -6,25 +6,19 @@ import { isProdEnv } from './config.utils';
 
 export const serverTime = () => admin.firestore.Timestamp.now();
 
-export function cOn<T>(o: T, path: URL_PATHS): T {
+export const cOn = <T extends { uid: string }>(o: T, path: URL_PATHS): T => {
   const url: string = isProdEnv ? WEN_PROD_ADDRESS : WEN_TEST_ADDRESS;
   return uOn(merge(o, {
-    wenUrl: url + path + '/' + (<any>o).uid,
+    wenUrl: url + path + '/' + o.uid,
     createdOn: serverTime(),
   }));
 };
 
-export function uOn<T>(o: T): T {
-  return merge(o, {
-    updatedOn: serverTime()
-  })
-};
+export const uOn = <T>(o: T): T => merge(o, {
+  updatedOn: serverTime()
+})
 
-export function dateToTimestamp(d: any, onlyDownToMinutes = false): any {
-  let date = dayjs(d);
-  if (onlyDownToMinutes) {
-    date = date.second(0).millisecond(0);
-  }
-
+export const dateToTimestamp = (d: dayjs.ConfigType, onlyDownToMinutes = false) => {
+  const date = onlyDownToMinutes ? dayjs(d).second(0).millisecond(0) : dayjs(d);
   return admin.firestore.Timestamp.fromDate(date.toDate());
 }
