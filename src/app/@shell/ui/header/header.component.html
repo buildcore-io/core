@@ -107,7 +107,7 @@
 
   <nz-dropdown-menu #notificationMenu="nzDropdownMenu">
     <wen-menu>
-      <div class="flex justify-between w-full px-5 py-4 cursor-pointer "
+      <div class="flex justify-between w-full px-5 py-4 cursor-pointer"
         *ngFor="let nt of (notifications$ | async); trackBy: trackByUid; let first = first; let index = index;"
         [ngClass]="{
           'border-t': !first

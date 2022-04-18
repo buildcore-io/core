@@ -21,7 +21,7 @@
         ></wen-create-dropdown>
         <nz-badge [nzDot]="unreadNotificationCount > 0">
           <button nz-button nz-dropdown nzType="default" nzShape="circle"
-                *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu"
+                *ngIf="isLoggedIn$ | async" [nzDropdownMenu]="notificationMenu" nzOverlayClassName="w-[80vw] break-all"
                 [ngClass]="isMemberProfile ? 'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark hover:bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark' : ''"
                 class="relative inline-flex items-center justify-center border-0 wen-header-button"
                 (nzVisibleChange)="wenOnNotificationVisibleChange.emit()">
