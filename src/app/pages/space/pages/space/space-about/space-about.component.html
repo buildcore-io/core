@@ -1,12 +1,12 @@
 <ng-container *ngIf="deviceService.isMobile$ | async">
   <div class="flex items-center mt-5 ml-6">
-    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="bg-white border-2 border-gray-400 min-w-10" nzShape="circle">
+    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-2 border-tags-border dark:border-tags-border-dark min-w-10" nzShape="circle">
     </nz-avatar>
     <h1 class="w-2/3 mb-0 ml-4 text-2xl">{{ (data.space$ | async)?.name }}</h1>
   </div>
 
   <a nz-button class="flex items-center mt-5 mb-5 ml-6 wen-space-links" nzType="link" [routerLink]="['members']">
-    <wen-icon-members class="text-app-gray-400"></wen-icon-members>
+    <wen-icon-members class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-members>
     <div class="ml-3">{{ (data.space$ | async)?.totalMembers }} <span i18n>members</span>
       <span *ngIf="(data.space$ | async)?.totalPendingMembers">
         {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
@@ -24,21 +24,21 @@
 
 <nz-card nzTitle="About">
   <p nz-typography [innerHtml]="(data.space$ | async)?.about | markdown"
-    class="text-base font-medium whitespace-pre-line text-app-gray-text break-words">
+    class="text-base font-medium whitespace-pre-line text-foregrounds-primary dark:text-foregrounds-primary-dark break-words">
   </p>
 </nz-card>
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
     <a nz-button class="wen-space-links" nzType="link" [routerLink]="['members']">
-      <wen-icon-members class="text-app-gray-400"></wen-icon-members>
+      <wen-icon-members class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-members>
       <span>{{ (data.space$ | async)?.totalMembers }} <span i18n>members</span>
         <span *ngIf="(data.space$ | async)?.totalPendingMembers">
           {{'(' + (data.space$ | async)?.totalPendingMembers + ' pending)'}}
         </span>
       </span>
     </a>
-    <nz-tag class="px-2 py-1 text-xs border-none rounded-md">
+    <nz-tag class="px-2 py-1 text-xs border-none rounded-md bg-tags-commencing dark:bg-tags-commencing-dark border-tags-member dark:border-tags-member-dark text-foregrounds-primary dark:text-foregrounds-primary-dark">
       {{ (data.space$ | async)?.open ? 'Open to join instantly' : 'Requires approval to join'}}
     </nz-tag>
   </div>
@@ -61,7 +61,7 @@
     </button>
   </div>
 
-  <div class="w-5/6 mt-3 text-sm font-semibold text-app-gray-400" i18n>
+  <div class="w-5/6 mt-3 text-sm font-semibold text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
     Connected spaces that you recognize
   </div>
 
@@ -111,7 +111,7 @@
         (wenOnAllianceEdit)="onAllianceEdit($event)">
       </wen-space-alliances-table>
 
-      <div class="absolute bottom-0 z-10 flex items-center w-full bg-white" #spaceAlliancesActions>
+      <div class="absolute bottom-0 z-10 flex items-center w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark" #spaceAlliancesActions>
         <button *ngIf="(data.isGuardianWithinSpace$ | async)" nz-button nzType="primary" nzSize="small" i18n
           (click)="openAlliance()">
           New connection
@@ -153,7 +153,7 @@
           </button>
         </div>
 
-        <div class="flex items-center text-sm font-semibold cursor-pointer text-orange-darkest"
+        <div class="flex items-center text-sm font-semibold cursor-pointer text-accent-primary dark:text-accent-primary-darkest"
           (click)="onAllianceSave(false)" *ngIf="!isNewAlliance">
           <wen-icon-terminated class="mr-2"></wen-icon-terminated>
           <span i18n>Terminate alliance</span>
@@ -175,7 +175,7 @@
         [reputationWeightControl]="reputationWeightControl">
       </wen-space-new-alliance>
 
-      <div class="z-10 flex items-center w-full bg-white">
+      <div class="z-10 flex items-center w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
         <button nz-button nzType="primary" nzSize="small" (click)="onAllianceSave()">
           <ng-container *ngIf="isNewAlliance; else mobileSaveAlliance" i18n>Form a connection</ng-container>
           <ng-template #mobileSaveAlliance i18n>Save</ng-template>
@@ -184,7 +184,7 @@
           Cancel
         </button>
       </div>
-      <div class="flex items-center mt-12 text-sm font-semibold cursor-pointer text-orange-darkest"
+      <div class="flex items-center mt-12 text-sm font-semibold cursor-pointer text-accent-primary dark:text-accent-primary-darkest"
         (click)="onAllianceSave(false)" *ngIf="!isNewAlliance">
         <wen-icon-terminated class="mr-2"></wen-icon-terminated>
         <span i18n>Terminate alliance</span>
@@ -211,7 +211,7 @@
     <a nz-button class="wen-space-links" nzType="link" target="new" [ngClass]="{
                 'mobile-link': deviceService.isMobile$ | async
             }" [href]="'https://github.com/' + (data.space$ | async)?.github">
-      <wen-icon-github class="text-app-gray-400"></wen-icon-github>
+      <wen-icon-github class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-github>
       <span>{{ (data.space$ | async)?.github }}</span>
     </a>
   </div>
@@ -219,7 +219,7 @@
     <a nz-button class="wen-space-links" nzType="link" target="new" [ngClass]="{
                 'mobile-link': deviceService.isMobile$ | async
             }" [href]="'https://twitter.com/' + (data.space$ | async)?.twitter">
-      <wen-icon-twitter class="text-app-gray-400"></wen-icon-twitter>
+      <wen-icon-twitter class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-twitter>
       <span>{{ (data.space$ | async)?.twitter }}</span>
     </a>
   </div>
@@ -227,7 +227,7 @@
     <a nz-button class="wen-space-links" nzType="link" target="new" [ngClass]="{
                 'mobile-link': deviceService.isMobile$ | async
             }" [href]="'https://discord.gg/' + (data.space$ | async)?.discord">
-      <wen-icon-discord class="text-app-gray-400"></wen-icon-discord>
+      <wen-icon-discord class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-discord>
       <span>{{'discord.gg/' + (data.space$ | async)?.discord}}</span>
     </a>
   </div>
@@ -236,7 +236,7 @@
 <nz-card [nzTitle]="(data.space$ | async)?.totalGuardians + ' Guardians'" class="lg:mt-4">
   <div class="space-y-2" *ngIf="data.guardians$">
     <div *ngFor="let g of data.guardians$ | async; trackBy: trackByUid"
-      class="text-base font-medium cursor-pointer text-app-gray-text" [routerLink]="['/', 'member', g.uid]">
+      class="text-base font-medium cursor-pointer text-foregrounds-primary dark:text-foregrounds-primary-dark" [routerLink]="['/', 'member', g.uid]">
       <nz-avatar nzIcon="user" [nzSrc]="g.currentProfileImage | ipfsAvatar:filesizes.small" class="mr-2"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 32">
       </nz-avatar>

@@ -4,7 +4,9 @@ import { BehaviorSubject } from 'rxjs';
 import { GLOBAL_DEBOUNCE_TIME } from './../../../../../functions/interfaces/config';
 import { SortOptions } from "./sort-options.interface";
 
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class FilterService {
   public selectedSort$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(SortOptions.OLDEST);
   public search$: BehaviorSubject<string|undefined> = new BehaviorSubject<string|undefined>(undefined);

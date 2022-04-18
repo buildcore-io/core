@@ -7,7 +7,6 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { DropdownTabsComponent } from './dropdown-tabs.component';
 
 
-
 @NgModule({
   declarations: [DropdownTabsComponent],
   imports: [

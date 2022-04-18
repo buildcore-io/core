@@ -5,7 +5,6 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { ShareComponent } from './share.component';
 
 
-
 @NgModule({
   declarations: [
     ShareComponent

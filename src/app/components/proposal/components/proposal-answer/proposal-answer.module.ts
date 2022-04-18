@@ -5,7 +5,6 @@ import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { ProposalAnswerComponent } from './proposal-answer.component';
 
 
-
 @NgModule({
   declarations: [
     ProposalAnswerComponent

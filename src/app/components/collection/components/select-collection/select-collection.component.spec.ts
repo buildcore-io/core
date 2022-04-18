@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SelectCollectionComponent } from './select-collection.component';
+
 
 describe('SelectCollectionComponent', () => {
   let component: SelectCollectionComponent;
   let fixture: ComponentFixture<SelectCollectionComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ SelectCollectionComponent ]
+      declarations: [SelectCollectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

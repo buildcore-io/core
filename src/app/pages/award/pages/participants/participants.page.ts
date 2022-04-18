@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { } from '@angular/compiler';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
@@ -22,6 +23,7 @@ enum FilterOptions {
 @UntilDestroy()
 @Component({
   selector: 'wen-participants',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './participants.page.html',
   styleUrls: ['./participants.page.less']
 })
@@ -75,19 +77,20 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async (val) => {
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe((val) => {
       // We need reset old values.
       this.resetParticipantsList();
       this.overTenRecords = false;
       if (val && val.length > 0) {
-        const obj: Member[] = await firstValueFrom(this.memberApi.last(undefined, val));
-        const ids: string[] = obj.map((o) => {
-          return o.uid;
-        });
+        firstValueFrom(this.memberApi.last(undefined, val)).then((obj: Member[]) => {
+          const ids: string[] = obj.map((o) => {
+            return o.uid;
+          });
 
-        // Top 10 records only supported
-        this.overTenRecords = ids.length > 10;
-        this.onScroll(ids.slice(0, 10));
+          // Top 10 records only supported
+          this.overTenRecords = ids.length > 10;
+          this.onScroll(ids.slice(0, 10));
+        });
       } else {
 
         // Show normal list again.
@@ -169,7 +172,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       uid: id,
       member: memberId
     }, (sc, finish) => {
-      this.notification.processRequest(this.awardApi.approveParticipant(sc), 'Approve.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.awardApi.approveParticipant(sc), 'Approve.', finish).subscribe(() => {
         // none.
       });
     });

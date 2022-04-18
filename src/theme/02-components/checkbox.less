@@ -1,5 +1,17 @@
 .ant-checkbox-checked {
     .ant-checkbox-inner {
-        @apply bg-orange border-orange;
+        @apply bg-accent-primary dark:bg-accent-primary-dark border-accent-primary dark:border-accent-primary-dark;
+    }
+}
+
+.ant-checkbox {
+    @apply text-foregrounds-primary dark:text-foregrounds-primary-dark;
+}
+
+.ant-checkbox-wrapper {
+    @apply text-foregrounds-primary dark:text-foregrounds-primary-dark;
+    
+    .ant-checkbox-disabled + span {
+        @apply text-foregrounds-secondary dark:text-foregrounds-secondary-dark;
     }
 }

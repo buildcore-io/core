@@ -11,7 +11,7 @@ describe('IOTAAddressComponent', () => {
   let component: IOTAAddressComponent;
   let fixture: ComponentFixture<IOTAAddressComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ IOTAAddressComponent ],
       providers: [
@@ -21,7 +21,7 @@ describe('IOTAAddressComponent', () => {
         MockProvider(OrderApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

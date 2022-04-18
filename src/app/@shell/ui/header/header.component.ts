@@ -74,7 +74,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.member$.pipe(
       untilDestroyed(this)
-    ).subscribe(async (obj) => {
+    ).subscribe((obj) => {
       if (obj?.uid) {
         this.cancelAccessSubscriptions();
         this.accessSubscriptions$.push(this.memberApi.topSpaces(obj.uid, 'createdOn', undefined, 1).subscribe((space) => {
@@ -100,7 +100,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         const previousIsMemberProfile = this.isMemberProfile;
         const previousIsLandingPage = this.isLandingPage;
 
-        this.isMemberProfile = Boolean(obj.url?.startsWith(memberRoute))
+        this.isMemberProfile = Boolean(obj.url.startsWith(memberRoute))
         this.isLandingPage = Boolean(obj.url === landingPageRoute)
 
         if (previousIsMemberProfile !== this.isMemberProfile || previousIsLandingPage || this.isLandingPage) {
@@ -122,7 +122,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (expired === false && o?.payload.void === false && o?.payload.reconciled === false) {
+      if (expired === false && o?.payload.void === false && o.payload.reconciled === false) {
         if (!this.notificationRef) {
           this.notificationRef = this.nzNotification.template(this.notCompletedNotification, {
             nzDuration: 0,
@@ -140,7 +140,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.removeCheckoutNotification(false);
       } else {
         if (getItem(StorageItem.CheckoutTransaction) && (!this.subscriptionTransaction$ || this.subscriptionTransaction$.closed)) {
-          this.subscriptionTransaction$ = this.orderApi.listen(<any>getItem(StorageItem.CheckoutTransaction)).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
+          this.subscriptionTransaction$ = this.orderApi.listen(<any>getItem(StorageItem.CheckoutTransaction)).pipe(untilDestroyed(this)).subscribe(<any> this.transaction$);
         }
       }
     });
@@ -171,7 +171,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public async onOpenCheckout(): Promise<void> {
     const t = this.transaction$.getValue();
-    if (!t?.payload.nft || !t?.payload.collection) {
+    if (!t?.payload.nft || !t.payload.collection) {
       return;
     }
 

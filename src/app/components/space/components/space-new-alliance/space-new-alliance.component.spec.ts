@@ -9,12 +9,12 @@ describe('SpaceNewAllianceComponent', () => {
   let component: SpaceNewAllianceComponent;
   let fixture: ComponentFixture<SpaceNewAllianceComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ SpaceNewAllianceComponent ],
       providers: [MockProvider(DataService), MockProvider(AuthService)]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

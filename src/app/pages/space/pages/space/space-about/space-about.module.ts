@@ -24,7 +24,6 @@ import { MarkDownModule } from '../../../../../@core/pipes/markdown/markdown.mod
 import { SpaceAboutComponent } from './space-about.component';
 
 
-
 @NgModule({
   declarations: [
     SpaceAboutComponent

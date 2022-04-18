@@ -5,7 +5,9 @@ import * as dayjs from 'dayjs';
 import { BehaviorSubject } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService {
   public award$: BehaviorSubject<Award | undefined> = new BehaviorSubject<Award | undefined>(undefined);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);

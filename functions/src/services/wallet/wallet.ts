@@ -27,22 +27,18 @@ interface Output {
 }
 
 export class WalletService {
-  private API_ENDPOINT = ['https://us3.svrs.io', 'https://us4.svrs.io']; // Mainnet
-  private API_ENDPOINT_SLAVE = 'https://chrysalis-nodes.iota.org';
-  // private API_ENDPOINT = 'https://api.lb-0.h.chrysalis-devnet.iota.cafe';   // DEV NET
+  private API_ENDPOINT = [
+    'https://us3.svrs.io',
+    'https://us4.svrs.io',
+    'https://chrysalis-nodes.iota.org'
+  ]; // Mainnet
+  // private API_ENDPOINT = ['https://api.lb-0.h.chrysalis-devnet.iota.cafe'];   // DEV NET
   private client: SingleNodeClient;
   private nodeInfo?: INodeInfo;
 
   constructor() {
-    let y: number = Math.random();
-    if (y < 0.5) {
-      y = 0
-    } else {
-      y = 1
-    }
-
-    // Random.
-    this.client = new SingleNodeClient(this.API_ENDPOINT[y]);
+    const random = Math.floor(Math.random() * this.API_ENDPOINT.length);
+    this.client = new SingleNodeClient(this.API_ENDPOINT[random]);
   }
 
   public async init(): Promise<void> {
@@ -65,7 +61,8 @@ export class WalletService {
   }
 
   public setSlaveEndPoint(): void {
-    this.client = new SingleNodeClient(this.API_ENDPOINT_SLAVE);
+    const random = Math.floor(Math.random() * this.API_ENDPOINT.length);
+    this.client = new SingleNodeClient(this.API_ENDPOINT[random]);
   }
 
   public async getNodeInfo(): Promise<INodeInfo> {

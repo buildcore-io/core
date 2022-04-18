@@ -90,7 +90,7 @@ export class NftSaleAuctionComponent implements OnInit {
     merge(this.floorPriceControl.valueChanges, this.floorUnitControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = this.getRawPrice(Number(this.floorPriceControl.value), <Units>this.floorUnitControl.value);
+        const value = this.getRawPrice(Number(this.floorPriceControl.value), <Units> this.floorUnitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.floorPriceControl.setErrors(errors);
       });
@@ -102,7 +102,7 @@ export class NftSaleAuctionComponent implements OnInit {
           this.buyPriceControl.setErrors(null);
           return;
         }
-        const value = this.getRawPrice(Number(this.buyPriceControl.value), <Units>this.buyUnitControl.value);
+        const value = this.getRawPrice(Number(this.buyPriceControl.value), <Units> this.buyUnitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.buyPriceControl.setErrors(errors);
       });
@@ -110,13 +110,13 @@ export class NftSaleAuctionComponent implements OnInit {
     this.selectedAccessControl.valueChanges.pipe(untilDestroyed(this))
       .subscribe(() => {
         switch (this.selectedAccessControl.value) {
-          case NftAccess.OPEN:
-            this.buyerControl.removeValidators(Validators.required);
-            this.buyerControl.setErrors(null);
-            break;
-          case NftAccess.MEMBERS:
-            this.buyerControl.addValidators(Validators.required);
-            break;
+        case NftAccess.OPEN:
+          this.buyerControl.removeValidators(Validators.required);
+          this.buyerControl.setErrors(null);
+          break;
+        case NftAccess.MEMBERS:
+          this.buyerControl.addValidators(Validators.required);
+          break;
         }
       });
   }

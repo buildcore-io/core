@@ -86,7 +86,7 @@
                                 </td>
                                 <td class="w-0">
                                     <wen-icon-eye *ngIf="!nftErrors[i]?.length; else errorBlock"
-                                        class="text-black cursor-pointer" (click)="previewNft = nft"></wen-icon-eye>
+                                        class="text-accent-secondary dark:text-accent-secondary-dark cursor-pointer" (click)="previewNft = nft"></wen-icon-eye>
                                     <ng-template #errorBlock>
                                         <div class="flex items-center text-alerts-error">
                                             <div class="mr-1 text-xs font-medium" i18n>Error</div>
@@ -102,7 +102,7 @@
                                     </ng-template>
                                 </td>
                                 <td class="w-0">
-                                    <wen-icon-trash class="cursor-pointer text-app-gray-400" (click)="removeNft(i)"></wen-icon-trash>
+                                    <wen-icon-trash class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark" (click)="removeNft(i)"></wen-icon-trash>
                                 </td>
                             </tr>
                         </tbody>
@@ -162,7 +162,7 @@
                     </nz-card>
 
                     <div class="absolute top-0 left-0 w-full h-full" *ngIf="uploadedFiles.length === 0">
-                        <div class="absolute z-10 flex items-center justify-center px-5 py-3 text-base font-medium transform -translate-x-1/2 -translate-y-1/2 rounded-lg top-1/2 left-1/2 bg-alerts-warning text-app-gra-text whitespace-nowrap" i18n>
+                        <div class="absolute z-10 flex items-center justify-center px-5 py-3 text-base font-medium -translate-x-1/2 -translate-y-1/2 rounded-lg top-1/2 left-1/2 bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary dark:text-foregrounds-primary whitespace-nowrap" i18n>
                                 You have to upload images first.
                         </div>
                     </div>
@@ -186,7 +186,7 @@
     <wen-nft-preview [nft]="previewNft" (wenOnClose)="previewNft = null"></wen-nft-preview>
 </ng-container>
 
-<div *ngIf="deviceService.isMobile$ | async" class="flex p-4 mt-6 bg-white rounded-2xl text-foregrounds-secondary">
+<div *ngIf="deviceService.isMobile$ | async" class="flex p-4 mt-6 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl text-foregrounds-secondary">
     <wen-icon-info-circle></wen-icon-info-circle>
     <div class="ml-3" i18n>To create multiple classic NFTs, you have to use the web version of Soonaverse.</div>
 </div>

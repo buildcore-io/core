@@ -35,7 +35,7 @@ export class RouterService {
     });
   }
 
-  private updateVariables(): void  {
+  private updateVariables(): void {
     this.isHomeRoute$.next((this.router.url || '/').substring(1) === this.homeRoute);
     this.isNewRoute$.next([this.urlToNewSpace, this.urlToNewProposal, this.urlToNewAward, this.urlToNewCollection].includes(this.router.url));
   }

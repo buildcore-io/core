@@ -99,7 +99,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
       throw throwInvalidArgument(WenError.you_dont_have_required_badge);
     }
   }
-  
+
   // Validate royalty space exists
   const refSpaceRoyalty: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.royaltiesSpace);
   await SpaceValidator.spaceExists(refSpaceRoyalty);
@@ -203,6 +203,11 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
   if (docCollection.data().createdBy !== member) {
     throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
+  }
+
+  // Royalty fees can be only decreased.
+  if (docCollection.data().royaltiesFee < params.body.royaltiesFee) {
+    throw throwInvalidArgument(WenError.royalty_fees_can_only_be_reduced);
   }
 
   // Validate space exists.

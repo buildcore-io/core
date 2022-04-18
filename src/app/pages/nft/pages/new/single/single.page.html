@@ -67,12 +67,12 @@
                                 <i
                                   nz-icon
                                   nzType="info-circle"
-                                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                                  class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                                   nz-tooltip
                                   i18n-nzTooltipTitle
                                   [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
                                 ></i>
-                                <div class="absolute transform -translate-y-1/2 right-10 top-1/2">
+                                <div class="absolute -translate-y-1/2 right-10 top-1/2">
                                     <button *ngFor="let unit of priceUnits"
                                         nz-button nzShape="circle" nzSize="small"
                                         class="mr-1 wen-secondary"
@@ -89,7 +89,7 @@
                     <nz-form-item>
                         <nz-form-control i18n-nzErrorTip nzErrorTip="Available On is required.">
                           <nz-date-picker
-                            class="flex flex-grow"
+                            class="flex grow"
                             [nzDisabledDate]="disabledStartDate.bind(this)"
                             [nzDisabledTime]="disabledDateTime.bind(this)"
                             nzSize="large"
@@ -145,7 +145,7 @@
                                 [formControl]="gForm(property, 'value')"
                             />
 
-                            <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeProperty(i)"></wen-icon-trash>
+                            <wen-icon-trash class="cursor-pointer text-accent-primary dark:text-accent-primary-darkest" (click)="removeProperty(i)"></wen-icon-trash>
 
                             </div>
                             <div class="my-4 separator"></div>
@@ -158,7 +158,7 @@
                                 <div class="text-xs font-bold">
                                     <span i18n>Property</span> #0{{ i + 1 }}
                                 </div>
-                                <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeProperty(i)"></wen-icon-trash>
+                                <wen-icon-trash class="cursor-pointer text-accent-primary dark:text-accent-primary-darkest" (click)="removeProperty(i)"></wen-icon-trash>
                             </div>
 
                             <div class="mt-2 mb-5 separator"></div>
@@ -191,7 +191,7 @@
                 </div>
 
                 <button nz-button *ngIf="properties.controls.length < maxPropertyCount"
-                    nzType="link" class="flex items-center pl-0 mt-3" (click)="addProperty()">
+                    class="flex items-center mt-3 wen-secondary" (click)="addProperty()">
                     <wen-icon-plus class="mr-0.5"></wen-icon-plus>
                     <span i18n>Add property</span>
                 </button>
@@ -210,7 +210,7 @@
                     <ng-container *ngIf="deviceService.isDesktop$ | async">
                         <div class="flex items-center text-xs font-medium text-foregrounds-secondary" *ngIf="stats.controls.length > 0">
                             <div class="w-1/2" i18n>Stats name (E.g. Stamina)</div>
-                            <div class="w-1/2 transform translate-x-2" i18n>Value (E.g. 10, 1/10 , etc.)</div>
+                            <div class="w-1/2 translate-x-2" i18n>Value (E.g. 10, 1/10 , etc.)</div>
                         </div>
 
                         <div class="my-2 separator"></div>
@@ -237,7 +237,7 @@
                                     [formControl]="gForm(stat, 'value')"
                                 />
 
-                                <wen-icon-trash class="cursor-pointer grow text-orange-darkest" (click)="removeStat(i)"></wen-icon-trash>
+                                <wen-icon-trash class="cursor-pointer grow text-accent-primary dark:text-accent-primary-darkest" (click)="removeStat(i)"></wen-icon-trash>
                             </div>
 
                             <div class="my-4 separator"></div>
@@ -250,7 +250,7 @@
                                 <div class="text-xs font-bold">
                                     <span i18n>Stat</span> #0{{ i + 1 }}
                                 </div>
-                                <wen-icon-trash class="cursor-pointer text-orange-darkest" (click)="removeStat(i)"></wen-icon-trash>
+                                <wen-icon-trash class="cursor-pointer text-accent-primary dark:text-accent-primary-darkest" (click)="removeStat(i)"></wen-icon-trash>
                             </div>
 
                             <div class="mt-2 mb-5 separator"></div>
@@ -282,7 +282,7 @@
                 </div>
 
                 <button nz-button *ngIf="stats.controls.length < maxStatCount"
-                nzType="link" class="flex items-center pl-0 mt-3" (click)="addStat()">
+                    class="flex items-center mt-3 wen-secondary" (click)="addStat()">
                     <wen-icon-plus class="mr-0.5"></wen-icon-plus>
                     <span i18n>Add stat</span>
                 </button>
@@ -320,7 +320,7 @@
                                     <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                                 </ng-container>
                             </nz-upload>
-                            <div class="text-orange-darkest" *ngIf="fileUploadError || (mediaControl.invalid && !mediaControl.pristine)">
+                            <div class="text-accent-primary dark:text-accent-primary-darkest" *ngIf="fileUploadError || (mediaControl.invalid && !mediaControl.pristine)">
                                 <ng-container *ngIf="(mediaControl.invalid && !mediaControl.pristine)" i18n>Media is required</ng-container>
                                 <br>
                                 <ng-container *ngIf="fileUploadError">{{ fileUploadError }}</ng-container>

@@ -9,7 +9,7 @@ describe('CollectionsPage', () => {
   let component: CollectionsPage;
   let fixture: ComponentFixture<CollectionsPage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ CollectionsPage ],
       providers: [
@@ -18,7 +18,7 @@ describe('CollectionsPage', () => {
         MockProvider(ActivatedRoute)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

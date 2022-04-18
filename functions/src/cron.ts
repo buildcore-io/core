@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL, SUB_COL } from '../../functions/interfaces/models/base';
-import { DEFAULT_TRANSACTION_DELAY, MAX_WALLET_RETRY } from '../interfaces/config';
+import { DEFAULT_TRANSACTION_RETRY, DEF_WALLET_PAY_IN_PROGRESS, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../interfaces/config';
 import { Collection, TransactionType } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
@@ -38,9 +38,14 @@ export const reTryWallet: functions.CloudFunction<any> = functions.pubsub.schedu
       // We ignore while there are errors.
       if (t.data().payload.walletReference.chainReference) {
         // If processed on does not exists something went wrong and try again.
-        const readyToRun: dayjs.Dayjs = t.data().payload.walletReference.processedOn ? dayjs(t.data().payload.walletReference.processedOn.toDate()).add(DEFAULT_TRANSACTION_DELAY, 'ms') : dayjs().subtract(1, 's');
+        const readyToRun: dayjs.Dayjs = t.data().payload.walletReference.processedOn ? dayjs(t.data().payload.walletReference.processedOn.toDate()).add(DEFAULT_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
+        const readyToReprocessedWallet: dayjs.Dayjs = t.data().payload.walletReference.processedOn ? dayjs(t.data().payload.walletReference.processedOn.toDate()).add(EXTENDED_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
         // This is one is not ready yet.
-        if (readyToRun.isAfter(dayjs())) {
+        if (
+          readyToRun.isAfter(dayjs()) ||
+          // It can take up to 10 minutes when servers are overloaded.
+          (readyToReprocessedWallet.isAfter(dayjs()) && t.data().payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS))
+        ) {
           continue;
         }
 

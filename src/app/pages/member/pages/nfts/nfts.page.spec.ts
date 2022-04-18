@@ -10,7 +10,7 @@ describe('NFTsPage', () => {
   let component: NFTsPage;
   let fixture: ComponentFixture<NFTsPage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ NFTsPage ],
       providers: [
@@ -19,7 +19,7 @@ describe('NFTsPage', () => {
         MockProvider(NftApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

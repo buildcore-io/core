@@ -7,7 +7,6 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { SpaceAlliancesTableComponent } from './space-alliances-table.component';
 
 
-
 @NgModule({
   declarations: [
     SpaceAlliancesTableComponent

@@ -1,0 +1,16 @@
+.ant-table-content {
+    @apply bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
+
+    .ant-table-thead > tr > th {
+        @apply text-foregrounds-secondary dark:text-foregrounds-secondary-dark;
+    }
+
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+        @apply border-b-foregrounds-separator dark:border-b-foregrounds-separator-dark;
+    }
+
+    .ant-table-row:hover {
+        @apply bg-accent-selected dark:bg-accent-selected-dark !important;
+    }
+}

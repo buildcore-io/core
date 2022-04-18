@@ -62,9 +62,9 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || []).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 
@@ -126,7 +126,7 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.lowToHighAvailable(last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
         return this.nftApi.lowToHighAuction(last, search);
-      }  else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.lowToHighOwned(last, search);
       } else {
         return this.nftApi.lowToHigh(last, search);
@@ -148,9 +148,9 @@ export class NFTsPage implements OnInit, OnDestroy {
         return this.nftApi.highToLowSpace(this.spaceControl.value, last, search);
       } else if (this.selectedTags$.value[0] === HOT_TAGS.AVAILABLE) {
         return this.nftApi.highToLowAvailable(last, search);
-      }  else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.AUCTION) {
         return this.nftApi.highToLowAuction(last, search);
-      }else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
+      } else if (this.selectedTags$.value[0] === HOT_TAGS.OWNED) {
         return this.nftApi.highToLowOwned(last, search);
       } else {
         return this.nftApi.highToLow(last, search);
@@ -206,7 +206,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.nfts$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.nfts$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

@@ -4,17 +4,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
+import { NftApi, OffersHistory, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { ThemeList, ThemeService } from '@core/services/theme';
 import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from '@functions/interfaces/config';
-import { Collection, CollectionType, TransactionBillPayment, TransactionType } from '@functions/interfaces/models';
+import { Collection, CollectionType, Transaction, TransactionBillPayment, TransactionType } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -22,14 +23,15 @@ import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { BehaviorSubject, interval, map, skip, Subscription, take } from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, map, skip, Subscription, take } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
 dayjs.extend(isSameOrBefore);
 
 export enum ListingType {
   CURRENT_BIDS = 0,
-  MY_BIDS = 1,
-  MY_TRANSACTIONS = 2
+  PAST_BIDS = 1,
+  MY_BIDS = 2
 }
 
 @UntilDestroy()
@@ -47,74 +49,11 @@ export class NFTPage implements OnInit, OnDestroy {
   public isCopied = false;
   public mediaType: 'video' | 'image' | undefined;
   public isNftPreviewOpen = false;
-  public currentListingType = ListingType.MY_TRANSACTIONS;
+  public currentListingType = ListingType.MY_BIDS;
   public endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
-  public lineChartOptions: ChartConfiguration['options'] = {
-    elements: {
-      line: {
-        tension: 0
-      }
-    },
-    scales: {
-      xAxis: {
-          ticks: {
-              maxTicksLimit: 10,
-              color: '#959388',
-              font: {
-                size: 14,
-                weight: '600',
-                family: 'Poppins',
-                lineHeight: '14px'
-              }
-          }
-      },
-      yAxis: {
-        ticks: {
-            maxTicksLimit: 10,
-            color: '#959388',
-            font: {
-              size: 14,
-              weight: '600',
-              family: 'Poppins',
-              lineHeight: '14px'
-            }
-        }
-      }
-    },
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        xAlign: 'center',
-        yAlign: 'bottom',
-        backgroundColor: '#fff',
-        titleColor: 'rgba(0,0,0,0)',
-        titleSpacing: 0,
-        titleMarginBottom: 0,
-        titleFont: {
-          lineHeight: 0
-        },
-        bodyColor: '#333333',
-        bodyFont: {
-          weight: '500',
-          family: 'Poppins',
-          size: 16,
-          lineHeight: '28px'
-        },
-        bodyAlign: 'center',
-        bodySpacing: 0,
-        borderColor: 'rgba(0, 0, 0, 0.2)',
-        borderWidth: 1,
-        footerMarginTop: 0,
-        caretPadding: 16,
-        caretSize: 2,
-        displayColors: false
-      }
-    }
-  };
+  public lineChartOptions?: ChartConfiguration['options'] = {}
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];
@@ -135,7 +74,8 @@ export class NFTPage implements OnInit, OnDestroy {
     private fileApi: FileApi,
     private router: Router,
     private cache: CacheService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private themeService: ThemeService
   ) {
     // none
   }
@@ -190,7 +130,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
     let lastNftId: undefined | string = undefined;
     let lastOwner: undefined | string = undefined;
-    this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
+    this.data.nft$.pipe(skip(1), untilDestroyed(this)).subscribe(async(p) => {
       // TODO Only cause refresh if it's different to previous.
       if (p && (p.uid !== lastNftId || p.owner !== lastOwner)) {
         lastNftId = p.uid;
@@ -215,17 +155,24 @@ export class NFTPage implements OnInit, OnDestroy {
             return obj[0];
           })).subscribe(this.data.firstNftInCollection$)
         );
+      }
 
-        if (this.auth.member$.value && this.data.nft$.value) {
-          this.nftSubscriptions$.push(this.nftApi.getMembersTransactions(this.auth.member$.value, this.data.nft$.value).pipe(untilDestroyed(this)).subscribe(this.data.myTransactions$));
-        }
+      if (this.auth.member$.value && this.data.nft$.value) {
+        this.data.pastBidTransactionsLoading$.next(true);
+        this.nftSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!)
+          .pipe(untilDestroyed(this))
+          .subscribe((value: Transaction[]) => {
+            this.currentListingType = ListingType.PAST_BIDS;
+            this.data.pastBidTransactions$.next(value);
+            this.data.pastBidTransactionsLoading$.next(false);
+          }));
       }
 
       // Sync ticker.
       this.endsOnTicker$.next(p?.auctionFrom || undefined);
     });
 
-    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async (p) => {
+    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async(p) => {
       if (p) {
         this.collectionSubscriptions$.forEach((s) => {
           s.unsubscribe();
@@ -239,14 +186,42 @@ export class NFTPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.orders$.pipe(untilDestroyed(this)).subscribe((obj) => {
-      const arr: any = [];
-      obj?.forEach((obj) => {
-        arr.push([obj.order.createdOn?.toDate(), obj.order.payload.amount]);
-      });
+    combineLatest([this.data.orders$, this.themeService.theme$])
+      .pipe(
+        filter(([obj, theme]) => !!obj && !!theme),
+        untilDestroyed(this)
+      )
+      .subscribe(([obj, theme]) => {
+        const arr: any = [];
+        obj?.forEach((obj) => {
+          arr.push([obj.order.createdOn?.toDate(), obj.order.payload.amount]);
+        });
 
-      this.initChart(arr);
-    });
+        switch (theme) {
+        case ThemeList.Light:
+          this.setLineChartOptions('#959388', '#fff', '#333');
+          this.initChart(arr, {
+            backgroundColor: '#FCFBF9',
+            borderColor: '#F39200',
+            pointBackgroundColor: '#F39200',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#333',
+            pointHoverBorderColor: '#fff'
+          });
+          break;
+        case ThemeList.Dark:
+          this.setLineChartOptions('#6A6962', '#333', '#fff');
+          this.initChart(arr, {
+            backgroundColor: '#232323',
+            borderColor: '#F39200',
+            pointBackgroundColor: '#F39200',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#333',
+            pointHoverBorderColor: '#fff'
+          });
+          break;
+        }
+      });
 
     interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
       this.endsOnTicker$.next(this.endsOnTicker$.value);
@@ -270,7 +245,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   private refreshBids(): void {
-    if (this.auctionInProgress(this.data.nft$.value, this.data.collection$.value)) {
+    if (this.data.auctionInProgress(this.data.nft$.value, this.data.collection$.value)) {
       this.currentListingType = ListingType.CURRENT_BIDS;
       this.cd.markForCheck();
 
@@ -279,11 +254,25 @@ export class NFTPage implements OnInit, OnDestroy {
       });
       this.tranSubscriptions$ = [];
       // Resubscribe.
+
       if (this.data.nft$.value) {
-        this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value).pipe(untilDestroyed(this)).subscribe(this.data.allBidTransactions$));
-      }
-      if (this.auth.member$.value && this.data.nft$.value) {
-        this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value).pipe(untilDestroyed(this)).subscribe(this.data.myBidTransactions$));
+        this.data.allBidTransactionsLoading$.next(true);
+        this.tranSubscriptions$.push(this.nftApi.getOffers(this.data.nft$.value!)
+          .pipe(untilDestroyed(this))
+          .subscribe((value: OffersHistory[]) => {
+            this.data.allBidTransactions$.next(value);
+            this.data.allBidTransactionsLoading$.next(false);
+          }));
+
+        if (this.auth.member$.value) {
+          this.data.myBidTransactionsLoading$.next(true);
+          this.tranSubscriptions$.push(this.nftApi.getMembersBids(this.auth.member$.value, this.data.nft$.value!, true)
+            .pipe(untilDestroyed(this))
+            .subscribe((value: Transaction[]) => {
+              this.data.myBidTransactions$.next(value);
+              this.data.myBidTransactionsLoading$.next(false);
+            }));
+        }
       }
     }
   }
@@ -375,65 +364,12 @@ export class NFTPage implements OnInit, OnDestroy {
     return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isAfter(dayjs(), 's');
   }
 
-  public auctionInProgress(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return (
-      col.approved === true && !!nft?.auctionFrom && !!nft?.auctionTo &&
-      dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's') &&
-      dayjs(nft.auctionTo.toDate()).isAfter(dayjs(), 's')
-    );
-  }
-
   public saleNotStartedYet(nft?: Nft | null): boolean {
-    if (!nft) {
+    if (!nft || !nft.availableFrom) {
       return false;
     }
 
     return dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's')
-  }
-
-  public getAuctionEnd(nft?: Nft | null): dayjs.Dayjs | undefined {
-    if (!nft?.auctionTo) {
-      return;
-    }
-
-    return dayjs(nft.auctionTo.toDate());
-  }
-
-  public getAuctionEndHours(nft?: Nft | null): number {
-    const expiresOn = this.getAuctionEnd(nft);
-    if (!expiresOn) {
-      return 0;
-    }
-
-    return expiresOn.diff(dayjs(), 'hour');
-  }
-
-  public getAuctionEndMin(nft?: Nft | null): number {
-    const expiresOn = this.getAuctionEnd(nft);
-    if (!expiresOn) {
-      return 0;
-    }
-
-    let minutes = expiresOn.diff(dayjs(), 'minute');
-    const hours = Math.floor(minutes / 60);
-    minutes = minutes - (hours * 60);
-    return minutes;
-  }
-
-  public getAuctionEndSec(nft?: Nft | null): number {
-    const expiresOn = this.getAuctionEnd(nft);
-    if (!expiresOn) {
-      return 0;
-    }
-
-    let seconds = expiresOn.diff(dayjs(), 'seconds');
-    const minutes = Math.floor(seconds / 60);
-    seconds = seconds - (minutes * 60);
-    return seconds;
   }
 
   public discount(collection?: Collection|null, nft?: Nft|null): number {
@@ -533,14 +469,6 @@ export class NFTPage implements OnInit, OnDestroy {
     return ListingType;
   }
 
-  public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs(), 's');
-  }
-
   public getTitle(nft?: Nft | null): any {
     if (!nft) {
       return '';
@@ -567,8 +495,76 @@ export class NFTPage implements OnInit, OnDestroy {
     return (!nft.owner && (nft.type === CollectionType.GENERATED || nft.type === CollectionType.SFT));
   }
 
-  public initChart(data: any[][]): void {
-    const dataToShow: { data: number[], labels: string[] } = {
+  private setLineChartOptions(axisColor: string, tooltipColor: string, tooltipBackgroundColor: string): void {
+    this.lineChartOptions = {
+      elements: {
+        line: {
+          tension: 0
+        }
+      },
+      scales: {
+        xAxis: {
+          ticks: {
+            maxTicksLimit: 10,
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        },
+        yAxis: {
+          ticks: {
+            maxTicksLimit: 10,
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          xAlign: 'center',
+          yAlign: 'bottom',
+          backgroundColor: tooltipBackgroundColor,
+          titleColor: 'rgba(0,0,0,0)',
+          titleSpacing: 0,
+          titleMarginBottom: 0,
+          titleFont: {
+            lineHeight: 0
+          },
+          bodyColor: tooltipColor,
+          bodyFont: {
+            weight: '500',
+            family: 'Poppins',
+            size: 16,
+            lineHeight: '28px'
+          },
+          bodyAlign: 'center',
+          bodySpacing: 0,
+          borderColor: 'rgba(0, 0, 0, 0.2)',
+          borderWidth: 1,
+          footerMarginTop: 0,
+          caretPadding: 16,
+          caretSize: 2,
+          displayColors: false
+        }
+      }
+    };
+    this.cd.markForCheck();
+  }
+
+  private initChart(data: any[][], colorOptions: object): void {
+    const dataToShow: { data: number[]; labels: string[] } = {
       data: [],
       labels: []
     };
@@ -585,13 +581,8 @@ export class NFTPage implements OnInit, OnDestroy {
       datasets: [
         {
           data: dataToShow.data,
-          backgroundColor: '#FCFBF9',
-          borderColor: '#F39200',
-          pointBackgroundColor: '#F39200',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#333333',
-          pointHoverBorderColor: '#fff',
-          fill: 'origin'
+          fill: 'origin',
+          ...colorOptions
         }
       ],
       labels: dataToShow.labels

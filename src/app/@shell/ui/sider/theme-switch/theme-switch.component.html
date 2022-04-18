@@ -1,8 +1,9 @@
 <div class="relative w-6 h-6 overflow-hidden cursor-pointer rounded-2xl" *ngIf="deviceService.isDesktop$ | async; else isMobileBlock">
   <div
-    class="absolute flex flex-col justify-between w-full h-16 overflow-visible transition-transform duration-1000 ease-in-out t-0 l-0 wrapper"
+    class="absolute flex flex-col justify-between w-full h-16 overflow-visible
+      transition-transform duration-1000 ease-in-out t-0 l-0 wrapper text-icons-primary dark:text-icons-primary-dark"
     [ngClass]="{
-      'transform rotate-180': (currentTheme$ | async) === theme.Light
+      'rotate-180': (currentTheme$ | async) === theme.Light
     }"
   >
     <wen-icon-moon (click)="onClickChangeTheme(theme.Light)"> </wen-icon-moon>
@@ -15,7 +16,8 @@
     <div (click)="onClickChangeTheme(theme.Light)"
       class="flex items-center justify-center w-10 h-10 rounded-full"
       [ngClass]="{
-        'bg-orange': (currentTheme$ | async) === theme.Light
+        'bg-accent-primary dark:bg-accent-primary-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark':
+          (currentTheme$ | async) === theme.Light
       }">
       <wen-icon-sun> </wen-icon-sun>
     </div>
@@ -23,7 +25,8 @@
     <div (click)="onClickChangeTheme(theme.Dark)"
       class="flex items-center justify-center w-10 h-10 rounded-full"
       [ngClass]="{
-        'bg-orange': (currentTheme$ | async) === theme.Dark
+        'bg-accent-primary dark:bg-accent-primary-dark text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark':
+          (currentTheme$ | async) === theme.Dark
       }">
       <wen-icon-moon> </wen-icon-moon>
     </div>

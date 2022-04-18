@@ -44,7 +44,7 @@ export class MobileHeaderComponent {
   }
 
   public wenOnCreateClick(): void {
-    if(this.isMobileMenuVisible) {
+    if (this.isMobileMenuVisible) {
       this.setMobileMenuVisible(false);
     }
   }

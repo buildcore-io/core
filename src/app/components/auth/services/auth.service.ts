@@ -141,7 +141,7 @@ export class AuthService {
     }
   }
 
-  public async mint(_ipfsCid: string): Promise<boolean> {
+  public async mint(): Promise<boolean> {
     // TODO waiting for stable EVM to plug it into our SC.
     return true;
   }
@@ -163,7 +163,7 @@ export class AuthService {
             method: "eth_requestAccounts",
             params: [{ eth_accounts: {} }]
           });
-        } catch(e) {
+        } catch (e) {
           this.notification.error($localize`You must enable access to read your account address.`, '');
           this.showWalletPopup$.next(WalletStatus.HIDDEN);
           return undefined;

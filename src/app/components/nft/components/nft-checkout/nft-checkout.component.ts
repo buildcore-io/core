@@ -5,15 +5,17 @@ import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { CheckoutService } from '@core/services/checkout';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { PreviewImageService } from '@core/services/preview-image';
 import { getItem, removeItem, setItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionType, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Collection, CollectionType, Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -69,7 +71,16 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     return this._nft;
   }
 
-  @Input() collection?: Collection|null;
+  @Input() 
+  set collection(value: Collection|null|undefined) {
+    this._collection = value;
+    if (this.collection) {
+      this.royaltySpace = this.cache.allSpaces$.getValue().find((s: Space) => this.collection?.royaltiesSpace === s.uid);
+    }
+  }
+  get collection(): Collection|null|undefined {
+    return this._collection;
+  }
   @Output() wenOnClose = new EventEmitter<void>();
 
   public purchasedNft?: Nft|null;
@@ -84,13 +95,16 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
   public invalidPayment = false;
   public targetAddress?: string;
   public targetAmount?: number;
+  public royaltySpace?: Space|null;
   private _isOpen = false;
   private _nft?: Nft|null;
+  private _collection?: Collection|null;
 
   private transSubscription?: Subscription;
   public path = ROUTER_UTILS.config.nft.root;
   constructor(
     public deviceService: DeviceService,
+    public previewImageService: PreviewImageService,
     private checkoutService: CheckoutService,
     private auth: AuthService,
     private router: Router,
@@ -100,6 +114,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private orderApi: OrderApi,
     private nftApi: NftApi,
     private fileApi: FileApi,
+    private cache: CacheService
   ) {}
 
   public ngOnInit(): void {
@@ -125,7 +140,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
             }
 
             listeningToTransaction.push(tranId);
-            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any>this.transaction$);
+            this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any> this.transaction$);
           }
         } else if (!val.linkedTransactions) {
           this.currentStep = StepType.TRANSACTION;
@@ -191,7 +206,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     });
 
     if (getItem(StorageItem.CheckoutTransaction)) {
-      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.CheckoutTransaction)).subscribe(<any>this.transaction$);
+      this.transSubscription = this.orderApi.listen(<string>getItem(StorageItem.CheckoutTransaction)).subscribe(<any> this.transaction$);
     }
 
     // Run ticker.
@@ -350,7 +365,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       this.notification.processRequest(this.orderApi.orderNft(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.CheckoutTransaction, val.uid);
-        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
         this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
       });
     });

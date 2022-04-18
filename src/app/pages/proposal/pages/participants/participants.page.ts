@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { } from '@angular/compiler';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
@@ -20,6 +21,7 @@ enum ParticipantFilterOptions {
 @UntilDestroy()
 @Component({
   selector: 'wen-participants',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './participants.page.html',
   styleUrls: ['./participants.page.less']
 })
@@ -76,7 +78,7 @@ export class ParticipantsPage implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async (val) => {
+    this.search$.pipe(skip(1), untilDestroyed(this)).subscribe(async(val) => {
       // We need reset old values.
       this.resetDataStore();
       this.resetSubjects();

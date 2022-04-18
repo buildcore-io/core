@@ -79,15 +79,15 @@ export class CollectionsPage implements OnInit, OnDestroy {
     });
 
     this.spaceControl.valueChanges
-    .pipe(untilDestroyed(this))
-    .subscribe((o) => {
-      this.storageService.selectedSpace.next(o.space);
-      if (this.filter.search$.value && this.filter.search$.value.length > 0) {
-        this.listen(this.filter.search$.value);
-      } else {
-        this.listen();
-      }
-  });
+      .pipe(untilDestroyed(this))
+      .subscribe((o) => {
+        this.storageService.selectedSpace.next(o.space);
+        if (this.filter.search$.value && this.filter.search$.value.length > 0) {
+          this.listen(this.filter.search$.value);
+        } else {
+          this.listen();
+        }
+      });
   }
 
   public handleChange(tag: string): void {
@@ -96,9 +96,9 @@ export class CollectionsPage implements OnInit, OnDestroy {
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || []).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 
@@ -158,7 +158,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.collections$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.collections$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

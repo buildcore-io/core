@@ -74,7 +74,7 @@ export class MemberEditDrawerComponent implements OnInit {
       this.nzNotification.error('', 'No more avatars available');
       return;
     } else {
-      const results: boolean = await this.auth.mint(result[0].uid);
+      const results: boolean = await this.auth.mint();
       if (results === false) {
         this.nzNotification.error('', 'Unable to mint your avatar at the moment. Try again later.');
       } else {

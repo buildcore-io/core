@@ -295,7 +295,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = this.getRawPrice(Number(this.priceControl.value), <Units>this.unitControl.value);
+        const value = this.getRawPrice(Number(this.priceControl.value), <Units> this.unitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });
@@ -327,9 +327,9 @@ export class UpsertPage implements OnInit, OnDestroy {
     return (list || [])
       .filter((o) => o.rejected !== true)
       .map((o) => ({
-          label: o.name || o.uid,
-          value: o.uid,
-          img: o.bannerUrl
+        label: o.name || o.uid,
+        value: o.uid,
+        img: o.bannerUrl
       }));
   }
 
@@ -424,9 +424,9 @@ export class UpsertPage implements OnInit, OnDestroy {
       ? (tooltip =
           'Classic NFTs are the most straightforward in that you upload your images, they’re all visible right away, and people can browse through your collection and purchase what they like. Simply upload and sell!')
       : type === 1
-      ? (tooltip =
+        ? (tooltip =
           'Generated NFTs add a little mystery into the mix. The buyer won’t know what their NFT looks like until they mint it. The owner of the collection has the ability to put in a placeholder image for the entire collection to give the buyer an idea of what the NFT may look like, but their mint will still be a surprise. This is the most common type of NFT (it’s what IOTABOTs did).')
-      : (tooltip =
+        : (tooltip =
           'SFTs (Semi-Fungible Tokens) are a hybrid between the two approaches above. The collection creator can create a classic NFT, but they have the option to multiply them. For example, they can upload 10 images, but each image will have a quantity of 100. This is a relatively new term in the space, but a good real world example of this approach would be baseball or football trading cards.');
 
     return tooltip;
@@ -455,7 +455,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledDateTime(startValue: Date | Date[]): DisabledTimeConfig {
     if (
-        !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day') ) {
+      !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day') ) {
       return {
         nzDisabledHours: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
         nzDisabledMinutes: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),

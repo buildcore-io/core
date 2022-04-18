@@ -14,7 +14,6 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NftPreviewComponent } from './nft-preview.component';
 
 
-
 @NgModule({
   declarations: [
     NftPreviewComponent

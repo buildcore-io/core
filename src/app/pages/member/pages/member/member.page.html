@@ -11,7 +11,7 @@
       </h1>
 
       <button *ngIf="(deviceService.isMobile$ | async) && ((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
-        nz-button nzType="default" nzBlock nzSize="small" class="w-max"
+        nz-button nzType="default" nzSize="small" class="w-max"
         (click)="isAboutMemberVisible = true" i18n>Profile info</button>
     </div>
 
@@ -34,22 +34,22 @@
           *ngIf="(data.member$ | async)?.github || (data.member$ | async)?.twitter || (data.member$ | async)?.discord">
           <a *ngIf="(data.member$ | async)?.github" nz-button nzType="link" target="new"
             [href]="'https://github.com/' + (data.member$ | async)!.github">
-            <wen-icon-github class="text-app-gray-text hover:text-blue-hover"></wen-icon-github>
+            <wen-icon-github class="text-foregrounds-primary dark:text-foregrounds-primary-dark hover:text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark"></wen-icon-github>
           </a>
           <a *ngIf="(data.member$ | async)?.twitter" nz-button nzType="link" target="new"
             [href]="'https://twitter.com/' + (data.member$ | async)!.twitter">
-            <wen-icon-twitter class="text-app-gray-text hover:text-blue-hover"></wen-icon-twitter>
+            <wen-icon-twitter class="text-foregrounds-primary dark:text-foregrounds-primary-dark hover:text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark"></wen-icon-twitter>
           </a>
           <a *ngIf="(data.member$ | async)?.discord" nz-button nzType="link" target="new" nz-tooltip
             [nzTooltipTitle]="(data.member$ | async)!.discord">
-            <wen-icon-discord class="text-app-gray-text hover:text-blue-hover"></wen-icon-discord>
+            <wen-icon-discord class="text-foregrounds-primary dark:text-foregrounds-primary-dark hover:text-buttons-primary-on-hover dark:text-buttons-primary-on-hover-dark"></wen-icon-discord>
           </a>
         </div>
     </div>
 
     <wen-tabs class="block w-screen lg:w-max -ml-5 lg:ml-0 overflow-x-auto overflow-y-hidden" [tabs]="sections"></wen-tabs>
     
-    <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-app-gray-100 mt-6"></div>
+    <div *ngIf="deviceService.isMobile$ | async" class="h-px w-screen -ml-5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark mt-6"></div>
 
     <div class="relative w-full py-12 lg:w-auto" [style.min-height]="(height$ | async) + 'px'">
       <router-outlet></router-outlet>

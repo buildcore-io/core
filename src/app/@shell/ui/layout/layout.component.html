@@ -7,19 +7,19 @@
     <wen-sider></wen-sider>
   </nz-sider>
 
-  <nz-layout [ngClass]="(showSideBar$ | async) ? 'rounded-l-large' : ''">
+  <nz-layout class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark" [ngClass]="(showSideBar$ | async) ? 'rounded-l-large' : ''">
     <wen-header></wen-header>
 
     <div
-      class="relative w-full bg-white h-28 lg:hidden"
+      class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark h-28 lg:hidden"
       [ngClass]="{
         hidden: routerService.isHomeRoute$ | async,
         'h-28': (routerService.isNewRoute$ | async) === false,
-        'h-20': routerService.isNewRoute$ | async
+        'h-16': routerService.isNewRoute$ | async
       }"
     >
       <div
-        class="absolute bottom-0 w-full h-10 bg-tag-default rounded-t-40"
+        class="absolute bottom-0 w-full h-10 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-t-40"
         [ngClass]="{
           'h-4 rounded-t-none z-50': routerService.isNewRoute$ | async
         }"

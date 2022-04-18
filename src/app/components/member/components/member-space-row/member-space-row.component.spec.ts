@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MemberSpaceRowComponent } from './member-space-row.component';
+
 
 describe('MemberSpaceRowComponent', () => {
   let component: MemberSpaceRowComponent;
   let fixture: ComponentFixture<MemberSpaceRowComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ MemberSpaceRowComponent ]
+      declarations: [MemberSpaceRowComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

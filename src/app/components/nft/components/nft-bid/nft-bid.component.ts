@@ -4,16 +4,19 @@ import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { OrderApi } from '@api/order.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
+import { PreviewImageService } from '@core/services/preview-image';
 import { getBitItemItem, removeBitItemItem, setBitItemItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Collection, CollectionType, Transaction, TransactionType } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { Collection, CollectionType, Space, Transaction, TransactionType } from '@functions/interfaces/models';
+import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from '@pages/nft/services/data.service';
 import dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 
@@ -59,7 +62,17 @@ export class NftBidComponent implements OnInit {
     return this._nft;
   }
 
-  @Input() collection?: Collection | null;
+  @Input() 
+  set collection(value: Collection|null|undefined) {
+    this._collection = value;
+    if (this.collection) {
+      this.royaltySpace = this.cache.allSpaces$.getValue().find((s: Space) => this.collection?.royaltiesSpace === s.uid);
+    }
+  }
+  get collection(): Collection|null|undefined {
+    return this._collection;
+  }
+  @Input() endsOnTicker$: BehaviorSubject<Timestamp | undefined> = new BehaviorSubject<Timestamp | undefined>(undefined);
   @Output() wenOnClose = new EventEmitter<void>();
 
   public transaction$: BehaviorSubject<Transaction | undefined> = new BehaviorSubject<Transaction | undefined>(undefined);
@@ -72,20 +85,25 @@ export class NftBidComponent implements OnInit {
   public targetAddress?: string;
   public targetAmount?: number;
   public path = ROUTER_UTILS.config.nft.root;
+  public royaltySpace?: Space|null;
 
   private transSubscription?: Subscription;
   private _isOpen = false;
   private _nft?: Nft | null;
+  private _collection?: Collection|null;
 
   constructor(
     public deviceService: DeviceService,
-    private cd: ChangeDetectorRef,
     public auth: AuthService,
+    public data: DataService,
+    public previewImageService: PreviewImageService,
+    private cd: ChangeDetectorRef,
     private fileApi: FileApi,
     private notification: NotificationService,
     private router: Router,
     private orderApi: OrderApi,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cache: CacheService
   ) { }
 
   public ngOnInit(): void {
@@ -153,7 +171,7 @@ export class NftBidComponent implements OnInit {
     });
 
     if (this.nft?.uid && getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())) {
-      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())).subscribe(<any>this.transaction$);
+      this.transSubscription = this.orderApi.listen(<string>getBitItemItem(this.nft.uid + this.auth.member$.value?.uid + this.nft.auctionTo?.toMillis())).subscribe(<any> this.transaction$);
     }
 
     // Run ticker.
@@ -257,7 +275,7 @@ export class NftBidComponent implements OnInit {
       this.notification.processRequest(this.orderApi.openBid(sc), 'Order created.', finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         setBitItemItem(params.nft + this.auth.member$.value?.uid + this.nft?.auctionTo?.toMillis(), val.uid);
-        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any>this.transaction$);
+        this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
       });
     });
   }

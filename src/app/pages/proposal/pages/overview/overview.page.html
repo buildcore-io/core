@@ -37,7 +37,7 @@
       [formControl]="voteControl">
       <nz-card *ngFor="let a of q.answers" class="block mt-4"
         [ngClass]="{
-          'border-2 border-solid border-orange': a.value === voteControl.value
+          'border-2 border-solid border-accent-primary dark:border-accent-primary-dark': a.value === voteControl.value
         }">
           <wen-proposal-answer 
             [answer]="a">
@@ -56,6 +56,6 @@
 
 <div class="mx-8 mt-10">
   <h4 i18n>Proposal Description</h4>
-  <div class="whitespace-pre-line " nz-typography [innerHtml]="(data.proposal$ | async)?.additionalInfo | markdown">
+  <div class="whitespace-pre-line text-foregrounds-primary dark:text-foregrounds-primary-dark" nz-typography [innerHtml]="(data.proposal$ | async)?.additionalInfo | markdown">
   </div>
 </div>

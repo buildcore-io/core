@@ -23,7 +23,12 @@ export const removeBitItemItem = (nftId: string): void => {
 
 export const getNotificationItem = (memberId: string): unknown | null => {
   const item = localStorage.getItem(StorageItem.Notification + memberId);
-  return item ? JSON.parse(item) : null;
+  try {
+    return item ? JSON.parse(item) : null;
+  } catch (err) {
+    console.error('Error while parsing local storage notification item', err);
+    return null;
+  }
 };
 
 export const setNotificationItem = (memberId: string, value: unknown): void => {

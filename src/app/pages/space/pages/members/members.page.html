@@ -32,7 +32,7 @@
       <nz-input-group *ngIf="(data.isGuardianWithinSpace$ | async) === false || (deviceService.isDesktop$ | async); else mobileSearch"
         [nzSize]="(deviceService.isDesktop$ | async) ? 'large' : 'small'" [nzPrefix]="prefixIconSearch"
         class="w-full ml-0 border-none shadow-none outline-0 lg:w-72" nzSearch>
-        <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base" [formControl]="filterControl"/>
+        <input type="text" nz-input i18n-placeholder placeholder="Find Member" class="text-base bg-inputs-background dark:bg-inputs-background-dark" [formControl]="filterControl"/>
       </nz-input-group>
       <ng-template #prefixIconSearch>
         <i nz-icon nzType="search" class="text-xl"></i>
@@ -49,12 +49,12 @@
     <nz-alert nzType="warning" i18n-nzMessage nzMessage="Showing only few top records..."
       *ngIf="overTenRecords && data.isEmpty((getList() | async)) === false"></nz-alert>
 
-    <nz-skeleton *ngIf="data.isLoading(getList() | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+    <nz-skeleton *ngIf="data.isLoading(getList() | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty((getList() | async))">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400" i18n>
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Members
         </span>
       </div>

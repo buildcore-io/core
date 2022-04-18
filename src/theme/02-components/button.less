@@ -1,6 +1,3 @@
-a.ant-btn {
-  -webkit-appearance: none;
-}
 
 .ant-btn:disabled {
   opacity: 0.5;
@@ -24,25 +21,53 @@ a.ant-btn {
 
 .ant-btn {
   font-size: @font-size-lg;
-  @apply inline-flex place-items-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
+  @apply inline-flex place-items-center justify-center bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark dark:border-none;
   
-  &:hover {
-    @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;
+  > * {
+    @apply text-inherit;
   }
 
-  &:active,
-  &:focus {
-    @apply text-buttons-secondary-pressed dark:text-buttons-secondary-pressed-dark;
+  &:not([nztype="default"]) {
+    @apply text-buttons-text dark:text-buttons-text-dark;
   }
 }
 
+.ant-btn.ant-btn-block {
+  @apply flex;
+}
 
 .ant-btn-primary {
-  @apply bg-buttons-primary-enabled;
+  @apply bg-buttons-primary-enabled dark:bg-buttons-primary-enabled-dark text-foregrounds-on-primary;
+
+  &:hover {
+    @apply bg-buttons-primary-on-hover dark:bg-buttons-primary-on-hover-dark text-foregrounds-on-primary;
+  }
 
   &:active,
   &:focus {
-    @apply bg-buttons-primary-pressed dark:bg-buttons-primary-pressed-dark border-buttons-primary-pressed dark:border-buttons-primary-pressed-dark;
+    @apply bg-buttons-primary-pressed dark:bg-buttons-primary-pressed-dark border-buttons-primary-pressed;
+  }
+}
+
+a.ant-btn {
+  -webkit-appearance: none;
+  @apply py-0;
+}
+
+a.ant-btn&:not([nztype="default"]) {
+  @apply text-textlink-enabled dark:text-textlink-enabled-dark;
+
+  &:hover {
+    @apply text-textlink-on-hover;
+  }
+
+  &:active,
+  &:focus {
+    @apply text-textlink-pressed;
+  }
+
+  &:not(.ant-btn-block) {
+    @apply bg-transparent dark:bg-transparent;
   }
 }
 
@@ -52,14 +77,23 @@ a.ant-btn {
 
 .ant-btn-dangerous {
   border-color: transparent;
+  @apply border-transparent bg-buttons-destructive dark:bg-buttons-destructive;
+
+  &:hover {
+    @apply bg-buttons-destructive dark:bg-buttons-destructive;
+  }
 }
 
 .wen-secondary {
-  @apply text-app-gray-text hover:border-orange;
+  @apply text-buttons-secondary-enabled dark:text-buttons-secondary-enabled-dark bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark border-none !important;
+
+  &:hover {
+    @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;
+  }
 
   &:active,
   &:focus {
-    @apply bg-orange border-orange text-white;
+    @apply text-buttons-secondary-pressed dark:text-buttons-secondary-pressed-dark;
 
     path {
       stroke: white;
@@ -67,7 +101,7 @@ a.ant-btn {
   }
 
   &.selected {
-    @apply bg-orange border-orange text-white;
+    @apply bg-accent-primary dark:bg-accent-primary-dark border-accent-primary dark:border-accent-primary-dark text-white !important;
   }
 }
 
@@ -91,12 +125,12 @@ a.ant-btn {
 }
 
 .wen-header-button {
-  @apply text-app-gray-text hover:border-orange border border-solid hover:text-app-gray-text;
+  @apply text-foregrounds-primary dark:text-foregrounds-primary-dark hover:border-accent-primary dark:border-accent-primary-dark border border-solid hover:text-foregrounds-primary dark:text-foregrounds-primary-dark;
 
   outline: @input-hover-border-color;
 
   &:focus {
-    @apply border-orange text-app-gray-text;
+    @apply border-accent-primary dark:border-accent-primary-dark text-foregrounds-primary dark:text-foregrounds-primary-dark;
 
     outline: 1px solid @input-hover-border-color;
   }
@@ -104,12 +138,12 @@ a.ant-btn {
 
 .isMember {
   .wen-header-button {
-    @apply bg-bg-background hover:bg-bg-background;
+    @apply bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark hover:bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark;
   }
 }
 
 .ant-popover-inner-content {
-  @apply text-black font-medium text-xs leading-4 px-2 py-1;
+  @apply text-accent-secondary dark:text-accent-secondary-dark font-medium text-xs leading-4 px-2 py-1;
 }
 
 .ant-btn-sm {

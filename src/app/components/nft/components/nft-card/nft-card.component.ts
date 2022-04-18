@@ -148,18 +148,18 @@ export class NftCardComponent {
     if (this.nft?.owner) {
       return {
         label: $localize`Available`,
-        className: 'bg-tag-green'
+        className: 'bg-tags-available dark:bg-tags-available-dark'
       };
     } else if (this.nft?.type === CollectionType.CLASSIC) {
       return {
         label: $localize`New NFT`,
-        className: 'bg-tag-green'
+        className: 'bg-tags-available dark:bg-tags-available-dark'
       };
     } else {
       const remaining = ((this.collection?.total || 0) - (this.collection?.sold || 0));
       return {
         label: remaining > 100 ? `100+ remaining` : `${remaining} remaining`,
-        className: remaining >= 100 ? 'bg-tag-blue' : 'bg-tag-red'
+        className: remaining >= 100 ? 'bg-tags-commencing dark:bg-tags-commencing-dark' : 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
   }

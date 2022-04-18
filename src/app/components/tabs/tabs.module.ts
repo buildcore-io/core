@@ -5,7 +5,6 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { TabsComponent } from './tabs.component';
 
 
-
 @NgModule({
   exports: [
     TabsComponent

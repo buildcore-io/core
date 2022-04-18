@@ -14,7 +14,7 @@
           [isLandingPage]="isLandingPage">
         </wen-mobile-header>
 
-        <div class="flex items-center justify-between w-full h-16 mt-10 rounded-full bg-tag-default" (click)="onClickProfile()">
+        <div class="flex items-center justify-between w-full h-16 mt-10 rounded-full bg-tags-regular dark:bg-tags-regular-dark" (click)="onClickProfile()">
           <div class="ml-2 font-semibold w-full">
             <ng-container *ngIf="isLoggedIn$ | async; else notLoggedInBlock">
               <nz-avatar nzIcon="user" [nzSrc]="(member$ | async)?.currentProfileImage | ipfsAvatar:filesizes?.small" [nzSize]="48"
@@ -28,7 +28,7 @@
             <ng-template #notLoggedInBlock>
               <div class="flex items-center justify-between w-full">
                 <div class="flex items-center">
-                  <nz-avatar nzSrc="assets/metamask.png" [nzSize]="48" class="mr-1 border-2 border-app-gray-100"></nz-avatar>
+                  <nz-avatar nzSrc="assets/metamask.svg" [nzSize]="48" class="mr-1 border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark"></nz-avatar>
                   <div class="ml-3">
                     <div class="font-semibold">Metamask</div>
                     <div class="text-xs text-foregrounds-secondary" i18n>Connect to your MetaMask wallet</div>
@@ -44,6 +44,8 @@
           <wen-menu [items]="(auth.mobileMenuItems$ | async) || []"></wen-menu>
         </div>
 
+        <wen-theme-switch class="block ml-9 mt-4"></wen-theme-switch>
+
         <div class="absolute flex flex-col items-center justify-between w-full bottom-10">
           <div *ngIf="isLoggedIn$ | async"
             class="flex items-center text-lg font-bold"
@@ -52,7 +54,7 @@
             <span i18n>Log out</span>
           </div>
 
-          <div class="flex items-center mt-6 text-sm font-medium text-app-gray-400">
+          <div class="flex items-center mt-6 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             <span i18n>Powered by</span>
             <wen-icon-soonlabs class="ml-2"></wen-icon-soonlabs>
           </div>

@@ -10,7 +10,6 @@ import { MemberReputationModalModule } from '../member-reputation-modal/member-r
 import { MemberSpaceRowComponent } from './member-space-row.component';
 
 
-
 @NgModule({
   declarations: [
     MemberSpaceRowComponent

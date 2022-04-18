@@ -5,7 +5,6 @@ import { IconModule } from '@components/icon/icon.module';
 import { FixedCreateButtonComponent } from './fixed-create-button.component';
 
 
-
 @NgModule({
   declarations: [
     FixedCreateButtonComponent

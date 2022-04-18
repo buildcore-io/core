@@ -13,7 +13,6 @@ import { ThemeSwitchModule } from '../sider/theme-switch/theme-switch.module';
 import { MobileMenuComponent } from './mobile-menu.component';
 
 
-
 @NgModule({
   declarations: [
     MobileMenuComponent

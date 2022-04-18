@@ -1,6 +1,6 @@
-<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!award?.approved && !award?.rejected" i18n>Pending
+<nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="!award?.approved && !award?.rejected" i18n>Pending
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="award?.rejected" i18n>Rejected
+<nz-tag class="wen-status-tag bg-tags-closed dark:bg-tags-closed-dark border-tags-closed dark:border-tags-closed-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="award?.rejected" i18n>Rejected
 </nz-tag>
-<nz-tag class="wen-status-tag bg-tag-red border-tag-red" *ngIf="isCompleted(award)" i18n>Completed</nz-tag>
-<nz-tag class="wen-status-tag bg-tag-green border-tag-green" *ngIf="!isCompleted(award) && award?.approved" i18n>Available</nz-tag>
+<nz-tag class="wen-status-tag bg-tags-closed dark:bg-tags-closed-dark border-tags-closed dark:border-tags-closed-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="isCompleted(award)" i18n>Completed</nz-tag>
+<nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="!isCompleted(award) && award?.approved" i18n>Available</nz-tag>

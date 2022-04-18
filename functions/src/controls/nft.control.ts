@@ -50,7 +50,15 @@ export const createNft: functions.CloudFunction<Member> = functions.runWith({
   const creator = params.address.toLowerCase();
   const schema: ObjectSchema<Member> = Joi.object(defaultJoiUpdateCreateSchema());
   assertValidation(schema.validate(params.body));
-  return processOneCreateNft(creator, params.body);
+
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
+  const docCollection: admin.firestore.DocumentSnapshot = await refCollection.get();
+  if (!docCollection.exists) {
+    throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  const collectionData: Collection = <Collection>docCollection.data();
+  return processOneCreateNft(creator, params.body, collectionData, collectionData.total + 1);
 });
 
 export const createBatchNft: functions.CloudFunction<string[]> = functions.runWith({
@@ -63,13 +71,24 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const creator = params.address.toLowerCase();
-  const schema: any = Joi.array().items(Joi.object().keys(defaultJoiUpdateCreateSchema())).max(500);
+  const schema: any = Joi.array().items(Joi.object().keys(defaultJoiUpdateCreateSchema())).min(1).max(500);
   assertValidation(schema.validate(params.body));
+
+  // TODO What happens if they submit various collection. We need JOI to only allow same collection within all nfts.
+  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body[0].collection);
+  const docCollection: admin.firestore.DocumentSnapshot = await refCollection.get();
+  if (!docCollection.exists) {
+    throw throwInvalidArgument(WenError.collection_does_not_exists);
+  }
+
+  const collectionData: Collection = <Collection>docCollection.data();
 
   // Batch create.
   const process: Promise<Member>[] = [];
+  let i: number = collectionData.total;
   for (const b of params.body) {
-    process.push(processOneCreateNft(creator, b));
+    i++;
+    process.push(processOneCreateNft(creator, b, collectionData, i));
   }
 
   // Wait for it complete.
@@ -79,20 +98,13 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
   });
 });
 
-const processOneCreateNft = async (creator: string, params: any): Promise<Member> => {
+const processOneCreateNft = async (creator: string, params: any, collectionData: Collection, position: number): Promise<Member> => {
   const nftAddress: string = getRandomEthAddress();
   const docMember: admin.firestore.DocumentSnapshot = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.collection);
-  const docCollection: admin.firestore.DocumentSnapshot = await refCollection.get();
-  if (!docCollection.exists) {
-    throw throwInvalidArgument(WenError.collection_does_not_exists);
-  }
-
-  const collectionData: Collection = <Collection>docCollection.data()
   if (collectionData.createdBy !== creator) {
     throw throwInvalidArgument(WenError.you_must_be_the_creator_of_this_collection);
   }
@@ -128,7 +140,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
       locked: false,
       price: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
       availablePrice: (isNaN(finalPrice) || finalPrice < MIN_IOTA_AMOUNT) ? MIN_IOTA_AMOUNT : finalPrice,
-      position: collectionData.total + 1,
+      position: position,
       lockedBy: null,
       ipfsMedia: null,
       ipfsMetadata: null,
@@ -146,6 +158,7 @@ const processOneCreateNft = async (creator: string, params: any): Promise<Member
     }), URL_PATHS.NFT)));
 
     // Update collection.
+    const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(collectionData.uid);
     await refCollection.update({
       total: admin.firestore.FieldValue.increment(1)
     });

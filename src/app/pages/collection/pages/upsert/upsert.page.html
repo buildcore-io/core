@@ -70,13 +70,13 @@
                   <i
                     nz-icon
                     nzType="info-circle"
-                    class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
                   ></i>
                   <div
-                    class="absolute transform -translate-y-1/2 right-10 top-1/2"
+                    class="absolute -translate-y-1/2 right-10 top-1/2"
                   >
                     <button
                       *ngFor="let unit of priceUnits"
@@ -101,7 +101,7 @@
                 nzErrorTip="Available On is required."
               >
                 <nz-date-picker
-                  class="flex flex-grow"
+                  class="flex grow"
                   [nzDisabledDate]="disabledStartDate.bind(this)"
                   [nzDisabledTime]="disabledDateTime.bind(this)"
                   nzSize="large"
@@ -115,7 +115,7 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-              <nz-form-label class="text-sm font-medium text-app-gray-600" i18n>Royalty</nz-form-label>
+              <nz-form-label class="text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalty</nz-form-label>
               <span class="ant-card-meta-description" i18n>
                 This royalty % will be applied on the initial mint of the NFTs and all secondary sales. The IOTA address that will be receiving royalties must always have a minimum balance of 1 Mi due to the dust protection mechanism of the IOTA protocol.
               </span><br />
@@ -135,7 +135,7 @@
                 <i
                   nz-icon
                   nzType="info-circle"
-                  class="absolute transform -translate-y-1/2 cursor-pointer right-6 top-1/2 text-app-gray-400"
+                  class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   nz-tooltip
                   i18n-nzTooltipTitle
                   nzTooltipTitle="Example: 10 % , 20 % , etc.."
@@ -152,7 +152,7 @@
                   <i
                     nz-icon
                     nzType="info-circle"
-                    class="cursor-pointer text-app-gray-400"
+                    class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                     nz-tooltip
                     i18n-nzTooltipTitle
                     nzTooltipTitle="Royalties goes to a different space"
@@ -257,7 +257,7 @@
                 class="flex items-center justify-between mt-4"
                 *ngFor="let discount of discounts.controls; let i = index"
               >
-                <nz-input-group nzAddOnBefore="XP >" class="flex-grow w-1/2">
+                <nz-input-group nzAddOnBefore="XP >" class="grow w-1/2">
                   <input
                     type="text"
                     nz-input
@@ -268,7 +268,7 @@
 
                 <wen-icon-arrow-right class="mx-10"></wen-icon-arrow-right>
 
-                <div class="flex items-center flex-grow w-1/2">
+                <div class="flex items-center grow w-1/2">
                   <nz-input-number
                     class="w-full max-w-80"
                     [nzMin]="0"
@@ -342,7 +342,7 @@
             nz-button
             *ngIf="discounts.controls.length < maxDiscountCount"
             nzType="link"
-            class="flex items-center pl-0 mt-3"
+            class="flex items-center mt-3 wen-secondary"
             [disabled]="priceControl.invalid"
             (click)="addDiscount()"
           >
@@ -395,7 +395,7 @@
                   *ngFor="let type of collectionTypes; trackBy: trackByValue"
                   [value]="type.value"
                 >
-                  <span class="flex items-center">
+                  <span class="flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark">
                     {{ type.key }}
                     <wen-icon-question-circle
                       class="ml-1"
@@ -439,7 +439,7 @@
                     <span class="pl-2 text-xs">jpeg/png</span>
                   </ng-container>
                 </nz-upload>
-                <div class="text-orange-darkest" *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine" i18n>
+                <div class="text-accent-primary dark:text-accent-primary-darkest" *ngIf="bannerUrlControl.invalid && !bannerUrlControl.pristine" i18n>
                   Banner is required.
                 </div>
               </nz-form-control>
@@ -474,7 +474,7 @@
                               <i class="upload-icon" nz-icon nzType="upload"></i> <span class="pl-2 text-xs">jpg/jpeg/png/webp/mp4</span>
                           </ng-container>
                       </nz-upload>
-                      <div class="text-orange-darkest" *ngIf="placeholderUrlControl.invalid && !placeholderUrlControl.pristine" i18n>
+                      <div class="text-accent-primary dark:text-accent-primary-darkest" *ngIf="placeholderUrlControl.invalid && !placeholderUrlControl.pristine" i18n>
                         Placeholder is required.
                       </div>
                   </nz-form-control>
@@ -529,7 +529,7 @@
               >
                 <wen-radio [value]="targetAccess.OPEN"
                   ><span class="flex items-center"
-                    ><span i18n>Open Sale</span>
+                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Open Sale</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -539,7 +539,7 @@
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.GUARDIANS_ONLY"
                   ><span class="flex items-center"
-                    ><span i18n>Space Guardians Only</span>
+                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Space Guardians Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -550,7 +550,7 @@
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_ONLY"
                   ><span class="flex items-center"
-                    ><span i18n>Space Members Only</span>
+                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Space Members Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -561,7 +561,7 @@
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_WITH_BADGE"
                   ><span class="flex items-center"
-                    ><span i18n>Space Members with Badge Only</span>
+                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>Space Members with Badge Only</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -571,7 +571,7 @@
                 ></wen-radio>
                 <wen-radio [value]="targetAccess.MEMBERS_WITH_NFT_FROM_COLLECTION"
                   ><span class="flex items-center"
-                    ><span i18n>At least one NFT from Collections</span>
+                    ><span class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>At least one NFT from Collections</span>
                     <wen-icon-question-circle
                       class="ml-1"
                       nz-tooltip
@@ -592,7 +592,7 @@
                 <i
                   nz-icon
                   nzType="info-circle"
-                  class="cursor-pointer text-app-gray-400"
+                  class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   nz-tooltip
                   nzTooltipTitle="NFT can't be added after approval."
                 ></i>
@@ -608,7 +608,7 @@
                 <i
                   nz-icon
                   nzType="info-circle"
-                  class="cursor-pointer text-app-gray-400"
+                  class="cursor-pointer text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
                   nz-tooltip
                   nzTooltipTitle="One NFT per Member Only"
                 ></i>

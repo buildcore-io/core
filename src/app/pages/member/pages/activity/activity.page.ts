@@ -3,12 +3,13 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
+import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import { map } from "rxjs";
+import { combineLatest, filter, map } from "rxjs";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from "./../../services/data.service";
 @UntilDestroy()
@@ -24,82 +25,18 @@ export class ActivityPage implements OnInit {
   public spaceControl: FormControl;
   public defaultSpace = DEFAULT_SPACE;
   public lineChartType: ChartType = 'line';
-
   public lineChartData?: ChartConfiguration['data'];
-
-  public lineChartOptions: ChartConfiguration['options'] = {
-    elements: {
-      line: {
-        tension: 0
-      }
-    },
-    scales: {
-        xAxis: {
-            ticks: {
-                maxTicksLimit: 10,
-                color: '#959388',
-                font: {
-                  size: 14,
-                  weight: '600',
-                  family: 'Poppins',
-                  lineHeight: '14px'
-                }
-            }
-        },
-        yAxis: {
-          ticks: {
-              color: '#959388',
-              font: {
-                size: 14,
-                weight: '600',
-                family: 'Poppins',
-                lineHeight: '14px'
-              }
-          }
-        }
-    },
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        xAlign: 'center',
-        yAlign: 'bottom',
-        backgroundColor: '#fff',
-        titleColor: 'rgba(0,0,0,0)',
-        titleSpacing: 0,
-        titleMarginBottom: 0,
-        titleFont: {
-          lineHeight: 0
-        },  
-        bodyColor: '#333333',
-        bodyFont: {
-          weight: '500',
-          family: 'Poppins',
-          size: 16,
-          lineHeight: '28px'
-        },
-        bodyAlign: 'center',
-        bodySpacing: 0,
-        borderColor: 'rgba(0, 0, 0, 0.2)',
-        borderWidth: 1,
-        footerMarginTop: 0,
-        caretPadding: 16,
-        caretSize: 2,
-        displayColors: false
-      }
-    }
-  };
+  public lineChartOptions?: ChartConfiguration['options'] = {};
   
   constructor(
     private cd: ChangeDetectorRef,
     private storageService: StorageService,
+    private themeService: ThemeService,
     public data: DataService,
     public cache: CacheService,
     public deviceService: DeviceService
   ) {
     // Init empty.
-    this.initChart([]);
     this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.spaceForm = new FormGroup({
       space: this.spaceControl,
@@ -108,16 +45,39 @@ export class ActivityPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.data.badges$.pipe(
-      untilDestroyed(this),
-      map((o) => {
-        return o?.map((t: Transaction) => {
-          return [t.createdOn?.toDate(), t.payload.xp];
-        });
-      })
-    ).subscribe((data) => {
-      this.initChart(data || []);
-    });
+    combineLatest([this.data.badges$, this.themeService.theme$])
+      .pipe(
+        filter(([obj, theme]) => !!obj && !!theme),
+        map(([obj, theme]) => [obj?.map((t: Transaction) => [t.createdOn?.toDate(), t.payload.xp]), theme]),
+        untilDestroyed(this)
+      )
+      .subscribe(([data, theme]) => {
+        data = (data || []) as any[][];
+        switch (theme) {
+        case ThemeList.Light:
+          this.setLineChartOptions('#959388', '#fff', '#333');
+          this.initChart(data, {
+            backgroundColor: '#FCFBF9',
+            borderColor: '#F39200',
+            pointBackgroundColor: '#F39200',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#333',
+            pointHoverBorderColor: '#fff'
+          });
+          break;
+        case ThemeList.Dark:
+          this.setLineChartOptions('#6A6962', '#333', '#fff');
+          this.initChart(data || [], {
+            backgroundColor: '#232323',
+            borderColor: '#F39200',
+            pointBackgroundColor: '#F39200',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#333',
+            pointHoverBorderColor: '#fff'
+          });
+          break;
+        }
+      });
 
     this.spaceForm.valueChanges
       .pipe(untilDestroyed(this))
@@ -129,7 +89,7 @@ export class ActivityPage implements OnInit {
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
         this.data.refreshBadges(this.getSelectedSpace(), this.spaceForm.value.includeAlliances);
-    });
+      });
 
     let prev: string | undefined;
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
@@ -180,8 +140,74 @@ export class ActivityPage implements OnInit {
     return ['/', ROUTER_UTILS.config.space.root, spaceId]
   }
 
-  public initChart(data: any[][]): void {
-    const dataToShow: { data: number[], labels: string[]} = {
+  private setLineChartOptions(axisColor: string, tooltipColor: string, tooltipBackgroundColor: string): void {
+    this.lineChartOptions = {
+      elements: {
+        line: {
+          tension: 0
+        }
+      },
+      scales: {
+        xAxis: {
+          ticks: {
+            maxTicksLimit: 10,
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        },
+        yAxis: {
+          ticks: {
+            color: axisColor,
+            font: {
+              size: 14,
+              weight: '600',
+              family: 'Poppins',
+              lineHeight: '14px'
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          xAlign: 'center',
+          yAlign: 'bottom',
+          backgroundColor: tooltipBackgroundColor,
+          titleColor: 'rgba(0,0,0,0)',
+          titleSpacing: 0,
+          titleMarginBottom: 0,
+          titleFont: {
+            lineHeight: 0
+          },  
+          bodyColor: tooltipColor,
+          bodyFont: {
+            weight: '500',
+            family: 'Poppins',
+            size: 16,
+            lineHeight: '28px'
+          },
+          bodyAlign: 'center',
+          bodySpacing: 0,
+          borderColor: 'rgba(0, 0, 0, 0.2)',
+          borderWidth: 1,
+          footerMarginTop: 0,
+          caretPadding: 16,
+          caretSize: 2,
+          displayColors: false
+        }
+      }
+    };
+  }
+
+  private initChart(data: any[][], colorOptions: object): void {
+    const dataToShow: { data: number[]; labels: string[]} = {
       data: [],
       labels: []
     };
@@ -209,13 +235,8 @@ export class ActivityPage implements OnInit {
       datasets: [
         {
           data: dataToShow.data,
-          backgroundColor: '#FCFBF9',
-          borderColor: '#F39200',
-          pointBackgroundColor: '#F39200',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#333333',
-          pointHoverBorderColor: '#fff',
-          fill: 'origin'
+          fill: 'origin',
+          ...colorOptions
         }
       ],
       labels: dataToShow.labels

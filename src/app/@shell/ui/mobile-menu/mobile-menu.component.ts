@@ -41,7 +41,7 @@ export class MobileMenuComponent {
   }
 
   onClickProfile(): void {
-    if(!this.auth.isLoggedIn$.value) {
+    if (!this.auth.isLoggedIn$.value) {
       this.auth.signIn().then((res) => {
         // Only redirect to dashboard if home.
         if (this.router.url === '/' && res) {

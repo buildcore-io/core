@@ -16,7 +16,7 @@ export interface AllianceExtended extends Alliance {
 export interface SpaceWithAlliances extends Space {
   alliances: {
     [propName: string]: AllianceExtended;
-  }
+  };
 }
 
 @Injectable({
@@ -29,7 +29,7 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public listen(id: EthAddress): Observable<SpaceWithAlliances | undefined> {
-    return super.listen(id).pipe(switchMap(async (obj: Space | undefined) => {
+    return super.listen(id).pipe(switchMap(async(obj: Space | undefined) => {
       // Load space's alliances.
       const subRecords: Space[] = await this.getSubRecordsInBatches(COL.SPACE, Object.keys(obj?.alliances || {}));
 

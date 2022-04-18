@@ -2,12 +2,12 @@
   <div class="space-y-4">
     <h3 i18n>Active Proposals</h3>
 
-    <nz-skeleton *ngIf="data.isLoading(data.proposalsActive$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+    <nz-skeleton *ngIf="data.isLoading(data.proposalsActive$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.proposalsActive$ | async)">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400" i18n>
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Active Proposals
         </span>
         <!-- <button nz-button nzType="primary" class="self-center w-48" [routerLink]="['/discover', 'spaces']">Discover
@@ -23,12 +23,12 @@
   <div class="space-y-4">
     <h3 class="mb-5 lg:mb-6" i18n>Active Awards</h3>
 
-    <nz-skeleton *ngIf="data.isLoading(data.awardsActive$ | async)" class="p-4 bg-white rounded-2xl" [nzActive]="true"
+    <nz-skeleton *ngIf="data.isLoading(data.awardsActive$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
       [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
 
     <nz-card class="w-full" *ngIf="data.isEmpty(data.awardsActive$ | async)">
       <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-app-gray-400" i18n>
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Active Awards
         </span>
       </div>

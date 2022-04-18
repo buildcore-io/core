@@ -15,7 +15,7 @@ describe('MultiplePage', () => {
   let component: MultiplePage;
   let fixture: ComponentFixture<MultiplePage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ MultiplePage ],
       providers: [
@@ -30,7 +30,7 @@ describe('MultiplePage', () => {
         MockProvider(NftApi)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

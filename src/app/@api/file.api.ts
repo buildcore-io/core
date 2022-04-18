@@ -28,7 +28,7 @@ export class FileApi {
   public getMetadata(url: string): Observable<any> {
     const ref: AngularFireStorageReference = this.storage.refFromURL(url);
     return ref.getMetadata();
- }
+  }
 
   public upload(memberId: string, item: NzUploadXHRArgs, type: FileType): Subscription {
     const file: NzUploadFile = item.file;
@@ -54,7 +54,7 @@ export class FileApi {
     ).subscribe({
       next: (result) => {
         if (result && item.onProgress) {
-          const event = { percent: 0};
+          const event = { percent: 0 };
           event.percent = (result.bytesTransferred / result.totalBytes) * 100;
           item.onProgress(event, item.file);
         }

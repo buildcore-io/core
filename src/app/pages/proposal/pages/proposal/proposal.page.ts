@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AwardApi } from "@api/award.api";
@@ -26,6 +26,7 @@ import { DataService as ProposalDataService } from './../../services/data.servic
 @UntilDestroy()
 @Component({
   selector: 'wen-proposal',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './proposal.page.html',
   styleUrls: ['./proposal.page.less']
 })
@@ -102,7 +103,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     });
 
     // Once we get proposal get space.
-    this.data.proposal$.pipe(skip(1), first()).subscribe(async (p) => {
+    this.data.proposal$.pipe(skip(1), first()).subscribe(async(p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         if (p.createdBy) {

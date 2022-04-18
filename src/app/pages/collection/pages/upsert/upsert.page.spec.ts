@@ -17,7 +17,7 @@ describe('UpsertPage', () => {
   let component: UpsertPage;
   let fixture: ComponentFixture<UpsertPage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ UpsertPage ],
       providers: [
@@ -34,7 +34,7 @@ describe('UpsertPage', () => {
         MockProvider(CacheService)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

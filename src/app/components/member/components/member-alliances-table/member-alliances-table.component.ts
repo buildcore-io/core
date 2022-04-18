@@ -24,7 +24,7 @@ export class MemberAlliancesTableComponent implements OnInit {
   @Input() member?: Member | null;
   @Input() tableClasses = '';
   public memberWithinSpace: {
-    [propName: string]: boolean
+    [propName: string]: boolean;
   } = {};
   constructor(
     public previewImageService: PreviewImageService,

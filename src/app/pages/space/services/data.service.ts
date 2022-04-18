@@ -19,7 +19,9 @@ export enum MemberFilterOptions {
   BLOCKED = 'blocked'
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService implements OnDestroy {
   public space$: BehaviorSubject<SpaceWithAlliances | undefined> = new BehaviorSubject<SpaceWithAlliances | undefined>(undefined);
   public isMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

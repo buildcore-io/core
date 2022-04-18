@@ -9,7 +9,9 @@ import { Milestone } from './../../../../../functions/interfaces/models/mileston
 import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../../../../functions/interfaces/models/proposal';
 import { TransactionWithFullMember } from './../../../@api/proposal.api';
 
-@Injectable()
+@Injectable({
+  providedIn: 'any'
+})
 export class DataService {
   public proposal$: BehaviorSubject<Proposal | undefined> = new BehaviorSubject<Proposal | undefined>(undefined);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);

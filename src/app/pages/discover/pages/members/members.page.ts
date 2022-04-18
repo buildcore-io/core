@@ -88,7 +88,7 @@ export class MembersPage implements OnInit, OnDestroy {
         if (o.space !== DEFAULT_SPACE.value) {
           this.filter.filterControl.setValue('');
         }
-    });
+      });
   }
 
   public get isLoggedIn$(): BehaviorSubject<boolean> {
@@ -97,9 +97,9 @@ export class MembersPage implements OnInit, OnDestroy {
 
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || []).map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.avatarUrl
+      label: o.name || o.uid,
+      value: o.uid,
+      img: o.avatarUrl
     }));
   }
 
@@ -186,7 +186,7 @@ export class MembersPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.members$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.members$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

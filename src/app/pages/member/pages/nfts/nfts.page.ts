@@ -9,7 +9,7 @@ import { Collection } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ParticipantsPage } from '@pages/proposal/pages/participants/participants.page';
-import { BehaviorSubject, debounceTime, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, map, Observable, of, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @UntilDestroy()
@@ -74,8 +74,10 @@ export class NFTsPage implements OnInit, OnDestroy {
   public getHandler(last?: any, search?: string): Observable<Nft[]> {
     if (this.collectionControl.value !== DEFAULT_COLLECTION.value && this.data.member$.value) {
       return this.nftApi.topMemberByCollection(this.collectionControl.value, this.data.member$.value.uid, last, search);
+    } else if (this.data.member$.value) {
+      return this.nftApi.topMember(this.data.member$.value.uid, last, search);
     } else {
-      return this.nftApi.topMember(this.data.member$.value!.uid, last, search);
+      return of([]);
     }
   }
 
@@ -117,7 +119,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.nft$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.nft$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }

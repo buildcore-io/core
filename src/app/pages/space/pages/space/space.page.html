@@ -27,7 +27,7 @@
     <nz-avatar
       [nzSrc]="(avatarUrl$ | async) || undefined"
       [nzSize]="(deviceService.isDesktop$ | async) ? 120 : 80"
-      class="absolute top-0 -mt-8 transform -translate-y-1/2 bg-white border-2 border-gray-400 left-4"
+      class="absolute top-0 -mt-8 -translate-y-1/2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-2 border-tags-border dark:border-tags-border-dark left-4"
       nzShape="circle"
     >
     </nz-avatar>
@@ -87,7 +87,7 @@
 
       <div
         *ngIf="deviceService.isMobile$ | async"
-        class="w-screen h-px mt-6 -ml-5 bg-app-gray-100"
+        class="w-screen h-px mt-6 -ml-5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"
       ></div>
 
       <div class="w-full py-14 lg:py-12">

@@ -12,7 +12,6 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { SpaceNewAllianceComponent } from './space-new-alliance.component';
 
 
-
 @NgModule({
   declarations: [
     SpaceNewAllianceComponent

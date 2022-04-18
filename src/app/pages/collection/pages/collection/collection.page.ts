@@ -75,7 +75,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async (obj: Collection|undefined) => {
+    this.data.collection$.pipe(skip(1), untilDestroyed(this)).subscribe(async(obj: Collection|undefined) => {
       if (!obj) {
         this.notFound();
         return;
@@ -88,7 +88,7 @@ export class CollectionPage implements OnInit, OnDestroy {
 
       if (this.auth.member$.value?.uid) {
         this.guardiansSubscription$ = this.spaceApi.isGuardianWithinSpace(obj.space, this.auth.member$.value.uid)
-                                      .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$);
+          .pipe(untilDestroyed(this)).subscribe(this.data.isGuardianWithinSpace$);
       }
 
       // Get badges to show.
@@ -119,7 +119,7 @@ export class CollectionPage implements OnInit, OnDestroy {
       this.data.accessCollections$.next(collections);
     });
 
-    this.data.collection$.pipe(skip(1), first()).subscribe(async (p) => {
+    this.data.collection$.pipe(skip(1), first()).subscribe(async(p) => {
       if (p) {
         this.subscriptions$.push(this.spaceApi.listen(p.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         if (p.royaltiesSpace) {
@@ -222,9 +222,9 @@ export class CollectionPage implements OnInit, OnDestroy {
     }
 
     await this.auth.sign({
-        uid: this.data.collection$.value.uid
+      uid: this.data.collection$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.collectionApi.approve(sc), 'Approved.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.collectionApi.approve(sc), 'Approved.', finish).subscribe(() => {
         // none.
       });
     });
@@ -246,7 +246,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     await this.auth.sign({
       uid: this.data.collection$.value.uid
     }, (sc, finish) => {
-      this.notification.processRequest(this.collectionApi.reject(sc), 'Rejected.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.collectionApi.reject(sc), 'Rejected.', finish).subscribe(() => {
         // none.
       });
     });
@@ -360,7 +360,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.data.nft$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.data.nft$.pipe(map(() => {
       if (!this.data.dataStore[this.data.dataStore.length - 1]) {
         return true;
       }

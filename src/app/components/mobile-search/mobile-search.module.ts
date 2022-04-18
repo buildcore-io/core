@@ -7,7 +7,6 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { MobileSearchComponent } from './mobile-search.component';
 
 
-
 @NgModule({
   declarations: [
     MobileSearchComponent

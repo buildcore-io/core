@@ -14,7 +14,7 @@
             <td class="flex items-center cursor-pointer" [routerLink]="['/space', ally._record.uid]">
                 <nz-avatar
                     [nzSrc]="previewImageService.getAvatarSize(ally._record.avatarUrl)"
-                    class="mr-3 bg-white border-gray-400"
+                    class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark"
                     nzShape="circle"
                     [nzSize]="32"
                 >
@@ -28,14 +28,14 @@
                 <div class="ml-3 text-sm font-bold">x{{ ally.weight }}</div>
             </td>
             <td>
-                <div class="text-sm font-medium" [ngClass]="ally.established ? 'text-green-success' : 'text-app-gray-400'">
+                <div class="text-sm font-medium" [ngClass]="ally.established ? 'text-alerts-success dark:text-alerts-success-dark' : 'text-foregrounds-secondary dark:text-foregrounds-secondary-dark'">
                     <div *ngIf="size === 'large'; else iconsBlock">
                         <ng-container *ngIf="ally.established; else recognisedBlock" i18n>Established</ng-container>
                         <ng-template #recognisedBlock i18n>Recognised</ng-template>
                     </div>
                     <ng-template #iconsBlock>
                         <wen-icon-check *ngIf="ally.established"></wen-icon-check>
-                        <wen-icon-eye *ngIf="!ally.established" class="text-app-gray-400"></wen-icon-eye>
+                        <wen-icon-eye *ngIf="!ally.established" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-eye>
                     </ng-template>
                 </div>
             </td>
@@ -53,7 +53,7 @@
             <div class="flex items-center">
                 <nz-avatar
                     [nzSrc]="previewImageService.getAvatarSize(ally._record.avatarUrl)"
-                    class="mr-3 bg-white border-gray-400 min-w-8"
+                    class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-8"
                     nzShape="circle"
                     [nzSize]="32"
                 >
@@ -70,8 +70,8 @@
         </div>
         <div class="mt-2 flex items-center">
             <div class="text-foregrounds-secondary text-xs font-medium  mr-1.5" i18n>Status</div>
-            <wen-icon-check *ngIf="ally.established" class="text-green-success"></wen-icon-check>
-            <wen-icon-eye *ngIf="!ally.established" class="text-app-gray-400"></wen-icon-eye>
+            <wen-icon-check *ngIf="ally.established" class="text-alerts-success dark:text-alerts-success-dark"></wen-icon-check>
+            <wen-icon-eye *ngIf="!ally.established" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-eye>
         </div>
     </div>
 </ng-template>

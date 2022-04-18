@@ -11,7 +11,7 @@
     [nzWidth]="1000"
     >
     <ng-template #nftPreviewModalContent>
-        <div class="w-full h-full p-6 bg-bg-background rounded-2xl">
+        <div class="w-full h-full p-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <div class="flex items-start justify-between">
                 <div class="text-2xl font-bold" i18n>Preview</div>
                 <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
@@ -39,10 +39,10 @@
 
 <ng-template #content>
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-10" *ngIf="nft">
-        <div class="flex-grow w-full lg:w-1/2 lg:mr-10">
+        <div class="grow w-full lg:w-1/2 lg:mr-10">
             <h1 class="mt-2">{{ nft.name }}</h1>
 
-            <div class="flex items-center justify-between w-full h-12 p-4 mt-5 bg-white rounded-xl"
+            <div class="flex items-center justify-between w-full h-12 p-4 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl"
                 *ngIf="nft?.availableFrom">
                 <div class="flex items-center mr-8"
                     [ngClass]="{ 'text-alerts-error': false }">
@@ -55,7 +55,7 @@
             </div>
 
             <div class="flex flex-wrap items-center mt-5">
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
                         <div class="text-lg font-bold truncate">{{ data.formatBest(nft.price) }}</div>
@@ -64,12 +64,12 @@
                 </div>
 
 
-                <div class="flex-grow h-20 px-4 py-3 mr-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Author</div>
                     <div class="flex items-center mt-2">
                       <a [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
-                          class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                          class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
                           style="max-width: 32px; min-width: 32px;" [nzSize]="32">
                         </nz-avatar>
                         <div class="ml-3 text-base font-medium truncate max-w-20">
@@ -79,10 +79,10 @@
                     </div>
                 </div>
 
-                <div class="flex-grow h-20 px-4 py-3 bg-white w-3/10 rounded-xl">
+                <div class="grow h-20 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark w-3/10 rounded-xl">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Space</div>
                     <a class="flex items-center mt-2" [routerLink]="['/space', space?.uid]">
-                        <nz-avatar class="border-2 border-app-gray-100 bg-bg-background min-w-10"
+                        <nz-avatar class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
                             style="max-width: 32px; min-width: 32px;" [nzSize]="32"
                             [nzSrc]="previewImageService.getAvatarSize(space?.avatarUrl)">
                         </nz-avatar>
@@ -96,13 +96,13 @@
             </div>
 
             <wen-collapse title="System info" class="mt-8">
-                <div class="wen-description-item bg-bg-background">
-                    <span nz-typography class="text-app-gray-400" i18n>Migrate</span>
-                    <p nz-typography class="flex items-center w-3/5 lg:w-1/2">
+                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+                    <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Migrate</span>
+                    <p nz-typography class="flex items-center w-3/5 lg:w-1/2 text-foregrounds-primary dark:text-foregrounds-primary-dark">
                         <span i18n>Shimmer/Mainnet (Tokenization)...SOON.</span>
 
                         <wen-icon-question-circle
-                            class="ml-2.5 text-app-gray-400"
+                            class="ml-2.5"
                             nz-tooltip
                             i18n-nzTooltipTitle
                             nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
@@ -110,38 +110,38 @@
                     </p>
                 </div>
 
-                <div class="wen-description-item bg-bg-background">
-                    <span nz-typography class="text-app-gray-400" i18n>IPFS Metadata</span>
-                    <p nz-typography i18n>
+                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+                    <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Metadata</span>
+                    <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                         Preparing...
                     </p>
                 </div>
-                <div class="wen-description-item bg-bg-background">
-                  <span nz-typography class="text-app-gray-400" i18n>IPFS Image</span>
-                  <p nz-typography i18n>
+                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
+                  <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Image</span>
+                  <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
                       Preparing...
                   </p>
               </div>
             </wen-collapse>
 
             <wen-collapse title="Properties" class="mt-4" *ngIf="nft.properties">
-                <div class="wen-description-item bg-bg-background"
+                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let prop of getValues(nft.properties)">
-                        <span nz-typography class="text-app-gray-400">{{ prop.label }}</span>
-                        <p nz-typography>{{ prop.value }}</p>
+                        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ prop.label }}</span>
+                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ prop.value }}</p>
                 </div>
             </wen-collapse>
 
             <wen-collapse title="Stats" class="mt-4" *ngIf="nft.stats">
-                <div class="wen-description-item bg-bg-background"
+                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let stat of getValues(nft.stats)">
-                        <span nz-typography class="text-app-gray-400">{{ stat.label }}</span>
-                        <p nz-typography>{{ stat.value }}</p>
+                        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ stat.label }}</span>
+                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ stat.value }}</p>
                 </div>
             </wen-collapse>
         </div>
 
-        <div class="flex-grow w-full max-w-screen-sm lg:w-1/2">
+        <div class="grow w-full max-w-screen-sm lg:w-1/2">
             <div class="relative w-full overflow-hidden rounded-2xl">
                 <img
                     *ngIf="mediaType === 'image'"

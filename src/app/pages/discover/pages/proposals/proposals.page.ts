@@ -134,7 +134,7 @@ export class ProposalsPage implements OnInit, OnDestroy {
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {
-    return <BehaviorSubject<boolean>>this.proposal$.pipe(map(() => {
+    return <BehaviorSubject<boolean>> this.proposal$.pipe(map(() => {
       if (!this.dataStore[this.dataStore.length - 1]) {
         return true;
       }
