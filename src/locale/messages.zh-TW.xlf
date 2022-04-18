@@ -482,7 +482,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">196</context>
         </context-group>
-        <target state="needs-translation">Unable to get nonce to authenticate!</target>
+        <target state="translated">無法取得隨機數來認證！</target>
       </trans-unit>
       <trans-unit id="2286941765985804347" datatype="html">
         <source>You have to open Soonaverse in MetaMask app.</source>
@@ -1649,7 +1649,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">100,101</context>
         </context-group>
-        <target state="needs-translation"><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></target>
+        <target state="translated"><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
@@ -6010,7 +6010,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">412,413</context>
         </context-group>
-        <target state="needs-translation">Reputation Options</target>
+        <target state="translated">聲望選項</target>
       </trans-unit>
       <trans-unit id="6227891212656837777" datatype="html">
         <source>Set Minimum Weight</source>
@@ -6058,7 +6058,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">326</context>
         </context-group>
-        <target state="needs-translation">id</target>
+        <target state="translated">id</target>
       </trans-unit>
       <trans-unit id="2933071059791349572" datatype="html">
         <source>Final Results</source>
@@ -6827,7 +6827,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">168</context>
         </context-group>
-        <target state="needs-translation">Your brand is key.</target>
+        <target state="translated">您的品牌是關鍵。</target>
       </trans-unit>
       <trans-unit id="7599513045034313396" datatype="html">
         <source>Make it personal.</source>
