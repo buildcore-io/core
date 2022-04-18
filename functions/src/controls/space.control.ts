@@ -21,7 +21,7 @@ import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): Space {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<Space>(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
     open: Joi.boolean().allow(false, true).optional(),

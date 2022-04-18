@@ -17,7 +17,7 @@ import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP, URL_PATHS } from './../.
 import { Member } from './../../interfaces/models/member';
 
 function defaultJoiUpdateCreateSchema(): Member {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<Member>(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
     currentProfileImage: Joi.object({

@@ -25,7 +25,7 @@ import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): Award {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<Award>(), {
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(AwardType.PARTICIPATE_AND_APPROVE).required(),

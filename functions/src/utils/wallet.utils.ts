@@ -1,4 +1,3 @@
-import { DocumentData } from "@firebase/firestore";
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
@@ -9,11 +8,11 @@ import { COL, WenRequest } from './../../interfaces/models/base';
 import { throwUnAuthenticated } from "./error.utils";
 export const ethAddressLength = 42;
 
-const toHex = (stringToConvert: string) => {
-  return stringToConvert.split('').map((c) => {
-    return c.charCodeAt(0).toString(16).padStart(2, '0');
-  }).join('');
-}
+const toHex = (stringToConvert: string) =>
+  stringToConvert.split('').map((c) =>
+    c.charCodeAt(0).toString(16).padStart(2, '0')
+  ).join('');
+
 
 export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
   if (!req) {
@@ -28,8 +27,7 @@ export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
     throw throwUnAuthenticated(WenError.signature_must_be_provided);
   }
 
-  const userDocRef: any = admin.firestore().collection(COL.MEMBER).doc(req.address);
-  const userDoc: DocumentData = await userDocRef.get();
+  const userDoc = await admin.firestore().collection(COL.MEMBER).doc(req.address).get();
   if (!userDoc.exists) {
     throw throwUnAuthenticated(WenError.failed_to_decode_token);
   }
@@ -59,18 +57,16 @@ export async function decodeAuth(req: WenRequest): Promise<DecodedToken> {
   };
 };
 
-export function cleanParams(params: any): any {
-  // None required.
-  return params;
-}
+// None required.
+export const cleanParams = <T>(params: T) => params
 
-export function getRandomEthAddress(): string {
-  const id: string = randomBytes(32).toString('hex');
-  const privateKey: string = '0x' + id;
+export function getRandomEthAddress() {
+  const id = randomBytes(32).toString('hex');
+  const privateKey = '0x' + id;
   // We don't save private key.
   // console.log("SAVE BUT DO NOT SHARE THIS:", privateKey);
 
-  const wallet:Wallet = new Wallet(privateKey);
+  const wallet: Wallet = new Wallet(privateKey);
 
   // Return public address.
   return wallet.address.toLowerCase();
