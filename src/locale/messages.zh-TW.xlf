@@ -2067,7 +2067,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">57</context>
         </context-group>
-        <target state="needs-translation">Various auction length coming next sprint once community have a vote!</target>
+        <target state="translated">在社群投票後，各式各樣的拍賣週期即將釋出！</target>
       </trans-unit>
       <trans-unit id="8998035935912313478" datatype="html">
         <source>Duration of auction is 3 days</source>
@@ -2119,7 +2119,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">65,66</context>
         </context-group>
-        <target state="needs-translation">Specific member(s) only (Transfer)</target>
+        <target state="translated">限定轉移給特定的成員(們)</target>
       </trans-unit>
       <trans-unit id="967760480943683200" datatype="html">
         <source>Reserve for specific buyer</source>
@@ -2478,7 +2478,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="needs-translation">Listed by</target>
+        <target state="translated">列出</target>
       </trans-unit>
       <trans-unit id="2565998990420679638" datatype="html">
         <source>Made available for auction by</source>
@@ -2486,7 +2486,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Made available for auction by</target>
+        <target state="translated">可供拍賣</target>
       </trans-unit>
       <trans-unit id="9074325042294858925" datatype="html">
         <source>Purchased by</source>
@@ -2558,7 +2558,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">Order</target>
+        <target state="translated">訂單</target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -4514,7 +4514,7 @@
           <context context-type="sourcefile">src/app/pages/discover/pages/spaces/spaces.page.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="needs-translation">Open</target>
+        <target state="translated">開啟</target>
       </trans-unit>
       <trans-unit id="6605589104672584220" datatype="html">
         <source> Welcome to The Soonaverse </source>
@@ -5394,7 +5394,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">324</context>
         </context-group>
-        <target state="needs-translation">Media is required</target>
+        <target state="translated">需要媒體</target>
       </trans-unit>
       <trans-unit id="9199594040130693701" datatype="html">
         <source>Select one of your collections to display this NFT.</source>
