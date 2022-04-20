@@ -1,0 +1,154 @@
+<nz-card i18n-nzTitle nzTitle="My purchased tokens">
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Janurary 1st, 2022</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">50</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">January 10th, 2022</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">60</p>
+    </div>
+    <div class="wen-description-item bg-tags-available dark:bg-tags-available-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Total</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">110</p>
+    </div>
+
+    <div class="w-full flex justify-end">
+        <button class="wen-secondary ml-auto" nz-button nzType="link" nzSize="default">
+            <wen-icon-revert [size]="20"></wen-icon-revert>
+            <div class="font-semibold text-sm ml-2">
+                Refund
+            </div>
+        </button>
+    </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="Active sale inprogress">
+    <div class="w-full">
+        <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
+            [nzPercent]="40 | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
+        <div class="flex justify-between font-medium text-sm space-x-10 text-sm text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <div class="text-left break-words line-clamp-2 w-1/3 grow">
+                {{40 | number : '1.2-2'}}% </div>
+            <div class="text-right break-words line-clamp-2 w-2/3 grow">
+                <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">4 000 000</span>
+                <span> / 10 000 000 </span>
+                <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark" i18n>SOON</span>
+            </div>
+        </div>
+    </div>
+</nz-card>
+
+<nz-card>
+    <div class="flex items-center">
+        <wen-icon-time class="text-icons-secondary dark:text-icons-secondary"></wen-icon-time>
+        <div class="ml-2.5 font-bold" i18n>
+            Sale ends in
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between w-full mt-4 space-x-2">
+        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark">
+            {{ 1 }} <ng-container i18n>d</ng-container>
+        </div>
+        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark">
+            {{ 20 }} <ng-container i18n>h</ng-container>
+        </div>
+        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark">
+            {{ 20 }} <ng-container i18n>min</ng-container>
+        </div>
+        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark">
+            {{ 10 }} <ng-container i18n>s</ng-container>
+        </div>
+    </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="Schedule">
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Sale starts</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10:00 AM, January 1st, 2022</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Sale ends</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10:00 AM, January 31st, 2022</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
+            Cooldown Period Lenght
+
+            <wen-icon-question-circle class="ml-2 cursor-help" [size]="20"
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
+        </span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">24 h</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Cooldown Period Ends</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10:01 AM, February 1st, 2022</p>
+    </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="Token Info">
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Icon</span>
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+            class="border-2 border-tags-border dark:border-tags-borde-dark min-w-8"
+            nzShape="circle"
+            [nzSize]="32">
+        </nz-avatar>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Name</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">Soonlabs Token</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Symbol</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">SOON</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Price</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">1 SOON = 1 MIOTA</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
+            Network
+
+            <wen-icon-question-circle class="ml-2 cursor-help" [size]="20"
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
+        </span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">Shimmer comming</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Total supply</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10 000 000</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Type</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">Dynamic</p>
+    </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="Related Links" *ngIf="true">
+  <div *ngIf="true">
+    <a nz-button class="wen-space-links" nzType="link" target="new" [href]="''">
+      <wen-icon-link></wen-icon-link>
+      <span>{{ 'iotatreasury.web' }}</span>
+    </a>
+  </div>
+  <div *ngIf="true">
+    <a nz-button class="wen-space-links" nzType="link" target="new" [href]="'https://github.com/' + ''">
+      <wen-icon-github></wen-icon-github>
+      <span>{{ 'github/iotatreasury.web' }}</span>
+    </a>
+  </div>
+  <div *ngIf="true">
+    <a nz-button class="wen-space-links" nzType="link" target="new" [href]="'https://twitter.com/' + ''">
+      <wen-icon-reddit></wen-icon-reddit>
+      <span>{{ 'reddit/iotatreasury.web' }}</span>
+    </a>
+  </div>
+  <div *ngIf="true">
+    <a nz-button class="wen-space-links" nzType="link" target="new" [href]="'https://discord.gg/' + ''">
+      <wen-icon-discord></wen-icon-discord>
+      <span>{{ 'discord/iotatreasury.web' }}</span>
+    </a>
+  </div>
+</nz-card>

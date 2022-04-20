@@ -47,6 +47,7 @@ import { PlusIconComponent } from './plus/plus.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
 import { RedditIconComponent } from './reddit/reddit.component';
 import { RefreshIconComponent } from './refresh/refresh.component';
+import { RevertIconComponent } from './revert/revert.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SadIconComponent } from './sad/sad.component';
 import { SearchIconComponent } from './search/search.component';
@@ -130,7 +131,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersWithBadgeIconComponent,
     MembersWithNftFromCollectionIconComponent,
     NineDotsIconComponent,
-    OpenSaleIconComponent
+    OpenSaleIconComponent,
+    RevertIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -196,7 +198,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersWithBadgeIconComponent,
     MembersWithNftFromCollectionIconComponent,
     NineDotsIconComponent,
-    OpenSaleIconComponent
+    OpenSaleIconComponent,
+    RevertIconComponent
   ],
   imports: [
     CommonModule

@@ -1,0 +1,132 @@
+<wen-content [showBackButton]="true">
+    <ng-container *ngIf="deviceService.isMobile$ | async">
+      <wen-drawer-toggle
+        i18n-label
+        label="Token info"
+        (click)="isTokenInfoVisible = true">
+      </wen-drawer-toggle>
+    </ng-container>
+  
+    <div class="relative py-12" nz-row [nzGutter]="40">
+      <div nz-col nzFlex="auto"
+        [ngStyle]="{
+          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+        }">
+        <div class="mb-8 space-x-3 flex items-center">
+          <a [routerLink]="['/space', 'space_uid']" class="flex items-center">
+            <nz-avatar
+              [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+              [nzSize]="32"
+              class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-8"
+              nzShape="circle"
+            >
+            </nz-avatar>
+            <div class="font-medium">
+              {{ 'space_name' }}
+            </div>
+          </a>
+  
+          <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-0 mr-4" i18n>Token Sale</nz-tag>
+          <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-0" i18n>Token Sale</nz-tag>
+        </div>
+  
+        <h1 class="mb-6">{{ 'SoonLabs token launchpad' }}</h1>
+  
+        <wen-tabs class="block w-screen mt-10 -ml-5 lg:w-max lg:ml-0" [tabs]="sections"></wen-tabs>
+  
+        <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"></div>
+  
+        <div class="w-full py-12">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+      <div class="mt-4 space-y-4 lg:mt-36 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+        [ngStyle]="{
+          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+        }">
+        <button
+          nz-button
+          nzType="primary"
+          nzBlock
+          nzSize="large"
+          (click)="isBuyTokensVisible = true"
+          [disabled]="false"
+          i18n
+        >
+          Buy Tokens
+        </button>
+  
+        <wen-share
+          class="block mb-4 p-6 lg:p-0"
+          i18n-shareText
+          shareText="Check out award"
+          [shareUrl]="getShareUrl()"
+          *ngIf="deviceService.isDesktop$ | async">
+        </wen-share>
+  
+        <wen-token-info class="block space-y-4"
+          *ngIf="deviceService.isDesktop$ | async">
+        </wen-token-info>
+      </div>
+    </div>
+  
+    <!-- <nz-modal
+      [(nzVisible)]="isBuyTokensVisible"
+      i18n-nzTitle
+      nzTitle="Confirm your participation"
+      nzClosable="false"
+      [nzContent]="modalContent"
+      [nzFooter]="modalFooter"
+      [nzWidth]="700"
+    >
+      <ng-template #modalContent>
+        <p class="text-lg mb-9" i18n>
+          The whole communication is now handled outside the platform, let the
+          award creator know how to contact you.
+        </p>
+        <textarea
+          nz-input
+          i18n-placeholder
+          placeholder="Provide description or link to your work."
+          [formControl]="commentControl"
+          rows="5"
+        ></textarea>
+      </ng-template>
+  
+      <ng-template #modalFooter>
+        <div class="text-left">
+          <button nz-button class="mr-4" nzType="primary" (click)="participate()" i18n>
+            Submit
+          </button>
+          <button nz-button nzType="default" (click)="handleParticipateCancel()" i18n>
+            Cancel
+          </button>
+        </div>
+      </ng-template>
+    </nz-modal> -->
+  
+    <nz-drawer
+        [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }"
+        [nzWidth]="'100vw'"
+        [nzClosable]="false"
+        [nzVisible]="isTokenInfoVisible"
+      >
+      <div *nzDrawerContent class="relative h-full">
+        <button class="absolute z-10 -top-4 right-5" (click)="isTokenInfoVisible = false">
+          <wen-icon-close></wen-icon-close>
+        </button>
+  
+        <h1 class="w-3/4 mt-10 mb-12 ml-5">{{ 'SoonLabs token launchpad' }}</h1>
+  
+        <wen-share
+          class="block mb-4 p-6 lg:p-0"
+          i18n-shareText
+          shareText="Check out award"
+          [shareUrl]="getShareUrl()">
+        </wen-share>
+  
+        <wen-token-info></wen-token-info>
+      </div>
+    </nz-drawer>
+  </wen-content>
+  

@@ -124,7 +124,7 @@
               </div>
             </wen-collapse>
 
-            <wen-collapse title="Properties" class="mt-4" *ngIf="nft.properties">
+            <wen-collapse i18n-title title="Properties" class="mt-4" *ngIf="nft.properties">
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let prop of getValues(nft.properties)">
                         <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ prop.label }}</span>
@@ -132,7 +132,7 @@
                 </div>
             </wen-collapse>
 
-            <wen-collapse title="Stats" class="mt-4" *ngIf="nft.stats">
+            <wen-collapse i18n-title title="Stats" class="mt-4" *ngIf="nft.stats">
                 <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     *ngFor="let stat of getValues(nft.stats)">
                         <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ stat.label }}</span>

@@ -1,0 +1,78 @@
+
+<div class="mt-12 text-2xl font-bold" i18n>
+    Token description
+</div>
+
+<nz-card i18n-nzTitle nzTitle="Breakdown" class="mt-4 lg:mt-6">
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Total token supply</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">100 000</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Price per token</span>
+        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">1 Mi</p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Treasury</span>
+        <p nz-typography class=" text-right">
+            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">50%</span>
+            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(50 000 Mi)</span>
+        </p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Development fund</span>
+        <p nz-typography class=" text-right">
+            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">20%</span>
+            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(20 000 Mi)</span>
+        </p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">VC</span>
+        <p nz-typography class=" text-right">
+            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">10%</span>
+            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(10 000 Mi)</span>
+        </p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Fundraising</span>
+        <p nz-typography class=" text-right">
+            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">10%</span>
+            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(10 000 Mi)</span>
+        </p>
+    </div>
+    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Public sale</span>
+        <p nz-typography class=" text-right">
+            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">10%</span>
+            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(10 000 Mi)</span>
+        </p>
+    </div>
+</nz-card>
+
+<nz-card i18n-nzTitle nzTitle="Token distribution" class="mt-4 lg:mt-6">
+    <div class="flex justify-between w-full">
+        <div class="block relative w-3/5">
+            <canvas baseChart width="400" height="180"
+                [data]="lineChartData"
+                [options]="lineChartOptions"
+                [type]="lineChartType"></canvas>
+
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center">
+                <span class="text-2xl font bold">100 000</span>
+                <span class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary"> SOON</span>
+            </div>
+        </div>
+
+
+        <div class="space-y-3">
+            <div *ngFor="let opt of lineChartData?.labels; let i = index"
+                class="flex">
+                <div class="w-6 h-3 rounded-md mr-2" [ngStyle]="{ 'background-color': colors[i] }"></div>
+                <div class="font-medium -mt-1.5">
+                    <div class="truncate">{{ lineChartData?.labels?.[i] }}</div>
+                    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-1 truncate">50% (50 000 SOON)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nz-card>

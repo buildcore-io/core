@@ -1,5 +1,23 @@
 <div class="space-y-12">
   <div class="space-y-4">
+    <h3 i18n>Upcoming Sale</h3>
+
+    <nz-skeleton *ngIf="false" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
+      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+
+    <nz-card class="w-full" *ngIf="false">
+      <div class="flex flex-col justify-center text-center h-36">
+        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+          No Upcoming Sale
+        </span>
+      </div>
+    </nz-card>
+
+    <wen-token-card *ngIf="true" class="block">
+    </wen-token-card>
+  </div>
+
+  <div class="space-y-4">
     <h3 i18n>Active Proposals</h3>
 
     <nz-skeleton *ngIf="data.isLoading(data.proposalsActive$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
@@ -10,8 +28,6 @@
         <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Active Proposals
         </span>
-        <!-- <button nz-button nzType="primary" class="self-center w-48" [routerLink]="['/discover', 'spaces']">Discover
-          Spaces</button> -->
       </div>
     </nz-card>
 

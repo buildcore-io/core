@@ -75,6 +75,15 @@ export const ROUTER_UTILS = {
       single: 'single',
       multiple: 'multiple'
     },
+    token: {
+      // Redirect back to space?!
+      root: URL_PATHS.TOKEN,
+      newToken: 'new',
+      token: ':tokenId',
+      overview: 'overview',
+      metrics: 'metrics',
+      airdrops: 'airdrops'
+    },
     errorResponse: {
       notFound: '404',
     },
