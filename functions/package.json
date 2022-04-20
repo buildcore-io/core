@@ -1,7 +1,7 @@
 {
   "name": "soonaverse-functions",
   "scripts": {
-    "lint": "eslint --ext .js,.ts .",
+    "lint": "eslint --ext .js,.ts src",
     "build": "tsc",
     "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only functions,firestore,storage,ui",
     "shell": "npm run build && firebase functions:shell",

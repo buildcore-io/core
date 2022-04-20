@@ -1,7 +1,7 @@
 
 interface UidAndName {
   readonly uid?: string;
-  readonly name?: string
+  readonly name?: string;
 }
 
 const getAllSubstrings = (str: string) => str.split('').map((_, index) => str.slice(0, index + 1))

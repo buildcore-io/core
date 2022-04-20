@@ -8,7 +8,7 @@ export const pump = isProdEnv ? 9 : 2;
 export const superPump = isProdEnv ? 40 : 2;
 
 export function scale(func: WEN_FUNC): number {
-  const scaleSettings: any = {};
+  const scaleSettings = {} as { [key: string]: number };
   scaleSettings[WEN_FUNC.cMemberNotExists] = important;
   scaleSettings[WEN_FUNC.uMember] = medium;
 

@@ -67,7 +67,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
 
 export const createCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.cCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -165,7 +165,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
 
 export const updateCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.uCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -241,7 +241,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
 export const approveCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.approveCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -290,7 +290,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
 
 export const rejectCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.rejectCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);

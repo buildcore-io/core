@@ -40,7 +40,7 @@ function defaultJoiUpdateCreateSchema(): Member {
 
 export const createMember: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.cMemberNotExists),
-}).https.onCall(async (address: string, context: any): Promise<Member> => {
+}).https.onCall(async(address: string, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.cMemberNotExists, context);
   if (!address || address.length !== ethAddressLength) {
     throw throwUnAuthenticated(WenError.address_must_be_provided);
@@ -65,7 +65,7 @@ export const createMember: functions.CloudFunction<Member> = functions.runWith({
 
 export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.uMember),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.uMember, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -96,7 +96,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
       throw throwInvalidArgument(WenError.nft_does_not_exists);
     }
 
-    if (doc.data()!.available !== true) {
+    if (doc.data()?.available !== true) {
       throw throwInvalidArgument(WenError.nft_is_no_longer_available);
     }
   }
