@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { WEN_FUNC } from "../../interfaces/functions";
+import { Space } from '../../interfaces/models';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
@@ -8,55 +9,55 @@ import { addOwner, approveAward, approveParticipant, createAward, participate, r
 import { createMember } from './../../src/controls/member.control';
 import { createSpace, joinSpace } from './../../src/controls/space.control';
 
+const dummyAward = (spaceId?: string) => ({
+  name: 'Award A',
+  description: 'Finish this and that',
+  space: spaceId,
+  type: AwardType.PARTICIPATE_AND_APPROVE,
+  endDate: dayjs().add(5, 'days').toDate(),
+  badge: {
+    name: 'Winner',
+    description: 'Such a special',
+    count: 2,
+    xp: 0
+  }
+})
+
+const expectThrow = <C, E>(call: C, error: E) => {
+  (<any>expect(call)).rejects.toThrowError(error)
+}
+
 describe('AwardController: ' + WEN_FUNC.cAward, () => {
   let walletSpy: any;
-  let memberAddress: any;
-  let space: any;
+  let memberAddress: string;
+  let space: Space;
+  let award: any;
+  let body: any;
+
+  const mockWalletReturn = <T,>(address: string, body: T) =>
+    walletSpy.mockReturnValue(Promise.resolve({ address: address, body }));
+
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = wallet.getRandomEthAddress();
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {}
-    }));
+    mockWalletReturn(memberAddress, {})
 
-    const wrapped: any = testEnv.wrap(createMember);
-    const returns = await wrapped(memberAddress);
+    const returns = await testEnv.wrap(createMember)(memberAddress);
     expect(returns?.uid).toEqual(memberAddress.toLowerCase());
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: {
-        name: 'Space A'
-      }
-    }));
-    const wCreate: any = testEnv.wrap(createSpace);
-    space = await wCreate();
+    mockWalletReturn(memberAddress, { name: 'Space A' })
+
+    const wCreate = testEnv.wrap(createSpace);
+    space = await wCreate({});
     expect(space?.uid).toBeDefined();
     walletSpy.mockRestore();
   });
 
   it('successfully create award with name', async () => {
-    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    const body: any = {
-      name: 'Award A',
-      description: 'Finish this and that',
-      space: space?.uid,
-      type: AwardType.PARTICIPATE_AND_APPROVE,
-      endDate: dayjs().add(5, 'days').toDate(),
-      badge: {
-        name: 'Winner',
-        description: 'Such a special',
-        count: 2,
-        xp: 0
-      }
-    };
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: memberAddress,
-      body: body
-    }));
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    const body = dummyAward(space.uid);
+    mockWalletReturn(memberAddress, body)
 
-    const wrapped: any = testEnv.wrap(createAward);
-    const returns = await wrapped();
+    const returns = await testEnv.wrap(createAward)({});
     expect(returns?.uid).toBeDefined();
     expect(returns?.name).toEqual(body.name);
     expect(returns?.description).toEqual(body.description);
@@ -64,455 +65,220 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     expect(returns?.badge).toEqual(body.badge);
     expect(returns?.createdOn).toBeDefined();
     expect(returns?.updatedOn).toBeDefined();
+
     walletSpy.mockRestore();
   });
 
   describe('Failed Validation', () => {
-    let body: any;
-    let walletSpy: any;
-    beforeEach(async () => {
+    beforeEach(() => {
       walletSpy = jest.spyOn(wallet, 'decodeAuth');
-      body = {
-        name: 'Award A',
-        description: 'Finish this and that',
-        space: space?.uid,
-        type: AwardType.PARTICIPATE_AND_APPROVE,
-        endDate: dayjs().add(5, 'days').toDate(),
-        badge: {
-          name: 'Winner',
-          description: 'Such a special',
-          count: 2,
-          xp: 0
-        }
-      };
+      body = dummyAward(space.uid)
     });
 
-    it('failed to create award - missing space', async () => {
+    const execute = (error: string) => {
+      mockWalletReturn(memberAddress, body)
+      expectThrow(testEnv.wrap(createAward)({}), error)
+      walletSpy.mockRestore();
+    }
+
+    it('failed to create award - missing space', () => {
       delete body.space;
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-      walletSpy.mockRestore();
+      execute(WenError.invalid_params.key)
     });
 
-    it('failed to create award - invalid space', async () => {
+    it('failed to create award - invalid space', () => {
       body.space = wallet.getRandomEthAddress();
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.space_does_not_exists.key);
-      walletSpy.mockRestore();
+      execute(WenError.space_does_not_exists.key)
     });
 
-    it('failed to create award - invalid name', async () => {
+    it('failed to create award - invalid name', () => {
       delete body.name;
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-      walletSpy.mockRestore();
+      execute(WenError.invalid_params.key)
     });
 
-    it('failed to create award - badge over limit', async () => {
+    it('failed to create award - badge over limit', () => {
       body.badge.count = 10001;
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-      walletSpy.mockRestore();
+      execute(WenError.invalid_params.key)
     });
 
-    it('failed to create award - badge not divadable by XP', async () => {
+    it('failed to create award - badge not dividable by XP', () => {
       body.badge.count = 2;
       body.xp = 5;
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-      walletSpy.mockRestore();
+      execute(WenError.invalid_params.key)
     });
 
-    it('failed to create award - badge over XP limit', async () => {
+    it('failed to create award - badge over XP limit', () => {
       body.badge.count = 10001;
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-      walletSpy.mockRestore();
+      execute(WenError.invalid_params.key)
     });
   });
 
   describe('Owner manipulation tests', () => {
-    let body: any;
-    let walletSpy: any;
-    let award: any;
     const memberAddress2 = wallet.getRandomEthAddress();
     const memberAddress3 = wallet.getRandomEthAddress();
+
     beforeEach(async () => {
       walletSpy = jest.spyOn(wallet, 'decodeAuth');
-      body = {
-        name: 'Award A',
-        description: 'Finish this and that',
-        space: space?.uid,
-        type: AwardType.PARTICIPATE_AND_APPROVE,
-        endDate: dayjs().add(5, 'days').toDate(),
-        badge: {
-          name: 'Winner',
-          description: 'Such a special',
-          count: 2,
-          xp: 0
-        }
-      };
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
-
-      const wrapped: any = testEnv.wrap(createAward);
-      award = await wrapped();
+      body = dummyAward(space?.uid)
+      mockWalletReturn(memberAddress, body)
+      award = await testEnv.wrap(createAward)({});
       expect(award?.uid).toBeDefined();
     });
 
     it('Add owner.', async () => {
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid,
-          member: memberAddress2
-        }
-      }));
-
-      const wrapped: any = testEnv.wrap(addOwner);
-      const returns = await wrapped();
+      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
+      const returns = await testEnv.wrap(addOwner)({});
       expect(returns?.uid).toBeDefined();
       walletSpy.mockRestore();
     });
 
     it('Fail to add owner - not owner', async () => {
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: award.uid,
-          member: memberAddress3
-        }
-      }));
-
-      const wrapped: any = testEnv.wrap(addOwner);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.you_are_not_owner_of_the_award.key);
+      mockWalletReturn(memberAddress2, { uid: award.uid, member: memberAddress3 })
+      expectThrow(testEnv.wrap(addOwner)({}), WenError.you_are_not_owner_of_the_award.key)
       walletSpy.mockRestore();
     });
 
     it('Invalid Award', async () => {
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: memberAddress3,
-          member: memberAddress3
-        }
-      }));
-
-      const wrapped: any = testEnv.wrap(addOwner);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.award_does_not_exists.key);
+      mockWalletReturn(memberAddress2, { uid: memberAddress3, member: memberAddress3 })
+      expectThrow(testEnv.wrap(addOwner)({}), WenError.award_does_not_exists.key)
       walletSpy.mockRestore();
     });
   });
 
   describe('Participant manipulation tests', () => {
-    let body: any;
-    let walletSpy: any;
-    let award: any;
     const memberAddress2 = wallet.getRandomEthAddress();
     const memberAddress3 = wallet.getRandomEthAddress();
     const memberAddress4 = wallet.getRandomEthAddress();
+
     beforeEach(async () => {
       walletSpy = jest.spyOn(wallet, 'decodeAuth');
-      body = {
-        name: 'Award A',
-        description: 'Finish this and that',
-        space: space?.uid,
-        type: AwardType.PARTICIPATE_AND_APPROVE,
-        endDate: dayjs().add(5, 'days').toDate(),
-        badge: {
-          name: 'Winner',
-          description: 'Such a special',
-          count: 2,
-          xp: 0
-        }
-      };
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: body
-      }));
+      body = dummyAward(space?.uid)
+      mockWalletReturn(memberAddress, body)
 
-      const wrapped: any = testEnv.wrap(createAward);
-      award = await wrapped();
+      award = await testEnv.wrap(createAward)({});
       expect(award?.uid).toBeDefined();
 
       // Create members
-      [
-        memberAddress2,
-        memberAddress3,
-        memberAddress4
-      ].forEach(async (r) => {
-        walletSpy.mockReturnValue(Promise.resolve({
-          address: r,
-          body: {}
-        }));
-
-        const wrapped: any = testEnv.wrap(createMember);
-        const returns = await wrapped(r);
+      [memberAddress2, memberAddress3, memberAddress4].forEach(async (r) => {
+        mockWalletReturn(r, {})
+        const returns = await testEnv.wrap(createMember)(r);
         expect(returns?.uid).toEqual(r.toLowerCase());
       });
     });
 
     it('Participate.', async () => {
       // Join space first.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: space?.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: space?.uid })
 
-      const wrapped3: any = testEnv.wrap(joinSpace);
-      const returns3 = await wrapped3();
+      const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid
-        }
-      }));
-      const approveA: any = testEnv.wrap(approveAward);
-      const approved = await approveA();
+      mockWalletReturn(memberAddress, { uid: award.uid })
+
+      const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: award.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: award.uid })
 
-      const wrapped: any = testEnv.wrap(participate);
-      const returns = await wrapped();
+      const returns = await testEnv.wrap(participate)({});
       expect(returns?.uid).toBeDefined();
       walletSpy.mockRestore();
     });
 
     it('Unable to participate, not approved.', async () => {
       // Join space first.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: space?.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: space?.uid })
 
-      const wrapped3: any = testEnv.wrap(joinSpace);
-      const returns3 = await wrapped3();
+      const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: award.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: award.uid })
 
-      const wrapped: any = testEnv.wrap(participate);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.award_is_not_approved.key);
+      expectThrow(testEnv.wrap(participate)({}), WenError.award_is_not_approved.key)
     });
 
     it('Unable to participate, rejected.', async () => {
       // Join space first.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: space?.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: space?.uid })
 
-      const wrapped3: any = testEnv.wrap(joinSpace);
-      const returns3 = await wrapped3();
+      const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid
-        }
-      }));
-      const approveA: any = testEnv.wrap(rejectAward);
-      const approved = await approveA();
+      mockWalletReturn(memberAddress, { uid: award.uid })
+
+      const approved = await testEnv.wrap(rejectAward)({});
       expect(approved?.uid).toBeDefined();
       expect(approved?.rejected).toEqual(true);
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: award.uid
-        }
-      }));
-
-      const wrapped: any = testEnv.wrap(participate);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.award_is_rejected.key);
+      mockWalletReturn(memberAddress2, { uid: award.uid })
+      expectThrow(testEnv.wrap(participate)({}), WenError.award_is_rejected.key)
     });
 
     it('Fail to participate. Must be within the space.', async () => {
+      mockWalletReturn(memberAddress, { uid: award.uid })
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid
-        }
-      }));
-      const approveA: any = testEnv.wrap(approveAward);
-      const approved = await approveA();
+      const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: wallet.getRandomEthAddress(),
-        body: {
-          uid: award.uid
-        }
-      }));
-      const wrapped: any = testEnv.wrap(participate);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.you_are_not_part_of_the_space.key);
+      mockWalletReturn(wallet.getRandomEthAddress(), { uid: award.uid })
+
+      expectThrow(testEnv.wrap(participate)({}), WenError.you_are_not_part_of_the_space.key)
     });
 
     it('Already participant', async () => {
       // Join space first.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: space?.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: space?.uid })
 
-      const wrapped3: any = testEnv.wrap(joinSpace);
-      const returns3 = await wrapped3();
+      const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid
-        }
-      }));
-      const approveA: any = testEnv.wrap(approveAward);
-      const approved = await approveA();
+      mockWalletReturn(memberAddress, { uid: award.uid })
+
+      const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: award.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: award.uid })
 
-      const wrapped: any = testEnv.wrap(participate);
-      const returns = await wrapped();
+      const returns = await testEnv.wrap(participate)({});
       expect(returns?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: award.uid
-        }
-      }));
-      const wrapped2: any = testEnv.wrap(participate);
-      (<any>expect(wrapped2())).rejects.toThrowError(WenError.member_is_already_participant_of_space.key);
+      mockWalletReturn(memberAddress2, { uid: award.uid })
+
+      expectThrow(testEnv.wrap(participate)({}), WenError.member_is_already_participant_of_space.key)
       walletSpy.mockRestore();
     });
 
     it('Invalid Award', async () => {
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid
-        }
-      }));
-      const approveA: any = testEnv.wrap(approveAward);
-      const approved = await approveA();
+      mockWalletReturn(memberAddress, { uid: award.uid })
+
+      const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: memberAddress3
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: memberAddress3 })
 
-      const wrapped: any = testEnv.wrap(participate);
-      (<any>expect(wrapped())).rejects.toThrowError(WenError.award_does_not_exists.key);
+      expectThrow(testEnv.wrap(participate)({}), WenError.award_does_not_exists.key)
       walletSpy.mockRestore();
     });
 
     it('Participate and assign badge', async () => {
       // Join space first.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: space?.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: space?.uid })
 
-      const wrapped3: any = testEnv.wrap(joinSpace);
-      const returns3 = await wrapped3();
+      const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid
-        }
-      }));
+      mockWalletReturn(memberAddress, { uid: award.uid })
 
-      const approveA: any = testEnv.wrap(approveAward);
-      const approved = await approveA();
+      const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress2,
-        body: {
-          uid: award.uid
-        }
-      }));
+      mockWalletReturn(memberAddress2, { uid: award.uid })
 
-      const wrapped: any = testEnv.wrap(participate);
-      const returns = await wrapped();
+      const returns = await testEnv.wrap(participate)({});
       expect(returns?.uid).toBeDefined();
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid,
-          member: memberAddress2
-        }
-      }));
+      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
 
-      const wrapped2: any = testEnv.wrap(approveParticipant);
-      const returns2 = await wrapped2();
+      const returns2 = await testEnv.wrap(approveParticipant)({});
       expect(returns2?.uid).toBeDefined();
       expect(returns2?.payload).toBeDefined();
       expect(returns2?.payload.award).toEqual(award.uid);
@@ -521,18 +287,10 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       walletSpy.mockRestore();
     });
 
-
     it('Assign badge without being participant', async () => {
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid,
-          member: memberAddress2
-        }
-      }));
+      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
 
-      const wrapped2: any = testEnv.wrap(approveParticipant);
-      const returns2 = await wrapped2();
+      const returns2 = await testEnv.wrap(approveParticipant)({});
       expect(returns2?.uid).toBeDefined();
       expect(returns2?.payload).toBeDefined();
       expect(returns2?.payload.award).toEqual(award.uid);
@@ -543,48 +301,28 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
     it('Failed to assign badge since its consumed', async () => {
       // First badge.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid,
-          member: memberAddress2
-        }
-      }));
+      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
 
-      const wrapped2: any = testEnv.wrap(approveParticipant);
-      const returns2 = await wrapped2();
+      const returns2 = await testEnv.wrap(approveParticipant)({});
       expect(returns2?.uid).toBeDefined();
       expect(returns2?.payload).toBeDefined();
       expect(returns2?.payload.award).toEqual(award.uid);
 
       // Second badge.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid,
-          member: memberAddress3
-        }
-      }));
+      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress3 })
 
-      const wrapped3: any = testEnv.wrap(approveParticipant);
-      const returns3 = await wrapped3();
+      const returns3 = await testEnv.wrap(approveParticipant)({});
       expect(returns3?.uid).toBeDefined();
       expect(returns3?.payload).toBeDefined();
       expect(returns3?.payload.award).toEqual(award.uid);
 
       // Fails no enoguh.
-      walletSpy.mockReturnValue(Promise.resolve({
-        address: memberAddress,
-        body: {
-          uid: award.uid,
-          member: memberAddress4
-        }
-      }));
+      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress4 })
 
       // TODO Fix this.
       try {
-        await wrapped3();
-      } catch(e) {
+        await testEnv.wrap(approveParticipant)({});
+      } catch (e) {
         expect(e).toBeDefined();
       }
       // (<any>expect(wrapped4())).rejects.toThrowError(WenError.no_more_available_badges.key);
