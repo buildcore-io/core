@@ -8,6 +8,7 @@ import { AwardType } from './../../interfaces/models/award';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './../../src/controls/award.control';
 import { createMember } from './../../src/controls/member.control';
 import { createSpace, joinSpace } from './../../src/controls/space.control';
+import { expectThrow } from './common';
 
 const dummyAward = (spaceId?: string) => ({
   name: 'Award A',
@@ -23,19 +24,16 @@ const dummyAward = (spaceId?: string) => ({
   }
 })
 
-const expectThrow = <C, E>(call: C, error: E) => {
-  (<any>expect(call)).rejects.toThrowError(error)
-}
+let walletSpy: any;
+
+const mockWalletReturn = <T,>(address: string, body: T) =>
+  walletSpy.mockReturnValue(Promise.resolve({ address: address, body }));
 
 describe('AwardController: ' + WEN_FUNC.cAward, () => {
-  let walletSpy: any;
   let memberAddress: string;
   let space: Space;
   let award: any;
   let body: any;
-
-  const mockWalletReturn = <T,>(address: string, body: T) =>
-    walletSpy.mockReturnValue(Promise.resolve({ address: address, body }));
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
