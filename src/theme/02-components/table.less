@@ -10,7 +10,33 @@
         @apply border-b-foregrounds-separator dark:border-b-foregrounds-separator-dark;
     }
 
+    .ant-table-tbody > tr > td {
+        @apply text-foregrounds-primary dark:text-foregrounds-primary-dark;
+    }
+
     .ant-table-row:hover {
         @apply bg-accent-selected dark:bg-accent-selected-dark !important;
+    }
+}
+
+.ant-table-pagination {
+    @apply flex justify-center;
+
+    .ant-pagination-item,
+    .ant-pagination-prev .ant-pagination-item-link,
+    .ant-pagination-next .ant-pagination-item-link {
+        @apply flex justify-center items-center border-0 font-medium text-sm bg-transparent;
+        
+        a {
+            @apply text-foregrounds-primary dark:text-foregrounds-primary-dark;
+        }
+    }
+
+    .ant-pagination-item-active {
+        @apply bg-accent-primary dark:bg-accent-primary-dark;
+
+        a {
+            @apply text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark;
+        }
     }
 }

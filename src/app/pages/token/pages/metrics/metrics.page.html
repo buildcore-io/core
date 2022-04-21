@@ -50,8 +50,8 @@
 </nz-card>
 
 <nz-card i18n-nzTitle nzTitle="Token distribution" class="mt-4 lg:mt-6">
-    <div class="flex justify-between w-full">
-        <div class="block relative w-3/5">
+    <div class="flex flex-col xl:flex-row justify-between w-full">
+        <div class="block relative w-full xl:w-3/5">
             <canvas baseChart width="400" height="180"
                 [data]="lineChartData"
                 [options]="lineChartOptions"
@@ -64,9 +64,9 @@
         </div>
 
 
-        <div class="space-y-3">
+        <div class="xl:space-x-0 xl:space-y-3 flex xl:flex-col flex-wrap items-center mt-8 xl:mt-0">
             <div *ngFor="let opt of lineChartData?.labels; let i = index"
-                class="flex">
+                class="flex mr-4 xl:mr-0 mt-4 xl:mt-0">
                 <div class="w-6 h-3 rounded-md mr-2" [ngStyle]="{ 'background-color': colors[i] }"></div>
                 <div class="font-medium -mt-1.5">
                     <div class="truncate">{{ lineChartData?.labels?.[i] }}</div>

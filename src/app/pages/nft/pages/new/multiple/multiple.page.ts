@@ -339,6 +339,7 @@ export class MultiplePage implements OnInit {
     })
     return false;
   }
+
   public beforeImagesUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
     return this.uploadedFiles.length < this.imagesLimit;

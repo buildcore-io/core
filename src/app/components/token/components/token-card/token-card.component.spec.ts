@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TokenCardComponent } from './token-card.component';
+
 
 describe('TokenCardComponent', () => {
   let component: TokenCardComponent;
   let fixture: ComponentFixture<TokenCardComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ TokenCardComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

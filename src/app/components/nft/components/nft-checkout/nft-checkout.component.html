@@ -77,13 +77,13 @@
                     >
                     </nz-avatar>
                     <div class="ml-3 text-xs font-medium">
-                        <div class="text-foregrounds-secondary" i18n>Royalties goes to</div>
+                        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalties goes to</div>
                         <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
                     </div>
                 </a>
 
                 <div class="px-5 py-3 mt-8 lg:mt-auto bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl w-max">
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Total price</div>
+                    <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total price</div>
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
                         <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
                         <div class="mr-2 font-bold truncate">{{ formatBest(calc(getRecord()?.availablePrice || getRecord()?.price || 0, discount())) }}</div>
@@ -132,7 +132,7 @@
                 Confirm and Lock
         </button>
 
-        <div class="mt-4 text-xs font-medium text-foregrounds-secondary">
+        <div class="mt-4 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <span i18n>Your NFT will be locked for purchase for</span> {{lockTime}} <span i18n>minutes</span>.
         </div>
     </div>
@@ -168,7 +168,7 @@
             </div>
         </div>
 
-        <div class="mt-6 text-sm font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+        <div class="mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             Do not send funds from an exchange, always use wallets you fully control.
         </div>
 
@@ -242,7 +242,7 @@
 
         <div class="flex lg:items-center">
             <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
-                <wen-icon-check class="text-white"></wen-icon-check>
+                <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
             </div>
             <div class="ml-3.5 text-lg font-medium" i18n>Transaction complete. Congratulations.</div>
         </div>

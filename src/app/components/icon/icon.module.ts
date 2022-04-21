@@ -14,6 +14,7 @@ import { CalendarIconComponent } from './calendar/calendar.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
+import { CoinIconComponent } from './coin/coin.component';
 import { CollectionIconComponent } from './collection/collection.component';
 import { CopyIconComponent } from './copy/copy.component';
 import { CrownIconComponent } from './crown/crown.component';
@@ -132,7 +133,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersWithNftFromCollectionIconComponent,
     NineDotsIconComponent,
     OpenSaleIconComponent,
-    RevertIconComponent
+    RevertIconComponent,
+    CoinIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -199,7 +201,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersWithNftFromCollectionIconComponent,
     NineDotsIconComponent,
     OpenSaleIconComponent,
-    RevertIconComponent
+    RevertIconComponent,
+    CoinIconComponent
   ],
   imports: [
     CommonModule

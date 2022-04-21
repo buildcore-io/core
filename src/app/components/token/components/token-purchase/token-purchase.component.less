@@ -1,0 +1,19 @@
+.wen-description-item {
+    @apply flex justify-between items-center w-full px-5 py-3 mb-4 rounded-xl;
+}
+
+.deep-link {
+    @apply flex items-center justify-center w-full mb-6 lg:mb-0 lg:mr-4 lg:w-auto border-inputs-border dark:border-inputs-border-dark px-5 py-3;
+    padding-top: 12px !important;
+}
+
+input[type=number] {
+    @apply rounded-none;
+}
+
+::ng-deep {
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        opacity: 0;
+    }
+}

@@ -70,41 +70,6 @@
       </div>
     </div>
   
-    <!-- <nz-modal
-      [(nzVisible)]="isBuyTokensVisible"
-      i18n-nzTitle
-      nzTitle="Confirm your participation"
-      nzClosable="false"
-      [nzContent]="modalContent"
-      [nzFooter]="modalFooter"
-      [nzWidth]="700"
-    >
-      <ng-template #modalContent>
-        <p class="text-lg mb-9" i18n>
-          The whole communication is now handled outside the platform, let the
-          award creator know how to contact you.
-        </p>
-        <textarea
-          nz-input
-          i18n-placeholder
-          placeholder="Provide description or link to your work."
-          [formControl]="commentControl"
-          rows="5"
-        ></textarea>
-      </ng-template>
-  
-      <ng-template #modalFooter>
-        <div class="text-left">
-          <button nz-button class="mr-4" nzType="primary" (click)="participate()" i18n>
-            Submit
-          </button>
-          <button nz-button nzType="default" (click)="handleParticipateCancel()" i18n>
-            Cancel
-          </button>
-        </div>
-      </ng-template>
-    </nz-modal> -->
-  
     <nz-drawer
         [nzBodyStyle]="{ overflow: 'auto', padding: '8px' }"
         [nzWidth]="'100vw'"
@@ -130,3 +95,4 @@
     </nz-drawer>
   </wen-content>
   
+  <wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>

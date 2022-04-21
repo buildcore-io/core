@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AirdropsPage } from './airdrops.page';
+
 
 describe('AirdropsPage', () => {
   let component: AirdropsPage;
   let fixture: ComponentFixture<AirdropsPage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ AirdropsPage ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

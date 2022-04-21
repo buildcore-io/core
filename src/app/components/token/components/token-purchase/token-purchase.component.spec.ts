@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TokenPage } from './token.page';
+import { TokenPurchaseComponent } from './token-purchase.component';
 
 
-describe('TokenPage', () => {
-  let component: TokenPage;
-  let fixture: ComponentFixture<TokenPage>;
+describe('TokenPurchaseComponent', () => {
+  let component: TokenPurchaseComponent;
+  let fixture: ComponentFixture<TokenPurchaseComponent>;
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ TokenPage ]
+      declarations: [ TokenPurchaseComponent ]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TokenPage);
+    fixture = TestBed.createComponent(TokenPurchaseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

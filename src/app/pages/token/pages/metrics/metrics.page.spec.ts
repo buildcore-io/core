@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MetricsPage } from './metrics.page';
+
 
 describe('MetricsPage', () => {
   let component: MetricsPage;
   let fixture: ComponentFixture<MetricsPage>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ MetricsPage ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
