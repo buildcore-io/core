@@ -31,7 +31,8 @@ export const ROUTER_UTILS = {
       awards: 'awards',
       badges: 'badges',
       spaces: 'spaces',
-      nfts: 'nfts'
+      nfts: 'nfts',
+      tokens: 'tokens'
     },
     space: {
       // Redirect back to discovery

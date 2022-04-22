@@ -43,7 +43,7 @@
     </div>
 
     <nz-table class="block px-5 mt-5"
-        [nzData]="data" [nzShowPagination]="true" [nzPageSize]="12">
+        [nzData]="data" [nzShowPagination]="true">
         <thead>
             <tr>
                 <th *ngFor="let c of tableConfig; let last = last" [ngStyle]="{ 'text-align': last ? 'right' : 'left' }" i18n>{{ c.label }}</th>
