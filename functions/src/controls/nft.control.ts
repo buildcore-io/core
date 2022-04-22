@@ -12,6 +12,7 @@ import { Member } from '../../interfaces/models/member';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -20,7 +21,7 @@ import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionType } from './../../interfaces/models/collection';
 
-function defaultJoiUpdateCreateSchema(): any {
+function defaultJoiUpdateCreateSchema() {
   return merge(getDefaultParams(), {
     name: Joi.string().allow(null, '').required(),
     description: Joi.string().allow(null, '').required(),
@@ -29,7 +30,7 @@ function defaultJoiUpdateCreateSchema(): any {
       scheme: ['https']
     }).optional(),
     // On test we allow now.
-    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
+    availableFrom: Joi.date().greater(dayjs().add(isProdEnv ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     url: Joi.string().allow(null, '').uri({
@@ -43,7 +44,7 @@ function defaultJoiUpdateCreateSchema(): any {
 
 export const createNft: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.cNft),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.cNft, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -65,13 +66,13 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
   minInstances: scale(WEN_FUNC.cBatchNft),
   timeoutSeconds: 300,
   memory: "4GB",
-}).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.cBatchNft, context);
 
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
   const creator = params.address.toLowerCase();
-  const schema: any = Joi.array().items(Joi.object().keys(defaultJoiUpdateCreateSchema())).min(1).max(500);
+  const schema = Joi.array().items(Joi.object().keys(defaultJoiUpdateCreateSchema())).min(1).max(500);
   assertValidation(schema.validate(params.body));
 
   // TODO What happens if they submit various collection. We need JOI to only allow same collection within all nfts.
@@ -93,12 +94,10 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
 
   // Wait for it complete.
   const output: Member[] = await Promise.all(process);
-  return <any>output.map((o) => {
-    return o.uid;
-  });
+  return output.map((o) => o.uid);
 });
 
-const processOneCreateNft = async (creator: string, params: any, collectionData: Collection, position: number): Promise<Member> => {
+const processOneCreateNft = async(creator: string, params: Nft, collectionData: Collection, position: number): Promise<Member> => {
   const nftAddress: string = getRandomEthAddress();
   const docMember: admin.firestore.DocumentSnapshot = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
   if (!docMember.exists) {
@@ -110,10 +109,10 @@ const processOneCreateNft = async (creator: string, params: any, collectionData:
   }
 
   if (params.availableFrom) {
-    params.availableFrom = dateToTimestamp(params.availableFrom, true);
+    params.availableFrom = dateToTimestamp(params.availableFrom.toDate(), true);
   }
 
-  if (!collectionData.availableFrom || dayjs(collectionData.availableFrom.toDate()).isAfter(dayjs(params.availableFrom.toDate()), 'minutes')) {
+  if (!collectionData.availableFrom || dayjs(collectionData.availableFrom.toDate()).isAfter(dayjs(params.availableFrom?.toDate()), 'minutes')) {
     throw throwInvalidArgument(WenError.nft_date_must_be_after_or_same_with_collection_available_from_date);
   }
 
@@ -131,7 +130,7 @@ const processOneCreateNft = async (creator: string, params: any, collectionData:
   }
 
   const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(nftAddress);
-  const finalPrice: number = parseInt(params.price);
+  const finalPrice = params.price;
   let docNft: admin.firestore.DocumentSnapshot = await refNft.get();
   if (!docNft.exists) {
     // Document does not exists.
@@ -180,7 +179,7 @@ const processOneCreateNft = async (creator: string, params: any, collectionData:
   return <Member>docNft.data();
 }
 
-function makeAvailableForSaleJoi(): any {
+function makeAvailableForSaleJoi() {
   return merge(getDefaultParams(), {
     nft: CommonJoi.uidCheck().required(),
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT),
@@ -198,7 +197,7 @@ function makeAvailableForSaleJoi(): any {
 
 export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
   minInstances: scale(WEN_FUNC.setForSaleNft),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Nft> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Nft> => {
   appCheck(WEN_FUNC.setForSaleNft, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -247,7 +246,7 @@ export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
     throw throwInvalidArgument(WenError.nft_auction_already_in_progress);
   }
 
-  const update: any = {
+  const update = <Nft>{
     saleAccess: params.body.access || NftAccess.OPEN,
     saleAccessMembers: params.body.accessMembers || []
   };

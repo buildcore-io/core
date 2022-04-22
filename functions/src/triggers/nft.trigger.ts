@@ -9,26 +9,26 @@ import { medium } from '../scale.settings';
 // Listen for changes in all documents in the NFT and update to prepare it for filtering.
 export const nftWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
   minInstances: medium
-}).firestore.document(COL.NFT + '/{nftId}').onWrite(async (change) => {
-  const newValue: Nft = <Nft>change.after.data();
+}).firestore.document(COL.NFT + '/{nftId}').onWrite(async(change) => {
+  const newValue = <Nft>change.after.data();
   // Let's wrap this into a transaction.
-  await admin.firestore().runTransaction(async (transaction) => {
+  await admin.firestore().runTransaction(async(transaction) => {
     if (!newValue) {
       return;
     }
 
     let update = false;
-    const refSource: any = admin.firestore().collection(COL.NFT).doc(newValue.uid);
-    const sfDoc: any = await transaction.get(refSource);
+    const refSource = admin.firestore().collection(COL.NFT).doc(newValue.uid);
+    const sfDoc = await transaction.get(refSource);
     if (!sfDoc.data()) {
       return;
     }
 
     // Data object.
-    const nftData: Nft = sfDoc.data();
+    const nftData = <Nft>sfDoc.data();
 
     // Update Availability
-    if (nftData.availableFrom && nftData.auctionFrom && nftData.available !== NftAvailable.AUCTION_AND_SALE){
+    if (nftData.availableFrom && nftData.auctionFrom && nftData.available !== NftAvailable.AUCTION_AND_SALE) {
       nftData.available = NftAvailable.AUCTION_AND_SALE;
       update = true;
     } else if (nftData.availableFrom && nftData.available !== NftAvailable.SALE) {

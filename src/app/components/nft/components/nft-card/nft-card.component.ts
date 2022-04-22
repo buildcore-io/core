@@ -172,7 +172,7 @@ export class NftCardComponent {
     return dayjs(date.toDate()).isAfter(dayjs(), 's');
   }
 
-  public getDaysLeft(availableFrom?: Timestamp): number {
+  public getDaysLeft(availableFrom?: Timestamp|null): number {
     if (!availableFrom) return 0;
     return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }
