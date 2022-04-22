@@ -25,6 +25,7 @@ import { EditIconComponent } from './edit/edit.component';
 import { EraseIconComponent } from './erase/erase.component';
 import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
+import { FileCheckIconComponent } from './file-check/file-check.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
 import { GuardiansOnlyIconComponent } from './guardians-only/guardians-only.component';
@@ -134,7 +135,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     NineDotsIconComponent,
     OpenSaleIconComponent,
     RevertIconComponent,
-    CoinIconComponent
+    CoinIconComponent,
+    FileCheckIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -202,7 +204,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     NineDotsIconComponent,
     OpenSaleIconComponent,
     RevertIconComponent,
-    CoinIconComponent
+    CoinIconComponent,
+    FileCheckIconComponent
   ],
   imports: [
     CommonModule
