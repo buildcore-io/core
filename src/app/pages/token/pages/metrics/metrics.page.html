@@ -4,48 +4,13 @@
 </div>
 
 <nz-card i18n-nzTitle nzTitle="Breakdown" class="mt-4 lg:mt-6">
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Total token supply</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">100 000</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Price per token</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">1 Mi</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Treasury</span>
-        <p nz-typography class=" text-right">
-            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">50%</span>
-            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(50 000 Mi)</span>
-        </p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Development fund</span>
-        <p nz-typography class=" text-right">
-            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">20%</span>
-            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(20 000 Mi)</span>
-        </p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">VC</span>
-        <p nz-typography class=" text-right">
-            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">10%</span>
-            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(10 000 Mi)</span>
-        </p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Fundraising</span>
-        <p nz-typography class=" text-right">
-            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">10%</span>
-            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(10 000 Mi)</span>
-        </p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Public sale</span>
-        <p nz-typography class=" text-right">
-            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">10%</span>
-            <span class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">(10 000 Mi)</span>
-        </p>
+    <div *ngFor="let item of breakdownData"
+        class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
+            <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ item.label }}</span>
+            <p nz-typography class=" text-right">
+                <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ item.value }}</span>
+                <span *ngIf="item.extra" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"> {{ item.extra }}</span>
+            </p>
     </div>
 </nz-card>
 

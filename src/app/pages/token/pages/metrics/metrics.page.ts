@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ChartConfiguration, ChartType } from 'chart.js';
 
+export interface TokenBreakdownItem {
+  label: string;
+  value: string;
+  extra?: string;
+};
 @Component({
   selector: 'wen-metrics',
   templateUrl: './metrics.page.html',
@@ -30,4 +35,10 @@ export class MetricsPage {
       }
     }
   };
+  public breakdownData: TokenBreakdownItem[] = [
+    { label: 'Total token supply', value: '100 000' },
+    { label: 'Price per token', value: '1 Mi' },
+    { label: 'Treasury', value: '50%', extra: '(50 000 Mi)' },
+    { label: 'Development fund', value: '20%', extra: '(20 000 Mi)' }
+  ]
 }
