@@ -60,7 +60,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">69,70</context>
         </context-group>
-        <target state="translated">공간</target>
+        <target state="translated">스페이스</target>
       </trans-unit>
       <trans-unit id="2011097393756618787" datatype="html">
         <source>Proposal</source>
@@ -84,7 +84,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
-        <target state="translated">상</target>
+        <target state="translated">보상</target>
       </trans-unit>
       <trans-unit id="16823705783062999" datatype="html">
         <source>Collection</source>
@@ -108,7 +108,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/collections/collections.page.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="translated">모음집</target>
+        <target state="translated">컬렉션</target>
       </trans-unit>
       <trans-unit id="821740044721286718" datatype="html">
         <source> None. </source>
@@ -172,7 +172,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">272</context>
         </context-group>
-        <target state="translated">당신은 NFT를 얻으셨습니다.</target>
+        <target state="translated">NFT를 얻으셨습니다.</target>
       </trans-unit>
       <trans-unit id="653764875284666289" datatype="html">
         <source>You are a proud owner of a new NFT. Congratulations!</source>
@@ -288,7 +288,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="translated"> 모음집 </target>
+        <target state="translated"> 컬렉션 </target>
       </trans-unit>
       <trans-unit id="9002287905742257858" datatype="html">
         <source>Connect to your MetaMask wallet</source>
@@ -296,7 +296,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="translated">당신의 메타마스크 지갑에 연결하세요.</target>
+        <target state="translated">메타마스크 지갑에 연결하세요.</target>
       </trans-unit>
       <trans-unit id="7507948636555938109" datatype="html">
         <source>Log out</source>
@@ -312,7 +312,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-menu/mobile-menu.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="translated">에 의해 구동됨</target>
+        <target state="translated">Powered by</target>
       </trans-unit>
       <trans-unit id="1725803651955575191" datatype="html">
         <source> The page you were looking for was not found </source>
@@ -328,7 +328,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/not-found/not-found.page.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
-        <target state="translated"> 수니버스 발견하기 </target>
+        <target state="translated"> Soonaverse 탐험하기 </target>
       </trans-unit>
       <trans-unit id="6159287661976790789" datatype="html">
         <source>See Docs</source>
@@ -356,7 +356,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">291,292</context>
         </context-group>
-        <target state="translated">공개 임박</target>
+        <target state="translated">곧 공개 예정</target>
       </trans-unit>
       <trans-unit id="3612321595619972457" datatype="html">
         <source>Metamask</source>
@@ -372,7 +372,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="translated">당신의 메타마스크 지갑에 연결하세요.</target>
+        <target state="translated">메타마스크 지갑에 연결하세요.</target>
       </trans-unit>
       <trans-unit id="9133528864934693149" datatype="html">
         <source>Make sure you select public IOTA EVM Chain in MetaMask.</source>
@@ -388,7 +388,7 @@
           <context context-type="sourcefile">src/app/components/auth/components/sign-in-modal/sign-in-modal.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="translated">네트워크 이름: 아이오타 EVM</target>
+        <target state="translated">네트워크명: 아이오타 EVM</target>
       </trans-unit>
       <trans-unit id="1895879371426538757" datatype="html">
         <source>RPC URL: https://evm.wasp.sc.iota.org/</source>
@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">156</context>
         </context-group>
-        <target state="translated">먼저 당신의 메타마스크를 잠금해제하셔야 합니다!</target>
+        <target state="translated">먼저 메타마스크를 잠금해제 해주세요!</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
@@ -466,7 +466,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">167</context>
         </context-group>
-        <target state="translated">당신 계좌 주소를 읽으려면 설정에서 접근을 허용하셔야 합니다.</target>
+        <target state="translated">계좌 주소를 보려면 설정에서 접근을 허용하셔야 합니다.</target>
       </trans-unit>
       <trans-unit id="9030101964674216890" datatype="html">
         <source>Please make sure you select address in MetaMask!</source>
@@ -482,7 +482,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">196</context>
         </context-group>
-        <target state="translated">인증을 위한 난스nonce를 가져올 수 없습니다!</target>
+        <target state="translated">인증을 위한 nonce를 가져올 수 없습니다!</target>
       </trans-unit>
       <trans-unit id="2286941765985804347" datatype="html">
         <source>You have to open Soonaverse in MetaMask app.</source>
@@ -618,7 +618,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">564,565</context>
         </context-group>
-        <target state="translated">배지를 단 스페이스 회원 전용</target>
+        <target state="translated">뱃지를 소유한 스페이스 회원 전용</target>
       </trans-unit>
       <trans-unit id="7476114218032668015" datatype="html">
         <source>At least one NFT from Collections</source>
@@ -630,7 +630,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">574,575</context>
         </context-group>
-        <target state="translated">모음집에서 적어도 하나의 NFT</target>
+        <target state="translated">컬렉션에서 적어도 하나의 NFT</target>
       </trans-unit>
       <trans-unit id="6874589093281206826" datatype="html">
         <source>Starts in</source>
@@ -830,7 +830,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-about/member-about.component.html</context>
           <context context-type="linenumber">84,85</context>
         </context-group>
-        <target state="translated">최근의 뱃지들</target>
+        <target state="translated">최근 얻은 뱃지</target>
       </trans-unit>
       <trans-unit id="1888256859473055215" datatype="html">
         <source>No badges</source>
@@ -882,7 +882,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.ts</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="translated">상</target>
+        <target state="translated">보상</target>
       </trans-unit>
       <trans-unit id="7770530583769024002" datatype="html">
         <source>XP</source>
@@ -910,7 +910,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-alliances-table/member-alliances-table.component.html</context>
           <context context-type="linenumber">29</context>
         </context-group>
-        <target state="translated">총 평판</target>
+        <target state="translated">총 명성</target>
       </trans-unit>
       <trans-unit id="4112746459433867442" datatype="html">
         <source>awards</source>
@@ -918,7 +918,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-card/member-card.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="translated">상</target>
+        <target state="translated">보상</target>
       </trans-unit>
       <trans-unit id="3013055597615607317" datatype="html">
         <source>Display Name</source>
@@ -958,7 +958,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="translated">프로필에 표시되는 자신에 대한 간략한 설명입니다.</target>
+        <target state="translated">프로필에 표시되는 간단한 자기소개입니다.</target>
       </trans-unit>
       <trans-unit id="1793778323686892052" datatype="html">
         <source>Your description (optional)</source>
@@ -994,7 +994,7 @@
           <context context-type="sourcefile">src/app/components/member/components/member-edit-drawer/member-edit-drawer.component.html</context>
           <context context-type="linenumber">34,37</context>
         </context-group>
-        <target state="translated">프로필 사진용 아바타를 무료로 제작하세요. </target>
+        <target state="translated">유니크 아바타를 무료로 민팅하고 프로필 사진으로 설정해보세요. <x id="LINE_BREAK" ctype="lb"/><x id="LINE_BREAK" ctype="lb"/> 거래 가능한 슈퍼 레어 프리미엄 아바타 및 수집품/악세사리가 곧 공개될 예정입니다. </target>
       </trans-unit>
       <trans-unit id="7678665112140498921" datatype="html">
         <source>WOW! Looks like yours is the prettiest avatar of all. Congratulations. </source>
