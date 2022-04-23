@@ -1,11 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { TokenBreakdownItem } from '@pages/token/services/new.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 
-export interface TokenBreakdownItem {
-  label: string;
-  value: string;
-  extra?: string;
-};
+
 @Component({
   selector: 'wen-metrics',
   templateUrl: './metrics.page.html',
