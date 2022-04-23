@@ -21,7 +21,8 @@ export enum URL_PATHS {
   PROPOSAL = 'proposal',
   AWARD = 'award',
   MEMBER = 'member',
-  COLLECTION = 'collection'
+  COLLECTION = 'collection',
+  TOKEN = 'token'
 }
 
 export const WEN_NAME = 'Soonaverse';

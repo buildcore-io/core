@@ -1,0 +1,85 @@
+<nz-modal *ngIf="deviceService.isDesktop$ | async"
+    [(nzVisible)]="isOpen"
+    nzCentered
+    [nzClosable]="false"
+    [nzMaskClosable]="true"
+    [nzMask]="true"
+    (nzOnCancel)="close()"
+    [nzContent]="tokenPurchaseModalContent"
+    [nzFooter]="null"
+    [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
+    [nzWidth]="760"
+    >
+    <ng-template #tokenPurchaseModalContent>
+        <div class="flex items-start justify-between">
+            <div class="text-2xl font-bold">
+                <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Refund token</ng-container>
+                <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Claim token</ng-container>
+            </div>
+            <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
+        </div>
+
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+    </ng-template>
+</nz-modal>
+
+<nz-drawer *ngIf="deviceService.isMobile$ | async"
+    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+    [nzWidth]="'100vw'" #drawer
+    [nzClosable]="false"
+    [nzVisible]="isOpen">
+    <div *nzDrawerContent class="relative min-h-full h-max">
+        <div class="pb-4 text-3xl font-bold">
+            <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Refund token</ng-container>
+            <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Claim token</ng-container>
+        </div>
+        <button class="absolute right-0 z-10 top-1" (click)="close()">
+            <wen-icon-close></wen-icon-close>
+        </button>
+
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+    </div>
+</nz-drawer>
+
+<ng-template #content>
+    <div class="mt-8 lg:mt-6 flex items-center">
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+          class="border-2 border-tags-border dark:border-tags-borde-dark min-w-12"
+          nzShape="circle"
+          [nzSize]="48">
+        </nz-avatar>
+        <div class="font-bold text-lg ml-4">{{ 'SoonLabs Token' }}</div>
+        <div class="font-medium ml-3">{{ '(SOON)' }}</div>
+    </div>
+
+    <div class="flex items-center mt-5">
+        <wen-icon-time class="text-icons-secondary dark:text-icons-secondary-dark" [size]="20"></wen-icon-time>
+        <div class="font-medium ml-2.5" i18n>Cooldown period ends in 2 hours</div>
+    </div>
+
+    <div class="mt-4 py-3 px-5 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+        <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Tokens claim amount</ng-container>
+            <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Tokens refund amount</ng-container>
+        </div>
+        <div class="text-lg font-bold">
+            100
+        </div>
+    </div>
+
+    <label class="w-full mt-8" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
+        <div class="text-base font-medium">
+            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark mr-0.5" i18n>By checking this box, you agree with</span>
+            <br *ngIf="deviceService.isMobile$ | async" />
+            <a href="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ" target="_new" class="inline underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                (click)="$event.stopPropagation()" i18n>Terms and Conditions</a>
+        </div>
+    </label>
+
+    <div class="w-full mt-10 flex justify-center item-center">
+        <button nz-button nzType="primary" nzSize="large">
+            <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Confirm and claim</ng-container>
+            <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Confirm and refund</ng-container>
+        </button>
+    </div>
+</ng-template>

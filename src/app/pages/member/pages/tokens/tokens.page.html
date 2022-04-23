@@ -1,0 +1,34 @@
+<nz-card>
+    <nz-table class="block"
+        [nzData]="tokens" [nzShowPagination]="false">
+        <thead>
+            <tr>
+                <th i18n>Tokens</th>
+                <th i18n>Amount</th>
+                <th i18n>(Mi) Value</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let t of tokens">
+                <td>
+                    <div class="flex items-center">
+                        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+                          class="border-2 border-tags-border dark:border-tags-borde-dark min-w-8"
+                          nzShape="circle"
+                          [nzSize]="32">
+                        </nz-avatar>
+                        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-3">{{ t.token }}</div>
+                    </div>
+                </td>
+                <td class="font-medium">{{ t.amount }}</td>
+                <td class="font-medium">{{ t.value }}</td>
+                <td style="text-align: right">
+                    <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="typeClick(t.type)">{{ t.type }}</a>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</nz-card>
+
+<wen-token-claim-refund *ngIf="openClaimRefundType !== null" [isOpen]="openClaimRefundType !== null" [type]="openClaimRefundType" (wenOnClose)="openClaimRefundType = null"></wen-token-claim-refund>

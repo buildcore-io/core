@@ -5,7 +5,7 @@ import { NzUploadFile, NzUploadXHRArgs } from "ng-zorro-antd/upload";
 import { finalize, Observable, Subscription } from 'rxjs';
 import { FILE_SIZES } from "./../../../functions/interfaces/models/base";
 
-export type FileType = 'space_avatar' | 'space_banner' | 'collection_banner' | 'nft_media' | 'nft_placeholder';
+export type FileType = 'space_avatar' | 'space_banner' | 'collection_banner' | 'nft_media' | 'nft_placeholder' | 'token_icon' | 'token_introductionary';
 
 @Injectable({
   providedIn: 'root',

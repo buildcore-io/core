@@ -31,7 +31,8 @@ export const ROUTER_UTILS = {
       awards: 'awards',
       badges: 'badges',
       spaces: 'spaces',
-      nfts: 'nfts'
+      nfts: 'nfts',
+      tokens: 'tokens'
     },
     space: {
       // Redirect back to discovery
@@ -74,6 +75,15 @@ export const ROUTER_UTILS = {
       nft: ':nftId',
       single: 'single',
       multiple: 'multiple'
+    },
+    token: {
+      // Redirect back to space?!
+      root: URL_PATHS.TOKEN,
+      newToken: 'new',
+      token: ':tokenId',
+      overview: 'overview',
+      metrics: 'metrics',
+      airdrops: 'airdrops'
     },
     errorResponse: {
       notFound: '404',

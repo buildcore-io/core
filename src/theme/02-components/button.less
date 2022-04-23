@@ -88,16 +88,16 @@ a.ant-btn&:not([nztype="default"]) {
   @apply text-buttons-secondary-enabled dark:text-buttons-secondary-enabled-dark bg-buttons-secondary-background dark:bg-buttons-secondary-background-dark border-none !important;
 
   &:hover {
-    @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark;
+    @apply text-buttons-secondary-on-hover dark:text-buttons-secondary-on-hover-dark !important;
   }
 
   &:active,
   &:focus {
-    @apply text-buttons-secondary-pressed dark:text-buttons-secondary-pressed-dark;
+    @apply text-buttons-secondary-pressed dark:text-buttons-secondary-pressed-dark !important;
 
-    path {
-      stroke: white;
-    }
+    // path {
+    //   stroke: white;
+    // }
   }
 
   &.selected {

@@ -1,0 +1,46 @@
+<wen-content [showBackButton]="true">
+    <h1 class="mt-8" i18n>Create token</h1>
+
+    <div class="flex items-center">
+      <ng-container *ngFor="let s of sections; let last = last">
+        <div class="tab"
+          [ngClass]="{ 'selected-tab': currentStep === s.step}"
+          (click)="currentStep = s.step">
+            {{ s.label }}
+        </div>
+        <div *ngIf="!last" class="h-0.5 w-12 bg-foregrounds-placeholder dark:bg-foregrounds-placeholder-dark"></div>
+      </ng-container>
+    </div>
+    
+    <form nz-form nzLayout="vertical" [formGroup]="newService.tokenForm" class="mt-4">
+      <wen-new-metrics *ngIf="currentStep === stepTypes.METRICS"></wen-new-metrics>
+      <wen-new-overview *ngIf="currentStep === stepTypes.OVERVIEW"></wen-new-overview>
+      <wen-new-summary *ngIf="currentStep === stepTypes.SUMMARY"></wen-new-summary>
+    </form>
+  
+    <button
+      nz-button
+      nzType="primary"
+      class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-10"
+      nzSize="large"
+      type="button"
+      (click)="continue()"
+      *ngIf="currentStep === stepTypes.METRICS || currentStep === stepTypes.OVERVIEW"
+      i18n
+    >
+        Continue
+    </button>
+  
+    <button
+      nz-button
+      nzType="primary"
+      class="w-full mt-8 lg:w-auto mb-18 lg:mb-6 lg:mt-10"
+      nzSize="large"
+      type="button"
+      (click)="submit()"
+      *ngIf="currentStep === stepTypes.SUMMARY"
+      i18n
+    >
+        Submit token
+    </button>
+</wen-content>

@@ -11,6 +11,7 @@ import { MobileSearchModule } from '@components/mobile-search/mobile-search.modu
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineBadgesModule } from '@components/timeline-badges/timeline-badges.module';
+import { TokenClaimRefundModule } from '@components/token/components/token-claim-refund/token-claim-refund.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
 import { IpfsBadgeModule } from '@core/pipes/ipfs-badge/ipfs-badge.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -24,6 +25,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
@@ -42,10 +44,11 @@ import { BadgesPage } from './pages/badges/badges.page';
 import { MemberPage } from './pages/member/member.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
 import { MemberSpacesComponent } from './pages/spaces/member-spaces.component';
+import { TokensPage } from './pages/tokens/tokens.page';
 import { DataService } from './services/data.service';
 
 @NgModule({
-  declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, MemberSpacesComponent, NFTsPage],
+  declarations: [MemberPage, ActivityPage, AwardsPage, BadgesPage, MemberSpacesComponent, NFTsPage, TokensPage],
   providers: [ DataService ],
   imports: [
     CommonModule,
@@ -85,7 +88,9 @@ import { DataService } from './services/data.service';
     InfiniteScrollModule,
     NzSelectModule,
     SelectCollectionModule,
-    NgChartsModule
+    NgChartsModule,
+    NzTableModule,
+    TokenClaimRefundModule
   ],
 })
 export class MemberModule {
