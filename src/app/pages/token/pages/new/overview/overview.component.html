@@ -94,7 +94,7 @@
                 <div class="flex items-center justify-between">
                     <button
                         nz-button
-                        *ngIf="(newService.links?.controls.length < newService.maxLinksCount) && last"
+                        *ngIf="((newService.links?.controls?.length || 0) < newService.maxLinksCount) && last"
                         nzType="link"
                         class="flex items-center mt-3 wen-secondary pl-0 w-max"
                         (click)="newService.addLink()"
