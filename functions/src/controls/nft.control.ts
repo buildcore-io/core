@@ -109,7 +109,8 @@ const processOneCreateNft = async(creator: string, params: Nft, collectionData: 
   }
 
   if (params.availableFrom) {
-    params.availableFrom = dateToTimestamp(params.availableFrom.toDate(), true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params.availableFrom = dateToTimestamp(<any>params.availableFrom, true);
   }
 
   if (!collectionData.availableFrom || dayjs(collectionData.availableFrom.toDate()).isAfter(dayjs(params.availableFrom?.toDate()), 'minutes')) {

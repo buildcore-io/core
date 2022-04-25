@@ -8,7 +8,7 @@ import { AwardType } from './../../interfaces/models/award';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './../../src/controls/award.control';
 import { createMember } from './../../src/controls/member.control';
 import { createSpace, joinSpace } from './../../src/controls/space.control';
-import { expectThrow } from './common';
+import { expectThrow, mockWalletReturnValue } from './common';
 
 const dummyAward = (spaceId?: string) => ({
   name: 'Award A',
@@ -26,9 +26,6 @@ const dummyAward = (spaceId?: string) => ({
 
 let walletSpy: any;
 
-const mockWalletReturn = <T,>(address: string, body: T) =>
-  walletSpy.mockReturnValue(Promise.resolve({ address: address, body }));
-
 describe('AwardController: ' + WEN_FUNC.cAward, () => {
   let memberAddress: string;
   let space: Space;
@@ -38,11 +35,11 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturn(memberAddress, {})
+    mockWalletReturnValue(walletSpy, memberAddress, {})
 
     const returns = await testEnv.wrap(createMember)(memberAddress);
     expect(returns?.uid).toEqual(memberAddress.toLowerCase());
-    mockWalletReturn(memberAddress, { name: 'Space A' })
+    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' })
 
     const wCreate = testEnv.wrap(createSpace);
     space = await wCreate({});
@@ -53,7 +50,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
   it('successfully create award with name', async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     const body = dummyAward(space.uid);
-    mockWalletReturn(memberAddress, body)
+    mockWalletReturnValue(walletSpy, memberAddress, body)
 
     const returns = await testEnv.wrap(createAward)({});
     expect(returns?.uid).toBeDefined();
@@ -74,7 +71,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     });
 
     const execute = (error: string) => {
-      mockWalletReturn(memberAddress, body)
+      mockWalletReturnValue(walletSpy, memberAddress, body)
       expectThrow(testEnv.wrap(createAward)({}), error)
       walletSpy.mockRestore();
     }
@@ -118,26 +115,26 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     beforeEach(async () => {
       walletSpy = jest.spyOn(wallet, 'decodeAuth');
       body = dummyAward(space?.uid)
-      mockWalletReturn(memberAddress, body)
+      mockWalletReturnValue(walletSpy, memberAddress, body)
       award = await testEnv.wrap(createAward)({});
       expect(award?.uid).toBeDefined();
     });
 
     it('Add owner.', async () => {
-      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid, member: memberAddress2 })
       const returns = await testEnv.wrap(addOwner)({});
       expect(returns?.uid).toBeDefined();
       walletSpy.mockRestore();
     });
 
     it('Fail to add owner - not owner', async () => {
-      mockWalletReturn(memberAddress2, { uid: award.uid, member: memberAddress3 })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid, member: memberAddress3 })
       expectThrow(testEnv.wrap(addOwner)({}), WenError.you_are_not_owner_of_the_award.key)
       walletSpy.mockRestore();
     });
 
     it('Invalid Award', async () => {
-      mockWalletReturn(memberAddress2, { uid: memberAddress3, member: memberAddress3 })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: memberAddress3, member: memberAddress3 })
       expectThrow(testEnv.wrap(addOwner)({}), WenError.award_does_not_exists.key)
       walletSpy.mockRestore();
     });
@@ -151,14 +148,14 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     beforeEach(async () => {
       walletSpy = jest.spyOn(wallet, 'decodeAuth');
       body = dummyAward(space?.uid)
-      mockWalletReturn(memberAddress, body)
+      mockWalletReturnValue(walletSpy, memberAddress, body)
 
       award = await testEnv.wrap(createAward)({});
       expect(award?.uid).toBeDefined();
 
       // Create members
       [memberAddress2, memberAddress3, memberAddress4].forEach(async (r) => {
-        mockWalletReturn(r, {})
+        mockWalletReturnValue(walletSpy, r, {})
         const returns = await testEnv.wrap(createMember)(r);
         expect(returns?.uid).toEqual(r.toLowerCase());
       });
@@ -166,17 +163,17 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
     it('Participate.', async () => {
       // Join space first.
-      mockWalletReturn(memberAddress2, { uid: space?.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: space?.uid })
 
       const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid })
 
       const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress2, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid })
 
       const returns = await testEnv.wrap(participate)({});
       expect(returns?.uid).toBeDefined();
@@ -185,74 +182,74 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
     it('Unable to participate, not approved.', async () => {
       // Join space first.
-      mockWalletReturn(memberAddress2, { uid: space?.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: space?.uid })
 
       const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress2, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid })
 
       expectThrow(testEnv.wrap(participate)({}), WenError.award_is_not_approved.key)
     });
 
     it('Unable to participate, rejected.', async () => {
       // Join space first.
-      mockWalletReturn(memberAddress2, { uid: space?.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: space?.uid })
 
       const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid })
 
       const approved = await testEnv.wrap(rejectAward)({});
       expect(approved?.uid).toBeDefined();
       expect(approved?.rejected).toEqual(true);
 
-      mockWalletReturn(memberAddress2, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid })
       expectThrow(testEnv.wrap(participate)({}), WenError.award_is_rejected.key)
     });
 
     it('Fail to participate. Must be within the space.', async () => {
-      mockWalletReturn(memberAddress, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid })
 
       const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      mockWalletReturn(wallet.getRandomEthAddress(), { uid: award.uid })
+      mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { uid: award.uid })
 
       expectThrow(testEnv.wrap(participate)({}), WenError.you_are_not_part_of_the_space.key)
     });
 
     it('Already participant', async () => {
       // Join space first.
-      mockWalletReturn(memberAddress2, { uid: space?.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: space?.uid })
 
       const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid })
 
       const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress2, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid })
 
       const returns = await testEnv.wrap(participate)({});
       expect(returns?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress2, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid })
 
       expectThrow(testEnv.wrap(participate)({}), WenError.member_is_already_participant_of_space.key)
       walletSpy.mockRestore();
     });
 
     it('Invalid Award', async () => {
-      mockWalletReturn(memberAddress, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid })
 
       const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress2, { uid: memberAddress3 })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: memberAddress3 })
 
       expectThrow(testEnv.wrap(participate)({}), WenError.award_does_not_exists.key)
       walletSpy.mockRestore();
@@ -260,21 +257,21 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
     it('Participate and assign badge', async () => {
       // Join space first.
-      mockWalletReturn(memberAddress2, { uid: space?.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: space?.uid })
 
       const returns3 = await testEnv.wrap(joinSpace)({});
       expect(returns3?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid })
 
       const approved = await testEnv.wrap(approveAward)({});
       expect(approved?.uid).toBeDefined();
 
-      mockWalletReturn(memberAddress2, { uid: award.uid })
+      mockWalletReturnValue(walletSpy, memberAddress2, { uid: award.uid })
 
       const returns = await testEnv.wrap(participate)({});
       expect(returns?.uid).toBeDefined();
-      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid, member: memberAddress2 })
 
       const returns2 = await testEnv.wrap(approveParticipant)({});
       expect(returns2?.uid).toBeDefined();
@@ -286,7 +283,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     });
 
     it('Assign badge without being participant', async () => {
-      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid, member: memberAddress2 })
 
       const returns2 = await testEnv.wrap(approveParticipant)({});
       expect(returns2?.uid).toBeDefined();
@@ -299,7 +296,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
 
     it('Failed to assign badge since its consumed', async () => {
       // First badge.
-      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress2 })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid, member: memberAddress2 })
 
       const returns2 = await testEnv.wrap(approveParticipant)({});
       expect(returns2?.uid).toBeDefined();
@@ -307,7 +304,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       expect(returns2?.payload.award).toEqual(award.uid);
 
       // Second badge.
-      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress3 })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid, member: memberAddress3 })
 
       const returns3 = await testEnv.wrap(approveParticipant)({});
       expect(returns3?.uid).toBeDefined();
@@ -315,7 +312,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
       expect(returns3?.payload.award).toEqual(award.uid);
 
       // Fails no enoguh.
-      mockWalletReturn(memberAddress, { uid: award.uid, member: memberAddress4 })
+      mockWalletReturnValue(walletSpy, memberAddress, { uid: award.uid, member: memberAddress4 })
 
       // TODO Fix this.
       try {
