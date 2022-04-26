@@ -1,6 +1,7 @@
 import { Member, Transaction } from '../../../interfaces/models';
 import { Nft } from '../../../interfaces/models/nft';
 import { Notification, NotificationType } from "../../../interfaces/models/notification";
+import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { serverTime } from '../../utils/dateTime.utils';
 import { getRandomEthAddress } from '../../utils/wallet.utils';
 
@@ -11,7 +12,7 @@ export class NotificationService {
       type: NotificationType.NEW_BID,
       member: nft.owner,
       params: {
-        amount: tran.payload.amount,
+        amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
         member: {
           name: member.name || member.uid
         },
@@ -30,7 +31,7 @@ export class NotificationService {
       type: NotificationType.WIN_BID,
       member: member.uid,
       params: {
-        amount: tran.payload.amount,
+        amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
         member: {
           name: member.name || member.uid
         },
@@ -49,7 +50,7 @@ export class NotificationService {
       type: NotificationType.LOST_BID,
       member: member.uid,
       params: {
-        amount: tran.payload.amount,
+        amount: (<OrderPayBillCreditTransaction>tran.payload).amount,
         member: {
           name: member.name || member.uid
         },

@@ -1,14 +1,14 @@
-import * as functions from 'firebase-functions';
 import { WEN_FUNC } from '../interfaces/functions';
+import { isProdEnv } from './utils/config.utils';
 
-export const low = (functions.config()?.environment?.type === 'prod') ? 1 : 1;
-export const medium = (functions.config()?.environment?.type === 'prod') ? 3 : 2;
-export const important = (functions.config()?.environment?.type === 'prod') ? 6 : 2;
-export const pump = (functions.config()?.environment?.type === 'prod') ? 9 : 2;
-export const superPump = (functions.config()?.environment?.type === 'prod') ? 40 : 2;
+export const low = 1;
+export const medium = isProdEnv ? 3 : 2;
+export const important = isProdEnv ? 6 : 2;
+export const pump = isProdEnv ? 9 : 2;
+export const superPump = isProdEnv ? 40 : 2;
 
 export function scale(func: WEN_FUNC): number {
-  const scaleSettings: any = {};
+  const scaleSettings = {} as { [key: string]: number };
   scaleSettings[WEN_FUNC.cMemberNotExists] = important;
   scaleSettings[WEN_FUNC.uMember] = medium;
 

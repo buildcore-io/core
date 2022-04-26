@@ -10,8 +10,8 @@ import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 
 export interface AddressDetails {
   bech32: string;
-  keyPair: IKeyPair,
-  hex: string,
+  keyPair: IKeyPair;
+  hex: string;
   mnemonic: string;
 }
 
@@ -70,8 +70,8 @@ export class WalletService {
   }
 
   public async reattach(messageId: string): Promise<{
-      message: IMessage;
-      messageId: string;
+    message: IMessage;
+    messageId: string;
   }> {
     return reattach(this.client, messageId);
   }
@@ -103,7 +103,7 @@ export class WalletService {
       mnemonic: mnemonic,
       keyPair: genesisWalletKeyPair,
       hex: genesisWalletAddressHex,
-      bech32: Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, genesisWalletAddress, this.nodeInfo!.bech32HRP)
+      bech32: Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, genesisWalletAddress, this.nodeInfo?.bech32HRP!)
     };
   }
 
@@ -112,9 +112,8 @@ export class WalletService {
       await this.init();
     }
 
-    const decodeBench32Target = Bech32Helper.fromBech32(address, this.nodeInfo!.bech32HRP);
-    const newAddressHex = Converter.bytesToHex(decodeBench32Target!.addressBytes);
-    return newAddressHex;
+    const decodeBench32Target = Bech32Helper.fromBech32(address, this.nodeInfo?.bech32HRP!);
+    return Converter.bytesToHex(decodeBench32Target?.addressBytes!)
   }
 
   public async sendFromGenesis(fromAddress: AddressDetails, toAddress: string, amount: number, data: string): Promise<string> {
@@ -126,29 +125,29 @@ export class WalletService {
     const inputsWithKeyPairs: Input[] = [];
     let totalGenesis = 0;
     for (let i = 0; i < genesisAddressOutputs.outputIds.length; i++) {
-        const output = await this.client.output(genesisAddressOutputs.outputIds[i]);
-        if (!output.isSpent) {
-            inputsWithKeyPairs.push({
-                input: {
-                    type: UTXO_INPUT_TYPE,
-                    transactionId: output.transactionId,
-                    transactionOutputIndex: output.outputIndex
-                },
-                addressKeyPair: fromAddress.keyPair
-            });
-            if (output.output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
-                totalGenesis += (output.output as ISigLockedSingleOutput).amount;
-            }
+      const output = await this.client.output(genesisAddressOutputs.outputIds[i]);
+      if (!output.isSpent) {
+        inputsWithKeyPairs.push({
+          input: {
+            type: UTXO_INPUT_TYPE,
+            transactionId: output.transactionId,
+            transactionOutputIndex: output.outputIndex
+          },
+          addressKeyPair: fromAddress.keyPair
+        });
+        if (output.output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
+          totalGenesis += (output.output as ISigLockedSingleOutput).amount;
         }
+      }
     }
 
     const outputs: Output[] = [
-        // This is the transfer to the new address
-        {
-            address: await this.convertAddressToHex(toAddress),
-            addressType: ED25519_ADDRESS_TYPE,
-            amount: amount
-        }
+      // This is the transfer to the new address
+      {
+        address: await this.convertAddressToHex(toAddress),
+        addressType: ED25519_ADDRESS_TYPE,
+        amount: amount
+      }
     ];
     const reminder: number = totalGenesis - amount;
     if (reminder > 0) {
@@ -161,8 +160,8 @@ export class WalletService {
     }
 
     const { messageId } = await sendAdvanced(this.client, inputsWithKeyPairs, outputs, {
-        key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
-        data: Converter.utf8ToBytes(data)
+      key: Converter.utf8ToBytes(KEY_NAME_TANGLE),
+      data: Converter.utf8ToBytes(data)
     });
 
     return messageId;

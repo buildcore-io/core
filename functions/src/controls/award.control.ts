@@ -5,9 +5,8 @@ import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
 import { merge, round } from 'lodash';
 import { URL_PATHS } from '../../interfaces/config';
-import { WEN_FUNC } from '../../interfaces/functions';
-import { DecodedToken } from '../../interfaces/functions/index';
-import { COL, SUB_COL } from '../../interfaces/models/base';
+import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions';
+import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
@@ -17,15 +16,13 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { WenError } from './../../interfaces/errors';
-import { StandardResponse } from './../../interfaces/functions/index';
 import { Award, AwardType } from './../../interfaces/models/award';
-import { WenRequest } from './../../interfaces/models/base';
 import { Transaction, TransactionType } from './../../interfaces/models/transaction';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): Award {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<Award>(), {
     name: Joi.string().required(),
     description: Joi.string().allow(null, '').optional(),
     type: Joi.number().equal(AwardType.PARTICIPATE_AND_APPROVE).required(),
@@ -63,7 +60,7 @@ function defaultJoiUpdateCreateSchema(): Award {
 
 export const createAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.cAward),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Award> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Award> => {
   appCheck(WEN_FUNC.cAward, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -93,7 +90,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
       throw throwInvalidArgument(WenError.ntt_does_not_exists);
     }
 
-    if (doc.data()!.available !== true) {
+    if (doc.data()?.available !== true) {
       throw throwInvalidArgument(WenError.ntt_is_no_longer_available);
     }
   }
@@ -138,7 +135,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
 
 export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.addOwnerAward),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addOwnerAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -181,7 +178,7 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
 
 export const approveAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.aAward),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -222,7 +219,7 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
 
 export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.rAward),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -267,7 +264,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
 
 export const participate: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.participateAward),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.participateAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -331,7 +328,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
 
 export const approveParticipant: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.aParticipantAward),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aParticipantAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -366,7 +363,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const participant: admin.firestore.DocumentReference = await refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member);
+  const participant: admin.firestore.DocumentReference = refAward.collection(SUB_COL.PARTICIPANTS).doc(params.body.member);
   const participantRec: DocumentSnapshotType = await participant.get();
   if (params.body) {
     // Member might not be participant of the space, that's fine. we just need to add him.
@@ -380,7 +377,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     }
 
     // Increase count via transaction.
-    await admin.firestore().runTransaction(async (transaction) => {
+    await admin.firestore().runTransaction(async(transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refAward);
       const newCount = (sfDoc.data().issued || 0) + 1;
       transaction.update(refAward, {
@@ -419,11 +416,11 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     // - We need to track it per space as well.
     // - We need to track on space who they have alliance with and use that to determine which XP/awards to pick
     const refMember: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
-    await admin.firestore().runTransaction(async (transaction) => {
+    await admin.firestore().runTransaction(async(transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refMember);
       const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
       const totalReputation = (sfDoc.data().totalReputation || 0) + xp;
-      const finalObj: any = {
+      const finalObj = {
         ...sfDoc.data(),
         ...{
           awardsCompleted: awardsCompleted,

@@ -202,7 +202,7 @@ export class NftBidComponent implements OnInit {
     }
   }
 
-  public formatBest(amount: number | undefined): string {
+  public formatBest(amount: number | undefined | null): string {
     if (!amount) {
       return '';
     }

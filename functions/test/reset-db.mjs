@@ -1,8 +1,8 @@
-import fetch from 'node-fetch';
+import test from 'firebase-functions-test';
 
 export default async () => {
   console.log('Resetting DB...');
-  return fetch('http://localhost:8080/emulator/v1/projects/soonaverse/databases/(default)/documents', {
-        method: 'DELETE'
-  })
+  test({ projectId: 'soonaverse-dev' }).firestore.clearFirestoreData(
+    'soonaverse-dev',
+  );
 };
