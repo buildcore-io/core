@@ -381,7 +381,7 @@ describe('Ordering flows', () => {
     }
   });
 
-  it.skip('One collection, generated NFT, over pay + credit should go back', async () => {
+  it('One collection, generated NFT, over pay + credit should go back', async () => {
     const validationOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
@@ -424,7 +424,7 @@ describe('Ordering flows', () => {
     expect(c).toBe(2);
   });
 
-  it.skip('One collection, generated NFT, pay + validate bill / royalty', async () => {
+  it('One collection, generated NFT, pay + validate bill / royalty', async () => {
     const validationOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
@@ -462,6 +462,7 @@ describe('Ordering flows', () => {
     expect(c).toBe(2);
   });
 
+  // TODO
   it.skip('One collection, generated NFT, order and expect transaction to be voided. (cron test)', async () => {
     const validationOrder = await validateSpaceAddressFunc(member.uid, space.uid);
     const nextMilestone = await submitMilestoneFunc(validationOrder.payload.targetAddress, validationOrder.payload.amount);
