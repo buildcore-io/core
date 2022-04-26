@@ -9,18 +9,16 @@ jobs:
     defaults:
       run:
         working-directory: functions
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: '14'
-      - run: echo $FIREBASE_TOKEN
-      - run: echo ${{ secrets.FIREBASE_DEV_TOKEN }}
       - run: npm install
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
       - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test --ci --forceExit" --project default
-        env:
-            FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
 
