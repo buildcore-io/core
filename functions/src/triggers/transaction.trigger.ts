@@ -1,7 +1,5 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { Change } from "firebase-functions";
-import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { BillPaymentTransaction, CreditPaymentTransaction, IOTATangleTransaction, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
@@ -12,19 +10,19 @@ import { WalletService } from "../services/wallet/wallet";
 import { serverTime } from "../utils/dateTime.utils";
 
 // Listen for changes in all documents in the 'users' collection
-export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
+export const transactionWrite = functions.runWith({
   timeoutSeconds: 540,
   minInstances: superPump,
   memory: "512MB",
-}).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async(change) => {
-  const newValue: Transaction = <Transaction>change.after.data();
+}).firestore.document(COL.TRANSACTION + '/{tranId}').onUpdate(async (change) => {
+  const newValue = <Transaction>change.after.data();
   const WALLET_PAY_IN_PROGRESS = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
   if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
     return;
   }
 
   // Let's wrap this into a transaction.
-  await admin.firestore().runTransaction(async(transaction) => {
+  await admin.firestore().runTransaction(async (transaction) => {
     const refSource = admin.firestore().collection(COL.TRANSACTION).doc(newValue.uid);
     const sfDoc = await transaction.get(refSource);
     if (!sfDoc.data()) {
@@ -143,7 +141,7 @@ export const transactionWrite: functions.CloudFunction<Change<DocumentSnapshot>>
   }
 
   // Update transaction with payment info.
-  await admin.firestore().runTransaction(async(transaction) => {
+  await admin.firestore().runTransaction(async (transaction) => {
     const refSource = admin.firestore().collection(COL.TRANSACTION).doc(newValue.uid);
     const sfDoc = await transaction.get(refSource);
     if (!sfDoc.data()) {

@@ -3,51 +3,41 @@ import { WEN_FUNC } from "../../interfaces/functions";
 import { createMember, updateMember } from '../../src/controls/member.control';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../../test/set-up';
+import { expectThrow, mockWalletReturnValue } from "./common";
+
+let walletSpy: any;
 
 describe('MemberController: ' + WEN_FUNC.cMemberNotExists, () => {
   it('successfully create member', async () => {
     const dummyAddress = wallet.getRandomEthAddress();
-    const walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: {}
-    }));
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    mockWalletReturnValue(walletSpy, dummyAddress, {})
 
-    const wrapped: any = testEnv.wrap(createMember);
-    const returns = await wrapped(dummyAddress);
-    expect(returns?.uid).toEqual(dummyAddress.toLowerCase());
-    expect(returns?.createdOn).toBeDefined();
-    expect(returns?.updatedOn).toBeDefined();
+    const member = await testEnv.wrap(createMember)(dummyAddress);
+    expect(member?.uid).toEqual(dummyAddress.toLowerCase());
+    expect(member?.createdOn).toBeDefined();
+    expect(member?.updatedOn).toBeDefined();
     walletSpy.mockRestore();
   });
 
   it('address not provided', async () => {
-    const wrapped: any = testEnv.wrap(createMember);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.address_must_be_provided.key);
+    expectThrow(testEnv.wrap(createMember)({}), WenError.address_must_be_provided.key)
   });
 });
 
 describe('MemberController: ' + WEN_FUNC.uMember, () => {
-  let walletSpy: any;
   let dummyAddress: any;
   let doc: any;
 
   beforeEach(async () => {
     dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: {}
-    }));
-
-    const wCreate: any = testEnv.wrap(createMember);
-    doc = await wCreate(dummyAddress);
+    mockWalletReturnValue(walletSpy, dummyAddress, {})
+    doc = await testEnv.wrap(createMember)(dummyAddress);
     expect(doc?.uid).toEqual(dummyAddress.toLowerCase());
   });
 
   it('successfully update member', async () => {
-    // Let's go ahead and update the member.
-    const wUpdate: any = testEnv.wrap(updateMember);
     const updateParams = {
       uid: dummyAddress,
       name: 'abc' + Math.floor(Math.random() * 1000),
@@ -56,72 +46,36 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
       twitter: 'asdasd',
       github: 'asdasda'
     };
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: updateParams
-    }));
-    const doc2: any = await wUpdate();
-    expect(doc2?.name).toEqual(updateParams.name);
-    expect(doc2?.about).toEqual('He rocks');
-    expect(doc2?.discord).toEqual(updateParams.discord);
-    expect(doc2?.twitter).toEqual(updateParams.twitter);
-    expect(doc2?.github).toEqual(updateParams.github);
-
+    mockWalletReturnValue(walletSpy, dummyAddress, updateParams)
+    const uMember: any = await testEnv.wrap(updateMember)({});
+    expect(uMember?.name).toEqual(updateParams.name);
+    expect(uMember?.about).toEqual('He rocks');
+    expect(uMember?.discord).toEqual(updateParams.discord);
+    expect(uMember?.twitter).toEqual(updateParams.twitter);
+    expect(uMember?.github).toEqual(updateParams.github);
     walletSpy.mockRestore();
   });
 
   it('fail to update member username exists already', async () => {
-    // Let's go ahead and update the member.
-    const wUpdate: any = testEnv.wrap(updateMember);
-    const updateParams = {
-      uid: dummyAddress,
-      name: 'abcd' + Math.floor(Math.random() * 1000),
-    };
+    const updateParams = { uid: dummyAddress, name: 'abcd' + Math.floor(Math.random() * 1000) };
+    mockWalletReturnValue(walletSpy, dummyAddress, updateParams);
+    const uMember = await testEnv.wrap(updateMember)({});
+    expect(uMember?.name).toEqual(updateParams.name);
 
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: updateParams
-    }));
-    const doc2: any = await wUpdate();
-    expect(doc2?.name).toEqual(updateParams.name);
-
-    // Create another member.
     const dummyAddress2 = wallet.getRandomEthAddress();
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress2,
-      body: {}
-    }));
+    mockWalletReturnValue(walletSpy, dummyAddress2, {});
+    const cMember = await testEnv.wrap(createMember)(dummyAddress2);
+    expect(cMember?.uid).toEqual(dummyAddress2.toLowerCase());
 
-    const wrapped: any = testEnv.wrap(createMember);
-    const returns = await wrapped(dummyAddress2);
-    expect(returns?.uid).toEqual(dummyAddress2.toLowerCase());
-
-    const updateParams2 = {
-      uid: dummyAddress2,
-      name: updateParams.name,
-    };
-
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress2,
-      body: updateParams2
-    }));
-    (<any>expect(wUpdate())).rejects.toThrowError(WenError.member_username_exists.key);
-    walletSpy.mockRestore();
+    mockWalletReturnValue(walletSpy, dummyAddress2, { uid: dummyAddress2, name: updateParams.name, })
+    expectThrow(testEnv.wrap(updateMember)({}), WenError.member_username_exists.key)
   });
 
   it('unset discord', async () => {
-    // Let's go ahead and update the member.
-    const wUpdate: any = testEnv.wrap(updateMember);
-    const updateParams = {
-      uid: dummyAddress,
-      discord: undefined
-    };
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: updateParams
-    }));
-    const doc2: any = await wUpdate();
-    expect(doc2?.discord).toEqual(null);
+    const updateParams = { uid: dummyAddress, discord: undefined };
+    mockWalletReturnValue(walletSpy, dummyAddress, updateParams)
+    const uMember = await testEnv.wrap(updateMember)({});
+    expect(uMember?.discord).toEqual(null);
     walletSpy.mockRestore();
   });
 });

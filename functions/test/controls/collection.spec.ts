@@ -2,7 +2,7 @@ import chance from 'chance';
 import dayjs from "dayjs";
 import * as admin from 'firebase-admin';
 import { WEN_FUNC } from "../../interfaces/functions";
-import { TransactionOrderType, TransactionType } from "../../interfaces/models";
+import { Member, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { Categories, CollectionAccess, CollectionType } from "../../interfaces/models/collection";
 import { serverTime } from "../../src/utils/dateTime.utils";
@@ -13,267 +13,145 @@ import { approveCollection, createCollection, rejectCollection, updateCollection
 import { createMember } from './../../src/controls/member.control';
 import { validateAddress } from './../../src/controls/order.control';
 import { createSpace } from './../../src/controls/space.control';
+import { expectThrow, milestoneProcessed, mockWalletReturnValue } from './common';
 
-const db = admin.firestore();
+let walletSpy: any;
+
+const createMilestone = async (order: Transaction) => {
+  const allMil = await admin.firestore().collection(COL.MILESTONE).get();
+  const nextMilestone = (allMil.size + 1).toString();
+  const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
+  const iotaAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
+  const transaction = {
+    createdOn: serverTime(),
+    messageId: 'mes-' + defTranId,
+    inputs: [{ address: iotaAddress, amount: 123 }],
+    outputs: [{ address: order.payload.targetAddress, amount: order.payload.amount }]
+  }
+  await admin.firestore().doc(`${COL.MILESTONE}/${nextMilestone}/${SUB_COL.TRANSACTIONS}/${defTranId}`).set(transaction);
+  await milestoneProcessed(nextMilestone, defTranId);
+}
+
+const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
+  name: 'Collection A',
+  description: 'babba',
+  type: CollectionType.CLASSIC,
+  category: Categories.ART,
+  access: CollectionAccess.OPEN,
+  royaltiesFee,
+  space: spaceId,
+  royaltiesSpace: spaceId,
+  onePerMemberOnly: false,
+  availableFrom: dayjs().add(1, 'hour').toDate(),
+  price: 10 * 1000 * 1000
+})
 
 describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
-  let walletSpy: any;
-  let dummyAddress: any;
+  let dummyAddress: string;
   let space: any;
-  let member: any;
+  let member: Member;
 
   beforeEach(async () => {
     dummyAddress = wallet.getRandomEthAddress();
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: {}
-    }));
+    mockWalletReturnValue(walletSpy, dummyAddress, {})
 
-    const wCreate: any = testEnv.wrap(createMember);
-    member = await wCreate(dummyAddress);
+    member = await testEnv.wrap(createMember)(dummyAddress);
     expect(member?.uid).toEqual(dummyAddress.toLowerCase());
 
-    const wrappedSpace: any = testEnv.wrap(createSpace);
-    space = await wrappedSpace();
+    space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
 
-    // We must validate space address.
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: {
-        space: space!.uid
-      }
-    }));
-    const wrappedOrder: any = testEnv.wrap(validateAddress);
-    const order: any = await wrappedOrder();
+    mockWalletReturnValue(walletSpy, dummyAddress, { space: space!.uid })
+    const order: Transaction = await testEnv.wrap(validateAddress)({});
     expect(order?.type).toBe(TransactionType.ORDER);
     expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
 
-    // Create milestone to process my validation.
-    const allMil = await db.collection(COL.MILESTONE).get();
-    const nextMilestone = (allMil.size + 1).toString();
-    const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-    const iotaAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-    await db.collection(COL.MILESTONE).doc(nextMilestone)
-    .collection('transactions').doc(defTranId)
-    .set({
-      createdOn: serverTime(),
-      messageId: 'mes-' + defTranId,
-      inputs: [{
-        address: iotaAddress,
-        amount: 123
-      }],
-      outputs: [{
-        address: order.payload.targetAddress,
-        amount: order.payload.amount
-      }]
-    });
-
-    const milestoneProcessed: any = async () => {
-      let processed: any = false;
-      for (let attempt = 0; attempt < 400; ++attempt) {
-          if (attempt > 0) {
-            await new Promise((r) => setTimeout(r, 500));
-          }
-          try {
-            const unsub: any = await db.collection(COL.MILESTONE).doc(nextMilestone).collection(SUB_COL.TRANSACTIONS).doc(defTranId).onSnapshot(async (snap: any) => {
-              if (snap.data().processed === true) {
-                processed = true;
-              }
-              unsub();
-            });
-            if (!processed) {
-              throw new Error();
-            }
-            return; // It worked
-          } catch {
-            // none.
-          }
-      }
-      // Out of retries
-      throw new Error("Milestone was not processed.");
-    }
-
-    await milestoneProcessed();
+    await createMilestone(order)
   });
 
-  const cSpaceHelper = (params: any) => {
-    walletSpy.mockReturnValue(Promise.resolve({
-      address: dummyAddress,
-      body: params
-    }));
-  }
   it('successfully create collection', async () => {
-    cSpaceHelper({
-      name: 'Collection A',
-      description: 'babba',
-      type: CollectionType.CLASSIC,
-      category: Categories.ART,
-      access: CollectionAccess.OPEN,
-      royaltiesFee: 0.6,
-      space: space.uid,
-      royaltiesSpace: space.uid,
-      onePerMemberOnly: false,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
-    });
-
-    const wrapped: any = testEnv.wrap(createCollection);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    expect(returns?.createdOn).toBeDefined();
-    expect(returns?.approved).toBe(false);
-    expect(returns?.rejected).toBe(false);
-    expect(returns?.updatedOn).toBeDefined();
-    expect(returns?.total).toBe(0);
-    expect(returns?.sold).toBe(0);
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    const collection = await testEnv.wrap(createCollection)({});
+    expect(collection?.uid).toBeDefined();
+    expect(collection?.createdOn).toBeDefined();
+    expect(collection?.approved).toBe(false);
+    expect(collection?.rejected).toBe(false);
+    expect(collection?.updatedOn).toBeDefined();
+    expect(collection?.total).toBe(0);
+    expect(collection?.sold).toBe(0);
     walletSpy.mockRestore();
   });
 
   it('fail to create collection - wrong royalties', async () => {
-    cSpaceHelper({
-      name: 'Collection A',
-      description: 'babba',
-      royaltiesFee: 4,
-      space: space.uid,
-      type: CollectionType.CLASSIC,
-      category: Categories.ART,
-      access: CollectionAccess.OPEN,
-      onePerMemberOnly: false,
-      royaltiesSpace: space.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
-    });
-    const wrapped: any = testEnv.wrap(createCollection);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 4));
+    expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key)
     walletSpy.mockRestore();
   });
 
   it('fail to create collection - missing royalties space', async () => {
-    cSpaceHelper({
-      name: 'Collection A',
-      description: 'babba',
-      royaltiesFee: 0.1,
-      type: CollectionType.CLASSIC,
-      category: Categories.ART,
-      access: CollectionAccess.OPEN,
-      onePerMemberOnly: false,
-      space: space.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
-    });
-    const wrapped: any = testEnv.wrap(createCollection);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.invalid_params.key);
-
+    const collection = dummyCollection(space.uid, 0.1)
+    delete collection.royaltiesSpace
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
+    expectThrow(testEnv.wrap(createCollection)({}), WenError.invalid_params.key)
     walletSpy.mockRestore();
   });
 
   it('collection does not exists for update', async () => {
-    cSpaceHelper({
+    mockWalletReturnValue(walletSpy, dummyAddress, {
       uid: wallet.getRandomEthAddress(),
       name: 'Collection A',
       description: 'babba',
       royaltiesFee: 0.6,
       royaltiesSpace: space.uid
     });
-    const wrapped: any = testEnv.wrap(updateCollection);
-    (<any>expect(wrapped())).rejects.toThrowError(WenError.collection_does_not_exists.key);
-
+    expectThrow(testEnv.wrap(updateCollection)({}), WenError.collection_does_not_exists.key)
     walletSpy.mockRestore();
   });
 
   it('successfully create collection & update', async () => {
-    cSpaceHelper({
-      name: 'Collection A',
-      description: 'babba',
-      royaltiesFee: 0.6,
-      type: CollectionType.CLASSIC,
-      category: Categories.ART,
-      access: CollectionAccess.OPEN,
-      onePerMemberOnly: false,
-      space: space.uid,
-      royaltiesSpace: space.uid,
-      availableFrom: dayjs().add(1, 'week').toDate(),
-      price: 10 * 1000 * 1000
-    });
+    const collection = dummyCollection(space.uid, 0.6)
+    mockWalletReturnValue(walletSpy, dummyAddress, collection);
 
-    const wrapped: any = testEnv.wrap(createCollection);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    expect(returns?.description).toBe('babba');
+    const cCollection = await testEnv.wrap(createCollection)({});
+    expect(cCollection?.uid).toBeDefined();
+    expect(cCollection?.description).toBe('babba');
 
-    cSpaceHelper({
-      uid: returns?.uid,
+    mockWalletReturnValue(walletSpy, dummyAddress, {
+      uid: cCollection?.uid,
       name: 'Collection A',
       description: '123',
       royaltiesFee: 0.6,
       royaltiesSpace: space.uid
     });
-    const wrapped2: any = testEnv.wrap(updateCollection);
-    const returns2 = await wrapped2();
-    expect(returns2?.uid).toBeDefined();
-    expect(returns2?.description).toBe('123');
+    const uCollection = await testEnv.wrap(updateCollection)({});
+    expect(uCollection?.uid).toBeDefined();
+    expect(uCollection?.description).toBe('123');
     walletSpy.mockRestore();
   });
 
   it('successfully create collection & approve', async () => {
-    cSpaceHelper({
-      name: 'Collection A',
-      description: 'babba',
-      category: Categories.ART,
-      royaltiesFee: 0.6,
-      type: CollectionType.CLASSIC,
-      access: CollectionAccess.OPEN,
-      onePerMemberOnly: false,
-      space: space.uid,
-      royaltiesSpace: space.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
-    });
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    const cCollection = await testEnv.wrap(createCollection)({});
+    expect(cCollection?.uid).toBeDefined();
+    expect(cCollection?.description).toBe('babba');
 
-    const wrapped: any = testEnv.wrap(createCollection);
-    const returns = await wrapped();
-    expect(returns?.uid).toBeDefined();
-    expect(returns?.description).toBe('babba');
-
-    cSpaceHelper({
-      uid: returns?.uid,
-    });
-    const wrapped2: any = testEnv.wrap(approveCollection);
-    const returns2 = await wrapped2();
-    expect(returns2?.uid).toBeDefined();
-    expect(returns2?.approved).toBe(true);
-    expect(returns2?.rejected).toBe(false);
+    mockWalletReturnValue(walletSpy, dummyAddress, { uid: cCollection?.uid, });
+    const uCollection = await testEnv.wrap(approveCollection)({});
+    expect(uCollection?.uid).toBeDefined();
+    expect(uCollection?.approved).toBe(true);
+    expect(uCollection?.rejected).toBe(false);
     walletSpy.mockRestore();
   });
 
   it('successfully create collection & reject', async () => {
-    cSpaceHelper({
-      name: 'Collection A',
-      description: 'babba',
-      category: Categories.ART,
-      royaltiesFee: 0.6,
-      type: CollectionType.CLASSIC,
-      access: CollectionAccess.OPEN,
-      onePerMemberOnly: false,
-      space: space.uid,
-      royaltiesSpace: space.uid,
-      availableFrom: dayjs().add(1, 'hour').toDate(),
-      price: 10 * 1000 * 1000
-    });
-
-    const wrapped: any = testEnv.wrap(createCollection);
-    const returns = await wrapped();
+    mockWalletReturnValue(walletSpy, dummyAddress, dummyCollection(space.uid, 0.6));
+    const returns = await testEnv.wrap(createCollection)({});
     expect(returns?.uid).toBeDefined();
     expect(returns?.description).toBe('babba');
 
-    cSpaceHelper({
-      uid: returns?.uid,
-    });
-    const wrapped2: any = testEnv.wrap(rejectCollection);
-    const returns2 = await wrapped2();
+    mockWalletReturnValue(walletSpy, dummyAddress, { uid: returns?.uid });
+    const returns2 = await testEnv.wrap(rejectCollection)({});
     expect(returns2?.uid).toBeDefined();
     expect(returns2?.approved).toBe(false);
     expect(returns2?.rejected).toBe(true);
