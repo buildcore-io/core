@@ -143,7 +143,8 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
       availableFrom: this.availableFromControl.value,
       price: this.getRawPrice(this.priceControl.value, this.unitControl.value),
       access: this.selectedAccessControl.value,
-      accessMembers: this.buyerControl.value
+      accessMembers: this.buyerControl.value,
+      close: true
     });
   }
 

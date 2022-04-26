@@ -28,6 +28,7 @@ export interface UpdateEvent {
   price?: number|null;
   auctionFloorPrice?: number|null;
   auctionLength?: number|null;
+  close?: boolean;
 }
 
 @UntilDestroy()
@@ -136,15 +137,20 @@ export class NftSaleComponent {
     // TODO Or if it's coplete reset.
     if (e.type === SaleType.NOT_FOR_SALE && this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs())) {
       e = {
-        type: SaleType.NOT_FOR_SALE
+        type: SaleType.NOT_FOR_SALE,
+        close: true
       };
     }
 
     e.nft = this.nft?.uid;
     delete e.type;
+    const close = e.close;
+    delete e.close;
     await this.auth.sign(e, (sc, finish) => {
       this.notification.processRequest(this.nftApi.setForSaleNft(sc), 'Submitted.', finish).subscribe(() => {
-        this.close();
+        if (close) {
+          this.close();
+        }
       });
     });
   }
