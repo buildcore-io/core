@@ -1,16 +1,9 @@
 <nz-card i18n-nzTitle nzTitle="My purchased tokens">
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Janurary 1st, 2022</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">50</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">January 10th, 2022</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">60</p>
-    </div>
-    <div class="wen-description-item bg-tags-available dark:bg-tags-available-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Total</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">110</p>
-    </div>
+    <wen-description [items]="[
+        { title: 'Janurary 1st, 2022', value: '50' },
+        { title: 'January 10th, 2022', value: '60' },
+        { title: 'Total', value: '110', backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+    ]"></wen-description>
 
     <div class="w-full flex justify-end">
         <button class="wen-secondary ml-auto" nz-button nzType="link" nzSize="default">
@@ -63,67 +56,40 @@
 </nz-card>
 
 <nz-card i18n-nzTitle nzTitle="Schedule">
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Sale starts</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10:00 AM, January 1st, 2022</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Sale ends</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10:00 AM, January 31st, 2022</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
-            Cooldown Period Lenght
-
-            <wen-icon-question-circle class="ml-2 cursor-help" [size]="20"
-                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
-        </span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">24 h</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Cooldown Period Ends</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10:01 AM, February 1st, 2022</p>
-    </div>
+    <wen-description type="card" i18n-title title="Schedule" [items]="[
+        { title: 'Sale starts', value: '10:00 AM, January 1st, 2022' },
+        { title: 'Sale ends', value: '10:00 AM, January 31st, 2022' },
+        { title: 'Cooldown Period Length', value: '24h', titleTemplate: cooldownTooltipIcon },
+        { title: 'Cooldown Period Ends', value: '10:01 AM, February 1st, 2022' }
+    ]"></wen-description>
+    <ng-template #cooldownTooltipIcon>
+        <wen-icon-question-circle class="cursor-help" [size]="20"
+            nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
+    </ng-template>
 </nz-card>
 
+
 <nz-card i18n-nzTitle nzTitle="Token Info">
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Icon</span>
+    <wen-description [items]="[
+        { title: 'Icon', valueTemplate: tokenAvatar },
+        { title: 'Name', value: 'Soonlabs Token' },
+        { title: 'Symbol', value: 'SOON' },
+        { title: 'Price', value: '1 SOON = 1 MIOTA' },
+        { title: 'Network', value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
+        { title: 'Total supply', value: '10 000 000' },
+        { title: 'Type', value: 'Dynamic' }
+    ]"></wen-description>
+    <ng-template #tokenAvatar>
         <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
             class="border-2 border-tags-border dark:border-tags-borde-dark min-w-8"
             nzShape="circle"
             [nzSize]="32">
         </nz-avatar>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Name</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">Soonlabs Token</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Symbol</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">SOON</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Price</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">1 SOON = 1 MIOTA</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
-            Network
-
-            <wen-icon-question-circle class="ml-2 cursor-help" [size]="20"
-                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
-        </span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">Shimmer comming</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Total supply</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">10 000 000</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">Type</span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">Dynamic</p>
-    </div>
+    </ng-template>
+    <ng-template #networkTooltipIcon>
+        <wen-icon-question-circle class="cursor-help" [size]="20"
+            nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
+    </ng-template>
 </nz-card>
 
 <nz-card i18n-nzTitle nzTitle="Related Links" *ngIf="true">

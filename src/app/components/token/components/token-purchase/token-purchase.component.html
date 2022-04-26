@@ -67,20 +67,16 @@
 
 
 <ng-template #confirmTemplate>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
-            <wen-icon-time [size]="20"></wen-icon-time>
-            <div class="ml-2.5" i18n>Sale ends in</div>
-        </span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">2 h</p>
-    </div>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
-            <wen-icon-coin [size]="20"></wen-icon-coin>
-            <div class="ml-2.5" i18n>Token price</div>
-        </span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">1 Mi</p>
-    </div>
+    <wen-description [items]="[
+        { title: 'Sale ends in', titleIcon: timeIcon, value: '2 h' },
+        { title: 'Token price', titleIcon: coinIcon, value: '1 Mi' }
+    ]"></wen-description>
+    <ng-template #timeIcon>
+        <wen-icon-time [size]="20"></wen-icon-time>
+    </ng-template>
+    <ng-template #coinIcon>
+        <wen-icon-coin [size]="20"></wen-icon-coin>
+    </ng-template>
 
     <label class="w-full mt-2" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
         <div class="text-base font-medium">
@@ -104,13 +100,12 @@
 </ng-template>
 
 <ng-template #transactionTemplate>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
-            <wen-icon-time [size]="20"></wen-icon-time>
-            <div class="ml-2.5" i18n>Cooldown period ends in</div>
-        </span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">2 h</p>
-    </div>
+    <wen-description [items]="[
+        { title: 'Cooldown period ends in', titleIcon: timeIcon, value: '2 h' }
+    ]"></wen-description>
+    <ng-template #timeIcon>
+        <wen-icon-time [size]="20"></wen-icon-time>
+    </ng-template>
 
     <div class="flex items-center justify-between font-medium space-x-4">
         <div class="relative rounded-3xl border border-inputs-border dark:border-inputs-border-dark flex-1 px-6 py-2 h-14">
@@ -173,13 +168,12 @@
 </ng-template>
 
 <ng-template #waitTemplate>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
-            <wen-icon-time [size]="20"></wen-icon-time>
-            <div class="ml-2.5" i18n>Cooldown period ends in</div>
-        </span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">2 h</p>
-    </div>
+    <wen-description [items]="[
+        { title: 'Cooldown period ends in', titleIcon: timeIcon, value: '2 h' }
+    ]"></wen-description>
+    <ng-template #timeIcon>
+        <wen-icon-time [size]="20"></wen-icon-time>
+    </ng-template>
 
     <div class="flex items-center justify-between font-medium space-x-4 mt-6">
         <div class="rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark flex-1 h-14 px-6 py-2">
@@ -253,13 +247,12 @@
 </ng-template>
 
 <ng-template #completeTemplate>
-    <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
-            <wen-icon-time [size]="20"></wen-icon-time>
-            <div class="ml-2.5" i18n>Cooldown period ends in</div>
-        </span>
-        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark text-right">2 h</p>
-    </div>
+    <wen-description [items]="[
+        { title: 'Cooldown period ends in', titleIcon: timeIcon, value: '2 h' }
+    ]"></wen-description>
+    <ng-template #timeIcon>
+        <wen-icon-time [size]="20"></wen-icon-time>
+    </ng-template>
 
     <div class="flex items-center justify-between w-full space-x-4 mt-6">
         <div class="flex-1 flex flex-col items-center py-3 border border-foregrounds-separator dark:border-foregrounds-separator-dark rounded-2xl">

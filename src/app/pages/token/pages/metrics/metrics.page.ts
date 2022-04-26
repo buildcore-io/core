@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TokenBreakdownItem } from '@pages/token/services/new.service';
+import { DescriptionItem } from '@components/description/description.component';
 import { ChartConfiguration, ChartType } from 'chart.js';
 
 
@@ -32,10 +32,10 @@ export class MetricsPage {
       }
     }
   };
-  public breakdownData: TokenBreakdownItem[] = [
-    { label: 'Total token supply', value: '100 000' },
-    { label: 'Price per token', value: '1 Mi' },
-    { label: 'Treasury', value: '50%', extra: '(50 000 Mi)' },
-    { label: 'Development fund', value: '20%', extra: '(20 000 Mi)' }
+  public breakdownData: DescriptionItem[] = [
+    { title: 'Total token supply', value: '100 000' },
+    { title: 'Price per token', value: '1 Mi' },
+    { title: 'Treasury', value: '50%', extraValue: '(50 000 Mi)' },
+    { title: 'Development fund', value: '20%', extraValue: '(20 000 Mi)' }
   ]
 }

@@ -2,12 +2,13 @@ import { Injectable } from "@angular/core";
 import { OffersHistory, SuccesfullOrdersWithFullHistory } from "@api/nft.api";
 import { AuthService } from "@components/auth/services/auth.service";
 import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
+import { DescriptionItem } from "@components/description/description.component";
 import { UnitsHelper } from "@core/utils/units-helper";
 import { Timestamp } from "@functions/interfaces/models/base";
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { Collection, Member, Space, Transaction } from "functions/interfaces/models";
-import { Nft } from "functions/interfaces/models/nft";
+import { Nft, PropStats } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
 dayjs.extend(isSameOrBefore);
 
@@ -66,7 +67,7 @@ export class DataService {
       }));
   }
 
-  public getPropStats(obj: any): any[] {
+  public getPropStats(obj: PropStats | undefined = {}): DescriptionItem[] {
     if (!obj) {
       return [];
     }
@@ -77,7 +78,7 @@ export class DataService {
       if (a.label > b.label) { return 1; }
       return 0;
     })) {
-      final.push(v);
+      final.push({ title: v.label, value: v.value });
     }
 
     return final;
