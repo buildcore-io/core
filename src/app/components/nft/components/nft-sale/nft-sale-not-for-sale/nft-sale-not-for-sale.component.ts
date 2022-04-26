@@ -25,8 +25,7 @@ export class NftSaleNotForSaleComponent {
 
   public submit(): void {
     this.wenOnUpdate.next({
-      type: SaleType.NOT_FOR_SALE,
-      close: true
+      type: SaleType.NOT_FOR_SALE
     });
   }
 }

@@ -62,7 +62,6 @@ export class NftSaleAuctionComponent implements OnInit {
     return this._nft;
   }
   @Output() public wenOnUpdate = new EventEmitter<UpdateEvent>();
-  @Output() public wenOnClose = new EventEmitter<void>();
   public form: FormGroup;
   public floorPriceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
   public floorUnitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
@@ -164,8 +163,7 @@ export class NftSaleAuctionComponent implements OnInit {
       auctionLength: TRANSACTION_MAX_EXPIRY_MS,
       auctionFloorPrice: this.getRawPrice(this.floorPriceControl.value, this.floorUnitControl.value),
       access: this.selectedAccessControl.value,
-      accessMembers: this.buyerControl.value,
-      close: false
+      accessMembers: this.buyerControl.value
     };
 
     // if (this.buyAvailableControl.value) {
@@ -174,7 +172,6 @@ export class NftSaleAuctionComponent implements OnInit {
     // }
 
     this.wenOnUpdate.next(up);
-    this.isSubmitted = true;
     this.cd.markForCheck();
   }
 }
