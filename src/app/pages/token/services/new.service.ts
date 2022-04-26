@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { DescriptionItem } from '@components/description/description.component';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { Space } from '@functions/interfaces/models';
 import dayjs from 'dayjs';
@@ -12,11 +13,6 @@ import { BehaviorSubject, of, Subscription } from 'rxjs';
 export const MAX_ALLOCATIONS_COUNT = 100;
 export const MAX_LINKS_COUNT = 20;
 
-export interface TokenBreakdownItem {
-  label: string;
-  value: string;
-  extra?: string;
-};
 
 @Injectable({
   providedIn: 'any'
@@ -26,11 +22,11 @@ export class NewService {
   public distributionOptions = [
     { label: $localize`Fixed price`, value: 'fixed' }
   ];
-  public breakdownData: TokenBreakdownItem[] = [
-    { label: 'Total token supply', value: '100 000' },
-    { label: 'Price per token', value: '1 Mi' },
-    { label: 'Treasury', value: '50%', extra: '(50 000 Mi)' },
-    { label: 'Development fund', value: '20%', extra: '(20 000 Mi)' }
+  public breakdownData: DescriptionItem[] = [
+    { title: 'Total token supply', value: '100 000' },
+    { title: 'Price per token', value: '1 Mi' },
+    { title: 'Treasury', value: '50%', extraValue: '(50 000 Mi)' },
+    { title: 'Development fund', value: '20%', extraValue: '(20 000 Mi)' }
   ]
   public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;

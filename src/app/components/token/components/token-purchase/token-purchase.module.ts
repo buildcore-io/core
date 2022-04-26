@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -25,7 +26,8 @@ import { TokenPurchaseComponent } from './token-purchase.component';
     NzAvatarModule,
     NzInputModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DescriptionModule
   ],
   exports: [
     TokenPurchaseComponent

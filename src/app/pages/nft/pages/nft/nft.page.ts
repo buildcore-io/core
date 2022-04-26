@@ -54,6 +54,17 @@ export class NFTPage implements OnInit, OnDestroy {
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {}
+  public systemInfoLabels: string[] = [
+    $localize`On-Chain Record`,
+    $localize`Migrate`,
+    $localize`IPFS Metadata`,
+    $localize`IPFS Image`
+  ];
+  public systemInfoValues: { [key: string]: string } = {
+    preparing: $localize`Preparing...`,
+    view: $localize`View`,
+    tokenization: $localize`Shimmer/Mainnet (Tokenization)...SOON.`
+  };
   private subscriptions$: Subscription[] = [];
   private nftSubscriptions$: Subscription[] = [];
   private collectionSubscriptions$: Subscription[] = [];

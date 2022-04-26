@@ -4,14 +4,7 @@
 </div>
 
 <nz-card i18n-nzTitle nzTitle="Breakdown" class="mt-4 lg:mt-6">
-    <div *ngFor="let item of breakdownData"
-        class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-            <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ item.label }}</span>
-            <p nz-typography class=" text-right">
-                <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ item.value }}</span>
-                <span *ngIf="item.extra" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"> {{ item.extra }}</span>
-            </p>
-    </div>
+    <wen-description [items]="breakdownData"></wen-description>
 </nz-card>
 
 <nz-card i18n-nzTitle nzTitle="Token distribution" class="mt-4 lg:mt-6">

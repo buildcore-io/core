@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { RadioModule } from '@components/radio/radio.module';
@@ -87,7 +88,8 @@ import { TokenRoutingModule } from './token-routing.module';
     NzCheckboxModule,
     SelectSpaceModule,
     RadioModule,
-    NzRadioModule
+    NzRadioModule,
+    DescriptionModule
   ]
 })
 export class TokenModule { }

@@ -292,15 +292,8 @@
             >
             </nz-card-meta>
 
-            <div class="mt-6"> 
-                <div *ngFor="let item of newService.breakdownData"
-                    class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark font-medium text-sm">
-                        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ item.label }}</span>
-                        <p nz-typography class=" text-right">
-                            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ item.value }}</span>
-                            <span *ngIf="item.extra" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"> {{ item.extra }}</span>
-                        </p>
-                </div>
+            <div class="mt-6">
+                <wen-description [items]="newService.breakdownData"></wen-description>
             </div>
         </nz-card>
     </div>

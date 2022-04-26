@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BadgeModule } from "@components/badge/badge.module";
+import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MemberCardModule } from '@components/member/components/member-card/member-card.module';
@@ -104,7 +105,8 @@ import { DataService } from './services/data.service';
     ProposalAnswerModule,
     MobileSearchModule,
     FormsModule,
-    ShareModule
+    ShareModule,
+    DescriptionModule
   ]
 })
 export class ProposalModule { }
