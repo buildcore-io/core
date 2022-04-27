@@ -181,7 +181,7 @@
 </div>
 
 <div class="mt-10 xl:grid place-items-start">
-    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(collections$ | async)">
+    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="!isLoading(collections$ | async)">
       {{ ((collections$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>collections</span>
     </p>
     <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"

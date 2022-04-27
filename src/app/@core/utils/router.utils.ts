@@ -14,6 +14,7 @@ export const ROUTER_UTILS = {
       root: 'market',
       collections: 'collections',
       nfts: 'nfts',
+      tokens: 'tokens'
     },
     discover: {
       root: 'discover',

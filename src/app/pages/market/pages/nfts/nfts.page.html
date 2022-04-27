@@ -69,7 +69,7 @@
 </div>
 
 <div class="mt-10 lg:grid place-items-start">
-    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(nfts$ | async)">
+    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="!isLoading(nfts$ | async)">
       {{ ((nfts$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
     </p>
     <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
