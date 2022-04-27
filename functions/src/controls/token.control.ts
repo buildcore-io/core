@@ -3,9 +3,10 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { URL_PATHS } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
+import { TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
@@ -29,11 +30,11 @@ const createSchema = () => ({
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   space: Joi.string().required(),
-  pricePerToken: Joi.number().required().min(0.01),
-  totalSupply: Joi.number().required().min(0.01),
+  pricePerToken: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
+  totalSupply: Joi.number().required().min(100).max(1000000000000).integer(),
   allocations: Joi.array().required().items(Joi.object().keys({
     title: Joi.string().required(),
-    percentage: Joi.number().min(0.01).required(),
+    percentage: Joi.number().min(0.01).precision(2).required(),
     isPublicSale: Joi.boolean().optional()
   })).min(1).custom((allocations: TokenAllocation[], helpers) => {
     const publicSaleCount = allocations.filter(a => a.isPublicSale).length
@@ -46,11 +47,11 @@ const createSchema = () => ({
     }
     return allocations;
   }),
-  saleStartDate: Joi.date().greater(dayjs().toDate()).optional(),
-  saleLength: Joi.number().optional().min(1).max(78),
+  saleStartDate: Joi.date().greater(dayjs().add(7, 'd').toDate()).optional(),
+  saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
-  icon: Joi.string().optional(),
-  overviewGraphics: Joi.string().optional(),
+  icon: Joi.string().required(),
+  overviewGraphics: Joi.string().required(),
 })
 
 export const createToken = functions.runWith({
@@ -66,6 +67,11 @@ export const createToken = functions.runWith({
   const snapshot = await admin.firestore().collection(COL.TOKENS).where('space', '==', params.body.space).get()
   if (snapshot.size > 0) {
     throw throwInvalidArgument(WenError.token_already_exists_for_space);
+  }
+
+  const symbolSnapshot = await admin.firestore().collection(COL.TOKENS).where('symbol', '==', params.body.symbol).get();
+  if (symbolSnapshot.size > 0) {
+    throw throwInvalidArgument(WenError.token_symbol_must_be_globally_unique);
   }
 
   await assertIsGuardian(params.body.space, owner)
@@ -84,7 +90,6 @@ export const createToken = functions.runWith({
 
 const updateSchema = {
   name: Joi.string().required().allow(null, ''),
-  symbol: Joi.string().required().allow(null, ''),
   title: Joi.string().required().allow(null, ''),
   description: Joi.string().required().allow(null, ''),
   uid: Joi.string().required()

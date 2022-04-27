@@ -80,5 +80,6 @@ export const WenError = {
   this_is_limited_addition_collection: { code: 2071, key: 'Collection is limited edition. No NFT can be added after approval.' },
   royalty_fees_can_only_be_reduced: { code: 2072, key: 'Royalty fees can only be reduced.' },
   token_already_exists_for_space: { code: 2073, key: 'Only one token is allowed per space.' },
+  token_symbol_must_be_globally_unique: { code: 2074, key: 'Token symbol must be globally unique.' },
 }
 

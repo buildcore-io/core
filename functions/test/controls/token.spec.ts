@@ -14,11 +14,13 @@ let walletSpy: any;
 
 const dummyToken = (space: string) => ({
   name: 'MyToken',
-  symbol: 'ASymbol',
+  symbol: wallet.getRandomEthAddress(),
   space,
-  pricePerToken: 100,
+  pricePerToken: 1 * 1000 * 1000,
   totalSupply: 1000,
-  allocations: [{ title: 'Allocation1', percentage: 100 }]
+  allocations: [{ title: 'Allocation1', percentage: 100 }],
+  icon: 'icon',
+  overviewGraphics: 'overviewGraphics'
 })
 
 describe('Token controller: ' + WEN_FUNC.cToken, () => {
@@ -114,12 +116,28 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
 
-    const correctData = ({ ...dummyToken(space.uid), saleStartDate: dayjs().add(1, 'd').toDate(), saleLength: 6, allocations })
+    const correctData = ({ ...dummyToken(space.uid), saleStartDate: dayjs().add(8, 'd').toDate(), saleLength: 240000, allocations })
     mockWalletReturnValue(walletSpy, memberAddress, correctData)
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
   })
 
+  it('Should throw, token symbol not unique', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await testEnv.wrap(createToken)({})
+
+    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space B' })
+    const space = await testEnv.wrap(createSpace)({});
+    const data = dummyToken(space.uid)
+    mockWalletReturnValue(walletSpy, memberAddress, { ...data, symbol: token.symbol })
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.token_symbol_must_be_globally_unique.key)
+  })
+
+  it('Should throw, space does not exist', async () => {
+    token.space = wallet.getRandomEthAddress()
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.you_are_not_guardian_of_space.key)
+  })
 })
 
 
@@ -140,27 +158,25 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   });
 
   it('Should update token', async () => {
-    const updateData = { name: 'TokenName2', symbol: 'asd', uid: token.uid, title: 'title', description: 'description' }
+    const updateData = { name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(updateData.name)
-    expect(result.symbol).toBe(updateData.symbol)
     expect(result.title).toBe(updateData.title)
     expect(result.description).toBe(updateData.description)
   })
 
   it('Should update token - remove description', async () => {
-    const updateData = { name: token.name, symbol: token.symbol, uid: token.uid, title: 'title2', description: null }
+    const updateData = { name: token.name, uid: token.uid, title: 'title2', description: null }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(token.name)
-    expect(result.symbol).toBe(token.symbol)
     expect(result.title).toBe(updateData.title)
     expect(result.description).toBe(updateData.description)
   })
 
   it('Should throw, not owner ', async () => {
-    const updateData = { name: 'TokenName2', symbol: 'asd', uid: token.uid, title: 'title', description: 'description' }
+    const updateData = { name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key)
   })
