@@ -50,5 +50,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.orderNft] = pump;
   scaleSettings[WEN_FUNC.validateAddress] = medium;
 
+  scaleSettings[WEN_FUNC.cToken] = low
+
   return scaleSettings[func] || low;
 }

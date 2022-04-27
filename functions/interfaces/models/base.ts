@@ -30,6 +30,7 @@ export const enum COL {
   TRANSACTION = 'transaction',
   BADGES = 'badges',
   AVATARS = 'avatars',
+  TOKENS = 'tokens'
 }
 
 export const enum SUB_COL {
@@ -39,7 +40,7 @@ export const enum SUB_COL {
   GUARDIANS = 'guardians',
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
-  TRANSACTIONS = 'transactions'
+  TRANSACTIONS = 'transactions',
 }
 
 export const enum AWARD_COL {

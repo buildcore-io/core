@@ -2,10 +2,15 @@ import * as admin from 'firebase-admin';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 
 export const mockWalletReturnValue = <T,>(walletSpy: any, address: string, body: T) =>
-  walletSpy.mockReturnValue(Promise.resolve({ address: address, body }));
+  walletSpy.mockReturnValue(Promise.resolve({ address, body }));
 
-export const expectThrow = <C, E>(call: C, error: E) => {
-  (<any>expect(call)).rejects.toThrowError(error)
+export const expectThrow = async <C, E>(call: Promise<C>, error: E) => {
+  try {
+    await call;
+    fail()
+  } catch (e) {
+    expect(e.details.key).toBe(error)
+  }
 }
 
 export const milestoneProcessed = async (nextMilestone: string, defTranId: string) => {
