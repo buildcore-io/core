@@ -9,12 +9,14 @@ import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
 import { expectThrow, mockWalletReturnValue } from "./common";
 
+const alphabet = "abcdefghijklmnopqrstuvwxyz"
+const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
 
 let walletSpy: any;
 
 const dummyToken = (space: string) => ({
   name: 'MyToken',
-  symbol: wallet.getRandomEthAddress(),
+  symbol: getRandomSymbol(),
   space,
   pricePerToken: 1 * 1000 * 1000,
   totalSupply: 1000,

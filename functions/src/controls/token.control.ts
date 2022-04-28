@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
@@ -26,12 +26,12 @@ const assertIsGuardian = async (space: string, member: string) => {
 
 const createSchema = () => ({
   name: Joi.string().required(),
-  symbol: Joi.string().required(),
+  symbol: Joi.string().required().length(4).regex(RegExp('^[A-Z]+$')),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   space: Joi.string().required(),
   pricePerToken: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
-  totalSupply: Joi.number().required().min(100).max(1000000000000).integer(),
+  totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPLY).max(MAX_TOTAL_TOKEN_SUPLY).integer(),
   allocations: Joi.array().required().items(Joi.object().keys({
     title: Joi.string().required(),
     percentage: Joi.number().min(0.01).precision(2).required(),
@@ -47,7 +47,7 @@ const createSchema = () => ({
     }
     return allocations;
   }),
-  saleStartDate: Joi.date().greater(dayjs().add(7, 'd').toDate()).optional(),
+  saleStartDate: Joi.date().greater(dayjs().add(MIN_TOKEN_START_DATE_DAY, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
