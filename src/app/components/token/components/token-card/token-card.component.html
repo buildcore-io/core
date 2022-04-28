@@ -62,7 +62,17 @@
                     <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Sale ends</div>
                     <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium truncate mt-2">{{ '10:00 AM, January 1st, 2022' }}</div>
                 </div>
-                <div class="px-5 pt-4 pb-5 bg-tags-available dark:bg-tags-available-dark flex-1 rounded-xl w-full xl:w-auto">
+
+                <wen-countdown
+                    class="block flex-1 w-full xl:w-auto"
+                    wrapperClassName="bg-tags-available dark:bg-tags-available-dark"
+                    tabClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
+                    [title]="getCountdownTitle()"
+                    [finalDate]="getCountdownDate()"
+                    [showDate]="false"
+                    size="small">
+                </wen-countdown>
+                <!-- <div class="px-5 pt-4 pb-5 bg-tags-available dark:bg-tags-available-dark flex-1 rounded-xl w-full xl:w-auto">
                     <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Cooldown period ends</div>
                     <div class="flex items-center justify-between w-full space-x-2 text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium mt-2">
                         <div class="flex items-center justify-center py-1 rounded-lg bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1">
@@ -78,7 +88,7 @@
                             {{ 10 }}<ng-container i18n>s</ng-container>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </ng-container>
         
@@ -102,7 +112,17 @@
                     <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Sale ends</div>
                     <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium truncate mt-2">{{ '10:00 AM, January 1st, 2022' }}</div>
                 </div>
-                <div class="px-5 pt-4 pb-5 bg-tags-closed dark:bg-tags-closed-dark flex-1 rounded-xl w-full xl:w-auto">
+
+                <wen-countdown
+                    class="block flex-1 w-full xl:w-auto"
+                    wrapperClassName="bg-tags-closed dark:bg-tags-closed-dark"
+                    tabClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
+                    [title]="getCountdownTitle()"
+                    [finalDate]="getCountdownDate()"
+                    [showDate]="false"
+                    size="small">
+                </wen-countdown>
+                <!-- <div class="px-5 pt-4 pb-5 bg-tags-closed dark:bg-tags-closed-dark flex-1 rounded-xl w-full xl:w-auto">
                     <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Cooldown period ends</div>
                     <div class="flex items-center justify-between w-full space-x-2 text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium mt-2">
                         <div class="flex items-center justify-center py-1 rounded-lg bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1">
@@ -118,7 +138,7 @@
                             {{ 16 }}<ng-container i18n>s</ng-container>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </ng-container>
     </a>

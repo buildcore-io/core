@@ -15,7 +15,7 @@ export enum TokenCardType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenCardComponent {
-  public cardType = TokenCardType.ENDING;
+  public cardType = TokenCardType.ONGOING;
 
   constructor(
     public deviceService: DeviceService,
@@ -24,5 +24,13 @@ export class TokenCardComponent {
 
   public get tokenCardTypes(): typeof TokenCardType {
     return TokenCardType;
+  }
+
+  public getCountdownDate(): Date {
+    return new Date('2022-05-30');
+  }
+
+  public getCountdownTitle(): string {
+    return $localize`Cooldown period ends`;
   }
 }

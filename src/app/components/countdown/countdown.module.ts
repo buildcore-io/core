@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
-import { NftCountdownComponent } from './nft-countdown.component';
+import { CountdownComponent } from './countdown.component';
 
 
 @NgModule({
   declarations: [
-    NftCountdownComponent
+    CountdownComponent
   ],
   imports: [
     CommonModule,
     IconModule
   ],
   exports: [
-    NftCountdownComponent
+    CountdownComponent
   ]
 })
-export class NftCountdownModule { }
+export class CountdownModule { }

@@ -31,29 +31,15 @@
     </div>
 </nz-card>
 
-<nz-card>
-    <div class="flex items-center">
-        <wen-icon-time class="text-icons-secondary dark:text-icons-secondary"></wen-icon-time>
-        <div class="ml-2.5 font-bold" i18n>
-            Sale ends in
-        </div>
-    </div>
-
-    <div class="flex items-center justify-between w-full mt-4 space-x-2">
-        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark text-foregrounds-primary dark:text-foregrounds-primary-dark">
-            {{ 1 }} <ng-container i18n>d</ng-container>
-        </div>
-        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark text-foregrounds-primary dark:text-foregrounds-primary-dark">
-            {{ 20 }} <ng-container i18n>h</ng-container>
-        </div>
-        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark text-foregrounds-primary dark:text-foregrounds-primary-dark">
-            {{ 20 }} <ng-container i18n>min</ng-container>
-        </div>
-        <div class="flex items-center justify-center flex-1 py-3 font-bold rounded-2xl bg-tags-closed dark:bg-tags-closed-dark text-foregrounds-primary dark:text-foregrounds-primary-dark">
-            {{ 10 }} <ng-container i18n>s</ng-container>
-        </div>
-    </div>
-</nz-card>
+<wen-countdown
+    class="block"
+    wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
+    tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
+    [title]="getCountdownTitle()"
+    [finalDate]="getCountdownDate()"
+    [showDate]="false"
+    size="default">
+</wen-countdown>
 
 <nz-card i18n-nzTitle nzTitle="Schedule">
     <wen-description type="card" i18n-title title="Schedule" [items]="[

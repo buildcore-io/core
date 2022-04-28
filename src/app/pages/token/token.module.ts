@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CountdownModule } from '@components/countdown/countdown.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -89,7 +90,8 @@ import { TokenRoutingModule } from './token-routing.module';
     SelectSpaceModule,
     RadioModule,
     NzRadioModule,
-    DescriptionModule
+    DescriptionModule,
+    CountdownModule
   ]
 })
 export class TokenModule { }

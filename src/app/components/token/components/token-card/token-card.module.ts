@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CountdownModule } from '@components/countdown/countdown.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
@@ -16,7 +17,8 @@ import { TokenCardComponent } from './token-card.component';
     RouterModule,
     NzAvatarModule,
     IconModule,
-    NzProgressModule
+    NzProgressModule,
+    CountdownModule
   ],
   exports: [
     TokenCardComponent
