@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { OrderApi } from "@api/order.api";
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -59,7 +58,6 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
-    private sanitizer: DomSanitizer,
     private orderApi: OrderApi
   ) {
   }
@@ -90,7 +88,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
             listeningToTransaction.push(tranId);
             this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any> this.transaction$);
           }
-        } else if (!val.linkedTransactions) {
+        } else if (!val.linkedTransactions || val.linkedTransactions.length === 0) {
           this.currentStep = StepType.TRANSACTION;
         }
 
@@ -199,23 +197,6 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
     }
 
     return UnitsHelper.formatBest(amount, 2);
-  }
-
-  public fireflyDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-           '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
-  }
-
-  public tanglePayDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 
   public isSpaceVerification(): boolean {
