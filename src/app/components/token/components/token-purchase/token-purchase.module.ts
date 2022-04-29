@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -27,7 +28,8 @@ import { TokenPurchaseComponent } from './token-purchase.component';
     NzInputModule,
     FormsModule,
     ReactiveFormsModule,
-    DescriptionModule
+    DescriptionModule,
+    ModalDrawerModule
   ],
   exports: [
     TokenPurchaseComponent

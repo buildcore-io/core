@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -25,7 +26,8 @@ import { TokenClaimRefundComponent } from './token-claim-refund.component';
     NzAvatarModule,
     NzInputModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ModalDrawerModule
   ],
   exports: [
     TokenClaimRefundComponent

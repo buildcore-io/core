@@ -1,41 +1,10 @@
-<nz-modal *ngIf="deviceService.isDesktop$ | async"
-    [(nzVisible)]="isOpen"
-    nzCentered
-    [nzClosable]="false"
-    [nzMaskClosable]="true"
-    [nzMask]="true"
-    (nzOnCancel)="close()"
-    [nzContent]="nftSaleModalContent"
-    [nzFooter]="null"
-    [nzBodyStyle]="{ padding: '0px' }"
-    [nzWidth]="760"
-    >
-    <ng-template #nftSaleModalContent>
-        <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <div class="flex items-start justify-between px-6 pt-7">
-                <div class="text-2xl font-bold" i18n>List Item for sale</div>
-                <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
-            </div>
-
-            <ng-container *ngTemplateOutlet="content"></ng-container>
-        </div>
-    </ng-template>
-</nz-modal>
-
-<nz-drawer *ngIf="deviceService.isMobile$ | async"
-    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-    [nzWidth]="'100vw'" #drawer
-    [nzClosable]="false"
-    [nzVisible]="isOpen">
-    <div *nzDrawerContent class="relative min-h-full h-max">
-        <div class="pb-4 text-3xl font-bold" i18n>List Item for sale</div>
-        <button class="absolute right-0 z-10 top-1" (click)="close()">
-            <wen-icon-close></wen-icon-close>
-        </button>
-
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-    </div>
-</nz-drawer>
+<wen-modal-drawer
+    i18n-title
+    title="List Item for sale"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
 
 <ng-template #content>
     <div class="flex flex-col px-6 mt-12 lg:flex-row lg:mt-6">
