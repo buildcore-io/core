@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { OrderApi } from '@api/order.api';
@@ -102,7 +101,6 @@ export class NftBidComponent implements OnInit {
     private notification: NotificationService,
     private router: Router,
     private orderApi: OrderApi,
-    private sanitizer: DomSanitizer,
     private cache: CacheService
   ) { }
 
@@ -154,7 +152,7 @@ export class NftBidComponent implements OnInit {
               this.linkedTransactions$.next(currentArray);
             });
           }
-        } else if (!val.linkedTransactions) {
+        } else if (!val.linkedTransactions || val.linkedTransactions.length === 0) {
           this.currentStep = StepType.TRANSACTION;
         }
 
@@ -243,23 +241,6 @@ export class NftBidComponent implements OnInit {
     } else if (this.nft.type === CollectionType.SFT) {
       return $localize`SFT`;
     }
-  }
-
-  public fireflyDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-      '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
-  }
-
-  public tanglePayDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 
   public async proceedWithBid(): Promise<void> {

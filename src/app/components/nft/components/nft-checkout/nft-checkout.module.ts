@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
+import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { TimeModule } from '@core/pipes/time/time.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
@@ -36,7 +37,8 @@ import { NftCheckoutComponent } from './nft-checkout.component';
     TruncateModule,
     NzNotificationModule,
     NzAvatarModule,
-    ModalDrawerModule
+    ModalDrawerModule,
+    WalletDeeplinkModule
   ],
   exports: [
     NftCheckoutComponent

@@ -116,26 +116,12 @@
         Do not send funds from an exchange, always use wallets you fully control.
     </div>
 
-    <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto" *ngIf="true">
-        <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-            class="deep-link">
-            <div class="flex items-center">
-                <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                    Firefly
-                </div>
-            </div>
-        </a>
-        <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-            class="deep-link">
-            <div class="flex items-center">
-                <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                    Tanglepay
-                </div>
-            </div>
-          </a>
-    </div>
+    <wen-wallet-deeplink
+        *ngIf="true"
+        class="mt-6"
+        [targetAddress]="targetAddress"
+        [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+    </wen-wallet-deeplink>
 </ng-template>
 
 <ng-template #waitTemplate>
@@ -178,27 +164,13 @@
     <div class="mt-10 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark w-full" i18n>
         Do not send funds from an exchange, always use wallets you fully control.
     </div>
-
-    <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto" *ngIf="true">
-        <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-            class="deep-link">
-            <div class="flex items-center">
-                <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                    Firefly
-                </div>
-            </div>
-        </a>
-        <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-            class="deep-link">
-            <div class="flex items-center">
-                <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                    Tanglepay
-                </div>
-            </div>
-          </a>
-    </div>
+    
+    <wen-wallet-deeplink
+        *ngIf="true"
+        class="mt-6"
+        [targetAddress]="targetAddress"
+        [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+    </wen-wallet-deeplink>
 
     <div class="mt-12 w-full my-8 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
         <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
