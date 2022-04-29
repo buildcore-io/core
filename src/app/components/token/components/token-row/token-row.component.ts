@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 
 @Component({
@@ -12,6 +13,7 @@ export class TokenRowComponent {
   public d = new Date();
 
   constructor(
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
+    public deviceService: DeviceService
   ) {}
 }
