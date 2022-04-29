@@ -1,45 +1,9 @@
-<nz-modal *ngIf="deviceService.isDesktop$ | async"
-    [(nzVisible)]="isOpen"
-    nzCentered
-    [nzClosable]="false"
-    [nzMaskClosable]="true"
-    [nzMask]="true"
-    (nzOnCancel)="close()"
-    [nzContent]="tokenPurchaseModalContent"
-    [nzFooter]="null"
-    [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
-    [nzWidth]="760"
-    >
-    <ng-template #tokenPurchaseModalContent>
-        <div class="flex items-start justify-between">
-            <div class="text-2xl font-bold">
-                <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Refund token</ng-container>
-                <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Claim token</ng-container>
-            </div>
-            <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
-        </div>
-
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-    </ng-template>
-</nz-modal>
-
-<nz-drawer *ngIf="deviceService.isMobile$ | async"
-    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-    [nzWidth]="'100vw'" #drawer
-    [nzClosable]="false"
-    [nzVisible]="isOpen">
-    <div *nzDrawerContent class="relative min-h-full h-max">
-        <div class="pb-4 text-3xl font-bold">
-            <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Refund token</ng-container>
-            <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Claim token</ng-container>
-        </div>
-        <button class="absolute right-0 z-10 top-1" (click)="close()">
-            <wen-icon-close></wen-icon-close>
-        </button>
-
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-    </div>
-</nz-drawer>
+<wen-modal-drawer
+    [title]="getTitle()"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
 
 <ng-template #content>
     <div class="mt-8 lg:mt-6 flex items-center">

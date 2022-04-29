@@ -47,4 +47,15 @@ export class TokenClaimRefundComponent {
     this.type = TokenItemType.CLAIM;
     this.cd.markForCheck();
   }
+
+  public getTitle(): string {
+    switch (this.type) {
+    case TokenItemType.CLAIM:
+      return $localize`Claim token`;
+    case TokenItemType.REFUND:
+      return $localize`Refund token`;
+    default:
+      return '';
+    }
+  }
 }
