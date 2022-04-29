@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from "@angular/platform-browser";
 import { NavigationEnd, Router } from '@angular/router';
@@ -16,8 +16,12 @@ import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from './../../../../../../functions/in
   templateUrl: './market.page.html',
   styleUrls: ['./market.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
+  // TODO investigate how to bypass this....
+  // changeDetection: ChangeDetectionStrategy.Default
+
 })
 export class MarketPage implements OnInit, OnDestroy {
+
   public filterControl: FormControl = new FormControl(undefined);
   public sections: TabSection[] = [
     { route: ROUTER_UTILS.config.market.collections, label: $localize`Collections` },
@@ -30,7 +34,9 @@ export class MarketPage implements OnInit, OnDestroy {
     public filter: FilterService,
     private titleService: Title,
     public deviceService: DeviceService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
+
   ) {
     // none;
   }
@@ -69,4 +75,5 @@ export class MarketPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.titleService.setTitle(WEN_NAME);
   }
+
 }

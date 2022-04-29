@@ -45,8 +45,8 @@ export class NftCardComponent {
         } else if (o.contentType.match('image/.*')) {
           this.mediaType = 'image';
         }
-
-        this.cd.markForCheck();
+        // this.cd.markForCheck();  // this seems to causing a serious issue within nfts.page !!!!!
+        this.cd.detectChanges();
       });
     }
   }

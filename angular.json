@@ -123,7 +123,8 @@
                 "output":"/assets/"
               }
             ],
-            "styles": ["src/theme/styles.less"],
+            "styles": ["src/theme/styles.less", "node_modules/instantsearch.css/themes/satellite.css"
+            ],
             "scripts": []
           },
           "configurations": {

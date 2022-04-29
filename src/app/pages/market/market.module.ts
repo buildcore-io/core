@@ -22,12 +22,19 @@ import { CollectionsPage } from './pages/collections/collections.page';
 import { MarketPage } from './pages/market/market.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
 import { FilterService } from './services/filter.service';
+import {NgAisModule} from "angular-instantsearch";
+import {SearchBox} from "@pages/market/pages/market/search.component";
+import {SortBy} from "@pages/market/pages/market/sort.component";
+import {RefinementList} from "@pages/market/pages/market/refinement.component";
 
 @NgModule({
   declarations: [
     MarketPage,
     CollectionsPage,
-    NFTsPage
+    NFTsPage,
+    SearchBox,
+    SortBy,
+    RefinementList
   ],
   imports: [
     CommonModule,
@@ -49,7 +56,9 @@ import { FilterService } from './services/filter.service';
     CollectionCardModule,
     InfiniteScrollModule,
     NzSkeletonModule,
-    NftCardModule
+    NftCardModule,
+    NgAisModule.forRoot()
+
   ],
   providers: [FilterService]
 })

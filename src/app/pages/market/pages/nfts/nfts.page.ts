@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { NftApi } from '@api/nft.api';
@@ -6,12 +6,17 @@ import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/s
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
-import { Collection, Space } from '@functions/interfaces/models';
+import {Collection, CollectionAccess, Space} from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
+import algoliasearch from "algoliasearch/lite";
+import { Timestamp } from "firebase/firestore";
+import {TabSection} from "@components/tabs/tabs.component";
+import {ROUTER_UTILS} from "@core/utils/router.utils";
+import {Mappings} from "@pages/market/pages/market/refinement.component";
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -22,14 +27,49 @@ export enum HOT_TAGS {
   SPACE = 'SPACE'
 }
 
+const searchClient = algoliasearch(
+  '2WGM1RPQKZ',
+  '4c4da0d2d8b2d582b6f5f232b75314b4'
+);
+
 @UntilDestroy()
 @Component({
   selector: 'wen-nfts',
   templateUrl: './nfts.page.html',
   styleUrls: ['./nfts.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
+  // TODO investigate how to bypass this....
+  // changeDetection: ChangeDetectionStrategy.Default
 })
 export class NFTsPage implements OnInit, OnDestroy {
+  searchParameters = { hitsPerPage: 3 } ;
+
+  config = {
+    indexName: 'nft',
+    searchClient,
+    searchFunction: (helper: any) => {
+      console.log('searchFunction called with ', helper);
+      helper.search();
+      this.cd.detectChanges();
+    },
+    // @ts-ignore
+    onStateChange: ({ uiState, setUiState }) => {
+      // Custom logic
+
+      console.log('change uiState=', uiState)
+
+      setUiState(uiState);
+      this.cd.detectChanges();
+    },
+    // initialUiState: {
+    //   collection: {
+    //     query: 'phone',
+    //     page: 5,
+    //   },
+    // }
+  };
+
+
   public sortControl: FormControl;
   public spaceControl: FormControl;
   public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
@@ -44,13 +84,22 @@ export class NFTsPage implements OnInit, OnDestroy {
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
 
+  public spaceMapping: Mappings = {};
+
+  public sections: TabSection[] = [
+    { route: ROUTER_UTILS.config.market.collections, label: $localize`Collections` },
+    { route: ROUTER_UTILS.config.market.nfts, label: $localize`NFT\'s` }
+  ];
+  public selectedSection?: TabSection;
+  public isSearchInputFocused = false;
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
     public cache: CacheService,
     public nftApi: NftApi,
     private storageService: StorageService,
-    private cacheService: CacheService
+    private cacheService: CacheService,
+    private cd: ChangeDetectorRef
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
@@ -69,6 +118,17 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    // quick & temporary ....
+    this.cache.allSpaces$
+      .pipe(untilDestroyed(this)).subscribe( (spaces) => {
+      this.spaceMapping = {};
+      spaces.forEach((space: Space) => {
+        if (space.name) {
+          this.spaceMapping[space.uid] = space.name;
+        }
+      });
+    })
+
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
         this.listen(this.filter.search$.value);
@@ -226,5 +286,11 @@ export class NFTsPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
     this.nfts$.next(undefined);
+  }
+  public convertToSoonaverseModel(algolia: any): any {
+    return {...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom) };
+  }
+  public convertAllToSoonaverseModel(algolia: any[]): any[] {
+    return algolia.map(a => this.convertToSoonaverseModel(a));
   }
 }
