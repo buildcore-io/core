@@ -450,7 +450,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation">Unable to sign transaction. Please try to reload page.</target>
+        <target state="translated">Transazione negata per autenticazione fallita. La preghiamo di ricaricare la pagina.</target>
       </trans-unit>
       <trans-unit id="4055437571775141299" datatype="html">
         <source>You must unlock your MetaMask first!</source>
