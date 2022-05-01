@@ -1,5 +1,5 @@
 import { Url } from "url";
-import { BaseRecord, Timestamp } from "./base";
+import { BaseRecord, EthAddress, Timestamp } from "./base";
 
 
 export interface TokenAllocation {
@@ -8,6 +8,11 @@ export interface TokenAllocation {
   readonly isPublicSale?: boolean;
 }
 
+export enum TokenStatus {
+  READY = 'ready',
+  PROCESSING_PAYMENTS = 'processing_payments',
+  ERROR = 'error'
+}
 
 export interface Token extends BaseRecord {
   readonly name: string;
@@ -24,4 +29,14 @@ export interface Token extends BaseRecord {
   readonly links: Url[];
   readonly icon?: string;
   readonly overviewGraphics?: string;
+  readonly status: TokenStatus
+}
+
+export interface TokenPurchase {
+  readonly member?: EthAddress;
+  readonly totalAmount?: number;
+  readonly amount?: number;
+  readonly refundedAmount?: number;
+  readonly tokenOwned?: number;
+  readonly reconciled?: boolean;
 }

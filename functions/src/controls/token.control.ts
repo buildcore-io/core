@@ -6,16 +6,17 @@ import { merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
-import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { Member, Space, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
-import { cOn, dateToTimestamp, uOn } from '../utils/dateTime.utils';
+import { WalletService } from '../services/wallet/wallet';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Token, TokenAllocation } from './../../interfaces/models/token';
+import { Token, TokenAllocation, TokenStatus } from './../../interfaces/models/token';
 
 const assertIsGuardian = async (space: string, member: string) => {
   const guardianDoc = (await admin.firestore().doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`).get());
@@ -34,7 +35,7 @@ const createSchema = () => ({
   totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPLY).max(MAX_TOTAL_TOKEN_SUPLY).integer(),
   allocations: Joi.array().required().items(Joi.object().keys({
     title: Joi.string().required(),
-    percentage: Joi.number().min(0.01).precision(2).required(),
+    percentage: Joi.number().min(0.01).max(100).precision(2).required(),
     isPublicSale: Joi.boolean().optional()
   })).min(1).custom((allocations: TokenAllocation[], helpers) => {
     const publicSaleCount = allocations.filter(a => a.isPublicSale).length
@@ -82,8 +83,10 @@ export const createToken = functions.runWith({
   }
 
   const tokenUid: string = getRandomEthAddress();
-  params.body.startDate = dateToTimestamp(params.body.startDate)
-  const data = keywords(cOn(merge(cleanParams(params.body), { uid: tokenUid, createdBy: owner, pending: true }), URL_PATHS.TOKEN))
+  params.body.saleStartDate = dateToTimestamp(params.body.saleStartDate)
+  const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength, 'ms').add(2, 'd')
+  const token = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.READY, coolDownEnd: dateToTimestamp(coolDownEnd) }
+  const data = keywords(cOn(merge(cleanParams(params.body), token), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKENS).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKENS}/${tokenUid}`).get()).data()
 })
@@ -117,3 +120,116 @@ export const updateToken = functions.runWith({
   await tokenDocRef.update(uOn(params.body))
   return <Token>(await tokenDocRef.get()).data()
 })
+
+const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+  dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
+
+
+const tokenInSaleOrCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+  dayjs().isAfter(dayjs(token.saleStartDate.toDate())) &&
+  dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms').add(2, 'd'))
+
+const orderOrCreditTokenSchema = ({
+  token: Joi.string().required(),
+  amount: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required()
+})
+
+export const orderToken = functions.runWith({
+  minInstances: scale(WEN_FUNC.openBid),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.orderToken, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema = Joi.object(orderOrCreditTokenSchema);
+  assertValidation(schema.validate(params.body));
+
+  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()).data()
+  if (!token) {
+    throw throwInvalidArgument(WenError.invalid_params)
+  }
+  if (!tokenOrderIsWithinPublicSalePeriod(token)) {
+    throw throwInvalidArgument(WenError.no_token_public_sale)
+  }
+
+  const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+  const newWallet = new WalletService();
+  const targetAddress = await newWallet.getNewIotaAddressDetails();
+  const tranId = getRandomEthAddress();
+  const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
+
+  await orderDoc.set(<Transaction>{
+    type: TransactionType.ORDER,
+    uid: tranId,
+    member: owner,
+    space: token.space,
+    createdOn: serverTime(),
+    payload: {
+      type: TransactionOrderType.TOKEN_PURCHASE,
+      amount: params.body.amount,
+      targetAddress: targetAddress.bech32,
+      beneficiary: 'space',
+      beneficiaryUid: token.space,
+      beneficiaryAddress: space?.validatedAddress,
+      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+      reconciled: false,
+      void: false,
+      chainReference: null,
+      token: token.uid
+    },
+    linkedTransactions: []
+  });
+
+  return <Transaction>(await orderDoc.get()).data()
+});
+
+export const creditToken = functions.runWith({
+  minInstances: scale(WEN_FUNC.creditToken),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.orderToken, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema = Joi.object(orderOrCreditTokenSchema);
+  assertValidation(schema.validate(params.body));
+
+  const purchaseDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.PURCHASES}/${owner}`)
+  const purchase = (await purchaseDocRef.get()).data()
+  if (!purchase || purchase.amount < params.body.amount) {
+    throw throwInvalidArgument(WenError.invalid_params)
+  }
+  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()).data()
+  if (!token || !tokenInSaleOrCoolDownPeriod(token)) {
+    throw throwInvalidArgument(WenError.no_token_public_sale)
+  }
+  const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+
+  const batch = admin.firestore().batch();
+  if (purchase?.amount === params.body.amount) {
+    batch.delete(purchaseDocRef)
+  } else {
+    batch.update(purchaseDocRef, { totalAmount: admin.firestore.FieldValue.increment(-params.body.amount) })
+  }
+
+  const tranId = getRandomEthAddress();
+  const creditTranDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  const creditTransaction = <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: tranId,
+    space: token.space,
+    member: owner,
+    createdOn: serverTime(),
+    payload: {
+      amount: params.body.amount,
+      sourceAddress: space?.validatedAddress,
+      targetAddress: member?.validatedAddress,
+      token: token.uid,
+      reconciled: true,
+      void: false,
+    }
+  };
+  batch.set(creditTranDoc, creditTransaction)
+  await batch.commit()
+
+  return <Transaction>(await creditTranDoc.get()).data()
+});

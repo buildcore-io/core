@@ -16,6 +16,7 @@ export enum TransactionOrderType {
   NFT_BID = "NFT_BID",
   SPACE_ADDRESS_VALIDATION = "SPACE_ADDRESS_VALIDATION",
   MEMBER_ADDRESS_VALIDATION = "MEMBER_ADDRESS_VALIDATION",
+  TOKEN_PURCHASE = 'TOKEN_PURCHASE'
 }
 
 export enum TransactionValidationType {
@@ -62,6 +63,7 @@ export interface OrderTransaction {
   expiresOn: Timestamp;
   validationType: TransactionValidationType;
   collection?: EthAddress;
+  token?: EthAddress
 }
 
 export interface PaymentTransaction {

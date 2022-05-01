@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
-import { COL, IotaAddress } from '../../../interfaces/models/base';
+import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
@@ -631,6 +631,12 @@ export class ProcessingService {
     }
   }
 
+  private async updateTokenPurchase(order: Transaction) {
+    await admin.firestore()
+      .doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.PURCHASES}/${order.member}`)
+      .set({ member: order.member, totalAmount: admin.firestore.FieldValue.increment(order.payload.amount) }, { merge: true })
+  }
+
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
     // We have to check each output address if there is an order for it.
     if (tran.outputs?.length) {
@@ -709,6 +715,9 @@ export class ProcessingService {
                   }
 
                   await this.markAsReconciled(orderData, match.msgId);
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
+                  await this.createPayment(orderData, match);
+                  await this.updateTokenPurchase(orderData)
                 }
               } else {
                 // Now process all invalid orders.
