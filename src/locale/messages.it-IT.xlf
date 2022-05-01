@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">156</context>
         </context-group>
-        <target state="needs-translation">You must unlock your MetaMask first!</target>
+        <target state="translated">Accedere innanzitutto al MetaMask inserendo la password!</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
