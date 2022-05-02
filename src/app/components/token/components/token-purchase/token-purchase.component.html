@@ -244,12 +244,12 @@
 
     <div class="flex items-center flex-col lg:flex-row w-full mt-10 lg:w-auto lg:justify-center">
         <button nz-button nzType="primary"
-            nzSize="large" class="w-full lg:w-auto lg:mr-2" i18n (click)="close()">
+            nzSize="large" class="w-full lg:w-auto lg:mr-2" (click)="close()" i18n>
             Close checkout
         </button>
 
         <button nz-button nzType="default" (click)="null"
-            nzSize="large" class="w-full lg:w-auto mb-6 lg:mb-0 lg:mt-1" i18n (click)="null">
+            nzSize="large" class="w-full lg:w-auto mb-6 lg:mb-0 lg:mt-1" (click)="null" i18n>
             Show my Tokens
         </button>
     </div>

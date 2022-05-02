@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<div class="space-y-4 lg:space-y-6">
     <button
         nz-button
         nzType="primary"
@@ -9,6 +9,16 @@
         i18n
     >
         Buy Tokens
+    </button>
+
+    <button
+        nz-button
+        nzSize="large"
+        class="wen-secondary w-full"
+        (click)="isScheduleSaleVisible = true"
+        i18n
+    >
+        Schedule public sale
     </button>
     
     <wen-share
@@ -21,3 +31,4 @@
 </div>
 
 <wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>
+<wen-token-public-sale *ngIf="isScheduleSaleVisible" [isOpen]="isScheduleSaleVisible" (wenOnClose)="isScheduleSaleVisible = false"></wen-token-public-sale>

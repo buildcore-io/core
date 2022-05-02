@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class TokenBuyComponent {
   public isBuyTokensVisible = false;
+  public isScheduleSaleVisible = false;
 
   public getShareUrl(): string {
     return window.location.href;

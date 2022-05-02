@@ -9,6 +9,7 @@ import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
+import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
@@ -39,11 +40,11 @@ import { NewPage } from './pages/new/new.page';
 import { NewOverviewComponent } from './pages/new/overview/overview.component';
 import { NewSummaryComponent } from './pages/new/summary/summary.component';
 import { OverviewPage } from './pages/overview/overview.page';
+import { TokenBuyComponent } from './pages/token/token-buy/token-buy.component';
 import { TokenInfoComponent } from './pages/token/token-info/token-info.component';
+import { TokenProgressComponent } from './pages/token/token-progress/token-progress.component';
 import { TokenPage } from './pages/token/token.page';
 import { TokenRoutingModule } from './token-routing.module';
-import { TokenBuyComponent } from './pages/token/token-buy/token-buy.component';
-import { TokenProgressComponent } from './pages/token/token-progress/token-progress.component';
 
 
 @NgModule({
@@ -95,7 +96,8 @@ import { TokenProgressComponent } from './pages/token/token-progress/token-progr
     RadioModule,
     NzRadioModule,
     DescriptionModule,
-    CountdownModule
+    CountdownModule,
+    TokenPublicSaleModule
   ]
 })
 export class TokenModule { }
