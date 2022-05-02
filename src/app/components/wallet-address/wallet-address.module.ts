@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
+import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { TimeModule } from '@core/pipes/time/time.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
@@ -26,7 +27,8 @@ import { WalletAddressComponent } from './wallet-address.component';
     NzButtonModule,
     TimeModule,
     NzAlertModule,
-    TruncateModule
+    TruncateModule,
+    WalletDeeplinkModule
   ],
   exports: [
     WalletAddressComponent

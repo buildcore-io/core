@@ -9,6 +9,7 @@
 <ng-template #content>
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-6">
         <div class="relative w-full lg:w-72 lg:w-overflow-hidden">
+            {{ currentStep }}
             <img
                 *ngIf="mediaType === 'image'"
                 i18n-alt
@@ -143,26 +144,12 @@
             Do not send funds from an exchange, always use wallets you fully control.
         </div>
 
-        <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto" *ngIf="!isExpired((transaction$ | async))">
-            <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Firefly
-                    </div>
-                </div>
-            </a>
-            <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Tanglepay
-                    </div>
-                </div>
-              </a>
-        </div>
+        <wen-wallet-deeplink
+            *ngIf="!isExpired((transaction$ | async))"
+            class="mt-6"
+            [targetAddress]="targetAddress"
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+        </wen-wallet-deeplink>
     </div>
 </ng-template>
 

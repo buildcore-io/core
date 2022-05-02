@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { copyToClipboard } from '@core/utils/tools.utils';
@@ -38,8 +37,7 @@ export class TokenPurchaseComponent {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
-    private cd: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private cd: ChangeDetectorRef
   ) { }
 
   public close(): void {
@@ -55,23 +53,6 @@ export class TokenPurchaseComponent {
 
   public get stepType(): typeof StepType {
     return StepType;
-  }
-
-  public fireflyDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-           '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
-  }
-
-  public tanglePayDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 
   public copyAddress() {
