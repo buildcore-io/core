@@ -13,14 +13,14 @@ const getTokenOwned = (totalSupply: number, totalBought: number, payedByMember: 
   totalSupply >= totalBought ? payedByMember : Math.floor(payedByMember * 100 / totalBought / 100 * totalSupply)
 
 const getMemberPurchaseAllocation = (purchase: TokenPurchase, token: Token, totalSupply: number, totalBought: number): TokenPurchase => {
-  const totalAmount = purchase.totalAmount || 0;
-  const payedByMember = getTokenCount(token, totalAmount)
+  const totalDeposit = purchase.totalDeposit || 0;
+  const payedByMember = getTokenCount(token, totalDeposit)
   const tokenOwned = getTokenOwned(totalSupply, totalBought, payedByMember)
   const amount = token.pricePerToken * tokenOwned
   if (totalSupply >= totalBought) {
     return { ...purchase, amount, tokenOwned, refundedAmount: 0 }
   }
-  const refundedAmount = totalAmount - (tokenOwned * token.pricePerToken)
+  const refundedAmount = totalDeposit - (tokenOwned * token.pricePerToken)
   return { ...purchase, amount, tokenOwned, refundedAmount: refundedAmount < MIN_IOTA_AMOUNT ? 0 : refundedAmount }
 }
 
@@ -85,7 +85,7 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     }
 
     const purchasesSnap = await admin.firestore().collection(`${COL.TOKENS}/${tokenId}/${SUB_COL.PURCHASES}`).get()
-    const totalBought = purchasesSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, (<TokenPurchase>doc.data()!).totalAmount || 0), 0)
+    const totalBought = purchasesSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, (<TokenPurchase>doc.data()!).totalDeposit || 0), 0)
 
     const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
     const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
@@ -93,7 +93,7 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
 
     const promises = purchasesSnap.docs
-      .map(doc => getMemberPurchaseAllocation(doc.data()!, token, totalPublicSupply, totalBought))
+      .map(doc => getMemberPurchaseAllocation(<TokenPurchase>doc.data()!, token, totalPublicSupply, totalBought))
       .filter(p => !p.reconciled)
       .map(reconcileBuyer(token, space))
 

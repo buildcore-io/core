@@ -84,4 +84,4 @@ exports[WEN_FUNC.cToken] = createToken
 exports[WEN_FUNC.uToken] = updateToken
 exports[WEN_FUNC.orderToken] = orderToken
 exports[WEN_FUNC.creditToken] = creditToken
-exports['onTokenStatusUpdate'] = onTokenStatusUpdate
+exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate

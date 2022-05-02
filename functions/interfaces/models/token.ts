@@ -1,5 +1,5 @@
 import { Url } from "url";
-import { BaseRecord, EthAddress, Timestamp } from "./base";
+import { BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
 
 
 export interface TokenAllocation {
@@ -25,16 +25,18 @@ export interface Token extends BaseRecord {
   readonly allocations: TokenAllocation[];
   readonly saleStartDate?: Timestamp;
   readonly saleLength?: number;
+  readonly coolDownEnd?: Timestamp;
   readonly pending: boolean;
   readonly links: Url[];
   readonly icon?: string;
   readonly overviewGraphics?: string;
-  readonly status: TokenStatus
+  readonly status: TokenStatus;
+  readonly totalDeposit: number;
 }
 
-export interface TokenPurchase {
+export interface TokenPurchase extends BaseSubCollection {
   readonly member?: EthAddress;
-  readonly totalAmount?: number;
+  readonly totalDeposit: number;
   readonly amount?: number;
   readonly refundedAmount?: number;
   readonly tokenOwned?: number;

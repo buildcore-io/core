@@ -632,9 +632,18 @@ export class ProcessingService {
   }
 
   private async updateTokenPurchase(order: Transaction) {
-    await admin.firestore()
-      .doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.PURCHASES}/${order.member}`)
-      .set({ member: order.member, totalAmount: admin.firestore.FieldValue.increment(order.payload.amount) }, { merge: true })
+    const batch = admin.firestore().batch()
+    const purchaseRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.PURCHASES}/${order.member}`)
+    const purchase = {
+      member: order.member,
+      totalDeposit: admin.firestore.FieldValue.increment(order.payload.amount),
+      parentId: order.payload.token,
+      parentCol: COL.TOKENS
+    }
+    batch.set(purchaseRef, purchase, { merge: true })
+    const tokenRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}`)
+    batch.update(tokenRef, { totalDeposit: admin.firestore.FieldValue.increment(order.payload.amount) })
+    await batch.commit()
   }
 
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {

@@ -16,7 +16,7 @@ import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Token, TokenAllocation, TokenStatus } from './../../interfaces/models/token';
+import { Token, TokenAllocation, TokenPurchase, TokenStatus } from './../../interfaces/models/token';
 
 const assertIsGuardian = async (space: string, member: string) => {
   const guardianDoc = (await admin.firestore().doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`).get());
@@ -81,12 +81,14 @@ export const createToken = functions.runWith({
   if (hasPublicSale && (params.body.saleStartDate === undefined || params.body.saleLength === undefined)) {
     throw throwInvalidArgument(WenError.invalid_params);
   }
-
+  if (hasPublicSale) {
+    params.body.saleStartDate = dateToTimestamp(params.body.saleStartDate)
+    const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength, 'ms').add(2, 'd')
+    params.body.coolDownEnd = dateToTimestamp(coolDownEnd)
+  }
   const tokenUid: string = getRandomEthAddress();
-  params.body.saleStartDate = dateToTimestamp(params.body.saleStartDate)
-  const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength, 'ms').add(2, 'd')
-  const token = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.READY, coolDownEnd: dateToTimestamp(coolDownEnd) }
-  const data = keywords(cOn(merge(cleanParams(params.body), token), URL_PATHS.TOKEN))
+  const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.READY, totalDeposit: 0 }
+  const data = keywords(cOn(merge(cleanParams(params.body), extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKENS).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKENS}/${tokenUid}`).get()).data()
 })
@@ -125,8 +127,8 @@ const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate
   dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
 
 
-const tokenInSaleOrCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength &&
-  dayjs().isAfter(dayjs(token.saleStartDate.toDate())) &&
+const tokenCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+  dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
   dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms').add(2, 'd'))
 
 const orderOrCreditTokenSchema = ({
@@ -192,44 +194,45 @@ export const creditToken = functions.runWith({
   const schema = Joi.object(orderOrCreditTokenSchema);
   assertValidation(schema.validate(params.body));
 
-  const purchaseDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.PURCHASES}/${owner}`)
-  const purchase = (await purchaseDocRef.get()).data()
-  if (!purchase || purchase.amount < params.body.amount) {
-    throw throwInvalidArgument(WenError.invalid_params)
-  }
-  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()).data()
-  if (!token || !tokenInSaleOrCoolDownPeriod(token)) {
-    throw throwInvalidArgument(WenError.no_token_public_sale)
-  }
-  const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
-  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-
-  const batch = admin.firestore().batch();
-  if (purchase?.amount === params.body.amount) {
-    batch.delete(purchaseDocRef)
-  } else {
-    batch.update(purchaseDocRef, { totalAmount: admin.firestore.FieldValue.increment(-params.body.amount) })
-  }
-
   const tranId = getRandomEthAddress();
   const creditTranDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-  const creditTransaction = <Transaction>{
-    type: TransactionType.CREDIT,
-    uid: tranId,
-    space: token.space,
-    member: owner,
-    createdOn: serverTime(),
-    payload: {
-      amount: params.body.amount,
-      sourceAddress: space?.validatedAddress,
-      targetAddress: member?.validatedAddress,
-      token: token.uid,
-      reconciled: true,
-      void: false,
+
+  await admin.firestore().runTransaction(async (transaction) => {
+    const purchaseDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.PURCHASES}/${owner}`)
+    const purchase = <TokenPurchase | undefined>(await transaction.get(purchaseDocRef)).data()
+    if (!purchase || purchase.totalDeposit < params.body.amount) {
+      throw throwInvalidArgument(WenError.not_enough_funds)
     }
-  };
-  batch.set(creditTranDoc, creditTransaction)
-  await batch.commit()
+    const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()).data()
+    if (!token || !tokenCoolDownPeriod(token)) {
+      throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
+    }
+    const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+    const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+
+    if (purchase?.totalDeposit === params.body.amount) {
+      transaction.delete(purchaseDocRef)
+    } else {
+      transaction.update(purchaseDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+    }
+
+    const creditTransaction = <Transaction>{
+      type: TransactionType.CREDIT,
+      uid: tranId,
+      space: token.space,
+      member: owner,
+      createdOn: serverTime(),
+      payload: {
+        amount: params.body.amount,
+        sourceAddress: space?.validatedAddress,
+        targetAddress: member?.validatedAddress,
+        token: token.uid,
+        reconciled: true,
+        void: false,
+      }
+    };
+    transaction.set(creditTranDoc, creditTransaction)
+  })
 
   return <Transaction>(await creditTranDoc.get()).data()
 });
