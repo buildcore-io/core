@@ -10,7 +10,9 @@ import { NavigationService } from './@core/services/navigation/navigation.servic
   selector: 'wen-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
+
 })
 export class WenComponent implements OnInit {
   isLoggedIn$!: Observable<boolean>;

@@ -15,9 +15,9 @@ import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from './../../../../../../functions/in
   selector: 'wen-market',
   templateUrl: './market.page.html',
   styleUrls: ['./market.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
   // TODO investigate how to bypass this....
-  // changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default
 
 })
 export class MarketPage implements OnInit, OnDestroy {

@@ -1,4 +1,12 @@
-import {Component, Inject, forwardRef, Optional, ChangeDetectionStrategy, Input} from '@angular/core';
+import {
+  Component,
+  Inject,
+  forwardRef,
+  Optional,
+  ChangeDetectionStrategy,
+  Input,
+  ChangeDetectorRef, NgZone
+} from '@angular/core';
 import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
 
 import connectSearchBox, {
@@ -13,6 +21,7 @@ import {debounceTime} from "rxjs";
 import {GLOBAL_DEBOUNCE_TIME} from "@functions/interfaces/config";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {NavigationEnd, Router} from "@angular/router";
+
 
 @UntilDestroy()
 @Component({
@@ -72,6 +81,8 @@ export class SearchBox extends TypedBaseWidget<SearchBoxWidgetDescription, Searc
     @Inject(forwardRef(() => NgAisInstantSearch))
     public instantSearchInstance: NgAisInstantSearch,
     public deviceService: DeviceService,
+    private cd: ChangeDetectorRef,
+    private ngZone: NgZone
 
   ) {
     super('SearchBox');
@@ -85,19 +96,12 @@ export class SearchBox extends TypedBaseWidget<SearchBoxWidgetDescription, Searc
       debounceTime(GLOBAL_DEBOUNCE_TIME),
       untilDestroyed(this)
     ).subscribe((val) => {
-      this.state.refine(val);
+      this.ngZone.run(()=>{
+        this.state.refine(val);
+      })
     });
     super.ngOnInit();
 
-    // hacky way for now.... no need here in fact
-    // this.router.events
-    //   .pipe(untilDestroyed(this))
-    //   .subscribe((obj) => {
-    //     console.log('router events')
-    //     if (obj instanceof NavigationEnd) {
-    //       console.log('BINGO')
-    //     }
-    //   });
   }
 
 

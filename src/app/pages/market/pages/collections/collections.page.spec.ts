@@ -5,11 +5,16 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { FilterService } from '@pages/market/services/filter.service';
 import { MockProvider } from 'ng-mocks';
 import { CollectionsPage } from './collections.page';
+import {BehaviorSubject} from "rxjs";
+import {Collection, Space} from "@functions/interfaces/models";
 
 
 describe('CollectionsPage', () => {
   let component: CollectionsPage;
   let fixture: ComponentFixture<CollectionsPage>;
+  const allSpaces$ = new BehaviorSubject<Space[]>([]);
+  const allCollections$ = new BehaviorSubject<Collection[]>([]);
+
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
@@ -18,7 +23,7 @@ describe('CollectionsPage', () => {
         FilterService,
         MockProvider(CollectionApi),
         MockProvider(SpaceApi),
-        MockProvider(CacheService)
+        MockProvider(CacheService, {allSpaces$, allCollections$})
       ]
     })
       .compileComponents();

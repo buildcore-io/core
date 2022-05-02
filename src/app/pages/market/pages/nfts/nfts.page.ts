@@ -16,7 +16,7 @@ import algoliasearch from "algoliasearch/lite";
 import { Timestamp } from "firebase/firestore";
 import {TabSection} from "@components/tabs/tabs.component";
 import {ROUTER_UTILS} from "@core/utils/router.utils";
-import {Mappings} from "@pages/market/pages/market/refinement.component";
+import {AlgoliaService} from "@core/services/algolia/algolia.service";
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -37,9 +37,9 @@ const searchClient = algoliasearch(
   selector: 'wen-nfts',
   templateUrl: './nfts.page.html',
   styleUrls: ['./nfts.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
   // TODO investigate how to bypass this....
-  // changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class NFTsPage implements OnInit, OnDestroy {
   searchParameters = { hitsPerPage: 3 } ;
@@ -84,8 +84,6 @@ export class NFTsPage implements OnInit, OnDestroy {
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
 
-  public spaceMapping: Mappings = {};
-
   public sections: TabSection[] = [
     { route: ROUTER_UTILS.config.market.collections, label: $localize`Collections` },
     { route: ROUTER_UTILS.config.market.nfts, label: $localize`NFT\'s` }
@@ -99,7 +97,8 @@ export class NFTsPage implements OnInit, OnDestroy {
     public nftApi: NftApi,
     private storageService: StorageService,
     private cacheService: CacheService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    public readonly algoliaService: AlgoliaService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
@@ -118,16 +117,6 @@ export class NFTsPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    // quick & temporary ....
-    this.cache.allSpaces$
-      .pipe(untilDestroyed(this)).subscribe( (spaces) => {
-      this.spaceMapping = {};
-      spaces.forEach((space: Space) => {
-        if (space.name) {
-          this.spaceMapping[space.uid] = space.name;
-        }
-      });
-    })
 
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
@@ -287,10 +276,14 @@ export class NFTsPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.nfts$.next(undefined);
   }
-  public convertToSoonaverseModel(algolia: any): any {
-    return {...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom) };
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+    console.log(`nft:convertAllToSoonaverseModel ${algoliaItems.length}`, algoliaItems)
+
+    return algoliaItems.map(algolia => ({
+      ...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
+    }));
   }
-  public convertAllToSoonaverseModel(algolia: any[]): any[] {
-    return algolia.map(a => this.convertToSoonaverseModel(a));
-  }
+
+
+
 }

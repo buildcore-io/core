@@ -11,6 +11,7 @@ import { SelectSpaceModule } from '@components/space/components/select-space/sel
 import { TabsModule } from '@components/tabs/tabs.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -23,18 +24,15 @@ import { MarketPage } from './pages/market/market.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
 import { FilterService } from './services/filter.service';
 import {NgAisModule} from "angular-instantsearch";
-import {SearchBox} from "@pages/market/pages/market/search.component";
-import {SortBy} from "@pages/market/pages/market/sort.component";
-import {RefinementList} from "@pages/market/pages/market/refinement.component";
+import {SearchBox} from "../../@algolia/search.component";
+import {SortBy} from "../../@algolia/sort.component";
 
 @NgModule({
   declarations: [
     MarketPage,
     CollectionsPage,
     NFTsPage,
-    SearchBox,
-    SortBy,
-    RefinementList
+    SearchBox, SortBy,  // components integrated with Algolia
   ],
   imports: [
     CommonModule,
@@ -57,7 +55,8 @@ import {RefinementList} from "@pages/market/pages/market/refinement.component";
     InfiniteScrollModule,
     NzSkeletonModule,
     NftCardModule,
-    NgAisModule.forRoot()
+    NgAisModule,
+    NzCollapseModule,
 
   ],
   providers: [FilterService]

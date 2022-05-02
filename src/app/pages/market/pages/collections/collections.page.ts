@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { CollectionApi } from '@api/collection.api';
@@ -11,15 +11,10 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
-import algoliasearch from 'algoliasearch/lite';
 
 import { Timestamp } from "firebase/firestore";
-import {Mappings} from "@pages/market/pages/market/refinement.component";
+import {AlgoliaService} from "@core/services/algolia/algolia.service";
 
-const searchClient = algoliasearch(
-  '2WGM1RPQKZ',
-  '4c4da0d2d8b2d582b6f5f232b75314b4'
-);
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -32,46 +27,23 @@ export enum AddedCategories {
   ALL = 'All'
 }
 
+
 @UntilDestroy()
 @Component({
   selector: 'wen-collections',
   templateUrl: './collections.page.html',
   styleUrls: ['./collections.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
   // TODO investigate how to bypass this....
-  // changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.Default
 
 })
 export class CollectionsPage implements OnInit, OnDestroy {
-  searchParameters = { hitsPerPage: 3 } ;
 
   config = {
-    // indexName: 'nft',
     indexName: 'collection',
-    searchClient,
-    searchFunction(helper: any) {
-      console.log('searchFunction called with ', helper);
-      helper.search();
-    },
-    // @ts-ignore
-    onStateChange({ uiState, setUiState }) {
-      // Custom logic
-
-      console.log('change uiState=', uiState)
-
-      setUiState(uiState);
-    },
-    // initialUiState: {
-    //   collection: {
-    //     query: 'phone',
-    //     page: 5,
-    //   },
-    // }
+    searchClient: this.algoliaService.searchClient,
   };
-  resultsContainer?: Element = undefined;
-  header?: Element = undefined;
-  public spaceMapping: Mappings = {};
-  public accessMapping: Mappings = {};
 
   public sortControl: FormControl;
   public spaceControl: FormControl;
@@ -91,7 +63,11 @@ export class CollectionsPage implements OnInit, OnDestroy {
     public collectionApi: CollectionApi,
     public deviceService: DeviceService,
     public cache: CacheService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    public readonly algoliaService: AlgoliaService,
+    private cd: ChangeDetectorRef,
+    private ngZone: NgZone
+
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
@@ -100,23 +76,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    // quick & temporary ....
-    this.cache.allSpaces$
-      .pipe(untilDestroyed(this)).subscribe( (spaces) => {
-      this.spaceMapping = {};
-      spaces.forEach((space: Space) => {
-        if (space.name) {
-          this.spaceMapping[space.uid] = space.name;
-        }
-      });
-    })
-    // very hacky... but let's go quick for now
-    Object.values(CollectionAccess)
-      .forEach((value, index) => {
-      if (typeof value === 'string') {
-        this.accessMapping[''+index] = value
-      }
-    })
+
 
     this.filter.selectedSort$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
@@ -296,11 +256,14 @@ export class CollectionsPage implements OnInit, OnDestroy {
     this.collections$.next(undefined);
   }
 
-  public convertToSoonaverseModel(algolia: any): any {
-    console.log('convertToSoonaverseModel ', algolia)
-    return {...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom) };
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+    // console.log(`collection:convertAllToSoonaverseModel ${algoliaItems.length}`, algoliaItems)
+
+    return algoliaItems.map(algolia => ({
+      ...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
+     }));
   }
-  public convertAllToSoonaverseModel(algolia: any[]): any[] {
-    return algolia.map(a => this.convertToSoonaverseModel(a));
-  }
+
+
 }
+

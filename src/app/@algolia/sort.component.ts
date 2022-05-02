@@ -5,7 +5,7 @@ import {
   Optional,
   Input,
   ChangeDetectorRef,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy, NgZone
 } from '@angular/core';
 import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
 
@@ -56,16 +56,16 @@ export class SortBy extends TypedBaseWidget<SortByWidgetDescription, SortByConne
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
     public instantSearchInstance: NgAisInstantSearch,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private ngZone: NgZone
 
   ) {
     super('SortBy');
     this.sortControl = new FormControl();
     this.sortControl.valueChanges.pipe(untilDestroyed(this))
       .subscribe((val: any) => {
-      this.state.refine(val);
-      // try to force refresh.....
-      setTimeout( () => this.cd.detectChanges(), 1);
+        this.state.refine(val);
+
     });
 
   }
