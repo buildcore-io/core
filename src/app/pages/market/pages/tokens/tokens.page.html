@@ -78,7 +78,7 @@
     <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
         <!-- TODO: ngIf loading -->
-        <nz-skeleton *ngIf="true" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-full h-16" [nzActive]="true"
+        <nz-skeleton *ngIf="true" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 lg:w-full h-76 lg:h-16" [nzActive]="true"
             [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
         <!-- TODO: ngIf no tokens -->
