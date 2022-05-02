@@ -44,25 +44,8 @@
         [ngStyle]="{
           'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
-        <button
-          nz-button
-          nzType="primary"
-          nzBlock
-          nzSize="large"
-          (click)="isBuyTokensVisible = true"
-          [disabled]="false"
-          i18n
-        >
-          Buy Tokens
-        </button>
-  
-        <wen-share
-          class="block mb-4 p-6 lg:p-0"
-          i18n-shareText
-          shareText="Check out award"
-          [shareUrl]="getShareUrl()"
-          *ngIf="deviceService.isDesktop$ | async">
-        </wen-share>
+        <wen-token-buy *ngIf="deviceService.isDesktop$ | async"></wen-token-buy>
+        <wen-token-progress *ngIf="deviceService.isDesktop$ | async"></wen-token-progress>
   
         <wen-token-info class="block space-y-4"
           *ngIf="deviceService.isDesktop$ | async">
@@ -83,16 +66,7 @@
   
         <h1 class="w-3/4 mt-10 mb-12 ml-5">{{ 'SoonLabs token launchpad' }}</h1>
   
-        <wen-share
-          class="block mb-4 p-6 lg:p-0"
-          i18n-shareText
-          shareText="Check out award"
-          [shareUrl]="getShareUrl()">
-        </wen-share>
-  
         <wen-token-info></wen-token-info>
       </div>
     </nz-drawer>
   </wen-content>
-  
-  <wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>

@@ -1,0 +1,23 @@
+<div class="space-y-4">
+    <button
+        nz-button
+        nzType="primary"
+        nzBlock
+        nzSize="large"
+        (click)="isBuyTokensVisible = true"
+        [disabled]="false"
+        i18n
+    >
+        Buy Tokens
+    </button>
+    
+    <wen-share
+        class="block mb-4"
+        i18n-shareText
+        shareText="Check out award"
+        [shareUrl]="getShareUrl()"
+        size="large">
+    </wen-share>
+</div>
+
+<wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>

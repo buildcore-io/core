@@ -11,6 +11,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 export class ShareComponent {
   @Input() shareText = '';
   @Input() shareUrl = '';
+  @Input() size: 'small' | 'default' | 'large' = 'default';
   public isCopied = false;
 
   constructor(

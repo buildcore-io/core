@@ -42,6 +42,8 @@ import { OverviewPage } from './pages/overview/overview.page';
 import { TokenInfoComponent } from './pages/token/token-info/token-info.component';
 import { TokenPage } from './pages/token/token.page';
 import { TokenRoutingModule } from './token-routing.module';
+import { TokenBuyComponent } from './pages/token/token-buy/token-buy.component';
+import { TokenProgressComponent } from './pages/token/token-progress/token-progress.component';
 
 
 @NgModule({
@@ -54,7 +56,9 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenInfoComponent,
     NewMetricsComponent,
     NewOverviewComponent,
-    NewSummaryComponent
+    NewSummaryComponent,
+    TokenBuyComponent,
+    TokenProgressComponent
   ],
   imports: [
     CommonModule,
