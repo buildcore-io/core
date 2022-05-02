@@ -1,43 +1,15 @@
-<nz-modal *ngIf="deviceService.isDesktop$ | async"
-    [(nzVisible)]="isOpen"
-    nzCentered
-    [nzClosable]="false"
-    [nzMaskClosable]="true"
-    [nzMask]="true"
-    (nzOnCancel)="close()"
-    [nzContent]="nftCheckoutModalContent"
-    [nzFooter]="null"
-    [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
-    [nzWidth]="760"
-    >
-    <ng-template #nftCheckoutModalContent>
-        <div class="flex items-start justify-between">
-            <div class="text-2xl font-bold" i18n>Checkout</div>
-            <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
-        </div>
-
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-    </ng-template>
-</nz-modal>
-
-<nz-drawer *ngIf="deviceService.isMobile$ | async"
-    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-    [nzWidth]="'100vw'" #drawer
-    [nzClosable]="false"
-    [nzVisible]="isOpen">
-    <div *nzDrawerContent class="relative min-h-full h-max">
-        <div class="pb-4 text-3xl font-bold" i18n>Checkout</div>
-        <button class="absolute right-0 z-10 top-1" (click)="close()">
-            <wen-icon-close></wen-icon-close>
-        </button>
-
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-    </div>
-</nz-drawer>
+<wen-modal-drawer
+    i18n-title
+    title="Checkout"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
 
 <ng-template #content>
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-6">
         <div class="relative w-full lg:w-72 lg:w-overflow-hidden">
+            {{ currentStep }}
             <img
                 *ngIf="mediaType === 'image'"
                 i18n-alt
@@ -77,13 +49,13 @@
                     >
                     </nz-avatar>
                     <div class="ml-3 text-xs font-medium">
-                        <div class="text-foregrounds-secondary" i18n>Royalties goes to</div>
+                        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalties goes to</div>
                         <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
                     </div>
                 </a>
 
                 <div class="px-5 py-3 mt-8 lg:mt-auto bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl w-max">
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>Total price</div>
+                    <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Total price</div>
                     <div class="flex items-center mt-2 text-lg" *ngIf="discount() < 1">
                         <div class="mr-2 font-bold line-through text-foregrounds-tertiary">{{ formatBest(getRecord()?.availablePrice || getRecord()?.price || 0) }}</div>
                         <div class="mr-2 font-bold truncate">{{ formatBest(calc(getRecord()?.availablePrice || getRecord()?.price || 0, discount())) }}</div>
@@ -132,7 +104,7 @@
                 Confirm and Lock
         </button>
 
-        <div class="mt-4 text-xs font-medium text-foregrounds-secondary">
+        <div class="mt-4 text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <span i18n>Your NFT will be locked for purchase for</span> {{lockTime}} <span i18n>minutes</span>.
         </div>
     </div>
@@ -168,30 +140,16 @@
             </div>
         </div>
 
-        <div class="mt-6 text-sm font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+        <div class="mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             Do not send funds from an exchange, always use wallets you fully control.
         </div>
 
-        <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto" *ngIf="!isExpired((transaction$ | async))">
-            <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Firefly
-                    </div>
-                </div>
-            </a>
-            <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Tanglepay
-                    </div>
-                </div>
-              </a>
-        </div>
+        <wen-wallet-deeplink
+            *ngIf="!isExpired((transaction$ | async))"
+            class="mt-6"
+            [targetAddress]="targetAddress"
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+        </wen-wallet-deeplink>
     </div>
 </ng-template>
 
@@ -242,7 +200,7 @@
 
         <div class="flex lg:items-center">
             <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
-                <wen-icon-check class="text-white"></wen-icon-check>
+                <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
             </div>
             <div class="ml-3.5 text-lg font-medium" i18n>Transaction complete. Congratulations.</div>
         </div>

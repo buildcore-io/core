@@ -2,50 +2,52 @@ import axios from 'axios';
 import * as functions from 'firebase-functions';
 import fs from 'fs';
 import { File, NFTStorage } from 'nft.storage';
+import { MatchRecord } from 'nft.storage/dist/src/lib/interface';
 import { Collection } from '../../../interfaces/models';
 import { Nft, PropStats } from '../../../interfaces/models/nft';
+
 
 export interface IpfsSuccessResult {
   metadata: string;
   image: string;
 }
 
-const nftStorageConfig: any = {
-  endpoint: 'https://api.nft.storage', // the default
+const nftStorageConfig = {
+  endpoint: new URL('https://api.nft.storage'), // the default
   token: functions.config()?.nftstorage?.token
 }
 
-const pinataConfig: any = {
+const pinataConfig = {
   key: functions.config()?.pinata?.key,
   secret: functions.config()?.pinata?.secret
 }
 
 export class IpfsService {
-  private async pinByHash(hashToPin: any, metadata: any): Promise<any> {
+  private async pinByHash<T>(hashToPin: string, metadata: MatchRecord<T, (input: unknown) => URL>) {
     const url = `https://api.pinata.cloud/pinning/pinByHash`;
     const body = {
-        hashToPin: hashToPin,
-        pinataMetadata: metadata
+      hashToPin: hashToPin,
+      pinataMetadata: metadata
     };
     return axios.post(url, body, {
-        headers: {
-            pinata_api_key: pinataConfig.key,
-            pinata_secret_api_key: pinataConfig.secret
-        }
+      headers: {
+        pinata_api_key: pinataConfig.key,
+        pinata_secret_api_key: pinataConfig.secret
+      }
     });
   };
 
-  private async pinJSONToIPFS(metadata: any): Promise<any> {
+  private async pinJSONToIPFS<T>(metadata: MatchRecord<T, (input: unknown) => URL>) {
     const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
     const body = {
-        pinataMetadata: metadata,
-        pinataContent: metadata
+      pinataMetadata: metadata,
+      pinataContent: metadata
     };
     return axios.post(url, body, {
-        headers: {
-            pinata_api_key: pinataConfig.key,
-            pinata_secret_api_key: pinataConfig.secret
-        }
+      headers: {
+        pinata_api_key: pinataConfig.key,
+        pinata_secret_api_key: pinataConfig.secret
+      }
     });
   };
 
@@ -53,6 +55,7 @@ export class IpfsService {
     const storage = new NFTStorage({ endpoint: nftStorageConfig.endpoint, token: nftStorageConfig.token });
 
     // Let's get the file from URL and detect the type.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const file: any = await fetch(fileUrl);
     const filename: string = nft.uid + (Math.random() * 1000);
     const fileStream = fs.createWriteStream('/tmp/' + filename);
@@ -61,7 +64,7 @@ export class IpfsService {
       file.body.on("error", reject);
       fileStream.on("finish", resolve);
     });
-    const finalMetadata: any = await storage.store({
+    const finalMetadata = await storage.store({
       name: nft.name,
       description: nft.description,
       author: nft.createdBy,
@@ -85,7 +88,7 @@ export class IpfsService {
   }
 
   private formatPropsStats(obj: PropStats) {
-    const out: any = {};
+    const out = {} as { [key: string]: string };
     for (const [key, o] of Object.entries(obj || {})) {
       out[key] = o.value;
     }
@@ -93,7 +96,7 @@ export class IpfsService {
     return out;
   }
 
-  public async fileUpload(fileUrl: string, nft: Nft, collection: Collection): Promise<IpfsSuccessResult|undefined> {
+  public async fileUpload(fileUrl: string, nft: Nft, collection: Collection): Promise<IpfsSuccessResult | undefined> {
     console.log('Uploading to storage: ' + fileUrl);
     const out = await this.nftUpload(fileUrl, nft, collection);
     if (out) {
@@ -107,7 +110,7 @@ export class IpfsService {
           metadata: metadata.data.IpfsHash,
           image: cid
         };
-      } catch(e) {
+      } catch (e) {
         console.log('Failed to pin ' + fileUrl, e);
       }
     }

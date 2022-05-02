@@ -9,7 +9,8 @@ import { TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import { scale } from "../scale.settings";
-import { cOn, dateToTimestamp, uOn } from "../utils/dateTime.utils";
+import { isProdEnv } from '../utils/config.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
@@ -22,7 +23,7 @@ import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): SchemaCollection {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<SchemaCollection>(), {
     name: Joi.string().allow(null, '').required(),
     description: Joi.string().allow(null, '').required(),
     space: CommonJoi.uidCheck(),
@@ -33,7 +34,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
       scheme: ['https']
     }).optional(),
     // On test we allow now.
-    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
+    availableFrom: Joi.date().greater(dayjs().add(isProdEnv ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),
@@ -66,7 +67,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
 
 export const createCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.cCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -132,7 +133,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
         approved: false,
         rejected: false,
         sold: true,
-        soldOn: admin.firestore.Timestamp.now(),
+        soldOn: serverTime(),
         owner: null,
         space: params.body.space,
         type: params.body.type,
@@ -164,7 +165,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
 
 export const updateCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.uCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -240,7 +241,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
 export const approveCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.approveCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -289,7 +290,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
 
 export const rejectCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.rejectCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);

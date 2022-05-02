@@ -14,6 +14,17 @@ export class ProposalInfoComponent {
   @Output() wenOnExportClick = new EventEmitter<void>();
   @Output() wenOnApprove = new EventEmitter<void>();
   @Output() wenOnReject = new EventEmitter<void>();
+  public descriptionLabels: string[] = [
+    $localize`Current Milestone`,
+    $localize`Commence Date`,
+    $localize`Start Date`,
+    $localize`End Date`,
+    $localize`Voting Type`,
+    $localize`Total Weight`
+  ];
+  public descriptionHelpers = {
+    milestone: $localize`Milestone`
+  };
 
   constructor(
     public deviceService: DeviceService,

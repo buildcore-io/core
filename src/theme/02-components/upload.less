@@ -4,7 +4,7 @@
 
 .ant-upload.ant-upload-btn {
   @apply bg-inputs-background dark:bg-inputs-background-dark text-icons-primary dark:text-icons-primary-dark
-    border-2 border-dashed border-inputs-border dark:border-inputs-border-dark transition-colors;
+    border-2 border-dashed border-inputs-border dark:border-inputs-border-dark transition-colors rounded-2xl;
 
   &:hover {
     @apply border-buttons-primary-on-hover dark:border-buttons-primary-on-hover-dark;
@@ -19,7 +19,8 @@
   }
 }
 
-.wen-avatar-uploader {
+.wen-avatar-uploader,
+.wen-icon-uploader {
   .ant-upload,
   .ant-upload-list-picture-card-container {
     @apply rounded-full w-32 h-32;

@@ -34,23 +34,15 @@
     </ais-stats>
   </div>
 
-
   <header class="header" id="header">
     <div class="header-searchbox">
       <app-search-box></app-search-box>
     </div>
   </header>
 
-
-
-  <!--  </div>-->
-
-  <!--  </div>-->
   <main class="container">
 
     <section class="container-results mr-10">
-      <!--      <header class="container-header container-options">-->
-      <!--      </header>-->
 
       <ais-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits">
@@ -60,66 +52,12 @@
             <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             >
 
-              <!--                      <ol class="ais-Hits-list">-->
-              <!--            <li *ngFor="let hit of hits" class="ais-Hits-item">-->
-
-              <!--              <article class="hit">-->
-
-              <!--                <header class="hit-image-container">-->
-              <!--                  <img [src]="hit.bannerUrl || hit.media || '/assets/mocks/no_banner.jpg'" [alt]="hit.name" class="hit-image" />-->
-              <!--                </header>-->
-
-
-
-              <!--                <div class="hit-info-container">-->
-
-              <!--                  <p class="hit-category">-->
-              <!--                    category {{ hit.category }}-->
-              <!--                  </p>-->
-
-
-              <!--                              {{ hit | json }}-->
-              <!--                  <h1>-->
-              <!--                    <ais-highlight-->
-              <!--                      attribute="name"-->
-              <!--                      [hit]="hit"-->
-              <!--                    ></ais-highlight>-->
-              <!--                  </h1>-->
-
-
-
-
-              <!--                    <p class="hit-description">-->
-              <!--                      <app-snippet-->
-              <!--                        attribute="description"-->
-              <!--                        [hit]="hit"-->
-              <!--                      ></app-snippet>-->
-              <!--                    </p>-->
-
-              <!--                  <p class="hit-description">-->
-              <!--                    <ais-highlight attribute="description" [hit]="hit"></ais-highlight>-->
-              <!--                  </p>-->
-
               <wen-collection-card class="outline-none w-full h-full"
                                    *ngFor="let hit of hits; trackBy: trackByUid"
                                    [collection]="hit"
                                    [fullWidth]="(deviceService.isMobile$ | async) || false">
               </wen-collection-card>
-
-              <!--                  <footer>-->
-              <!--                    <p>-->
-              <!--                      <span class="hit-em">$&nbsp;</span>-->
-              <!--                      <strong>{{ hit.price | currency: 'USD':'' }}</strong>-->
-              <!--                    </p>-->
-              <!--                  </footer>-->
-
-              <!--                </div>-->
-
-              <!--              </article>-->
-
             </div>
-            <!--            </li>-->
-            <!--          </ol>-->
 
           </div>
         </ng-template>
@@ -167,6 +105,7 @@
           <nz-collapse>
             <nz-collapse-panel
               nzHeader="Saletype"
+              nzActive="true"
             >
               <ais-refinement-list
                 attribute="access"
@@ -177,6 +116,7 @@
 
             <nz-collapse-panel
               nzHeader="Spaces"
+              nzActive="true"
             >
                 <ais-refinement-list
                   attribute="space"
@@ -189,6 +129,7 @@
 
             <nz-collapse-panel
               nzHeader="Category"
+              nzActive="true"
             >
               <ais-refinement-list
                 attribute="category"
@@ -197,7 +138,6 @@
             </nz-collapse-panel>
 
           </nz-collapse>
-
 
           <ais-panel header="Price range">
             <ais-range-slider
@@ -401,7 +341,7 @@
 </div>
 
 <div class="mt-10 xl:grid place-items-start">
-    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(collections$ | async)">
+    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="!isLoading(collections$ | async)">
       {{ ((collections$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>collections</span>
     </p>
     <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"

@@ -45,6 +45,10 @@ export const enum WEN_FUNC {
   orderNft = "orderNft",
   openBid = "openBid",
   validateAddress = "validateAddress",
+
+  // TOKEN functions
+  cToken = 'cToken',
+  uToken = 'uToken'
 }
 
 export interface cMemberNotExists {

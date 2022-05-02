@@ -7,6 +7,7 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
+import { createToken, updateToken } from './controls/token.control';
 import { finaliseAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, voidExpiredOrders } from "./cron";
 import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
@@ -75,3 +76,7 @@ exports['trigger_milestoneTransactionWrite'] = milestoneTransactionWrite;
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;
 exports['trigger_nftWrite'] = nftWrite;
+
+// Token functions
+exports[WEN_FUNC.cToken] = createToken
+exports[WEN_FUNC.uToken] = updateToken

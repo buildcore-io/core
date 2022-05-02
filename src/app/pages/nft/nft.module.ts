@@ -3,11 +3,12 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
+import { CountdownModule } from '@components/countdown/countdown.module';
+import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
 import { NftBidModule } from '@components/nft/components/nft-bid/nft-bid.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
-import { NftCountdownModule } from '@components/nft/components/nft-countdown/nft-countdown.module';
 import { NftPreviewModule } from '@components/nft/components/nft-preview/nft-preview.module';
 import { NftSaleModule } from '@components/nft/components/nft-sale/nft-sale.module';
 import { RadioModule } from '@components/radio/radio.module';
@@ -92,7 +93,8 @@ import { DataService } from './services/data.service';
     NftSaleModule,
     CollapseModule,
     NgChartsModule,
-    NftCountdownModule
+    DescriptionModule,
+    CountdownModule
   ],
   providers: [
     DataService

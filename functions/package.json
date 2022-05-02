@@ -1,12 +1,12 @@
 {
   "name": "soonaverse-functions",
   "scripts": {
-    "lint": "eslint --ext .js,.ts .",
+    "lint": "eslint --ext .js,.ts src",
     "build": "tsc",
     "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only functions,firestore,storage,ui",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "test": "jest test/ --runInBand",
+    "test": "jest token.spec.ts",
     "test:watch": "jest test/ --watch-all --detect-open-handles",
     "deploy": "firebase deploy --only functions -f",
     "logs": "firebase functions:log"

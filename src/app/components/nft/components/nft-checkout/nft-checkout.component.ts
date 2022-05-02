@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { NftApi } from '@api/nft.api';
@@ -110,7 +109,6 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     private router: Router,
     private notification: NotificationService,
     private cd: ChangeDetectorRef,
-    private sanitizer: DomSanitizer,
     private orderApi: OrderApi,
     private nftApi: NftApi,
     private fileApi: FileApi,
@@ -130,7 +128,6 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
           removeItem(StorageItem.CheckoutTransaction);
           return;
         }
-
         if (val.linkedTransactions?.length > 0) {
           this.currentStep = StepType.WAIT;
           // Listen to other transactions.
@@ -142,7 +139,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
             listeningToTransaction.push(tranId);
             this.orderApi.listen(tranId).pipe(untilDestroyed(this)).subscribe(<any> this.transaction$);
           }
-        } else if (!val.linkedTransactions) {
+        } else if (!val.linkedTransactions || val.linkedTransactions.length === 0) {
           this.currentStep = StepType.TRANSACTION;
         }
 
@@ -324,23 +321,6 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
 
   public getRecord(): Nft|null|undefined {
     return this.purchasedNft || this.nft;
-  }
-
-  public fireflyDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-           '?amount=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi');
-  }
-
-  public tanglePayDeepLink(): SafeUrl {
-    if (!this.targetAddress || !this.targetAmount) {
-      return '';
-    }
-
-    return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress + '?value=' + (this.targetAmount / 1000 / 1000) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 
   public async proceedWithOrder(): Promise<void> {

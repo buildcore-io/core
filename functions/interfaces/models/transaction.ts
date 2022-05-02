@@ -31,9 +31,9 @@ export interface VoteTransaction {
 export interface WalletResult {
   createdOn: Timestamp;
   processedOn: Timestamp;
-  chainReference?: string|null;
+  chainReference?: string | null;
   chainReferences?: string[];
-  error?: any|null;
+  error?: any | null;
   confirmed: boolean;
   count: number;
 }
@@ -86,12 +86,15 @@ export interface BillPaymentTransaction {
   void: boolean;
   previusOwnerEntity?: 'space' | 'member',
   previusOwner?: EthAddress,
+  ownerEntity?: 'space' | 'member',
+  owner?: EthAddress,
   chainReference: string;
   walletReference: WalletResult;
   sourceTransaction: string;
   nft?: EthAddress;
   royalty: boolean,
   collection?: EthAddress;
+  delay: number;
 }
 
 export interface CreditPaymentTransaction {
@@ -107,12 +110,32 @@ export interface CreditPaymentTransaction {
   collection?: EthAddress;
 }
 
+export interface IOTATangleTransaction {
+  tranId: string;
+  network: string;
+  payment: boolean;
+  ipfsMedia: string;
+  ipfsMetadata: string;
+  refund: boolean;
+  member?: EthAddress;
+  space?: EthAddress;
+  previusOwnerEntity?: 'space' | 'member';
+  previusOwner?: EthAddress;
+  ownerEntity?: 'space' | 'member';
+  owner?: EthAddress;
+  nft?: EthAddress;
+  royalty: boolean;
+  collection?: EthAddress;
+}
+
+export type TransactionPayload = VoteTransaction | BadgeTransaction | OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction | IOTATangleTransaction;
+
 export interface Transaction extends BaseRecord {
   type: TransactionType;
   member?: EthAddress;
   space?: EthAddress;
   linkedTransactions: EthAddress[];
-  payload: any; // VoteTransaction|BadgeTransaction|OrderTransaction|PaymentTransaction|BillPaymentTransaction|CreditPaymentTransaction;
+  payload: any; // TransactionPayload
 }
 
 export interface TransactionBillPayment extends Transaction {

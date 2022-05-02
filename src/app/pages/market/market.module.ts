@@ -9,6 +9,7 @@ import { MobileSearchModule } from '@components/mobile-search/mobile-search.modu
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
+import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
@@ -22,6 +23,7 @@ import { MarketRoutingModule } from './market-routing.module';
 import { CollectionsPage } from './pages/collections/collections.page';
 import { MarketPage } from './pages/market/market.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
+import { TokensPage } from './pages/tokens/tokens.page';
 import { FilterService } from './services/filter.service';
 import {NgAisModule} from "angular-instantsearch";
 import {SearchBox} from "../../@algolia/search.component";
@@ -32,7 +34,8 @@ import {SortBy} from "../../@algolia/sort.component";
     MarketPage,
     CollectionsPage,
     NFTsPage,
-    SearchBox, SortBy,  // components integrated with Algolia
+    SearchBox, SortBy,  // components integrated with Algolia will move from here....
+    TokensPage
   ],
   imports: [
     CommonModule,
@@ -57,7 +60,7 @@ import {SortBy} from "../../@algolia/sort.component";
     NftCardModule,
     NgAisModule,
     NzCollapseModule,
-
+    TokenRowModule
   ],
   providers: [FilterService]
 })

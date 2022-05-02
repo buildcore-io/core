@@ -11,6 +11,7 @@ export interface MilestoneTransaction {
   milestone: number;
   inputs: MilestoneTransactionEntry[],
   outputs: MilestoneTransactionEntry[],
+  processed: boolean;
 }
 export interface Milestone {
   transactions: {

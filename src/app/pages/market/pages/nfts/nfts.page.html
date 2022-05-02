@@ -35,17 +35,9 @@
     </ais-stats>
   </div>
 
-
-  <!--          <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark mt-6"></div>-->
-
   <header class="header" id="header">
     <div class="header-searchbox">
       <app-search-box></app-search-box>
-      <!--      <ais-search-box placeholder="spaces, awards, proposals or members…"-->
-      <!--                      [searchAsYouType]="true"-->
-      <!--                      [autofocus]="true"-->
-      <!--                      resetTitle="Clear"-->
-      <!--      ></ais-search-box>-->
     </div>
   </header>
   <main class="container">
@@ -59,76 +51,13 @@
             <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             >
 
-              <!--                      <ol class="ais-Hits-list">-->
-              <!--            <li *ngFor="let hit of hits" class="ais-Hits-item">-->
-
-              <!--              <article class="hit">-->
-
-              <!--                <header class="hit-image-container">-->
-              <!--                  <img [src]="hit.bannerUrl || hit.media || '/assets/mocks/no_banner.jpg'" [alt]="hit.name" class="hit-image" />-->
-              <!--                </header>-->
-
-
-
-              <!--                <div class="hit-info-container">-->
-
-              <!--                  <p class="hit-category">-->
-              <!--                    category {{ hit.category }}-->
-              <!--                  </p>-->
-
-
-              <!--                              {{ hit | json }}-->
-              <!--                  <h1>-->
-              <!--                    <ais-highlight-->
-              <!--                      attribute="name"-->
-              <!--                      [hit]="hit"-->
-              <!--                    ></ais-highlight>-->
-              <!--                  </h1>-->
-
-
-
-
-              <!--                    <p class="hit-description">-->
-              <!--                      <app-snippet-->
-              <!--                        attribute="description"-->
-              <!--                        [hit]="hit"-->
-              <!--                      ></app-snippet>-->
-              <!--                    </p>-->
-
-              <!--                  <p class="hit-description">-->
-              <!--                    <ais-highlight attribute="description" [hit]="hit"></ais-highlight>-->
-              <!--                  </p>-->
-
-              <!--              <wen-collection-card class="outline-none w-full h-full"-->
-              <!--                                   *ngFor="let hit of hits"-->
-              <!--                                   [collection]="convertToSoonaverseModel(hit)"-->
-              <!--                                   [fullWidth]="(deviceService.isMobile$ | async) || false">-->
-              <!--              </wen-collection-card>-->
-
-
               <wen-nft-card class="outline-none w-full h-full"
                             *ngFor="let hit of hits; trackBy: trackByUid"
                             [nft]="hit"
                             [collection]="getCollection(hit.collection)"
-
               >
               </wen-nft-card>
-
-              <!--                  <footer>-->
-              <!--                    <p>-->
-              <!--                      <span class="hit-em">$&nbsp;</span>-->
-              <!--                      <strong>{{ hit.price | currency: 'USD':'' }}</strong>-->
-              <!--                    </p>-->
-              <!--                  </footer>-->
-
-              <!--                </div>-->
-
-              <!--              </article>-->
-
             </div>
-            <!--            </li>-->
-            <!--          </ol>-->
-
           </div>
         </ng-template>
       </ais-hits>
@@ -173,6 +102,7 @@
           <nz-collapse nzExpandIconPosition="right">
             <nz-collapse-panel
               nzHeader="Spaces"
+              nzActive="true"
             >
               <ais-refinement-list
                 attribute="space"
@@ -264,11 +194,11 @@
 </div>
 
 <div class="mt-10 lg:grid place-items-start">
-  <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(nfts$ | async)">
-    {{ ((nfts$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
-  </p>
-  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
-       (scrolled)="onScroll()">
+    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="!isLoading(nfts$ | async)">
+      {{ ((nfts$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
+    </p>
+    <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        (scrolled)="onScroll()">
 
     <nz-skeleton *ngIf="isLoading(nfts$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
                  [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
