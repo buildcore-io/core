@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
+import { last } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
@@ -104,7 +105,7 @@ export class ProcessingService {
       const pay: TransactionPayment = <TransactionPayment>previousHighestPayDoc.data();
 
       // Let's get the actual order.
-      const refOrder = admin.firestore().collection(COL.TRANSACTION).doc(pay.payload.sourceTransaction);
+      const refOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(pay.payload.sourceTransaction)!);
       const sfDocOrder = await this.transaction.get(refOrder);
       const data = <Transaction | undefined>sfDocOrder.data()
       if (!data) {
@@ -183,7 +184,9 @@ export class ProcessingService {
       } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
         const payments = await admin.firestore().collection(COL.TRANSACTION)
           .where('payload.invalidPayment', '==', false)
-          .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
+          .where('payload.sourceTransaction', 'array-contains', transaction.uid)
+          .orderBy('payload.amount', 'desc')
+          .get();
         if (payments.size === 0) {
           // No orders, we just void.
           const data = <Transaction>sfDoc.data();
@@ -228,7 +231,7 @@ export class ProcessingService {
         targetAddress: (<OrderPayBillCreditTransaction>order.payload).targetAddress,
         reconciled: true,
         void: false,
-        sourceTransaction: order.uid,
+        sourceTransaction: [order.uid],
         chainReference: tran.msgId,
         nft: (<OrderPayBillCreditTransaction>order.payload).nft || null,
         collection: (<OrderPayBillCreditTransaction>order.payload).collection || null,
@@ -277,7 +280,7 @@ export class ProcessingService {
           previusOwnerEntity: orderPayload.beneficiary,
           previusOwner: orderPayload.beneficiaryUid,
           targetAddress: orderPayload.beneficiaryAddress,
-          sourceTransaction: order.uid,
+          sourceTransaction: [order.uid],
           nft: orderPayload.nft || null,
           reconciled: true,
           royalty: false,
@@ -308,7 +311,7 @@ export class ProcessingService {
           amount: royaltyAmt,
           sourceAddress: orderPayload.targetAddress,
           targetAddress: orderPayload.royaltiesSpaceAddress,
-          sourceTransaction: order.uid,
+          sourceTransaction: [order.uid],
           previusOwnerEntity: orderPayload.beneficiary,
           previusOwner: orderPayload.beneficiaryUid,
           reconciled: true,
@@ -351,7 +354,7 @@ export class ProcessingService {
           amount: paymentPayload.amount,
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
-          sourceTransaction: payment.uid,
+          sourceTransaction: [payment.uid],
           nft: paymentPayload.nft || null,
           reconciled: true,
           void: false,
@@ -452,7 +455,7 @@ export class ProcessingService {
 
       // We have to set link on the past order.
       if (!sameOwner) {
-        const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.payload.sourceTransaction);
+        const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(previousHighestPay.payload.sourceTransaction)!);
         const refHighTranOrderDoc = await this.transaction.get(refHighTranOrder);
         if (refHighTranOrderDoc.data()) {
           this.updates.push({
@@ -581,7 +584,7 @@ export class ProcessingService {
             }, serverTime(), sameOwner);
             // We have to set link on the past order.
             if (!sameOwner) {
-              const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(highestPay.payload.sourceTransaction);
+              const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(highestPay.payload.sourceTransaction)!);
               const refHighTranOrderDoc = await this.transaction.get(refHighTranOrder);
               if (refHighTranOrderDoc.data()) {
                 this.updates.push({
