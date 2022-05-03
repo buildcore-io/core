@@ -341,7 +341,7 @@ export class ProcessingService {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
-    const paymentPayload = <PaymentTransaction>payment.payload
+    const paymentPayload = payment.payload
     let transOut: Transaction | undefined;
     if (paymentPayload.amount > 0) {
       const tranId: string = getRandomEthAddress();
@@ -358,6 +358,7 @@ export class ProcessingService {
           targetAddress: tran.from.address,
           sourceTransaction: [payment.uid],
           nft: paymentPayload.nft || null,
+          token: paymentPayload.token || null,
           reconciled: true,
           void: false,
           collection: paymentPayload.collection || null,
@@ -739,6 +740,10 @@ export class ProcessingService {
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
                   await this.createPayment(orderData, match);
                   await this.updateTokenDistribution(orderData, match)
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
+                  const payment = await this.createPayment(orderData, match);
+                  await this.createCredit(payment, match);
+                  await this.markAsReconciled(orderData, match.msgId);
                 }
               } else {
                 // Now process all invalid orders.

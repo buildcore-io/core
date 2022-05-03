@@ -83,6 +83,9 @@ export const WenError = {
   token_symbol_must_be_globally_unique: { code: 2074, key: 'Token symbol must be globally unique.' },
   no_token_public_sale: { code: 2075, key: 'Token not on public sale.' },
   not_enough_funds: { code: 2076, key: 'Not enough funds to credit' },
-  token_not_in_cool_down_period: { code: 2077, key: 'Token not in cool down period.' }
+  token_not_in_cool_down_period: { code: 2077, key: 'Token not in cool down period.' },
+  no_tokens_available_for_airdrop: { code: 2078, key: 'No more tokens are available for airdrop.' },
+  token_already_airdropped_for_member: { code: 2079, key: 'Token already airdropped for member.' },
+  airdrop_already_claimed: { code: 2090, key: 'Airdrop was claimed before.' }
 }
 

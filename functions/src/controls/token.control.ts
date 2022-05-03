@@ -15,16 +15,9 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Token, TokenAllocation, TokenDistribution, TokenStatus } from './../../interfaces/models/token';
-
-const assertIsGuardian = async (space: string, member: string) => {
-  const guardianDoc = (await admin.firestore().doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`).get());
-  if (!guardianDoc.exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
-}
+import { Token, TokenAirdrop, TokenAllocation, TokenDistribution, TokenStatus } from './../../interfaces/models/token';
 
 const createSchema = () => ({
   name: Joi.string().required(),
@@ -88,8 +81,8 @@ export const createToken = functions.runWith({
     const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength + params.body.coolDownLength, 'ms')
     params.body.coolDownEnd = dateToTimestamp(coolDownEnd)
   }
-  const tokenUid: string = getRandomEthAddress();
-  const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.AVAILABLE, totalDeposit: 0 }
+  const tokenUid = getRandomEthAddress();
+  const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.AVAILABLE, totalDeposit: 0, totalAirdropped: 0 }
   const data = keywords(cOn(merge(cleanParams(params.body), extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKENS).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKENS}/${tokenUid}`).get()).data()
@@ -243,3 +236,126 @@ export const creditToken = functions.runWith({
 
   return <Transaction>(await creditTranDoc.get()).data()
 });
+
+const airdropTokenSchema = ({
+  token: Joi.string().required(),
+  count: Joi.number().min(0).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
+  recipient: Joi.string().required(),
+})
+
+const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
+  const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
+  const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
+  return token.totalSupply - totalPublicSupply - token.totalAirdropped >= count
+}
+
+export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.airdropToken) })
+  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+    appCheck(WEN_FUNC.orderToken, context);
+    const params = await decodeAuth(req);
+    const owner = params.address.toLowerCase();
+    const schema = Joi.object(airdropTokenSchema);
+    assertValidation(schema.validate(params.body));
+
+    const airdropDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.AIRDROPS}/${params.body.recipient}`);
+
+    await admin.firestore().runTransaction(async (transaction) => {
+      const airdropDoc = await transaction.get(airdropDocRef);
+
+      if (airdropDoc.exists) {
+        throw throwInvalidArgument(WenError.token_already_airdropped_for_member)
+      }
+
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`);
+      const token = <Token>(await transaction.get(tokenDocRef)).data();
+
+      if (!token) {
+        throw throwInvalidArgument(WenError.invalid_params);
+      }
+      await assertIsGuardian(token.space, owner);
+
+      if (!hasAvailableTokenToAirdrop(token, params.body.count)) {
+        throw throwInvalidArgument(WenError.no_tokens_available_for_airdrop);
+      }
+
+      transaction.update(tokenDocRef, { totalAirdropped: admin.firestore.FieldValue.increment(params.body.count) })
+      const airdropData: TokenAirdrop = {
+        parentId: token.uid,
+        parentCol: COL.TOKENS,
+        member: params.body.recipient,
+        tokenOwned: params.body.count,
+        claimed: false
+      }
+      transaction.create(airdropDocRef, airdropData)
+    })
+
+    return <TokenAirdrop>(await airdropDocRef.get()).data()
+  });
+
+const claimAirdropTokenSchema = ({
+  token: Joi.string().required()
+})
+
+export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_FUNC.claimAirdroppedToken) })
+  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+    appCheck(WEN_FUNC.orderToken, context);
+    const params = await decodeAuth(req);
+    const owner = params.address.toLowerCase();
+    const schema = Joi.object(claimAirdropTokenSchema);
+    assertValidation(schema.validate(params.body));
+
+    const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get();
+    if (!tokenDoc.exists) {
+      throw throwInvalidArgument(WenError.invalid_params);
+    }
+
+    const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${tokenDoc.data()?.space}`).get()
+
+    const tranId = getRandomEthAddress()
+    const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
+
+    await admin.firestore().runTransaction(async (transaction) => {
+      const airdropDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.AIRDROPS}/${owner}`);
+      const airdropDoc = await transaction.get(airdropDocRef);
+
+      if (!airdropDoc.exists) {
+        throw throwInvalidArgument(WenError.invalid_params)
+      }
+
+      if (airdropDoc.data()?.claimed) {
+        throw throwInvalidArgument(WenError.airdrop_already_claimed)
+      }
+
+      transaction.update(airdropDocRef, { claimed: true })
+
+      const newWallet = new WalletService();
+      const targetAddress = await newWallet.getNewIotaAddressDetails();
+      const orderData = <Transaction>{
+        type: TransactionType.ORDER,
+        uid: tranId,
+        member: owner,
+        space: tokenDoc.data()?.space,
+        createdOn: serverTime(),
+        payload: {
+          type: TransactionOrderType.TOKEN_AIRDROP,
+          amount: MIN_IOTA_AMOUNT,
+          targetAddress: targetAddress.bech32,
+          beneficiary: 'space',
+          beneficiaryUid: tokenDoc.data()?.space,
+          beneficiaryAddress: spaceDoc.data()?.validatedAddress,
+          // TODO when does this expire???
+          // expiresOn: dateToTimestamp(dayjs(tokenDoc.saleStartDate?.toDate()).add(tokenDoc.saleLength || 0, 'ms')),
+          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+          reconciled: false,
+          void: false,
+          chainReference: null,
+          token: tokenDoc.id
+        },
+        linkedTransactions: []
+      }
+      transaction.create(orderDoc, orderData)
+    })
+
+    return <Transaction>(await (orderDoc.get())).data();
+  });
+

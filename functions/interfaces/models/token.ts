@@ -32,6 +32,7 @@ export interface Token extends BaseRecord {
   readonly overviewGraphics?: string;
   readonly status: TokenStatus;
   readonly totalDeposit: number;
+  readonly totalAirdropped: number;
 }
 
 export interface TokenDistribution extends BaseSubCollection {
@@ -42,3 +43,10 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly tokenOwned?: number;
   readonly reconciled?: boolean;
 }
+
+export interface TokenAirdrop extends BaseSubCollection {
+  readonly member?: EthAddress;
+  readonly tokenOwned?: number;
+  readonly claimed?: boolean;
+}
+
