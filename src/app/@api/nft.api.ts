@@ -50,7 +50,8 @@ export class NftApi extends BaseApi<Nft> {
     ).valueChanges().pipe(switchMap(async(obj: any[]) => {
       let out: SuccesfullOrdersWithFullHistory[] = [];
       for (const b of obj) {
-        const order: DocumentSnapshot<TransactionOrder> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());
+        const sourceTransaction = b.payload.sourceTransaction[b.payload.sourceTransaction.length - 1]
+        const order: DocumentSnapshot<TransactionOrder> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(sourceTransaction).get());
         const member: DocumentSnapshot<Member> = <any> await firstValueFrom(this.afs.collection(COL.MEMBER).doc(b.member).get());
         const o: SuccesfullOrdersWithFullHistory = {
           newMember: member.data()!,
@@ -137,11 +138,13 @@ export class NftApi extends BaseApi<Nft> {
       let out: Transaction[] = [];
       for (const b of obj) {
         // TODO Retrieve in parallel.
-        const tran: DocumentSnapshot<any> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(b.payload.sourceTransaction).get());
+        let sourceTransaction = b.payload.sourceTransaction[b.payload.sourceTransaction.length - 1]
+        const tran: DocumentSnapshot<any> = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(sourceTransaction).get());
         // If payment we have to got to order
         let tran2: DocumentSnapshot<TransactionOrder>|undefined = undefined;
         if (tran.data()?.type === TransactionType.PAYMENT) {
-          tran2 = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(tran.data()?.payload.sourceTransaction).get());
+          sourceTransaction = tran.data()?.payload.sourceTransaction[tran.data()?.payload.sourceTransaction.length - 1]
+          tran2 = <any> await firstValueFrom(this.afs.collection(COL.TRANSACTION).doc(sourceTransaction).get());
         }
 
         if (
