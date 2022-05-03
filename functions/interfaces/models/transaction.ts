@@ -72,7 +72,7 @@ export interface PaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: string;
+  sourceTransaction: string[];
   nft?: EthAddress;
   collection?: EthAddress;
   invalidPayment: boolean;
@@ -90,7 +90,7 @@ export interface BillPaymentTransaction {
   owner?: EthAddress,
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: string;
+  sourceTransaction: string[];
   nft?: EthAddress;
   royalty: boolean,
   collection?: EthAddress;
@@ -105,7 +105,7 @@ export interface CreditPaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: string;
+  sourceTransaction: string[];
   nft?: EthAddress;
   collection?: EthAddress;
 }
