@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MemberApi } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
@@ -6,6 +6,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NewService } from '@pages/token/services/new.service';
 
 export enum StepType {
+  INTRODUCTION = 'Introduction',
   METRICS = 'Metrics',
   OVERVIEW = 'Overview',
   SUMMARY = 'Summary'
@@ -19,8 +20,9 @@ export enum StepType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewPage implements OnInit {
-  public currentStep = StepType.METRICS;
+  public currentStep = StepType.SUMMARY;
   public sections = [
+    { step: StepType.INTRODUCTION, label: $localize`Introduction` },
     { step: StepType.METRICS, label: $localize`Metrics` },
     { step: StepType.OVERVIEW, label: $localize`Overview` },
     { step: StepType.SUMMARY, label: $localize`Summary` }
@@ -29,7 +31,6 @@ export class NewPage implements OnInit {
   constructor(
     public deviceService: DeviceService,
     public newService: NewService,
-    private cd: ChangeDetectorRef,
     private auth: AuthService,
     private memberApi: MemberApi
   ) {}
@@ -46,18 +47,7 @@ export class NewPage implements OnInit {
     return StepType;
   }
 
-  public continue(): void {
-    if (this.currentStep === StepType.METRICS) {
-      this.currentStep = StepType.OVERVIEW;
-    } else if (this.currentStep === StepType.OVERVIEW) {
-      this.currentStep = StepType.SUMMARY;
-    }
-    this.cd.markForCheck();
-  }
-
   public submit(): void {
     console.log('Submit');
   }
-
-  
 }

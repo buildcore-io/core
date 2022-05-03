@@ -4,7 +4,7 @@
           <span i18n>Include bids </span>
     </label>
 
-    <button nz-button nzType="default" nzSize="default" (click)="null">
+    <button nz-button nzType="default" nzSize="default" (click)="exportTransactions()">
         <wen-icon-file-export></wen-icon-file-export>
         <div class="text-lg font-semibold ml-2.5" i18n>Export CSV</div>
     </button>
@@ -27,7 +27,7 @@
                 <td>
                     <div class="flex items-center">
                         <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
-                          class="border-2 border-tags-border dark:border-tags-borde-dark min-w-8"
+                          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
                           nzShape="circle"
                           [nzSize]="32">
                         </nz-avatar>

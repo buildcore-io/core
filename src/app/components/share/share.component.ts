@@ -2,6 +2,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 import { DeviceService } from '@core/services/device';
 import { copyToClipboard } from '@core/utils/tools.utils';
 
+export enum ShareComponentSize {
+  SMALL = 'small',
+  DEFAULT = 'default',
+  LARGE = 'large'
+}
+
 @Component({
   selector: 'wen-share',
   templateUrl: './share.component.html',
@@ -11,7 +17,7 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 export class ShareComponent {
   @Input() shareText = '';
   @Input() shareUrl = '';
-  @Input() size: 'small' | 'default' | 'large' = 'default';
+  @Input() size: ShareComponentSize = ShareComponentSize.DEFAULT;
   public isCopied = false;
 
   constructor(
@@ -19,6 +25,9 @@ export class ShareComponent {
     private cd: ChangeDetectorRef
   ) { }
 
+  public get shareSizes(): typeof ShareComponentSize {
+    return ShareComponentSize;
+  }
 
   public getShareUrl(): string {
     return 'http://twitter.com/share?text=' + this.shareText + '&url=' + this.shareUrl + '&hashtags=soonaverse';

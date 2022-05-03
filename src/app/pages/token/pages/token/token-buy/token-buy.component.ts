@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ShareComponentSize } from '@components/share/share.component';
 
 @Component({
   selector: 'wen-token-buy',
@@ -12,5 +13,9 @@ export class TokenBuyComponent {
 
   public getShareUrl(): string {
     return window.location.href;
+  }
+  
+  public get shareSizes(): typeof ShareComponentSize {
+    return ShareComponentSize;
   }
 }

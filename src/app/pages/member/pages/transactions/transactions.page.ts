@@ -27,4 +27,9 @@ export class TransactionsPage {
   public onScroll(): void {
     return;
   }
+
+  // TODO: will be implemented once table is filled with correct data
+  public exportTransactions(): void {
+    return;
+  }
 }

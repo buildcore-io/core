@@ -35,6 +35,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NgChartsModule } from 'ng2-charts';
 import { AirdropsPage } from './pages/airdrops/airdrops.page';
 import { MetricsPage } from './pages/metrics/metrics.page';
+import { NewIntroductionComponent } from './pages/new/introduction/introduction.component';
 import { NewMetricsComponent } from './pages/new/metrics/metrics.component';
 import { NewPage } from './pages/new/new.page';
 import { NewOverviewComponent } from './pages/new/overview/overview.component';
@@ -59,7 +60,8 @@ import { TokenRoutingModule } from './token-routing.module';
     NewOverviewComponent,
     NewSummaryComponent,
     TokenBuyComponent,
-    TokenProgressComponent
+    TokenProgressComponent,
+    NewIntroductionComponent
   ],
   imports: [
     CommonModule,

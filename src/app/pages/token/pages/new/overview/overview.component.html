@@ -1,21 +1,30 @@
 <div class="py-4" nz-row [nzGutter]="24">
     <div
-        class="space-y-4"
         nz-col
         nzFlex="auto"
         [ngStyle]="{
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
-        <nz-card i18n-nzTitle nzTitle="Token info">
-            <div class="space-y-4">
+
+        <nz-card *ngFor="let description of newService.descriptions?.controls; let i = index; let first = first; let last = last"
+            class="relative mt-4">
+            <nz-card-meta
+                [nzTitle]="getDescriptionTitle(i+1)"
+            ></nz-card-meta>
+            <wen-icon-trash
+                *ngIf="!first"
+                class="absolute top-6 right-8 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
+                (click)="newService.removeDescription(i)"
+            ></wen-icon-trash>
+            <div class="pt-4">
                 <nz-form-item>
                     <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
                         <input
                             nz-input
                             nzSize="large"
                             i18n-placeholder
-                            placeholder="Title"
-                            [formControl]="newService.titleControl"
+                            placeholder="Token description title"
+                            [formControl]="newService.gForm(description, 'title')"
                         />
                     </nz-form-control>
                 </nz-form-item>
@@ -27,19 +36,37 @@
                             i18n-placeholder
                             placeholder="Token description"
                             rows="4"
-                            [formControl]="newService.descriptionControl"
+                            [formControl]="newService.gForm(description, 'description')"
                         ></textarea>
                     </nz-form-control>
                 </nz-form-item>
             </div>
         </nz-card>
-    </div>
 
-        <div
-            class="mt-4 space-y-4 lg:mt-0 lg:max-w-450"
-            nz-col
-            [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+        <button
+            nz-button
+            *ngIf="(newService.descriptions?.controls?.length || 0) < newService.maxDescriptionsCount"
+            nzType="link"
+            class="mt-4 wen-secondary"
+            (click)="newService.addDescription()"
         >
+            <wen-icon-plus class="mr-0.5"></wen-icon-plus>
+            <span i18n>Add another description</span>
+        </button>
+
+        <button *ngIf="deviceService.isDesktop$ | async"
+            nz-button nzType="primary" nzSize="large" class="w-full mt-12" (click)="wenOnTabChange.emit(stepTypes.SUMMARY)" i18n>
+                Continue
+        </button>
+    </div>
+    
+    <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark my-8"></div>
+    
+    <div
+        class="mt-4 space-y-4 lg:mt-0 lg:max-w-450"
+        nz-col
+        [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+    >
         <nz-card [nzBordered]="false">
             <nz-card-meta
                 i18n-nzTitle
@@ -113,3 +140,8 @@
         </nz-card>
     </div>
 </div>
+
+<button *ngIf="deviceService.isMobile$ | async"
+    nz-button nzType="primary" nzSize="large" class="w-full mt-12" (click)="wenOnTabChange.emit(stepTypes.SUMMARY)" i18n>
+        Continue
+</button>
