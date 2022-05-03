@@ -6,7 +6,7 @@ import { merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
@@ -15,6 +15,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
+import { allPaymentsQuery, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenPurchase, TokenStatus } from './../../interfaces/models/token';
 
@@ -145,42 +146,49 @@ export const orderToken = functions.runWith({
   const schema = Joi.object(orderOrCreditTokenSchema);
   assertValidation(schema.validate(params.body));
 
-  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()).data()
-  if (!token) {
+  const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()
+  if (!tokenDoc.exists) {
     throw throwInvalidArgument(WenError.invalid_params)
   }
+  const token = <Token>tokenDoc.data()
   if (!tokenOrderIsWithinPublicSalePeriod(token)) {
     throw throwInvalidArgument(WenError.no_token_public_sale)
   }
 
-  const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
-  const newWallet = new WalletService();
-  const targetAddress = await newWallet.getNewIotaAddressDetails();
-  const tranId = getRandomEthAddress();
+  const tranId = tokenOrderTransactionDocId(owner, token)
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
+  const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
 
-  await orderDoc.set(<Transaction>{
-    type: TransactionType.ORDER,
-    uid: tranId,
-    member: owner,
-    space: token.space,
-    createdOn: serverTime(),
-    payload: {
-      type: TransactionOrderType.TOKEN_PURCHASE,
-      amount: params.body.amount,
-      targetAddress: targetAddress.bech32,
-      beneficiary: 'space',
-      beneficiaryUid: token.space,
-      beneficiaryAddress: space?.validatedAddress,
-      expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
-      validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
-      reconciled: false,
-      void: false,
-      chainReference: null,
-      token: token.uid
-    },
-    linkedTransactions: []
-  });
+  await admin.firestore().runTransaction(async (transaction) => {
+    const newWallet = new WalletService();
+    const targetAddress = await newWallet.getNewIotaAddressDetails();
+    const order = await transaction.get(orderDoc)
+    if (!order.exists) {
+      const data = <Transaction>{
+        type: TransactionType.ORDER,
+        uid: tranId,
+        member: owner,
+        space: token.space,
+        createdOn: serverTime(),
+        payload: {
+          type: TransactionOrderType.TOKEN_PURCHASE,
+          amount: params.body.amount,
+          targetAddress: targetAddress.bech32,
+          beneficiary: 'space',
+          beneficiaryUid: token.space,
+          beneficiaryAddress: space?.validatedAddress,
+          expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
+          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+          reconciled: false,
+          void: false,
+          chainReference: null,
+          token: token.uid
+        },
+        linkedTransactions: []
+      }
+      transaction.set(orderDoc, data)
+    }
+  })
 
   return <Transaction>(await orderDoc.get()).data()
 });
@@ -207,28 +215,25 @@ export const creditToken = functions.runWith({
     if (!token || !tokenCoolDownPeriod(token)) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
-    const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
-    const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+    const member = <Member>(await memberDocRef(owner).get()).data()
+    const order = await transaction.get(orderDocRef(owner, token))
+    const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
-    if (purchase?.totalDeposit === params.body.amount) {
-      transaction.delete(purchaseDocRef)
-    } else {
-      transaction.update(purchaseDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
-    }
-
+    transaction.update(purchaseDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,
       uid: tranId,
       space: token.space,
-      member: owner,
+      member: member.uid,
       createdOn: serverTime(),
       payload: {
         amount: params.body.amount,
-        sourceAddress: space?.validatedAddress,
-        targetAddress: member?.validatedAddress,
+        sourceAddress: order.data()?.payload.targetAddress,
+        targetAddress: member.validatedAddress,
+        sourceTransactions: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
-        void: false,
+        void: false
       }
     };
     transaction.set(creditTranDoc, creditTransaction)

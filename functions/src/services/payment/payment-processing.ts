@@ -228,13 +228,14 @@ export class ProcessingService {
         // This must be the amount they send. As we're handing both correct amount from order or invalid one.
         amount: tran.to.amount,
         sourceAddress: tran.from.address,
-        targetAddress: (<OrderPayBillCreditTransaction>order.payload).targetAddress,
+        targetAddress: order.payload.targetAddress,
         reconciled: true,
         void: false,
         sourceTransaction: [order.uid],
         chainReference: tran.msgId,
-        nft: (<OrderPayBillCreditTransaction>order.payload).nft || null,
-        collection: (<OrderPayBillCreditTransaction>order.payload).collection || null,
+        nft: order.payload.nft || null,
+        collection: order.payload.collection || null,
+        token: order.payload.token || null,
         invalidPayment: invalidPayment
       }
     };
@@ -634,18 +635,18 @@ export class ProcessingService {
     }
   }
 
-  private async updateTokenPurchase(order: Transaction) {
+  private async updateTokenPurchase(order: Transaction, tran: TransactionMatch) {
     const batch = admin.firestore().batch()
     const purchaseRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.PURCHASES}/${order.member}`)
     const purchase = {
       member: order.member,
-      totalDeposit: admin.firestore.FieldValue.increment(order.payload.amount),
+      totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
       parentId: order.payload.token,
       parentCol: COL.TOKENS
     }
     batch.set(purchaseRef, purchase, { merge: true })
     const tokenRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}`)
-    batch.update(tokenRef, { totalDeposit: admin.firestore.FieldValue.increment(order.payload.amount) })
+    batch.update(tokenRef, { totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount) })
     await batch.commit()
   }
 
@@ -729,7 +730,7 @@ export class ProcessingService {
                   await this.markAsReconciled(orderData, match.msgId);
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
                   await this.createPayment(orderData, match);
-                  await this.updateTokenPurchase(orderData)
+                  await this.updateTokenPurchase(orderData, match)
                 }
               } else {
                 // Now process all invalid orders.
@@ -753,7 +754,6 @@ export class ProcessingService {
 
     return;
   }
-
 
   public async processAsInvalid(tran: MilestoneTransaction, order: TransactionOrder, o: MilestoneTransactionEntry): Promise<void> {
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];

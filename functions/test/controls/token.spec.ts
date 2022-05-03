@@ -325,7 +325,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
     const updatedPurchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(updatedPurchase).toBeUndefined()
+    expect(updatedPurchase?.totalDeposit).toBe(0)
   })
 
   it('Should throw, amount too much to refund', async () => {
