@@ -4,8 +4,9 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { FilterService } from '@pages/market/services/filter.service';
 import { MockProvider } from 'ng-mocks';
 import { NFTsPage } from './nfts.page';
-import {BehaviorSubject, of} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {Collection, Space} from "@functions/interfaces/models";
+import {AlgoliaModule} from "@Algolia/algolia.module";
 
 
 describe('NFTsPage', () => {
@@ -17,7 +18,7 @@ describe('NFTsPage', () => {
   beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [ NFTsPage ],
-      providers: [FilterService, MockProvider(CacheService, {allSpaces$, allCollections$}), MockProvider(NftApi)]
+      providers: [FilterService, MockProvider(CacheService, {allSpaces$, allCollections$}), MockProvider(NftApi)],
     })
       .compileComponents();
   });
@@ -32,3 +33,4 @@ describe('NFTsPage', () => {
     expect(component).toBeTruthy();
   });
 });
+

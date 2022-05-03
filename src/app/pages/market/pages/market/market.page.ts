@@ -10,6 +10,10 @@ import { debounceTime } from 'rxjs';
 import { FilterService } from '../../services/filter.service';
 import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from './../../../../../../functions/interfaces/config';
 
+export const marketSections = [
+  { route: `../${ROUTER_UTILS.config.market.collections}`, label: $localize`Collections` },
+  { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFT\'s` }
+];
 @UntilDestroy()
 @Component({
   selector: 'wen-market',
@@ -17,6 +21,7 @@ import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from './../../../../../../functions/in
   styleUrls: ['./market.page.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
   // TODO investigate how to bypass this....
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 
 })

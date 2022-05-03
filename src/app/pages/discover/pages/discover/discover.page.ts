@@ -9,10 +9,21 @@ import { debounceTime } from "rxjs";
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { FilterService } from './../../services/filter.service';
 
+export const discoverSections: TabSection[] = [
+  { route: [ `../${ROUTER_UTILS.config.discover.spaces}`], label: $localize`Spaces` },
+  { route: [ `../${ROUTER_UTILS.config.discover.collections}`], label: $localize`Collections` },
+  { route: [ `../${ROUTER_UTILS.config.discover.awards}`], label: $localize`Awards` },
+  { route: [ `../${ROUTER_UTILS.config.discover.proposals}`], label: $localize`Proposals` },
+  { route: [ `../${ROUTER_UTILS.config.discover.members}`], label: $localize`Members` }
+];
+
 @UntilDestroy()
 @Component({
   selector: 'wen-discover',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default,
+
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.less']
 })

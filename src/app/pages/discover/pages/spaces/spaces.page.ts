@@ -8,6 +8,9 @@ import { SortOptions } from "../../services/sort-options.interface";
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { FilterService } from './../../services/filter.service';
+import {AlgoliaService} from "@Algolia/services/algolia.service";
+import {discoverSections} from "@pages/discover/pages/discover/discover.page";
+import {defaultPaginationItems} from "@Algolia/algolia.options";
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -18,9 +21,23 @@ export enum HOT_TAGS {
 @Component({
   templateUrl: './spaces.page.html',
   styleUrls: ['./spaces.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default
+
 })
 export class SpacesPage implements OnInit, OnDestroy {
+  config = {
+    indexName: 'space',
+    searchClient: this.algoliaService.searchClient,
+  };
+  sections = discoverSections;
+  sortItems = [
+    { value: 'space', label: 'recent' },
+    { value: 'space_createdOn_desc', label: 'Oldest' },
+  ];
+  paginationItems = defaultPaginationItems;
+
   public sortControl: FormControl;
   public spaces$: BehaviorSubject<Space[]|undefined> = new BehaviorSubject<Space[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.OPEN];
@@ -35,7 +52,8 @@ export class SpacesPage implements OnInit, OnDestroy {
   constructor(
     private spaceApi: SpaceApi,
     public filter: FilterService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public readonly algoliaService: AlgoliaService,
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }

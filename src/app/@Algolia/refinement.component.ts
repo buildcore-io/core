@@ -1,4 +1,13 @@
-import {Component, Inject, forwardRef, Optional, Input} from '@angular/core';
+import {
+  Component,
+  Inject,
+  forwardRef,
+  Optional,
+  Input,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy
+} from '@angular/core';
 import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
 
 import connectRefinementList, {
@@ -7,10 +16,10 @@ import connectRefinementList, {
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
 import {DeviceService} from "@core/services/device";
 
-export type Mappings = { [v: string] : string };
+export type RefinementMappings = { [v: string]: string };
 
 @Component({
-  selector: 'app-refinement-list',
+  selector: 'wen-refinement-list',
   template: `
     <ul class="ais-RefinementList-list">
       <li class="ais-RefinementList-item" *ngFor="let item of state.items">
@@ -27,13 +36,16 @@ export type Mappings = { [v: string] : string };
          </label>
       </li>
     </ul>
-`
+`,
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default
+
 })
 
-export class RefinementList extends TypedBaseWidget<RefinementListWidgetDescription, RefinementListConnectorParams> {
+export class RefinementListComponent extends TypedBaseWidget<RefinementListWidgetDescription, RefinementListConnectorParams> implements OnInit {
 
   @Input() attribute!: string;
-  @Input() mapping?: Mappings;
+  @Input() mapping?: RefinementMappings;
 
   public state: RefinementListWidgetDescription['renderState'] = {
     canRefine: false,
@@ -44,13 +56,14 @@ export class RefinementList extends TypedBaseWidget<RefinementListWidgetDescript
     isShowingMore: false,
     items: [],
     sendEvent: {} as any,
-    refine(value: string): void {},
-    searchForItems(query: string): void {},
-    toggleShowMore(): void {}
+    refine(value: string): void {/**/},
+    searchForItems(query: string): void {/**/},
+    toggleShowMore(): void { /**/}
   };
 
   constructor(
     @Inject(forwardRef(() => NgAisIndex))
+    // eslint-disable-next-line new-cap
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))

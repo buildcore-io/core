@@ -2,30 +2,13 @@
   <div class="container">
     <ais-hits-per-page
       class="container-option"
-      [items]="[
-            {
-              label: '3 hits per page',
-              value: 3            },
-            {
-              label: '10 hits per page',
-              value: 10,
-              default: true
-            },
-            {
-              label: '64 hits per page',
-              value: 64
-            }
-          ]"
+      [items]="paginationItems"
     >
     </ais-hits-per-page>
 
     <ais-sort-by
       class="container-option"
-      [items]="[
-                    { value: 'nft', label: 'recent' },
-                    { value: 'nft_price_asc', label: 'Low to High' },
-                    { value: 'nft_price_desc', label: 'High to Low' },
-                  ]"
+      [items]="sortItems"
     ></ais-sort-by>
 
     <ais-stats>
@@ -37,7 +20,7 @@
 
   <header class="header" id="header">
     <div class="header-searchbox">
-      <app-search-box></app-search-box>
+      <wen-search-box [sections]="sections"></wen-search-box>
     </div>
   </header>
   <main class="container">
@@ -75,13 +58,9 @@
       <section class="container-filters">
         <div class="container-header">
           <h4>Filters&Sorts</h4>
-          <app-sort-by
-            [items]="[
-    { value: 'nft', label: 'Recent' },
-    { value: 'nft_price_asc', label: 'Low to High' },
-    { value: 'nft_price_desc', label: 'High to Low' },
-  ]"
-          ></app-sort-by>
+          <wen-sort-by
+            [items]="sortItems"
+          ></wen-sort-by>
           <ais-clear-refinements
             class="clear-filters"
             data-layout="desktop"

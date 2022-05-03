@@ -5,7 +5,7 @@ import {
   Optional,
   ChangeDetectionStrategy,
   Input,
-  ChangeDetectorRef, NgZone
+  ChangeDetectorRef, NgZone, OnInit, OnDestroy
 } from '@angular/core';
 import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
 
@@ -25,7 +25,7 @@ import {NavigationEnd, Router} from "@angular/router";
 
 @UntilDestroy()
 @Component({
-  selector: 'app-search-box',
+  selector: 'wen-search-box',
   template: `
     <div class="flex items-center">
       <wen-tabs *ngIf="deviceService.isDesktop$ | async" [tabs]="sections" class="mr-10"></wen-tabs>
@@ -55,20 +55,19 @@ import {NavigationEnd, Router} from "@angular/router";
 
     </div>
 `,
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.OnPush
+
 
 })
-export class SearchBox extends TypedBaseWidget<SearchBoxWidgetDescription, SearchBoxConnectorParams> {
-  // oups.... TODO clean up this default parameter
-  @Input() sections: TabSection[] = [
-    { route: `../${ROUTER_UTILS.config.market.collections}`, label: $localize`Collections` },
-    { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFT\'s` }
-  ];
+export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescription, SearchBoxConnectorParams> implements OnInit {
+  @Input() sections: TabSection[] = [];
 
   public state: SearchBoxWidgetDescription['renderState'] = {
-    clear(): void {},
+    clear(): void { /* */},
     isSearchStalled: false,
     query: '',
-    refine(value: string): void {},
+    refine(value: string): void { /* */},
   }
   public filterControl: FormControl = new FormControl(undefined);
   public selectedSection?: TabSection;
@@ -76,6 +75,7 @@ export class SearchBox extends TypedBaseWidget<SearchBoxWidgetDescription, Searc
 
   constructor(
     @Inject(forwardRef(() => NgAisIndex))
+    // eslint-disable-next-line new-cap
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))

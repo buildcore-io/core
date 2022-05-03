@@ -5,7 +5,7 @@ import {
   Optional,
   Input,
   ChangeDetectorRef,
-  ChangeDetectionStrategy, NgZone
+  NgZone, ChangeDetectionStrategy, OnInit
 } from '@angular/core';
 import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
 
@@ -18,7 +18,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-sort-by',
+  selector: 'wen-sort-by',
   template: `
     <ng-template #defaultTemplate let-selected>
       <div class="flex items-center">
@@ -37,9 +37,12 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
   </nz-option>
 </nz-select>
 `,
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.OnPush
+
 
 })
-export class SortBy extends TypedBaseWidget<SortByWidgetDescription, SortByConnectorParams> {
+export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, SortByConnectorParams> implements OnInit {
 
   @Input() items: any[] = [];
 
@@ -48,11 +51,13 @@ export class SortBy extends TypedBaseWidget<SortByWidgetDescription, SortByConne
   public state: SortByWidgetDescription['renderState'] = {
     currentRefinement: "", hasNoResults: false, initialIndex: "", options: [
     ],
-    refine(value: string): void {}
+    refine(value: string): void { /* */}
   }
   constructor(
     @Inject(forwardRef(() => NgAisIndex))
-    @Optional()
+
+  // eslint-disable-next-line new-cap
+  @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
     public instantSearchInstance: NgAisInstantSearch,
@@ -66,7 +71,7 @@ export class SortBy extends TypedBaseWidget<SortByWidgetDescription, SortByConne
       .subscribe((val: any) => {
         this.state.refine(val);
 
-    });
+      });
 
   }
   ngOnInit() {

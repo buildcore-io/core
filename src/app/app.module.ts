@@ -75,7 +75,6 @@ const imports: any[] = [
   AngularFirestoreModule,
   AngularFireFunctionsModule,
   AngularFireStorageModule,
-  NgAisModule.forRoot(),
 ];
 
 // AppCheck only in production.

@@ -7,7 +7,8 @@ import { MockProvider } from 'ng-mocks';
 import { CollectionsPage } from './collections.page';
 import {BehaviorSubject} from "rxjs";
 import {Collection, Space} from "@functions/interfaces/models";
-
+import {AlgoliaModule} from "@Algolia/algolia.module";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
 
 describe('CollectionsPage', () => {
   let component: CollectionsPage;
@@ -23,8 +24,9 @@ describe('CollectionsPage', () => {
         FilterService,
         MockProvider(CollectionApi),
         MockProvider(SpaceApi),
-        MockProvider(CacheService, {allSpaces$, allCollections$})
-      ]
+        MockProvider(CacheService, {allSpaces$, allCollections$}),
+        MockProvider(AlgoliaService)
+      ],
     })
       .compileComponents();
   });
@@ -39,3 +41,4 @@ describe('CollectionsPage', () => {
     expect(component).toBeTruthy();
   });
 });
+

@@ -13,7 +13,9 @@ import { SortOptions } from '@pages/market/services/sort-options.interface';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
 import { Timestamp } from "firebase/firestore";
-import {AlgoliaService} from "@core/services/algolia/algolia.service";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
+import {marketSections} from "@pages/market/pages/market/market.page";
+import {defaultPaginationItems} from "@Algolia/algolia.options";
 
 
 export enum HOT_TAGS {
@@ -35,6 +37,7 @@ export enum AddedCategories {
   styleUrls: ['./collections.page.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
   // TODO investigate how to bypass this....
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 
 })
@@ -44,6 +47,13 @@ export class CollectionsPage implements OnInit, OnDestroy {
     indexName: 'collection',
     searchClient: this.algoliaService.searchClient,
   };
+  sections = marketSections;
+  sortItems = [
+    { value: 'collection', label: 'recent' },
+    { value: 'collection_price_asc', label: 'Low to High' },
+    { value: 'collection_price_desc', label: 'High to Low' },
+  ];
+  paginationItems = defaultPaginationItems;
 
   public sortControl: FormControl;
   public spaceControl: FormControl;
@@ -257,11 +267,10 @@ export class CollectionsPage implements OnInit, OnDestroy {
   }
 
   public convertAllToSoonaverseModel(algoliaItems: any[]) {
-    // console.log(`collection:convertAllToSoonaverseModel ${algoliaItems.length}`, algoliaItems)
 
     return algoliaItems.map(algolia => ({
       ...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
-     }));
+    }));
   }
 
 

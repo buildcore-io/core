@@ -11,6 +11,7 @@ import { NavigationService } from './@core/services/navigation/navigation.servic
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 
 })

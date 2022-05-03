@@ -12,7 +12,6 @@ import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzCardModule } from 'ng-zorro-antd/card';
-import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -25,16 +24,13 @@ import { MarketPage } from './pages/market/market.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
 import { TokensPage } from './pages/tokens/tokens.page';
 import { FilterService } from './services/filter.service';
-import {NgAisModule} from "angular-instantsearch";
-import {SearchBox} from "../../@algolia/search.component";
-import {SortBy} from "../../@algolia/sort.component";
+import {AlgoliaModule} from "@Algolia/algolia.module";
 
 @NgModule({
   declarations: [
     MarketPage,
     CollectionsPage,
     NFTsPage,
-    SearchBox, SortBy,  // components integrated with Algolia will move from here....
     TokensPage
   ],
   imports: [
@@ -58,9 +54,8 @@ import {SortBy} from "../../@algolia/sort.component";
     InfiniteScrollModule,
     NzSkeletonModule,
     NftCardModule,
-    NgAisModule,
-    NzCollapseModule,
-    TokenRowModule
+    TokenRowModule,
+    AlgoliaModule,
   ],
   providers: [FilterService]
 })

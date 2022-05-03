@@ -1,20 +1,18 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import algoliasearch from "algoliasearch/lite";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {CollectionAccess, Space} from "@functions/interfaces/models";
 import {CacheService} from "@core/services/cache/cache.service";
-import {Mappings} from "../../../@algolia/refinement.component";
+import {RefinementMappings} from "../refinement.component";
 
-const spaceMapping: Mappings = {};
-const accessMapping: Mappings = {};
+const spaceMapping: RefinementMappings = {};
+const accessMapping: RefinementMappings = {};
 
 @UntilDestroy()
 @Injectable({
   providedIn: 'root'
 })
 export class AlgoliaService {
-  // public modalOpen$ = new BehaviorSubject<boolean>(false);
   public readonly searchClient = algoliasearch(
     '2WGM1RPQKZ',
     '4c4da0d2d8b2d582b6f5f232b75314b4'
@@ -25,12 +23,12 @@ export class AlgoliaService {
     // quick & temporary ....
     this.cacheService.allSpaces$
       .pipe(untilDestroyed(this)).subscribe( (spaces) => {
-      spaces.forEach((space: Space) => {
-        if (space.name) {
-          spaceMapping[space.uid] = space.name;
-        }
-      });
-    })
+        spaces.forEach((space: Space) => {
+          if (space.name) {
+            spaceMapping[space.uid] = space.name;
+          }
+        });
+      })
     // very hacky... but let's go quick for now
     Object.values(CollectionAccess)
       .forEach((value, index) => {
@@ -55,7 +53,7 @@ export class AlgoliaService {
     console.log(`convertToAccessName ${algoliaItems.length}`, algoliaItems)
 
     return algoliaItems.map(algolia => {
-      const name = accessMapping[algolia.value] || algolia.label.substring(0, 10) + '...'
+      const name = accessMapping[algolia.value] || algolia.label;
       return {
         ...algolia,
         label: name,

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { NftApi } from '@api/nft.api';
@@ -6,17 +6,19 @@ import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/s
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
-import {Collection, CollectionAccess, Space} from '@functions/interfaces/models';
+import {Collection, Space} from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
-import algoliasearch from "algoliasearch/lite";
 import { Timestamp } from "firebase/firestore";
 import {TabSection} from "@components/tabs/tabs.component";
 import {ROUTER_UTILS} from "@core/utils/router.utils";
-import {AlgoliaService} from "@core/services/algolia/algolia.service";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
+import {marketSections} from "@pages/market/pages/market/market.page";
+import {discoverSections} from "@pages/discover/pages/discover/discover.page";
+import {defaultPaginationItems} from "@Algolia/algolia.options";
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -27,11 +29,6 @@ export enum HOT_TAGS {
   SPACE = 'SPACE'
 }
 
-const searchClient = algoliasearch(
-  '2WGM1RPQKZ',
-  '4c4da0d2d8b2d582b6f5f232b75314b4'
-);
-
 @UntilDestroy()
 @Component({
   selector: 'wen-nfts',
@@ -39,37 +36,21 @@ const searchClient = algoliasearch(
   styleUrls: ['./nfts.page.less'],
   // changeDetection: ChangeDetectionStrategy.OnPush
   // TODO investigate how to bypass this....
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class NFTsPage implements OnInit, OnDestroy {
-  searchParameters = { hitsPerPage: 3 } ;
-
   config = {
     indexName: 'nft',
-    searchClient,
-    searchFunction: (helper: any) => {
-      console.log('searchFunction called with ', helper);
-      helper.search();
-      this.cd.detectChanges();
-    },
-    // @ts-ignore
-    onStateChange: ({ uiState, setUiState }) => {
-      // Custom logic
-
-      console.log('change uiState=', uiState)
-
-      setUiState(uiState);
-      this.cd.detectChanges();
-    },
-    // initialUiState: {
-    //   collection: {
-    //     query: 'phone',
-    //     page: 5,
-    //   },
-    // }
+    searchClient: this.algoliaService.searchClient,
   };
-
-
+  sections = marketSections;
+  sortItems = [
+    { value: 'nft', label: 'recent' },
+    { value: 'nft_price_asc', label: 'Low to High' },
+    { value: 'nft_price_desc', label: 'High to Low' },
+  ];
+  paginationItems = defaultPaginationItems;
   public sortControl: FormControl;
   public spaceControl: FormControl;
   public nfts$: BehaviorSubject<Nft[]|undefined> = new BehaviorSubject<Nft[]|undefined>(undefined);
@@ -84,12 +65,6 @@ export class NFTsPage implements OnInit, OnDestroy {
   private dataStore: Nft[][] = [];
   private subscriptions$: Subscription[] = [];
 
-  public sections: TabSection[] = [
-    { route: ROUTER_UTILS.config.market.collections, label: $localize`Collections` },
-    { route: ROUTER_UTILS.config.market.nfts, label: $localize`NFT\'s` }
-  ];
-  public selectedSection?: TabSection;
-  public isSearchInputFocused = false;
   constructor(
     public filter: FilterService,
     public deviceService: DeviceService,
@@ -97,7 +72,6 @@ export class NFTsPage implements OnInit, OnDestroy {
     public nftApi: NftApi,
     private storageService: StorageService,
     private cacheService: CacheService,
-    private cd: ChangeDetectorRef,
     public readonly algoliaService: AlgoliaService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
@@ -221,7 +195,7 @@ export class NFTsPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler(this.nfts$.value[this.nfts$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
-  public trackByUid(index: number, item: any): number {
+  public trackByUid(_index: number, item: any): number {
     return item.uid;
   }
 
@@ -283,7 +257,6 @@ export class NFTsPage implements OnInit, OnDestroy {
       ...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
     }));
   }
-
 
 
 }

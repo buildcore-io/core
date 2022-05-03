@@ -1,3 +1,108 @@
+<ais-instantsearch [config]="config">
+  <div class="container">
+    <ais-hits-per-page
+      class="container-option"
+      [items]="paginationItems"
+    >
+    </ais-hits-per-page>
+    <ais-sort-by
+      class="container-option"
+      [items]="sortItems"
+    ></ais-sort-by>
+    <ais-stats>
+      <ng-template let-state="state">
+        {{state.nbHits}} results found in {{state.processingTimeMS}} ms.
+      </ng-template>
+    </ais-stats>
+  </div>
+
+  <header class="header" id="header">
+    <div class="header-searchbox">
+      <wen-search-box [sections]="sections"></wen-search-box>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="container-results mr-10">
+
+      <ais-hits >
+        <ng-template let-hits="hits">
+
+          <div class="mt-10 xl:grid place-items-start">
+
+            <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+            >
+              <wen-space-card class="w-full h-full outline-none"
+                              *ngFor="let space of hits; trackBy: trackByUid"
+                              [space]="space">
+              </wen-space-card>
+            </div>
+
+          </div>
+        </ng-template>
+      </ais-hits>
+
+      <footer class="container-footer">
+        <ais-pagination
+          [padding]="2"
+          [showFirst]="true"
+          [showLast]="true"
+        ></ais-pagination>
+      </footer>
+    </section>
+
+
+    <div class="container-wrapper">
+      <section class="container-filters">
+        <div class="container-header">
+          <h4>Filters&Sorts</h4>
+          <wen-sort-by
+            [items]="sortItems"
+          ></wen-sort-by>
+          <ais-clear-refinements
+            class="clear-filters"
+            data-layout="desktop"
+            resetLabel="Clear filters"
+          ></ais-clear-refinements>
+
+          <ais-stats data-layout="mobile">
+            <ng-template let-state="state">
+              <span class="ais-Stats-text">
+                <strong>{{ state.nbHits | number }}</strong> results in <strong>{{state.processingTimeMS}}</strong> ms.
+              </span>
+            </ng-template>
+          </ais-stats>
+        </div>
+
+
+        <div class="container-body">
+
+          <nz-collapse>
+            <ais-panel
+              header="ALL / Open only"
+            >
+              <ais-toggle
+                attribute="open"
+                label="only&nbsp;open&nbsp;"
+                [on]="true"
+              ></ais-toggle>
+            </ais-panel>
+
+          </nz-collapse>
+
+        </div>
+
+
+      </section>
+    </div>
+
+  </main>
+</ais-instantsearch>
+
+
+
+
 <div class="flex items-end justify-between">
   <div class="flex items-center mt-6 lg:mt-12">
     <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">

@@ -1,10 +1,10 @@
 import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
 import { MockProvider } from 'ng-mocks';
 import {TestBed} from "@angular/core/testing";
-import {AlgoliaService} from "@core/services/algolia/algolia.service";
 import {CacheService} from "@core/services/cache/cache.service";
 import {BehaviorSubject} from "rxjs";
 import {Collection, Space} from "@functions/interfaces/models";
+import {AlgoliaService} from "./algolia.service";
 
 describe('AlgoliaService', () => {
   let service: AlgoliaService;
