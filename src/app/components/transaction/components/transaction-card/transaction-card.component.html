@@ -1,0 +1,47 @@
+<div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:px-6 py-3.5 rounded-2xl
+    flex flex-col lg:flex-row lg:items-center cursor-pointer">
+    <div class="flex items-center w-full lg:w-3/12 px-6 lg:px-0">
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+          nzShape="circle"
+          [nzSize]="32">
+        </nz-avatar>
+        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-4">{{ 'SoonLabs Token' }}</div>
+    </div>
+
+    <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-6"></div>
+
+    <div class="font-medium w-full lg:w-3/12 px-6 lg:px-0 mt-6 lg:mt-0">
+        <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Type
+        </div>
+        <div class="mt-0.5">
+            {{ 'Purchase' }}
+        </div>
+    </div>
+
+    <div class="font-medium w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="true">
+        <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Date
+        </div>
+        <div class="mt-0.5">
+            {{ d | date: 'medium' }}
+        </div>
+    </div>
+
+    <div class="font-medium w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="false">
+        <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Amount
+        </div>
+        <div class="mt-0.5">
+            500
+        </div>
+    </div>
+
+    <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-4"></div>
+
+    <div class="flex items-center justify-center w-full mt-4 lg:mt-0">
+        <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+            [href]="'#'" target="_blank" i18n>Transaction</a>
+    </div>
+</div>

@@ -9,7 +9,7 @@
 <ng-template #content>
     <div class="mt-8 lg:mt-6 flex items-center">
         <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
-          class="border-2 border-tags-border dark:border-tags-borde-dark min-w-12"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
         </nz-avatar>
@@ -78,9 +78,12 @@
         <wen-icon-time [size]="20"></wen-icon-time>
     </ng-template>
 
-    <div class="flex items-center justify-between font-medium space-x-4">
-        <div class="relative rounded-3xl border border-inputs-border dark:border-inputs-border-dark flex-1 px-6 py-2 h-14">
-            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>(SOON) Amount</div>
+    <div class="relative flex flex-col font-medium mt-6 lg:mt-0">
+        <div class="relative rounded-3xl border border-inputs-border dark:border-inputs-border-dark flex-1 min-h-14 px-6 py-2 h-14 w-full
+            flex flex-row-reverse items-center justify-between">
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                SOON
+            </div>
             <input class="w-full outline-0 p-0"
                     [formControl]="amountControl"
                     type="number"
@@ -89,10 +92,18 @@
                     [nzBorderless]="true">
         </div>
         
-        <div class="rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark flex-1 h-14 px-6 py-2">
-            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in Miota</div>
+        <div class="rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark mt-2 flex-1 min-h-14 px-6 py-2 w-full
+            flex flex-row-reverse items-center justify-between">
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                Mi
+            </div>
             <div class="mt-1">{{amountControl.value}}</div>
         </div>
+
+        <button nz-button nzType="primary" nzShape="circle" nzSize="default"
+            class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2">
+                <wen-icon-switch></wen-icon-switch>
+        </button>
     </div>
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
@@ -233,12 +244,12 @@
 
     <div class="flex items-center flex-col lg:flex-row w-full mt-10 lg:w-auto lg:justify-center">
         <button nz-button nzType="primary"
-            nzSize="large" class="w-full lg:w-auto lg:mr-2" i18n (click)="close()">
+            nzSize="large" class="w-full lg:w-auto lg:mr-2" (click)="close()" i18n>
             Close checkout
         </button>
 
         <button nz-button nzType="default" (click)="null"
-            nzSize="large" class="w-full lg:w-auto mb-6 lg:mb-0 lg:mt-1" i18n (click)="null">
+            nzSize="large" class="w-full lg:w-auto mb-6 lg:mb-0 lg:mt-1" (click)="null" i18n>
             Show my Tokens
         </button>
     </div>

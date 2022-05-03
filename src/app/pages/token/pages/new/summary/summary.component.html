@@ -1,224 +1,171 @@
 <div class="py-4" nz-row [nzGutter]="24">
     <div
-        class="space-y-4"
+        class="font-medium"
         nz-col
         nzFlex="auto"
         [ngStyle]="{
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
-        }"
-        >
-        <nz-card i18n-nzTitle nzTitle="Token info">
-            <div class="space-y-4">
-                <nz-form-item>
-                    <nz-form-control
-                        i18n-nzErrorTip
-                        nzErrorTip="Name is required."
-                    >
-                    <input
-                        nz-input
-                        i18n-placeholder
-                        placeholder="Name"
-                        nzSize="large"
-                        [formControl]="newService.nameControl"
-                    />
-                    </nz-form-control>
-                </nz-form-item>
-                <nz-form-item>
-                    <nz-form-control
-                        i18n-nzErrorTip
-                        nzErrorTip="Symbol is required."
-                    >
-                    <input
-                        nz-input
-                        i18n-placeholder
-                        placeholder="Symbol"
-                        nzSize="large"
-                        [formControl]="newService.symbolControl"
-                    />
-                    </nz-form-control>
-                </nz-form-item>
-            </div>
-        </nz-card>
-
-        <nz-card i18n-nzTitle nzTitle="Start date">
-            <nz-form-item>
-                <nz-form-control
-                    i18n-nzErrorTip
-                    nzErrorTip="Start date is required."
-                >
-                    <nz-date-picker
-                    class="flex grow"
-                    [nzDisabledDate]="newService.disabledStartDate.bind(this)"
-                    nzSize="large"
-                    [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
-                    nzFormat="yyyy-MM-dd HH:mm"
-                    [formControl]="newService.startDateControl"
-                    i18n-nzPlaceHolder
-                    nzPlaceHolder="Start date for the token offering"
-                    >
-                    </nz-date-picker>
-                </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item>
-                <nz-form-control
-                    i18n-nzErrorTip
-                    nzErrorTip="Offering length is required."
-                >
-                    <nz-select
-                    class="w-full"
-                    nzSize="large"
-                    nzShowSearch
-                    [nzCustomTemplate]="selectTpl"
-                    nzAllowClear
-                    [nzPlaceHolder]="placeholderTpl"
-                    [formControl]="newService.offerLengthControl"
-                    >
-                        <nz-option
-                            *ngFor="let opt of newService.offeringLengthOptions"
-                            nzCustomContent
-                            [nzLabel]="opt"
-                            [nzValue]="opt"
-                        >
-                            {{ opt }}
-                        </nz-option>
-                    </nz-select>
-                    <ng-template #placeholderTpl>
-                        <div class="flex items-center space-x-4">
-                            <wen-icon-time [size]="20" class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-time>
-                            <span i18n>Select token offering lenght (Default 2 days)</span>
-                        </div>
-                    </ng-template>
-                    <ng-template #selectTpl let-s>
-                        <div class="flex items-center space-x-4">
-                            <wen-icon-time [size]="20" class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-time>
-                            <span>{{ s.nzLabel }}</span>
-                        </div>
-                    </ng-template>
-                </nz-form-control>
-            </nz-form-item>
-        </nz-card>
-
-        <nz-card i18n-nzTitle nzTitle="Token supply">
-            <div class="space-y-4">
-                <nz-form-item>
-                    <nz-form-control
-                        i18n-nzErrorTip
-                        nzErrorTip="Price is required."
-                    >
-                        <input
-                            nz-input
-                            i18n-placeholder
-                            placeholder="Price per token (MIOTAs)"
-                            nzSize="large"
-                            [formControl]="newService.priceControl"
-                        />
-                    </nz-form-control>
-                </nz-form-item>
-                <nz-form-item>
-                    <nz-form-control
-                        i18n-nzErrorTip
-                        nzErrorTip="Total supply is required."
-                    >
-                        <input
-                            nz-input
-                            i18n-placeholder
-                            placeholder="Total token supply"
-                            nzSize="large"
-                            [formControl]="newService.totalSupplyControl"
-                        />
-                    </nz-form-control>
-                </nz-form-item>
-            </div>
-        </nz-card>
-
-        <div class="text-xl font-bold mt-16" i18n>Token allocation</div>
-
-        <nz-card *ngFor="let allocation of newService.allocations?.controls; let i = index; let first = first; let last = last"
-            [nzTitle]="newService.getAllocationTitle(i+1)" class="relative">
-            <wen-icon-trash
-                *ngIf="!first"
-                class="absolute top-6 right-8 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
-                (click)="newService.removeAllocation(i)"
-            ></wen-icon-trash>
-            <div class="lg:pt-4">
-                <nz-form-item>
-                    <nz-form-control
-                        i18n-nzErrorTip
-                        nzErrorTip="Total supply is required."
-                    >
-                        <input
-                        nz-input
-                        i18n-placeholder
-                        placeholder="Allocation title"
-                        nzSize="large"
-                        [formControl]="newService.gForm(allocation, 'title')"
-                        />
-                    </nz-form-control>
-                </nz-form-item>
-                <nz-form-item>
-                    <nz-form-control
-                        i18n-nzErrorTip
-                        nzErrorTip="Percentage of tokens is required."
-                    >
-                        <input
-                            nz-input
-                            i18n-placeholder
-                            placeholder="% of tokens for sale (Default 100%)"
-                            nzSize="large"
-                            [formControl]="newService.gForm(allocation, 'percentage')"
-                        />
-                    </nz-form-control>
-                </nz-form-item>
-                <nz-form-item>
-                    <label nz-checkbox [formControl]="newService.gForm(allocation, 'publicSale')">
-                        <div class="flex items-center">
-                            <div class="font-medium mr-2.5" i18n>
-                                Public sale
-                            </div>
-                            <i
-                                nz-icon
-                                nzType="question-circle"
-                                class="cursor-pointer text-icons-secondary dark:text-icons-secondary-dark"
-                                nz-tooltip
-                                nzTooltipTitle="Some tooltip IDK"
-                            ></i>
-                        </div>
-                    </label>
-                </nz-form-item>
-
-                <div *ngIf="!last" class="mt-2 mb-5 w-full h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
-                </div>
-
+        }">
+        
+        <div class="px-8 pt-6 pb-8 rounded-2xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
+            <div class="flex items-center justify-between">
+                <div class="font-bold text-lg" i18n>Token info</div>
                 <button
                     nz-button
-                    *ngIf="((newService.allocations?.controls?.length || 0) < newService.maxAllocationsCount) && last"
                     nzType="link"
-                    class="flex items-center mt-3 wen-secondary pl-0"
-                    (click)="newService.addAllocation()"
-                    >
-                    <wen-icon-plus class="mr-0.5"></wen-icon-plus>
-                    <span i18n>Add allocation</span>
+                    class="wen-secondary"
+                    (click)="wenOnTabChange.emit(stepTypes.METRICS)"
+                    i18n
+                >
+                    Edit
                 </button>
-            </nz-card>
+            </div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Name
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.nameControl?.value }}
+            </div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Symbol
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.symbolControl?.value }}
+            </div>
+        </div>
+        
+        <div class="px-8 pt-6 pb-8 rounded-2xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark mt-6">
+            <div class="flex items-center justify-between">
+                <div class="font-bold text-lg" i18n>Token supply</div>
+                <button
+                    nz-button
+                    nzType="link"
+                    class="wen-secondary"
+                    (click)="wenOnTabChange.emit(stepTypes.METRICS)"
+                    i18n
+                >
+                    Edit
+                </button>
+            </div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Price per token (MIOTAs)
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.priceControl?.value }}
+            </div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Total token supply
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.totalSupplyControl?.value }}
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between mt-10">
+            <div class="font-bold text-lg" i18n>Token description</div>
+            <button
+                nz-button
+                nzType="link"
+                class="wen-secondary"
+                (click)="wenOnTabChange.emit(stepTypes.OVERVIEW)"
+                i18n
+            >
+                Edit
+            </button>
+        </div>
+        
+        <div *ngFor="let description of newService.descriptions?.controls"
+            class="px-8 pt-6 pb-8 rounded-2xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark mt-6">
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Description title
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.gForm(description, 'title')?.value }}
+            </div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Description
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.gForm(description, 'description')?.value }}
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between mt-10">
+            <div class="font-bold text-lg" i18n>Token allocation</div>
+            <button
+                nz-button
+                nzType="link"
+                class="wen-secondary"
+                (click)="wenOnTabChange.emit(stepTypes.METRICS)"
+                i18n
+            >
+                Edit
+            </button>
+        </div>
+        
+        <div *ngFor="let allocation of newService.allocations?.controls; let i = index"
+            class="px-8 pt-6 pb-8 rounded-2xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark mt-6">
+
+            <div class="font-bold text-lg">{{ getAllocationTitle(i+1) }}</div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Allocation title
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.gForm(allocation, 'title')?.value }}
+            </div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                % of tokens for sale (Default 100%)
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.gForm(allocation, 'percentage')?.value }}
+            </div>
+
+            <div *ngIf="newService.gForm(allocation, 'publicSale')?.value"
+                class="flex items-center mt-6">
+                    <div class="flex items-center justify-center w-5 h-5 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
+                        <wen-icon-check></wen-icon-check>
+                    </div>
+                    <div class="ml-2.5" i18n>Public sale</div>
+            </div>
         </div>
 
-        <div
-            class="mt-4 space-y-4 lg:mt-0 lg:max-w-450"
-            nz-col
-            [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
-        >
-        <nz-card i18n-nzTitle nzTitle="Space Info">
-            <nz-form-item>
-                <wen-select-space
-                    class="block w-full"
-                    [includeDefaultSpace]="false"
-                    [formControl]="newService.spaceControl"
-                    [spaces]="newService.getSpaceListOptions(newService.spaces$ | async)"
-                    size="large"
-                >
-                </wen-select-space>
-            </nz-form-item>
+        <button *ngIf="deviceService.isDesktop$ | async"
+            nz-button nzType="primary" nzSize="large" class="w-full mt-12" (click)="wenOnSubmit.emit()" i18n>
+                Submit token
+        </button>
+    </div>
+    
+    <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark my-8"></div>
+
+    <div
+        class="mt-4 space-y-4 lg:mt-0 lg:max-w-450"
+        nz-col
+        [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+    >
+        <nz-card i18n-nzTitle nzTitle="Space">
+            <div class="flex items-center w-full lg:w-3/12 px-6 lg:px-0">
+                <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+                  class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
+                  nzShape="circle"
+                  [nzSize]="48">
+                </nz-avatar>
+                <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-2xl ml-4">{{ 'SoonLabs' }}</div>
+            </div>
         </nz-card>
 
         <nz-card>
@@ -230,40 +177,17 @@
                 >
             </nz-card-meta>
 
-            <div class="mt-6">
-                <nz-form-item>
-                    <nz-form-control
-                        [nzValidateStatus]="newService.iconControl"
-                        i18n-nzErrorTip
-                        nzErrorTip="Icon is mandatory"
-                    >
-                    <nz-upload
-                        class="wen-icon-uploader"
-                        nzName="icon"
-                        nzListType="picture-card"
-                        [nzDirectory]="false"
-                        nzType="drag"
-                        [nzLimit]="1"
-                        [nzCustomRequest]="newService.uploadFile.bind(this, 'token_icon')"
-                        (nzChange)="newService.uploadChangeIcon($event)"
-                        nzFileType="image/png,image/jpeg"
-                        [nzShowUploadList]="true"
-                        [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
-                    >
-                        <ng-container>
-                            <i class="upload-icon" nz-icon nzType="upload"></i
-                            ><span class="pl-2 text-xs">jpeg/png</span>
-                        </ng-container>
-                    </nz-upload>
-                    </nz-form-control>
-                </nz-form-item>
-            </div>
+            <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+                class="border-2 border-tags-border dark:border-tags-border-dark min-w-30 mt-6"
+                nzShape="circle"
+                [nzSize]="120">
+            </nz-avatar>
         </nz-card>
 
         <nz-card>
             <nz-card-meta
                 i18n-nzTitle
-                nzTitle="Space"
+                nzTitle="Token price"
                 i18n-nzDescription
                 nzDescription="Distribution of the token happens after the token offering end date."
             >
@@ -275,7 +199,7 @@
                         class="wen-radio-group"
                         [formControl]="newService.distributionControl"
                     >
-                        <wen-radio *ngFor="let opt of newService.distributionOptions" [value]="opt.value">
+                        <wen-radio *ngFor="let opt of newService.distributionOptions" [value]="opt?.value || ''">
                             <span class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ opt.label }}</span>
                         </wen-radio>
                     </nz-radio-group>
@@ -298,3 +222,8 @@
         </nz-card>
     </div>
 </div>
+
+<button *ngIf="deviceService.isMobile$ | async"
+    nz-button nzType="primary" nzSize="large" class="w-full mt-12" (click)="wenOnSubmit.emit()" i18n>
+        Submit token
+</button>

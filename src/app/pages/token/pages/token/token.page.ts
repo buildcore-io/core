@@ -17,15 +17,10 @@ export class TokenPage {
     { route: [ROUTER_UTILS.config.token.airdrops], label: $localize`Airdrops` }
   ];
   public isTokenInfoVisible = false;
-  public isBuyTokensVisible = false;
 
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public data: DataService
   ) {}
-
-  public getShareUrl(): string {
-    return window.location.href;
-  }
 }

@@ -1,0 +1,69 @@
+<div class="flex items-center justify-between w-full mb-6 lg:mb-4">
+    <label class="font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark"
+        nz-checkbox [formControl]="includeBidsControl">
+          <span i18n>Include bids </span>
+    </label>
+
+    <button nz-button nzType="default" nzSize="default" (click)="exportTransactions()">
+        <wen-icon-file-export></wen-icon-file-export>
+        <div class="text-lg font-semibold ml-2.5" i18n>Export CSV</div>
+    </button>
+</div>
+
+<nz-card *ngIf="deviceService.isDesktop$ | async">
+    <nz-table class="block"
+        [nzData]="transactions" [nzShowPagination]="false">
+        <thead>
+            <tr>
+                <th i18n>Item</th>
+                <th i18n>Type</th>
+                <th i18n>Date</th>
+                <th i18n>Amount</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let t of transactions">
+                <td>
+                    <div class="flex items-center">
+                        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+                          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                          nzShape="circle"
+                          [nzSize]="32">
+                        </nz-avatar>
+                        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-3">{{ t.token }}</div>
+                    </div>
+                </td>
+                <td class="font-medium">{{ t.type }}</td>
+                <td class="font-medium">{{ t.date | date: 'medium' }}</td>
+                <td class="font-medium">{{ t.amount }}</td>
+                <td style="text-align: right">
+                    <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                        [href]="t.link" target="_blank" i18n>Transaction</a>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</nz-card>
+
+<div class="mt-3" *ngIf="deviceService.isMobile$ | async">
+    <!-- TODO: ngIf not loading -->
+    <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        (scrolled)="onScroll()">
+        <!-- TODO: ngIf loading -->
+        <nz-skeleton *ngIf="true" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 lg:w-full h-76 lg:h-16" [nzActive]="true"
+            [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+
+        <!-- TODO: ngIf no transactions -->
+        <nz-card class="w-76" *ngIf="true">
+            <div class="flex flex-col justify-center text-center h-36">
+                <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    No transactions
+                </span>
+            </div>
+        </nz-card>
+
+        <wen-transaction-card *ngFor="let transaction of [0, 1, 2, 3]" class="block mt-3">
+        </wen-transaction-card>
+    </div>
+</div>

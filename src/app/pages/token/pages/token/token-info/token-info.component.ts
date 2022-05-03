@@ -12,12 +12,4 @@ export class TokenInfoComponent {
   constructor(
     public previewImageService: PreviewImageService
   ) {}
-
-  public getCountdownDate(): Date {
-    return new Date('2022-05-30');
-  }
-
-  public getCountdownTitle(): string {
-    return $localize`Sale ends in`;
-  }
 }

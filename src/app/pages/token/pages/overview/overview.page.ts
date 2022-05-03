@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DeviceService } from '@core/services/device';
 
 @Component({
   selector: 'wen-overview',
@@ -7,4 +8,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OverviewPage {
+
+  constructor(
+    public deviceService: DeviceService
+  ) {}
 }

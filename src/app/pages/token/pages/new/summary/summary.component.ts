@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { PreviewImageService } from '@core/services/preview-image';
 import { NewService } from '@pages/token/services/new.service';
+import { StepType } from '../new.page';
 
 @Component({
   selector: 'wen-new-summary',
@@ -9,9 +11,20 @@ import { NewService } from '@pages/token/services/new.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewSummaryComponent {
+  @Output() wenOnSubmit = new EventEmitter<void>();
+  @Output() wenOnTabChange = new EventEmitter<StepType>();
 
   constructor(
     public newService: NewService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public previewImageService: PreviewImageService
   ) {}
+
+  public get stepTypes(): typeof StepType {
+    return StepType;
+  }
+
+  public getAllocationTitle(index: number): string {
+    return $localize`Allocation` + ` #${index >= 10 ? index : '0' + index}`;
+  }
 }
