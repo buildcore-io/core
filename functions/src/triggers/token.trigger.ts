@@ -30,6 +30,7 @@ const createBillPayment =
     purchase: TokenPurchase,
     payments: Transaction[],
     orderTargetAddress: string,
+    spaceAddress: string,
     batch: admin.firestore.WriteBatch
   ) => {
     const tranId = getRandomEthAddress();
@@ -42,7 +43,8 @@ const createBillPayment =
       createdOn: serverTime(),
       payload: {
         amount: purchase.amount,
-        targetAddress: orderTargetAddress,
+        sourceAddress: orderTargetAddress,
+        targetAddress: spaceAddress,
         sourceTransactions: payments.map(d => d.uid),
         reconciled: true,
         royalty: false,
@@ -86,13 +88,37 @@ const reconcileBuyer = (token: Token) => async (purchase: TokenPurchase) => {
   const purchaseDoc = admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${purchase.member}`)
   batch.update(purchaseDoc, { ...purchase, reconciled: true })
 
+  const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
+
   const orderDoc = await orderDocRef(purchase.member!, token).get()
   const orderTargetAddress = orderDoc.data()?.payload?.targetAddress
   const payments = (await allPaymentsQuery(purchase.member!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
-  createBillPayment(token, purchase, payments, orderTargetAddress, batch)
+  createBillPayment(token, purchase, payments, orderTargetAddress, spaceDoc.data()?.validatedAddress, batch)
   purchase.refundedAmount && await createCredit(token, purchase, payments, orderTargetAddress, batch)
   await batch.commit()
+}
+
+const distributeLeftoverTokens = (purchases: TokenPurchase[], totalPublicSupply: number, token: Token) => {
+  let tokensLeft = totalPublicSupply - purchases.reduce((sum, p) => sum + p.tokenOwned!, 0)
+  let i = 0;
+  let sell = false;
+  while (tokensLeft) {
+    const purchase = { ...purchases[i] }
+    if (purchase.refundedAmount! > token.pricePerToken) {
+      sell = true;
+      tokensLeft--;
+      purchase.refundedAmount! -= token.pricePerToken
+      purchase.tokenOwned! += 1
+      purchase.amount! += token.pricePerToken
+      purchases[i] = purchase
+    }
+    i = (i + 1) % purchases.length
+    if (i == 0 && !sell) {
+      break;
+    }
+  }
+
 }
 
 export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
@@ -111,12 +137,14 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
     const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
 
-    const promises = purchasesSnap.docs
+    const purchases = purchasesSnap.docs
       .filter(doc => doc.data().totalDeposit > 0)
-      .map(doc => getMemberPurchaseAllocation(<TokenPurchase>doc.data()!, token, totalPublicSupply, totalBought))
-      .filter(p => !p.reconciled)
-      .map(reconcileBuyer(token))
+      .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
+      .map(doc => getMemberPurchaseAllocation(<TokenPurchase>doc.data(), token, totalPublicSupply, totalBought))
 
+    distributeLeftoverTokens(purchases, totalPublicSupply, token);
+
+    const promises = purchases.filter(p => !p.reconciled).map(reconcileBuyer(token))
     await Promise.all(promises);
 
     await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).update({ status: TokenStatus.READY })

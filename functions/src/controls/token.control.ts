@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPLY, URL_PATHS } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
@@ -33,7 +33,7 @@ const createSchema = () => ({
   description: Joi.string().optional(),
   space: Joi.string().required(),
   pricePerToken: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
-  totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPLY).max(MAX_TOTAL_TOKEN_SUPLY).integer(),
+  totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPPLY).max(MAX_TOTAL_TOKEN_SUPPLY).integer(),
   allocations: Joi.array().required().items(Joi.object().keys({
     title: Joi.string().required(),
     percentage: Joi.number().min(0.01).max(100).precision(2).required(),
@@ -132,18 +132,13 @@ const tokenCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleL
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
   dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms').add(2, 'd'))
 
-const orderOrCreditTokenSchema = ({
-  token: Joi.string().required(),
-  amount: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required()
-})
-
 export const orderToken = functions.runWith({
   minInstances: scale(WEN_FUNC.openBid),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.orderToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object(orderOrCreditTokenSchema);
+  const schema = Joi.object({ token: Joi.string().required() });
   assertValidation(schema.validate(params.body));
 
   const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()
@@ -158,9 +153,9 @@ export const orderToken = functions.runWith({
   const tranId = tokenOrderTransactionDocId(owner, token)
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
   const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+  const newWallet = new WalletService();
 
   await admin.firestore().runTransaction(async (transaction) => {
-    const newWallet = new WalletService();
     const targetAddress = await newWallet.getNewIotaAddressDetails();
     const order = await transaction.get(orderDoc)
     if (!order.exists) {
@@ -172,13 +167,13 @@ export const orderToken = functions.runWith({
         createdOn: serverTime(),
         payload: {
           type: TransactionOrderType.TOKEN_PURCHASE,
-          amount: params.body.amount,
+          amount: token.pricePerToken,
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
           beneficiaryAddress: space?.validatedAddress,
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
-          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+          validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
           void: false,
           chainReference: null,
@@ -193,13 +188,18 @@ export const orderToken = functions.runWith({
   return <Transaction>(await orderDoc.get()).data()
 });
 
+const creditTokenSchema = ({
+  token: Joi.string().required(),
+  amount: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required()
+})
+
 export const creditToken = functions.runWith({
   minInstances: scale(WEN_FUNC.creditToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.orderToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object(orderOrCreditTokenSchema);
+  const schema = Joi.object(creditTokenSchema);
   assertValidation(schema.validate(params.body));
 
   const tranId = getRandomEthAddress();
