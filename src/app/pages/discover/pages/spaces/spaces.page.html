@@ -26,7 +26,7 @@
 
     <section class="container-results mr-10">
 
-      <ais-hits >
+      <ais-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits">
 
           <div class="mt-10 xl:grid place-items-start">

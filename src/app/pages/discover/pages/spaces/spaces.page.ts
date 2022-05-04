@@ -11,6 +11,7 @@ import { FilterService } from './../../services/filter.service';
 import {AlgoliaService} from "@Algolia/services/algolia.service";
 import {discoverSections} from "@pages/discover/pages/discover/discover.page";
 import {defaultPaginationItems} from "@Algolia/algolia.options";
+import {Timestamp} from "firebase/firestore";
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -33,7 +34,7 @@ export class SpacesPage implements OnInit, OnDestroy {
   };
   sections = discoverSections;
   sortItems = [
-    { value: 'space', label: 'recent' },
+    { value: 'space', label: 'Recent' },
     { value: 'space_createdOn_desc', label: 'Oldest' },
   ];
   paginationItems = defaultPaginationItems;
@@ -173,4 +174,16 @@ export class SpacesPage implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
   }
+
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+
+    return algoliaItems.map(algolia => ({
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      updatedOn: Timestamp.fromMillis(+algolia.updatedOn),
+      lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
+      endDate: Timestamp.fromMillis(+algolia.endDate)
+    }));
+  }
+
 }

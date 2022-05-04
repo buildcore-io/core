@@ -14,14 +14,32 @@ import { MemberApi } from './../../../../@api/member.api';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { AuthService } from './../../../../components/auth/services/auth.service';
 import { FilterService } from './../../services/filter.service';
+import {discoverSections} from "@pages/discover/pages/discover/discover.page";
+import {defaultPaginationItems} from "@Algolia/algolia.options";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
+import {Timestamp} from "firebase/firestore";
 
 @UntilDestroy()
 @Component({
   templateUrl: './members.page.html',
   styleUrls: ['./members.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class MembersPage implements OnInit, OnDestroy {
+  config = {
+    indexName: 'member',
+    searchClient: this.algoliaService.searchClient,
+  };
+  sections = discoverSections;
+  sortItems = [
+    { value: 'member', label: 'Recent' },
+    { value: 'member_createdOn_desc', label: 'Oldest' },
+  ];
+  paginationItems = defaultPaginationItems;
+
+
   public sortControl: FormControl;
   public spaceForm: FormGroup;
   public members$: BehaviorSubject<Member[]|undefined> = new BehaviorSubject<Member[]|undefined>(undefined);
@@ -36,7 +54,8 @@ export class MembersPage implements OnInit, OnDestroy {
     public cache: CacheService,
     private memberApi: MemberApi,
     private auth: AuthService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    public readonly algoliaService: AlgoliaService,
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
@@ -209,5 +228,18 @@ export class MembersPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cancelSubscriptions();
+  }
+
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+
+    return algoliaItems.map(algolia => ({
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      updatedOn: Timestamp.fromMillis(+algolia.updatedOn),
+      lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
+
+      spaces: !algolia.spaces ? null : Object.entries(algolia.spaces)
+        .forEach((key: any[], value) => ({ [key[0]]: {...key[1], updateOn: Timestamp.fromMillis(+key[1].updateOn), createOn: Timestamp.fromMillis(+key[1].createOn)}}))
+    }));
   }
 }

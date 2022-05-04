@@ -49,7 +49,7 @@ export class CollectionsPage implements OnInit, OnDestroy {
   };
   sections = marketSections;
   sortItems = [
-    { value: 'collection', label: 'recent' },
+    { value: 'collection', label: 'Recent' },
     { value: 'collection_price_asc', label: 'Low to High' },
     { value: 'collection_price_desc', label: 'High to Low' },
   ];

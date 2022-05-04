@@ -46,7 +46,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   };
   sections = marketSections;
   sortItems = [
-    { value: 'nft', label: 'recent' },
+    { value: 'nft', label: 'Recent' },
     { value: 'nft_price_asc', label: 'Low to High' },
     { value: 'nft_price_desc', label: 'High to Low' },
   ];

@@ -8,6 +8,10 @@ import { Award } from './../../../../../../functions/interfaces/models/award';
 import { AwardApi } from './../../../../@api/award.api';
 import { DEFAULT_LIST_SIZE } from './../../../../@api/base.api';
 import { FilterService } from './../../services/filter.service';
+import {discoverSections} from "@pages/discover/pages/discover/discover.page";
+import {defaultPaginationItems} from "@Algolia/algolia.options";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
+import {Timestamp} from "firebase/firestore";
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -19,10 +23,21 @@ export enum HOT_TAGS {
 @Component({
   templateUrl: './awards.page.html',
   styleUrls: ['./awards.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
-
+  // changeDetection: ChangeDetectionStrategy.OnPush
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class AwardsPage implements OnInit, OnDestroy {
+  config = {
+    indexName: 'award',
+    searchClient: this.algoliaService.searchClient,
+  };
+  sections = discoverSections;
+  sortItems = [
+    { value: 'award', label: 'Recent' },
+    { value: 'award_createdOn_desc', label: 'Oldest' },
+  ];
+  paginationItems = defaultPaginationItems;
   public sortControl: FormControl;
   public award$: BehaviorSubject<Award[]|undefined> = new BehaviorSubject<Award[]|undefined>(undefined);
   public hotTags: string[] = [HOT_TAGS.ALL, HOT_TAGS.ACTIVE, HOT_TAGS.COMPLETED];
@@ -32,7 +47,8 @@ export class AwardsPage implements OnInit, OnDestroy {
   constructor(
     private awardApi: AwardApi,
     public filter: FilterService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public readonly algoliaService: AlgoliaService,
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
   }
@@ -160,4 +176,16 @@ export class AwardsPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.award$.next(undefined);
   }
+
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+
+    return algoliaItems.map(algolia => ({
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      updatedOn: Timestamp.fromMillis(+algolia.updatedOn),
+      lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
+      endDate: Timestamp.fromMillis(+algolia.endDate)
+    }));
+  }
+
 }
