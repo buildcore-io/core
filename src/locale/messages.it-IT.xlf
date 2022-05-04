@@ -1238,7 +1238,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</target>
+        <target state="translated">Il prodotto digitale prescelto (NFT) sarà "sigillato" per l'intera durata dell'asta. L'offerta sarà bloccata ad avvenuto pagamento, con eventuale risarcimento immediato nel caso di un'offerta più alta.</target>
       </trans-unit>
       <trans-unit id="3086800896118622351" datatype="html">
         <source> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </source>
@@ -1254,7 +1254,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">277,278</context>
         </context-group>
-        <target state="needs-translation"> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </target>
+        <target state="translated"> Il rimborso è previsto solo nel caso di offerte più elevate. Inviare direttamente l'offerta allo stesso indirizzo se si desidera farne un'altra d'importo più elevato. </target>
       </trans-unit>
       <trans-unit id="6309493669385041493" datatype="html">
         <source>By checking this box, you agree with</source>
@@ -1294,7 +1294,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">180,181</context>
         </context-group>
-        <target state="needs-translation">Send IOTA to following address (please restake after!):</target>
+        <target state="translated">Inviare l'IOTA al seguente indirizzo (aspettare messa in staking!):</target>
       </trans-unit>
       <trans-unit id="2115592966120408375" datatype="html">
         <source>Copied</source>
