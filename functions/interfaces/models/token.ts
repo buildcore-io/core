@@ -45,8 +45,8 @@ export interface TokenDistribution extends BaseSubCollection {
 }
 
 export interface TokenAirdrop extends BaseSubCollection {
-  readonly member?: EthAddress;
-  readonly tokenOwned?: number;
-  readonly claimed?: boolean;
+  readonly member: EthAddress;
+  readonly tokenDropped: number;
+  readonly tokenClaimed: number;
 }
 

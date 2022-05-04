@@ -659,6 +659,14 @@ export class ProcessingService {
     });
   }
 
+  private async claimAirdroppedTokens(order: Transaction) {
+    await admin.firestore().runTransaction(async (transaction) => {
+      const dropDocRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.AIRDROPS}/${order.member}`)
+      const dropDoc = await transaction.get(dropDocRef);
+      transaction.update(dropDocRef, { tokenClaimed: dropDoc.data()?.tokenDropped })
+    })
+  }
+
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
     // We have to check each output address if there is an order for it.
     if (tran.outputs?.length) {
@@ -742,8 +750,9 @@ export class ProcessingService {
                   await this.updateTokenDistribution(orderData, match)
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
                   const payment = await this.createPayment(orderData, match);
-                  await this.createCredit(payment, match);
+                  await this.createBillPayment(orderData, payment);
                   await this.markAsReconciled(orderData, match.msgId);
+                  await this.claimAirdroppedTokens(orderData);
                 }
               } else {
                 // Now process all invalid orders.
