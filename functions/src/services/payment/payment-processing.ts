@@ -24,6 +24,7 @@ interface TransactionUpdates {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   action: 'update' | 'set';
+  merge?: boolean
 }
 
 export class ProcessingService {
@@ -37,7 +38,7 @@ export class ProcessingService {
   public submit(): void {
     this.updates.forEach((params) => {
       if (params.action === 'set') {
-        this.transaction.set(params.ref, params.data);
+        this.transaction.set(params.ref, params.data, { merge: params.merge || false });
       } else {
         this.transaction.update(params.ref, params.data);
       }
@@ -278,8 +279,8 @@ export class ProcessingService {
         payload: {
           amount: finalAmt,
           sourceAddress: orderPayload.targetAddress,
-          previusOwnerEntity: orderPayload.beneficiary,
-          previusOwner: orderPayload.beneficiaryUid,
+          previousOwnerEntity: orderPayload.beneficiary,
+          previousOwner: orderPayload.beneficiaryUid,
           targetAddress: orderPayload.beneficiaryAddress,
           sourceTransaction: [order.uid],
           nft: orderPayload.nft || null,
@@ -313,8 +314,8 @@ export class ProcessingService {
           sourceAddress: orderPayload.targetAddress,
           targetAddress: orderPayload.royaltiesSpaceAddress,
           sourceTransaction: [order.uid],
-          previusOwnerEntity: orderPayload.beneficiary,
-          previusOwner: orderPayload.beneficiaryUid,
+          previousOwnerEntity: orderPayload.beneficiary,
+          previousOwner: orderPayload.beneficiaryUid,
           reconciled: true,
           royalty: true,
           void: false,
@@ -635,19 +636,26 @@ export class ProcessingService {
     }
   }
 
-  private async updateTokenPurchase(order: Transaction, tran: TransactionMatch) {
-    const batch = admin.firestore().batch()
-    const purchaseRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.PURCHASES}/${order.member}`)
-    const purchase = {
+  private async updateTokenDistribution(order: Transaction, tran: TransactionMatch) {
+    const distributionRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distribution = {
       member: order.member,
       totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
       parentId: order.payload.token,
       parentCol: COL.TOKENS
     }
-    batch.set(purchaseRef, purchase, { merge: true })
+    this.updates.push({
+      ref: distributionRef,
+      data: distribution,
+      action: 'set',
+      merge: true
+    });
     const tokenRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}`)
-    batch.update(tokenRef, { totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount) })
-    await batch.commit()
+    this.updates.push({
+      ref: tokenRef,
+      data: { totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount) },
+      action: 'update'
+    });
   }
 
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
@@ -730,7 +738,7 @@ export class ProcessingService {
                   await this.markAsReconciled(orderData, match.msgId);
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
                   await this.createPayment(orderData, match);
-                  await this.updateTokenPurchase(orderData, match)
+                  await this.updateTokenDistribution(orderData, match)
                 }
               } else {
                 // Now process all invalid orders.

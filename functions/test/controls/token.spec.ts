@@ -261,7 +261,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       saleLength: 86400000 * 2,
       saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
       links: [],
-      status: TokenStatus.READY,
+      status: TokenStatus.AVAILABLE,
       totalDeposit: 0
     })
     await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
@@ -280,8 +280,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const purchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(purchase?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
   })
 
   it('Should order more token', async () => {
@@ -293,8 +293,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone2 = await submitMilestoneFunc(order2.payload.targetAddress, order2.payload.amount);
     await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
-    const purchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(purchase?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
+    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
   })
 
   it('Should create token order and should credit some amount', async () => {
@@ -304,8 +304,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
     }
 
-    const purchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(purchase?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
+    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
 
     await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({
       saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
@@ -316,8 +316,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone2 = await submitMilestoneFunc(credit.payload.targetAddress, credit.payload.amount);
     await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
-    const updatedPurchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(updatedPurchase?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+    const updatedDistribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(updatedDistribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
   })
 
   it('Should create token order and should credit all amount', async () => {
@@ -325,8 +325,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const purchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(purchase?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
 
     await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({
       saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
@@ -337,8 +337,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone2 = await submitMilestoneFunc(credit.payload.targetAddress, credit.payload.amount);
     await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
-    const updatedPurchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(updatedPurchase?.totalDeposit).toBe(0)
+    const updatedDistribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(updatedDistribution?.totalDeposit).toBe(0)
   })
 
   it('Should throw, amount too much to refund', async () => {
@@ -346,8 +346,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const purchase = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}/${memberAddress}`).get()).data()
-    expect(purchase?.totalDeposit).toBe(token.pricePerToken)
+    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution?.totalDeposit).toBe(token.pricePerToken)
 
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT * 4 });
     await expectThrow(testEnv.wrap(creditToken)({}), WenError.not_enough_funds.key)
@@ -372,13 +372,13 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
 })
 
-const tokenProcessed = async (tokenId: string, purchaseLength: number, reconciled: boolean) => {
+const tokenProcessed = async (tokenId: string, distributionLength: number, reconciled: boolean) => {
   for (let attempt = 0; attempt < 400; ++attempt) {
     await new Promise((r) => setTimeout(r, 1000));
     const doc = await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).get();
-    const purchasesSnap = await admin.firestore().collection(`${COL.TOKENS}/${tokenId}/${SUB_COL.PURCHASES}`).get()
-    const purchasesOk = purchasesSnap.docs.reduce((acc, doc) => acc && ((doc.data()?.reconciled || false) === reconciled), purchaseLength === purchasesSnap.docs.length)
-    if (purchasesOk && doc.data()?.status === TokenStatus.PROCESSED) {
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKENS}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const distributionsOk = distributionsSnap.docs.reduce((acc, doc) => acc && ((doc.data()?.reconciled || false) === reconciled), distributionLength === distributionsSnap.docs.length)
+    if (distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED) {
       return
     }
   }
@@ -422,7 +422,7 @@ describe('Token trigger test', () => {
       saleLength: 86400000 * 2,
       saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
       links: [],
-      status: TokenStatus.READY,
+      status: TokenStatus.AVAILABLE,
       totalDeposit: 0
     })
     await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
@@ -456,11 +456,11 @@ describe('Token trigger test', () => {
       }
     }
 
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ status: TokenStatus.PROCESSING_PAYMENTS });
+    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
 
     await tokenProcessed(token.uid, totalAmounts.length, true)
 
-    const snap = await admin.firestore().collection(`${COL.TOKENS}/${token.uid}/${SUB_COL.PURCHASES}`).get()
+    const snap = await admin.firestore().collection(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}`).get()
     snap.docs.forEach(doc => {
       const memberIndex = members.indexOf(doc.data().member)
       expect(doc.data()?.amount).toBe(MIN_IOTA_AMOUNT * amounts[memberIndex])

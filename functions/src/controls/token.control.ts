@@ -6,7 +6,7 @@ import { merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
@@ -17,7 +17,7 @@ import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { allPaymentsQuery, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Token, TokenAllocation, TokenPurchase, TokenStatus } from './../../interfaces/models/token';
+import { Token, TokenAllocation, TokenDistribution, TokenStatus } from './../../interfaces/models/token';
 
 const assertIsGuardian = async (space: string, member: string) => {
   const guardianDoc = (await admin.firestore().doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`).get());
@@ -89,7 +89,7 @@ export const createToken = functions.runWith({
     params.body.coolDownEnd = dateToTimestamp(coolDownEnd)
   }
   const tokenUid: string = getRandomEthAddress();
-  const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.READY, totalDeposit: 0 }
+  const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.AVAILABLE, totalDeposit: 0 }
   const data = keywords(cOn(merge(cleanParams(params.body), extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKENS).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKENS}/${tokenUid}`).get()).data()
@@ -155,9 +155,9 @@ export const orderToken = functions.runWith({
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
   const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
   const newWallet = new WalletService();
+  const targetAddress = await newWallet.getNewIotaAddressDetails();
 
   await admin.firestore().runTransaction(async (transaction) => {
-    const targetAddress = await newWallet.getNewIotaAddressDetails();
     const order = await transaction.get(orderDoc)
     if (!order.exists) {
       const data = <Transaction>{
@@ -207,9 +207,9 @@ export const creditToken = functions.runWith({
   const creditTranDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
 
   await admin.firestore().runTransaction(async (transaction) => {
-    const purchaseDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.PURCHASES}/${owner}`)
-    const purchase = <TokenPurchase | undefined>(await transaction.get(purchaseDocRef)).data()
-    if (!purchase || purchase.totalDeposit < params.body.amount) {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`)
+    const distribution = <TokenDistribution | undefined>(await transaction.get(distributionDocRef)).data()
+    if (!distribution || distribution.totalDeposit < params.body.amount) {
       throw throwInvalidArgument(WenError.not_enough_funds)
     }
     const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()).data()
@@ -220,7 +220,7 @@ export const creditToken = functions.runWith({
     const order = await transaction.get(orderDocRef(owner, token))
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
-    transaction.update(purchaseDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+    transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,
       uid: tranId,
@@ -228,6 +228,7 @@ export const creditToken = functions.runWith({
       member: member.uid,
       createdOn: serverTime(),
       payload: {
+        type: TransactionCreditType.TOKEN_PURCHASE,
         amount: params.body.amount,
         sourceAddress: order.data()?.payload.targetAddress,
         targetAddress: member.validatedAddress,

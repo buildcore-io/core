@@ -9,9 +9,9 @@ export interface TokenAllocation {
 }
 
 export enum TokenStatus {
-  READY = 'ready',
-  PROCESSING_PAYMENTS = 'processing_payments',
-  PROCESSED = 'processed'
+  AVAILABLE = 'available',
+  PROCESSING = 'processing',
+  PRE_MINTED = 'pre_minted'
 }
 
 export interface Token extends BaseRecord {
@@ -34,7 +34,7 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
 }
 
-export interface TokenPurchase extends BaseSubCollection {
+export interface TokenDistribution extends BaseSubCollection {
   readonly member?: EthAddress;
   readonly totalDeposit: number;
   readonly amount?: number;

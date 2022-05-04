@@ -19,6 +19,10 @@ export enum TransactionOrderType {
   TOKEN_PURCHASE = 'TOKEN_PURCHASE'
 }
 
+export enum TransactionCreditType {
+  TOKEN_PURCHASE = "TOKEN_PURCHASE",
+}
+
 export enum TransactionValidationType {
   ADDRESS_AND_AMOUNT,
   ADDRESS
@@ -86,8 +90,8 @@ export interface BillPaymentTransaction {
   targetAddress: IotaAddress;
   reconciled: boolean;
   void: boolean;
-  previusOwnerEntity?: 'space' | 'member',
-  previusOwner?: EthAddress,
+  previousOwnerEntity?: 'space' | 'member',
+  previousOwner?: EthAddress,
   ownerEntity?: 'space' | 'member',
   owner?: EthAddress,
   chainReference: string;
@@ -100,6 +104,7 @@ export interface BillPaymentTransaction {
 }
 
 export interface CreditPaymentTransaction {
+  type?: TransactionCreditType;
   amount: number;
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
@@ -121,8 +126,8 @@ export interface IOTATangleTransaction {
   refund: boolean;
   member?: EthAddress;
   space?: EthAddress;
-  previusOwnerEntity?: 'space' | 'member';
-  previusOwner?: EthAddress;
+  previousOwnerEntity?: 'space' | 'member';
+  previousOwner?: EthAddress;
   ownerEntity?: 'space' | 'member';
   owner?: EthAddress;
   nft?: EthAddress;
