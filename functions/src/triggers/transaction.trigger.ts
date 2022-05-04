@@ -91,8 +91,8 @@ export const transactionWrite = functions.runWith({
 
     // Once space can own NFT this will be expanded.
     if (tranData.member) {
-      details.previusOwner = payload.previusOwner;
-      details.previusOwnerEntity = payload.previusOwnerEntity;
+      details.previousOwner = payload.previousOwner;
+      details.previousOwnerEntity = payload.previousOwnerEntity;
       details.owner = tranData.member;
       details.ownerEntity = 'member';
     }

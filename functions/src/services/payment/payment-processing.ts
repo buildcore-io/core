@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 import { last } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
-import { COL, IotaAddress } from '../../../interfaces/models/base';
+import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
@@ -24,6 +24,7 @@ interface TransactionUpdates {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   action: 'update' | 'set';
+  merge?: boolean
 }
 
 export class ProcessingService {
@@ -37,7 +38,7 @@ export class ProcessingService {
   public submit(): void {
     this.updates.forEach((params) => {
       if (params.action === 'set') {
-        this.transaction.set(params.ref, params.data);
+        this.transaction.set(params.ref, params.data, { merge: params.merge || false });
       } else {
         this.transaction.update(params.ref, params.data);
       }
@@ -228,13 +229,14 @@ export class ProcessingService {
         // This must be the amount they send. As we're handing both correct amount from order or invalid one.
         amount: tran.to.amount,
         sourceAddress: tran.from.address,
-        targetAddress: (<OrderPayBillCreditTransaction>order.payload).targetAddress,
+        targetAddress: order.payload.targetAddress,
         reconciled: true,
         void: false,
         sourceTransaction: [order.uid],
         chainReference: tran.msgId,
-        nft: (<OrderPayBillCreditTransaction>order.payload).nft || null,
-        collection: (<OrderPayBillCreditTransaction>order.payload).collection || null,
+        nft: order.payload.nft || null,
+        collection: order.payload.collection || null,
+        token: order.payload.token || null,
         invalidPayment: invalidPayment
       }
     };
@@ -277,8 +279,8 @@ export class ProcessingService {
         payload: {
           amount: finalAmt,
           sourceAddress: orderPayload.targetAddress,
-          previusOwnerEntity: orderPayload.beneficiary,
-          previusOwner: orderPayload.beneficiaryUid,
+          previousOwnerEntity: orderPayload.beneficiary,
+          previousOwner: orderPayload.beneficiaryUid,
           targetAddress: orderPayload.beneficiaryAddress,
           sourceTransaction: [order.uid],
           nft: orderPayload.nft || null,
@@ -312,8 +314,8 @@ export class ProcessingService {
           sourceAddress: orderPayload.targetAddress,
           targetAddress: orderPayload.royaltiesSpaceAddress,
           sourceTransaction: [order.uid],
-          previusOwnerEntity: orderPayload.beneficiary,
-          previusOwner: orderPayload.beneficiaryUid,
+          previousOwnerEntity: orderPayload.beneficiary,
+          previousOwner: orderPayload.beneficiaryUid,
           reconciled: true,
           royalty: true,
           void: false,
@@ -634,6 +636,28 @@ export class ProcessingService {
     }
   }
 
+  private async updateTokenDistribution(order: Transaction, tran: TransactionMatch) {
+    const distributionRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distribution = {
+      member: order.member,
+      totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
+      parentId: order.payload.token,
+      parentCol: COL.TOKENS
+    }
+    this.updates.push({
+      ref: distributionRef,
+      data: distribution,
+      action: 'set',
+      merge: true
+    });
+    const tokenRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}`)
+    this.updates.push({
+      ref: tokenRef,
+      data: { totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount) },
+      action: 'update'
+    });
+  }
+
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
     // We have to check each output address if there is an order for it.
     if (tran.outputs?.length) {
@@ -712,6 +736,9 @@ export class ProcessingService {
                   }
 
                   await this.markAsReconciled(orderData, match.msgId);
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
+                  await this.createPayment(orderData, match);
+                  await this.updateTokenDistribution(orderData, match)
                 }
               } else {
                 // Now process all invalid orders.
@@ -735,7 +762,6 @@ export class ProcessingService {
 
     return;
   }
-
 
   public async processAsInvalid(tran: MilestoneTransaction, order: TransactionOrder, o: MilestoneTransactionEntry): Promise<void> {
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];

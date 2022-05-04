@@ -81,5 +81,8 @@ export const WenError = {
   royalty_fees_can_only_be_reduced: { code: 2072, key: 'Royalty fees can only be reduced.' },
   token_already_exists_for_space: { code: 2073, key: 'Only one token is allowed per space.' },
   token_symbol_must_be_globally_unique: { code: 2074, key: 'Token symbol must be globally unique.' },
+  no_token_public_sale: { code: 2075, key: 'Token not on public sale.' },
+  not_enough_funds: { code: 2076, key: 'Not enough funds to credit' },
+  token_not_in_cool_down_period: { code: 2077, key: 'Token not in cool down period.' }
 }
 

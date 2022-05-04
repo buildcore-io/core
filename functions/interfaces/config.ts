@@ -62,6 +62,6 @@ export const RPC_CHAIN = {
   // blockExplorerUrls?: string[];
   // iconUrls?: string[]; // Currently ignored.
 }
-export const MIN_TOTAL_TOKEN_SUPLY = 100;
-export const MAX_TOTAL_TOKEN_SUPLY = 1000000000000;
+export const MIN_TOTAL_TOKEN_SUPPLY = 100;
+export const MAX_TOTAL_TOKEN_SUPPLY = 1000000000000;
 export const MIN_TOKEN_START_DATE_DAY = 7
