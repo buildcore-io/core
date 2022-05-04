@@ -487,6 +487,7 @@ describe('Token airdrop test', () => {
     const dummyTokenData = dummyToken(space.uid)
     dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
     dummyTokenData.saleLength = 86400000
+    dummyTokenData.coolDownLength = 86400000
     dummyTokenData.allocations = [{ title: 'Private', percentage: 90 }, { title: 'Public', percentage: 10, isPublicSale: true }]
     mockWalletReturnValue(walletSpy, guardianAddress, dummyTokenData)
     token = await testEnv.wrap(createToken)({});
@@ -555,6 +556,7 @@ describe('Claim airdropped token test', () => {
     const dummyTokenData = dummyToken(space.uid)
     dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
     dummyTokenData.saleLength = 86400000
+    dummyTokenData.coolDownLength = 86400000
     dummyTokenData.allocations = [{ title: 'Private', percentage: 90 }, { title: 'Public', percentage: 10, isPublicSale: true }]
     mockWalletReturnValue(walletSpy, guardianAddress, dummyTokenData)
     token = await testEnv.wrap(createToken)({});
@@ -588,7 +590,6 @@ describe('Claim airdropped token test', () => {
         .where('payload.amount', '==', MIN_IOTA_AMOUNT)
         .where('member', '==', guardianAddress)
         .get();
-      snap.docs.forEach(d => console.log(d.data()))
       expect(snap.docs.length).toBe(1)
     }
     const airdrop = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.AIRDROPS}/${guardianAddress}`).get()).data()
