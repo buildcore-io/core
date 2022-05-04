@@ -11,8 +11,8 @@ import { PreviewImageService } from '@core/services/preview-image';
 })
 export class TokensPage {
   public tokens = [
-    { token: 'SoonLabs Token', amount: 500, value: 500, type: 'Refund' },
-    { token: 'IOTABOTS Token', amount: 100, value: 100, type: 'Claim' }
+    { item: 'SoonLabs Token', amount: 500, value: 500, type: 'Refund' },
+    { item: 'IOTABOTS Token', amount: 100, value: 100, type: 'Claim' }
   ];
   public openClaimRefundType: TokenItemType | null = null;
 

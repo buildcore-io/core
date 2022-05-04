@@ -11,10 +11,10 @@ import { PreviewImageService } from '@core/services/preview-image';
 })
 export class TransactionsPage {
   public transactions = [
-    { token: 'SoonLabs Token', amount: 500, type: 'Purchase', date: new Date(), link: 'https://www.google.com/' },
-    { token: 'IOTABOTS Token', amount: 100, type: 'Bid', date: new Date(), link: 'https://www.google.com/' },
-    { token: 'SoonLabs Token', amount: 500, type: 'Refund', date: new Date(), link: 'https://www.google.com/' },
-    { token: 'IOTABOTS Token', amount: 100, type: 'Sell', date: new Date(), link: 'https://www.google.com/' }
+    { item: 'SoonLabs Token', amount: 500, type: 'Purchase', date: new Date(), link: 'https://www.google.com/' },
+    { item: 'IOTABOTS Token', amount: 100, type: 'Bid', date: new Date(), link: 'https://www.google.com/' },
+    { item: 'SoonLabs Token', amount: 500, type: 'Refund', date: new Date(), link: 'https://www.google.com/' },
+    { item: 'IOTABOTS Token', amount: 100, type: 'Sell', date: new Date(), link: 'https://www.google.com/' }
   ];
   public includeBidsControl: FormControl = new FormControl(false);
 
