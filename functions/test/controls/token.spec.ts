@@ -69,6 +69,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
     token.saleStartDate = dayjs().add(8, 'day').toDate()
     token.saleLength = 86400000
+    token.coolDownLength = 86400000
     mockWalletReturnValue(walletSpy, memberAddress, token)
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
@@ -143,14 +144,24 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     await expectThrow(testEnv.wrap(createToken)({}), WenError.you_are_not_guardian_of_space.key)
   })
 
-  it('Should throw, saleStartDate requite', async () => {
+  it('Should throw,when public sale datea are requite', async () => {
+    const token: any = dummyToken(space.uid)
+
     const allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
     token.allocations = allocations
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
 
-    const correctData = ({ ...dummyToken(space.uid), saleStartDate: dayjs().add(8, 'd').toDate(), saleLength: 240000, allocations })
-    mockWalletReturnValue(walletSpy, memberAddress, correctData)
+    token.saleStartDate = dayjs().add(8, 'd').toDate()
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+
+    token.saleLength = 86400000
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+
+    token.coolDownLength = 86400000
+    mockWalletReturnValue(walletSpy, memberAddress, token)
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
   })
@@ -367,7 +378,7 @@ const tokenProcessed = async (tokenId: string, purchaseLength: number, reconcile
     const doc = await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).get();
     const purchasesSnap = await admin.firestore().collection(`${COL.TOKENS}/${tokenId}/${SUB_COL.PURCHASES}`).get()
     const purchasesOk = purchasesSnap.docs.reduce((acc, doc) => acc && ((doc.data()?.reconciled || false) === reconciled), purchaseLength === purchasesSnap.docs.length)
-    if (purchasesOk && doc.data()?.status === TokenStatus.READY) {
+    if (purchasesOk && doc.data()?.status === TokenStatus.PROCESSED) {
       return
     }
   }

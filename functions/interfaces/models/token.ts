@@ -11,7 +11,7 @@ export interface TokenAllocation {
 export enum TokenStatus {
   READY = 'ready',
   PROCESSING_PAYMENTS = 'processing_payments',
-  ERROR = 'error'
+  PROCESSED = 'processed'
 }
 
 export interface Token extends BaseRecord {

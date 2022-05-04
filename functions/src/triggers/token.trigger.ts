@@ -147,5 +147,5 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     const promises = purchases.filter(p => !p.reconciled).map(reconcileBuyer(token))
     await Promise.all(promises);
 
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).update({ status: TokenStatus.READY })
+    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).update({ status: TokenStatus.PROCESSED })
   })

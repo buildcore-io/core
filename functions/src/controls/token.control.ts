@@ -51,6 +51,7 @@ const createSchema = () => ({
   }),
   saleStartDate: Joi.date().greater(dayjs().add(MIN_TOKEN_START_DATE_DAY, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
+  coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
@@ -79,12 +80,12 @@ export const createToken = functions.runWith({
   await assertIsGuardian(params.body.space, owner)
 
   const hasPublicSale = (<TokenAllocation[]>params.body.allocations).filter(a => a.isPublicSale).length > 0
-  if (hasPublicSale && (params.body.saleStartDate === undefined || params.body.saleLength === undefined)) {
+  if (hasPublicSale && (!params.body.saleStartDate || !params.body.saleLength || !params.body.coolDownLength)) {
     throw throwInvalidArgument(WenError.invalid_params);
   }
   if (hasPublicSale) {
     params.body.saleStartDate = dateToTimestamp(params.body.saleStartDate)
-    const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength, 'ms').add(2, 'd')
+    const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength + params.body.coolDownLength, 'ms')
     params.body.coolDownEnd = dateToTimestamp(coolDownEnd)
   }
   const tokenUid: string = getRandomEthAddress();
