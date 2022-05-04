@@ -1,13 +1,6 @@
 <div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:px-6 py-3.5 rounded-2xl
     flex flex-col lg:flex-row lg:items-center cursor-pointer">
-    <div class="flex items-center w-full lg:w-3/12 px-6 lg:px-0">
-        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
-          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-          nzShape="circle"
-          [nzSize]="32">
-        </nz-avatar>
-        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-4">{{ 'SoonLabs Token' }}</div>
-    </div>
+    <div class="w-full lg:w-3/12 px-6 lg:px-0 font-bold text-lg">{{ 'SoonLabs Token' }}</div>
 
     <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-6"></div>
 

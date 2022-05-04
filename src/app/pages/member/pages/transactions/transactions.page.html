@@ -24,16 +24,7 @@
         </thead>
         <tbody>
             <tr *ngFor="let t of transactions">
-                <td>
-                    <div class="flex items-center">
-                        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
-                          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                          nzShape="circle"
-                          [nzSize]="32">
-                        </nz-avatar>
-                        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-3">{{ t.token }}</div>
-                    </div>
-                </td>
+                <td class="font-bold text-lg">{{ t.item }}</td>
                 <td class="font-medium">{{ t.type }}</td>
                 <td class="font-medium">{{ t.date | date: 'medium' }}</td>
                 <td class="font-medium">{{ t.amount }}</td>
