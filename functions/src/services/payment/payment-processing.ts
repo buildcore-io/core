@@ -7,6 +7,7 @@ import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
+import { TokenDistribution } from '../../../interfaces/models/token';
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
@@ -341,7 +342,7 @@ export class ProcessingService {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
-    const paymentPayload = <PaymentTransaction>payment.payload
+    const paymentPayload = payment.payload
     let transOut: Transaction | undefined;
     if (paymentPayload.amount > 0) {
       const tranId: string = getRandomEthAddress();
@@ -358,6 +359,7 @@ export class ProcessingService {
           targetAddress: tran.from.address,
           sourceTransaction: [payment.uid],
           nft: paymentPayload.nft || null,
+          token: paymentPayload.token || null,
           reconciled: true,
           void: false,
           collection: paymentPayload.collection || null,
@@ -658,6 +660,18 @@ export class ProcessingService {
     });
   }
 
+  private async claimAirdroppedTokens(order: Transaction) {
+    await admin.firestore().runTransaction(async (transaction) => {
+      const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+      const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
+      const data = {
+        tokenClaimed: distribution.tokenDropped!,
+        tokenOwned: admin.firestore.FieldValue.increment(distribution.tokenDropped! - (distribution.tokenClaimed || 0))
+      }
+      transaction.update(distributionDocRef, data)
+    })
+  }
+
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
     // We have to check each output address if there is an order for it.
     if (tran.outputs?.length) {
@@ -739,6 +753,11 @@ export class ProcessingService {
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
                   await this.createPayment(orderData, match);
                   await this.updateTokenDistribution(orderData, match)
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
+                  const payment = await this.createPayment(orderData, match);
+                  await this.createBillPayment(orderData, payment);
+                  await this.markAsReconciled(orderData, match.msgId);
+                  await this.claimAirdroppedTokens(orderData);
                 }
               } else {
                 // Now process all invalid orders.
