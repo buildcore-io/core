@@ -12,7 +12,9 @@ import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from './../../../../../../functions/in
 
 export const marketSections = [
   { route: `../${ROUTER_UTILS.config.market.collections}`, label: $localize`Collections` },
-  { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFT\'s` }
+  { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFT\'s` },
+  { route: `../${ROUTER_UTILS.config.market.tokens}`, label: $localize`Token\'s` }
+
 ];
 @UntilDestroy()
 @Component({

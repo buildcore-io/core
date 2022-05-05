@@ -6,6 +6,10 @@ import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { Space } from '@functions/interfaces/models';
 import { FilterService } from '@pages/market/services/filter.service';
+import {marketSections} from "@pages/market/pages/market/market.page";
+import {defaultPaginationItems} from "@Algolia/algolia.options";
+import {Timestamp} from "firebase/firestore";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
 
 export enum AddedCategories {
   ALL = 'All'
@@ -15,9 +19,26 @@ export enum AddedCategories {
   selector: 'wen-tokens',
   templateUrl: './tokens.page.html',
   styleUrls: ['./tokens.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
+  // TODO investigate how to bypass this....
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TokensPage {
+
+  config = {
+    indexName: 'collection',
+    searchClient: this.algoliaService.searchClient,
+  };
+  sections = marketSections;
+  sortItems = [
+    { value: 'collection', label: 'Recent' },
+    { value: 'collection_price_asc', label: 'Low to High' },
+    { value: 'collection_price_desc', label: 'High to Low' },
+  ];
+  paginationItems = defaultPaginationItems;
+
+
   public sortControl: FormControl;
   public spaceControl: FormControl;
   public statusControl: FormControl;
@@ -27,7 +48,9 @@ export class TokensPage {
     public deviceService: DeviceService,
     public cache: CacheService,
     public filter: FilterService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    public readonly algoliaService: AlgoliaService,
+
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
@@ -46,4 +69,19 @@ export class TokensPage {
   public onScroll(): void {
     return;
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+    return algoliaItems.map(algolia => ({
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      updatedOn: Timestamp.fromMillis(+algolia.updatedOn),
+      lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
+      availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
+    }));
+  }
+
 }

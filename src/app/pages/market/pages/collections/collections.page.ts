@@ -269,7 +269,11 @@ export class CollectionsPage implements OnInit, OnDestroy {
   public convertAllToSoonaverseModel(algoliaItems: any[]) {
 
     return algoliaItems.map(algolia => ({
-      ...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      updatedOn: Timestamp.fromMillis(+algolia.updatedOn),
+      lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
+      availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
     }));
   }
 

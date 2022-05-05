@@ -16,7 +16,6 @@ import connectSearchBox, {
 import {DeviceService} from "@core/services/device";
 import {FormControl} from "@angular/forms";
 import {TabSection} from "@components/tabs/tabs.component";
-import {ROUTER_UTILS} from "@core/utils/router.utils";
 import {debounceTime} from "rxjs";
 import {GLOBAL_DEBOUNCE_TIME} from "@functions/interfaces/config";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
@@ -35,7 +34,8 @@ import {NavigationEnd, Router} from "@angular/router";
         [selectedTab]="selectedSection">
       </wen-dropdown-tabs>
 
-      <wen-mobile-search *ngIf="deviceService.isMobile$ | async" [formControl]="filterControl" class="ml-auto" i18n-placeholder placeholder="Search">
+      <wen-mobile-search
+        *ngIf="deviceService.isMobile$ | async" [formControl]="filterControl" class="ml-auto" i18n-placeholder placeholder="Search">
       </wen-mobile-search>
 
       <nz-input-group *ngIf="deviceService.isDesktop$ | async"
@@ -82,6 +82,8 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
     public instantSearchInstance: NgAisInstantSearch,
     public deviceService: DeviceService,
     private cd: ChangeDetectorRef,
+    private router: Router,
+
     private ngZone: NgZone
 
   ) {
@@ -91,17 +93,33 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
     this.createWidget(connectSearchBox, {
       // instance options
     });
-    console.log('state=', this.state);
+    // console.log('state=', this.state);
     this.filterControl.valueChanges.pipe(
       debounceTime(GLOBAL_DEBOUNCE_TIME),
       untilDestroyed(this)
     ).subscribe((val) => {
-      this.ngZone.run(()=>{
         this.state.refine(val);
-      })
     });
+
+    this.setSelectedSection();
+
+    this.router.events
+      .pipe(untilDestroyed(this))
+      .subscribe((obj) => {
+        if (obj instanceof NavigationEnd) {
+          this.setSelectedSection();
+        }
+      });
+
     super.ngOnInit();
 
+  }
+
+  private setSelectedSection() {
+    console.log('setSelectedSection')
+    this.selectedSection =
+      this.sections.find((r: TabSection) =>
+        (this.router.url || '').includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase().substring(3)));
   }
 
 
