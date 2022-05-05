@@ -17,7 +17,7 @@ import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Token, TokenAirdrop, TokenAllocation, TokenDistribution, TokenStatus } from './../../interfaces/models/token';
+import { Token, TokenAllocation, TokenDistribution, TokenStatus } from './../../interfaces/models/token';
 
 const createSchema = () => ({
   name: Joi.string().required(),
@@ -259,15 +259,15 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
     const schema = Joi.object(airdropTokenSchema);
     assertValidation(schema.validate(params.body));
 
-    const airdropDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
+    const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
       params.body.drops.map(({ recipient }: { recipient: string }) =>
-        admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.AIRDROPS}/${recipient}`)
+        admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient}`)
       );
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const airdropDocs = []
-      for (const docRef of airdropDocRefs) {
-        airdropDocs.push(await transaction.get(docRef))
+      const distributionDocs = []
+      for (const docRef of distributionDocRefs) {
+        distributionDocs.push(await transaction.get(docRef))
       }
 
       const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`);
@@ -293,24 +293,20 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
           member: drop.recipient,
           tokenDropped: admin.firestore.FieldValue.increment(drop.count)
         }
-        transaction.create(airdropDocRefs[i], airdropData);
+        transaction.create(distributionDocRefs[i], airdropData);
       }
     })
 
-    const promises = airdropDocRefs.map(docRef => docRef.get());
-    return <TokenAirdrop[]>(await Promise.all(promises)).map(d => d.data());
+    const promises = distributionDocRefs.map(docRef => docRef.get());
+    return <TokenDistribution[]>(await Promise.all(promises)).map(d => d.data());
   });
-
-const claimAirdropTokenSchema = ({
-  token: Joi.string().required()
-})
 
 export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_FUNC.claimAirdroppedToken) })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
     appCheck(WEN_FUNC.orderToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object(claimAirdropTokenSchema);
+    const schema = Joi.object({ token: Joi.string().required() });
     assertValidation(schema.validate(params.body));
 
     const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get();
@@ -324,14 +320,14 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const airdropDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.AIRDROPS}/${owner}`);
-      const airdrop = <TokenAirdrop>(await transaction.get(airdropDocRef)).data();
+      const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
+      const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
 
-      if (!airdrop) {
+      if (!distribution) {
         throw throwInvalidArgument(WenError.invalid_params)
       }
 
-      if (airdrop.tokenDropped == (airdrop.tokenClaimed || 0)) {
+      if (distribution.tokenDropped == (distribution.tokenClaimed || 0)) {
         throw throwInvalidArgument(WenError.airdrop_already_claimed)
       }
 
@@ -350,8 +346,8 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
           beneficiary: 'space',
           beneficiaryUid: tokenDoc.data()?.space,
           beneficiaryAddress: spaceDoc.data()?.validatedAddress,
-          expiresOn: dateToTimestamp(dayjs().add(4, 'minutes')),
-          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+          expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+          validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
           void: false,
           chainReference: null,

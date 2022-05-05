@@ -7,6 +7,7 @@ import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
+import { TokenDistribution } from '../../../interfaces/models/token';
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
@@ -661,9 +662,13 @@ export class ProcessingService {
 
   private async claimAirdroppedTokens(order: Transaction) {
     await admin.firestore().runTransaction(async (transaction) => {
-      const dropDocRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.AIRDROPS}/${order.member}`)
-      const dropDoc = await transaction.get(dropDocRef);
-      transaction.update(dropDocRef, { tokenClaimed: dropDoc.data()?.tokenDropped })
+      const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+      const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
+      const data = {
+        tokenClaimed: distribution.tokenDropped!,
+        tokenOwned: admin.firestore.FieldValue.increment(distribution.tokenDropped! - (distribution.tokenClaimed || 0))
+      }
+      transaction.update(distributionDocRef, data)
     })
   }
 

@@ -10,19 +10,20 @@ import { getRandomEthAddress } from '../utils/wallet.utils';
 
 const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken)
 
-const getTokenOwned = (totalSupply: number, totalBought: number, payedByMember: number) =>
+const getBoughtByMemberCount = (totalSupply: number, totalBought: number, payedByMember: number) =>
   totalSupply >= totalBought ? payedByMember : Math.floor(payedByMember * 100 / totalBought / 100 * totalSupply)
 
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
   const paidByMember = getTokenCount(token, totalDeposit)
-  const tokenOwned = getTokenOwned(totalSupply, totalBought, paidByMember)
-  const amount = token.pricePerToken * tokenOwned
+  const boughtByMember = getBoughtByMemberCount(totalSupply, totalBought, paidByMember)
+  const totalPaid = token.pricePerToken * boughtByMember
+  const data = { ...distribution, totalPaid, totalBought: boughtByMember }
   if (totalSupply >= totalBought) {
-    return { ...distribution, amount, tokenOwned, refundedAmount: 0 }
+    return { ...data, refundedAmount: 0 }
   }
-  const refundedAmount = totalDeposit - (tokenOwned * token.pricePerToken)
-  return { ...distribution, amount, tokenOwned, refundedAmount: refundedAmount < MIN_IOTA_AMOUNT ? 0 : refundedAmount }
+  const refundedAmount = totalDeposit - (boughtByMember * token.pricePerToken)
+  return { ...data, refundedAmount: refundedAmount < MIN_IOTA_AMOUNT ? 0 : refundedAmount }
 }
 
 const createBillPayment =
@@ -42,7 +43,7 @@ const createBillPayment =
       member: distribution.member,
       createdOn: serverTime(),
       payload: {
-        amount: distribution.amount,
+        amount: distribution.totalPaid,
         sourceAddress: orderTargetAddress,
         targetAddress: space.validatedAddress,
         previousOwnerEntity: 'space',
@@ -89,7 +90,7 @@ const createCredit = async (
 const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution) => {
   const batch = admin.firestore().batch();
   const distributionDoc = admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.member}`)
-  batch.update(distributionDoc, { ...distribution, reconciled: true })
+  batch.update(distributionDoc, { ...distribution, tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0), reconciled: true })
 
   const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
 
@@ -103,7 +104,7 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
 }
 
 const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPublicSupply: number, token: Token) => {
-  let tokensLeft = totalPublicSupply - distributions.reduce((sum, p) => sum + p.tokenOwned!, 0)
+  let tokensLeft = totalPublicSupply - distributions.reduce((sum, p) => sum + p.totalBought!, 0)
   let i = 0;
   let sell = false;
   while (tokensLeft) {
@@ -112,8 +113,8 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
       sell = true;
       tokensLeft--;
       distribution.refundedAmount! -= token.pricePerToken
-      distribution.tokenOwned! += 1
-      distribution.amount! += token.pricePerToken
+      distribution.totalBought! += 1
+      distribution.totalPaid! += token.pricePerToken
       distributions[i] = distribution
     }
     i = (i + 1) % distributions.length

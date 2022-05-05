@@ -37,16 +37,15 @@ export interface Token extends BaseRecord {
 
 export interface TokenDistribution extends BaseSubCollection {
   readonly member?: EthAddress;
+
   readonly totalDeposit: number;
-  readonly amount?: number;
+  readonly totalPaid?: number;
   readonly refundedAmount?: number;
-  readonly tokenOwned?: number;
+  readonly totalBought?: number;
   readonly reconciled?: boolean;
-}
 
-export interface TokenAirdrop extends BaseSubCollection {
-  readonly member: EthAddress;
-  readonly tokenDropped: number;
-  readonly tokenClaimed: number;
-}
+  readonly tokenDropped?: number;
+  readonly tokenClaimed?: number;
 
+  readonly tokenOwned?: number;
+}
