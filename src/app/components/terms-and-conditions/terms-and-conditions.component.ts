@@ -1,0 +1,23 @@
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { DeviceService } from '@core/services/device';
+
+@Component({
+  selector: 'wen-terms-and-conditions',
+  templateUrl: './terms-and-conditions.component.html',
+  styleUrls: ['./terms-and-conditions.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class TermsAndConditionsComponent {
+  @Input() isChecked = false;
+  @Input() documentLink!: string;
+  @Output() wenOnCheckChange = new EventEmitter<boolean>();
+  
+  constructor(
+    public deviceService: DeviceService
+  ) {}
+
+  public onChange(value: boolean): void {
+    this.isChecked = value;
+    this.wenOnCheckChange.emit(this.isChecked);
+  }
+}
