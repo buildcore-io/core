@@ -24,7 +24,7 @@ interface TransactionUpdates {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   action: 'update' | 'set';
-  merge?: boolean
+  merge?: boolean;
 }
 
 export class ProcessingService {
