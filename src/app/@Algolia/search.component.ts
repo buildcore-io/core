@@ -98,7 +98,7 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
       debounceTime(GLOBAL_DEBOUNCE_TIME),
       untilDestroyed(this)
     ).subscribe((val) => {
-        this.state.refine(val);
+      this.state.refine(val);
     });
 
     this.setSelectedSection();
@@ -121,6 +121,4 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
       this.sections.find((r: TabSection) =>
         (this.router.url || '').includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase().substring(3)));
   }
-
-
 }

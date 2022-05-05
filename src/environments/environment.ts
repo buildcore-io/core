@@ -2,13 +2,12 @@ export const environment = {
   production: false,
   captcha: '6LfYqHQdAAAAAI91N8xl6pc0LIUj4s9ksqj02CWm',
   fbConfig: {
-    apiKey: "AIzaSyB4fcG8rtNWAiAtSmxmK3q3JLfMvtNCGP4",
-    authDomain: "soonaverse.firebaseapp.com",
-    projectId: "soonaverse",
-    storageBucket: "soonaverse.appspot.com",
-    messagingSenderId: "502842886229",
-    appId: "1:502842886229:web:fcb7da4040fd19ba742cdc",
-    measurementId: "G-CCX9NVPPCR"
+    apiKey: "AIzaSyDZhaoZ2Kr4GW-f1vKIlm3cwp77Q3YyzNM",
+    authDomain: "soonaverse-test.firebaseapp.com",
+    projectId: "soonaverse-test",
+    storageBucket: "soonaverse-test.appspot.com",
+    messagingSenderId: "206252445538",
+    appId: "1:206252445538:web:3cfb62b01468748631663b"
   },
   algolia: {
     appId: '6MPUETJRDB',

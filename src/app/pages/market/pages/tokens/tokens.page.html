@@ -34,11 +34,11 @@
             <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
             >
 
-              <wen-collection-card class="outline-none w-full h-full"
-                                   *ngFor="let hit of hits; trackBy: trackByUid"
-                                   [collection]="hit"
-                                   [fullWidth]="(deviceService.isMobile$ | async) || false">
-              </wen-collection-card>
+<!--              <wen-collection-card class="outline-none w-full h-full"-->
+<!--                                   *ngFor="let hit of hits; trackBy: trackByUid"-->
+<!--                                   [collection]="hit"-->
+<!--                                   [fullWidth]="(deviceService.isMobile$ | async) || false">-->
+<!--              </wen-collection-card>-->
             </div>
 
           </div>
@@ -136,99 +136,99 @@
 </ais-instantsearch>
 
 
-<div class="flex flex-col items-end justify-between xl:flex-row">
-    <wen-select-space
-      *ngIf="deviceService.isMobile$ | async"
-      class="block w-full mt-6 mb-6"
-      [formControl]="spaceControl"
-      [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-      size="large">
-    </wen-select-space>
-    <div class="flex items-start justify-between w-full xl:items-end lg:mt-12">
-        <div class="flex flex-col items-start xl:flex-row xl:items-center">
-            <div class="mt-4 xl:mt-0">
-                <div class="mb-2 text-xs font-medium text-foregrounds-secondary" i18n>Status</div>
-                <nz-select
-                    class="w-44"
-                    nzSize="small"
-                    i18n-nzPlaceHolder
-                    nzPlaceHolder="Category"
-                    [nzDropdownStyle]="{ 'min-width': '128px', 'max-width': '100%' }"
-                    [formControl]="statusControl"
-                    >
-                    <nz-option
-                        *ngFor="let cc of statuses"
-                        i18n-nzLabel
-                        [nzLabel]="cc"
-                        [nzValue]="cc"
-                    >
-                    </nz-option>
-                </nz-select>
-            </div>
+<!--<div class="flex flex-col items-end justify-between xl:flex-row">-->
+<!--    <wen-select-space-->
+<!--      *ngIf="deviceService.isMobile$ | async"-->
+<!--      class="block w-full mt-6 mb-6"-->
+<!--      [formControl]="spaceControl"-->
+<!--      [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"-->
+<!--      size="large">-->
+<!--    </wen-select-space>-->
+<!--    <div class="flex items-start justify-between w-full xl:items-end lg:mt-12">-->
+<!--        <div class="flex flex-col items-start xl:flex-row xl:items-center">-->
+<!--            <div class="mt-4 xl:mt-0">-->
+<!--                <div class="mb-2 text-xs font-medium text-foregrounds-secondary" i18n>Status</div>-->
+<!--                <nz-select-->
+<!--                    class="w-44"-->
+<!--                    nzSize="small"-->
+<!--                    i18n-nzPlaceHolder-->
+<!--                    nzPlaceHolder="Category"-->
+<!--                    [nzDropdownStyle]="{ 'min-width': '128px', 'max-width': '100%' }"-->
+<!--                    [formControl]="statusControl"-->
+<!--                    >-->
+<!--                    <nz-option-->
+<!--                        *ngFor="let cc of statuses"-->
+<!--                        i18n-nzLabel-->
+<!--                        [nzLabel]="cc"-->
+<!--                        [nzValue]="cc"-->
+<!--                    >-->
+<!--                    </nz-option>-->
+<!--                </nz-select>-->
+<!--            </div>-->
 
-            <div *ngIf="deviceService.isDesktop$ | async" class="xl:ml-4">
-                <div class="mt-2 mb-2 text-xs font-medium text-foregrounds-secondary xl:mt-0" i18n>Space</div>
-                <wen-select-space
-                    class="block w-44"
-                    [formControl]="spaceControl"
-                    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-                    size="small">
-                </wen-select-space>
-            </div>
-        </div>
-        <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-            <nz-select class="mt-6 wen-sort-button xl:mt-0" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
-                [formControl]="sortControl" nz-tooltip>
-                <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                <nz-option i18n-nzLabel nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
-                <nz-option i18n-nzLabel nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
-            </nz-select>
-            <ng-template #defaultTemplate let-selected>
-                <div class="flex items-center">
-                    <div nz-typography nzType="secondary" class="mr-1 text-xs">
-                        <ng-container *ngIf="selected.nzValue === filter.sortOptions.RECENT; else notRecent" i18n>Sort by</ng-container>
-                        <ng-template #notRecent i18n>Price</ng-template>
-                    </div>
-                    <span>{{ selected.nzLabel }}</span>
-                </div>
-            </ng-template>
-        </ng-container>
-        <ng-template #sortMobileBlock>
-            <div class="relative mt-6">
-                <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-                  <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-                  <nz-option i18n-nzLabel nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
-                  <nz-option i18n-nzLabel nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
-                </nz-select>
-                <ng-template #mobileSuffixIcon>
-                    <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
-                </ng-template>
-            </div>
-        </ng-template>
-    </div>
-</div>
+<!--            <div *ngIf="deviceService.isDesktop$ | async" class="xl:ml-4">-->
+<!--                <div class="mt-2 mb-2 text-xs font-medium text-foregrounds-secondary xl:mt-0" i18n>Space</div>-->
+<!--                <wen-select-space-->
+<!--                    class="block w-44"-->
+<!--                    [formControl]="spaceControl"-->
+<!--                    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"-->
+<!--                    size="small">-->
+<!--                </wen-select-space>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">-->
+<!--            <nz-select class="mt-6 wen-sort-button xl:mt-0" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"-->
+<!--                [formControl]="sortControl" nz-tooltip>-->
+<!--                <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>-->
+<!--                <nz-option i18n-nzLabel nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>-->
+<!--                <nz-option i18n-nzLabel nzLabel="High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>-->
+<!--            </nz-select>-->
+<!--            <ng-template #defaultTemplate let-selected>-->
+<!--                <div class="flex items-center">-->
+<!--                    <div nz-typography nzType="secondary" class="mr-1 text-xs">-->
+<!--                        <ng-container *ngIf="selected.nzValue === filter.sortOptions.RECENT; else notRecent" i18n>Sort by</ng-container>-->
+<!--                        <ng-template #notRecent i18n>Price</ng-template>-->
+<!--                    </div>-->
+<!--                    <span>{{ selected.nzLabel }}</span>-->
+<!--                </div>-->
+<!--            </ng-template>-->
+<!--        </ng-container>-->
+<!--        <ng-template #sortMobileBlock>-->
+<!--            <div class="relative mt-6">-->
+<!--                <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">-->
+<!--                  <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>-->
+<!--                  <nz-option i18n-nzLabel nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>-->
+<!--                  <nz-option i18n-nzLabel nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>-->
+<!--                </nz-select>-->
+<!--                <ng-template #mobileSuffixIcon>-->
+<!--                    <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>-->
+<!--                </ng-template>-->
+<!--            </div>-->
+<!--        </ng-template>-->
+<!--    </div>-->
+<!--</div>-->
 
-<div class="mt-10">
-    <!-- TODO: ngIf not loading -->
-    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="true">
-      {{ 100 }} <span i18n>tokens</span>
-    </p>
-    <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
-        (scrolled)="onScroll()">
-        <!-- TODO: ngIf loading -->
-        <nz-skeleton *ngIf="true" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-full h-16" [nzActive]="true"
-            [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+<!--<div class="mt-10">-->
+<!--    &lt;!&ndash; TODO: ngIf not loading &ndash;&gt;-->
+<!--    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="true">-->
+<!--      {{ 100 }} <span i18n>tokens</span>-->
+<!--    </p>-->
+<!--    <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"-->
+<!--        (scrolled)="onScroll()">-->
+<!--        &lt;!&ndash; TODO: ngIf loading &ndash;&gt;-->
+<!--        <nz-skeleton *ngIf="true" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-full h-16" [nzActive]="true"-->
+<!--            [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>-->
 
-        <!-- TODO: ngIf no tokens -->
-        <nz-card class="w-76" *ngIf="true">
-            <div class="flex flex-col justify-center text-center h-36">
-                <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    No tokens
-                </span>
-            </div>
-        </nz-card>
+<!--        &lt;!&ndash; TODO: ngIf no tokens &ndash;&gt;-->
+<!--        <nz-card class="w-76" *ngIf="true">-->
+<!--            <div class="flex flex-col justify-center text-center h-36">-->
+<!--                <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>-->
+<!--                    No tokens-->
+<!--                </span>-->
+<!--            </div>-->
+<!--        </nz-card>-->
 
-        <wen-token-row *ngFor="let token of [0, 1, 2, 3]" class="block mb-3">
-        </wen-token-row>
-    </div>
-</div>
+<!--        <wen-token-row *ngFor="let token of [0, 1, 2, 3]" class="block mb-3">-->
+<!--        </wen-token-row>-->
+<!--    </div>-->
+<!--</div>-->
