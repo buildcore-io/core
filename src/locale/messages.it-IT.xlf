@@ -1358,7 +1358,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control. </target>
+        <target state="translated"> Non inviare capitale dalle piattaforme di exchange. Utilizzare sempre portafogli digitali (wallets) che garantiscano il controllo totale e unico dei propri dati. </target>
       </trans-unit>
       <trans-unit id="2370778860499758288" datatype="html">
         <source> Firefly </source>
