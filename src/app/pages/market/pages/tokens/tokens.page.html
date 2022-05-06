@@ -27,22 +27,6 @@
     <section class="container-results mr-10">
 
       <ais-hits [transformItems]="convertAllToSoonaverseModel">
-        <ng-template let-hits="hits">
-
-          <div class="mt-10 xl:grid place-items-start">
-
-            <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
-            >
-
-<!--              <wen-collection-card class="outline-none w-full h-full"-->
-<!--                                   *ngFor="let hit of hits; trackBy: trackByUid"-->
-<!--                                   [collection]="hit"-->
-<!--                                   [fullWidth]="(deviceService.isMobile$ | async) || false">-->
-<!--              </wen-collection-card>-->
-            </div>
-
-          </div>
-        </ng-template>
       </ais-hits>
 
       <footer class="container-footer">
@@ -80,52 +64,6 @@
 
         <div class="container-body">
 
-          <nz-collapse>
-            <nz-collapse-panel
-              nzHeader="Saletype"
-              nzActive="true"
-            >
-              <ais-refinement-list
-                attribute="access"
-                [transformItems]="algoliaService.convertToAccessName"
-              >
-              </ais-refinement-list>
-            </nz-collapse-panel>
-
-            <nz-collapse-panel
-              nzHeader="Spaces"
-              nzActive="true"
-            >
-              <ais-refinement-list
-                attribute="space"
-                [transformItems]="algoliaService.convertToSpaceName"
-                [searchable]="false"
-                searchPlaceholder="Search for space…"
-              >
-              </ais-refinement-list>
-            </nz-collapse-panel>
-
-            <nz-collapse-panel
-              nzHeader="Category"
-              nzActive="true"
-            >
-              <ais-refinement-list
-                attribute="category"
-              >
-              </ais-refinement-list>
-            </nz-collapse-panel>
-
-          </nz-collapse>
-
-          <ais-panel header="Price range">
-            <ais-range-slider
-              attribute="price"
-              [pips]="false"
-              [tooltips]="true"
-              [precision]="0"
-            >
-            </ais-range-slider>
-          </ais-panel>
           <div>
           </div>
         </div>
