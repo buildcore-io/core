@@ -10,6 +10,7 @@ import { Member, Transaction, TransactionCreditType, TransactionOrderType, Trans
 import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
@@ -42,7 +43,8 @@ const createSchema = () => ({
     }
     return allocations;
   }),
-  saleStartDate: Joi.date().greater(dayjs().add(MIN_TOKEN_START_DATE_DAY, 'd').toDate()).optional(),
+  // Only on prod we enforce 7 days.
+  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
