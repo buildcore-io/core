@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { TokenApi } from '@api/token.api';
+import { MockProvider } from 'ng-mocks';
 import { TokenPage } from './token.page';
 
 
@@ -8,7 +11,11 @@ describe('TokenPage', () => {
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ TokenPage ]
+      declarations: [ TokenPage ],
+      providers: [
+        MockProvider(TokenApi),
+        MockProvider(ActivatedRoute)
+      ]
     })
       .compileComponents();
   });

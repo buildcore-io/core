@@ -20,8 +20,4 @@ export class NewOverviewComponent {
   public get stepTypes(): typeof StepType {
     return StepType;
   }
-
-  public getDescriptionTitle(index: number): string {
-    return index === 1 ? $localize`Token description` : ($localize`Description` + ` #${index >= 10 ? index : '0' + index}`);
-  }
 }

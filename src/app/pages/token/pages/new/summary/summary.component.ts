@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { NewService } from '@pages/token/services/new.service';
@@ -17,7 +18,8 @@ export class NewSummaryComponent {
   constructor(
     public newService: NewService,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
+    private cache: CacheService
   ) {}
 
   public get stepTypes(): typeof StepType {
@@ -26,5 +28,9 @@ export class NewSummaryComponent {
 
   public getAllocationTitle(index: number): string {
     return $localize`Allocation` + ` #${index >= 10 ? index : '0' + index}`;
+  }
+
+  public getSpaceAvatar(spaceId: string): string | undefined {
+    return this.cache.allSpaces$?.getValue().find(s => s.uid === spaceId)?.avatarUrl;
   }
 }

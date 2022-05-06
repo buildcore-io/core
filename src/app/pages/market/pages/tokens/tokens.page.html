@@ -19,9 +19,9 @@
                     [formControl]="statusControl"
                     >
                     <nz-option
-                        *ngFor="let cc of statuses"
+                        *ngFor="let cc of statuses; let i = index"
                         i18n-nzLabel
-                        [nzLabel]="cc"
+                        [nzLabel]="statusLabels[i]"
                         [nzValue]="cc"
                     >
                     </nz-option>
@@ -71,18 +71,15 @@
 </div>
 
 <div class="mt-10">
-    <!-- TODO: ngIf not loading -->
-    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="true">
-      {{ 100 }} <span i18n>tokens</span>
+    <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="!isLoading(tokens$ | async)">
+        {{ ((tokens$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>tokens</span>
     </p>
     <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
-        <!-- TODO: ngIf loading -->
-        <nz-skeleton *ngIf="true" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 lg:w-full h-76 lg:h-16" [nzActive]="true"
+        <nz-skeleton *ngIf="isLoading(tokens$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 lg:w-full h-76 lg:h-16" [nzActive]="true"
             [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
-        <!-- TODO: ngIf no tokens -->
-        <nz-card class="w-76" *ngIf="true">
+        <nz-card class="w-76" *ngIf="isEmpty(tokens$ | async)">
             <div class="flex flex-col justify-center text-center h-36">
                 <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     No tokens
@@ -90,7 +87,7 @@
             </div>
         </nz-card>
 
-        <wen-token-row *ngFor="let token of [0, 1, 2, 3]" class="block mb-3">
+        <wen-token-row *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token" class="block mb-3">
         </wen-token-row>
     </div>
 </div>

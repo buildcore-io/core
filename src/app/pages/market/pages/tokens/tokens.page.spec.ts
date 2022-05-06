@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SpaceApi } from '@api/space.api';
+import { TokenApi } from '@api/token.api';
 import { CacheService } from '@core/services/cache/cache.service';
 import { MockProvider } from 'ng-mocks';
 import { TokensPage } from './tokens.page';
@@ -14,7 +14,7 @@ describe('TokensPage', () => {
       declarations: [ TokensPage ],
       providers: [
         MockProvider(CacheService),
-        MockProvider(SpaceApi)
+        MockProvider(TokenApi)
       ]
     })
       .compileComponents();
