@@ -37,7 +37,6 @@ module.exports = {
     '@typescript-eslint/no-misused-new': 2,
     'keyword-spacing': 2,
     'space-before-blocks': 2,
-    'space-before-function-paren': ['error', 'never'],
     '@typescript-eslint/type-annotation-spacing': 2,
     'comma-spacing': 2,
     'no-multi-spaces': 2,

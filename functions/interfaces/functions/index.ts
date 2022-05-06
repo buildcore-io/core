@@ -48,7 +48,11 @@ export const enum WEN_FUNC {
 
   // TOKEN functions
   cToken = 'cToken',
-  uToken = 'uToken'
+  uToken = 'uToken',
+  orderToken = 'orderToken',
+  creditToken = 'creditToken',
+  airdropToken = 'airdropToken',
+  claimAirdroppedToken = 'claimAirdropedToken'
 }
 
 export interface cMemberNotExists {
@@ -61,6 +65,6 @@ export interface DecodedToken {
 }
 
 export interface StandardResponse {
-  status: 'error'|'success';
+  status: 'error' | 'success';
   error?: string;
 }

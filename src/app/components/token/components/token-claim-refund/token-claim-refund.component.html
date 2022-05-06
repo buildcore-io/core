@@ -8,7 +8,7 @@
 <ng-template #content>
     <div class="mt-8 lg:mt-6 flex items-center">
         <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
-          class="border-2 border-tags-border dark:border-tags-borde-dark min-w-12"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
         </nz-avatar>
@@ -31,14 +31,12 @@
         </div>
     </div>
 
-    <label class="w-full mt-8" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
-        <div class="text-base font-medium">
-            <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark mr-0.5" i18n>By checking this box, you agree with</span>
-            <br *ngIf="deviceService.isMobile$ | async" />
-            <a href="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ" target="_new" class="inline underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                (click)="$event.stopPropagation()" i18n>Terms and Conditions</a>
-        </div>
-    </label>
+    <wen-terms-and-conditions
+        class="mt-8"
+        [isChecked]="agreeTermsConditions"
+        documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+        (wenOnCheckChange)="agreeTermsConditions = $event">
+    </wen-terms-and-conditions>
 
     <div class="w-full mt-10 flex justify-center item-center">
         <button nz-button nzType="primary" nzSize="large">

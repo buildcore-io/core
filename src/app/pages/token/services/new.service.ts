@@ -11,6 +11,7 @@ import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 
 export const MAX_ALLOCATIONS_COUNT = 100;
+export const MAX_DESCRIPTIONS_COUNT = 5;
 export const MAX_LINKS_COUNT = 20;
 
 
@@ -30,22 +31,20 @@ export class NewService {
   ]
   public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
+  public maxDescriptionsCount = MAX_DESCRIPTIONS_COUNT;
   public maxLinksCount = MAX_LINKS_COUNT;  
 
   public nameControl: FormControl = new FormControl('', Validators.required);
   public symbolControl: FormControl = new FormControl('', Validators.required);
-  public startDateControl: FormControl = new FormControl('', Validators.required);
-  public offerLengthControl: FormControl = new FormControl(2, [Validators.required, Validators.min(1)]);
   public priceControl: FormControl = new FormControl('', Validators.required);
   public totalSupplyControl: FormControl = new FormControl('', Validators.required);
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public iconControl: FormControl = new FormControl('', Validators.required);
   public distributionControl: FormControl = new FormControl('fixed', Validators.required);
-  public titleControl: FormControl = new FormControl('', Validators.required);
-  public descriptionControl: FormControl = new FormControl('', Validators.required);
   public introductionaryControl: FormControl = new FormControl('', Validators.required);
   
   public allocations: FormArray;
+  public descriptions: FormArray;
   public links: FormArray;
   public tokenForm: FormGroup;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
@@ -56,26 +55,25 @@ export class NewService {
     private auth: AuthService
   ) {
     this.allocations = new FormArray([]);
+    this.descriptions = new FormArray([]);
     this.links = new FormArray([]);
 
     this.tokenForm = new FormGroup({
       name: this.nameControl,
       symbol: this.symbolControl,
-      startDate: this.startDateControl,
-      offerLength: this.offerLengthControl,
       price: this.priceControl,
       totalSupply: this.totalSupplyControl,
       space: this.spaceControl,
       icon: this.iconControl,
       distribution: this.distributionControl,
-      title: this.titleControl,
-      description: this.descriptionControl,
       introductionary: this.introductionaryControl,
       allocations: this.allocations,
+      descriptions: this.descriptions,
       links: this.links
     });
 
     this.addAllocation();
+    this.addDescription();
     this.addLink();
   }
 
@@ -95,6 +93,23 @@ export class NewService {
 
   public removeAllocation(index: number): void {
     this.allocations.removeAt(index);
+  }
+
+  private getDescriptionForm(title = '', description = ''): FormGroup {
+    return new FormGroup({
+      title: new FormControl(title, Validators.required),
+      description: new FormControl(description, Validators.required)
+    });
+  }
+
+  public addDescription(title = '', description = ''): void {
+    if (this.descriptions.controls.length < MAX_DESCRIPTIONS_COUNT) {
+      this.descriptions.push(this.getDescriptionForm(title, description));
+    }
+  }
+
+  public removeDescription(index: number): void {
+    this.descriptions.removeAt(index);
   }
 
   private getLinkForm(url = ''): FormGroup {
@@ -168,9 +183,5 @@ export class NewService {
     }
 
     return this.fileApi.upload(this.auth.member$.value.uid, item, type);
-  }
-
-  public getAllocationTitle(index: number): string {
-    return $localize`Allocation` + ` #${index >= 10 ? index : '0' + index}`;
   }
 }

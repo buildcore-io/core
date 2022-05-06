@@ -40,31 +40,14 @@
           <router-outlet></router-outlet>
         </div>
       </div>
-      <div class="mt-4 space-y-4 lg:mt-36 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+      <div class="mt-4 space-y-4 lg:space-y-6 lg:mt-36 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
         [ngStyle]="{
           'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
-        <button
-          nz-button
-          nzType="primary"
-          nzBlock
-          nzSize="large"
-          (click)="isBuyTokensVisible = true"
-          [disabled]="false"
-          i18n
-        >
-          Buy Tokens
-        </button>
+        <wen-token-buy *ngIf="deviceService.isDesktop$ | async"></wen-token-buy>
+        <wen-token-progress *ngIf="deviceService.isDesktop$ | async"></wen-token-progress>
   
-        <wen-share
-          class="block mb-4 p-6 lg:p-0"
-          i18n-shareText
-          shareText="Check out award"
-          [shareUrl]="getShareUrl()"
-          *ngIf="deviceService.isDesktop$ | async">
-        </wen-share>
-  
-        <wen-token-info class="block space-y-4"
+        <wen-token-info class="block space-y-4 lg:space-y-6"
           *ngIf="deviceService.isDesktop$ | async">
         </wen-token-info>
       </div>
@@ -83,16 +66,7 @@
   
         <h1 class="w-3/4 mt-10 mb-12 ml-5">{{ 'SoonLabs token launchpad' }}</h1>
   
-        <wen-share
-          class="block mb-4 p-6 lg:p-0"
-          i18n-shareText
-          shareText="Check out award"
-          [shareUrl]="getShareUrl()">
-        </wen-share>
-  
         <wen-token-info></wen-token-info>
       </div>
     </nz-drawer>
   </wen-content>
-  
-  <wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>

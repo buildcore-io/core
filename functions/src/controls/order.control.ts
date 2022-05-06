@@ -25,7 +25,7 @@ import { AddressDetails, WalletService } from './../services/wallet/wallet';
 
 export const orderNft: functions.CloudFunction<Transaction> = functions.runWith({
   minInstances: scale(WEN_FUNC.orderNft),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
   appCheck(WEN_FUNC.orderNft, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -153,7 +153,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('payload.royalty', '==', false)
       .where('payload.collection', '==', docCollectionData.uid)
-      .where('payload.previusOwnerEntity', '==', 'space').get();
+      .where('payload.previousOwnerEntity', '==', 'space').get();
     if (qry.size >= 1) {
       throw throwInvalidArgument(WenError.you_can_only_own_one_nft_from_collection);
     }
@@ -233,7 +233,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Lock NFT
-  await admin.firestore().runTransaction(async(transaction) => {
+  await admin.firestore().runTransaction(async (transaction) => {
     const sfDoc: DocumentSnapshotType = await transaction.get(refNft);
     if (sfDoc.data()) {
       // Was locked by another transaction.
@@ -291,7 +291,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
 
 export const validateAddress: functions.CloudFunction<Transaction> = functions.runWith({
   minInstances: scale(WEN_FUNC.validateAddress),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
   appCheck(WEN_FUNC.validateAddress, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -359,7 +359,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
 
 export const openBid: functions.CloudFunction<Transaction> = functions.runWith({
   minInstances: scale(WEN_FUNC.openBid),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
   appCheck(WEN_FUNC.openBid, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);

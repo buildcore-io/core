@@ -145,14 +145,12 @@
              send higher amount directly to the same address.
         </div>
 
-        <label class="w-full mt-6 lg:ml-6 lg:w-auto" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
-            <div class="text-base font-medium">
-                <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark mr-0.5" i18n>By checking this box, you agree with</span>
-                <br *ngIf="deviceService.isMobile$ | async" />
-                <a href="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ" target="_new" class="inline underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                    (click)="$event.stopPropagation()" i18n>Terms and Conditions</a>
-            </div>
-        </label>
+        <wen-terms-and-conditions
+            class="mt-6 lg:ml-6"
+            [isChecked]="agreeTermsConditions"
+            documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+            (wenOnCheckChange)="agreeTermsConditions = $event">
+        </wen-terms-and-conditions>
 
         <button nz-button nzType="primary" nzSize="large" class="w-full mt-6 lg:w-auto"
             [disabled]="!agreeTermsConditions" i18n (click)="proceedWithBid()">

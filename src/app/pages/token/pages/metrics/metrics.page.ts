@@ -37,5 +37,5 @@ export class MetricsPage {
     { title: 'Price per token', value: '1 Mi' },
     { title: 'Treasury', value: '50%', extraValue: '(50 000 Mi)' },
     { title: 'Development fund', value: '20%', extraValue: '(20 000 Mi)' }
-  ]
+  ];
 }

@@ -165,64 +165,48 @@
               *ngIf="questions.controls.length > 1">Remove Question</button>-->
 
         <ng-container *ngFor="let question of questions.controls; let i = index">
-          <ng-container
+          <nz-card
             *ngFor="let answer of getAnswers(question); let ii = index"
+            [nzBordered]="false"
+            class="relative"
           >
-            <nz-card
-              [nzBordered]="false"
-              [nzExtra]="actionsTpl"
-            >
             <nz-card-meta
-            [nzTitle]="getAnswerTitle(ii)"
-            i18n-nzDescription
-            nzDescription="Text and description for each individual answer."
-          >
-          </nz-card-meta>
-              <div class="mt-4 space-y-4">
-                <nz-form-item>
-                  <nz-form-control i18n-nzErrorTip nzErrorTip="Answer Text is required.">
-                    <input
-                      nz-input
-                      i18n-placeholder
-                      placeholder="Answer Text"
-                      nzSize="large"
-                      [formControl]="gForm(answer, 'text')"
-                    />
-                  </nz-form-control>
-                </nz-form-item>
-                <nz-form-item>
-                  <nz-form-control>
-                    <textarea
-                      nz-input
-                      i18n-placeholder
-                      placeholder="Answer description"
-                      nzSize="large"
-                      rows="4"
-                      [formControl]="gForm(answer, 'additionalInfo')"
-                    ></textarea>
-                  </nz-form-control>
-                </nz-form-item>
-              </div>
-            </nz-card>
-            <ng-template #actionsTpl>
-              <div class="space-x-4">
-                <!-- This is not important to show. We just default it. No need to allow customization of this value for now. -->
-                <!-- <nz-input-number [nzMin]="0" [nzMax]="250" nzSize="large" placeholder="Answer Value"
-                  [formControl]="gForm(answer, 'value')">
-                </nz-input-number> -->
-                <button
-                  nz-button
-                  nzDanger
-                  nzType="text"
-                  nzShape="circle"
-                  *ngIf="getAnswers(question).length > 2"
-                  (click)="removeAnswer(question, ii)"
-                >
-                  <i nz-icon nzType="delete"></i>
-                </button>
-              </div>
-            </ng-template>
-          </ng-container>
+              [nzTitle]="getAnswerTitle(ii+1)"
+              i18n-nzDescription
+              nzDescription="Text and description for each individual answer."
+            >
+            </nz-card-meta>
+            <wen-icon-trash
+                *ngIf="ii > 1"
+                class="absolute top-6 right-8 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
+                (click)="removeAnswer(question, ii)"
+            ></wen-icon-trash>
+            <div class="mt-4 space-y-4">
+              <nz-form-item>
+                <nz-form-control i18n-nzErrorTip nzErrorTip="Answer Text is required.">
+                  <input
+                    nz-input
+                    i18n-placeholder
+                    placeholder="Answer Text"
+                    nzSize="large"
+                    [formControl]="gForm(answer, 'text')"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-control>
+                  <textarea
+                    nz-input
+                    i18n-placeholder
+                    placeholder="Answer description"
+                    nzSize="large"
+                    rows="4"
+                    [formControl]="gForm(answer, 'additionalInfo')"
+                  ></textarea>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </nz-card>
           <button
             nz-button
             type="button"
