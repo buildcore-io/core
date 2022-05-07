@@ -52,6 +52,24 @@ const createSchema = () => ({
   overviewGraphics: Joi.string().required(),
 })
 
+const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
+  const coolDownEnd = dayjs(saleStartDate.toDate()).add(saleLength + coolDownLength, 'ms')
+  return { saleStartDate, saleLength, coolDownEnd: dateToTimestamp(coolDownEnd) }
+}
+
+// eslint-disable-next-line
+const shouldSetPublicSaleTimeFrames = (body: any, allocations: TokenAllocation[]) => {
+  const hasPublicSale = allocations.filter(a => a.isPublicSale).length > 0
+  const count: number = [body.saleStartDate, body.saleLength, body.coolDownLength].reduce((sum, act) => sum + (act === undefined ? 0 : 1), 0)
+  if (count === 3 && !hasPublicSale) {
+    throw throwInvalidArgument(WenError.no_token_public_sale);
+  }
+  if (count > 0 && count < 3) {
+    throw throwInvalidArgument(WenError.invalid_params);
+  }
+  return count === 3
+}
+
 export const createToken = functions.runWith({
   minInstances: scale(WEN_FUNC.cToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
@@ -74,18 +92,12 @@ export const createToken = functions.runWith({
 
   await assertIsGuardian(params.body.space, owner)
 
-  const hasPublicSale = (<TokenAllocation[]>params.body.allocations).filter(a => a.isPublicSale).length > 0
-  if (hasPublicSale && (!params.body.saleStartDate || !params.body.saleLength || !params.body.coolDownLength)) {
-    throw throwInvalidArgument(WenError.invalid_params);
-  }
-  if (hasPublicSale) {
-    params.body.saleStartDate = dateToTimestamp(params.body.saleStartDate)
-    const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength + params.body.coolDownLength, 'ms')
-    params.body.coolDownEnd = dateToTimestamp(coolDownEnd)
-  }
+  const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
+    getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength) : {}
+
   const tokenUid = getRandomEthAddress();
   const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.AVAILABLE, totalDeposit: 0, totalAirdropped: 0 }
-  const data = keywords(cOn(merge(cleanParams(params.body), extraData), URL_PATHS.TOKEN))
+  const data = keywords(cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKENS).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKENS}/${tokenUid}`).get()).data()
 })
@@ -119,6 +131,43 @@ export const updateToken = functions.runWith({
   await tokenDocRef.update(uOn(params.body))
   return <Token>(await tokenDocRef.get()).data()
 })
+
+const setAvailableForSaleSchema = {
+  token: Joi.string().required(),
+  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
+  saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+  coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+}
+
+export const setTokenAvailableForSale = functions.runWith({
+  minInstances: scale(WEN_FUNC.setTokenAvailableForSale),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.cSpace, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+
+  const schema = Joi.object(setAvailableForSaleSchema);
+  assertValidation(schema.validate(params.body));
+
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`);
+
+  await admin.firestore().runTransaction(async (transaction) => {
+    const data = <Token | undefined>(await transaction.get(tokenDocRef)).data()
+    if (!data) {
+      throw throwInvalidArgument(WenError.invalid_params)
+    }
+    if (data.saleStartDate) {
+      throw throwInvalidArgument(WenError.public_sale_already_set)
+    }
+    await assertIsGuardian(data.space, owner)
+    shouldSetPublicSaleTimeFrames(params.body, data.allocations);
+    const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength);
+    transaction.update(tokenDocRef, timeFrames);
+  })
+
+  return <Token>(await tokenDocRef.get()).data();
+})
+
 
 const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
   dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
