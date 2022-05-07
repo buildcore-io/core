@@ -6,7 +6,7 @@ import { WEN_FUNC } from "../../interfaces/functions";
 import { Space, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
-import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, updateToken } from "../../src/controls/token.control";
+import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
@@ -139,13 +139,26 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     await expectThrow(testEnv.wrap(createToken)({}), WenError.you_are_not_guardian_of_space.key)
   })
 
-  it('Should throw,when public sale datea are requite', async () => {
+  it('Should create with public sale but no date', async () => {
     const token: any = dummyToken(space.uid)
-
-    const allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
-    token.allocations = allocations
+    token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
     mockWalletReturnValue(walletSpy, memberAddress, token)
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+  })
+
+  it('Should throw, no public sale', async () => {
+    const token: any = dummyToken(space.uid)
+    token.saleStartDate = dayjs().add(8, 'd').toDate()
+    token.saleLength = 86400000;
+    token.coolDownLength = 86400000;
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.no_token_public_sale.key)
+  })
+
+  it('Should throw, when public sale data is incomplete', async () => {
+    const token: any = dummyToken(space.uid)
+    token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
 
     token.saleStartDate = dayjs().add(8, 'd').toDate()
     mockWalletReturnValue(walletSpy, memberAddress, token)
@@ -212,6 +225,53 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
     const updateData = { name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key)
+  })
+
+})
+
+describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
+  let memberAddress: string;
+  let space: Space;
+  let token: any
+  let publicTime = { saleStartDate: dayjs().toDate(), saleLength: 86400000 * 2, coolDownLength: 86400000 }
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
+    mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
+    token = await testEnv.wrap(createToken)({});
+  });
+
+  it('Should throw, not on public sale', async () => {
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.no_token_public_sale.key);
+  })
+
+  it('Should throw, not guardian', async () => {
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.you_are_not_guardian_of_space.key);
+  })
+
+  it('Should set public availability', async () => {
+    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result.saleStartDate).toBeDefined()
+    expect(result.saleLength).toBeDefined()
+    expect(result.coolDownEnd).toBeDefined()
+  })
+
+  it('Should throw, can not set public availability twice', async () => {
+    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    await testEnv.wrap(setTokenAvailableForSale)({});
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.public_sale_already_set.key);
   })
 
 })
