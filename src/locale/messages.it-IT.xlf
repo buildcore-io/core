@@ -1799,7 +1799,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">d</target>
+        <target state="translated">g.</target>
       </trans-unit>
       <trans-unit id="8398233202919865612" datatype="html">
         <source>h</source>
@@ -1807,7 +1807,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="needs-translation">h</target>
+        <target state="translated">o.</target>
       </trans-unit>
       <trans-unit id="3370839803061654054" datatype="html">
         <source>hours</source>
@@ -1815,7 +1815,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">hours</target>
+        <target state="translated">orario</target>
       </trans-unit>
       <trans-unit id="8033953731717586115" datatype="html">
         <source>m</source>
@@ -1823,7 +1823,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">m</target>
+        <target state="translated">m</target>
       </trans-unit>
       <trans-unit id="3901733599428143571" datatype="html">
         <source>min</source>
