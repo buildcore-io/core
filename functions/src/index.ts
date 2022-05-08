@@ -12,6 +12,7 @@ import { finaliseAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwards
 import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
+import { onTokenBuySellCreated } from './triggers/token.buy.sell.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
 admin.initializeApp();
@@ -88,3 +89,4 @@ exports[WEN_FUNC.creditToken] = creditToken
 exports[WEN_FUNC.airdropToken] = airdropToken
 exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken
 exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate
+exports['trigger_onTokenBuySellCreated'] = onTokenBuySellCreated

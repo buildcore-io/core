@@ -1,16 +1,16 @@
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import { last } from 'lodash';
-import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY } from '../../../interfaces/config';
+import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
-import { TokenDistribution } from '../../../interfaces/models/token';
+import { TokenBuySellOrder, TokenDistribution } from '../../../interfaces/models/token';
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
-import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { NotificationService } from '../notification/notification';
 
@@ -672,6 +672,42 @@ export class ProcessingService {
     })
   }
 
+  private async createTokenBuyRequest(order: Transaction) {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distributionDoc = await this.transaction.get(distributionDocRef)
+    if (!distributionDoc.exists) {
+      const data = {
+        member: order.member,
+        totalDeposit: 0,
+        totalPaid: 0,
+        refundedAmount: 0,
+        totalBought: 0,
+        reconciled: false,
+        tokenDropped: 0,
+        tokenClaimed: 0,
+        lockedForSale: 0,
+        sold: 0,
+        totalPurchased: 0,
+        tokenOwned: 0
+      }
+      this.updates.push({ ref: distributionDocRef, data, action: 'set' });
+    }
+    const buyDocId = getRandomEthAddress()
+    const data = cOn(<TokenBuySellOrder>{
+      uid: buyDocId,
+      owner: order.member,
+      token: order.payload.token,
+      type: 'buy',
+      count: order.payload.count,
+      price: order.payload.price,
+      fulfilled: 0,
+      settled: false,
+      orderTransactionId: order.uid,
+    }, URL_PATHS.TOKEN_MARKET)
+    const buyDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${buyDocId}`);
+    this.updates.push({ ref: buyDocRef, data, action: 'set' });
+  }
+
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
     // We have to check each output address if there is an order for it.
     if (tran.outputs?.length) {
@@ -758,6 +794,9 @@ export class ProcessingService {
                   await this.createBillPayment(orderData, payment);
                   await this.markAsReconciled(orderData, match.msgId);
                   await this.claimAirdroppedTokens(orderData);
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_BUY) {
+                  await this.createPayment(orderData, match);
+                  await this.createTokenBuyRequest(orderData)
                 }
               } else {
                 // Now process all invalid orders.

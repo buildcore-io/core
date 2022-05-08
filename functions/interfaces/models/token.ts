@@ -51,5 +51,28 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly tokenDropped?: number;
   readonly tokenClaimed?: number;
 
+  readonly lockedForSale?: number;
+  readonly sold?: number;
+
+  readonly totalPurchased?: number;
+
   readonly tokenOwned?: number;
+}
+
+export interface TokenPurchase extends BaseRecord {
+  readonly sell: string;
+  readonly buy: string;
+  readonly count: number;
+  readonly price: number;
+}
+
+export interface TokenBuySellOrder extends BaseRecord {
+  readonly owner: string;
+  readonly token: string;
+  readonly type: 'buy' | 'sell';
+  readonly count: number;
+  readonly price: number;
+  readonly fulfilled: number;
+  readonly settled: boolean;
+  readonly orderTransactionId?: string;
 }
