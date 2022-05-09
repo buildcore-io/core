@@ -74,7 +74,8 @@ export enum TokenBuySellOrderType {
 export enum TokenBuySellOrderStatus {
   ACTIVE = 'active',
   SETTLED = 'settled',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
+  PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled'
 }
 
 export interface TokenBuySellOrder extends BaseRecord {

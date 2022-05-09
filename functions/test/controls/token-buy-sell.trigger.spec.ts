@@ -253,7 +253,7 @@ describe('Buy sell trigger', () => {
     const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).where('type', '==', TokenBuySellOrderType.BUY).get()
     mockWalletReturnValue(walletSpy, buyer, { uid: snap.docs[0].id });
     const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
-    expect(cancelled.status).toBe(TokenBuySellOrderStatus.CANCELLED)
+    expect(cancelled.status).toBe(TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
     const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.CREDIT)
       .where('member', '==', buyer)

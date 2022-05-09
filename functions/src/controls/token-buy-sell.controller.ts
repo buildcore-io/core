@@ -78,7 +78,9 @@ export const cancelBuyOrSell = functions.runWith({
     throw throwInvalidArgument(WenError.invalid_params)
   }
 
-  transaction.update(saleDocRef, uOn({ status: TokenBuySellOrderStatus.CANCELLED }))
+  transaction.update(saleDocRef, uOn({
+    status: sale.fulfilled === 0 ? TokenBuySellOrderStatus.CANCELLED : TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED
+  }))
 
   if (sale.type === TokenBuySellOrderType.SELL) {
     const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${sale.token}/${SUB_COL.DISTRIBUTION}/${sale.owner}`)
