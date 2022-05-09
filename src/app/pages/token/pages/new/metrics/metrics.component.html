@@ -11,7 +11,7 @@
                 <nz-form-item>
                     <nz-form-control
                         i18n-nzErrorTip
-                        nzErrorTip="Name is required."
+                        nzErrorTip="Name is invalid."
                         >
                         <input
                         nz-input
@@ -25,7 +25,7 @@
                 <nz-form-item>
                     <nz-form-control
                         i18n-nzErrorTip
-                        nzErrorTip="Symbol is required."
+                        nzErrorTip="Symbol is invalid (Length must be 4 and letters must be A-Z)."
                         >
                         <input
                         nz-input
@@ -44,7 +44,7 @@
                 <nz-form-item>
                     <nz-form-control
                         i18n-nzErrorTip
-                        nzErrorTip="Price is required."
+                        nzErrorTip="Price is invalid."
                         >
                         <input
                         nz-input
@@ -58,7 +58,7 @@
                 <nz-form-item>
                     <nz-form-control
                         i18n-nzErrorTip
-                        nzErrorTip="Total supply is required."
+                        nzErrorTip="Total supply is invalid."
                         >
                         <input
                         nz-input
@@ -87,7 +87,7 @@
                 <nz-form-item>
                 <nz-form-control
                     i18n-nzErrorTip
-                    nzErrorTip="Total supply is required."
+                    nzErrorTip="Total supply is invalid."
                     >
                     <input
                         nz-input
@@ -101,7 +101,7 @@
                 <nz-form-item>
                 <nz-form-control
                     i18n-nzErrorTip
-                    nzErrorTip="Percentage of tokens is required."
+                    nzErrorTip="Percentage of tokens is invalid."
                     >
                     <input
                         nz-input
@@ -113,7 +113,7 @@
                 </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                <label nz-checkbox [formControl]="newService.gForm(allocation, 'publicSale')">
+                <label nz-checkbox [formControl]="newService.gForm(allocation, 'isPublicSale')">
                     <div class="flex items-center">
                     <div class="font-medium mr-2.5" i18n>
                         Public sale
@@ -130,6 +130,10 @@
                 </nz-form-item>
             </div>
         </nz-card>
+        <div class="flex items-center text-alerts-error mt-4" *ngIf="!isTotalValid">
+            <div class="mr-1 text-sm font-medium" i18n>Invalid sum of percentages</div>
+            <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Sum of the percentages must be 100" class="cursor-pointer"></i>
+        </div>
 
         <button
             nz-button
@@ -158,11 +162,11 @@
         <nz-card i18n-nzTitle nzTitle="Space">
             <nz-form-item>
                 <wen-select-space
-                class="block w-full"
-                [includeDefaultSpace]="false"
-                [formControl]="newService.spaceControl"
-                [spaces]="newService.getSpaceListOptions(newService.spaces$ | async)"
-                size="large"
+                    class="block w-full"
+                    [includeDefaultSpace]="false"
+                    [formControl]="newService.spaceControl"
+                    [spaces]="newService.getSpaceListOptions(newService.spaces$ | async)"
+                    size="large"
                 >
                 </wen-select-space>
             </nz-form-item>
@@ -191,7 +195,7 @@
                             [nzDirectory]="false"
                             nzType="drag"
                             [nzLimit]="1"
-                            [nzCustomRequest]="newService.uploadFile.bind(this, 'token_icon')"
+                            [nzCustomRequest]="newService.uploadFile.bind(newService, 'token_icon')"
                             (nzChange)="newService.uploadChangeIcon($event)"
                             nzFileType="image/png,image/jpeg"
                             [nzShowUploadList]="true"

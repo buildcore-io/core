@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Token } from '@functions/interfaces/models/token';
 
 @Component({
   selector: 'wen-token-row',
@@ -9,7 +10,7 @@ import { PreviewImageService } from '@core/services/preview-image';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenRowComponent {
-  // TODO: delete this
+  @Input() token?: Token;
   public d = new Date();
 
   constructor(

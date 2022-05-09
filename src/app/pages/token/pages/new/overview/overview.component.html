@@ -6,53 +6,33 @@
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
 
-        <nz-card *ngFor="let description of newService.descriptions?.controls; let i = index; let first = first; let last = last"
-            class="relative mt-4">
-            <nz-card-meta
-                [nzTitle]="getDescriptionTitle(i+1)"
-            ></nz-card-meta>
-            <wen-icon-trash
-                *ngIf="!first"
-                class="absolute top-6 right-8 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
-                (click)="newService.removeDescription(i)"
-            ></wen-icon-trash>
+        <nz-card class="relative mt-4" i18n-nzTitle nzTitle="Token description">
             <div class="pt-4">
                 <nz-form-item>
-                    <nz-form-control i18n-nzErrorTip nzErrorTip="Title is required.">
+                    <nz-form-control i18n-nzErrorTip nzErrorTip="Title is invalid.">
                         <input
                             nz-input
                             nzSize="large"
                             i18n-placeholder
                             placeholder="Token description title"
-                            [formControl]="newService.gForm(description, 'title')"
+                            [formControl]="newService.titleControl"
                         />
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                    <nz-form-control i18n-nzErrorTip nzErrorTip="Description is required.">
+                    <nz-form-control i18n-nzErrorTip nzErrorTip="Description is invalid.">
                         <textarea
                             nz-input
                             nzSize="large"
                             i18n-placeholder
                             placeholder="Token description"
                             rows="4"
-                            [formControl]="newService.gForm(description, 'description')"
+                            [formControl]="newService.descriptionControl"
                         ></textarea>
                     </nz-form-control>
                 </nz-form-item>
             </div>
         </nz-card>
-
-        <button
-            nz-button
-            *ngIf="(newService.descriptions?.controls?.length || 0) < newService.maxDescriptionsCount"
-            nzType="link"
-            class="mt-4 wen-secondary"
-            (click)="newService.addDescription()"
-        >
-            <wen-icon-plus class="mr-0.5"></wen-icon-plus>
-            <span i18n>Add another description</span>
-        </button>
 
         <button *ngIf="deviceService.isDesktop$ | async"
             nz-button nzType="primary" nzSize="large" class="w-full mt-12" (click)="wenOnTabChange.emit(stepTypes.SUMMARY)" i18n>
@@ -81,14 +61,14 @@
                     <nz-form-control 
                     [nzValidateStatus]="newService.introductionaryControl"
                     i18n-nzErrorTip
-                    nzErrorTip="Introductionary media is required.">
+                    nzErrorTip="Introductionary media is invalid.">
                         <nz-upload
                             class="wen-banner"
                             nzName="banner"
                             nzType="drag"
                             nzListType="picture-card"
                             [nzLimit]="1"
-                            [nzCustomRequest]="newService.uploadFile.bind(this, 'token_introductionary')"
+                            [nzCustomRequest]="newService.uploadFile.bind(newService, 'token_introductionary')"
                             (nzChange)="newService.uploadChangeIntroductionary($event)"
                             nzFileType="image/png,image/jpg,image/jpeg,image/webp,video/mp4"
                             [nzShowUploadList]="{ showPreviewIcon: false, showDownloadIcon: false, showRemoveIcon: true }"

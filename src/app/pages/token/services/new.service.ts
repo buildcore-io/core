@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
-import { DescriptionItem } from '@components/description/description.component';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
+import { TokenDistributionType } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
@@ -14,37 +15,36 @@ export const MAX_ALLOCATIONS_COUNT = 100;
 export const MAX_DESCRIPTIONS_COUNT = 5;
 export const MAX_LINKS_COUNT = 20;
 
+export interface AllocationType {
+  title: string; 
+  percentage: string;
+  isPublicSale: boolean;
+}
 
 @Injectable({
   providedIn: 'any'
 })
 export class NewService {
-
   public distributionOptions = [
-    { label: $localize`Fixed price`, value: 'fixed' }
+    { label: $localize`Fixed price`, value: TokenDistributionType.FIXED }
   ];
-  public breakdownData: DescriptionItem[] = [
-    { title: 'Total token supply', value: '100 000' },
-    { title: 'Price per token', value: '1 Mi' },
-    { title: 'Treasury', value: '50%', extraValue: '(50 000 Mi)' },
-    { title: 'Development fund', value: '20%', extraValue: '(20 000 Mi)' }
-  ]
   public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
   public maxDescriptionsCount = MAX_DESCRIPTIONS_COUNT;
   public maxLinksCount = MAX_LINKS_COUNT;  
 
   public nameControl: FormControl = new FormControl('', Validators.required);
-  public symbolControl: FormControl = new FormControl('', Validators.required);
-  public priceControl: FormControl = new FormControl('', Validators.required);
-  public totalSupplyControl: FormControl = new FormControl('', Validators.required);
+  public symbolControl: FormControl = new FormControl('', [Validators.required, Validators.pattern(/^[A-Z]+$/), Validators.minLength(4), Validators.maxLength(4)]);
+  public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(MIN_IOTA_AMOUNT / 1000 / 1000), Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000)]);
+  public totalSupplyControl: FormControl = new FormControl('', [Validators.required, Validators.min(MIN_TOTAL_TOKEN_SUPPLY), Validators.max(MAX_TOTAL_TOKEN_SUPPLY)]);
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public iconControl: FormControl = new FormControl('', Validators.required);
-  public distributionControl: FormControl = new FormControl('fixed', Validators.required);
+  public titleControl: FormControl = new FormControl('', Validators.required);
+  public descriptionControl: FormControl = new FormControl('', Validators.required);
+  public distributionControl: FormControl = new FormControl(TokenDistributionType.FIXED, Validators.required);
   public introductionaryControl: FormControl = new FormControl('', Validators.required);
   
   public allocations: FormArray;
-  public descriptions: FormArray;
   public links: FormArray;
   public tokenForm: FormGroup;
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
@@ -55,7 +55,6 @@ export class NewService {
     private auth: AuthService
   ) {
     this.allocations = new FormArray([]);
-    this.descriptions = new FormArray([]);
     this.links = new FormArray([]);
 
     this.tokenForm = new FormGroup({
@@ -67,49 +66,32 @@ export class NewService {
       icon: this.iconControl,
       distribution: this.distributionControl,
       introductionary: this.introductionaryControl,
+      title: this.titleControl,
+      description: this.descriptionControl,
       allocations: this.allocations,
-      descriptions: this.descriptions,
       links: this.links
     });
 
     this.addAllocation();
-    this.addDescription();
     this.addLink();
   }
 
-  private getAllocationForm(title = '', percentage = '', publicSale = false): FormGroup {
+  private getAllocationForm(title = '', percentage = '', isPublicSale = false): FormGroup {
     return new FormGroup({
       title: new FormControl(title, Validators.required),
-      percentage: new FormControl(percentage, Validators.required),
-      publicSale: new FormControl(publicSale)
+      percentage: new FormControl(percentage, [Validators.required, Validators.min(0.01), Validators.max(100)]),
+      isPublicSale: new FormControl(isPublicSale)
     });
   }
 
-  public addAllocation(title = '', percentage = '', publicSale = false): void {
+  public addAllocation(title = '', percentage = '', isPublicSale = false): void {
     if (this.allocations.controls.length < MAX_ALLOCATIONS_COUNT) {
-      this.allocations.push(this.getAllocationForm(title, percentage || (this.allocations.length === 0 ? '100' : ''), publicSale));
+      this.allocations.push(this.getAllocationForm(title, percentage || (this.allocations.length === 0 ? '100' : '0'), isPublicSale));
     }
   }
 
   public removeAllocation(index: number): void {
     this.allocations.removeAt(index);
-  }
-
-  private getDescriptionForm(title = '', description = ''): FormGroup {
-    return new FormGroup({
-      title: new FormControl(title, Validators.required),
-      description: new FormControl(description, Validators.required)
-    });
-  }
-
-  public addDescription(title = '', description = ''): void {
-    if (this.descriptions.controls.length < MAX_DESCRIPTIONS_COUNT) {
-      this.descriptions.push(this.getDescriptionForm(title, description));
-    }
-  }
-
-  public removeDescription(index: number): void {
-    this.descriptions.removeAt(index);
   }
 
   private getLinkForm(url = ''): FormGroup {

@@ -1,6 +1,6 @@
 <nz-card *ngIf="deviceService.isDesktop$ | async">
     <nz-table class="block"
-        [nzData]="tokens" [nzShowPagination]="false">
+        [nzData]="(tokens$ | async) || []" [nzShowPagination]="false">
         <thead>
             <tr>
                 <th i18n>Item</th>
@@ -10,21 +10,21 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let t of tokens">
+            <tr *ngFor="let t of tokens$ | async">
                 <td>
                     <div class="flex items-center">
-                        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+                        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
                           class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
                           nzShape="circle"
                           [nzSize]="32">
                         </nz-avatar>
-                        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-3">{{ t.item }}</div>
+                        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-3">{{ t.name }}</div>
                     </div>
                 </td>
-                <td class="font-medium">{{ t.amount }}</td>
-                <td class="font-medium">{{ t.value }}</td>
+                <td class="font-medium">{{ 123 }}</td>
+                <td class="font-medium">{{ 312 }}</td>
                 <td style="text-align: right">
-                    <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="typeClick(t.type)">{{ t.type }}</a>
+                    <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="null">{{ 't.type' }}</a>
                 </td>
             </tr>
         </tbody>
@@ -33,15 +33,16 @@
 
 
 <div class="mt-3" *ngIf="deviceService.isMobile$ | async">
-    <!-- TODO: ngIf not loading -->
+    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(tokens$ | async)">
+      {{ ((tokens$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
+    </p>
     <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
         (scrolled)="onScroll()">
-        <!-- TODO: ngIf loading -->
-        <nz-skeleton *ngIf="true" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 lg:w-full h-76 lg:h-16" [nzActive]="true"
+
+        <nz-skeleton *ngIf="isLoading(tokens$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 lg:w-full h-76 lg:h-16" [nzActive]="true"
             [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
 
-        <!-- TODO: ngIf no tokens -->
-        <nz-card class="w-76" *ngIf="true">
+        <nz-card class="w-76" *ngIf="isEmpty(tokens$ | async)">
             <div class="flex flex-col justify-center text-center h-36">
                 <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     No tokens
@@ -50,7 +51,7 @@
         </nz-card>
 
         <!-- Will be rendered propertly after passing correct data -->
-        <wen-token-row *ngFor="let token of [0, 1, 2, 3]" class="block mt-3">
+        <wen-token-row *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token" class="block mt-3">
         </wen-token-row>
     </div>
 </div>

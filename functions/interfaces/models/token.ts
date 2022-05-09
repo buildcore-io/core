@@ -14,6 +14,10 @@ export enum TokenStatus {
   PRE_MINTED = 'pre_minted'
 }
 
+export enum TokenDistributionType {
+  FIXED = 'fixed'
+}
+
 export interface Token extends BaseRecord {
   readonly name: string;
   readonly symbol: string;
