@@ -1,9 +1,10 @@
 import * as admin from 'firebase-admin';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
+import { TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderType, TokenDistribution } from "../../interfaces/models/token";
-import { buyToken, sellToken } from "../../src/controls/token-buy-sell.controller";
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from "../../interfaces/models/token";
+import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from "./common";
@@ -25,7 +26,7 @@ describe('Buy sell controller, sell token', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
   });
 
-  it('Should create sell order', async () => {
+  it('Should create sell order and cancel it', async () => {
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
     const sell = await testEnv.wrap(sellToken)({});
@@ -33,6 +34,13 @@ describe('Buy sell controller, sell token', () => {
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
     const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
     expect(distribution.data()?.lockedForSale).toBe(5)
+
+    const cancelRequest = { uid: sell.uid }
+    mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
+    const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
+    expect(cancelled.status).toBe(TokenBuySellOrderStatus.CANCELLED)
+    const cancelledDistribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
+    expect(cancelledDistribution.data()?.lockedForSale).toBe(0)
   })
 
   it('Should throw, not enough tokens', async () => {
@@ -68,7 +76,7 @@ describe('Buy sell controller, buy token', () => {
     await testEnv.wrap(sellToken)({});
   });
 
-  it('Should create buy order', async () => {
+  it('Should create buy order and cancel it', async () => {
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
     const order = await testEnv.wrap(buyToken)({});
@@ -83,5 +91,17 @@ describe('Buy sell controller, buy token', () => {
     expect(buy.price).toBe(MIN_IOTA_AMOUNT)
     expect(buy.count).toBe(5)
     expect(buy.type).toBe(TokenBuySellOrderType.BUY)
+
+    const cancelRequest = { uid: buy.uid }
+    mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
+    const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
+    expect(cancelled.status).toBe(TokenBuySellOrderStatus.CANCELLED)
+    const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', memberAddress)
+      .where('payload.type', '==', TransactionCreditType.TOKEN_BUY)
+      .get()
+    expect(creditSnap.docs.length).toBe(1)
+    expect(creditSnap.docs[0].data()?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT)
   })
 })

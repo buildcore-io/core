@@ -7,13 +7,14 @@ import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
-import { TokenBuySellOrder, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
+import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
-import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
+import { creditBuyer } from '../utils/token-buy-sell.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const buySellTokenSchema = {
@@ -54,13 +55,41 @@ export const sellToken = functions.runWith({
       count: params.body.count,
       price: params.body.price,
       fulfilled: 0,
-      settled: false,
+      status: TokenBuySellOrderStatus.ACTIVE,
     }, URL_PATHS.TOKEN_MARKET)
     transaction.create(sellDocRef, data)
     transaction.update(distributionDocRef, { lockedForSale: admin.firestore.FieldValue.increment(params.body.count) })
   });
   return <TokenBuySellOrder>(await sellDocRef.get()).data()
 })
+
+
+export const cancelBuyOrSell = functions.runWith({
+  minInstances: scale(WEN_FUNC.cancelBuyOrSell),
+}).https.onCall(async (req: WenRequest) => admin.firestore().runTransaction(async (transaction) => {
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+  const schema = Joi.object({ uid: Joi.string().required() });
+  assertValidation(schema.validate(params.body));
+
+  const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${params.body.uid}`)
+  const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
+  if (!sale || sale.owner !== owner || sale.status !== TokenBuySellOrderStatus.ACTIVE) {
+    throw throwInvalidArgument(WenError.invalid_params)
+  }
+  const status = sale.fulfilled === 0 ? TokenBuySellOrderStatus.CANCELLED : TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED
+
+  transaction.update(saleDocRef, uOn({ status }))
+
+  if (sale.type === TokenBuySellOrderType.SELL) {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${sale.token}/${SUB_COL.DISTRIBUTION}/${sale.owner}`)
+    transaction.update(distributionDocRef, uOn({ lockedForSale: 0 }))
+  } else {
+    await creditBuyer(sale, [], transaction)
+  }
+
+  return { ...sale, status }
+}))
 
 export const buyToken = functions.runWith({
   minInstances: scale(WEN_FUNC.sellToken),

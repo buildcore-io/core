@@ -1,10 +1,10 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Member, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import { serverTime, uOn } from '../utils/dateTime.utils';
-import { memberDocRef } from '../utils/token.utils';
+import { creditBuyer } from '../utils/token-buy-sell.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
@@ -12,9 +12,9 @@ export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
 export const onTokenBuySellCreated = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
   .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onCreate(async (snap) => {
     const data = <TokenBuySellOrder>snap.data()
-    let settled = await fulfillSales(data.uid)
-    while (!settled) {
-      settled = await fulfillSales(data.uid)
+    let isSettled = await fulfillSales(data.uid)
+    while (!isSettled) {
+      isSettled = await fulfillSales(data.uid)
     }
   })
 
@@ -40,45 +40,11 @@ const fulfillSale = (buy: TokenBuySellOrder, sell: TokenBuySellOrder, transactio
   const update = (sale: TokenBuySellOrder) => ({
     ...sale,
     fulfilled: sale.fulfilled + tokens,
-    settled: sale.count === sale.fulfilled + tokens
+    status: sale.count === sale.fulfilled + tokens ? TokenBuySellOrderStatus.SETTLED : TokenBuySellOrderStatus.ACTIVE
   })
   return { buy: update(buy), sell: update(sell), purchase }
 }
 
-const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
-  const oldPurchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs.map(d => <TokenPurchase>d.data())
-  const totalPaid = [...oldPurchases, ...newPurchase].reduce((sum, act) => sum + (act.price * act.count), 0);
-  const refundAmount = buy.price * buy.count - totalPaid
-  if (!refundAmount) {
-    return;
-  }
-
-  const member = <Member>(await memberDocRef(buy.owner).get()).data()
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${buy.token}`).get()).data()
-  const order = <Transaction>(await (admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get())).data()
-  const tranId = getRandomEthAddress();
-
-  const data = <Transaction>{
-    type: TransactionType.CREDIT,
-    uid: tranId,
-    space: token.space,
-    member: member.uid,
-    createdOn: serverTime(),
-    payload: {
-      type: TransactionCreditType.TOKEN_BUY,
-      amount: refundAmount,
-      sourceAddress: order.payload.targetAddress,
-      targetAddress: member.validatedAddress,
-      sourceTransactions: [buy.paymentTransactionId],
-      token: token.uid,
-      reconciled: true,
-      void: false,
-      invalidPayment: true
-    }
-  };
-  const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
-  transaction.create(docRef, data)
-}
 
 const createBillPayment = async (
   amount: number,
@@ -140,7 +106,7 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
 
   let update = doc
   for (const b of docs) {
-    if (update.settled || b.settled) {
+    if (update.status === TokenBuySellOrderStatus.SETTLED || b.status === TokenBuySellOrderStatus.SETTLED) {
       continue
     }
     const isSell = doc.type === TokenBuySellOrderType.SELL
@@ -162,11 +128,11 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
   }
   transaction.update(docRef, uOn(update))
 
-  if (update.type === TokenBuySellOrderType.BUY && update.settled) {
+  if (update.type === TokenBuySellOrderType.BUY && update.status === TokenBuySellOrderStatus.SETTLED) {
     await creditBuyer(update, purchases, transaction)
   }
 
-  return update.settled || docs.length === 0
+  return update.status === TokenBuySellOrderStatus.SETTLED || docs.length === 0
 })
 
 
@@ -175,7 +141,7 @@ const getSaleQuery = (sale: TokenBuySellOrder) =>
     .where('type', '==', sale.type === TokenBuySellOrderType.BUY ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY)
     .where('token', '==', sale.token)
     .where('price', sale.type === TokenBuySellOrderType.BUY ? '<=' : '>=', sale.price)
-    .where('settled', '==', false)
+    .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
     .orderBy('price')
     .orderBy('createdOn')
     .limit(TOKEN_SALE_ORDER_FETCH_LIMIT)
