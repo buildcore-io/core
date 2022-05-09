@@ -5,6 +5,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
+import { TokenDistributionType } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
@@ -25,7 +26,7 @@ export interface AllocationType {
 })
 export class NewService {
   public distributionOptions = [
-    { label: $localize`Fixed price`, value: 'fixed' }
+    { label: $localize`Fixed price`, value: TokenDistributionType.FIXED }
   ];
   public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
@@ -40,7 +41,7 @@ export class NewService {
   public iconControl: FormControl = new FormControl('', Validators.required);
   public titleControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
-  public distributionControl: FormControl = new FormControl('fixed', Validators.required);
+  public distributionControl: FormControl = new FormControl(TokenDistributionType.FIXED, Validators.required);
   public introductionaryControl: FormControl = new FormControl('', Validators.required);
   
   public allocations: FormArray;
