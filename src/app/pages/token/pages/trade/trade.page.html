@@ -1,0 +1,248 @@
+<wen-content [showBackButton]="true">
+    <div class="relative py-12" nz-row [nzGutter]="40">
+      <div nz-col nzFlex="auto"
+        [ngStyle]="{
+          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+        }">
+        <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>NFT</nz-tag>
+        <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"  i18n>Available</nz-tag>
+        <h1 class="mt-2">{{ 'SoonLabs token' }}</h1>
+
+        <div class="flex items-center justify-between space-x-3 mt-8">
+            <div class="px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1 rounded-xl">
+                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    24h VWAP
+                </div>
+                <div class="font-bold text-lg mt-2">
+                    0.898
+                </div>
+            </div>
+            <div class="px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1 rounded-xl">
+                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    7-day VWAP
+                </div>
+                <div class="font-bold text-lg mt-2">
+                    0.999
+                </div>
+            </div>
+            <div class="px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1 rounded-xl">
+                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    Total Volume
+                </div>
+                <div class="font-bold text-lg mt-2">
+                    12 Ti
+                </div>
+            </div>
+        </div>
+
+        <nz-card class="mt-6">
+            <div class="flex items-center justify-between">
+                <div class="text-lg font-bold" i18n>Token chart</div>
+
+                <div class="space-x-1">
+                    <button *ngFor="let l of chartLengthOptions" 
+                        nz-button nzShape="circle" nzSize="small"
+                        class="wen-secondary"
+                        [ngClass]="{ 'selected': l.value === chartLengthControl.value }"
+                        (click)="chartLengthControl.setValue(l.value)">
+                            {{ l.label }}
+                    </button>
+                </div>
+            </div>
+        </nz-card>
+      </div>
+      <div class="mt-6 lg:mt-30 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+        [ngStyle]="{
+          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+        }">
+        
+        <button
+          nz-button
+          nzBlock
+          nzSize="large"
+          nzType="primary"
+          (click)="null"
+        >
+          <div class="mr-1" i18n>Buy</div>
+          <div> {{ 'SOON' }}</div>
+        </button>
+
+        <button
+          class="mt-6 wen-secondary"
+          nz-button
+          nzBlock
+          nzSize="large"
+          (click)="null"
+        >
+          <div class="mr-1" i18n>Sell</div>
+          <div> {{ 'SOON' }}</div>
+        </button>
+
+        <wen-share
+          class="block mt-6 p-6 lg:p-0"
+          i18n-shareText
+          shareText="Check out token"
+          [shareUrl]="'asdasd'">
+        </wen-share>
+
+        <div class="font-bold text-2xl mt-12">
+            <span i18n>What is</span> {{ 'SoonLabs token' }} ({{'SOON'}})?
+        </div>
+
+        <div class="mt-6 font-medium">
+            The tokens will stay removed from the IOTA network and can never be created or used again in the IOTA DLT. The tokens will stay removed from the IOTA network and can never be created or used again in the IOTA DLT. The tokens will stay removed from the IOTA network and can never be created or used again in the IOTA DLT.
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full flex flex-col lg:flex-row lg:space-x-10 mt-10">
+        <nz-card i18n-nzTitle nzTitle="Offers" class="flex-1 w-full h-max">
+            <div class="flex px-6 mb-4 items-center">
+                <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentOfferListing === offerListingTypes.OPEN"
+                    (nzCheckedChange)="currentOfferListing = offerListingTypes.OPEN">
+                        <span i18n>Open offers</span>
+                </nz-tag>
+                <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentOfferListing === offerListingTypes.MY"
+                    (nzCheckedChange)="currentOfferListing = offerListingTypes.MY">
+                        <span i18n>My offers</span>
+                </nz-tag>
+            </div>
+
+            <nz-table *ngIf="currentOfferListing === offerListingTypes.OPEN"
+                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="openOffers" [nzShowPagination]="true" [nzNoResult]="noOpenOffers">
+                <thead>
+                    <tr>
+                        <th i18n>Price</th>
+                        <th class="right" i18n>Amount</th>
+                        <th class="right" i18n>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <nz-skeleton *ngIf="false; else openOffersBlock"  class=""
+                        [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                        [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                    <ng-template #openOffersBlock>
+                        <tr *ngFor="let item of openOffers">
+                            <td>{{ item.price }}</td>
+                            <td class="right">{{ item.amount }}</td>
+                            <td class="right">{{ item.total }}</td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </nz-table>
+
+            <ng-template #noOpenOffers>
+                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no open offers</div>
+            </ng-template>
+
+            <nz-table *ngIf="currentOfferListing === offerListingTypes.MY"
+                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="myOffers" [nzShowPagination]="true" [nzNoResult]="noMyOffers">
+                <thead>
+                    <tr>
+                        <th i18n>Price</th>
+                        <th class="right" i18n>Amount</th>
+                        <th class="right" i18n>Total</th>
+                        <th class="right" i18n>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <nz-skeleton *ngIf="false; else myOffersBlock"  class=""
+                        [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                        [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                    <ng-template #myOffersBlock>
+                        <tr *ngFor="let item of myOffers">
+                            <td>{{ item.price }}</td>
+                            <td class="right">{{ item.amount }}</td>
+                            <td class="right">{{ item.total }}</td>
+                            <td *ngIf="item?.canCancel"
+                                class="right">
+                                <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n>Cancel</a>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </nz-table>
+
+            <ng-template #noMyOffers>
+                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no your offers</div>
+            </ng-template>
+        </nz-card>
+
+        <nz-card i18n-nzTitle nzTitle="Requests" class="flex-1 w-full h-max mt-6 lg:mt-0">
+            <div class="flex px-6 mb-4 items-center">
+                <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentRequestListing === requestListingTypes.OPEN"
+                    (nzCheckedChange)="currentRequestListing = requestListingTypes.OPEN">
+                        <span i18n>Open requests</span>
+                </nz-tag>
+                <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentRequestListing === requestListingTypes.MY"
+                    (nzCheckedChange)="currentRequestListing = requestListingTypes.MY">
+                        <span i18n>My requests</span>
+                </nz-tag>
+            </div>
+
+            <nz-table *ngIf="currentRequestListing === requestListingTypes.OPEN"
+                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="openOffers" [nzShowPagination]="true" [nzNoResult]="noOpenRequests">
+                <thead>
+                    <tr>
+                        <th i18n>Price</th>
+                        <th class="right" i18n>Amount</th>
+                        <th class="right" i18n>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <nz-skeleton *ngIf="false; else openRequestsBlock"  class=""
+                        [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                        [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                    <ng-template #openRequestsBlock>
+                        <tr *ngFor="let item of openOffers">
+                            <td>{{ item.price }}</td>
+                            <td class="right">{{ item.amount }}</td>
+                            <td class="right">{{ item.total }}</td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </nz-table>
+
+            <ng-template #noOpenRequests>
+                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no open requests</div>
+            </ng-template>
+
+            <nz-table *ngIf="currentRequestListing === requestListingTypes.MY"
+                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="myOffers" [nzShowPagination]="true" [nzNoResult]="noMyRequests" [nzPageSize]="10">
+                <thead>
+                    <tr>
+                        <th i18n>Price</th>
+                        <th class="right" i18n>Amount</th>
+                        <th class="right" i18n>Total</th>
+                        <th class="right" i18n>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <nz-skeleton *ngIf="false; else myRequestsBlock"  class=""
+                        [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                        [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                    <ng-template #myRequestsBlock>
+                        <tr *ngFor="let item of myOffers">
+                            <td>{{ item.price }}</td>
+                            <td class="right">{{ item.amount }}</td>
+                            <td class="right">{{ item.total }}</td>
+                            <td *ngIf="item?.canCancel"
+                                class="right">
+                                <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n>Cancel</a>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </nz-table>
+
+            <ng-template #noMyRequests>
+                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no your requests</div>
+            </ng-template>
+        </nz-card>
+    </div>
+</wen-content>
+  

@@ -145,7 +145,7 @@
             </div>
 
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
-            <wen-collapse i18n-nzTitle title="Bidding" class="mt-4" [isCollapsed]="true">
+            <wen-collapse i18n-title title="Bidding" class="mt-4" [isCollapsed]="true">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
                     <nz-tag nzMode="checkable" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
                         (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
@@ -292,7 +292,7 @@
                 </wen-share>
             </ng-container>
 
-            <wen-collapse i18n-nzTitle title="History" class="mt-8" [isCollapsed]="false">
+            <wen-collapse i18n-title title="History" class="mt-8" [isCollapsed]="false">
                 <div style="display: block;">
                     <canvas baseChart width="400" height="180"
                                 [data]="lineChartData"
