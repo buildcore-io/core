@@ -77,10 +77,9 @@ export const cancelBuyOrSell = functions.runWith({
   if (!sale || sale.owner !== owner || sale.status !== TokenBuySellOrderStatus.ACTIVE) {
     throw throwInvalidArgument(WenError.invalid_params)
   }
+  const status = sale.fulfilled === 0 ? TokenBuySellOrderStatus.CANCELLED : TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED
 
-  transaction.update(saleDocRef, uOn({
-    status: sale.fulfilled === 0 ? TokenBuySellOrderStatus.CANCELLED : TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED
-  }))
+  transaction.update(saleDocRef, uOn({ status }))
 
   if (sale.type === TokenBuySellOrderType.SELL) {
     const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${sale.token}/${SUB_COL.DISTRIBUTION}/${sale.owner}`)
@@ -89,7 +88,7 @@ export const cancelBuyOrSell = functions.runWith({
     await creditBuyer(sale, [], transaction)
   }
 
-  return { ...sale, status: TokenBuySellOrderStatus.CANCELLED }
+  return { ...sale, status }
 }))
 
 export const buyToken = functions.runWith({
