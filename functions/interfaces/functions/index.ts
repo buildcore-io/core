@@ -55,7 +55,8 @@ export const enum WEN_FUNC {
   airdropToken = 'airdropToken',
   claimAirdroppedToken = 'claimAirdroppedToken',
   sellToken = 'sellToken',
-  buyToken = 'buyToken'
+  buyToken = 'buyToken',
+  cancelBuyOrSell = 'cancelBuyOrSell'
 }
 
 export interface cMemberNotExists {

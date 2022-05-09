@@ -7,7 +7,7 @@ import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
-import { TokenBuySellOrder, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
+import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
@@ -701,7 +701,7 @@ export class ProcessingService {
       count: order.payload.count,
       price: order.payload.price,
       fulfilled: 0,
-      settled: false,
+      status: TokenBuySellOrderStatus.ACTIVE,
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
     }, URL_PATHS.TOKEN_MARKET)

@@ -7,6 +7,7 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
+import { cancelBuyOrSell } from './controls/token-buy-sell.controller';
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { finaliseAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, tokenCoolDownOver, voidExpiredOrders } from "./cron";
 import { collectionWrite } from './triggers/collection.trigger';
@@ -90,3 +91,4 @@ exports[WEN_FUNC.airdropToken] = airdropToken
 exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken
 exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate
 exports['trigger_onTokenBuySellCreated'] = onTokenBuySellCreated
+exports[WEN_FUNC.cancelBuyOrSell] = cancelBuyOrSell

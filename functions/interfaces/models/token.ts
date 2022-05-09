@@ -71,6 +71,12 @@ export enum TokenBuySellOrderType {
   SELL = 'sell'
 }
 
+export enum TokenBuySellOrderStatus {
+  ACTIVE = 'active',
+  SETTLED = 'settled',
+  CANCELLED = 'cancelled'
+}
+
 export interface TokenBuySellOrder extends BaseRecord {
   readonly owner: string;
   readonly token: string;
@@ -78,7 +84,7 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly count: number;
   readonly price: number;
   readonly fulfilled: number;
-  readonly settled: boolean;
+  readonly status: TokenBuySellOrderStatus;
   readonly orderTransactionId?: string;
   readonly paymentTransactionId?: string;
 }
