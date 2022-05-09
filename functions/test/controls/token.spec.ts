@@ -256,7 +256,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   })
 
   it('Should set public availability', async () => {
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
     const updateData = { token: token.uid, ...publicTime }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
@@ -266,7 +266,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   })
 
   it('Should throw, can not set public availability twice', async () => {
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
     await testEnv.wrap(setTokenAvailableForSale)({});
 
@@ -312,7 +312,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       totalDeposit: 0,
       totalAirdropped: 0
     })
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
 
   it('Should create token order', async () => {
@@ -320,7 +320,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
   })
 
@@ -333,7 +333,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone2 = await submitMilestoneFunc(order2.payload.targetAddress, order2.payload.amount);
     await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
-    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
   })
 
@@ -344,10 +344,10 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
     }
 
-    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
 
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
       saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
       coolDownEnd: dateToTimestamp(dayjs().add(1, 'd').toDate())
     });
@@ -356,7 +356,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone2 = await submitMilestoneFunc(credit.payload.targetAddress, credit.payload.amount);
     await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
-    const updatedDistribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    const updatedDistribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(updatedDistribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
   })
 
@@ -365,10 +365,10 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
 
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
       saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
       coolDownEnd: dateToTimestamp(dayjs().add(1, 'd').toDate())
     });
@@ -377,7 +377,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone2 = await submitMilestoneFunc(credit.payload.targetAddress, credit.payload.amount);
     await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
 
-    const updatedDistribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    const updatedDistribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(updatedDistribution?.totalDeposit).toBe(0)
   })
 
@@ -386,7 +386,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const distribution = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(token.pricePerToken)
 
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT * 4 });
@@ -398,7 +398,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
       saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
       coolDownEnd: dateToTimestamp(dayjs().add(1, 'd').toDate())
     });
@@ -415,8 +415,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 const tokenProcessed = async (tokenId: string, distributionLength: number, reconciled: boolean) => {
   for (let attempt = 0; attempt < 400; ++attempt) {
     await new Promise((r) => setTimeout(r, 1000));
-    const doc = await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).get();
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKENS}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const doc = await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get();
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
     const distributionsOk = distributionsSnap.docs.reduce((acc, doc) => acc && ((doc.data()?.reconciled || false) === reconciled), distributionLength === distributionsSnap.docs.length)
     if (distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED) {
       return
@@ -463,7 +463,7 @@ describe('Token trigger test', () => {
       totalDeposit: 0,
       totalAirdropped: 0
     })
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
 
 
@@ -484,11 +484,11 @@ describe('Token trigger test', () => {
       await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
     }
 
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
 
     await tokenProcessed(token.uid, totalAmounts.length, true)
 
-    const snap = await admin.firestore().collection(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}`).get()
+    const snap = await admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`).get()
     snap.docs.forEach(doc => {
       const memberIndex = members.indexOf(doc.data().member)
       expect(doc.data()?.totalPaid).toBe(MIN_IOTA_AMOUNT * amounts[memberIndex])
@@ -601,7 +601,7 @@ describe('Claim airdropped token test', () => {
         .get();
       expect(snap.docs.length).toBe(1)
     }
-    const airdrop = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    const airdrop = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
     expect(airdrop?.tokenClaimed).toBe(900)
     expect(airdrop?.tokenOwned).toBe(900)
   })
@@ -653,7 +653,7 @@ describe('Order and claim airdropped token test', () => {
       totalDeposit: 0,
       totalAirdropped: 0
     })
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 
     const airdropRequest = { token: token.uid, drops: [{ count: 5, recipient: memberAddress }], }
     mockWalletReturnValue(walletSpy, memberAddress, airdropRequest)
@@ -670,10 +670,10 @@ describe('Order and claim airdropped token test', () => {
     const claimNxtMilestone = await submitMilestoneFunc(claimOrder.payload.targetAddress, claimOrder.payload.amount);
     await milestoneProcessed(claimNxtMilestone.milestone, claimNxtMilestone.tranId);
 
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, 1, true)
 
-    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data();
+    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data();
     expect(distribution.tokenClaimed).toBe(5)
     expect(distribution.totalPaid).toBe(5 * token.pricePerToken)
     expect(distribution.tokenOwned).toBe(10)

@@ -86,6 +86,7 @@ export const WenError = {
   token_not_in_cool_down_period: { code: 2077, key: 'Token not in cool down period.' },
   no_tokens_available_for_airdrop: { code: 2078, key: 'No more tokens are available for airdrop.' },
   airdrop_already_claimed: { code: 2079, key: 'Airdrop was claimed before.' },
-  public_sale_already_set: { code: 2080, key: 'Public sale already set.' }
+  public_sale_already_set: { code: 2080, key: 'Public sale already set.' },
+  no_available_tokens_for_sale: { code: 2081, key: 'No available tokens for sale.' }
 }
 

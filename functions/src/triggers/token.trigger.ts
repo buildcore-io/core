@@ -89,7 +89,7 @@ const createCredit = async (
 
 const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution) => {
   const batch = admin.firestore().batch();
-  const distributionDoc = admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.member}`)
+  const distributionDoc = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.member}`)
   batch.update(distributionDoc, { ...distribution, tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0), reconciled: true })
 
   const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
@@ -126,7 +126,7 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
 }
 
 export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
-  .firestore.document(COL.TOKENS + '/{tokenId}').onUpdate(async (change, context) => {
+  .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
     const tokenId = context.params.tokenId
     const prev = change.before.data();
     const token = <Token | undefined>change.after.data();
@@ -135,7 +135,7 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       return;
     }
 
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKENS}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
     const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
 
     const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
@@ -151,5 +151,5 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
     await Promise.all(promises);
 
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).update({ status: TokenStatus.PRE_MINTED })
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status: TokenStatus.PRE_MINTED })
   })

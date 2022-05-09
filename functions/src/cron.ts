@@ -177,7 +177,7 @@ export const ipfsForNft = functions.runWith({ timeoutSeconds: 540, memory: '2GB'
 });
 
 export const tokenCoolDownOver = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
-  const tokens = await admin.firestore().collection(`${COL.TOKENS}`)
+  const tokens = await admin.firestore().collection(`${COL.TOKEN}`)
     .where('status', '==', TokenStatus.AVAILABLE)
     .where('coolDownEnd', '<=', dateToTimestamp(dayjs().toDate()))
     .get();
