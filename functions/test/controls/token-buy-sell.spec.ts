@@ -2,8 +2,8 @@ import * as admin from 'firebase-admin';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenDistribution } from "../../interfaces/models/token";
-import { buyToken, sellToken } from "../../src/controls/token.buy.sell.controller";
+import { Token, TokenBuySellOrder, TokenBuySellOrderType, TokenDistribution } from "../../interfaces/models/token";
+import { buyToken, sellToken } from "../../src/controls/token-buy-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from "./common";
@@ -20,9 +20,9 @@ describe('Buy sell controller, sell token', () => {
 
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', }
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).set(token);
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 }
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
   });
 
   it('Should create sell order', async () => {
@@ -31,7 +31,7 @@ describe('Buy sell controller, sell token', () => {
     const sell = await testEnv.wrap(sellToken)({});
     expect(sell.count).toBe(5)
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
-    const distribution = await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
+    const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
     expect(distribution.data()?.lockedForSale).toBe(5)
   })
 
@@ -59,9 +59,9 @@ describe('Buy sell controller, buy token', () => {
 
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace' }
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).set(token);
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 }
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
 
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
@@ -76,11 +76,12 @@ describe('Buy sell controller, buy token', () => {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', 'buy').where('owner', '==', memberAddress).get()
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
+      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', memberAddress).get()
     expect(buySnap.docs.length).toBe(1)
     const buy = <TokenBuySellOrder>buySnap.docs[0].data()
     expect(buy.price).toBe(MIN_IOTA_AMOUNT)
     expect(buy.count).toBe(5)
-    expect(buy.type).toBe('buy')
+    expect(buy.type).toBe(TokenBuySellOrderType.BUY)
   })
 })

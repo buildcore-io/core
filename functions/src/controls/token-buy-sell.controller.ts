@@ -7,7 +7,7 @@ import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
-import { TokenBuySellOrder, TokenDistribution } from '../../interfaces/models/token';
+import { TokenBuySellOrder, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
@@ -31,7 +31,7 @@ export const sellToken = functions.runWith({
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
 
-  const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
+  const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
   const sellDocId = getRandomEthAddress();
   const sellDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${sellDocId}`);
 
@@ -50,7 +50,7 @@ export const sellToken = functions.runWith({
       uid: sellDocId,
       owner,
       token: params.body.token,
-      type: 'sell',
+      type: TokenBuySellOrderType.SELL,
       count: params.body.count,
       price: params.body.price,
       fulfilled: 0,
@@ -70,7 +70,7 @@ export const buyToken = functions.runWith({
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
 
-  const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get();
+  const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get();
   if (!tokenDoc.exists) {
     throw throwInvalidArgument(WenError.invalid_params)
   }

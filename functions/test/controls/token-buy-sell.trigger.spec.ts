@@ -2,9 +2,9 @@ import * as admin from 'firebase-admin';
 import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenDistribution } from "../../interfaces/models/token";
-import { buyToken, sellToken } from "../../src/controls/token.buy.sell.controller";
-import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token.buy.sell.trigger";
+import { Token, TokenBuySellOrder, TokenBuySellOrderType, TokenDistribution } from "../../interfaces/models/token";
+import { buyToken, sellToken } from "../../src/controls/token-buy-sell.controller";
+import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.trigger";
 import { cOn } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -32,9 +32,9 @@ describe('Buy sell trigger', () => {
 
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace' }
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).set(token);
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 }
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
   });
 
   it('Should fulfill buy with one sell', async () => {
@@ -48,17 +48,17 @@ describe('Buy sell trigger', () => {
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 2000));
 
-    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', 'buy').where('owner', '==', buyer).get()
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
     expect(buySnap.docs.length).toBe(1)
     const buy = <TokenBuySellOrder>buySnap.docs[0].data()
     expect(buy.settled).toBe(true)
-    const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
+    const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
     expect(sellDistribution.lockedForSale).toBe(0)
     expect(sellDistribution.sold).toBe(5)
     expect(sellDistribution.tokenOwned).toBe(5)
-    const buyDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()).data()
+    const buyDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()).data()
     expect(buyDistribution.totalPurchased).toBe(5)
     expect(buyDistribution.tokenOwned).toBe(5)
 
@@ -68,6 +68,13 @@ describe('Buy sell trigger', () => {
     expect(purchase[0].data().sell).toBeDefined()
     expect(purchase[0].data().price).toBe(MIN_IOTA_AMOUNT)
     expect(purchase[0].data().count).toBe(5)
+
+    const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('member', '==', seller)
+      .get()
+    expect(paymentSnap.docs.length).toBe(1)
+    expect(paymentSnap.docs[0].data().payload.amount).toBe(MIN_IOTA_AMOUNT * 5)
   })
 
   it('Should fulfill buy with two sell and credit owner', async () => {
@@ -84,7 +91,7 @@ describe('Buy sell trigger', () => {
 
     await new Promise((r) => setTimeout(r, 1000));
 
-    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', 'buy').where('owner', '==', buyer).get()
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
     expect(buySnap.docs.length).toBe(1)
     const buy = <TokenBuySellOrder>buySnap.docs[0].data()
     expect(buy.settled).toBe(true)
@@ -96,6 +103,14 @@ describe('Buy sell trigger', () => {
       .get()
     expect(creditSnap.docs.length).toBe(1)
     expect(creditSnap.docs[0].data().payload.amount).toBe(MIN_IOTA_AMOUNT * 5)
+
+    const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('member', '==', seller)
+      .get()
+    expect(paymentSnap.docs.length).toBe(2)
+    const amounts = paymentSnap.docs.map(doc => doc.data().payload.amount).sort()
+    expect(amounts).toEqual([2 * MIN_IOTA_AMOUNT, 3 * MIN_IOTA_AMOUNT])
   })
 
   it('Should fulfill sell with two buy', async () => {
@@ -107,7 +122,7 @@ describe('Buy sell trigger', () => {
     await testEnv.wrap(sellToken)({});
     await new Promise((r) => setTimeout(r, 1000));
 
-    const sellSnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', 'sell').where('owner', '==', seller).get()
+    const sellSnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.SELL).where('owner', '==', seller).get()
     expect(sellSnap.docs.length).toBe(1)
     const sell = <TokenBuySellOrder>sellSnap.docs[0].data()
     expect(sell.settled).toBe(true)
@@ -127,14 +142,14 @@ describe('Buy sell trigger', () => {
       .where('owner', 'in', [seller, buyer])
       .get()
     ).docs.map(d => <TokenBuySellOrder>d.data())
-    const buyFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === 'buy' ? sale.fulfilled : 0), 0)
+    const buyFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === TokenBuySellOrderType.BUY ? sale.fulfilled : 0), 0)
     expect(buyFulfillmentCount).toBe(10)
-    const sellFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === 'sell' ? sale.fulfilled : 0), 0)
+    const sellFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === TokenBuySellOrderType.SELL ? sale.fulfilled : 0), 0)
     expect(sellFulfillmentCount).toBe(10)
   })
 
   it('Should buy and sell in parallel', async () => {
-    const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`)
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`)
     const distribution = <TokenDistribution>{ tokenOwned: 15 }
     await distributionDocRef.set(distribution);
     const sellTokenFunc = async (count: number, price: number) => {
@@ -143,7 +158,7 @@ describe('Buy sell trigger', () => {
         uid: sellDocId,
         owner: seller,
         token: token.uid,
-        type: 'sell',
+        type: TokenBuySellOrderType.SELL,
         count: count,
         price: price,
         fulfilled: 0,
@@ -162,7 +177,7 @@ describe('Buy sell trigger', () => {
       sellTokenFunc(5, MIN_IOTA_AMOUNT)
     ]
     await Promise.all(promises)
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 2000));
 
     const sales = (await admin.firestore()
       .collection(COL.TOKEN_MARKET)
@@ -177,21 +192,29 @@ describe('Buy sell trigger', () => {
     expect(sellDistribution.sold).toBe(15)
     expect(sellDistribution.lockedForSale).toBe(0)
     expect(sellDistribution.tokenOwned).toBe(0)
-    const buyDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()).data()
+    const buyDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()).data()
     expect(buyDistribution.totalPurchased).toBe(15)
     expect(buyDistribution.tokenOwned).toBe(15)
+
+    const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('member', '==', seller)
+      .get()
+    expect(paymentSnap.docs.length).toBe(3)
+    const amounts = paymentSnap.docs.map(doc => doc.data().payload.amount).sort()
+    expect(amounts).toEqual([5 * MIN_IOTA_AMOUNT, 5 * MIN_IOTA_AMOUNT, 5 * MIN_IOTA_AMOUNT])
   })
 
   it('Should settle after second run on move than batch limit', async () => {
     const distribution = <TokenDistribution>{ tokenOwned: 120 }
-    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
     const sellTokenFunc = async (count: number, price: number) => {
       const sellDocId = wallet.getRandomEthAddress();
       const data = cOn(<TokenBuySellOrder>{
         uid: sellDocId,
         owner: seller,
         token: token.uid,
-        type: 'sell',
+        type: TokenBuySellOrderType.SELL,
         count: count,
         price: price,
         fulfilled: 0,
@@ -212,7 +235,7 @@ describe('Buy sell trigger', () => {
 
     await new Promise((r) => setTimeout(r, 2000));
 
-    const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', 'buy').where('owner', '==', buyer).get()).docs
+    const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
     expect(buyDocs.length).toBe(1)
     expect(buyDocs[0].data()?.fulfilled).toBe(count)
     expect(buyDocs[0].data()?.settled).toBe(true)

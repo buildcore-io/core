@@ -7,7 +7,7 @@ import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
-import { TokenBuySellOrder, TokenDistribution } from '../../../interfaces/models/token';
+import { TokenBuySellOrder, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
@@ -639,12 +639,12 @@ export class ProcessingService {
   }
 
   private async updateTokenDistribution(order: Transaction, tran: TransactionMatch) {
-    const distributionRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distributionRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
     const distribution = {
       member: order.member,
       totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
       parentId: order.payload.token,
-      parentCol: COL.TOKENS
+      parentCol: COL.TOKEN
     }
     this.updates.push({
       ref: distributionRef,
@@ -652,7 +652,7 @@ export class ProcessingService {
       action: 'set',
       merge: true
     });
-    const tokenRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}`)
+    const tokenRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
     this.updates.push({
       ref: tokenRef,
       data: { totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount) },
@@ -662,7 +662,7 @@ export class ProcessingService {
 
   private async claimAirdroppedTokens(order: Transaction) {
     await admin.firestore().runTransaction(async (transaction) => {
-      const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+      const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
       const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
       const data = {
         tokenClaimed: distribution.tokenDropped!,
@@ -672,8 +672,8 @@ export class ProcessingService {
     })
   }
 
-  private async createTokenBuyRequest(order: Transaction) {
-    const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+  private async createTokenBuyRequest(order: Transaction, payment: Transaction) {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
     const distributionDoc = await this.transaction.get(distributionDocRef)
     if (!distributionDoc.exists) {
       const data = {
@@ -697,12 +697,13 @@ export class ProcessingService {
       uid: buyDocId,
       owner: order.member,
       token: order.payload.token,
-      type: 'buy',
+      type: TokenBuySellOrderType.BUY,
       count: order.payload.count,
       price: order.payload.price,
       fulfilled: 0,
       settled: false,
       orderTransactionId: order.uid,
+      paymentTransactionId: payment.uid,
     }, URL_PATHS.TOKEN_MARKET)
     const buyDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${buyDocId}`);
     this.updates.push({ ref: buyDocRef, data, action: 'set' });
@@ -795,8 +796,8 @@ export class ProcessingService {
                   await this.markAsReconciled(orderData, match.msgId);
                   await this.claimAirdroppedTokens(orderData);
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_BUY) {
-                  await this.createPayment(orderData, match);
-                  await this.createTokenBuyRequest(orderData)
+                  const payment = await this.createPayment(orderData, match);
+                  await this.createTokenBuyRequest(orderData, payment)
                 }
               } else {
                 // Now process all invalid orders.
