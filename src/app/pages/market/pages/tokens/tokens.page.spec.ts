@@ -5,6 +5,7 @@ import { MockProvider } from 'ng-mocks';
 import { TokensPage } from './tokens.page';
 import {BehaviorSubject} from "rxjs";
 import {Collection, Space} from "@functions/interfaces/models";
+import {SpaceApi} from "@api/space.api";
 
 
 describe('TokensPage', () => {
@@ -20,7 +21,7 @@ describe('TokensPage', () => {
       providers: [
         MockProvider(CacheService),
         MockProvider(SpaceApi),
-        MockProvider(CacheService, {allSpaces$, allCollections$})
+        MockProvider(CacheService, {allSpaces$, allCollections$}),
         MockProvider(TokenApi)
       ]
     })

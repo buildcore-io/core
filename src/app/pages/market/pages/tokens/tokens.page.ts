@@ -37,11 +37,8 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-
-
-=======
 export class TokensPage implements OnInit, OnDestroy {
-    config = {
+  config = {
     indexName: 'collection',
     searchClient: this.algoliaService.searchClient,
   };
@@ -69,9 +66,7 @@ export class TokensPage implements OnInit, OnDestroy {
     public filter: FilterService,
     private storageService: StorageService,
     public readonly algoliaService: AlgoliaService,
-
     public tokenApi: TokenApi,
-    private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
@@ -187,10 +182,6 @@ export class TokensPage implements OnInit, OnDestroy {
     }
 
     this.subscriptions$.push(this.getHandler(this.tokens$.value[this.tokens$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
-  }
-
-  public trackByUid(index: number, item: any): number {
-    return item.uid;
   }
 
   public isLoading(arr: any): boolean {
