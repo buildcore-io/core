@@ -8,10 +8,14 @@
     .ant-table-thead > tr > th,
     .ant-table-tbody > tr > td {
         @apply border-b-foregrounds-separator dark:border-b-foregrounds-separator-dark;
+
+        &.right {
+            @apply text-right !important;
+        }
     }
 
     .ant-table-tbody > tr > td {
-        @apply text-foregrounds-primary dark:text-foregrounds-primary-dark;
+        @apply text-foregrounds-primary dark:text-foregrounds-primary-dark font-medium;
     }
 
     .ant-table-row:hover {

@@ -79,13 +79,13 @@ export const ROUTER_UTILS = {
       multiple: 'multiple'
     },
     token: {
-      // Redirect back to space?!
       root: URL_PATHS.TOKEN,
       newToken: 'new',
       token: ':tokenId',
       overview: 'overview',
       metrics: 'metrics',
-      airdrops: 'airdrops'
+      airdrops: 'airdrops',
+      trade: ':tokenId/trade'
     },
     errorResponse: {
       notFound: '404',

@@ -6,6 +6,7 @@ import { MetricsPage } from './pages/metrics/metrics.page';
 import { NewPage } from './pages/new/new.page';
 import { OverviewPage } from './pages/overview/overview.page';
 import { TokenPage } from './pages/token/token.page';
+import { TradePage } from './pages/trade/trade.page';
 
 const routes: Routes = [
   {
@@ -25,6 +26,7 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.token.airdrops, component: AirdropsPage }
     ]
   },
+  { path: ROUTER_UTILS.config.token.trade, component: TradePage },
   {
     path: '',
     redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces

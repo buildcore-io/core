@@ -28,6 +28,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
@@ -45,6 +46,7 @@ import { TokenBuyComponent } from './pages/token/token-buy/token-buy.component';
 import { TokenInfoComponent } from './pages/token/token-info/token-info.component';
 import { TokenProgressComponent } from './pages/token/token-progress/token-progress.component';
 import { TokenPage } from './pages/token/token.page';
+import { TradePage } from './pages/trade/trade.page';
 import { TokenRoutingModule } from './token-routing.module';
 
 
@@ -61,7 +63,8 @@ import { TokenRoutingModule } from './token-routing.module';
     NewSummaryComponent,
     TokenBuyComponent,
     TokenProgressComponent,
-    NewIntroductionComponent
+    NewIntroductionComponent,
+    TradePage
   ],
   imports: [
     CommonModule,
@@ -99,7 +102,8 @@ import { TokenRoutingModule } from './token-routing.module';
     NzRadioModule,
     DescriptionModule,
     CountdownModule,
-    TokenPublicSaleModule
+    TokenPublicSaleModule,
+    NzSkeletonModule
   ]
 })
 export class TokenModule { }
