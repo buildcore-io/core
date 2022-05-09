@@ -82,14 +82,13 @@
             </button>
         </div>
         
-        <div *ngFor="let description of newService.descriptions?.controls"
-            class="px-8 pt-6 pb-8 rounded-2xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark mt-6">
+        <div class="px-8 pt-6 pb-8 rounded-2xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark mt-6">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Description title
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ newService.gForm(description, 'title')?.value }}
+                {{ newService.titleControl?.value }}
             </div>
 
             <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -97,7 +96,7 @@
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ newService.gForm(description, 'description')?.value }}
+                {{ newService.descriptionControl?.value }}
             </div>
         </div>
         
@@ -135,7 +134,7 @@
                 {{ newService.gForm(allocation, 'percentage')?.value }}
             </div>
 
-            <div *ngIf="newService.gForm(allocation, 'publicSale')?.value"
+            <div *ngIf="newService.gForm(allocation, 'isPublicSale')?.value"
                 class="flex items-center mt-6">
                     <div class="flex items-center justify-center w-5 h-5 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
                         <wen-icon-check></wen-icon-check>
@@ -159,7 +158,7 @@
     >
         <nz-card i18n-nzTitle nzTitle="Space">
             <div class="flex items-center w-full lg:w-3/12 px-6 lg:px-0">
-                <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+                <nz-avatar [nzSrc]="previewImageService.getAvatarSize(getSpaceAvatar(this.newService.spaceControl?.value))"
                   class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
                   nzShape="circle"
                   [nzSize]="48">
@@ -177,7 +176,7 @@
                 >
             </nz-card-meta>
 
-            <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+            <nz-avatar [nzSrc]="previewImageService.getAvatarSize(newService.iconControl?.value)"
                 class="border-2 border-tags-border dark:border-tags-border-dark min-w-30 mt-6"
                 nzShape="circle"
                 [nzSize]="120">
@@ -205,20 +204,6 @@
                     </nz-radio-group>
                 </nz-form-control>
             </nz-form-item>
-        </nz-card>
-
-        <nz-card>
-            <nz-card-meta
-                i18n-nzTitle
-                nzTitle="Breakdown"
-                i18n-nzDescription
-                nzDescription="Configure the token suply first to see breakdown."
-            >
-            </nz-card-meta>
-
-            <div class="mt-6">
-                <wen-description [items]="newService.breakdownData"></wen-description>
-            </div>
         </nz-card>
     </div>
 </div>

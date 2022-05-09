@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
+import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { MockProvider } from 'ng-mocks';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -18,7 +20,9 @@ describe('NewPage', () => {
         MockProvider(AuthService),
         MockProvider(MemberApi),
         MockProvider(NzNotificationService),
-        MockProvider(FileApi)
+        MockProvider(FileApi),
+        MockProvider(TokenApi),
+        MockProvider(Router)
       ]
     })
       .compileComponents();

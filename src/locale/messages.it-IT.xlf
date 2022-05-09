@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/navigation/navigation.service.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="needs-translation">Back</target>
+        <target state="translated">Indietro</target>
       </trans-unit>
       <trans-unit id="7627544798203088407" datatype="html">
         <source>Discover</source>
@@ -204,7 +204,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">282</context>
         </context-group>
-        <target state="needs-translation"> was outbid. Try again!</target>
+        <target state="translated"> Offerta superata. Riprovare!</target>
       </trans-unit>
       <trans-unit id="8052677427935411852" datatype="html">
         <source>just offered</source>
@@ -450,7 +450,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation">Unable to sign transaction. Please try to reload page.</target>
+        <target state="translated">Transazione negata per autenticazione fallita. La preghiamo di ricaricare la pagina.</target>
       </trans-unit>
       <trans-unit id="4055437571775141299" datatype="html">
         <source>You must unlock your MetaMask first!</source>
@@ -458,7 +458,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">156</context>
         </context-group>
-        <target state="needs-translation">You must unlock your MetaMask first!</target>
+        <target state="translated">Accedere innanzitutto al MetaMask inserendo la password!</target>
       </trans-unit>
       <trans-unit id="720946609464126782" datatype="html">
         <source>You must enable access to read your account address.</source>
@@ -466,7 +466,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">167</context>
         </context-group>
-        <target state="needs-translation">You must enable access to read your account address.</target>
+        <target state="translated">È necessario abilitare l'accesso per accedere all'account di posta elettronica.</target>
       </trans-unit>
       <trans-unit id="9030101964674216890" datatype="html">
         <source>Please make sure you select address in MetaMask!</source>
@@ -474,7 +474,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="needs-translation">Please make sure you select address in MetaMask!</target>
+        <target state="translated">Assicurarsi che sia stato selezionato un indirizzo nel MetaMask!</target>
       </trans-unit>
       <trans-unit id="4963418461748546700" datatype="html">
         <source>Unable to get nonce to authenticate!</source>
@@ -482,7 +482,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">196</context>
         </context-group>
-        <target state="needs-translation">Unable to get nonce to authenticate!</target>
+        <target state="translated">Nonce da autenticazione negato!</target>
       </trans-unit>
       <trans-unit id="2286941765985804347" datatype="html">
         <source>You have to open Soonaverse in MetaMask app.</source>
@@ -490,7 +490,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">239</context>
         </context-group>
-        <target state="needs-translation">You have to open Soonaverse in MetaMask app.</target>
+        <target state="translated">Aprire Soonaverse nella app di MetaMask.</target>
       </trans-unit>
       <trans-unit id="9186218670020875251" datatype="html">
         <source>Failed to initialize MetaMask, try to reload page.</source>
@@ -498,7 +498,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation">Failed to initialize MetaMask, try to reload page.</target>
+        <target state="translated">Inizializzazione configurazione MetaMask non riuscita. Provare a ricaricare la pagina.</target>
       </trans-unit>
       <trans-unit id="9217311297628108490" datatype="html">
         <source>Pending
@@ -1210,7 +1210,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <target state="needs-translation">Min bid</target>
+        <target state="translated">Offerta min</target>
       </trans-unit>
       <trans-unit id="523519638239091406" datatype="html">
         <source>Your bid is the highest</source>
@@ -1238,7 +1238,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</target>
+        <target state="translated">Il prodotto digitale prescelto (NFT) sarà "sigillato" per l'intera durata dell'asta. L'offerta sarà bloccata ad avvenuto pagamento, con eventuale risarcimento immediato nel caso di un'offerta più alta.</target>
       </trans-unit>
       <trans-unit id="3086800896118622351" datatype="html">
         <source> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </source>
@@ -1254,7 +1254,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">277,278</context>
         </context-group>
-        <target state="needs-translation"> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </target>
+        <target state="translated"> Il rimborso è previsto solo nel caso di offerte più elevate. Inviare direttamente l'offerta allo stesso indirizzo se si desidera farne un'altra d'importo più elevato. </target>
       </trans-unit>
       <trans-unit id="6309493669385041493" datatype="html">
         <source>By checking this box, you agree with</source>
@@ -1294,7 +1294,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">180,181</context>
         </context-group>
-        <target state="needs-translation">Send IOTA to following address (please restake after!):</target>
+        <target state="translated">Inviare l'IOTA al seguente indirizzo (aspettare messa in staking!):</target>
       </trans-unit>
       <trans-unit id="2115592966120408375" datatype="html">
         <source>Copied</source>
@@ -1358,7 +1358,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control. </target>
+        <target state="translated"> Non inviare capitale dalle piattaforme di exchange. Utilizzare sempre portafogli digitali (wallets) che garantiscano il controllo totale e unico dei propri dati. </target>
       </trans-unit>
       <trans-unit id="2370778860499758288" datatype="html">
         <source> Firefly </source>
@@ -1422,7 +1422,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">231,232</context>
         </context-group>
-        <target state="needs-translation"> IOTA to following address (please restake after!):</target>
+        <target state="translated"> IOTA al seguente indirizzo (in seguito avviare lo staking!):</target>
       </trans-unit>
       <trans-unit id="621968232322439820" datatype="html">
         <source> Your transactions </source>
@@ -1510,7 +1510,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">282</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, use only a Firefly or TanglePay wallet. </target>
+        <target state="translated"> Non inviare capitale dalle piattaforme exchange. Utilizzare solo i portafogli digitali di Firefly o TanglePay. </target>
       </trans-unit>
       <trans-unit id="7539361169976574107" datatype="html">
         <source>Congratulations you won the NFT.</source>
@@ -1518,7 +1518,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">314,315</context>
         </context-group>
-        <target state="needs-translation">Congratulations you won the NFT.</target>
+        <target state="translated">Complimenti, lei ha vinto l'NFT.</target>
       </trans-unit>
       <trans-unit id="8528366073079211415" datatype="html">
         <source> Close checkout </source>
@@ -1550,7 +1550,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">337,338</context>
         </context-group>
-        <target state="needs-translation">Bidding is expired. Good luck next time :) </target>
+        <target state="translated">Questa offerta è scaduta. Coraggio e buona fortuna per la prossima:) </target>
       </trans-unit>
       <trans-unit id="8537440199831054052" datatype="html">
         <source>Generated NFT</source>
@@ -1562,7 +1562,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
           <context context-type="linenumber">368</context>
         </context-group>
-        <target state="needs-translation">Generated NFT</target>
+        <target state="translated">NFT generato</target>
       </trans-unit>
       <trans-unit id="7535874439763400390" datatype="html">
         <source>SFT</source>
@@ -1630,7 +1630,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">73</context>
         </context-group>
-        <target state="needs-translation">Current bid</target>
+        <target state="translated">Offerta corrente</target>
       </trans-unit>
       <trans-unit id="5383011891382211495" datatype="html">
         <source>Owned by</source>
@@ -1649,7 +1649,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">100,101</context>
         </context-group>
-        <target state="needs-translation"><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></target>
+        <target state="translated"><x id="START_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet" equiv-text="llet class=&quot;text-white&quot;&gt;"/><x id="CLOSE_TAG_WEN_ICON_WALLET" ctype="x-wen_icon_wallet"/></target>
       </trans-unit>
       <trans-unit id="2274969689215998696" datatype="html">
         <source>New NFT</source>
@@ -1791,7 +1791,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ownTitle(data.nft$ | async) }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ownTitle(data.nft$ | async) }}"/></target>
       </trans-unit>
       <trans-unit id="3616191027804458021" datatype="html">
         <source>d</source>
@@ -1799,7 +1799,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">d</target>
+        <target state="translated">g.</target>
       </trans-unit>
       <trans-unit id="8398233202919865612" datatype="html">
         <source>h</source>
@@ -1807,7 +1807,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <target state="needs-translation">h</target>
+        <target state="translated">o.</target>
       </trans-unit>
       <trans-unit id="3370839803061654054" datatype="html">
         <source>hours</source>
@@ -1815,7 +1815,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">hours</target>
+        <target state="translated">orario</target>
       </trans-unit>
       <trans-unit id="8033953731717586115" datatype="html">
         <source>m</source>
@@ -1823,7 +1823,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation">m</target>
+        <target state="translated">m</target>
       </trans-unit>
       <trans-unit id="3901733599428143571" datatype="html">
         <source>min</source>
@@ -1831,7 +1831,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
-        <target state="needs-translation">min</target>
+        <target state="translated">min</target>
       </trans-unit>
       <trans-unit id="2155832126259145609" datatype="html">
         <source>s</source>
@@ -1839,7 +1839,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">50</context>
         </context-group>
-        <target state="needs-translation">s</target>
+        <target state="translated">s</target>
       </trans-unit>
       <trans-unit id="8444840466573361504" datatype="html">
         <source>sec</source>
@@ -1847,7 +1847,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-countdown/nft-countdown.component.html</context>
           <context context-type="linenumber">50,51</context>
         </context-group>
-        <target state="needs-translation">sec</target>
+        <target state="translated">secα</target>
       </trans-unit>
       <trans-unit id="5637997436989246922" datatype="html">
         <source>Sale Starts</source>

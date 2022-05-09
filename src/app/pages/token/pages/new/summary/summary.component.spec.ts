@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SpaceApi } from '@api/space.api';
+import { CacheService } from '@core/services/cache/cache.service';
 import { NewService } from '@pages/token/services/new.service';
 import { MockProvider } from 'ng-mocks';
 import { NewSummaryComponent } from './summary.component';
@@ -12,7 +14,9 @@ describe('NewSummaryComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ NewSummaryComponent ],
       providers: [
-        MockProvider(NewService)
+        MockProvider(NewService),
+        MockProvider(CacheService),
+        MockProvider(SpaceApi)
       ]
     })
       .compileComponents();

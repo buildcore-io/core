@@ -49,10 +49,11 @@ export const enum WEN_FUNC {
   // TOKEN functions
   cToken = 'cToken',
   uToken = 'uToken',
+  setTokenAvailableForSale = 'setTokenAvailableForSale',
   orderToken = 'orderToken',
   creditToken = 'creditToken',
   airdropToken = 'airdropToken',
-  claimAirdroppedToken = 'claimAirdropedToken'
+  claimAirdroppedToken = 'claimAirdroppedToken'
 }
 
 export interface cMemberNotExists {
