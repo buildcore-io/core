@@ -1,8 +1,11 @@
 import chance from 'chance';
 import * as admin from 'firebase-admin';
-import { TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
+import { Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
+import { createMember as createMemberFunc } from "../../src/controls/member.control";
+import { createSpace as createSpaceFunc } from "../../src/controls/space.control";
 import { serverTime } from '../../src/utils/dateTime.utils';
+import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
 
@@ -61,4 +64,28 @@ export const validateMemberAddressFunc = async (spy: any, adr: string) => {
   expect(order?.type).toBe(TransactionType.ORDER);
   expect(order?.payload.type).toBe(TransactionOrderType.MEMBER_ADDRESS_VALIDATION);
   return <TransactionOrder>order;
+}
+
+
+export const createMember = async (spy: any, validate?: boolean): Promise<string> => {
+  const memberAddress = wallet.getRandomEthAddress();
+  mockWalletReturnValue(spy, memberAddress, {})
+  await testEnv.wrap(createMemberFunc)(memberAddress);
+  if (validate) {
+    const memberValidation = await validateMemberAddressFunc(spy, memberAddress);
+    const milestone = await submitMilestoneFunc(memberValidation.payload.targetAddress, memberValidation.payload.amount);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
+  }
+  return memberAddress;
+}
+
+export const createSpace = async (spy: any, guardian: string, validate?: boolean): Promise<Space> => {
+  mockWalletReturnValue(spy, guardian, { name: 'Space A' })
+  const space = await testEnv.wrap(createSpaceFunc)({});
+  if (validate) {
+    const spaceValidation = await validateSpaceAddressFunc(spy, guardian, space.uid);
+    const nextMilestone = await submitMilestoneFunc(spaceValidation.payload.targetAddress, spaceValidation.payload.amount);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+  }
+  return space
 }

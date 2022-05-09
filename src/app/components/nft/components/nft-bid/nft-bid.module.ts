@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { CountdownModule } from '@components/countdown/countdown.module';
 import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
+import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
@@ -46,7 +47,8 @@ import { NftBidComponent } from './nft-bid.component';
     IpfsAvatarModule,
     CountdownModule,
     ModalDrawerModule,
-    WalletDeeplinkModule
+    WalletDeeplinkModule,
+    TermsAndConditionsModule
   ],
   exports: [
     NftBidComponent

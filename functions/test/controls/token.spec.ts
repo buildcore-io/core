@@ -3,16 +3,14 @@ import * as admin from 'firebase-admin';
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
 import { WenError } from "../../interfaces/errors";
 import { WEN_FUNC } from "../../interfaces/functions";
-import { Member, Space } from "../../interfaces/models";
+import { Space, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
-import { Token, TokenStatus } from "../../interfaces/models/token";
-import { createMember } from "../../src/controls/member.control";
-import { createSpace } from "../../src/controls/space.control";
-import { createToken, creditToken, orderToken, updateToken } from "../../src/controls/token.control";
+import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, validateMemberAddressFunc, validateSpaceAddressFunc } from "./common";
+import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from "./common";
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
@@ -25,10 +23,10 @@ const dummyToken = (space: string) => ({
   space,
   pricePerToken: 1 * 1000 * 1000,
   totalSupply: 1000,
-  allocations: [{ title: 'Allocation1', percentage: 100 }],
+  allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
   icon: 'icon',
-  overviewGraphics: 'overviewGraphics'
-})
+  overviewGraphics: 'overviewGraphics',
+}) as any
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
   mockWalletReturnValue(spy, address, params);
@@ -51,11 +49,8 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, memberAddress, {})
-    await testEnv.wrap(createMember)(memberAddress);
-    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' })
-    space = await testEnv.wrap(createSpace)({});
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
     token = dummyToken(space.uid)
   });
 
@@ -144,13 +139,26 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     await expectThrow(testEnv.wrap(createToken)({}), WenError.you_are_not_guardian_of_space.key)
   })
 
-  it('Should throw,when public sale datea are requite', async () => {
+  it('Should create with public sale but no date', async () => {
     const token: any = dummyToken(space.uid)
-
-    const allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
-    token.allocations = allocations
+    token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
     mockWalletReturnValue(walletSpy, memberAddress, token)
-    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+  })
+
+  it('Should throw, no public sale', async () => {
+    const token: any = dummyToken(space.uid)
+    token.saleStartDate = dayjs().add(8, 'd').toDate()
+    token.saleLength = 86400000;
+    token.coolDownLength = 86400000;
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.no_token_public_sale.key)
+  })
+
+  it('Should throw, when public sale data is incomplete', async () => {
+    const token: any = dummyToken(space.uid)
+    token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
 
     token.saleStartDate = dayjs().add(8, 'd').toDate()
     mockWalletReturnValue(walletSpy, memberAddress, token)
@@ -169,9 +177,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   it('Should throw, token symbol not unique', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await testEnv.wrap(createToken)({})
-
-    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space B' })
-    const space = await testEnv.wrap(createSpace)({});
+    const space = await createSpace(walletSpy, memberAddress)
     const data = dummyToken(space.uid)
     mockWalletReturnValue(walletSpy, memberAddress, { ...data, symbol: token.symbol })
     await expectThrow(testEnv.wrap(createToken)({}), WenError.token_symbol_must_be_globally_unique.key)
@@ -191,11 +197,8 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, memberAddress, {})
-    await testEnv.wrap(createMember)(memberAddress);
-    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' })
-    space = await testEnv.wrap(createSpace)({});
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
   });
@@ -226,6 +229,53 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
 
 })
 
+describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
+  let memberAddress: string;
+  let space: Space;
+  let token: any
+  let publicTime = { saleStartDate: dayjs().toDate(), saleLength: 86400000 * 2, coolDownLength: 86400000 }
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
+    mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
+    token = await testEnv.wrap(createToken)({});
+  });
+
+  it('Should throw, not on public sale', async () => {
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.no_token_public_sale.key);
+  })
+
+  it('Should throw, not guardian', async () => {
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.you_are_not_guardian_of_space.key);
+  })
+
+  it('Should set public availability', async () => {
+    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result.saleStartDate).toBeDefined()
+    expect(result.saleLength).toBeDefined()
+    expect(result.coolDownEnd).toBeDefined()
+  })
+
+  it('Should throw, can not set public availability twice', async () => {
+    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    await testEnv.wrap(setTokenAvailableForSale)({});
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.public_sale_already_set.key);
+  })
+
+})
+
 describe("Token controller: " + WEN_FUNC.orderToken, () => {
   let memberAddress: string;
   let space: Space;
@@ -233,11 +283,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, memberAddress, {})
-    await testEnv.wrap(createMember)(memberAddress);
-    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' })
-    space = await testEnv.wrap(createSpace)({});
+    memberAddress = await createMember(walletSpy, true)
+    space = await createSpace(walletSpy, memberAddress, true)
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({
@@ -262,17 +309,10 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
       links: [],
       status: TokenStatus.AVAILABLE,
-      totalDeposit: 0
+      totalDeposit: 0,
+      totalAirdropped: 0
     })
     await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
-
-    const spaceValidation = await validateSpaceAddressFunc(walletSpy, memberAddress, space.uid);
-    const nextMilestone = await submitMilestoneFunc(spaceValidation.payload.targetAddress, spaceValidation.payload.amount);
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
-
-    const memberValidation = await validateMemberAddressFunc(walletSpy, memberAddress);
-    const nextMilestone2 = await submitMilestoneFunc(memberValidation.payload.targetAddress, memberValidation.payload.amount);
-    await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
   });
 
   it('Should create token order', async () => {
@@ -389,17 +429,14 @@ describe('Token trigger test', () => {
   const totalTokenSupply = 10;
   const tokenPercentageForSale = 100;
   const pricePerToken = MIN_IOTA_AMOUNT
-  let guardian: Member;
+  let guardian: string;
   let space: Space;
   let token: Token;
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    const memberAddress = wallet.getRandomEthAddress();
-    mockWalletReturnValue(walletSpy, memberAddress, {})
-    guardian = await testEnv.wrap(createMember)(memberAddress);
-    mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' })
-    space = await testEnv.wrap(createSpace)({});
+    guardian = await createMember(walletSpy)
+    space = await createSpace(walletSpy, guardian, true)
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({
@@ -416,20 +453,17 @@ describe('Token trigger test', () => {
       allocations: [
         { title: 'Public sale', isPublicSale: true, percentage: tokenPercentageForSale },
       ],
-      createdBy: guardian.uid,
+      createdBy: guardian,
       name: 'MyToken',
       wenUrl: 'https://wen.soonaverse.com/token/' + tokenId,
       saleLength: 86400000 * 2,
       saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
       links: [],
       status: TokenStatus.AVAILABLE,
-      totalDeposit: 0
+      totalDeposit: 0,
+      totalAirdropped: 0
     })
     await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
-
-    const spaceValidation = await validateSpaceAddressFunc(walletSpy, memberAddress, space.uid);
-    const nextMilestone = await submitMilestoneFunc(spaceValidation.payload.targetAddress, spaceValidation.payload.amount);
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
   });
 
 
@@ -438,22 +472,16 @@ describe('Token trigger test', () => {
     const amounts = [3, 6, 1]
     const refunds = [1, 2, 1]
 
-    const members = Array.from(Array(totalAmounts.length)).map((_) => wallet.getRandomEthAddress());
+    const members = [] as string[]
 
-    for (const member of members) {
-      mockWalletReturnValue(walletSpy, member, {})
-      await testEnv.wrap(createMember)(member);
-      const memberValidation = await validateMemberAddressFunc(walletSpy, member);
-      const milestone = await submitMilestoneFunc(memberValidation.payload.targetAddress, memberValidation.payload.amount);
-      await milestoneProcessed(milestone.milestone, milestone.tranId);
+    for (const _ of Array.from(Array(totalAmounts.length))) {
+      members.push(await createMember(walletSpy, true))
     }
 
     for (let i = 0; i < members.length; ++i) {
-      for (let j = 0; j < totalAmounts[i]; ++j) {
-        const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
-        const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-        await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
-      }
+      const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
+      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, totalAmounts[i] * MIN_IOTA_AMOUNT);
+      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
     }
 
     await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
@@ -463,8 +491,192 @@ describe('Token trigger test', () => {
     const snap = await admin.firestore().collection(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}`).get()
     snap.docs.forEach(doc => {
       const memberIndex = members.indexOf(doc.data().member)
-      expect(doc.data()?.amount).toBe(MIN_IOTA_AMOUNT * amounts[memberIndex])
+      expect(doc.data()?.totalPaid).toBe(MIN_IOTA_AMOUNT * amounts[memberIndex])
       expect(doc.data()?.refundedAmount).toBe(MIN_IOTA_AMOUNT * refunds[memberIndex])
+      expect(doc.data()?.totalBought).toBe(amounts[memberIndex])
+      expect(doc.data()?.tokenOwned).toBe(amounts[memberIndex])
     })
   })
 })
+
+describe('Token airdrop test', () => {
+  let guardianAddress: string;
+  let memberAddress: string;
+  let space: Space;
+  let token: Token
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    guardianAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, guardianAddress)
+    const dummyTokenData = dummyToken(space.uid)
+    dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
+    dummyTokenData.saleLength = 86400000
+    dummyTokenData.coolDownLength = 86400000
+    dummyTokenData.allocations = [{ title: 'Private', percentage: 90 }, { title: 'Public', percentage: 10, isPublicSale: true }]
+    mockWalletReturnValue(walletSpy, guardianAddress, dummyTokenData)
+    token = await testEnv.wrap(createToken)({});
+    memberAddress = await createMember(walletSpy)
+  });
+
+  it('Should airdrop token', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }] }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    const airdrops = await testEnv.wrap(airdropToken)({});
+    expect(airdrops.length).toBe(1)
+    expect(airdrops[0].tokenDropped).toBe(900)
+    expect(airdrops[0].member).toBe(guardianAddress)
+  })
+
+  it('Should airdrop batch token', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 800, recipient: guardianAddress }, { count: 100, recipient: memberAddress }] }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    const airdrops = await testEnv.wrap(airdropToken)({});
+    expect(airdrops.length).toBe(2)
+    expect(airdrops[0].tokenDropped).toBe(800)
+    expect(airdrops[0].member).toBe(guardianAddress)
+    expect(airdrops[1].tokenDropped).toBe(100)
+    expect(airdrops[1].member).toBe(memberAddress)
+  })
+
+  it('Should throw, not enough tokens', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 1000, recipient: guardianAddress }] }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    await expectThrow(testEnv.wrap(airdropToken)({}), WenError.no_tokens_available_for_airdrop.key)
+  })
+
+  it('Should throw, not guardian', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 50, recipient: guardianAddress }] }
+    mockWalletReturnValue(walletSpy, memberAddress, airdropRequest)
+    await expectThrow(testEnv.wrap(airdropToken)({}), WenError.you_are_not_guardian_of_space.key)
+  })
+
+  it('Should throw at second drop', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }] }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    const airdrops = await testEnv.wrap(airdropToken)({});
+    expect(airdrops[0].tokenDropped).toBe(900)
+    expect(airdrops[0].member).toBe(guardianAddress)
+
+    const airdropRequest2 = { token: token.uid, drops: [{ count: 100, recipient: guardianAddress }] }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest2)
+    await expectThrow(testEnv.wrap(airdropToken)({}), WenError.no_tokens_available_for_airdrop.key)
+  })
+})
+
+describe('Claim airdropped token test', () => {
+  let guardianAddress: string;
+  let space: Space;
+  let token: Token
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    guardianAddress = await createMember(walletSpy, true)
+    space = await createSpace(walletSpy, guardianAddress, true)
+    const dummyTokenData = dummyToken(space.uid)
+    dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
+    dummyTokenData.saleLength = 86400000
+    dummyTokenData.coolDownLength = 86400000
+    dummyTokenData.allocations = [{ title: 'Private', percentage: 90 }, { title: 'Public', percentage: 10, isPublicSale: true }]
+    mockWalletReturnValue(walletSpy, guardianAddress, dummyTokenData)
+    token = await testEnv.wrap(createToken)({});
+
+    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }], }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    await testEnv.wrap(airdropToken)({});
+  });
+
+  it('Should claim token', async () => {
+    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
+    const order = await testEnv.wrap(claimAirdroppedToken)({});
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    const types = [TransactionType.ORDER, TransactionType.PAYMENT, TransactionType.BILL_PAYMENT]
+    for (const type of types) {
+      const snap = await admin.firestore().collection(COL.TRANSACTION)
+        .where('type', '==', type)
+        .where('payload.amount', '==', MIN_IOTA_AMOUNT)
+        .where('member', '==', guardianAddress)
+        .get();
+      expect(snap.docs.length).toBe(1)
+    }
+    const airdrop = (await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    expect(airdrop?.tokenClaimed).toBe(900)
+    expect(airdrop?.tokenOwned).toBe(900)
+  })
+
+  it('Should throw, can not claim twice', async () => {
+    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
+    const order = await testEnv.wrap(claimAirdroppedToken)({});
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
+    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.airdrop_already_claimed.key)
+  })
+})
+
+describe('Order and claim airdropped token test', () => {
+  let memberAddress: string;
+  let space: Space;
+  let token: Token
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    memberAddress = await createMember(walletSpy, true)
+    space = await createSpace(walletSpy, memberAddress, true)
+
+    const tokenId = wallet.getRandomEthAddress()
+    token = ({
+      symbol: 'MYWO',
+      totalSupply: 10,
+      pending: true,
+      icon: 'icon',
+      overviewGraphics: 'overviewGraphics',
+      updatedOn: serverTime(),
+      createdOn: serverTime(),
+      space: space.uid,
+      uid: tokenId,
+      pricePerToken: MIN_IOTA_AMOUNT,
+      allocations: [
+        { title: 'Public sale', isPublicSale: true, percentage: 50 },
+        { title: 'Private', percentage: 50 }
+      ],
+      createdBy: memberAddress,
+      name: 'MyToken',
+      wenUrl: 'https://wen.soonaverse.com/token/' + tokenId,
+      saleLength: 86400000 * 2,
+      saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
+      links: [],
+      status: TokenStatus.AVAILABLE,
+      totalDeposit: 0,
+      totalAirdropped: 0
+    })
+    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).set(token);
+
+    const airdropRequest = { token: token.uid, drops: [{ count: 5, recipient: memberAddress }], }
+    mockWalletReturnValue(walletSpy, memberAddress, airdropRequest)
+    await testEnv.wrap(airdropToken)({});
+  });
+
+  it('Should order and claim dropped', async () => {
+    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, 5 * token.pricePerToken);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
+    const claimOrder = await testEnv.wrap(claimAirdroppedToken)({});
+    const claimNxtMilestone = await submitMilestoneFunc(claimOrder.payload.targetAddress, claimOrder.payload.amount);
+    await milestoneProcessed(claimNxtMilestone.milestone, claimNxtMilestone.tranId);
+
+    await admin.firestore().doc(`${COL.TOKENS}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
+    await tokenProcessed(token.uid, 1, true)
+
+    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data();
+    expect(distribution.tokenClaimed).toBe(5)
+    expect(distribution.totalPaid).toBe(5 * token.pricePerToken)
+    expect(distribution.tokenOwned).toBe(10)
+  })
+})
+

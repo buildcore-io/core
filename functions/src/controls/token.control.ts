@@ -10,21 +10,15 @@ import { Member, Transaction, TransactionCreditType, TransactionOrderType, Trans
 import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenStatus } from './../../interfaces/models/token';
-
-const assertIsGuardian = async (space: string, member: string) => {
-  const guardianDoc = (await admin.firestore().doc(`${COL.SPACE}/${space}/${SUB_COL.GUARDIANS}/${member}`).get());
-  if (!guardianDoc.exists) {
-    throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-  }
-}
 
 const createSchema = () => ({
   name: Joi.string().required(),
@@ -49,13 +43,32 @@ const createSchema = () => ({
     }
     return allocations;
   }),
-  saleStartDate: Joi.date().greater(dayjs().add(MIN_TOKEN_START_DATE_DAY, 'd').toDate()).optional(),
+  // Only on prod we enforce 7 days.
+  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
 })
+
+const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
+  const coolDownEnd = dayjs(saleStartDate.toDate()).add(saleLength + coolDownLength, 'ms')
+  return { saleStartDate, saleLength, coolDownEnd: dateToTimestamp(coolDownEnd) }
+}
+
+// eslint-disable-next-line
+const shouldSetPublicSaleTimeFrames = (body: any, allocations: TokenAllocation[]) => {
+  const hasPublicSale = allocations.filter(a => a.isPublicSale).length > 0
+  const count: number = [body.saleStartDate, body.saleLength, body.coolDownLength].reduce((sum, act) => sum + (act === undefined ? 0 : 1), 0)
+  if (count === 3 && !hasPublicSale) {
+    throw throwInvalidArgument(WenError.no_token_public_sale);
+  }
+  if (count > 0 && count < 3) {
+    throw throwInvalidArgument(WenError.invalid_params);
+  }
+  return count === 3
+}
 
 export const createToken = functions.runWith({
   minInstances: scale(WEN_FUNC.cToken),
@@ -79,18 +92,12 @@ export const createToken = functions.runWith({
 
   await assertIsGuardian(params.body.space, owner)
 
-  const hasPublicSale = (<TokenAllocation[]>params.body.allocations).filter(a => a.isPublicSale).length > 0
-  if (hasPublicSale && (!params.body.saleStartDate || !params.body.saleLength || !params.body.coolDownLength)) {
-    throw throwInvalidArgument(WenError.invalid_params);
-  }
-  if (hasPublicSale) {
-    params.body.saleStartDate = dateToTimestamp(params.body.saleStartDate)
-    const coolDownEnd = dayjs((<Timestamp>params.body.saleStartDate).toDate()).add(params.body.saleLength + params.body.coolDownLength, 'ms')
-    params.body.coolDownEnd = dateToTimestamp(coolDownEnd)
-  }
-  const tokenUid: string = getRandomEthAddress();
-  const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.AVAILABLE, totalDeposit: 0 }
-  const data = keywords(cOn(merge(cleanParams(params.body), extraData), URL_PATHS.TOKEN))
+  const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
+    getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength) : {}
+
+  const tokenUid = getRandomEthAddress();
+  const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.AVAILABLE, totalDeposit: 0, totalAirdropped: 0 }
+  const data = keywords(cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
   await admin.firestore().collection(COL.TOKENS).doc(tokenUid).set(data);
   return <Token>(await admin.firestore().doc(`${COL.TOKENS}/${tokenUid}`).get()).data()
 })
@@ -124,6 +131,43 @@ export const updateToken = functions.runWith({
   await tokenDocRef.update(uOn(params.body))
   return <Token>(await tokenDocRef.get()).data()
 })
+
+const setAvailableForSaleSchema = {
+  token: Joi.string().required(),
+  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
+  saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+  coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+}
+
+export const setTokenAvailableForSale = functions.runWith({
+  minInstances: scale(WEN_FUNC.setTokenAvailableForSale),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.cSpace, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+
+  const schema = Joi.object(setAvailableForSaleSchema);
+  assertValidation(schema.validate(params.body));
+
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`);
+
+  await admin.firestore().runTransaction(async (transaction) => {
+    const data = <Token | undefined>(await transaction.get(tokenDocRef)).data()
+    if (!data) {
+      throw throwInvalidArgument(WenError.invalid_params)
+    }
+    if (data.saleStartDate) {
+      throw throwInvalidArgument(WenError.public_sale_already_set)
+    }
+    await assertIsGuardian(data.space, owner)
+    shouldSetPublicSaleTimeFrames(params.body, data.allocations);
+    const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength);
+    transaction.update(tokenDocRef, timeFrames);
+  })
+
+  return <Token>(await tokenDocRef.get()).data();
+})
+
 
 const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
   dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
@@ -243,3 +287,128 @@ export const creditToken = functions.runWith({
 
   return <Transaction>(await creditTranDoc.get()).data()
 });
+
+const airdropTokenSchema = ({
+  token: Joi.string().required(),
+  drops: Joi.array().required().items(Joi.object().keys({
+    count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
+    recipient: Joi.string().required()
+  })).min(1)
+})
+
+const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
+  const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
+  const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
+  return token.totalSupply - totalPublicSupply - token.totalAirdropped >= count
+}
+
+export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.airdropToken) })
+  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+    appCheck(WEN_FUNC.orderToken, context);
+    const params = await decodeAuth(req);
+    const owner = params.address.toLowerCase();
+    const schema = Joi.object(airdropTokenSchema);
+    assertValidation(schema.validate(params.body));
+
+    const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
+      params.body.drops.map(({ recipient }: { recipient: string }) =>
+        admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient}`)
+      );
+
+    await admin.firestore().runTransaction(async (transaction) => {
+      const distributionDocs = []
+      for (const docRef of distributionDocRefs) {
+        distributionDocs.push(await transaction.get(docRef))
+      }
+
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`);
+      const token = <Token>(await transaction.get(tokenDocRef)).data();
+
+      if (!token) {
+        throw throwInvalidArgument(WenError.invalid_params);
+      }
+      await assertIsGuardian(token.space, owner);
+
+      const totalDropped = params.body.drops.reduce((sum: number, { count }: { count: number }) => sum + count, 0)
+      if (!hasAvailableTokenToAirdrop(token, totalDropped)) {
+        throw throwInvalidArgument(WenError.no_tokens_available_for_airdrop);
+      }
+
+      transaction.update(tokenDocRef, { totalAirdropped: admin.firestore.FieldValue.increment(totalDropped) })
+
+      for (let i = 0; i < params.body.drops.length; ++i) {
+        const drop = params.body.drops[i]
+        const airdropData = {
+          parentId: token.uid,
+          parentCol: COL.TOKENS,
+          member: drop.recipient,
+          tokenDropped: admin.firestore.FieldValue.increment(drop.count)
+        }
+        transaction.create(distributionDocRefs[i], airdropData);
+      }
+    })
+
+    const promises = distributionDocRefs.map(docRef => docRef.get());
+    return <TokenDistribution[]>(await Promise.all(promises)).map(d => d.data());
+  });
+
+export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_FUNC.claimAirdroppedToken) })
+  .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+    appCheck(WEN_FUNC.orderToken, context);
+    const params = await decodeAuth(req);
+    const owner = params.address.toLowerCase();
+    const schema = Joi.object({ token: Joi.string().required() });
+    assertValidation(schema.validate(params.body));
+
+    const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get();
+    if (!tokenDoc.exists) {
+      throw throwInvalidArgument(WenError.invalid_params);
+    }
+
+    const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${tokenDoc.data()?.space}`).get()
+
+    const tranId = getRandomEthAddress()
+    const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
+
+    await admin.firestore().runTransaction(async (transaction) => {
+      const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
+      const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
+
+      if (!distribution) {
+        throw throwInvalidArgument(WenError.invalid_params)
+      }
+
+      if (distribution.tokenDropped == (distribution.tokenClaimed || 0)) {
+        throw throwInvalidArgument(WenError.airdrop_already_claimed)
+      }
+
+      const newWallet = new WalletService();
+      const targetAddress = await newWallet.getNewIotaAddressDetails();
+      const orderData = <Transaction>{
+        type: TransactionType.ORDER,
+        uid: tranId,
+        member: owner,
+        space: tokenDoc.data()?.space,
+        createdOn: serverTime(),
+        payload: {
+          type: TransactionOrderType.TOKEN_AIRDROP,
+          amount: MIN_IOTA_AMOUNT,
+          targetAddress: targetAddress.bech32,
+          beneficiary: 'space',
+          beneficiaryUid: tokenDoc.data()?.space,
+          beneficiaryAddress: spaceDoc.data()?.validatedAddress,
+          expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+          validationType: TransactionValidationType.ADDRESS,
+          reconciled: false,
+          void: false,
+          chainReference: null,
+          token: tokenDoc.id
+        },
+        linkedTransactions: []
+      }
+      transaction.create(orderDoc, orderData)
+    })
+
+    return <Transaction>(await (orderDoc.get())).data();
+  });
+

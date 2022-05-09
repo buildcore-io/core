@@ -7,7 +7,7 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
-import { createToken, creditToken, orderToken, updateToken } from './controls/token.control';
+import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { finaliseAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, tokenCoolDownOver, voidExpiredOrders } from "./cron";
 import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
@@ -82,6 +82,9 @@ exports['trigger_nftWrite'] = nftWrite;
 // Token functions
 exports[WEN_FUNC.cToken] = createToken
 exports[WEN_FUNC.uToken] = updateToken
+exports[WEN_FUNC.setTokenAvailableForSale] = setTokenAvailableForSale
 exports[WEN_FUNC.orderToken] = orderToken
 exports[WEN_FUNC.creditToken] = creditToken
+exports[WEN_FUNC.airdropToken] = airdropToken
+exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken
 exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate
