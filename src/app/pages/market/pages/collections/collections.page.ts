@@ -1,8 +1,7 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
-import { StorageService } from '@core/services/storage';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
 
@@ -42,7 +41,6 @@ export class CollectionsPage {
     public deviceService: DeviceService,
     public cache: CacheService,
     public readonly algoliaService: AlgoliaService,
-
   ) {
   }
 

@@ -24,6 +24,7 @@ import {NzCollapseModule} from "ng-zorro-antd/collapse";
 import {TokenRowModule} from "@components/token/components/token-row/token-row.module";
 import {AlgoliaService} from "./services/algolia.service";
 import {RefinementListComponent} from "@Algolia/refinement.component";
+import {VisibleDirective} from "@Algolia/visible.directive";
 
 @NgModule({
   imports: [CommonModule, HttpClientModule, NzNotificationModule,
@@ -50,8 +51,9 @@ import {RefinementListComponent} from "@Algolia/refinement.component";
     NgAisModule.forRoot(),
 
   ],
-  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent],
+  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective,
+  ],
   providers: [AlgoliaService],
-  exports: [SearchBoxComponent, SortByComponent, NgAisModule, NzCollapseModule]
+  exports: [SearchBoxComponent, SortByComponent, NgAisModule, NzCollapseModule, VisibleDirective]
 })
 export class AlgoliaModule {}
