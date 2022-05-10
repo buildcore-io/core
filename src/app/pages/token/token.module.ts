@@ -9,6 +9,8 @@ import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
+import { TokenBidModule } from '@components/token/components/token-bid/token-bid.module';
+import { TokenOfferModule } from '@components/token/components/token-offer/token-offer.module';
 import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
@@ -103,7 +105,9 @@ import { TokenRoutingModule } from './token-routing.module';
     DescriptionModule,
     CountdownModule,
     TokenPublicSaleModule,
-    NzSkeletonModule
+    NzSkeletonModule,
+    TokenBidModule,
+    TokenOfferModule
   ]
 })
 export class TokenModule { }

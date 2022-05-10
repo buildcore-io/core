@@ -86,6 +86,7 @@ export class NewPage implements OnInit {
     res.links = data.links.map((l: { url: string }) => l.url);
     res.icon = data.icon;
     res.overviewGraphics = data.introductionary;
+    res.termsAndConditionsLink = data.termsAndConditionsLink;
 
     return res;
   }

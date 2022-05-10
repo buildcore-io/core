@@ -37,6 +37,7 @@ export interface Token extends BaseRecord {
   readonly status: TokenStatus;
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
+  readonly termsAndConditionsLink: Url;
 }
 
 export interface TokenDistribution extends BaseSubCollection {

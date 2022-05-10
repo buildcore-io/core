@@ -3,6 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
 import { TokenDistributionType } from '@functions/interfaces/models/token';
@@ -43,6 +44,7 @@ export class NewService {
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public distributionControl: FormControl = new FormControl(TokenDistributionType.FIXED, Validators.required);
   public introductionaryControl: FormControl = new FormControl('', Validators.required);
+  public termsAndConditionsLinkControl: FormControl = new FormControl('', [Validators.required, getUrlValidator()]);
   
   public allocations: FormArray;
   public links: FormArray;
@@ -69,7 +71,8 @@ export class NewService {
       title: this.titleControl,
       description: this.descriptionControl,
       allocations: this.allocations,
-      links: this.links
+      links: this.links,
+      termsAndConditionsLink: this.termsAndConditionsLinkControl
     });
 
     this.addAllocation();
@@ -96,7 +99,7 @@ export class NewService {
 
   private getLinkForm(url = ''): FormGroup {
     return new FormGroup({
-      url: new FormControl(url, Validators.required)
+      url: new FormControl(url, [Validators.required, getUrlValidator()])
     });
   }
 

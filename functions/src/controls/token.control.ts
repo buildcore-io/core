@@ -50,6 +50,7 @@ const createSchema = () => ({
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
+  termsAndConditionsLink: Joi.string().uri().required(),
 })
 
 const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {

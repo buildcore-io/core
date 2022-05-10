@@ -18,7 +18,7 @@ export enum StepType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenPurchaseComponent {
-  @Input() currentStep = StepType.CONFIRM;
+  @Input() currentStep = StepType.COMPLETE;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
