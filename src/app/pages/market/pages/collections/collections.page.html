@@ -1,21 +1,4 @@
 <ais-instantsearch [config]="config">
-  <div class="container">
-    <ais-hits-per-page
-      class="container-option"
-      [items]="paginationItems"
-    >
-    </ais-hits-per-page>
-    <ais-sort-by
-      class="container-option"
-      [items]="sortItems"
-    ></ais-sort-by>
-    <ais-stats>
-      <ng-template let-state="state">
-        {{state.nbHits}} results found in {{state.processingTimeMS}} ms.
-      </ng-template>
-    </ais-stats>
-  </div>
-
   <header class="header" id="header">
     <div class="header-searchbox">
       <wen-search-box [sections]="sections"></wen-search-box>
@@ -24,8 +7,7 @@
 
   <main class="container">
 
-    <section class="container-results mr-10">
-
+    <div class="container-results mr-10">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
           <div class="mt-10 xl:grid place-items-start">
@@ -40,10 +22,9 @@
           <div (visible)="refine()"></div>
         </ng-template>
       </ais-infinite-hits>
-    </section>
+    </div>
 
-    <div class="container-wrapper">
-      <section class="container-filters">
+      <div class="container-filters">
         <div class="container-header">
           <h4>Filters&Sorts</h4>
           <wen-sort-by
@@ -116,8 +97,7 @@
           <div>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
 
   </main>
 </ais-instantsearch>

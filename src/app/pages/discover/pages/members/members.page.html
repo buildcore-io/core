@@ -1,20 +1,4 @@
 <ais-instantsearch [config]="config">
-  <div class="container">
-    <ais-hits-per-page
-      class="container-option"
-      [items]="paginationItems"
-    >
-    </ais-hits-per-page>
-    <ais-sort-by
-      class="container-option"
-      [items]="sortItems"
-    ></ais-sort-by>
-    <ais-stats>
-      <ng-template let-state="state">
-        {{state.nbHits}} results found in {{state.processingTimeMS}} ms.
-      </ng-template>
-    </ais-stats>
-  </div>
   <header class="header" id="header">
     <div class="header-searchbox">
       <wen-search-box [sections]="sections"></wen-search-box>
@@ -40,7 +24,6 @@
         </ng-template>
       </ais-infinite-hits>
     </section>
-    <div class="container-wrapper">
       <section class="container-filters">
         <div class="container-header">
           <h4>Filters&Sorts</h4>
@@ -64,11 +47,25 @@
 
 
         <div class="container-body">
+          <nz-collapse>
 
+            <nz-collapse-panel
+              nzHeader="Spaces"
+              nzActive="true"
+            >
+              <ais-refinement-list
+                attribute="spaces2"
+                [transformItems]="algoliaService.convertToSpaceName"
+                [searchable]="false"
+                searchPlaceholder="Search for space…"
+              >
+              </ais-refinement-list>
+            </nz-collapse-panel>
+
+          </nz-collapse>
         </div>
 
 
       </section>
-    </div>
   </main>
 </ais-instantsearch>

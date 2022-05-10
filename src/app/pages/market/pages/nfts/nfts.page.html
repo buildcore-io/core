@@ -2,25 +2,6 @@
   <ais-configure
     [searchParameters]="{ filters:  'hidden:false' }"
   ></ais-configure>
-  <div class="container">
-    <ais-hits-per-page
-      class="container-option"
-      [items]="paginationItems"
-    >
-    </ais-hits-per-page>
-
-    <ais-sort-by
-      class="container-option"
-      [items]="sortItems"
-    ></ais-sort-by>
-
-    <ais-stats>
-      <ng-template let-state="state">
-        {{state.nbHits}} results found in {{state.processingTimeMS}} ms.
-      </ng-template>
-    </ais-stats>
-  </div>
-
   <header class="header" id="header">
     <div class="header-searchbox">
       <wen-search-box [sections]="sections"></wen-search-box>

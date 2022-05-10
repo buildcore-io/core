@@ -1,21 +1,4 @@
 <ais-instantsearch [config]="config">
-  <div class="container">
-    <ais-hits-per-page
-      class="container-option"
-      [items]="paginationItems"
-    >
-    </ais-hits-per-page>
-    <ais-sort-by
-      class="container-option"
-      [items]="sortItems"
-    ></ais-sort-by>
-    <ais-stats>
-      <ng-template let-state="state">
-        {{state.nbHits}} results found in {{state.processingTimeMS}} ms.
-      </ng-template>
-    </ais-stats>
-  </div>
-
   <header class="header" id="header">
     <div class="header-searchbox">
       <wen-search-box [sections]="sections"></wen-search-box>
@@ -42,7 +25,6 @@
         </ng-template>
       </ais-infinite-hits>
     </section>
-    <div class="container-wrapper">
       <section class="container-filters">
         <div class="container-header">
           <h4>Filters&Sorts</h4>
@@ -64,8 +46,26 @@
           </ais-stats>
         </div>
         <div class="container-body">
+          <ais-panel
+            header="ALL / Approved only"
+          >
+            <ais-toggle
+              attribute="approved"
+              label="active"
+              [on]="true"
+            ></ais-toggle>
+          </ais-panel>
+
+          <ais-panel
+            header="ALL / Rejected only"
+          >
+            <ais-toggle
+              attribute="rejected"
+              label="active"
+              [on]="true"
+            ></ais-toggle>
+          </ais-panel>
         </div>
       </section>
-    </div>
   </main>
 </ais-instantsearch>
