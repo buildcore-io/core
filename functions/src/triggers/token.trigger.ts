@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import bigDecimal from 'js-big-decimal';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
@@ -8,22 +8,23 @@ import { serverTime } from '../utils/dateTime.utils';
 import { allPaymentsQuery, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
+const BIG_DECIMAL_PRECISION = 1000
+
 const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken)
 
-const getBoughtByMemberCount = (totalSupply: number, totalBought: number, payedByMember: number) =>
-  totalSupply >= totalBought ? payedByMember : Math.floor(payedByMember * 100 / totalBought / 100 * totalSupply)
+const getBoughtByMember = (token: Token, totalDeposit: number, totalSupply: number, totalBought: number) => {
+  const boughtByMember = bigDecimal.floor(bigDecimal.divide(totalDeposit, token.pricePerToken, BIG_DECIMAL_PRECISION))
+  const percentageBought = bigDecimal.divide(bigDecimal.multiply(boughtByMember, 100), Math.max(totalSupply, totalBought), BIG_DECIMAL_PRECISION)
+  const total = bigDecimal.floor(bigDecimal.divide(bigDecimal.multiply(totalSupply, percentageBought), 100, BIG_DECIMAL_PRECISION))
+  return Number(total)
+}
 
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
-  const paidByMember = getTokenCount(token, totalDeposit)
-  const boughtByMember = getBoughtByMemberCount(totalSupply, totalBought, paidByMember)
-  const totalPaid = token.pricePerToken * boughtByMember
-  const data = { ...distribution, totalPaid, totalBought: boughtByMember }
-  if (totalSupply >= totalBought) {
-    return { ...data, refundedAmount: 0 }
-  }
-  const refundedAmount = totalDeposit - (boughtByMember * token.pricePerToken)
-  return { ...data, refundedAmount: refundedAmount < MIN_IOTA_AMOUNT ? 0 : refundedAmount }
+  const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
+  const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
+  const refundedAmount = totalDeposit - totalPaid
+  return { ...distribution, totalPaid, totalBought: boughtByMember, refundedAmount }
 }
 
 const createBillPayment =
@@ -146,7 +147,9 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
       .map(doc => getMemberDistribution(<TokenDistribution>doc.data(), token, totalPublicSupply, totalBought))
 
-    distributeLeftoverTokens(distributions, totalPublicSupply, token);
+    if (totalBought > totalPublicSupply) {
+      distributeLeftoverTokens(distributions, totalPublicSupply, token);
+    }
 
     const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
     await Promise.all(promises);
