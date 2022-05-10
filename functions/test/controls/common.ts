@@ -2,6 +2,7 @@ import chance from 'chance';
 import * as admin from 'firebase-admin';
 import { Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
+import { TokenStatus } from '../../interfaces/models/token';
 import { createMember as createMemberFunc } from "../../src/controls/member.control";
 import { createSpace as createSpaceFunc } from "../../src/controls/space.control";
 import { serverTime } from '../../src/utils/dateTime.utils';
@@ -88,4 +89,17 @@ export const createSpace = async (spy: any, guardian: string, validate?: boolean
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
   }
   return space
+}
+
+export const tokenProcessed = async (tokenId: string, distributionLength: number, reconciled: boolean) => {
+  for (let attempt = 0; attempt < 400; ++attempt) {
+    await new Promise((r) => setTimeout(r, 1000));
+    const doc = await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get();
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const distributionsOk = distributionsSnap.docs.reduce((acc, doc) => acc && ((doc.data()?.reconciled || false) === reconciled), distributionLength === distributionsSnap.docs.length)
+    if (distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED) {
+      return
+    }
+  }
+  throw new Error("Token not processed: " + tokenId);
 }
