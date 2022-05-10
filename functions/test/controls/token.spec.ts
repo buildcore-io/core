@@ -26,6 +26,7 @@ const dummyToken = (space: string) => ({
   allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
   icon: 'icon',
   overviewGraphics: 'overviewGraphics',
+  termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
 }) as any
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
@@ -82,6 +83,12 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should throw, no name', async () => {
     delete token.name
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+  })
+
+  it('Should throw, no terms and conditions', async () => {
+    delete token.termsAndConditions
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
   })
@@ -310,7 +317,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       links: [],
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
-      totalAirdropped: 0
+      totalAirdropped: 0,
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
@@ -461,7 +469,8 @@ describe('Token trigger test', () => {
       links: [],
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
-      totalAirdropped: 0
+      totalAirdropped: 0,
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
@@ -651,7 +660,8 @@ describe('Order and claim airdropped token test', () => {
       links: [],
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
-      totalAirdropped: 0
+      totalAirdropped: 0,
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 
