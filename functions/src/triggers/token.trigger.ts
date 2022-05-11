@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import bigDecimal from 'js-big-decimal';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
@@ -8,22 +8,23 @@ import { serverTime } from '../utils/dateTime.utils';
 import { allPaymentsQuery, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
+const BIG_DECIMAL_PRECISION = 1000
+
 const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken)
 
-const getBoughtByMemberCount = (totalSupply: number, totalBought: number, payedByMember: number) =>
-  totalSupply >= totalBought ? payedByMember : Math.floor(payedByMember * 100 / totalBought / 100 * totalSupply)
+const getBoughtByMember = (token: Token, totalDeposit: number, totalSupply: number, totalBought: number) => {
+  const boughtByMember = bigDecimal.floor(bigDecimal.divide(totalDeposit, token.pricePerToken, BIG_DECIMAL_PRECISION))
+  const percentageBought = bigDecimal.divide(bigDecimal.multiply(boughtByMember, 100), Math.max(totalSupply, totalBought), BIG_DECIMAL_PRECISION)
+  const total = bigDecimal.floor(bigDecimal.divide(bigDecimal.multiply(totalSupply, percentageBought), 100, BIG_DECIMAL_PRECISION))
+  return Number(total)
+}
 
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
-  const paidByMember = getTokenCount(token, totalDeposit)
-  const boughtByMember = getBoughtByMemberCount(totalSupply, totalBought, paidByMember)
-  const totalPaid = token.pricePerToken * boughtByMember
-  const data = { ...distribution, totalPaid, totalBought: boughtByMember }
-  if (totalSupply >= totalBought) {
-    return { ...data, refundedAmount: 0 }
-  }
-  const refundedAmount = totalDeposit - (boughtByMember * token.pricePerToken)
-  return { ...data, refundedAmount: refundedAmount < MIN_IOTA_AMOUNT ? 0 : refundedAmount }
+  const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
+  const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
+  const refundedAmount = totalDeposit - totalPaid
+  return { ...distribution, totalPaid, totalBought: boughtByMember, refundedAmount }
 }
 
 const createBillPayment =
@@ -89,7 +90,7 @@ const createCredit = async (
 
 const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution) => {
   const batch = admin.firestore().batch();
-  const distributionDoc = admin.firestore().doc(`${COL.TOKENS}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.member}`)
+  const distributionDoc = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.member}`)
   batch.update(distributionDoc, { ...distribution, tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0), reconciled: true })
 
   const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
@@ -126,7 +127,7 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
 }
 
 export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
-  .firestore.document(COL.TOKENS + '/{tokenId}').onUpdate(async (change, context) => {
+  .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
     const tokenId = context.params.tokenId
     const prev = change.before.data();
     const token = <Token | undefined>change.after.data();
@@ -135,7 +136,7 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       return;
     }
 
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKENS}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
     const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
 
     const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
@@ -146,10 +147,12 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
       .map(doc => getMemberDistribution(<TokenDistribution>doc.data(), token, totalPublicSupply, totalBought))
 
-    distributeLeftoverTokens(distributions, totalPublicSupply, token);
+    if (totalBought > totalPublicSupply) {
+      distributeLeftoverTokens(distributions, totalPublicSupply, token);
+    }
 
     const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
     await Promise.all(promises);
 
-    await admin.firestore().doc(`${COL.TOKENS}/${tokenId}`).update({ status: TokenStatus.PRE_MINTED })
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status: TokenStatus.PRE_MINTED })
   })

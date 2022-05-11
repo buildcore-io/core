@@ -37,6 +37,7 @@ export interface Token extends BaseRecord {
   readonly status: TokenStatus;
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
+  readonly termsAndConditions: string;
 }
 
 export interface TokenDistribution extends BaseSubCollection {
@@ -51,5 +52,41 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly tokenDropped?: number;
   readonly tokenClaimed?: number;
 
+  readonly lockedForSale?: number;
+  readonly sold?: number;
+
+  readonly totalPurchased?: number;
+
   readonly tokenOwned?: number;
+}
+
+export interface TokenPurchase extends BaseRecord {
+  readonly sell: string;
+  readonly buy: string;
+  readonly count: number;
+  readonly price: number;
+}
+
+export enum TokenBuySellOrderType {
+  BUY = 'buy',
+  SELL = 'sell'
+}
+
+export enum TokenBuySellOrderStatus {
+  ACTIVE = 'active',
+  SETTLED = 'settled',
+  CANCELLED = 'cancelled',
+  PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled'
+}
+
+export interface TokenBuySellOrder extends BaseRecord {
+  readonly owner: string;
+  readonly token: string;
+  readonly type: TokenBuySellOrderType;
+  readonly count: number;
+  readonly price: number;
+  readonly fulfilled: number;
+  readonly status: TokenBuySellOrderStatus;
+  readonly orderTransactionId?: string;
+  readonly paymentTransactionId?: string;
 }

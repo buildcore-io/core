@@ -11,7 +11,7 @@ import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
   providedIn: 'root',
 })
 export class TokenApi extends BaseApi<Token> {
-  public token = COL.TOKENS;
+  public token = COL.TOKEN;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
   }
@@ -73,7 +73,7 @@ export class TokenApi extends BaseApi<Token> {
       return ref.where('space', '==', space);
     });
   }
-  
+
   public topMember(member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query(this.token, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('owner', '==', member);

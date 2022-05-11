@@ -50,6 +50,7 @@ const createSchema = () => ({
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
+  termsAndConditions: Joi.string().uri().required()
 })
 
 const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
@@ -80,12 +81,12 @@ export const createToken = functions.runWith({
   const schema = Joi.object(createSchema());
   assertValidation(schema.validate(params.body));
 
-  const snapshot = await admin.firestore().collection(COL.TOKENS).where('space', '==', params.body.space).get()
+  const snapshot = await admin.firestore().collection(COL.TOKEN).where('space', '==', params.body.space).get()
   if (snapshot.size > 0) {
     throw throwInvalidArgument(WenError.token_already_exists_for_space);
   }
 
-  const symbolSnapshot = await admin.firestore().collection(COL.TOKENS).where('symbol', '==', params.body.symbol).get();
+  const symbolSnapshot = await admin.firestore().collection(COL.TOKEN).where('symbol', '==', params.body.symbol).get();
   if (symbolSnapshot.size > 0) {
     throw throwInvalidArgument(WenError.token_symbol_must_be_globally_unique);
   }
@@ -98,8 +99,8 @@ export const createToken = functions.runWith({
   const tokenUid = getRandomEthAddress();
   const extraData = { uid: tokenUid, createdBy: owner, pending: true, status: TokenStatus.AVAILABLE, totalDeposit: 0, totalAirdropped: 0 }
   const data = keywords(cOn(merge(cleanParams(params.body), publicSaleTimeFrames, extraData), URL_PATHS.TOKEN))
-  await admin.firestore().collection(COL.TOKENS).doc(tokenUid).set(data);
-  return <Token>(await admin.firestore().doc(`${COL.TOKENS}/${tokenUid}`).get()).data()
+  await admin.firestore().collection(COL.TOKEN).doc(tokenUid).set(data);
+  return <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenUid}`).get()).data()
 })
 
 const updateSchema = {
@@ -119,7 +120,7 @@ export const updateToken = functions.runWith({
   const schema = Joi.object(updateSchema);
   assertValidation(schema.validate(params.body));
 
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.uid}`);
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.uid}`);
   const data = (await tokenDocRef.get()).data()
 
   if (!data) {
@@ -149,7 +150,7 @@ export const setTokenAvailableForSale = functions.runWith({
   const schema = Joi.object(setAvailableForSaleSchema);
   assertValidation(schema.validate(params.body));
 
-  const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`);
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
 
   await admin.firestore().runTransaction(async (transaction) => {
     const data = <Token | undefined>(await transaction.get(tokenDocRef)).data()
@@ -186,7 +187,7 @@ export const orderToken = functions.runWith({
   const schema = Joi.object({ token: Joi.string().required() });
   assertValidation(schema.validate(params.body));
 
-  const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()
+  const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
     throw throwInvalidArgument(WenError.invalid_params)
   }
@@ -251,12 +252,12 @@ export const creditToken = functions.runWith({
   const creditTranDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
 
   await admin.firestore().runTransaction(async (transaction) => {
-    const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`)
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`)
     const distribution = <TokenDistribution | undefined>(await transaction.get(distributionDocRef)).data()
     if (!distribution || distribution.totalDeposit < params.body.amount) {
       throw throwInvalidArgument(WenError.not_enough_funds)
     }
-    const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get()).data()
+    const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
     if (!token || !tokenCoolDownPeriod(token)) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
@@ -312,7 +313,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
 
     const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
       params.body.drops.map(({ recipient }: { recipient: string }) =>
-        admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient}`)
+        admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient}`)
       );
 
     await admin.firestore().runTransaction(async (transaction) => {
@@ -321,7 +322,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
         distributionDocs.push(await transaction.get(docRef))
       }
 
-      const tokenDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`);
+      const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
       const token = <Token>(await transaction.get(tokenDocRef)).data();
 
       if (!token) {
@@ -340,7 +341,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
         const drop = params.body.drops[i]
         const airdropData = {
           parentId: token.uid,
-          parentCol: COL.TOKENS,
+          parentCol: COL.TOKEN,
           member: drop.recipient,
           tokenDropped: admin.firestore.FieldValue.increment(drop.count)
         }
@@ -360,7 +361,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     const schema = Joi.object({ token: Joi.string().required() });
     assertValidation(schema.validate(params.body));
 
-    const tokenDoc = await admin.firestore().doc(`${COL.TOKENS}/${params.body.token}`).get();
+    const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get();
     if (!tokenDoc.exists) {
       throw throwInvalidArgument(WenError.invalid_params);
     }
@@ -371,7 +372,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const distributionDocRef = admin.firestore().doc(`${COL.TOKENS}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
+      const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
       const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
 
       if (!distribution) {
