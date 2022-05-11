@@ -76,7 +76,8 @@ export enum TokenBuySellOrderStatus {
   ACTIVE = 'active',
   SETTLED = 'settled',
   CANCELLED = 'cancelled',
-  PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled'
+  PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled',
+  EXPIRED = 'expired'
 }
 
 export interface TokenBuySellOrder extends BaseRecord {
@@ -89,4 +90,5 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly status: TokenBuySellOrderStatus;
   readonly orderTransactionId?: string;
   readonly paymentTransactionId?: string;
+  readonly expiresAt: Timestamp;
 }
