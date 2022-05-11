@@ -2,8 +2,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
-import {SearchBoxComponent} from "./search.component";
-import {SortByComponent} from "./sort.component";
 import {NzCardModule} from "ng-zorro-antd/card";
 import {NzInputModule} from "ng-zorro-antd/input";
 import {DropdownTabsModule} from "@components/dropdown-tabs/dropdown-tabs.module";
@@ -25,6 +23,8 @@ import {TokenRowModule} from "@components/token/components/token-row/token-row.m
 import {AlgoliaService} from "./services/algolia.service";
 import {RefinementListComponent} from "@Algolia/refinement.component";
 import {VisibleDirective} from "@Algolia/visible.directive";
+import {SortByComponent} from "@Algolia/sort/sort.component";
+import {SearchBoxComponent} from "@Algolia/search/search.component";
 
 @NgModule({
   imports: [CommonModule, HttpClientModule, NzNotificationModule,

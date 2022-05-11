@@ -5,7 +5,7 @@ import {
   Optional,
   Input,
   ChangeDetectorRef,
-  NgZone, ChangeDetectionStrategy, OnInit
+  NgZone, ChangeDetectionStrategy, OnInit, AfterViewInit
 } from '@angular/core';
 import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
 
@@ -19,30 +19,13 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 @UntilDestroy()
 @Component({
   selector: 'wen-sort-by',
-  template: `
-    <ng-template #defaultTemplate let-selected>
-      <div class="flex items-center">
-        <div nz-typography nzType="secondary" class="mr-1 text-xs">
-          <ng-container *ngIf="selected.nzLabel === 'Recent'; else notRecent" i18n>Sort by</ng-container>
-          <ng-template #notRecent i18n>Price</ng-template>
-        </div>
-        <span>{{ selected.nzLabel }}</span>
-      </div>
-    </ng-template>
-<nz-select   #select class="mt-6 wen-sort-button xl:mt-0" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
-             [formControl]="sortControl" nz-tooltip>
-(ngModelChange)="state.refine($event)">
-  <nz-option *ngFor="let option of state.options" [nzValue]="option.value" [nzLabel]="option.label">
-    {{ option.label }}
-  </nz-option>
-</nz-select>
-`,
+  templateUrl: './sort.component.html',
+  styleUrls: ['./sort.component.less'],
+  // changeDetection: ChangeDetectionStrategy.OnPush
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.OnPush
-
-
+  changeDetection: ChangeDetectionStrategy.Default
 })
-export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, SortByConnectorParams> implements OnInit {
+export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, SortByConnectorParams> implements OnInit, AfterViewInit {
 
   @Input() items: any[] = [];
 
@@ -61,18 +44,9 @@ export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, So
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
     public instantSearchInstance: NgAisInstantSearch,
-    private cd: ChangeDetectorRef,
-    private ngZone: NgZone
-
   ) {
     super('SortBy');
     this.sortControl = new FormControl();
-    this.sortControl.valueChanges.pipe(untilDestroyed(this))
-      .subscribe((val: any) => {
-        this.state.refine(val);
-
-      });
-
   }
   ngOnInit() {
     this.createWidget(connectSortBy, {
@@ -80,5 +54,12 @@ export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, So
       items: this.items,
     });
     super.ngOnInit();
+  }
+  ngAfterViewInit() {
+    this.sortControl.setValue(this.items && this.items.length > 0 ? this.items[0].value : '');
+    this.sortControl.valueChanges.pipe(untilDestroyed(this))
+      .subscribe((val: any) => {
+        this.state.refine(val);
+      });
   }
 }

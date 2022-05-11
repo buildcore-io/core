@@ -1,26 +1,27 @@
-<ais-instantsearch [config]="config">
+  <ais-instantsearch [config]="config">
   <header class="header" id="header">
     <div class="header-searchbox">
       <wen-search-box [sections]="sections"></wen-search-box>
     </div>
   </header>
   <main class="container">
-    <section class="container-results mr-10">
-      <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
-        <ng-template let-hits="hits" let-refine="showMore">
-          <div class="mt-10 xl:grid place-items-start">
+<!--    <div class="container-wrapper">-->
+      <div class="container-results mr-5">
+        <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
+          <ng-template let-hits="hits" let-refine="showMore">
             <div class="wen-cards-wrapper mb-10">
               <wen-space-card class="w-full h-full outline-none"
                               *ngFor="let space of hits; trackBy: trackByUid"
                               [space]="space">
               </wen-space-card>
             </div>
-          </div>
-          <div (visible)="refine()"></div>
-        </ng-template>
-      </ais-infinite-hits>
-    </section>
-     <section class="container-filters">
+            <div (visible)="refine()"></div>
+          </ng-template>
+        </ais-infinite-hits>
+      </div>
+<!--    </div>-->
+
+      <section class="container-filters w-[150px]">
         <div class="container-header">
           <h4>Filters&Sorts</h4>
           <wen-sort-by
