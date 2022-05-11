@@ -9,6 +9,7 @@ import { TokenStatus } from '../interfaces/models/token';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
 import { dateToTimestamp } from './utils/dateTime.utils';
+import { cancelExpiredSale } from './utils/token-buy-sell.utils';
 
 export const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
@@ -184,3 +185,5 @@ export const tokenCoolDownOver = functions.pubsub.schedule('every 1 minutes').on
   const promises = tokens.docs.map(doc => doc.ref.update({ status: TokenStatus.PROCESSING }));
   await Promise.all(promises);
 })
+
+export const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale)

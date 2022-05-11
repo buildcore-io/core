@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import { Member, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
+import { guardedRerun } from '../utils/common.utils';
 import { serverTime, uOn } from '../utils/dateTime.utils';
 import { creditBuyer } from '../utils/token-buy-sell.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -12,10 +13,7 @@ export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
 export const onTokenBuySellCreated = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
   .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onCreate(async (snap) => {
     const data = <TokenBuySellOrder>snap.data()
-    let isSettled = await fulfillSales(data.uid)
-    while (!isSettled) {
-      isSettled = await fulfillSales(data.uid)
-    }
+    await guardedRerun(async () => !(await fulfillSales(data.uid)))
   })
 
 

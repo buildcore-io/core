@@ -10,7 +10,7 @@ import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToke
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from "./common";
+import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
@@ -26,6 +26,7 @@ const dummyToken = (space: string) => ({
   allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
   icon: 'icon',
   overviewGraphics: 'overviewGraphics',
+  termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
 }) as any
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
@@ -82,6 +83,12 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should throw, no name', async () => {
     delete token.name
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+  })
+
+  it('Should throw, no terms and conditions', async () => {
+    delete token.termsAndConditions
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
   })
@@ -310,7 +317,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       links: [],
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
-      totalAirdropped: 0
+      totalAirdropped: 0,
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
@@ -410,93 +418,6 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     await expectThrow(testEnv.wrap(creditToken)({}), WenError.not_enough_funds.key)
   })
 
-})
-
-const tokenProcessed = async (tokenId: string, distributionLength: number, reconciled: boolean) => {
-  for (let attempt = 0; attempt < 400; ++attempt) {
-    await new Promise((r) => setTimeout(r, 1000));
-    const doc = await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get();
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
-    const distributionsOk = distributionsSnap.docs.reduce((acc, doc) => acc && ((doc.data()?.reconciled || false) === reconciled), distributionLength === distributionsSnap.docs.length)
-    if (distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED) {
-      return
-    }
-  }
-  throw new Error("Token not processed: " + tokenId);
-}
-
-describe('Token trigger test', () => {
-  const totalTokenSupply = 10;
-  const tokenPercentageForSale = 100;
-  const pricePerToken = MIN_IOTA_AMOUNT
-  let guardian: string;
-  let space: Space;
-  let token: Token;
-
-  beforeEach(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    guardian = await createMember(walletSpy)
-    space = await createSpace(walletSpy, guardian, true)
-
-    const tokenId = wallet.getRandomEthAddress()
-    token = ({
-      symbol: 'SOON',
-      totalSupply: totalTokenSupply,
-      pending: false,
-      icon: 'icon',
-      overviewGraphics: 'overviewGraphics',
-      updatedOn: serverTime(),
-      createdOn: serverTime(),
-      space: space.uid,
-      uid: tokenId,
-      pricePerToken,
-      allocations: [
-        { title: 'Public sale', isPublicSale: true, percentage: tokenPercentageForSale },
-      ],
-      createdBy: guardian,
-      name: 'MyToken',
-      wenUrl: 'https://wen.soonaverse.com/token/' + tokenId,
-      saleLength: 86400000 * 2,
-      saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
-      links: [],
-      status: TokenStatus.AVAILABLE,
-      totalDeposit: 0,
-      totalAirdropped: 0
-    })
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
-  });
-
-
-  it('Should buy tokens', async () => {
-    const totalAmounts = [4, 8, 2]
-    const amounts = [3, 6, 1]
-    const refunds = [1, 2, 1]
-
-    const members = [] as string[]
-
-    for (const _ of Array.from(Array(totalAmounts.length))) {
-      members.push(await createMember(walletSpy, true))
-    }
-
-    for (let i = 0; i < members.length; ++i) {
-      const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
-      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, totalAmounts[i] * MIN_IOTA_AMOUNT);
-      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
-    }
-
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
-
-    await tokenProcessed(token.uid, totalAmounts.length, true)
-
-    const snap = await admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`).get()
-    snap.docs.forEach(doc => {
-      const memberIndex = members.indexOf(doc.data().member)
-      expect(doc.data()?.totalPaid).toBe(MIN_IOTA_AMOUNT * amounts[memberIndex])
-      expect(doc.data()?.refundedAmount).toBe(MIN_IOTA_AMOUNT * refunds[memberIndex])
-      expect(doc.data()?.totalBought).toBe(amounts[memberIndex])
-      expect(doc.data()?.tokenOwned).toBe(amounts[memberIndex])
-    })
-  })
 })
 
 describe('Token airdrop test', () => {
@@ -651,7 +572,8 @@ describe('Order and claim airdropped token test', () => {
       links: [],
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
-      totalAirdropped: 0
+      totalAirdropped: 0,
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 

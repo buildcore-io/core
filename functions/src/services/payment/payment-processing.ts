@@ -8,7 +8,7 @@ import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interf
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
 import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
-import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
+import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
@@ -704,6 +704,7 @@ export class ProcessingService {
       status: TokenBuySellOrderStatus.ACTIVE,
       orderTransactionId: order.uid,
       paymentTransactionId: payment.uid,
+      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
     }, URL_PATHS.TOKEN_MARKET)
     const buyDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${buyDocId}`);
     this.updates.push({ ref: buyDocRef, data, action: 'set' });
