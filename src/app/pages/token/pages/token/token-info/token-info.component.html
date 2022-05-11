@@ -37,28 +37,10 @@
     </nz-card>
     
     <nz-card i18n-nzTitle nzTitle="Related Links" *ngIf="true">
-      <div *ngIf="true">
-        <a nz-button class="wen-space-links" nzType="link" target="new" [href]="''">
+      <div *ngFor="let l of (data.token$ | async)?.links">
+        <a nz-button class="wen-links" nzType="link" target="new" [href]="l">
           <wen-icon-link></wen-icon-link>
-          <span>{{ 'iotatreasury.web' }}</span>
-        </a>
-      </div>
-      <div *ngIf="true">
-        <a nz-button class="wen-space-links" nzType="link" target="new" [href]="'https://github.com/' + ''">
-          <wen-icon-github></wen-icon-github>
-          <span>{{ 'github/iotatreasury.web' }}</span>
-        </a>
-      </div>
-      <div *ngIf="true">
-        <a nz-button class="wen-space-links" nzType="link" target="new" [href]="'https://twitter.com/' + ''">
-          <wen-icon-reddit></wen-icon-reddit>
-          <span>{{ 'reddit/iotatreasury.web' }}</span>
-        </a>
-      </div>
-      <div *ngIf="true">
-        <a nz-button class="wen-space-links" nzType="link" target="new" [href]="'https://discord.gg/' + ''">
-          <wen-icon-discord></wen-icon-discord>
-          <span>{{ 'discord/iotatreasury.web' }}</span>
+          <span>{{ l.toString() | truncate:[24] }}</span>
         </a>
       </div>
     </nz-card>

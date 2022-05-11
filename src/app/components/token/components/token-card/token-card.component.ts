@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Token } from '@functions/interfaces/models/token';
 
 export enum TokenCardType {
   UPCOMING = 0,
@@ -16,6 +17,7 @@ export enum TokenCardType {
 })
 export class TokenCardComponent {
   public cardType = TokenCardType.ONGOING;
+  @Input() token?: Token;
 
   constructor(
     public deviceService: DeviceService,

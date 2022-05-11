@@ -70,11 +70,14 @@
         Token allocation info
     </div>
 
-    <wen-description [items]="allocationInfo"></wen-description>
+    <wen-description [items]="[
+        { title: allocationInfoLabels[0], value: formatBest(token?.pricePerToken) },
+        { title: allocationInfoLabels[1], value: publicAllocation(token?.allocations)?.percentage + '%', extraValue: '(' + percentageMarketCap() + ')' }
+    ]"></wen-description>
 
     <div class="flex items-center justify-center mt-10">
         <button nz-button nzType="primary"
-            nzSize="large" class="w-full lg:w-auto" (click)="null" i18n>
+            nzSize="large" class="w-full lg:w-auto" (click)="scheduleSale()" i18n>
                 Confirm and schedule sale
         </button>
     </div>

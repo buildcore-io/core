@@ -6,8 +6,9 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { AllocationType, NewService } from '@pages/token/services/new.service';
+import { NewService } from '@pages/token/services/new.service';
 
 export enum StepType {
   INTRODUCTION = 'Introduction',
@@ -65,7 +66,7 @@ export class NewPage implements OnInit {
       });
       return false;
     }
-    const total = (this.newService.allocations.value as AllocationType[]).reduce((acc, act) => acc + Number(act.percentage), 0)
+    const total = (this.newService.allocations.value as TokenAllocation[]).reduce((acc, act) => acc + Number(act.percentage), 0)
     if (total !== 100) {
       return false;
     }
@@ -86,7 +87,7 @@ export class NewPage implements OnInit {
     res.links = data.links.map((l: { url: string }) => l.url);
     res.icon = data.icon;
     res.overviewGraphics = data.introductionary;
-    res.termsAndConditionsLink = data.termsAndConditionsLink;
+    res.termsAndConditions = data.termsAndConditionsLink;
 
     return res;
   }

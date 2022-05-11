@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
-import { DescriptionItem } from '@components/description/description.component';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { TokenApi } from '@api/token.api';
+import { AuthService } from '@components/auth/services/auth.service';
+import { NotificationService } from '@core/services/notification';
+import { UnitsHelper } from '@core/utils/units-helper';
+import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 
 @Component({
@@ -16,20 +20,27 @@ export class TokenPublicSaleComponent {
   public get isOpen(): boolean {
     return this._isOpen;
   }
+  @Input() token?: Token;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public startDateControl: FormControl = new FormControl('', Validators.required);
-  public offerLengthControl: FormControl = new FormControl(null, [Validators.required, Validators.min(1)]);
-  public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
-  public allocationInfo: DescriptionItem[] = [
-    { title: 'Price per token', value: '1 Mi' },
-    { title: 'Public sale', value: '10%', extraValue: '(10 000 Mi)' }
-  ];
+  public offerLengthControl: FormControl = new FormControl(2, [Validators.required, Validators.min(1)]);
+  public scheduleSaleForm: FormGroup;
+  public offeringLengthOptions = Array.from({length: 3}, (_, i) => i + 1)
+  public allocationInfoLabels: string[] = [$localize`Price per token`, $localize`Public sale`];
   private _isOpen = false;
 
   constructor(
-    private cd: ChangeDetectorRef
-  ) { }
+    private cd: ChangeDetectorRef,
+    private auth: AuthService,
+    private notification: NotificationService,
+    private tokenApi: TokenApi
+  ) {
+    this.scheduleSaleForm = new FormGroup({
+      startDate: this.startDateControl,
+      offerLength: this.offerLengthControl
+    });
+  }
 
   public close(): void {
     this.reset();
@@ -48,5 +59,63 @@ export class TokenPublicSaleComponent {
     }
 
     return false;
+  }
+
+  public formatBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public publicAllocation(allocations?: TokenAllocation[]): TokenAllocation| undefined {
+    return allocations?.find(a => a.isPublicSale);
+  }
+
+  public percentageMarketCap(): string {
+    if (!this.token) {
+      return '';
+    }
+    return this.formatBest(this.token?.pricePerToken * this.token?.totalSupply / 100 * Number(this.publicAllocation(this.token?.allocations)?.percentage || 0));
+  }
+
+  private validateForm(): boolean {
+    this.scheduleSaleForm.updateValueAndValidity();
+    if (!this.scheduleSaleForm.valid) {
+      Object.values(this.scheduleSaleForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return false;
+    }
+    return true;
+  }
+
+  public formatSubmitData(data: any): any {
+    const res: any = {};
+
+    res.token = this.token?.uid;
+    res.saleStartDate = data.startDate;
+    res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
+    res.coolDownLength = data.offerLength * 24 * 60 * 60 * 1000;
+
+    return res;
+  }
+
+  public async scheduleSale(): Promise<void> {
+    if (!this.validateForm()) {
+      return;
+    }
+    await this.auth.sign(
+      this.formatSubmitData(this.scheduleSaleForm.value),
+      (sc, finish) => {
+        this.notification
+          .processRequest(this.tokenApi.setTokenAvailableForSale(sc), 'Scheduled public sale.', finish)
+          .subscribe(() => this.close());
+      },
+    );
   }
 }

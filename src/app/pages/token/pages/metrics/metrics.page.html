@@ -16,19 +16,20 @@
                 [type]="lineChartType"></canvas>
 
             <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center">
-                <span class="text-2xl font bold">100 000</span>
-                <span class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary"> SOON</span>
+                <span class="text-2xl font bold">{{ (data.token$ | async)?.totalSupply }}</span>
+                <span class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary"> {{ (data.token$ | async)?.symbol }}</span>
             </div>
         </div>
 
 
-        <div class="xl:space-x-0 xl:space-y-3 flex xl:flex-col flex-wrap items-center mt-8 xl:mt-0">
-            <div *ngFor="let opt of lineChartData?.labels; let i = index"
+        <div class="xl:space-x-0 xl:space-y-3 flex xl:flex-col flex-wrap items-start mt-8 xl:mt-0">
+            <div *ngFor="let a of (data.token$ | async)?.allocations; let i = index"
                 class="flex mr-4 xl:mr-0 mt-4 xl:mt-0">
                 <div class="w-6 h-3 rounded-md mr-2" [ngStyle]="{ 'background-color': colors[i] }"></div>
                 <div class="font-medium -mt-1.5">
-                    <div class="truncate">{{ lineChartData?.labels?.[i] }}</div>
-                    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-1 truncate">50% (50 000 SOON)</div>
+                    <div class="truncate">{{ a.title }}</div>
+                    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark mt-1 truncate">
+                        {{ a.percentage }}% ({{ percentageTokenAmount(a, (data.token$ | async) || undefined) }} {{ (data.token$ | async)?.symbol }})</div>
                 </div>
             </div>
         </div>

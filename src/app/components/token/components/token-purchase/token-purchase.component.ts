@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { copyToClipboard } from '@core/utils/tools.utils';
+import { Token } from '@functions/interfaces/models/token';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -25,6 +26,7 @@ export class TokenPurchaseComponent {
   public get isOpen(): boolean {
     return this._isOpen;
   }
+  @Input() token?: Token;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public amountControl: FormControl = new FormControl(null);

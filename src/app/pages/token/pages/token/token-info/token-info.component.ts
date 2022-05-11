@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PreviewImageService } from '@core/services/preview-image';
+import { DataService } from '@pages/token/services/data.service';
 
 @Component({
   selector: 'wen-token-info',
@@ -10,6 +11,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 export class TokenInfoComponent {
 
   constructor(
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
+    public data: DataService
   ) {}
 }
