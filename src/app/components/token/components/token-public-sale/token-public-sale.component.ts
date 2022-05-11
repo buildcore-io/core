@@ -100,7 +100,7 @@ export class TokenPublicSaleComponent {
     res.token = this.token?.uid;
     res.saleStartDate = data.startDate;
     res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
-    res.coolDownLength = data.offerLength * 24 * 60 * 60 * 1000;
+    res.coolDownLength = 24 * 60 * 60 * 1000;
 
     return res;
   }
