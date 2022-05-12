@@ -12,6 +12,7 @@
     </button>
 
     <button
+        *ngIf="!(data.token$ | async)?.saleStartDate"
         nz-button
         nzSize="large"
         class="wen-secondary w-full"
@@ -25,10 +26,10 @@
         class="block mb-4"
         i18n-shareText
         shareText="Check out token"
-        [shareUrl]="getShareUrl()"
+        [shareUrl]="getShareUrl(data.token$ | async)"
         [size]="shareSizes.LARGE">
     </wen-share>
 </div>
 
-<wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>
-<wen-token-public-sale *ngIf="isScheduleSaleVisible" [isOpen]="isScheduleSaleVisible" (wenOnClose)="isScheduleSaleVisible = false"></wen-token-public-sale>
+<wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>
+<wen-token-public-sale *ngIf="isScheduleSaleVisible" [isOpen]="isScheduleSaleVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isScheduleSaleVisible = false"></wen-token-public-sale>

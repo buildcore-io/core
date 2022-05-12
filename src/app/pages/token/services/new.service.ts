@@ -3,9 +3,10 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
-import { TokenDistributionType } from '@functions/interfaces/models/token';
+import { TokenAllocation, TokenDistributionType } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
@@ -14,12 +15,6 @@ import { BehaviorSubject, of, Subscription } from 'rxjs';
 export const MAX_ALLOCATIONS_COUNT = 100;
 export const MAX_DESCRIPTIONS_COUNT = 5;
 export const MAX_LINKS_COUNT = 20;
-
-export interface AllocationType {
-  title: string; 
-  percentage: string;
-  isPublicSale: boolean;
-}
 
 @Injectable({
   providedIn: 'any'
@@ -43,6 +38,7 @@ export class NewService {
   public descriptionControl: FormControl = new FormControl('', Validators.required);
   public distributionControl: FormControl = new FormControl(TokenDistributionType.FIXED, Validators.required);
   public introductionaryControl: FormControl = new FormControl('', Validators.required);
+  public termsAndConditionsLinkControl: FormControl = new FormControl('', [Validators.required, getUrlValidator()]);
   
   public allocations: FormArray;
   public links: FormArray;
@@ -69,7 +65,8 @@ export class NewService {
       title: this.titleControl,
       description: this.descriptionControl,
       allocations: this.allocations,
-      links: this.links
+      links: this.links,
+      termsAndConditionsLink: this.termsAndConditionsLinkControl
     });
 
     this.addAllocation();
@@ -86,7 +83,10 @@ export class NewService {
 
   public addAllocation(title = '', percentage = '', isPublicSale = false): void {
     if (this.allocations.controls.length < MAX_ALLOCATIONS_COUNT) {
-      this.allocations.push(this.getAllocationForm(title, percentage || (this.allocations.length === 0 ? '100' : '0'), isPublicSale));
+      if (!percentage) {
+        percentage = String(100 - this.allocations.value.reduce((acc: number, r: TokenAllocation) => acc + Number(r.percentage), 0));
+      }
+      this.allocations.push(this.getAllocationForm(title, percentage, isPublicSale));
     }
   }
 
@@ -96,7 +96,7 @@ export class NewService {
 
   private getLinkForm(url = ''): FormGroup {
     return new FormGroup({
-      url: new FormControl(url, Validators.required)
+      url: new FormControl(url, [Validators.required, getUrlValidator()])
     });
   }
 

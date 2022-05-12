@@ -26,7 +26,7 @@ const createSchema = () => ({
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   space: Joi.string().required(),
-  pricePerToken: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
+  pricePerToken: Joi.number().min(1).max(MAX_IOTA_AMOUNT).required(),
   totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPPLY).max(MAX_TOTAL_TOKEN_SUPPLY).integer(),
   allocations: Joi.array().required().items(Joi.object().keys({
     title: Joi.string().required(),

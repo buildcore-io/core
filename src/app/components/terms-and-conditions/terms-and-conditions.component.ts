@@ -9,6 +9,8 @@ import { DeviceService } from '@core/services/device';
 })
 export class TermsAndConditionsComponent {
   @Input() isChecked = false;
+  @Input() label? = $localize`By checking this box, you agree with`;
+  @Input() linkLabel? = $localize`Terms and Conditions`;
   @Input() documentLink!: string;
   @Output() wenOnCheckChange = new EventEmitter<boolean>();
   

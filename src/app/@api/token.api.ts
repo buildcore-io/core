@@ -11,13 +11,17 @@ import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
   providedIn: 'root',
 })
 export class TokenApi extends BaseApi<Token> {
-  public token = COL.TOKEN;
+  public collection = COL.TOKEN;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
   }
 
   public create(req: WenRequest): Observable<Token | undefined> {
     return this.request(WEN_FUNC.cToken, req);
+  }
+
+  public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {
+    return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
 
   public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
@@ -42,7 +46,7 @@ export class TokenApi extends BaseApi<Token> {
       refCust: (ref: any) => {
         return ref.where('space', '==', space);
       }
-    });
+    return this._query(this.collection, 'pricePerToken', 'asc', lastValue, search, def);
   }
 
   public lowToHighStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
@@ -81,7 +85,7 @@ export class TokenApi extends BaseApi<Token> {
       refCust: (ref: any) => {
         return ref.where('space', '==', space);
       }
-    });
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def);
   }
 
   public topStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
@@ -120,7 +124,7 @@ export class TokenApi extends BaseApi<Token> {
       refCust: (ref: any) => {
         return ref.where('space', '==', space);
       }
-    });
+    return this._query(this.collection, 'pricePerToken', 'desc', lastValue, search, def);
   }
 
   public highToLowStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {

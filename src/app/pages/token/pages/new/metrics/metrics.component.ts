@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { AllocationType, NewService } from '@pages/token/services/new.service';
+import { NewService } from '@pages/token/services/new.service';
 import { StepType } from '../new.page';
 
 @UntilDestroy()
@@ -25,7 +26,7 @@ export class NewMetricsComponent implements OnInit {
   public ngOnInit(): void {
     this.newService.allocations?.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe((allocations: AllocationType[]) => {
+      .subscribe((allocations: TokenAllocation[]) => {
         const total = allocations.reduce((acc, act) => acc + Number(act.percentage), 0)
         this.isTotalValid = total === 100;
         this.cd.markForCheck();
