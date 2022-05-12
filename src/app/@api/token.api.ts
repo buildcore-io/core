@@ -26,7 +26,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'pricePerToken',
       direction: 'asc',
       lastValue: lastValue,
@@ -37,7 +37,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public lowToHighSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'pricePerToken',
       direction: 'asc',
       lastValue: lastValue,
@@ -46,7 +46,7 @@ export class TokenApi extends BaseApi<Token> {
       refCust: (ref: any) => {
         return ref.where('space', '==', space);
       }
-    return this._query(this.collection, 'pricePerToken', 'asc', lastValue, search, def);
+    });
   }
 
   public lowToHighStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
@@ -65,7 +65,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
@@ -76,7 +76,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public topSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
@@ -85,7 +85,7 @@ export class TokenApi extends BaseApi<Token> {
       refCust: (ref: any) => {
         return ref.where('space', '==', space);
       }
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def);
+    });
   }
 
   public topStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
@@ -104,7 +104,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public highToLow(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'pricePerToken',
       direction: 'desc',
       lastValue: lastValue,
@@ -115,7 +115,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public highToLowSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'pricePerToken',
       direction: 'desc',
       lastValue: lastValue,
@@ -124,12 +124,12 @@ export class TokenApi extends BaseApi<Token> {
       refCust: (ref: any) => {
         return ref.where('space', '==', space);
       }
-    return this._query(this.collection, 'pricePerToken', 'desc', lastValue, search, def);
+    });
   }
 
   public highToLowStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'pricePerToken',
       direction: 'desc',
       lastValue: lastValue,
@@ -143,7 +143,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public space(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
@@ -157,7 +157,7 @@ export class TokenApi extends BaseApi<Token> {
 
   public topMember(member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
-      collection: this.token,
+      collection: this.collection,
       orderBy: 'createdOn',
       direction: 'desc',
       lastValue: lastValue,
