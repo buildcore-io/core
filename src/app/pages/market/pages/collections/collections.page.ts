@@ -44,7 +44,6 @@ export class CollectionsPage {
   ) {
   }
 
-
   public trackByUid(_index: number, item: any): number {
     return item.uid;
   }

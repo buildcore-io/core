@@ -6,7 +6,7 @@
   </header>
 
   <main class="container">
-    <section class="container-results mr-10">
+    <section class="container-results mr-5">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
           <div class="mt-10 xl:grid place-items-start">
@@ -54,10 +54,7 @@
               [on]="true"
             ></ais-toggle>
           </ais-panel>
-
         </div>
-
-
       </section>
   </main>
 </ais-instantsearch>

@@ -20,6 +20,7 @@ import {debounceTime} from "rxjs";
 import {GLOBAL_DEBOUNCE_TIME} from "@functions/interfaces/config";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {NavigationEnd, Router} from "@angular/router";
+import {FilterService} from "@pages/market/services/filter.service";
 
 
 @UntilDestroy()
@@ -54,9 +55,7 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
     public deviceService: DeviceService,
     private cd: ChangeDetectorRef,
     private router: Router,
-
-    private ngZone: NgZone
-
+    private filter: FilterService
   ) {
     super('SearchBox');
   }
@@ -64,12 +63,13 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
     this.createWidget(connectSearchBox, {
       // instance options
     });
-    // console.log('state=', this.state);
+
     this.filterControl.valueChanges.pipe(
       debounceTime(GLOBAL_DEBOUNCE_TIME),
       untilDestroyed(this)
     ).subscribe((val) => {
       this.state.refine(val);
+      this.filter.search$.next(val);
     });
 
     this.setSelectedSection();
@@ -84,6 +84,11 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
 
     super.ngOnInit();
 
+    const currentFilterText = this.filter.search$.value;
+    if (currentFilterText) {
+      this.filterControl.setValue(currentFilterText);
+      this.state.refine(currentFilterText);
+    }
   }
 
   private setSelectedSection() {
