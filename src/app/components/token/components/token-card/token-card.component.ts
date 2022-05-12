@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Token } from '@functions/interfaces/models/token';
+import { DataService } from '@pages/token/services/data.service';
 
 export enum TokenCardType {
   UPCOMING = 0,
@@ -15,12 +18,28 @@ export enum TokenCardType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenCardComponent {
-  public cardType = TokenCardType.ONGOING;
+  @Input() 
+  set token(value: Token | undefined) {
+    this._token = value;
+  }
+  get token(): Token | undefined {
+    return this._token;
+  }
+
+  // TODO: needs to be set dynamically
+  public cardType = TokenCardType.UPCOMING;
+  public path = ROUTER_UTILS.config.token.root;
+  private _token?: Token;
 
   constructor(
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
-  ) {}
+    public previewImageService: PreviewImageService,
+    public data: DataService
+  ) {
+    setTimeout(() => {
+      console.log(this.token);
+    }, 100);
+  }
 
   public get tokenCardTypes(): typeof TokenCardType {
     return TokenCardType;

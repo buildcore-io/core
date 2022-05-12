@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { copyToClipboard } from '@core/utils/tools.utils';
+import { Token } from '@functions/interfaces/models/token';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -18,13 +19,14 @@ export enum StepType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenPurchaseComponent {
-  @Input() currentStep = StepType.CONFIRM;
+  @Input() currentStep = StepType.COMPLETE;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
   public get isOpen(): boolean {
     return this._isOpen;
   }
+  @Input() token?: Token;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public amountControl: FormControl = new FormControl(null);

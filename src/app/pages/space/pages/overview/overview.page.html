@@ -13,7 +13,7 @@
       </div>
     </nz-card>
 
-    <wen-token-card *ngFor="let token of data.tokens$ | async" class="block">
+    <wen-token-card *ngFor="let token of data.tokens$ | async" [token]="token" class="block">
     </wen-token-card>
   </div>
 

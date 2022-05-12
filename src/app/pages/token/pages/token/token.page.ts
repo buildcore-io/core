@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -8,7 +9,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
-import { Subscription } from 'rxjs';
+import { first, skip, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -32,6 +33,7 @@ export class TokenPage implements OnInit, OnDestroy {
     public data: DataService,
     private titleService: Title,
     private tokenApi: TokenApi,
+    private spaceApi: SpaceApi,
     private route: ActivatedRoute
   ) {}
 
@@ -41,6 +43,12 @@ export class TokenPage implements OnInit, OnDestroy {
       const id: string | undefined = obj?.[ROUTER_UTILS.config.token.token.replace(':', '')];
       if (id) {
         this.listenToToken(id);
+      }
+    });
+    this.data.token$.subscribe(r =>console.log(r));
+    this.data.token$.pipe(skip(1), first()).subscribe((t) => {
+      if (t) {
+        this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
       }
     });
   }

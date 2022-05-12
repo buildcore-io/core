@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { IconModule } from '@components/icon/icon.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -18,7 +19,8 @@ import { TokenRowComponent } from './token-row.component';
     NzProgressModule,
     NzTagModule,
     IconModule,
-    NzButtonModule
+    NzButtonModule,
+    RouterModule
   ],
   exports: [
     TokenRowComponent

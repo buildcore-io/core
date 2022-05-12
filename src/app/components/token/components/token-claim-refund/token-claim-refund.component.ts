@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Token } from '@functions/interfaces/models/token';
 
 export enum TokenItemType {
   CLAIM = 0,
@@ -22,6 +23,7 @@ export class TokenClaimRefundComponent {
   public get isOpen(): boolean {
     return this._isOpen;
   }
+  @Input() token?: Token;
   @Output() wenOnClose = new EventEmitter<void>();
   
   public agreeTermsConditions = false;

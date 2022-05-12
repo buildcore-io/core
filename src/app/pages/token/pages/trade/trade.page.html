@@ -246,3 +246,5 @@
     </div>
 </wen-content>
   
+<wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen" (wenOnClose)="isBidTokenOpen = false"></wen-token-bid>
+<wen-token-offer *ngIf="isOfferTokenOpen" [isOpen]="isOfferTokenOpen" (wenOnClose)="isOfferTokenOpen = false"></wen-token-offer>

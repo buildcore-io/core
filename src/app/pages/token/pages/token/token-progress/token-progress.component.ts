@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { DataService } from '@pages/token/services/data.service';
 
 @Component({
   selector: 'wen-token-progress',
@@ -7,6 +8,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenProgressComponent {
+
+  constructor(
+    public data: DataService
+  ) {}
+
   public getCountdownDate(): Date {
     return new Date('2022-05-30');
   }
