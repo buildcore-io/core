@@ -21,62 +21,147 @@ export class TokenApi extends BaseApi<Token> {
   }
 
   public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'asc', lastValue, search, def);
+    return this._query({
+      collection: this.token,
+      orderBy: 'pricePerToken',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def
+    });
   }
 
   public lowToHighSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space);
+    return this._query({
+      collection: this.token,
+      orderBy: 'pricePerToken',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space);
+      }
     });
   }
 
   public lowToHighStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('status', '==', status);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('status', '==', status);
+      }
     });
   }
 
   public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def);
+    return this._query({
+      collection: this.token,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def
+    });
   }
 
   public topSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space);
+    return this._query({
+      collection: this.token,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space);
+      }
     });
   }
 
   public topStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('status', '==', status);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('status', '==', status);
+      }
     });
   }
 
   public highToLow(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'desc', lastValue, search, def);
+    return this._query({
+      collection: this.token,
+      orderBy: 'pricePerToken',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def
+    });
   }
 
   public highToLowSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space);
+    return this._query({
+      collection: this.token,
+      orderBy: 'pricePerToken',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space);
+      }
     });
   }
 
   public highToLowStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('status', '==', status);
+    return this._query({
+      collection: this.token,
+      orderBy: 'pricePerToken',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('status', '==', status);
+      }
     });
   }
 
   public space(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space);
+    return this._query({
+      collection: this.token,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space);
+      }
     });
   }
 
   public topMember(member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('owner', '==', member);
+    return this._query({
+      collection: this.token,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('owner', '==', member);
+      }
     });
   }
 }

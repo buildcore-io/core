@@ -60,54 +60,110 @@ export class AwardApi extends BaseApi<Award> {
   }
 
   public listenOwners(award: string, lastValue?: number): Observable<Member[]> {
-    return this.subCollectionMembers(award, SUB_COL.OWNERS, lastValue);
+    return this.subCollectionMembers({
+      docId: award,
+      subCol: SUB_COL.OWNERS,
+      lastValue: lastValue
+    });
   }
 
   public lastActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query(this.collection, 'endDate', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'endDate',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
+      }
     });
   }
 
   public topActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query(this.collection, 'endDate', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'endDate',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('endDate', '>=', new Date()).where('completed', '==', false).where('approved', '==', true);
+      }
     });
   }
 
   public lastCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('completed', '==', true).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('completed', '==', true).where('approved', '==', true);
+      }
     });
   }
 
   public topCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Award[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('completed', '==', true).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('completed', '==', true).where('approved', '==', true);
+      }
     });
   }
 
   // TODO: Fix typings.
   public listenPendingParticipants<AwardParticipantWithMember>(award: string, lastValue?: number, searchIds?: string[]): Observable<any> {
-    return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, searchIds, (original, finObj) => {
-      finObj.comment = original.comment;
-      finObj.participatedOn = original.createdOn;
-      finObj.completed = original.completed;
-      return finObj;
-    }, 'createdOn', 'desc', DEFAULT_LIST_SIZE, (ref: any) => {
-      return ref.where('completed', '==', false);
+    return this.subCollectionMembers<AwardParticipantWithMember>({
+      docId: award,
+      subCol: SUB_COL.PARTICIPANTS,
+      lastValue: lastValue,
+      searchIds: searchIds,
+      manipulateOutput: (original, finObj) => {
+        finObj.comment = original.comment;
+        finObj.participatedOn = original.createdOn;
+        finObj.completed = original.completed;
+        return finObj;
+      },
+      orderBy: 'createdOn',
+      direction: 'desc',
+      def: DEFAULT_LIST_SIZE,
+      refCust: (ref: any) => {
+        return ref.where('completed', '==', false);
+      }
     });
   }
 
   // TODO: Fix typings.
   public listenIssuedParticipants<AwardParticipantWithMember>(award: string, lastValue?: number, searchIds?: string[]): Observable<any> {
-    return this.subCollectionMembers<AwardParticipantWithMember>(award, SUB_COL.PARTICIPANTS, lastValue, searchIds, (original, finObj) => {
-      finObj.comment = original.comment;
-      finObj.participatedOn = original.createdOn;
-      finObj.completed = original.completed;
-      return finObj;
-    }, 'createdOn', 'desc', DEFAULT_LIST_SIZE, (ref: any) => {
-      return ref.where('completed', '==', true);
+    return this.subCollectionMembers<AwardParticipantWithMember>({
+      docId: award,
+      subCol: SUB_COL.PARTICIPANTS,
+      lastValue: lastValue,
+      searchIds: searchIds,
+      manipulateOutput: (original, finObj) => {
+        finObj.comment = original.comment;
+        finObj.participatedOn = original.createdOn;
+        finObj.completed = original.completed;
+        return finObj;
+      },
+      orderBy: 'createdOn',
+      direction: 'desc',
+      def: DEFAULT_LIST_SIZE,
+      refCust: (ref: any) => {
+        return ref.where('completed', '==', true);
+      }
     });
   }
 

@@ -1,16 +1,19 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { download } from '@core/utils/tools.utils';
 import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
-import { Subscription } from "rxjs";
+import Papa from 'papaparse';
+import { first, Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
 import { AllianceExtended, SpaceApi, SpaceWithAlliances } from './../../../../../@api/space.api';
 import { CacheService } from './../../../../../@core/services/cache/cache.service';
 import { EntityType } from './../../../../../components/wallet-address/wallet-address.component';
+
 
 @Component({
   selector: 'wen-space-about',
@@ -25,6 +28,7 @@ export class SpaceAboutComponent implements OnDestroy {
   public isAlliancesListOpen = false;
   public isNewAllianceOpen = false;
   public isNewAlliance = false;
+  public exportingMembers = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
   private spacesSubscription?: Subscription;
@@ -35,7 +39,8 @@ export class SpaceAboutComponent implements OnDestroy {
     public cache: CacheService,
     private notification: NotificationService,
     private auth: AuthService,
-    private spaceApi: SpaceApi
+    private spaceApi: SpaceApi,
+    private cd: ChangeDetectorRef
   ) { }
 
   public get filesizes(): typeof FILE_SIZES {
@@ -105,6 +110,33 @@ export class SpaceAboutComponent implements OnDestroy {
 
   public getShareUrl(space?: Space | null): string {
     return space?.wenUrlShort || space?.wenUrl || window.location.href;
+  }
+
+  public exportMembers(): void {
+    if (this.exportingMembers) return;
+    this.exportingMembers = true;
+    
+    const space = this.data.space$.value;
+    if (!space?.uid) return;
+
+    this.spaceApi.listenMembers(space?.uid, undefined, undefined, this.data.space$.value?.totalMembers)
+      .pipe(
+        first()
+      )
+      .subscribe((members) => {
+        this.exportingMembers = false;
+        const fields =
+          ['', 'Name', 'Address'];
+        const csv = Papa.unparse({
+          fields,
+          data: members.map(m => ([m.name?.replace(/[^a-zA-Z0-9-_]/g, ''), m.uid]))
+        });
+
+        const filteredSpaceName =
+          space?.name?.toLowerCase().replace(/[^a-zA-Z0-9-_]/g, '');
+        download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${filteredSpaceName}_members.csv`);
+        this.cd.markForCheck();
+      });
   }
 
   public ngOnDestroy(): void {
