@@ -51,14 +51,30 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public lastOpen(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
-    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('open', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('open', '==', true);
+      }
     });
   }
 
   public topOpen(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Space[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('open', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('open', '==', true);
+      }
     });
   }
 
@@ -99,19 +115,40 @@ export class SpaceApi extends BaseApi<Space> {
   }
 
   public listenGuardians(spaceId: string, lastValue?: number, searchIds?: string[]): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.GUARDIANS, lastValue, searchIds);
+    return this.subCollectionMembers({
+      docId: spaceId,
+      subCol: SUB_COL.GUARDIANS,
+      lastValue: lastValue,
+      searchIds: searchIds
+    });
   }
 
-  public listenMembers(spaceId: string, lastValue?: number, searchIds?: string[]): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.MEMBERS, lastValue, searchIds);
+  public listenMembers(spaceId: string, lastValue?: number, searchIds?: string[], def?: number): Observable<Member[]> {
+    return this.subCollectionMembers({
+      docId: spaceId,
+      subCol: SUB_COL.MEMBERS,
+      lastValue: lastValue,
+      searchIds: searchIds,
+      def: def
+    });
   }
 
   public listenBlockedMembers(spaceId: string, lastValue?: number, searchIds?: string[]): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.BLOCKED_MEMBERS, lastValue, searchIds);
+    return this.subCollectionMembers({
+      docId: spaceId,
+      subCol: SUB_COL.BLOCKED_MEMBERS,
+      lastValue: lastValue,
+      searchIds: searchIds
+    });
   }
 
   public listenPendingMembers(spaceId: string, lastValue?: number, searchIds?: string[]): Observable<Member[]> {
-    return this.subCollectionMembers(spaceId, SUB_COL.KNOCKING_MEMBERS, lastValue, searchIds);
+    return this.subCollectionMembers({
+      docId: spaceId,
+      subCol: SUB_COL.KNOCKING_MEMBERS,
+      lastValue: lastValue,
+      searchIds: searchIds
+    });
   }
 
   public create(req: WenRequest): Observable<Space | undefined> {

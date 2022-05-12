@@ -45,26 +45,58 @@ export class ProposalApi extends BaseApi<Proposal> {
   }
 
   public lastActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this._query(this.collection, 'settings.endDate', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'settings.endDate',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
+      }
     });
   }
 
   public topActive(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this._query(this.collection, 'settings.endDate', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'settings.endDate',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('settings.endDate', '>=', new Date()).where('approved', '==', true);
+      }
     });
   }
 
   public lastCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this._query(this.collection, 'settings.endDate', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'settings.endDate',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
+      }
     });
   }
 
   public topCompleted(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Proposal[]> {
-    return this._query(this.collection, 'settings.endDate', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'settings.endDate',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('settings.endDate', '<=', new Date()).where('approved', '==', true);
+      }
     });
   }
 
@@ -145,24 +177,44 @@ export class ProposalApi extends BaseApi<Proposal> {
   }
 
   public listenPendingMembers(proposalId: string, lastValue?: number, searchIds?: string[], orderBy: string | string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
-    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
-      finObj.voted = original.voted;
-      finObj._issuedOn = original.createdOn;
-      finObj.weight = original.weight;
-      return finObj;
-    }, orderBy, direction, def, (ref: any) => {
-      return ref.where('voted', '==', false);
+    return this.subCollectionMembers({
+      docId: proposalId,
+      subCol: SUB_COL.MEMBERS,
+      lastValue: lastValue,
+      searchIds: searchIds,
+      manipulateOutput: (original, finObj) => {
+        finObj.voted = original.voted;
+        finObj._issuedOn = original.createdOn;
+        finObj.weight = original.weight;
+        return finObj;
+      },
+      orderBy: orderBy,
+      direction: direction,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('voted', '==', false);
+      }
     });
   }
 
   public listenVotedMembers(proposalId: string, lastValue?: number, searchIds?: string[], orderBy: string | string[] = 'createdOn', direction: any = 'desc', def = DEFAULT_LIST_SIZE): Observable<ProposalParticipantWithMember[]> {
-    return this.subCollectionMembers(proposalId, SUB_COL.MEMBERS, lastValue, searchIds, (original, finObj) => {
-      finObj.voted = original.voted;
-      finObj._issuedOn = original.createdOn;
-      finObj.weight = original.weight;
-      return finObj;
-    }, orderBy, direction, def, (ref: any) => {
-      return ref.where('voted', '==', true);
+    return this.subCollectionMembers({
+      docId: proposalId,
+      subCol: SUB_COL.MEMBERS,
+      lastValue: lastValue,
+      searchIds: searchIds,
+      manipulateOutput: (original, finObj) => {
+        finObj.voted = original.voted;
+        finObj._issuedOn = original.createdOn;
+        finObj.weight = original.weight;
+        return finObj;
+      },
+      orderBy: orderBy,
+      direction: direction,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('voted', '==', true);
+      }
     });
   }
 
