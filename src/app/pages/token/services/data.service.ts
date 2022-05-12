@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { UnitsHelper } from "@core/utils/units-helper";
 import { Space } from "@functions/interfaces/models";
 import { Token } from "@functions/interfaces/models/token";
+import * as dayjs from 'dayjs';
 import { BehaviorSubject } from "rxjs";
 
 @Injectable({
@@ -30,5 +31,9 @@ export class DataService {
       return '';
     }
     return this.formatBest(token?.pricePerToken * token?.totalSupply / 100 * percentage);
+  }
+
+  public saleEndDate(token?: Token): dayjs.Dayjs {
+    return dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms');
   }
 }

@@ -1,10 +1,10 @@
 <div class="space-y-4 lg:space-y-6">
     <nz-card i18n-nzTitle nzTitle="Schedule">
         <wen-description type="card" i18n-title title="Schedule" [items]="[
-            { title: 'Sale starts', value: '10:00 AM, January 1st, 2022' },
-            { title: 'Sale ends', value: '10:00 AM, January 31st, 2022' },
-            { title: 'Cooldown Period Length', value: '24h', titleTemplate: cooldownTooltipIcon },
-            { title: 'Cooldown Period Ends', value: '10:01 AM, February 1st, 2022' }
+            { title: tokenScheduleLabels[0], value: (data.token$ | async)?.saleStartDate?.toDate() | date: 'h:mm a, MMMM d, y' },
+            { title: tokenScheduleLabels[1], value: data.saleEndDate((data.token$ | async) || undefined).toDate() | date: 'h:mm a, MMMM d, y' },
+            { title: tokenScheduleLabels[2], value: '24h', titleTemplate: cooldownTooltipIcon },
+            { title: tokenScheduleLabels[3], value: (data.token$ | async)?.coolDownEnd?.toDate() | date: 'h:mm a, MMMM d, y' }
         ]"></wen-description>
         <ng-template #cooldownTooltipIcon>
             <wen-icon-question-circle class="cursor-help" [size]="20"
@@ -15,16 +15,16 @@
     
     <nz-card i18n-nzTitle nzTitle="Token Info">
         <wen-description [items]="[
-            { title: 'Icon', valueTemplate: tokenAvatar },
-            { title: 'Name', value: 'Soonlabs Token' },
-            { title: 'Symbol', value: 'SOON' },
-            { title: 'Price', value: '1 SOON = 1 MIOTA' },
-            { title: 'Network', value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
-            { title: 'Total supply', value: '10 000 000' },
-            { title: 'Type', value: 'Dynamic' }
+            { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
+            { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
+            { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
+            { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + (((data.token$ | async)?.pricePerToken || 0) / 1000 / 1000).toFixed(2) + ' MIOTA' },
+            { title: tokenInfoLabels[4], value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
+            { title: tokenInfoLabels[5], value:  (data.token$ | async)?.totalSupply },
+            { title: tokenInfoLabels[6], value: 'Fixed' }
         ]"></wen-description>
         <ng-template #tokenAvatar>
-            <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+            <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
                 class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
                 nzShape="circle"
                 [nzSize]="32">

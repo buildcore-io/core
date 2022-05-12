@@ -10,6 +10,22 @@ import { DataService } from '@pages/token/services/data.service';
 })
 export class TokenInfoComponent {
 
+  public tokenScheduleLabels: string[] = [
+    $localize`Sale starts`,
+    $localize`Sale ends`,
+    $localize`Cooldown Period Length`,
+    $localize`Cooldown Period Ends`
+  ];
+  public tokenInfoLabels: string[] = [
+    $localize`Icon`,
+    $localize`Name`,
+    $localize`Symbol`,
+    $localize`Price`,
+    $localize`Network`,
+    $localize`Total supply`,
+    $localize`Type`
+  ];
+
   constructor(
     public previewImageService: PreviewImageService,
     public data: DataService
