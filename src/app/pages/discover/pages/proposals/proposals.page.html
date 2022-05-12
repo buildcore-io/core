@@ -6,14 +6,12 @@
   </header>
 
   <main class="container">
-
-    <section class="container-results mr-10">
-
+    <section class="container-results mr-5">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
           <div class="mt-10 xl:grid place-items-start">
             <div class="wen-cards-wrapper mb-10">
-              <wen-proposal-card class="w-full outline-none"
+              <wen-proposal-card class="w-full outline-none w-full h-full"
                                  *ngFor="let proposal of hits; trackBy: trackByUid"
                                  [proposal]="proposal"
                                  [fullWidth]="(deviceService.isMobile$ | async) || false"
