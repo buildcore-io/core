@@ -51,8 +51,6 @@ export class AlgoliaService {
   }
 
   public convertToAccessName(algoliaItems: any[]) {
-    console.log(`convertToAccessName ${algoliaItems.length}`, algoliaItems)
-
     return algoliaItems.map(algolia => {
       const name = accessMapping[algolia.value] || algolia.label;
       return {
