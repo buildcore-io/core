@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { MockProvider } from 'ng-mocks';
 import { TokenPage } from './token.page';
@@ -14,7 +15,8 @@ describe('TokenPage', () => {
       declarations: [ TokenPage ],
       providers: [
         MockProvider(TokenApi),
-        MockProvider(ActivatedRoute)
+        MockProvider(ActivatedRoute),
+        MockProvider(SpaceApi)
       ]
     })
       .compileComponents();

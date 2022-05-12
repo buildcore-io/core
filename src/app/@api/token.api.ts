@@ -11,7 +11,7 @@ import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
   providedIn: 'root',
 })
 export class TokenApi extends BaseApi<Token> {
-  public token = COL.TOKEN;
+  public collection = COL.TOKEN;
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
   }
@@ -20,12 +20,16 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.cToken, req);
   }
 
+  public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {
+    return this.request(WEN_FUNC.setTokenAvailableForSale, req);
+  }
+
   public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'asc', lastValue, search, def);
+    return this._query(this.collection, 'pricePerToken', 'asc', lastValue, search, def);
   }
 
   public lowToHighSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'asc', lastValue, search, def, (ref: any) => {
+    return this._query(this.collection, 'pricePerToken', 'asc', lastValue, search, def, (ref: any) => {
       return ref.where('space', '==', space);
     });
   }
@@ -37,11 +41,11 @@ export class TokenApi extends BaseApi<Token> {
   }
 
   public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def);
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def);
   }
 
   public topSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('space', '==', space);
     });
   }
@@ -53,29 +57,29 @@ export class TokenApi extends BaseApi<Token> {
   }
 
   public highToLow(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'desc', lastValue, search, def);
+    return this._query(this.collection, 'pricePerToken', 'desc', lastValue, search, def);
   }
 
   public highToLowSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'desc', lastValue, search, def, (ref: any) => {
+    return this._query(this.collection, 'pricePerToken', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('space', '==', space);
     });
   }
 
   public highToLowStatus(status: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'pricePerToken', 'desc', lastValue, search, def, (ref: any) => {
+    return this._query(this.collection, 'pricePerToken', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('status', '==', status);
     });
   }
 
   public space(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('space', '==', space);
     });
   }
 
   public topMember(member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query(this.token, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
+    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
       return ref.where('owner', '==', member);
     });
   }

@@ -31,6 +31,8 @@ export class TradePage {
   public chartLengthControl: FormControl = new FormControl(ChartLengthType.WEEK, Validators.required);
   public currentOfferListing = OfferListingType.OPEN;
   public currentRequestListing = RequestListingType.OPEN;
+  public isBidTokenOpen = false;
+  public isOfferTokenOpen = true;
 
   public openOffers = [
     { price: '100 Mi', amount: 32132, total: 31231329 },

@@ -13,16 +13,16 @@
           'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
         <div class="mb-8 space-x-3 flex items-center">
-          <a [routerLink]="['/space', 'space_uid']" class="flex items-center">
+          <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center">
             <nz-avatar
-              [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+              [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
               [nzSize]="32"
               class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-8"
               nzShape="circle"
             >
             </nz-avatar>
             <div class="font-medium">
-              {{ 'space_name' }}
+              {{ (data.space$ | async)?.name }}
             </div>
           </a>
   
@@ -30,7 +30,7 @@
           <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-0" i18n>Token Sale</nz-tag>
         </div>
   
-        <h1 class="mb-6">{{ 'SoonLabs token launchpad' }}</h1>
+        <h1 class="mb-6">{{ (data.token$ | async)?.name }}</h1>
   
         <wen-tabs class="block w-screen mt-10 -ml-5 lg:w-max lg:ml-0" [tabs]="sections"></wen-tabs>
   
@@ -64,7 +64,7 @@
           <wen-icon-close></wen-icon-close>
         </button>
   
-        <h1 class="w-3/4 mt-10 mb-12 ml-5">{{ 'SoonLabs token launchpad' }}</h1>
+        <h1 class="w-3/4 mt-10 mb-12 ml-5">{{ (data.token$ | async)?.name }}</h1>
   
         <wen-token-info></wen-token-info>
       </div>

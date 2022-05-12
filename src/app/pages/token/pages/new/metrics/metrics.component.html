@@ -54,7 +54,7 @@
                         [formControl]="newService.priceControl"
                         />
                     </nz-form-control>
-                    </nz-form-item>
+                </nz-form-item>
                 <nz-form-item>
                     <nz-form-control
                         i18n-nzErrorTip
@@ -252,14 +252,20 @@
                 nzDescription="Some description"
             >
             </nz-card-meta>
-            <nz-upload
-                nzAction=""
-            >
-                <button nz-button nzType="primary" nzSize="default" class="w-40 mt-6">
-                    <i class="upload-icon" nz-icon nzType="upload"></i>
-                    <div class="ml-2.5" i18n>Upload file</div>
-                </button>
-            </nz-upload>
+            <nz-form-item class="mt-6">
+                <nz-form-control
+                    i18n-nzErrorTip
+                    nzErrorTip="Terms and Conditions link is invalid."
+                    >
+                    <input
+                        nz-input
+                        i18n-placeholder
+                        placeholder="URL"
+                        nzSize="large"
+                        [formControl]="newService.termsAndConditionsLinkControl"
+                    />
+                </nz-form-control>
+            </nz-form-item>
         </nz-card>
     </div>
 </div>

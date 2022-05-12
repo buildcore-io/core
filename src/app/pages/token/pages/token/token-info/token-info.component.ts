@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PreviewImageService } from '@core/services/preview-image';
+import { DataService } from '@pages/token/services/data.service';
 
 @Component({
   selector: 'wen-token-info',
@@ -9,7 +10,24 @@ import { PreviewImageService } from '@core/services/preview-image';
 })
 export class TokenInfoComponent {
 
+  public tokenScheduleLabels: string[] = [
+    $localize`Sale starts`,
+    $localize`Sale ends`,
+    $localize`Cooldown Period Length`,
+    $localize`Cooldown Period Ends`
+  ];
+  public tokenInfoLabels: string[] = [
+    $localize`Icon`,
+    $localize`Name`,
+    $localize`Symbol`,
+    $localize`Price`,
+    $localize`Network`,
+    $localize`Total supply`,
+    $localize`Type`
+  ];
+
   constructor(
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
+    public data: DataService
   ) {}
 }
