@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from '@functions/interfaces/models';
+import { Token } from '@functions/interfaces/models/token';
 import * as dayjs from 'dayjs';
 import { map, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
@@ -50,6 +51,17 @@ export class MemberApi extends BaseApi<Member> {
       refCust: (ref: any) => {
         return linkedEntity ? ref.where('linkedEntities', 'array-contains', linkedEntity) : ref;
       }
+    });
+  }
+
+  public topTokens(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+    return this.topParent({
+      col: COL.TOKEN,
+      subCol: SUB_COL.DISTRIBUTION,
+      memberId: memberId,
+      orderBy: orderBy,
+      lastValue: lastValue,
+      def: def
     });
   }
 
