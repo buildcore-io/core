@@ -158,6 +158,27 @@ export class MemberApi extends BaseApi<Member> {
     ).valueChanges();
   }
 
+  public topTransactions(memberId: string, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
+    return this.afs.collection<Transaction>(
+      COL.TRANSACTION,
+      (ref) => {
+        const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+        let query: any = ref.where('member', '==', memberId).where('type', 'in', [TransactionType.PAYMENT, TransactionType.BILL_PAYMENT, TransactionType.CREDIT]);
+        order.forEach((o) => {
+          query = query.orderBy(o, 'desc');
+        });
+
+        if (lastValue) {
+          query = query.startAfter(lastValue).limit(def);
+        } else {
+          query = query.limit(def);
+        }
+
+        return query;
+      }
+    ).valueChanges();
+  }
+
   public allSpacesAsMember(memberId: EthAddress): Observable<Space[]> {
     const ref: AngularFirestoreCollectionGroup<SpaceMember> = this.afs.collectionGroup<SpaceMember>(
       SUB_COL.MEMBERS,
