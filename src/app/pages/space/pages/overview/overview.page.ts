@@ -1,10 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Award, Proposal } from '@functions/interfaces/models';
+import { Token } from '@functions/interfaces/models/token';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from "@pages/space/services/data.service";
 import { Subscription } from 'rxjs';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-overview',
   templateUrl: './overview.page.html',
@@ -13,12 +16,14 @@ import { Subscription } from 'rxjs';
 })
 export class OverviewPage implements OnInit, OnDestroy {
   public spaceId?: string;
+  public filteredTokens: Token[] = [];
   private subscriptions$: Subscription[] = [];
 
   constructor(
     public data: DataService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   public ngOnInit(): void {
@@ -32,6 +37,13 @@ export class OverviewPage implements OnInit, OnDestroy {
         this.router.navigate([ROUTER_UTILS.config.errorResponse.notFound]);
       }
     });
+
+    this.data.tokens$
+      .pipe(untilDestroyed(this))
+      .subscribe((tokens: Token[] | undefined) => {
+        this.filteredTokens = (tokens || []).filter(t => t.saleStartDate);
+        this.cd.markForCheck();
+      });
   }
 
   public trackByUid(index: number, item: Award | Proposal) {
