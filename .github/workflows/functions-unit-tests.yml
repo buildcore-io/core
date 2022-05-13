@@ -3,7 +3,7 @@ name: Functions Unit Tests
 on: push
 
 jobs:
-  functions_unit_tests:
+ functions_unit_tests_emulator:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -11,6 +11,23 @@ jobs:
         working-directory: functions
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_DEV_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+      - run: npm install
+      - run: npm install -g firebase-tools
+      - run: npm run build
+      - run: ./node_modules/.bin/firebase use dev
+      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test --ci --forceExit" --project dev
+
+  functions_unit_tests_online:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: functions
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
