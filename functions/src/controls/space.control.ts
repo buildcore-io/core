@@ -1,4 +1,3 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
@@ -6,6 +5,7 @@ import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/funct
 import { cyrb53 } from "../../interfaces/hash.utils";
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
@@ -58,7 +58,7 @@ async function updateLinkedEntityForMember(opp: 'add' | 'remove', space: Space, 
   }
 
   const refMember: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(memberId);
-  await admin.firestore().runTransaction(async(transaction) => {
+  await admin.firestore().runTransaction(async (transaction) => {
     const sfDoc: DocumentSnapshotType = await transaction.get(refMember);
     if (sfDoc.data()) {
       const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
@@ -86,7 +86,7 @@ async function updateLinkedEntityForMember(opp: 'add' | 'remove', space: Space, 
 
 export const createSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.cSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
   appCheck(WEN_FUNC.cSpace, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner: string = params.address.toLowerCase();
@@ -147,7 +147,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.uSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
   appCheck(WEN_FUNC.uSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -193,7 +193,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.joinSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
   appCheck(WEN_FUNC.joinSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -229,7 +229,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
     });
 
     // Set members.
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       let totalMembers = (sfDoc.data().totalMembers || 0);
       let totalPendingMembers = (sfDoc.data().totalPendingMembers || 0);
@@ -261,7 +261,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.leaveSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.leaveSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -296,7 +296,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 
   if (params.body) {
     await refSpace.collection(SUB_COL.MEMBERS).doc(owner).delete();
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       const totalMembers = (sfDoc.data().totalMembers || 0) - 1;
       const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? 1 : 0);
@@ -321,7 +321,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.addGuardianSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addGuardianSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -356,7 +356,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
       createdOn: serverTime()
     });
 
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       const totalGuardians = (sfDoc.data().totalGuardians || 0) + 1;
       transaction.update(refSpace, {
@@ -373,7 +373,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
 
 export const removeGuardian: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.removeGuardianSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.removeGuardianSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -406,7 +406,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
 
   if (params.body) {
     await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refSpace);
       const totalGuardians = (sfDoc.data().totalGuardians || 0) - 1;
       transaction.update(refSpace, {
@@ -422,7 +422,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
 
 export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.blockMemberSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.blockMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -484,7 +484,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
       await refSpace.collection(SUB_COL.GUARDIANS).doc(params.body.member).delete();
     }
 
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc = await transaction.get(refSpace);
       const totalPendingMembers = (sfDoc.data()?.totalPendingMembers || 0) - (isKnockingMember ? 1 : 0);
       const totalMembers = (sfDoc.data()?.totalMembers || 0) - (isKnockingMember ? 0 : 1);
@@ -509,7 +509,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
 
 export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.unblockMemberSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.unblockMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -542,7 +542,7 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
 
 export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.acceptMemberSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.acceptMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -575,7 +575,7 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
 
     await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).delete();
 
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc = await transaction.get(refSpace);
       const totalMembers = (sfDoc.data()?.totalMembers || 0) + 1;
       const totalPendingMembers = (sfDoc.data()?.totalPendingMembers || 0) - 1;
@@ -596,7 +596,7 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
 
 export const declineMemberSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.declineMemberSpace),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.declineMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -629,7 +629,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.setAlliance),
   timeoutSeconds: 300,
   memory: '4GB'
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext) => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.setAlliance, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -705,7 +705,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
       // Update members.
       const chunk = 500;
       for (let i = 0; i < updateMembers.length; i += chunk) {
-        await admin.firestore().runTransaction(async(transaction) => {
+        await admin.firestore().runTransaction(async (transaction) => {
           const updates = [];
           for (const m of updateMembers.slice(i, i + chunk)) {
             const refMember = admin.firestore().collection(COL.MEMBER).doc(m);

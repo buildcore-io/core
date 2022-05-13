@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import { merge } from 'lodash';
 import { URL_PATHS, WEN_PROD_ADDRESS, WEN_TEST_ADDRESS } from '../../interfaces/config';
 import { Timestamp } from '../../interfaces/models/base';
+import admin from '../admin.config';
 import { isProdEnv } from './config.utils';
 
 export const serverTime = () => admin.firestore.Timestamp.now() as Timestamp;

@@ -1,6 +1,5 @@
 import chance from 'chance';
 import dayjs from "dayjs";
-import * as admin from 'firebase-admin';
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Space } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
@@ -10,6 +9,7 @@ import { createMember } from '../../src/controls/member.control';
 import { createSpace } from '../../src/controls/space.control';
 import { serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
+import admin from '../../src/admin.config';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
 import { TransactionOrderType, TransactionType } from './../../interfaces/models/transaction';

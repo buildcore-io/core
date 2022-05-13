@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
@@ -9,6 +8,7 @@ import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Transaction } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";

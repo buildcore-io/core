@@ -1,4 +1,3 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from "joi";
@@ -6,6 +5,7 @@ import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument, throwUnAuthenticated } from "../utils/error.utils";
@@ -40,7 +40,7 @@ function defaultJoiUpdateCreateSchema(): Member {
 
 export const createMember: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.cMemberNotExists),
-}).https.onCall(async(address: string, context: functions.https.CallableContext): Promise<Member> => {
+}).https.onCall(async (address: string, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.cMemberNotExists, context);
   if (!address || address.length !== ethAddressLength) {
     throw throwUnAuthenticated(WenError.address_must_be_provided);
@@ -65,7 +65,7 @@ export const createMember: functions.CloudFunction<Member> = functions.runWith({
 
 export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.uMember),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.uMember, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);

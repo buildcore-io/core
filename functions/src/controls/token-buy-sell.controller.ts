@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
@@ -8,6 +7,7 @@ import { WEN_FUNC } from '../../interfaces/functions';
 import { Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';

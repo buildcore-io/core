@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
@@ -8,6 +7,7 @@ import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { WalletService } from '../services/wallet/wallet';
 import { isProdEnv } from '../utils/config.utils';

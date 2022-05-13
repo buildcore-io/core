@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import * as admin from 'firebase-admin';
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
 import { WenError } from "../../interfaces/errors";
 import { WEN_FUNC } from "../../interfaces/functions";
@@ -9,6 +8,7 @@ import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../in
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
+import admin from '../../src/admin.config';
 import { testEnv } from "../set-up";
 import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
 

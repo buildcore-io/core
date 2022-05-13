@@ -1,8 +1,8 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Member, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
+import admin from '../admin.config';
 import { guardedRerun } from '../utils/common.utils';
 import { serverTime, uOn } from '../utils/dateTime.utils';
 import { creditBuyer } from '../utils/token-buy-sell.utils';

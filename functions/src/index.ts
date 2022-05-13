@@ -1,4 +1,3 @@
-import * as admin from 'firebase-admin';
 import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
@@ -16,7 +15,6 @@ import { nftWrite } from './triggers/nft.trigger';
 import { onTokenBuySellCreated } from './triggers/token-buy-sell.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
-admin.initializeApp();
 
 // List all various functions supported by Firebase functions.
 // Members functions.

@@ -35,6 +35,7 @@ export const enum WEN_FUNC {
   uCollection = "uCollection",
   approveCollection = "approveCollection",
   rejectCollection = "rejectCollection",
+  collectionWrite = 'collectionWrite',
 
   // NFT functions.
   cNft = "cNft",
@@ -56,7 +57,11 @@ export const enum WEN_FUNC {
   claimAirdroppedToken = 'claimAirdroppedToken',
   sellToken = 'sellToken',
   buyToken = 'buyToken',
-  cancelBuyOrSell = 'cancelBuyOrSell'
+  cancelBuyOrSell = 'cancelBuyOrSell',
+
+  milestoneTransactionWrite = 'milestoneTransactionWrite',
+  nftWrite = 'nftWrite',
+  transactionWrite = 'transactionWrite'
 }
 
 export interface cMemberNotExists {

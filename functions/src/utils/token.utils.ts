@@ -1,8 +1,8 @@
 
-import * as admin from 'firebase-admin';
 import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token } from "../../interfaces/models/token";
+import admin from '../admin.config';
 import { throwInvalidArgument } from './error.utils';
 
 export const tokenOrderTransactionDocId = (member: string, token: Token) => member + '_' + token.uid

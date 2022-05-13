@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import { isEmpty } from 'lodash';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
+import admin from '../admin.config';
 import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { memberDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';

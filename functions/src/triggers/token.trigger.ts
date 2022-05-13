@@ -1,9 +1,9 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
+import admin from '../admin.config';
 import { serverTime } from '../utils/dateTime.utils';
 import { allPaymentsQuery, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
