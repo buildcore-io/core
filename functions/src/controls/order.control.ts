@@ -5,7 +5,7 @@ import { merge } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
-import { Member, Transaction } from '../../interfaces/models';
+import { Member, Space, Transaction } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import admin from '../admin.config';
@@ -71,13 +71,19 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
         .where('locked', '==', false)
         .where('placeholderNft', '==', false)
         .where('collection', '==', docCollectionData.uid)
-        .where('position', '>=', randNumber).orderBy('position', 'asc').limit(1).get();
+        .where('position', '>=', randNumber)
+        .orderBy('position', 'asc')
+        .limit(1)
+        .get();
       const nftBelow = await admin.firestore().collection(COL.NFT)
         .where('sold', '==', false)
         .where('locked', '==', false)
         .where('placeholderNft', '==', false)
         .where('collection', '==', docCollectionData.uid)
-        .where('position', '<=', randNumber).orderBy('position', 'desc').limit(1).get();
+        .where('position', '<=', randNumber)
+        .orderBy('position', 'desc')
+        .limit(1)
+        .get();
       if (nftAbove.size > 0) {
         refNft = admin.firestore().collection(COL.NFT).doc(nftAbove.docs[0].data().uid);
       } else if (nftBelow.size > 0) {
@@ -357,114 +363,91 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   return <Transaction>docTrans.data();
 });
 
-export const openBid: functions.CloudFunction<Transaction> = functions.runWith({
+export const openBid = functions.runWith({
   minInstances: scale(WEN_FUNC.openBid),
-}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.openBid, context);
-  // Validate auth details before we continue
-  const params: DecodedToken = await decodeAuth(req);
+  const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object(merge(getDefaultParams(), {
-    nft: Joi.string().length(ethAddressLength).lowercase().required()
-  }));
+  const schema = Joi.object({ nft: Joi.string().length(ethAddressLength).lowercase().required() });
   assertValidation(schema.validate(params.body));
 
-  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
+  const docMember = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
-  const refNft: admin.firestore.DocumentReference = admin.firestore().collection(COL.NFT).doc(params.body.nft);
-  const docNft: DocumentSnapshotType = await refNft.get();
-  const docNftData: Nft = docNft.data();
-  if (!docNft.exists) {
+  const refNft = admin.firestore().collection(COL.NFT).doc(params.body.nft);
+  const nft = <Nft | undefined>(await refNft.get()).data();
+  if (!nft) {
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
 
-  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(docNftData.collection);
-  const docCollection: DocumentSnapshotType = await refCollection.get();
-  const docCollectionData: Collection = docCollection.data();
-  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
-  const docSpace: DocumentSnapshotType = await refSpace.get();
+  const refCollection = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
+  const collection = <Collection>(await refCollection.get()).data();
+  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${collection.space}`).get()).data();
 
-  // Collection must be approved.
-  if (!docCollectionData.approved) {
+  if (!collection.approved) {
     throw throwInvalidArgument(WenError.collection_must_be_approved);
   }
 
-  if (docNftData.saleAccess === NftAccess.MEMBERS && !(docNftData.saleAccessMembers || []).includes(owner)) {
+  if (nft.saleAccess === NftAccess.MEMBERS && !(nft.saleAccessMembers || []).includes(owner)) {
     throw throwInvalidArgument(WenError.you_are_not_allowed_member_to_purchase_this_nft);
   }
 
-  if (!docNftData.auctionFrom) {
+  if (!nft.auctionFrom) {
     throw throwInvalidArgument(WenError.nft_not_available_for_sale);
   }
 
-  if (docNft.data().placeholderNft) {
+  if (nft.placeholderNft) {
     throw throwInvalidArgument(WenError.nft_placeholder_cant_be_purchased);
   }
 
-  if (docNft.data().owner === owner) {
+  if (nft.owner === owner) {
     throw throwInvalidArgument(WenError.you_cant_buy_your_nft);
   }
 
-  // Extra check to make sure owner address is defined.
-  let prevOwnerAddress: string | undefined = undefined;
-  const refPrevOwner: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(docNft.data().owner);
-  const docPrevOwner: DocumentSnapshotType = await refPrevOwner.get();
-  if (!docPrevOwner.data()?.validatedAddress) {
+  const prevOwnerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()?.validatedAddress
+  if (!prevOwnerAddress) {
     throw throwInvalidArgument(WenError.member_must_have_validated_address);
-  } else {
-    prevOwnerAddress = docPrevOwner.data()?.validatedAddress;
   }
 
-  // Get new target address.
-  const newWallet: WalletService = new WalletService();
-  const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-  const refRoyaltySpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
-  const docRoyaltySpace: DocumentSnapshotType = await refRoyaltySpace.get();
+  const newWallet = new WalletService();
+  const targetAddress = await newWallet.getNewIotaAddressDetails();
+  const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
+  const docRoyaltySpace = await refRoyaltySpace.get();
 
-  // Document does not exists.
-  const tranId: string = getRandomEthAddress();
-  const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  const tranId = getRandomEthAddress();
+  const transactionDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`);
 
-  let finalPrice = docNftData.auctionFloorPrice || MIN_AMOUNT_TO_TRANSFER;
-  if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
-    finalPrice = MIN_AMOUNT_TO_TRANSFER;
-  }
-
-  // Remove unwanted decimals.
-  finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
+  const finalPrice = Number(Math.max(nft.auctionFloorPrice || MIN_AMOUNT_TO_TRANSFER, MIN_AMOUNT_TO_TRANSFER).toPrecision(2));
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
-  await refTran.set(<Transaction>{
+
+  await transactionDocRef.set(<Transaction>{
     type: TransactionType.ORDER,
     uid: tranId,
     member: owner,
-    space: docCollectionData.space,
+    space: collection.space,
     createdOn: serverTime(),
     payload: {
       type: TransactionOrderType.NFT_BID,
       amount: finalPrice,
       targetAddress: targetAddress.bech32,
-      beneficiary: docNft.data().owner ? 'member' : 'space',
-      beneficiaryUid: docNft.data().owner || docCollectionData.space,
-      beneficiaryAddress: docNft.data().owner ? prevOwnerAddress : docSpace.data().validatedAddress,
-      royaltiesFee: docCollectionData.royaltiesFee,
-      royaltiesSpace: docCollectionData.royaltiesSpace,
-      royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,
-      expiresOn: docNft.data().auctionTo,
+      beneficiary: nft.owner ? 'member' : 'space',
+      beneficiaryUid: nft.owner || collection.space,
+      beneficiaryAddress: nft.owner ? prevOwnerAddress : space.validatedAddress,
+      royaltiesFee: collection.royaltiesFee,
+      royaltiesSpace: collection.royaltiesSpace,
+      royaltiesSpaceAddress: docRoyaltySpace.data()?.validatedAddress,
+      expiresOn: nft.auctionTo,
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,
       void: false,
       chainReference: null,
-      nft: docNftData.uid,
-      collection: docCollectionData.uid
+      nft: nft.uid,
+      collection: collection.uid
     },
     linkedTransactions: []
   });
 
-  // Load latest
-  const docTrans = await refTran.get();
-
-  // Return member.
-  return <Transaction>docTrans.data();
+  return <Transaction>(await transactionDocRef.get()).data();
 });

@@ -1,17 +1,18 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { COL, SUB_COL } from '../../functions/interfaces/models/base';
-import admin from './admin.config';
 import { DEFAULT_TRANSACTION_RETRY, DEF_WALLET_PAY_IN_PROGRESS, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../interfaces/config';
 import { Collection, PaymentTransaction, Transaction, TransactionOrder, TransactionType } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { TokenStatus } from '../interfaces/models/token';
+import admin from './admin.config';
+import { finalizeAllNftAuctions } from './cron/nft.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
 import { dateToTimestamp } from './utils/dateTime.utils';
 import { cancelExpiredSale } from './utils/token-buy-sell.utils';
 
-export const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.AWARD)
     .where('completed', '==', false)
     .where('endDate', '<=', new Date()).get();
@@ -32,7 +33,7 @@ export const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes')
   return null;
 });
 
-export const reTryWallet = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+const reTryWallet = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.TRANSACTION)
     .where('payload.walletReference.confirmed', '==', false)
     .where('payload.walletReference.count', '<', MAX_WALLET_RETRY).get();
@@ -80,7 +81,7 @@ export const reTryWallet = functions.pubsub.schedule('every 1 minutes').onRun(as
   return null;
 });
 
-export const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.TRANSACTION)
     .where('type', '==', TransactionType.ORDER)
     .where('payload.void', '==', false)
@@ -105,29 +106,9 @@ export const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').on
   return null;
 });
 
-export const finaliseAuctionNft = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
-  const qry = await admin.firestore().collection(COL.NFT)
-    .where('auctionTo', '<=', dayjs().toDate()).get();
+export const finalizeAuctionNft = functions.pubsub.schedule('every 1 minutes').onRun(finalizeAllNftAuctions);
 
-  if (qry.size > 0) {
-    for (const t of qry.docs) {
-      await admin.firestore().runTransaction(async (transaction) => {
-        const refSource = admin.firestore().collection(COL.NFT).doc(t.data().uid);
-        const sfDoc = await transaction.get(refSource);
-        const service: ProcessingService = new ProcessingService(transaction);
-        await service.markNftAsFinalized(<Nft>sfDoc.data());
-
-        // This will trigger all update/set.
-        service.submit();
-      });
-    }
-  }
-
-  // Finished.
-  return null;
-});
-
-export const hidePlaceholderAfterSoldOut = functions.pubsub.schedule('every 5 minutes').onRun(async () => {
+const hidePlaceholderAfterSoldOut = functions.pubsub.schedule('every 5 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.NFT)
     .where('sold', '==', true)
     .where('placeholderNft', '==', true)
@@ -149,7 +130,7 @@ export const hidePlaceholderAfterSoldOut = functions.pubsub.schedule('every 5 mi
 });
 
 const MAX_UPLOAD_RETRY = 3;
-export const ipfsForNft = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
+const ipfsForNft = functions.runWith({ timeoutSeconds: 540, memory: '2GB' }).pubsub.schedule('every 10 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.NFT).where('ipfsMedia', '==', null).limit(1000).get();;
   if (qry.size > 0) {
     for (const doc of qry.docs) {
@@ -177,7 +158,7 @@ export const ipfsForNft = functions.runWith({ timeoutSeconds: 540, memory: '2GB'
   }
 });
 
-export const tokenCoolDownOver = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
+const tokenCoolDownOver = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const tokens = await admin.firestore().collection(`${COL.TOKEN}`)
     .where('status', '==', TokenStatus.AVAILABLE)
     .where('coolDownEnd', '<=', dateToTimestamp(dayjs().toDate()))
@@ -186,4 +167,17 @@ export const tokenCoolDownOver = functions.pubsub.schedule('every 1 minutes').on
   await Promise.all(promises);
 })
 
-export const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale)
+const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale)
+
+export const cron = (functions.config()?.environment?.type === 'emulator')
+  ? {} : {
+    reTryWallet,
+    markAwardsAsComplete,
+    voidExpiredOrders,
+    finalizeAuctionNft,
+    ipfsForNft,
+    hidePlaceholderAfterSoldOut,
+    tokenCoolDownOver,
+    cancelExpiredSaleCron,
+  }
+

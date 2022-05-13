@@ -179,7 +179,7 @@ const tokenCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleL
   dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms').add(2, 'd'))
 
 export const orderToken = functions.runWith({
-  minInstances: scale(WEN_FUNC.openBid),
+  minInstances: scale(WEN_FUNC.orderToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.orderToken, context);
   const params = await decodeAuth(req);
