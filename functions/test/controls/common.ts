@@ -1,5 +1,4 @@
 import chance from 'chance';
-import * as admin from 'firebase-admin';
 import { Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { TokenStatus } from '../../interfaces/models/token';
@@ -7,6 +6,7 @@ import { createMember as createMemberFunc } from "../../src/controls/member.cont
 import { createSpace as createSpaceFunc } from "../../src/controls/space.control";
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
+import admin from '../../src/admin.config';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
 
@@ -102,4 +102,14 @@ export const tokenProcessed = async (tokenId: string, distributionLength: number
     }
   }
   throw new Error("Token not processed: " + tokenId);
+}
+
+export const wait = async (func: () => Promise<boolean>) => {
+  for (let attempt = 0; attempt < 400; ++attempt) {
+    if (await func()) {
+      return
+    }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  throw new Error("Timeout");
 }

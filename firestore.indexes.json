@@ -4,318 +4,258 @@
       "collectionGroup": "award",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "keywords", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "award",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "name",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "name", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "award",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "rank",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "rank", "order": "DESCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "award",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "completed", "order": "ASCENDING" },
+        { "fieldPath": "endDate", "order": "ASCENDING" }
       ]
     },
     {
       "collectionGroup": "knockingMembers",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "parentCol",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "parentCol", "order": "ASCENDING" },
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "member",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "keywords", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "member",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "name",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "name", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "member",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "name",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        }
+        { "fieldPath": "name", "order": "ASCENDING" },
+        { "fieldPath": "uid", "order": "ASCENDING" }
       ]
     },
     {
       "collectionGroup": "members",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "parentCol",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        }
+        { "fieldPath": "parentCol", "order": "ASCENDING" },
+        { "fieldPath": "uid", "order": "ASCENDING" }
       ]
     },
     {
       "collectionGroup": "members",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "parentCol",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "parentCol", "order": "ASCENDING" },
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "members",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "parentCol",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "settings.endDate",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "parentCol", "order": "ASCENDING" },
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "settings.endDate", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "members",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "nft",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "collection", "order": "ASCENDING" },
+        { "fieldPath": "locked", "order": "ASCENDING" },
+        { "fieldPath": "placeholderNft", "order": "ASCENDING" },
+        { "fieldPath": "sold", "order": "ASCENDING" },
+        { "fieldPath": "position", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "nft",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "collection", "order": "ASCENDING" },
+        { "fieldPath": "locked", "order": "ASCENDING" },
+        { "fieldPath": "placeholderNft", "order": "ASCENDING" },
+        { "fieldPath": "sold", "order": "ASCENDING" },
+        { "fieldPath": "position", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "participants",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "completed",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "parentCol",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "completed", "order": "ASCENDING" },
+        { "fieldPath": "parentCol", "order": "ASCENDING" },
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "participants",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "parentCol",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "parentCol", "order": "ASCENDING" },
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "participants",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "participants",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "completed",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "completed", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "proposal",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "keywords", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "proposal",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "name",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "name", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "proposal",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "space",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "settings.endDate",
-          "order": "ASCENDING"
-        }
+        { "fieldPath": "space", "order": "ASCENDING" },
+        { "fieldPath": "settings.endDate", "order": "ASCENDING" }
       ]
     },
     {
       "collectionGroup": "space",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "keywords",
-          "arrayConfig": "CONTAINS"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "keywords", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "space",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "name",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "name", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
       ]
     },
     {
       "collectionGroup": "space",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "rank",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "rank", "order": "DESCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "expiresAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "token", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "price", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "token",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "coolDownEnd", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "member", "order": "ASCENDING" },
+        { "fieldPath": "payload.proposalId", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "member", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdOn", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "payload.invalidPayment", "order": "ASCENDING" },
+        { "fieldPath": "payload.sourceTransaction", "arrayConfig": "CONTAINS" }
       ]
     },
     {
@@ -323,53 +263,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "member",
+          "fieldPath": "payload.walletReference.confirmed",
           "order": "ASCENDING"
         },
-        {
-          "fieldPath": "payload.proposalId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
+        { "fieldPath": "payload.walletReference.count", "order": "ASCENDING" }
       ]
     },
     {
       "collectionGroup": "transaction",
       "queryScope": "COLLECTION",
       "fields": [
-        {
-          "fieldPath": "member",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdOn",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "transaction",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "payload.invalidPayment",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "payload.sourceTransaction",
-          "arrayConfig": "CONTAINS"
-        }
+        { "fieldPath": "payload.reconciled", "order": "ASCENDING" },
+        { "fieldPath": "payload.void", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "payload.expiresOn", "order": "ASCENDING" }
       ]
     }
   ],

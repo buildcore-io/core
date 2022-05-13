@@ -1,10 +1,11 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { BillPaymentTransaction, CreditPaymentTransaction, IOTATangleTransaction, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Nft } from '../../interfaces/models/nft';
-import { superPump } from '../scale.settings';
+import admin from '../admin.config';
+import { scale } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
 import { WalletService } from "../services/wallet/wallet";
 import { serverTime } from "../utils/dateTime.utils";
@@ -12,7 +13,7 @@ import { serverTime } from "../utils/dateTime.utils";
 // Listen for changes in all documents in the 'users' collection
 export const transactionWrite = functions.runWith({
   timeoutSeconds: 540,
-  minInstances: superPump,
+  minInstances: scale(WEN_FUNC.transactionWrite),
   memory: "512MB",
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onUpdate(async (change) => {
   const newValue = <Transaction>change.after.data();

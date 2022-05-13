@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import * as admin from 'firebase-admin';
 import { TransactionType } from '../../../functions/interfaces/models';
 import { COL } from '../../../functions/interfaces/models/base';
 import { approveCollection, createCollection } from '../../../functions/src/controls/collection.control';
@@ -11,6 +10,7 @@ import { Member } from '../../interfaces/models/member';
 import { Nft } from '../../interfaces/models/nft';
 import { Space } from '../../interfaces/models/space';
 import { TransactionOrder, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models/transaction';
+import admin from '../../src/admin.config';
 import { dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';

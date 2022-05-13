@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
-import * as admin from 'firebase-admin';
 import bigDecimal from 'js-big-decimal';
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
 import { Space } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import admin from '../../src/admin.config';
 import { orderToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';

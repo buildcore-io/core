@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
@@ -10,6 +9,7 @@ import { TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../int
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { Member } from '../../interfaces/models/member';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { isProdEnv } from '../utils/config.utils';
@@ -44,7 +44,7 @@ function defaultJoiUpdateCreateSchema() {
 
 export const createNft: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.cNft),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.cNft, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -66,7 +66,7 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
   minInstances: scale(WEN_FUNC.cBatchNft),
   timeoutSeconds: 300,
   memory: "4GB",
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext) => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.cBatchNft, context);
 
   // Validate auth details before we continue
@@ -97,7 +97,7 @@ export const createBatchNft: functions.CloudFunction<string[]> = functions.runWi
   return output.map((o) => o.uid);
 });
 
-const processOneCreateNft = async(creator: string, params: Nft, collectionData: Collection, position: number): Promise<Member> => {
+const processOneCreateNft = async (creator: string, params: Nft, collectionData: Collection, position: number): Promise<Member> => {
   const nftAddress: string = getRandomEthAddress();
   const docMember: admin.firestore.DocumentSnapshot = await admin.firestore().collection(COL.MEMBER).doc(creator).get();
   if (!docMember.exists) {
@@ -198,7 +198,7 @@ function makeAvailableForSaleJoi() {
 
 export const setForSaleNft: functions.CloudFunction<Nft> = functions.runWith({
   minInstances: scale(WEN_FUNC.setForSaleNft),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Nft> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Nft> => {
   appCheck(WEN_FUNC.setForSaleNft, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);

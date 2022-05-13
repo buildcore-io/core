@@ -1,6 +1,6 @@
-import * as admin from 'firebase-admin';
 import { SUB_COL } from "../../../interfaces/models/base";
 import { throwInvalidArgument } from "../../utils/error.utils";
+import admin from '../../admin.config';
 import { WenError } from './../../../interfaces/errors';
 
 type DocRefType = admin.firestore.DocumentReference<admin.firestore.DocumentData>

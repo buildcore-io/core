@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
@@ -7,6 +6,7 @@ import { WenError } from '../../interfaces/errors';
 import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from "../../interfaces/models/firebase";
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
@@ -76,7 +76,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   minInstances: scale(WEN_FUNC.cProposal),
   timeoutSeconds: 300,
   memory: "2GB",
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Proposal> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Proposal> => {
   appCheck(WEN_FUNC.cProposal, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -207,7 +207,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
 
 export const approveProposal: functions.CloudFunction<Proposal> = functions.runWith({
   minInstances: scale(WEN_FUNC.aProposal),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aProposal, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -248,7 +248,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
 
 export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWith({
   minInstances: scale(WEN_FUNC.rProposal),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rProposal, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -293,7 +293,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
 
 export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWith({
   minInstances: scale(WEN_FUNC.voteOnProposal),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.voteOnProposal, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();

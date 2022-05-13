@@ -1,18 +1,19 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change } from "firebase-functions";
 import { DocumentSnapshot } from "firebase-functions/v1/firestore";
+import { WEN_FUNC } from '../../interfaces/functions';
 import { COL } from '../../interfaces/models/base';
 import { Nft, NftAvailable } from '../../interfaces/models/nft';
-import { medium } from '../scale.settings';
+import admin from '../admin.config';
+import { scale } from '../scale.settings';
 
 // Listen for changes in all documents in the NFT and update to prepare it for filtering.
 export const nftWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
-  minInstances: medium
-}).firestore.document(COL.NFT + '/{nftId}').onWrite(async(change) => {
+  minInstances: scale(WEN_FUNC.nftWrite)
+}).firestore.document(COL.NFT + '/{nftId}').onWrite(async (change) => {
   const newValue = <Nft>change.after.data();
   // Let's wrap this into a transaction.
-  await admin.firestore().runTransaction(async(transaction) => {
+  await admin.firestore().runTransaction(async (transaction) => {
     if (!newValue) {
       return;
     }

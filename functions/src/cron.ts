@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { COL, SUB_COL } from '../../functions/interfaces/models/base';
+import admin from './admin.config';
 import { DEFAULT_TRANSACTION_RETRY, DEF_WALLET_PAY_IN_PROGRESS, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../interfaces/config';
 import { Collection, PaymentTransaction, Transaction, TransactionOrder, TransactionType } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';

@@ -1,5 +1,6 @@
 import { WEN_FUNC } from '../interfaces/functions';
 import { isProdEnv } from './utils/config.utils';
+import * as functions from 'firebase-functions';
 
 export const low = 1;
 export const medium = isProdEnv ? 3 : 2;
@@ -42,6 +43,7 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.uCollection] = medium;
   scaleSettings[WEN_FUNC.approveCollection] = low;
   scaleSettings[WEN_FUNC.rejectCollection] = low;
+  scaleSettings[WEN_FUNC.collectionWrite] = medium
 
   scaleSettings[WEN_FUNC.cNft] = medium;
   scaleSettings[WEN_FUNC.setForSaleNft] = medium;
@@ -52,5 +54,9 @@ export function scale(func: WEN_FUNC): number {
 
   scaleSettings[WEN_FUNC.cToken] = low
 
-  return scaleSettings[func] || low;
+  scaleSettings[WEN_FUNC.milestoneTransactionWrite] = superPump
+  scaleSettings[WEN_FUNC.nftWrite] = medium
+  scaleSettings[WEN_FUNC.transactionWrite] = superPump
+
+  return functions.config()?.environment?.type === 'emulator' ? 0 : scaleSettings[func] || low;
 }

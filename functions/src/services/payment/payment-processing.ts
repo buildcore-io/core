@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import { last } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
@@ -12,6 +11,7 @@ import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, Pay
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
+import admin from '../../admin.config';
 import { NotificationService } from '../notification/notification';
 
 interface TransactionMatch {
