@@ -409,7 +409,7 @@ export class ProcessingService {
   }
 
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
-    const refNft = admin.firestore().collection(COL.NFT).doc((<OrderPayBillCreditTransaction>transaction.payload).nft!);
+    const refNft = admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
     const refPayment = admin.firestore().collection(COL.TRANSACTION).doc(payment.uid);
     const sfDocNft = await this.transaction.get(refNft);
     let newValidPayment = false;
@@ -419,7 +419,7 @@ export class ProcessingService {
       const previousHighestPayRef = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data()?.auctionHighestTransaction);
       const previousHighestPayDoc = await this.transaction.get(previousHighestPayRef);
 
-      // It has been succesfull, let's finalise.
+      // It has been successful, let's finalize.
       previousHighestPay = <TransactionPayment>previousHighestPayDoc.data();
       if (
         previousHighestPay.payload.amount < paymentPayload.amount &&

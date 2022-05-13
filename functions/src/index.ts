@@ -8,7 +8,7 @@ import { approveProposal, createProposal, rejectProposal, voteOnProposal } from 
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { cancelBuyOrSell } from './controls/token-buy-sell.controller';
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
-import { cancelExpiredSaleCron, finaliseAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, tokenCoolDownOver, voidExpiredOrders } from "./cron";
+import { cancelExpiredSaleCron, finalizeAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, tokenCoolDownOver, voidExpiredOrders } from "./cron";
 import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
@@ -68,7 +68,7 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 exports['cron_reTryWallet'] = reTryWallet;
 exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;
 exports['cron_voidExpiredOrders'] = voidExpiredOrders;
-exports['cron_finaliseAuctionNft'] = finaliseAuctionNft;
+exports['cron_finalizeAuctionNft'] = finalizeAuctionNft;
 exports['cron_ipfsForNft'] = ipfsForNft;
 exports['cron_hidePlaceholderAfterSoldOut'] = hidePlaceholderAfterSoldOut;
 exports['cron_tokenCoolDownOver'] = tokenCoolDownOver;

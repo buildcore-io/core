@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { COL, SUB_COL } from '../../functions/interfaces/models/base';
-import admin from './admin.config';
 import { DEFAULT_TRANSACTION_RETRY, DEF_WALLET_PAY_IN_PROGRESS, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../interfaces/config';
 import { Collection, PaymentTransaction, Transaction, TransactionOrder, TransactionType } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import { TokenStatus } from '../interfaces/models/token';
+import admin from './admin.config';
+import { finalizeAllNftAuctions } from './cron/nft.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
 import { dateToTimestamp } from './utils/dateTime.utils';
@@ -105,27 +106,8 @@ export const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').on
   return null;
 });
 
-export const finaliseAuctionNft = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
-  const qry = await admin.firestore().collection(COL.NFT)
-    .where('auctionTo', '<=', dayjs().toDate()).get();
 
-  if (qry.size > 0) {
-    for (const t of qry.docs) {
-      await admin.firestore().runTransaction(async (transaction) => {
-        const refSource = admin.firestore().collection(COL.NFT).doc(t.data().uid);
-        const sfDoc = await transaction.get(refSource);
-        const service: ProcessingService = new ProcessingService(transaction);
-        await service.markNftAsFinalized(<Nft>sfDoc.data());
-
-        // This will trigger all update/set.
-        service.submit();
-      });
-    }
-  }
-
-  // Finished.
-  return null;
-});
+export const finalizeAuctionNft = functions.pubsub.schedule('every 1 minutes').onRun(finalizeAllNftAuctions);
 
 export const hidePlaceholderAfterSoldOut = functions.pubsub.schedule('every 5 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.NFT)
