@@ -21,6 +21,7 @@ import {GLOBAL_DEBOUNCE_TIME} from "@functions/interfaces/config";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {NavigationEnd, Router} from "@angular/router";
 import {FilterService} from "@pages/market/services/filter.service";
+import {noop} from "@Algolia/util";
 
 
 @UntilDestroy()
@@ -36,10 +37,10 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
   @Input() sections: TabSection[] = [];
 
   public state: SearchBoxWidgetDescription['renderState'] = {
-    clear(): void { /* */},
+    clear: noop,
     isSearchStalled: false,
     query: '',
-    refine(value: string): void { /* */},
+    refine: noop,
   }
   public filterControl: FormControl = new FormControl(undefined);
   public selectedSection?: TabSection;
@@ -53,7 +54,6 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
     @Inject(forwardRef(() => NgAisInstantSearch))
     public instantSearchInstance: NgAisInstantSearch,
     public deviceService: DeviceService,
-    private cd: ChangeDetectorRef,
     private router: Router,
     private filter: FilterService
   ) {

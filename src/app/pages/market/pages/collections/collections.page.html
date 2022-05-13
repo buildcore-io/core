@@ -50,32 +50,35 @@
               nzHeader="Saletype"
               nzActive="true"
             >
-              <ais-refinement-list
+              <wen-refinement-list
                 attribute="access"
                 [transformItems]="algoliaService.convertToAccessName"
               >
-              </ais-refinement-list>
+              </wen-refinement-list>
             </nz-collapse-panel>
             <nz-collapse-panel
               nzHeader="Spaces"
               nzActive="true"
             >
-                <ais-refinement-list
+                <wen-refinement-list
                   attribute="space"
                   [transformItems]="algoliaService.convertToSpaceName"
-                  [searchable]="false"
-                  searchPlaceholder="Search for space…"
+                  [limit]="15"
+                  [showMoreLimit]="5"
+                  showMoreLabel="See more"
+                  showLessLabel="See less"
                 >
-                </ais-refinement-list>
+                </wen-refinement-list>
             </nz-collapse-panel>
             <nz-collapse-panel
               nzHeader="Category"
               nzActive="true"
             >
-              <ais-refinement-list
+              <wen-refinement-list
                 attribute="category"
+                [showIcon]="false"
               >
-              </ais-refinement-list>
+              </wen-refinement-list>
             </nz-collapse-panel>
           </nz-collapse>
           <ais-panel header="Price range">

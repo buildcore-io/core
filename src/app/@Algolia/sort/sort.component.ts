@@ -3,9 +3,7 @@ import {
   Inject,
   forwardRef,
   Optional,
-  Input,
-  ChangeDetectorRef,
-  NgZone, ChangeDetectionStrategy, OnInit, AfterViewInit
+  Input, ChangeDetectionStrategy, OnInit, AfterViewInit
 } from '@angular/core';
 import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
 
@@ -15,6 +13,7 @@ import connectSortBy, {
 } from 'instantsearch.js/es/connectors/sort-by/connectSortBy';
 import {FormControl} from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import {noop} from "@Algolia/util";
 
 @UntilDestroy()
 @Component({
@@ -34,7 +33,7 @@ export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, So
   public state: SortByWidgetDescription['renderState'] = {
     currentRefinement: "", hasNoResults: false, initialIndex: "", options: [
     ],
-    refine(value: string): void { /* */}
+    refine: noop
   }
   constructor(
     @Inject(forwardRef(() => NgAisIndex))

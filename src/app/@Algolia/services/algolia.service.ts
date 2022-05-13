@@ -4,7 +4,7 @@ import { environment } from '@env/environment';
 import { CollectionAccess, Space } from "@functions/interfaces/models";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
-import { RefinementMappings } from "../refinement.component";
+import {RefinementMappings} from "@Algolia/refinement/refinement.component";
 
 const spaceMapping: RefinementMappings = {};
 const accessMapping: RefinementMappings = {};
@@ -21,7 +21,6 @@ export class AlgoliaService {
 
   constructor( private readonly cacheService: CacheService,
   ) {
-    // quick & temporary ....
     this.cacheService.allSpaces$
       .pipe(untilDestroyed(this)).subscribe( (spaces) => {
         spaces.forEach((space: Space) => {
@@ -30,7 +29,6 @@ export class AlgoliaService {
           }
         });
       })
-    // very hacky... but let's go quick for now
     Object.values(CollectionAccess)
       .forEach((value, index) => {
         if (typeof value === 'string') {
@@ -38,8 +36,8 @@ export class AlgoliaService {
         }
       })
   }
+
   public convertToSpaceName(algoliaItems: any[]) {
-    console.log(`convertToSpaceName ${algoliaItems.length}`, algoliaItems)
     return algoliaItems.map(algolia => {
       const name = spaceMapping[algolia.value] || algolia.label.substring(0, 10) + '... (no name found???)'
       return {

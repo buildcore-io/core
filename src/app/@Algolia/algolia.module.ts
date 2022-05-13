@@ -21,10 +21,10 @@ import {NgAisModule} from "angular-instantsearch";
 import {NzCollapseModule} from "ng-zorro-antd/collapse";
 import {TokenRowModule} from "@components/token/components/token-row/token-row.module";
 import {AlgoliaService} from "./services/algolia.service";
-import {RefinementListComponent} from "@Algolia/refinement.component";
 import {VisibleDirective} from "@Algolia/visible.directive";
 import {SortByComponent} from "@Algolia/sort/sort.component";
 import {SearchBoxComponent} from "@Algolia/search/search.component";
+import {RefinementListComponent} from "@Algolia/refinement/refinement.component";
 
 @NgModule({
   imports: [CommonModule, HttpClientModule, NzNotificationModule,
@@ -54,6 +54,6 @@ import {SearchBoxComponent} from "@Algolia/search/search.component";
   declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective,
   ],
   providers: [AlgoliaService],
-  exports: [SearchBoxComponent, SortByComponent, NgAisModule, NzCollapseModule, VisibleDirective]
+  exports: [SearchBoxComponent, SortByComponent, RefinementListComponent, NgAisModule, NzCollapseModule, VisibleDirective]
 })
 export class AlgoliaModule {}
