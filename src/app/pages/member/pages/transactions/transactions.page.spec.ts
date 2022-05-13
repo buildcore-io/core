@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MemberApi } from '@api/member.api';
+import { DataService } from '@pages/member/services/data.service';
+import { MockProvider } from 'ng-mocks';
 import { TransactionsPage } from './transactions.page';
 
 
@@ -8,7 +11,11 @@ describe('TransactionsPage', () => {
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ TransactionsPage ]
+      declarations: [ TransactionsPage ],
+      providers: [
+        MockProvider(DataService),
+        MockProvider(MemberApi)
+      ]
     })
       .compileComponents();
   });

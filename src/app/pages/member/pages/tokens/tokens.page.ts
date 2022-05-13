@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
-import { TokenApi } from '@api/token.api';
+import { MemberApi } from '@api/member.api';
 import { TokenItemType } from '@components/token/components/token-claim-refund/token-claim-refund.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -26,7 +26,7 @@ export class TokensPage implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     public data: DataService,
-    private tokenApi: TokenApi,
+    private memberApi: MemberApi,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -35,7 +35,7 @@ export class TokensPage implements OnInit, OnDestroy {
       if (obj) {
         this.listen();
       }
-    })
+    });
   }
 
   private listen(search?: string): void {
@@ -54,7 +54,7 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public getHandler(last?: any, search?: string): Observable<Token[]> {
     if (this.data.member$.value) {
-      return this.tokenApi.topMember(this.data.member$.value.uid, last, search);
+      return this.memberApi.topTokens(this.data.member$.value.uid, undefined, last, undefined);
     } else {
       return of([]);
     }

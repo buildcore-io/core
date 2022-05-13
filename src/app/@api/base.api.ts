@@ -174,6 +174,32 @@ export class BaseApi<T> {
     }));
   }
 
+  public subCollectionMembersWithoutData<T>(args: SubCollectionMembersArgs): Observable<T[]> {
+    const { docId, subCol, lastValue, searchIds, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, refCust } = args;
+    const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
+      let query: any = refCust ? refCust(subRef) : subRef;
+
+      // Apply search on IDS.
+      if (searchIds && searchIds.length > 0) {
+        query = query.where('uid', 'in', searchIds);
+      }
+
+      const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+      order.forEach((o) => {
+        query = query.orderBy(o, direction);
+      });
+      if (lastValue) {
+        query = query.startAfter(lastValue).limit(def);
+      } else {
+        query = query.limit(def);
+      }
+
+      return query;
+    });
+
+    return ref.valueChanges();
+  }
+
   protected async getSubRecordsInBatches(col: COL, records: string[]): Promise<any[]> {
     const out: any = [];
     for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {

@@ -18,4 +18,8 @@ export class NewIntroductionComponent {
   public get stepTypes(): typeof StepType {
     return StepType;
   }
+
+  public onFillForm(): void {
+    window.open('https://tailwindcss.com/docs/display', '_blank');
+  }
 }

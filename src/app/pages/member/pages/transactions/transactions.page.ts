@@ -1,35 +1,149 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DEFAULT_LIST_SIZE, FULL_LIST } from '@api/base.api';
+import { MemberApi } from '@api/member.api';
 import { DeviceService } from '@core/services/device';
-import { PreviewImageService } from '@core/services/preview-image';
+import { TransactionService } from '@core/services/transaction';
+import { download } from '@core/utils/tools.utils';
+import { UnitsHelper } from '@core/utils/units-helper';
+import { Transaction } from '@functions/interfaces/models';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from '@pages/member/services/data.service';
+import Papa from 'papaparse';
+import { BehaviorSubject, first, map, Observable, of, skip, Subscription } from 'rxjs';
 
+@UntilDestroy()
 @Component({
   selector: 'wen-transactions',
   templateUrl: './transactions.page.html',
   styleUrls: ['./transactions.page.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TransactionsPage {
-  public transactions = [
-    { item: 'SoonLabs Token', amount: 500, type: 'Purchase', date: new Date(), link: 'https://www.google.com/' },
-    { item: 'IOTABOTS Token', amount: 100, type: 'Bid', date: new Date(), link: 'https://www.google.com/' },
-    { item: 'SoonLabs Token', amount: 500, type: 'Refund', date: new Date(), link: 'https://www.google.com/' },
-    { item: 'IOTABOTS Token', amount: 100, type: 'Sell', date: new Date(), link: 'https://www.google.com/' }
-  ];
+export class TransactionsPage implements OnInit, OnDestroy {
   public includeBidsControl: FormControl = new FormControl(false);
+  public transactions$: BehaviorSubject<Transaction[] | undefined> = new BehaviorSubject<Transaction[] | undefined>(undefined);
+  public exportingTransactions = false;
+  private dataStore: Transaction[][] = [];
+  private subscriptions$: Subscription[] = [];
 
   constructor(
-    public previewImageService: PreviewImageService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public transactionService: TransactionService,
+    private data: DataService,
+    private memberApi: MemberApi,
+    private cd: ChangeDetectorRef
   ) { }
 
-  // TODO: needs to be implemented
-  public onScroll(): void {
-    return;
+  public ngOnInit(): void {
+    this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
+      if (obj) {
+        this.listen();
+      }
+    })
   }
 
-  // TODO: will be implemented once table is filled with correct data
+  private listen(search?: string): void {
+    this.cancelSubscriptions();
+    this.transactions$.next(undefined);
+    this.subscriptions$.push(this.getHandler(undefined).subscribe(this.store.bind(this, 0)));
+  }
+
+  public isLoading(arr: any): boolean {
+    return arr === undefined;
+  }
+
+  public isEmpty(arr: any): boolean {
+    return (Array.isArray(arr) && arr.length === 0);
+  }
+
+  public getHandler(last?: any): Observable<Transaction[]> {
+    if (this.data.member$.value) {
+      return this.memberApi.topTransactions(this.data.member$.value.uid, undefined, last);
+    } else {
+      return of([]);
+    }
+  }
+
+  public onScroll(): void {
+    // In this case there is no value, no need to infinite scroll.
+    if (!this.transactions$.value) {
+      return;
+    }
+
+    // We reached maximum.
+    if ((!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE)) {
+      return;
+    }
+
+    // Def order field.
+    const lastValue = this.transactions$.value[this.transactions$.value.length - 1]._doc;
+    this.subscriptions$.push(this.getHandler(lastValue).subscribe(this.store.bind(this, this.dataStore.length)));
+  }
+
+  protected store(page: number, a: any): void {
+    if (this.dataStore[page]) {
+      this.dataStore[page] = a;
+    } else {
+      this.dataStore.push(a);
+    }
+
+    // Merge arrays.
+    this.transactions$.next(Array.prototype.concat.apply([], this.dataStore));
+  }
+
+  public get maxRecords$(): BehaviorSubject<boolean> {
+    return <BehaviorSubject<boolean>> this.transactions$.pipe(map(() => {
+      if (!this.dataStore[this.dataStore.length - 1]) {
+        return true;
+      }
+
+      return (!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
+    }));
+  }
+
   public exportTransactions(): void {
-    return;
+    if (!this.data.member$.value?.uid) return;
+    this.exportingTransactions = true;
+    this.memberApi.topTransactions(this.data.member$.value?.uid, undefined, undefined, FULL_LIST)
+      .pipe(
+        skip(1),
+        first()
+      )
+      .subscribe((transactions: Transaction[]) => {
+        this.exportingTransactions = false;
+        const fields =
+          ['', 'Item', 'Type', 'Date', 'Amount', 'Transaction'];
+        const csv = Papa.unparse({
+          fields,
+          data: transactions.map(t => [t.uid, this.transactionService.getTitle(t), t.createdOn, t.payload.amount, this.transactionService.getExplorerLink(t)])
+        });
+    
+        download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${this.data.member$.value?.uid}_transactions.csv`);
+        this.cd.markForCheck();
+      });
+  }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
+  public formatBest(amount: number | undefined | null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return UnitsHelper.formatBest(amount, 2);
+  }
+
+  private cancelSubscriptions(): void {
+    this.subscriptions$.forEach((s) => {
+      s.unsubscribe();
+    });
+
+    this.dataStore = [];
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSubscriptions();
   }
 }

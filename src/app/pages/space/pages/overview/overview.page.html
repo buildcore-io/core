@@ -1,5 +1,5 @@
 <div class="space-y-12">
-  <div class="space-y-4">
+  <div class="space-y-4" *ngIf="filteredTokens.length">
     <h3 i18n>Upcoming Sale</h3>
 
     <nz-skeleton *ngIf="data.isLoading(data.tokens$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
@@ -12,8 +12,7 @@
         </span>
       </div>
     </nz-card>
-
-    <wen-token-card *ngFor="let token of data.tokens$ | async" [token]="token" class="block">
+    <wen-token-card  *ngFor="let token of filteredTokens" [token]="token" class="block">
     </wen-token-card>
   </div>
 

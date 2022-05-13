@@ -67,7 +67,8 @@ export class NewPage implements OnInit {
       return false;
     }
     const total = (this.newService.allocations.value as TokenAllocation[]).reduce((acc, act) => acc + Number(act.percentage), 0)
-    if (total !== 100) {
+    const publicSales = (this.newService.allocations.value as TokenAllocation[]).filter((a) => a.isPublicSale);
+    if (total !== 100 && publicSales.length > 1) {
       return false;
     }
     return true;

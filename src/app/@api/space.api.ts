@@ -123,6 +123,16 @@ export class SpaceApi extends BaseApi<Space> {
     });
   }
 
+  public listenMembersWithoutData(spaceId: string, lastValue?: number, searchIds?: string[], def?: number): Observable<Array<{uid: string}>> {
+    return this.subCollectionMembersWithoutData({
+      docId: spaceId,
+      subCol: SUB_COL.MEMBERS,
+      lastValue: lastValue,
+      searchIds: searchIds,
+      def: def
+    });
+  }
+
   public listenMembers(spaceId: string, lastValue?: number, searchIds?: string[], def?: number): Observable<Member[]> {
     return this.subCollectionMembers({
       docId: spaceId,

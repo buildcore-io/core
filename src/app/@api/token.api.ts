@@ -154,18 +154,4 @@ export class TokenApi extends BaseApi<Token> {
       }
     });
   }
-
-  public topMember(member: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      search: search,
-      def: def,
-      refCust: (ref: any) => {
-        return ref.where('owner', '==', member);
-      }
-    });
-  }
 }

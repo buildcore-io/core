@@ -6,7 +6,7 @@ import { download } from '@core/utils/tools.utils';
 import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import Papa from 'papaparse';
-import { first, Subscription } from "rxjs";
+import { first, skip, Subscription } from "rxjs";
 import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/base';
 import { NotificationService } from '../../../../../@core/services/notification/notification.service';
 import { AuthService } from '../../../../../components/auth/services/auth.service';
@@ -119,17 +119,18 @@ export class SpaceAboutComponent implements OnDestroy {
     const space = this.data.space$.value;
     if (!space?.uid) return;
 
-    this.spaceApi.listenMembers(space?.uid, undefined, undefined, this.data.space$.value?.totalMembers)
+    this.spaceApi.listenMembersWithoutData(space?.uid, undefined, undefined, this.data.space$.value?.totalMembers)
       .pipe(
+        skip(1),
         first()
       )
       .subscribe((members) => {
         this.exportingMembers = false;
         const fields =
-          ['', 'Name', 'Address'];
+          ['', 'EthAddress'];
         const csv = Papa.unparse({
           fields,
-          data: members.map(m => ([m.name?.replace(/[^a-zA-Z0-9-_]/g, ''), m.uid]))
+          data: members.map(m => [m.uid])
         });
 
         const filteredSpaceName =
