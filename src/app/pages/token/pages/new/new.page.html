@@ -13,9 +13,9 @@
   </div>
   
   <form nz-form nzLayout="vertical" [formGroup]="newService.tokenForm" class="mt-4">
-    <wen-new-introduction *ngIf="currentStep === stepTypes.INTRODUCTION" (wenOnTabChange)="currentStep = $event"></wen-new-introduction>
-    <wen-new-metrics *ngIf="currentStep === stepTypes.METRICS" (wenOnTabChange)="currentStep = $event"></wen-new-metrics>
-    <wen-new-overview *ngIf="currentStep === stepTypes.OVERVIEW" (wenOnTabChange)="currentStep = $event"></wen-new-overview>
-    <wen-new-summary *ngIf="currentStep === stepTypes.SUMMARY" (wenOnTabChange)="currentStep = $event" (wenOnSubmit)="submit()"></wen-new-summary>
+    <wen-new-introduction [ngClass]="{ 'hidden': currentStep !== stepTypes.INTRODUCTION }" (wenOnTabChange)="currentStep = $event"></wen-new-introduction>
+    <wen-new-metrics [ngClass]="{ 'hidden': currentStep !== stepTypes.METRICS }" (wenOnTabChange)="currentStep = $event"></wen-new-metrics>
+    <wen-new-overview [ngClass]="{ 'hidden': currentStep !== stepTypes.OVERVIEW }" (wenOnTabChange)="currentStep = $event"></wen-new-overview>
+    <wen-new-summary [ngClass]="{ 'hidden': currentStep !== stepTypes.SUMMARY }" (wenOnTabChange)="currentStep = $event" (wenOnSubmit)="submit()"></wen-new-summary>
   </form>
 </wen-content>

@@ -16,6 +16,7 @@ export class NewMetricsComponent implements OnInit {
   @Output() wenOnTabChange = new EventEmitter<StepType>();
 
   public isTotalValid = true;
+  public isPublicSaleValid = true;
 
   constructor(
     public newService: NewService,
@@ -28,7 +29,9 @@ export class NewMetricsComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((allocations: TokenAllocation[]) => {
         const total = allocations.reduce((acc, act) => acc + Number(act.percentage), 0)
+        const publicSales = allocations.filter((a) => a.isPublicSale);
         this.isTotalValid = total === 100;
+        this.isPublicSaleValid = publicSales.length <= 1;
         this.cd.markForCheck();
       });
   }

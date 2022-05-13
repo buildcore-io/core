@@ -35,7 +35,7 @@ export class TokensPage implements OnInit, OnDestroy {
       if (obj) {
         this.listen();
       }
-    })
+    });
   }
 
   private listen(search?: string): void {

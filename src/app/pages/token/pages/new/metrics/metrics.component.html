@@ -130,6 +130,10 @@
                 </nz-form-item>
             </div>
         </nz-card>
+        <div class="flex items-center text-alerts-error mt-4" *ngIf="!isPublicSaleValid">
+            <div class="mr-1 text-sm font-medium" i18n>Only 1 of the allocations can be public</div>
+            <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Sum of the percentages must be 100" class="cursor-pointer"></i>
+        </div>
         <div class="flex items-center text-alerts-error mt-4" *ngIf="!isTotalValid">
             <div class="mr-1 text-sm font-medium" i18n>Invalid sum of percentages</div>
             <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Sum of the percentages must be 100" class="cursor-pointer"></i>
