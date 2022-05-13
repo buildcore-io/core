@@ -1,9 +1,6 @@
 name: Functions Online Unit Tests
 
-on:
-  push:
-    paths:
-      - 'functions/**'
+on: push
 
 jobs:
   functions_unit_tests_online:
