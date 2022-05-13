@@ -19,11 +19,7 @@ export class TokenRowComponent {
   constructor(
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService
-  ) {
-    setTimeout(() => {
-      console.log(this.token);
-    }, 100);
-  }
+  ) { }
 
   public formatBest(amount?: number|null): string {
     if (!amount) {

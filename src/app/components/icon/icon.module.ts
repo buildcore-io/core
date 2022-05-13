@@ -64,6 +64,7 @@ import { SwitchIconComponent } from './switch/switch.component';
 import { TagIconComponent } from './tag/tag.component';
 import { TerminatedIconComponent } from './terminated/terminated.component';
 import { TimeIconComponent } from './time/time.component';
+import { TokenIconComponent } from './token/token.component';
 import { TrashIconComponent } from './trash/trash.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
@@ -140,7 +141,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     CoinIconComponent,
     FileCheckIconComponent,
     SwitchIconComponent,
-    FileExportIconComponent
+    FileExportIconComponent,
+    TokenIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -211,7 +213,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     CoinIconComponent,
     FileCheckIconComponent,
     SwitchIconComponent,
-    FileExportIconComponent
+    FileExportIconComponent,
+    TokenIconComponent
   ],
   imports: [
     CommonModule

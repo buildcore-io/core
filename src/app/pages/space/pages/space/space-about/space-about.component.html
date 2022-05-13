@@ -45,7 +45,7 @@
         </div>
       </a>
 
-      <button nz-button nzType="default" nzSize="small" (click)="exportMembers()">
+      <button nz-button nzType="default" nzSize="small" *ngIf="(data.isGuardianWithinSpace$ | async)" (click)="exportMembers()">
         <ng-container *ngIf="!exportingMembers">
           <wen-icon-file-export [size]="16"></wen-icon-file-export>
           <div class="ml-2" i18n>Export members</div>
