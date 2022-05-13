@@ -8,7 +8,7 @@ import { approveProposal, createProposal, rejectProposal, voteOnProposal } from 
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { cancelBuyOrSell } from './controls/token-buy-sell.controller';
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
-import { cancelExpiredSaleCron, finalizeAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, tokenCoolDownOver, voidExpiredOrders } from "./cron";
+import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
@@ -16,7 +16,6 @@ import { onTokenBuySellCreated } from './triggers/token-buy-sell.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
 
-// List all various functions supported by Firebase functions.
 // Members functions.
 exports[WEN_FUNC.cMemberNotExists] = createMember;
 exports[WEN_FUNC.uMember] = updateMember;
@@ -65,14 +64,7 @@ exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
-exports['cron_reTryWallet'] = reTryWallet;
-exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;
-exports['cron_voidExpiredOrders'] = voidExpiredOrders;
-exports['cron_finalizeAuctionNft'] = finalizeAuctionNft;
-exports['cron_ipfsForNft'] = ipfsForNft;
-exports['cron_hidePlaceholderAfterSoldOut'] = hidePlaceholderAfterSoldOut;
-exports['cron_tokenCoolDownOver'] = tokenCoolDownOver;
-exports['cron_cancelExpiredSaleCron'] = cancelExpiredSaleCron;
+export { cron };
 
 // TRIGGER Tasks
 exports['trigger_milestoneTransactionWrite'] = milestoneTransactionWrite;
