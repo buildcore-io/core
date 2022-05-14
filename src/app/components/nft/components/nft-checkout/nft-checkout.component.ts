@@ -70,7 +70,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     return this._nft;
   }
 
-  @Input() 
+  @Input()
   set collection(value: Collection|null|undefined) {
     this._collection = value;
     if (this.collection) {
@@ -147,17 +147,17 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
-        this.pushToHistory(val.uid + '_payment_received', val.createdOn, 'Payment received.', (<any>val).payload?.chainReference);
+        this.pushToHistory(val.uid + '_payment_received', val.createdOn, $localize`Payment received.`, (<any>val).payload?.chainReference);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true && (<any>val).payload.invalidPayment === false) {
         // Let's add delay to achive nice effect.
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirming_trans', dayjs(), 'Confirming transaction.');
+          this.pushToHistory(val.uid + '_confirming_trans', dayjs(), $localize`Confirming transaction.`);
         }, 1000);
 
         setTimeout(() => {
-          this.pushToHistory(val.uid + '_confirmed_trans', dayjs(), 'Transaction confirmed.');
+          this.pushToHistory(val.uid + '_confirmed_trans', dayjs(), $localize`Transaction confirmed.`);
           this.receivedTransactions = true;
           this.currentStep = StepType.COMPLETE;
           this.cd.markForCheck();
@@ -184,11 +184,11 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && !val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_false', val.createdOn, 'Invalid amount received. Refunding transaction...');
+        this.pushToHistory(val.uid + '_false', val.createdOn, $localize`Invalid amount received. Refunding transaction...`);
       }
 
       if (val && val.type === TransactionType.CREDIT && val.payload.reconciled === true && val.payload?.walletReference?.chainReference) {
-        this.pushToHistory(val.uid + '_true', dayjs(), 'Invalid payment refunded.', val.payload?.walletReference?.chainReference);
+        this.pushToHistory(val.uid + '_true', dayjs(), $localize`Invalid payment refunded.`, val.payload?.walletReference?.chainReference);
 
 
         // Let's go back to wait. With slight delay so they can see this.
@@ -342,11 +342,11 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
     }
 
     await this.auth.sign(params, (sc, finish) => {
-      this.notification.processRequest(this.orderApi.orderNft(sc), 'Order created.', finish).subscribe((val: any) => {
+      this.notification.processRequest(this.orderApi.orderNft(sc), $localize`Order created.`, finish).subscribe((val: any) => {
         this.transSubscription?.unsubscribe();
         setItem(StorageItem.CheckoutTransaction, val.uid);
         this.transSubscription = this.orderApi.listen(val.uid).subscribe(<any> this.transaction$);
-        this.pushToHistory(val.uid, dayjs(), 'Waiting for transaction...');
+        this.pushToHistory(val.uid, dayjs(), $localize`Waiting for transaction...`);
       });
     });
   }
