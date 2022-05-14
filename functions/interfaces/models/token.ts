@@ -39,6 +39,14 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
+
+  // TODO
+  readonly avgBuy: number;
+  readonly avgSell: number;
+  // Total token volume traded (fullfilled) in past 24h
+  readonly volume24h: number;
+  // percentage change as integer.
+  readonly change24hPrc: number;
 }
 
 export interface TokenDistribution extends BaseSubCollection {

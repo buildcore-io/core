@@ -8,6 +8,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { WEN_NAME } from '@functions/interfaces/config';
+import { Token, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { first, skip, Subscription } from 'rxjs';
@@ -76,6 +77,16 @@ export class TokenPage implements OnInit, OnDestroy {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
+  }
+
+  public getLatestStatus(token?: Token): string {
+    if (token?.status === TokenStatus.AVAILABLE) {
+      return $localize`Available`;
+    } else if (token?.status === TokenStatus.PROCESSING) {
+      return $localize`Processing`;
+    } else {
+      return $localize`Pre-Minted`;
+    }
   }
 
   public ngOnDestroy(): void {

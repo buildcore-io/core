@@ -53,6 +53,16 @@ export class DataService {
     );
   }
 
+  public isInCooldown(token?: Token): boolean {
+    console.log(token);
+    return (
+      !!token?.approved &&
+      (token?.status === TokenStatus.AVAILABLE || token?.status === TokenStatus.PROCESSING) &&
+      dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs()) &&
+      dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms').isBefore(dayjs())
+    );
+  }
+
   public isAvailableForSale(token?: Token): boolean {
     return (
       !!token?.approved &&

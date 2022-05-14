@@ -28,6 +28,14 @@ export class TokenProgressComponent {
     return dayjs(this.token?.saleStartDate?.toDate()).toDate();
   }
 
+  public getInProgressTitle(): string {
+    if (this.data.isInCooldown(this.token)) {
+      return $localize`Cooldown in progress`;
+    } else {
+      return $localize`Sale in progress`;
+    }
+  }
+
   public getCountdownTitleStart(): string {
     return $localize`Sale starts in`;
   }

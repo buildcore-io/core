@@ -14,7 +14,6 @@ import dayjs from 'dayjs';
 })
 export class TokenRowComponent {
   @Input() token?: Token;
-  public d = new Date();
   public path = ROUTER_UTILS.config.token.root;
 
   constructor(
@@ -22,27 +21,51 @@ export class TokenRowComponent {
     public deviceService: DeviceService
   ) { }
 
-  public formatBest(amount?: number|null): string {
+  public formatBest(amount?: number|null, symbol = 'IOTA'): string {
     if (!amount) {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(amount, 2, symbol);
   }
 
   public available(): boolean {
-    return dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs());
+    return dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs()) && this.token?.status === TokenStatus.AVAILABLE;
+  }
+
+  public saleNotStarted(): boolean {
+    return dayjs(this.token?.saleStartDate?.toDate()).isAfter(dayjs());
+  }
+
+  public getEndDate(): dayjs.Dayjs {
+    return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms');
   }
 
   public saleEnded(): boolean {
-    return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms').isAfter(dayjs());
+    return this.getEndDate().isBefore(dayjs());
   }
 
   public isInCoolDown(): boolean {
-    return dayjs(this.token?.coolDownEnd?.toDate()).isBefore(dayjs()) && this.saleEnded();
+    return dayjs(this.token?.coolDownEnd?.toDate()).isAfter(dayjs()) && this.saleEnded();
   }
 
   public preMinted(): boolean {
     return this.token?.status === TokenStatus.PRE_MINTED;
+  }
+
+  public getPublicSaleSupply(): number {
+    let sup = 0;
+    this.token?.allocations.forEach((b) => {
+      if (b.isPublicSale) {
+        sup = b.percentage / 100;
+      }
+    });
+
+    return (this.token?.totalSupply || 0) * sup;
+  }
+
+  public getPrc(): number {
+    const prc = (this.token?.totalDeposit || 0) / this.getPublicSaleSupply();
+    return prc > 1 ? 1 : prc;
   }
 }

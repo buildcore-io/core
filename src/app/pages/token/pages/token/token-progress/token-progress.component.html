@@ -14,7 +14,7 @@
         </div>
     </nz-card>
 
-    <nz-card i18n-nzTitle nzTitle="Active sale in progress" *ngIf="data.isSalesInProgress(token)">
+    <nz-card [nzTitle]="getInProgressTitle()" *ngIf="data.isSalesInProgress(token)">
         <div class="w-full">
             <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
                 [nzPercent]="getPrc() | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
@@ -40,7 +40,7 @@
         size="default">
     </wen-countdown>
 
-    <wen-countdown *ngIf="data.isScheduledForSale(token) && !data.isAvailableForSale(token)"
+    <wen-countdown *ngIf="data.isScheduledForSale(token) && !data.isAvailableForSale(token) && !data.isInCooldown(token)"
       class="block"
       wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
       tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
