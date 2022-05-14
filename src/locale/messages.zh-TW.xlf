@@ -2526,7 +2526,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">Bill (owner)</target>
+        <target state="translated">帳單(所有者)</target>
       </trans-unit>
       <trans-unit id="4266126395396290088" datatype="html">
         <source>Bill (royalty)</source>
@@ -2534,7 +2534,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="needs-translation">Bill (royalty)</target>
+        <target state="translated">帳單(版稅)</target>
       </trans-unit>
       <trans-unit id="272934122656341350" datatype="html">
         <source>Credit</source>
@@ -2542,7 +2542,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.ts</context>
           <context context-type="linenumber">51</context>
         </context-group>
-        <target state="needs-translation">Credit</target>
+        <target state="translated">權益</target>
       </trans-unit>
       <trans-unit id="4892553839051604445" datatype="html">
         <source>Payment</source>
@@ -5718,7 +5718,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="needs-translation">Commencing milestone</target>
+        <target state="translated">啟動里程碑</target>
       </trans-unit>
       <trans-unit id="2793713233329713998" datatype="html">
         <source>Start milestone.</source>
@@ -5734,7 +5734,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Start milestone</target>
+        <target state="translated">開啟里程碑</target>
       </trans-unit>
       <trans-unit id="8083446854633867417" datatype="html">
         <source>End milestone.</source>
@@ -5750,7 +5750,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">End milestone</target>
+        <target state="translated">結束里程碑</target>
       </trans-unit>
       <trans-unit id="351136863252723542" datatype="html">
         <source>Proposal description is required.</source>
@@ -5774,7 +5774,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">127,128</context>
         </context-group>
-        <target state="needs-translation">Question Info</target>
+        <target state="translated">提問資訊</target>
       </trans-unit>
       <trans-unit id="8442760427417850891" datatype="html">
         <source>Title and description will only be displayed for this question.</source>
@@ -5814,7 +5814,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">178,179</context>
         </context-group>
-        <target state="needs-translation">Text and description for each individual answer.</target>
+        <target state="translated">每個回答的文本與描述。</target>
       </trans-unit>
       <trans-unit id="8908935743208562892" datatype="html">
         <source>Answer Text is required.</source>
@@ -5830,7 +5830,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">187,188</context>
         </context-group>
-        <target state="needs-translation">Answer Text</target>
+        <target state="translated">回答文本</target>
       </trans-unit>
       <trans-unit id="7684925695381964056" datatype="html">
         <source>Answer description</source>
@@ -5838,7 +5838,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">198,199</context>
         </context-group>
-        <target state="needs-translation">Answer description</target>
+        <target state="translated">回答描述</target>
       </trans-unit>
       <trans-unit id="8639613122350951248" datatype="html">
         <source>Add Choice</source>
@@ -5986,7 +5986,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">384,385</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has in the space &amp; connections</target>
+        <target state="translated">投票是根據成員在聯盟空間中擁有的XP總量加權計算的</target>
       </trans-unit>
       <trans-unit id="5394345820497679692" datatype="html">
         <source>XP Reputation - Selected Badges</source>
@@ -6002,7 +6002,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">400,401</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has for selected badges</target>
+        <target state="translated">投票是根據成員所選的徽章XP總量加權計算的</target>
       </trans-unit>
       <trans-unit id="8616735366662008176" datatype="html">
         <source>Reputation Options</source>
