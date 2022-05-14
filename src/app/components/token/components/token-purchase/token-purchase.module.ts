@@ -7,6 +7,7 @@ import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module'
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { RelativeTimeModule } from '@core/pipes/relative-time/relative-time.module';
+import { TimeModule } from '@core/pipes/time/time.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -29,6 +30,7 @@ import { TokenPurchaseComponent } from './token-purchase.component';
     NzCheckboxModule,
     NzAvatarModule,
     RelativeTimeModule,
+    TimeModule,
     NzInputModule,
     FormsModule,
     ReactiveFormsModule,

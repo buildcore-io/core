@@ -58,7 +58,7 @@
 
     <div class="flex flex-col items-center w-full">
         <button nz-button nzType="primary" nzSize="large" class="w-full mt-10 lg:w-auto"
-            [disabled]="!agreeTermsConditions" i18n (click)="null">
+            [disabled]="!agreeTermsConditions" i18n  (click)="proceedWithOrder()">
                 Confirm and generate adress
         </button>
 
@@ -79,7 +79,7 @@
     <div class="relative flex flex-col mt-6 font-medium lg:mt-0">
         <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                SOON
+                {{token?.symbol}}
             </div>
             <input class="w-full p-0 outline-0"
                     [formControl]="amountControl"
@@ -92,7 +92,7 @@
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 Mi
             </div>
-            <div class="mt-1">{{amountControl.value}}</div>
+            <div class="mt-1">{{formatBest(amountControl.value * (token?.pricePerToken || 0))}}</div>
         </div>
 
         <button nz-button nzType="primary" nzShape="circle" nzSize="default"
@@ -103,7 +103,7 @@
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <span i18n>Send</span> {{ 100 }} <span i18n>IOTA to following address:</span>
+          <span i18n>Send</span> {{ formatBest(amountControl.value * (token?.pricePerToken || 0)) }} <span i18n>IOTA to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -126,7 +126,7 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0) / 1000 / 1000)?.toString()">
     </wen-wallet-deeplink>
 </ng-template>
 
@@ -140,19 +140,19 @@
 
     <div class="flex items-center justify-between mt-6 space-x-4 font-medium">
         <div class="flex-1 px-6 py-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark h-14">
-            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Amount (SOON)</div>
-            <div class="mt-1">{{ 300 }}</div>
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Amount ({{token?.symbol}})</div>
+            <div class="mt-1">{{ formatBest(amountControl.value, token?.symbol) }}</div>
         </div>
 
         <div class="flex-1 px-6 py-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark h-14">
-            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in Miota</div>
-            <div class="mt-1">{{ 300 }}</div>
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price</div>
+            <div class="mt-1">{{ formatBest(amountControl.value * (token?.pricePerToken || 0)) }}</div>
         </div>
     </div>
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <span i18n>Send</span> {{ 100 }} <span i18n>IOTA to following address:</span>
+          <span i18n>Send</span> {{ formatBest(amountControl.value * (token?.pricePerToken || 0)) }} <span i18n>IOTA to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -175,7 +175,7 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0) / 1000 / 1000)?.toString()">
     </wen-wallet-deeplink>
 
     <div class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
@@ -184,13 +184,13 @@
         </div>
 
         <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
-            <!-- <div *ngFor="let t of history; let first=first"
+            <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
                     <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
-            </div> -->
+            </div>
         </div>
     </div>
 </ng-template>
@@ -203,14 +203,14 @@
         <wen-icon-time [size]="20"></wen-icon-time>
     </ng-template>
 
-    <div class="flex items-center justify-between w-full mt-6 space-x-4">
+    <div class="flex items-center justify-between w-full mt-6 space-x-4" *ngIf="token?.pricePerToken">
         <div class="flex flex-col items-center flex-1 py-3 border border-foregrounds-separator dark:border-foregrounds-separator-dark rounded-2xl">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Tokens to purchase</div>
-            <div class="mt-2 text-lg font-bold" i18n>300</div>
+            <div class="mt-2 text-lg font-bold" i18n>{{ formatBest(purchasedAmount / (token?.pricePerToken || 0), token?.symbol)}}</div>
         </div>
         <div class="flex flex-col items-center flex-1 py-3 border border-foregrounds-separator dark:border-foregrounds-separator-dark rounded-2xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price in Mi</div>
-            <div class="mt-2 text-lg font-bold" i18n>300</div>
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price</div>
+            <div class="mt-2 text-lg font-bold" i18n>{{ formatBest(purchasedAmount) }}</div>
         </div>
     </div>
 
@@ -220,13 +220,13 @@
         </div>
 
         <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
-            <!-- <div *ngFor="let t of history; let first=first"
+            <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
                     <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
-            </div> -->
+            </div>
         </div>
     </div>
 
@@ -242,10 +242,10 @@
             nzSize="large" class="w-full lg:w-auto lg:mr-2" (click)="close()" i18n>
             Close checkout
         </button>
-
-        <button nz-button nzType="default" (click)="null"
-            nzSize="large" class="w-full mb-6 lg:w-auto lg:mb-0 lg:mt-1" (click)="null" i18n>
+<!--
+        <button nz-button nzType="default" (click)="goToToken()"
+            nzSize="large" class="w-full mb-6 lg:w-auto lg:mb-0 lg:mt-1" i18n>
             Show my Tokens
-        </button>
+        </button> -->
     </div>
 </ng-template>

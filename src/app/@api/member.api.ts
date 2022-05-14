@@ -54,12 +54,12 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
-  public topTokens(memberId: EthAddress, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public topTokens(memberId: EthAddress, _orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this.topParent({
       col: COL.TOKEN,
       subCol: SUB_COL.DISTRIBUTION,
       memberId: memberId,
-      orderBy: orderBy,
+      orderBy: [],
       lastValue: lastValue,
       def: def
     });

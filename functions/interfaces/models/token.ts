@@ -50,7 +50,7 @@ export interface Token extends BaseRecord {
 }
 
 export interface TokenDistribution extends BaseSubCollection {
-  readonly member?: EthAddress;
+  readonly uid?: EthAddress;
 
   readonly totalDeposit: number;
   readonly totalPaid?: number;
@@ -67,6 +67,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly totalPurchased?: number;
 
   readonly tokenOwned?: number;
+  readonly createdOn?: Timestamp;
 }
 
 export interface TokenPurchase extends BaseRecord {

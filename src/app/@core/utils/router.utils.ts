@@ -85,7 +85,7 @@ export const ROUTER_UTILS = {
       overview: 'overview',
       metrics: 'metrics',
       airdrops: 'airdrops',
-      trade: ':tokenId/trade'
+      trade: 'trade'
     },
     errorResponse: {
       notFound: '404',

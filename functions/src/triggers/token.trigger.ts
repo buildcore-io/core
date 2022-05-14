@@ -41,7 +41,7 @@ const createBillPayment =
       type: TransactionType.BILL_PAYMENT,
       uid: tranId,
       space: token.space,
-      member: distribution.member,
+      member: distribution.uid,
       createdOn: serverTime(),
       payload: {
         amount: distribution.totalPaid,
@@ -65,7 +65,7 @@ const createCredit = async (
   orderTargetAddress: string,
   batch: admin.firestore.WriteBatch
 ) => {
-  const member = <Member>(await memberDocRef(distribution.member!).get()).data()
+  const member = <Member>(await memberDocRef(distribution.uid!).get()).data()
   const tranId = getRandomEthAddress();
   const data = <Transaction>{
     type: TransactionType.CREDIT,
@@ -90,14 +90,14 @@ const createCredit = async (
 
 const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution) => {
   const batch = admin.firestore().batch();
-  const distributionDoc = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.member}`)
+  const distributionDoc = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.uid}`)
   batch.update(distributionDoc, { ...distribution, tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0), reconciled: true })
 
   const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
 
-  const orderDoc = await orderDocRef(distribution.member!, token).get()
+  const orderDoc = await orderDocRef(distribution.uid!, token).get()
   const orderTargetAddress = orderDoc.data()?.payload?.targetAddress
-  const payments = (await allPaymentsQuery(distribution.member!, token.uid).get()).docs.map(d => <Transaction>d.data())
+  const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
   createBillPayment(token, distribution, payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
   distribution.refundedAmount && await createCredit(token, distribution, payments, orderTargetAddress, batch)

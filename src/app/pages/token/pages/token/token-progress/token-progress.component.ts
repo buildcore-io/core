@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Token, TokenDistribution } from '@functions/interfaces/models/token';
+import { Token, TokenDistribution, TokenStatus } from '@functions/interfaces/models/token';
 import { DataService } from '@pages/token/services/data.service';
 import dayjs from 'dayjs';
 
@@ -22,6 +22,10 @@ export class TokenProgressComponent {
 
   public getCountdownTitle(): string {
     return $localize`Sale ends in`;
+  }
+
+  public isPreMinted(): boolean {
+    return this.token?.status === TokenStatus.PRE_MINTED;
   }
 
   public getCountdownStartDate(): Date {
@@ -52,7 +56,7 @@ export class TokenProgressComponent {
   }
 
   public getPrc(): number {
-    const prc = (this.token?.totalDeposit || 0) / this.getPublicSaleSupply();
-    return prc > 1 ? 1 : prc;
+    const prc = ((this.token?.totalDeposit || 0) / (this.token?.pricePerToken || 0) / this.getPublicSaleSupply());
+    return (prc > 1 ? 1 : prc) * 100;
   }
 }

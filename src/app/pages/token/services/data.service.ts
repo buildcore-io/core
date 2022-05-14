@@ -54,7 +54,6 @@ export class DataService {
   }
 
   public isInCooldown(token?: Token): boolean {
-    console.log(token);
     return (
       !!token?.approved &&
       (token?.status === TokenStatus.AVAILABLE || token?.status === TokenStatus.PROCESSING) &&

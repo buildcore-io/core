@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 export class TokenRowComponent {
   @Input() token?: Token;
   public path = ROUTER_UTILS.config.token.root;
+  public tradePath = ROUTER_UTILS.config.token.trade;
 
   constructor(
     public previewImageService: PreviewImageService,
@@ -65,7 +66,7 @@ export class TokenRowComponent {
   }
 
   public getPrc(): number {
-    const prc = (this.token?.totalDeposit || 0) / this.getPublicSaleSupply();
-    return prc > 1 ? 1 : prc;
+    const prc = ((this.token?.totalDeposit || 0) / (this.token?.pricePerToken || 0) / this.getPublicSaleSupply());
+    return (prc > 1 ? 1 : prc) * 100;
   }
 }

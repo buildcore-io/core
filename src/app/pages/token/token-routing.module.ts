@@ -26,7 +26,7 @@ const routes: Routes = [
       { path: ROUTER_UTILS.config.token.airdrops, component: AirdropsPage }
     ]
   },
-  { path: ROUTER_UTILS.config.token.trade, component: TradePage },
+  { path: ROUTER_UTILS.config.token.token + '/' + ROUTER_UTILS.config.token.trade, component: TradePage },
   {
     path: '',
     redirectTo: '/' + ROUTER_UTILS.config.discover.root + '/' + ROUTER_UTILS.config.discover.spaces

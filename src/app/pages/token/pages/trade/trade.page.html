@@ -8,28 +8,28 @@
         <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"  i18n>Available</nz-tag>
         <h1 class="mt-2">{{ 'SoonLabs token' }}</h1>
 
-        <div class="flex items-center justify-between space-x-3 mt-8">
-            <div class="px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1 rounded-xl">
-                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+        <div class="flex items-center justify-between mt-8 space-x-3">
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     24h VWAP
                 </div>
-                <div class="font-bold text-lg mt-2">
+                <div class="mt-2 text-lg font-bold">
                     0.898
                 </div>
             </div>
-            <div class="px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1 rounded-xl">
-                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     7-day VWAP
                 </div>
-                <div class="font-bold text-lg mt-2">
+                <div class="mt-2 text-lg font-bold">
                     0.999
                 </div>
             </div>
-            <div class="px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark flex-1 rounded-xl">
-                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Total Volume
                 </div>
-                <div class="font-bold text-lg mt-2">
+                <div class="mt-2 text-lg font-bold">
                     12 Ti
                 </div>
             </div>
@@ -40,7 +40,7 @@
                 <div class="text-lg font-bold" i18n>Token chart</div>
 
                 <div class="space-x-1">
-                    <button *ngFor="let l of chartLengthOptions" 
+                    <button *ngFor="let l of chartLengthOptions"
                         nz-button nzShape="circle" nzSize="small"
                         class="wen-secondary"
                         [ngClass]="{ 'selected': l.value === chartLengthControl.value }"
@@ -55,7 +55,7 @@
         [ngStyle]="{
           'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
-        
+
         <button
           nz-button
           nzBlock
@@ -79,13 +79,13 @@
         </button>
 
         <wen-share
-          class="block mt-6 p-6 lg:p-0"
+          class="block p-6 mt-6 lg:p-0"
           i18n-shareText
           shareText="Check out token"
           [shareUrl]="'asdasd'">
         </wen-share>
 
-        <div class="font-bold text-2xl mt-12">
+        <div class="mt-12 text-2xl font-bold">
             <span i18n>What is</span> {{ 'SoonLabs token' }} ({{'SOON'}})?
         </div>
 
@@ -95,9 +95,9 @@
       </div>
     </div>
 
-    <div class="w-full flex flex-col lg:flex-row lg:space-x-10 mt-10">
+    <div class="flex flex-col w-full mt-10 lg:flex-row lg:space-x-10">
         <nz-card i18n-nzTitle nzTitle="Offers" class="flex-1 w-full h-max">
-            <div class="flex px-6 mb-4 items-center">
+            <div class="flex items-center px-6 mb-4">
                 <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentOfferListing === offerListingTypes.OPEN"
                     (nzCheckedChange)="currentOfferListing = offerListingTypes.OPEN">
                         <span i18n>Open offers</span>
@@ -170,8 +170,8 @@
             </ng-template>
         </nz-card>
 
-        <nz-card i18n-nzTitle nzTitle="Requests" class="flex-1 w-full h-max mt-6 lg:mt-0">
-            <div class="flex px-6 mb-4 items-center">
+        <nz-card i18n-nzTitle nzTitle="Requests" class="flex-1 w-full mt-6 h-max lg:mt-0">
+            <div class="flex items-center px-6 mb-4">
                 <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentRequestListing === requestListingTypes.OPEN"
                     (nzCheckedChange)="currentRequestListing = requestListingTypes.OPEN">
                         <span i18n>Open requests</span>
@@ -245,6 +245,6 @@
         </nz-card>
     </div>
 </wen-content>
-  
+
 <wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen" (wenOnClose)="isBidTokenOpen = false"></wen-token-bid>
 <wen-token-offer *ngIf="isOfferTokenOpen" [isOpen]="isOfferTokenOpen" (wenOnClose)="isOfferTokenOpen = false"></wen-token-offer>

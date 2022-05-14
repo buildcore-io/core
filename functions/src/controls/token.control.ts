@@ -343,6 +343,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
           parentId: token.uid,
           parentCol: COL.TOKEN,
           member: drop.recipient,
+          createdOn: serverTime(),
           tokenDropped: admin.firestore.FieldValue.increment(drop.count)
         }
         transaction.create(distributionDocRefs[i], airdropData);

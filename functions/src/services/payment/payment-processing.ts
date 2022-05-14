@@ -8,10 +8,10 @@ import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
 import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
+import admin from '../../admin.config';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
-import admin from '../../admin.config';
 import { NotificationService } from '../notification/notification';
 
 interface TransactionMatch {
@@ -644,7 +644,8 @@ export class ProcessingService {
       member: order.member,
       totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
       parentId: order.payload.token,
-      parentCol: COL.TOKEN
+      parentCol: COL.TOKEN,
+      createdOn: serverTime()
     }
     this.updates.push({
       ref: distributionRef,

@@ -9,6 +9,7 @@
                     i18n-nzPlaceHolder
                     nzPlaceHolder="Category"
                     [nzDropdownStyle]="{ 'min-width': '128px', 'max-width': '100%' }"
+                    [nzDisabled]="true"
                     [formControl]="statusControl"
                     >
                     <nz-option
@@ -23,6 +24,7 @@
         </div>
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
             <nz-select class="mt-6 wen-sort-button xl:mt-0" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
+            [nzDisabled]="true"
                 [formControl]="sortControl" nz-tooltip>
                 <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                 <nz-option i18n-nzLabel nzLabel="Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
@@ -40,7 +42,8 @@
         </ng-container>
         <ng-template #sortMobileBlock>
             <div class="relative mt-6">
-                <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
+                <nz-select class="w-40 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon"
+                [nzDisabled]="true">
                   <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
                   <nz-option i18n-nzLabel nzLabel="Price: Low to High" [nzValue]="filter.sortOptions.PRICE_LOW"></nz-option>
                   <nz-option i18n-nzLabel nzLabel="Price: High to Low" [nzValue]="filter.sortOptions.PRICE_HIGH"></nz-option>
