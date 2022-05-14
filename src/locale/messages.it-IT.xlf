@@ -3500,7 +3500,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">69,70</context>
         </context-group>
-        <target state="needs-translation">Royalties goes to</target>
+        <target state="translated">Cessione licenza d'uso</target>
       </trans-unit>
       <trans-unit id="2161224914165493901" datatype="html">
         <source>Starts at</source>
@@ -3508,7 +3508,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation">Starts at</target>
+        <target state="translated">Apertura alle</target>
       </trans-unit>
       <trans-unit id="6162691442834560200" datatype="html">
         <source>Items</source>
