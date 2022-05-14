@@ -3,7 +3,8 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Token } from '@functions/interfaces/models/token';
+import { Token, TokenStatus } from '@functions/interfaces/models/token';
+import dayjs from 'dayjs';
 
 @Component({
   selector: 'wen-token-row',
@@ -27,5 +28,21 @@ export class TokenRowComponent {
     }
 
     return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public available(): boolean {
+    return dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs());
+  }
+
+  public saleEnded(): boolean {
+    return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms').isAfter(dayjs());
+  }
+
+  public isInCoolDown(): boolean {
+    return dayjs(this.token?.coolDownEnd?.toDate()).isBefore(dayjs()) && this.saleEnded();
+  }
+
+  public preMinted(): boolean {
+    return this.token?.status === TokenStatus.PRE_MINTED;
   }
 }

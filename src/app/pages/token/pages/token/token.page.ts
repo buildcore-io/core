@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
@@ -26,11 +27,13 @@ export class TokenPage implements OnInit, OnDestroy {
   ];
   public isTokenInfoVisible = false;
   private subscriptions$: Subscription[] = [];
+  private memberDistributionSub$?: Subscription;
 
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public data: DataService,
+    private auth: AuthService,
     private titleService: Title,
     private tokenApi: TokenApi,
     private spaceApi: SpaceApi,
@@ -45,10 +48,19 @@ export class TokenPage implements OnInit, OnDestroy {
         this.listenToToken(id);
       }
     });
-    this.data.token$.subscribe(r =>console.log(r));
+
     this.data.token$.pipe(skip(1), first()).subscribe((t) => {
       if (t) {
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+      }
+    });
+
+    this.auth.member$?.pipe(untilDestroyed(this)).subscribe((member) => {
+      this.memberDistributionSub$?.unsubscribe();
+      if (member?.uid && this.data.token$.value?.uid) {
+        this.memberDistributionSub$ = this.tokenApi.getMembersDistribution(this.data.token$.value?.uid, member.uid).subscribe(this.data.memberDistribution$);
+      } else {
+        this.data.memberDistribution$?.next(undefined);
       }
     });
   }

@@ -1,24 +1,24 @@
 <div class="space-y-4 lg:space-y-6">
-    <nz-card i18n-nzTitle nzTitle="Schedule">
+    <nz-card i18n-nzTitle nzTitle="Schedule" *ngIf="data.isScheduledForSale((data.token$ | async) || undefined)">
         <wen-description type="card" i18n-title title="Schedule" [items]="[
-            { title: tokenScheduleLabels[0], value: (data.token$ | async)?.saleStartDate?.toDate() | date: 'h:mm a, MMMM d, y' },
-            { title: tokenScheduleLabels[1], value: data.saleEndDate((data.token$ | async) || undefined).toDate() | date: 'h:mm a, MMMM d, y' },
+            { title: tokenScheduleLabels[0], value: (data.token$ | async)?.saleStartDate?.toDate() | date: 'medium' },
+            { title: tokenScheduleLabels[1], value: data.saleEndDate((data.token$ | async) || undefined).toDate() | date: 'medium' },
             { title: tokenScheduleLabels[2], value: '24h', titleTemplate: cooldownTooltipIcon },
-            { title: tokenScheduleLabels[3], value: (data.token$ | async)?.coolDownEnd?.toDate() | date: 'h:mm a, MMMM d, y' }
+            { title: tokenScheduleLabels[3], value: (data.token$ | async)?.coolDownEnd?.toDate() | date: 'medium' }
         ]"></wen-description>
         <ng-template #cooldownTooltipIcon>
             <wen-icon-question-circle class="cursor-help" [size]="20"
-                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="During cooldown period you are able to trigger refund."></wen-icon-question-circle>
         </ng-template>
     </nz-card>
-    
-    
+
+
     <nz-card i18n-nzTitle nzTitle="Token Info">
         <wen-description [items]="[
             { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
             { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
             { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
-            { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + (((data.token$ | async)?.pricePerToken || 0) / 1000 / 1000).toFixed(2) + ' MIOTA' },
+            { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + (((data.token$ | async)?.pricePerToken || 0) / 1000 / 1000).toFixed(2) + ' mIOTA' },
             { title: tokenInfoLabels[4], value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
             { title: tokenInfoLabels[5], value:  (data.token$ | async)?.totalSupply },
             { title: tokenInfoLabels[6], value: 'Fixed' }
@@ -32,10 +32,10 @@
         </ng-template>
         <ng-template #networkTooltipIcon>
             <wen-icon-question-circle class="cursor-help" [size]="20"
-                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Some title IDK"></wen-icon-question-circle>
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Guardian's of the space will be able to decide where this token will be minted."></wen-icon-question-circle>
         </ng-template>
     </nz-card>
-    
+
     <nz-card i18n-nzTitle nzTitle="Related Links" *ngIf="true">
       <div *ngFor="let l of (data.token$ | async)?.links">
         <a nz-button class="wen-links" nzType="link" target="new" [href]="l">

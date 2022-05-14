@@ -5,10 +5,10 @@ import { WEN_FUNC } from "../../interfaces/functions";
 import { Space, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import admin from '../../src/admin.config';
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
-import admin from '../../src/admin.config';
 import { testEnv } from "../set-up";
 import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
 
@@ -297,7 +297,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     token = ({
       symbol: 'MYWO',
       totalSupply: 1000,
-      pending: true,
+      approved: true,
+      rejected: false,
       icon: 'icon',
       overviewGraphics: 'overviewGraphics',
       updatedOn: serverTime(),
@@ -552,7 +553,8 @@ describe('Order and claim airdropped token test', () => {
     token = ({
       symbol: 'MYWO',
       totalSupply: 10,
-      pending: true,
+      approved: true,
+      rejected: false,
       icon: 'icon',
       overviewGraphics: 'overviewGraphics',
       updatedOn: serverTime(),

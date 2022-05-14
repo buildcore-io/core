@@ -2,9 +2,9 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
-import { COL, WenRequest } from "@functions/interfaces/models/base";
-import { Token } from "@functions/interfaces/models/token";
-import { Observable } from "rxjs";
+import { COL, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
+import { Token, TokenDistribution } from "@functions/interfaces/models/token";
+import { Observable, of } from "rxjs";
 import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 
 @Injectable({
@@ -24,18 +24,15 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
 
-  public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'pricePerToken',
-      direction: 'asc',
-      lastValue: lastValue,
-      search: search,
-      def: def
-    });
+  public getMembersDistribution(tokenId: string, memberId: string): Observable<TokenDistribution | undefined> {
+    if (!tokenId || !memberId) {
+      return of(undefined);
+    }
+
+    return this.afs.collection(this.collection).doc(tokenId.toLowerCase()).collection(SUB_COL.DISTRIBUTION).doc<TokenDistribution>(memberId.toLowerCase()).valueChanges();
   }
 
-  public lowToHighSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'pricePerToken',
@@ -44,7 +41,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('space', '==', space);
+        return ref.where('approved', '==', true);
       }
     });
   }
@@ -58,7 +55,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('status', '==', status);
+        return ref.where('approved', '==', true).where('status', '==', status);
       }
     });
   }
@@ -70,20 +67,9 @@ export class TokenApi extends BaseApi<Token> {
       direction: 'desc',
       lastValue: lastValue,
       search: search,
-      def: def
-    });
-  }
-
-  public topSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'createdOn',
-      direction: 'desc',
-      lastValue: lastValue,
-      search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('space', '==', space);
+        return ref.where('approved', '==', true);
       }
     });
   }
@@ -97,7 +83,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('status', '==', status);
+        return ref.where('approved', '==', true).where('status', '==', status);
       }
     });
   }
@@ -109,20 +95,9 @@ export class TokenApi extends BaseApi<Token> {
       direction: 'desc',
       lastValue: lastValue,
       search: search,
-      def: def
-    });
-  }
-
-  public highToLowSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
-    return this._query({
-      collection: this.collection,
-      orderBy: 'pricePerToken',
-      direction: 'desc',
-      lastValue: lastValue,
-      search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('space', '==', space);
+        return ref.where('approved', '==', true);
       }
     });
   }
@@ -136,7 +111,7 @@ export class TokenApi extends BaseApi<Token> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('status', '==', status);
+        return ref.where('approved', '==', true).where('status', '==', status);
       }
     });
   }

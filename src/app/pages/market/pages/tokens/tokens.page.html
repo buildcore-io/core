@@ -1,12 +1,5 @@
 <div class="flex flex-col items-end justify-between xl:flex-row">
-    <wen-select-space
-      *ngIf="deviceService.isMobile$ | async"
-      class="block w-full mt-6 mb-6"
-      [formControl]="spaceControl"
-      [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-      size="large">
-    </wen-select-space>
-    <div class="flex items-end lg:items-start justify-between w-full xl:items-end lg:mt-12">
+    <div class="flex items-end justify-between w-full lg:items-start xl:items-end lg:mt-12">
         <div class="flex flex-col items-start xl:flex-row xl:items-center">
             <div class="mt-4 xl:mt-0">
                 <div class="mb-2 text-xs font-medium text-foregrounds-secondary" i18n>Status</div>
@@ -26,16 +19,6 @@
                     >
                     </nz-option>
                 </nz-select>
-            </div>
-
-            <div *ngIf="deviceService.isDesktop$ | async" class="xl:ml-4">
-                <div class="mt-2 mb-2 text-xs font-medium text-foregrounds-secondary xl:mt-0" i18n>Space</div>
-                <wen-select-space
-                    class="block w-44"
-                    [formControl]="spaceControl"
-                    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-                    size="small">
-                </wen-select-space>
             </div>
         </div>
         <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">

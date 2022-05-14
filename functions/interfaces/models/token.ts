@@ -30,7 +30,8 @@ export interface Token extends BaseRecord {
   readonly saleStartDate?: Timestamp;
   readonly saleLength?: number;
   readonly coolDownEnd?: Timestamp;
-  readonly pending: boolean;
+  readonly approved: boolean;
+  readonly rejected: boolean;
   readonly links: Url[];
   readonly icon?: string;
   readonly overviewGraphics?: string;

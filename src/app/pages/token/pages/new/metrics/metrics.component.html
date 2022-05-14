@@ -49,7 +49,7 @@
                         <input
                         nz-input
                         i18n-placeholder
-                        placeholder="Price per token (MIOTAs)"
+                        placeholder="Price per token (mIOTAs)"
                         nzSize="large"
                         [formControl]="newService.priceControl"
                         />
@@ -80,7 +80,7 @@
             ></nz-card-meta>
             <wen-icon-trash
                 *ngIf="!first"
-                class="absolute top-6 right-8 cursor-pointer text-icons-destructive dark:text-icons-destructive-dark"
+                class="absolute cursor-pointer top-6 right-8 text-icons-destructive dark:text-icons-destructive-dark"
                 (click)="newService.removeAllocation(i)"
             ></wen-icon-trash>
             <div class="pt-4">
@@ -130,11 +130,11 @@
                 </nz-form-item>
             </div>
         </nz-card>
-        <div class="flex items-center text-alerts-error mt-4" *ngIf="!isPublicSaleValid">
+        <div class="flex items-center mt-4 text-alerts-error" *ngIf="!isPublicSaleValid">
             <div class="mr-1 text-sm font-medium" i18n>Only 1 of the allocations can be public</div>
             <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Sum of the percentages must be 100" class="cursor-pointer"></i>
         </div>
-        <div class="flex items-center text-alerts-error mt-4" *ngIf="!isTotalValid">
+        <div class="flex items-center mt-4 text-alerts-error" *ngIf="!isTotalValid">
             <div class="mr-1 text-sm font-medium" i18n>Invalid sum of percentages</div>
             <i nz-icon nzType="info-circle" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Sum of the percentages must be 100" class="cursor-pointer"></i>
         </div>
@@ -156,7 +156,7 @@
         </button>
     </div>
 
-    <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px bg-foregrounds-separator dark:bg-foregrounds-separator-dark my-8"></div>
+    <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px my-8 bg-foregrounds-separator dark:bg-foregrounds-separator-dark"></div>
 
     <div
         class="mt-4 space-y-4 lg:mt-0 lg:max-w-450"
@@ -247,7 +247,7 @@
             >
             </nz-card-meta>
         </nz-card>
-        
+
         <nz-card>
             <nz-card-meta
                 i18n-nzTitle

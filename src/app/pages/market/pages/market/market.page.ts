@@ -21,8 +21,8 @@ export class MarketPage implements OnInit, OnDestroy {
   public filterControl: FormControl = new FormControl(undefined);
   public sections: TabSection[] = [
     { route: ROUTER_UTILS.config.market.collections, label: $localize`Collections` },
-    { route: ROUTER_UTILS.config.market.nfts, label: $localize`NFT\'s` },
-    { route: ROUTER_UTILS.config.market.tokens, label: $localize`Token\'s` }
+    { route: ROUTER_UTILS.config.market.nfts, label: $localize`NFTs` },
+    { route: ROUTER_UTILS.config.market.tokens, label: $localize`Tokens` }
   ];
   public selectedSection?: TabSection;
   public isSearchInputFocused = false;

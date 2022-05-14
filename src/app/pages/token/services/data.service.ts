@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { UnitsHelper } from "@core/utils/units-helper";
 import { Space } from "@functions/interfaces/models";
-import { Token } from "@functions/interfaces/models/token";
+import { Token, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import * as dayjs from 'dayjs';
 import { BehaviorSubject } from "rxjs";
 
@@ -11,6 +11,7 @@ import { BehaviorSubject } from "rxjs";
 export class DataService {
   public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(undefined);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
+  public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
 
   public resetSubjects(): void {
     // Clean up all streams.
@@ -18,22 +19,55 @@ export class DataService {
     this.space$.next(undefined);
   }
 
-  public formatBest(amount: number | undefined | null): string {
+  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
     if (!amount) {
-      return '';
+      return '0 ' + symbol;
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(amount, 2, symbol);
   }
 
-  public percentageMarketCap(percentage: number, token?: Token): string {
+  public percentageMarketCap(percentage: number, token?: Token, symbol = 'IOTA'): string {
     if (!token) {
       return '';
     }
-    return this.formatBest(token?.pricePerToken * token?.totalSupply / 100 * percentage);
+    return this.formatBest(token?.pricePerToken * (token?.totalSupply * percentage / 100), symbol);
   }
 
   public saleEndDate(token?: Token): dayjs.Dayjs {
     return dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms');
+  }
+
+  public isScheduledForSale(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      (token?.status === TokenStatus.AVAILABLE || token?.status === TokenStatus.PROCESSING) &&
+      !!token?.saleStartDate
+    );
+  }
+
+  public isAfterSaleStarted(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      dayjs(token?.saleStartDate?.toDate()).isBefore(dayjs())
+    );
+  }
+
+  public isAvailableForSale(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      token?.status === TokenStatus.AVAILABLE &&
+      dayjs(token?.saleStartDate?.toDate()).isBefore(dayjs()) &&
+      dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms').isAfter(dayjs())
+    );
+  }
+
+  public isSalesInProgress(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      token?.status === TokenStatus.AVAILABLE &&
+      dayjs(token?.saleStartDate?.toDate()).isBefore(dayjs()) &&
+      dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs())
+    );
   }
 }

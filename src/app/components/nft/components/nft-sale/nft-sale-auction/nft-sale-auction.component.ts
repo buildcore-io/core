@@ -149,7 +149,7 @@ export class NftSaleAuctionComponent implements OnInit {
   }
 
   private getRawPrice(price: number, unit: Units): number {
-    return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
+    return price * (unit === 'gIOTA' ? 1000 * 1000 * 1000 : 1000 * 1000);
   }
 
   public isProd(): boolean {

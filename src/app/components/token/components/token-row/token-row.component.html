@@ -1,6 +1,6 @@
 <div class="relative w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:px-5 py-3.5 rounded-2xl">
-    <a class="block lg:flex lg:items-center cursor-pointer lg:space-x-4 hover:text-current" [routerLink]="['/', this.path, token?.uid]">
-        <div class="flex items-center w-full lg:w-3/12 px-6 lg:px-0">
+    <a class="block cursor-pointer lg:flex lg:items-center lg:space-x-4 hover:text-current" [routerLink]="['/', this.path, token?.uid]">
+        <div class="flex items-center w-full px-6 lg:w-3/12 lg:px-0">
             <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
               class="border-2 border-tags-border dark:border-tags-border-dark min-w-10"
               nzShape="circle"
@@ -15,11 +15,11 @@
                 </div>
             </div>
         </div>
-    
-        <div *ngIf="deviceService.isMobile$ | async" class="h-px w-full bg-foregrounds-separator dark:bg-foregrounds-separator-dark mt-6 lg:mt-0"></div>
-    
-    
-        <div class="font-medium w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0">
+
+        <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-6 bg-foregrounds-separator dark:bg-foregrounds-separator-dark lg:mt-0"></div>
+
+
+        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Buy
             </div>
@@ -27,9 +27,9 @@
                 {{ formatBest(token?.pricePerToken)}}
             </div>
         </div>
-        
-        <div class="font-medium w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0">
-            <ng-container *ngIf="false">
+
+        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
+            <ng-container *ngIf="preMinted()">
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Sell
                 </div>
@@ -38,27 +38,27 @@
                 </div>
             </ng-container>
         </div>
-    
-        <div class="font-medium w-full lg:w-3/12 px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="false">
+
+        <div class="w-full px-6 mt-6 font-medium lg:w-3/12 lg:px-0 lg:mt-0" *ngIf="available()">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 <ng-container *ngIf="true" i18n>Sale starts</ng-container>
                 <ng-container *ngIf="false" i18n>Sale ends</ng-container>
             </div>
             <div class="mt-0.5">
-                {{ d | date: 'h:mm a, MMMM d, y' }}
+                {{ d | date: 'medium' }}
             </div>
         </div>
-    
-        <div class="font-medium w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="false">
+
+        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0" *ngIf="saleEnded() && isInCoolDown()">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Cooldown period ends
             </div>
             <div class="mt-0.5">
-                1d : 20h : 16min : 10s
+                {{ token?.coolDownEnd?.toDate() | date: 'medium'}}
             </div>
         </div>
-    
-        <div class="font-medium w-full lg:w-2/12 lg:text-right px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="true">
+
+        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:text-right lg:px-0 lg:mt-0" *ngIf="true">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Market Cap
             </div>
@@ -66,8 +66,8 @@
                 {{ formatBest((this.token?.totalSupply || 0) * (this.token?.pricePerToken || 0))}}
             </div>
         </div>
-    
-        <div class="font-medium w-full lg:w-1/12 lg:text-right px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="true">
+
+        <div class="w-full px-6 mt-6 font-medium lg:w-1/12 lg:text-right lg:px-0 lg:mt-0" *ngIf="preMinted()">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Volume (24h)
             </div>
@@ -75,8 +75,8 @@
                 {{ formatBest((this.token?.totalSupply || 0) * (this.token?.pricePerToken || 0))}}
             </div>
         </div>
-    
-        <div class="font-medium w-full lg:w-2/12 lg:text-right px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="true">
+
+        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:text-right lg:px-0 lg:mt-0" *ngIf="preMinted()">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Change (24h)
             </div>
@@ -84,24 +84,23 @@
                 +4,5%
             </div>
         </div>
-    
-        <div class="w-full lg:w-2/12 px-6 lg:px-0 mt-6 lg:mt-0" *ngIf="false">
+
+        <div class="w-full px-6 mt-6 lg:w-2/12 lg:px-0 lg:mt-0" *ngIf="false">
             <div class="flex items-center p-3 rounded-xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-                <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ 40 }}%</div>
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ 40 }}%</div>
                 <nz-progress class="w-full ml-2" [nzShowInfo]="false" nzStatus="active"
                     [nzPercent]="40 | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
             </div>
         </div>
-    
+
         <div [ngClass]="(deviceService.isDesktop$ | async) ? 'w-2/12 flex items-center justify-end' : 'absolute top-0 right-4 -translate-y-1/2 mt-0'">
-            <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark
-                border-tags-commencing dark:border-tags-commencing-dark" *ngIf="false" i18n>
+            <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="!preMinted() && !available()" i18n>
                 Coming soon
             </nz-tag>
-            <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="false" i18n>
+            <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="available()" i18n>
                 Buy
             </button>
-            <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="true" i18n>
+            <button nz-button nzType="primary" nzSize="small" class="w-24" *ngIf="preMinted()" i18n>
                 Buy / Sell
             </button>
         </div>

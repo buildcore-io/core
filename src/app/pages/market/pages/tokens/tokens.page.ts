@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { TokenApi } from '@api/token.api';
-import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
@@ -19,8 +19,7 @@ export enum AddedCategories {
 
 export enum HOT_TAGS {
   ALL = 'All',
-  STATUS = 'STATUS',
-  SPACE = 'SPACE'
+  STATUS = 'STATUS'
 }
 
 @UntilDestroy()
@@ -32,7 +31,6 @@ export enum HOT_TAGS {
 })
 export class TokensPage implements OnInit, OnDestroy {
   public sortControl: FormControl;
-  public spaceControl: FormControl;
   public statusControl: FormControl;
   public tokens$: BehaviorSubject<Token[]|undefined> = new BehaviorSubject<Token[]|undefined>(undefined);
   public statuses: string[] = [AddedCategories.ALL, TokenStatus.AVAILABLE, TokenStatus.PROCESSING, TokenStatus.PRE_MINTED];
@@ -49,7 +47,6 @@ export class TokensPage implements OnInit, OnDestroy {
     private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
-    this.spaceControl = new FormControl(this.storageService.selectedSpace.getValue() || DEFAULT_SPACE.value);
     this.statusControl = new FormControl(AddedCategories.ALL);
   }
 
@@ -80,22 +77,10 @@ export class TokensPage implements OnInit, OnDestroy {
         this.statusControl.setValue(AddedCategories.ALL, { emitEvent: false })
       }
 
-      if (o.indexOf(HOT_TAGS.SPACE) === -1 && this.spaceControl.value !== DEFAULT_SPACE.value) {
-        this.spaceControl.setValue(DEFAULT_SPACE.value, { emitEvent: false })
-      }
-
       if (this.filter.search$.value && this.filter.search$.value.length > 0) {
         this.listen(this.filter.search$.value);
       } else {
         this.listen();
-      }
-    });
-
-    this.spaceControl.valueChanges.pipe(untilDestroyed(this)).subscribe((obj) => {
-      if (obj && obj !== DEFAULT_SPACE.value) {
-        this.selectedTags$.next([HOT_TAGS.SPACE]);
-      } else if (obj === DEFAULT_SPACE.value) {
-        this.selectedTags$.next([HOT_TAGS.ALL]);
       }
     });
 
@@ -116,25 +101,19 @@ export class TokensPage implements OnInit, OnDestroy {
 
   public getHandler(last?: any, search?: string): Observable<Token[]> {
     if (this.filter.selectedSort$.value === SortOptions.PRICE_LOW) {
-      if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
-        return this.tokenApi.lowToHighSpace(this.spaceControl.value, last, search);
-      } else if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
         return this.tokenApi.lowToHighStatus(this.statusControl.value, last, search);
       } else {
         return this.tokenApi.lowToHigh(last, search);
       }
     } else if (this.filter.selectedSort$.value === SortOptions.RECENT) {
-      if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
-        return this.tokenApi.topSpace(this.spaceControl.value, last, search);
-      } else if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
         return this.tokenApi.topStatus(this.statusControl.value, last, search);
       } else {
         return this.tokenApi.top(last, search);
       }
     } else {
-      if (this.selectedTags$.value[0] === HOT_TAGS.SPACE) {
-        return this.tokenApi.highToLowSpace(this.spaceControl.value, last, search);
-      } else if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
+      if (this.selectedTags$.value[0] === HOT_TAGS.STATUS) {
         return this.tokenApi.highToLowStatus(this.statusControl.value, last, search);
       } else {
         return this.tokenApi.highToLow(last, search);

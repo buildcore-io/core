@@ -64,8 +64,8 @@ export class MetricsPage implements OnInit {
     this.cd.markForCheck();
   }
 
-  public percentageTokenAmount(a: TokenAllocation, token?: Token): number {
-    if (!token) return 0;
-    return Math.round(token.totalSupply * Number(a.percentage) / 100);
+  public percentageTokenAmount(a: TokenAllocation, token?: Token): string {
+    if (!token) return '';
+    return this.data.formatBest(Math.floor(token.totalSupply * Number(a.percentage) / 100), token.symbol);
   }
 }
