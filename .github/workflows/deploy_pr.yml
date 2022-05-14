@@ -6,7 +6,7 @@ on:
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
-    environment: stagging
+    environment: staging
     steps:
       - uses: actions/checkout@v2
       - run: npm install
