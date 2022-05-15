@@ -3,7 +3,7 @@ name: Firebase Functions - DEPLOY WEN
 on:
   push:
     branches:
-      - feat/launchpad
+      - develop
 
 jobs:
   deploy:
