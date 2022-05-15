@@ -41,10 +41,15 @@ export interface Token extends BaseRecord {
   readonly termsAndConditions: string;
 
   // TODO
-  readonly avgBuy: number;
-  readonly avgSell: number;
+  readonly avg24h: number;
+
+  readonly avg7d: number;
+
   // Total token volume traded (fullfilled) in past 24h
   readonly volume24h: number;
+  readonly volume7d: number;
+
+  readonly volumeTotal: number;
   // percentage change as integer.
   readonly change24hPrc: number;
 }

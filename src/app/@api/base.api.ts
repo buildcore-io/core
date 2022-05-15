@@ -9,7 +9,7 @@ export const WHERE_IN_BATCH = 10;
 export const FULL_LIST = 10000;
 
 export interface FbRef {
-  (ref: any): any;
+  (ref: any, ref2: any): any;
 };
 
 export interface QueryArgs {
@@ -252,7 +252,7 @@ export class BaseApi<T> {
         if (!finObj) {
           console.warn('Missing record in database');
         } else {
-          if ((frRef && frRef(finObj)) || !frRef) {
+          if ((frRef && frRef(finObj, o)) || !frRef) {
             out.push(finObj);
           }
         }

@@ -5,8 +5,7 @@
             <tr>
                 <th i18n>Item</th>
                 <th i18n>Amount</th>
-                <th i18n>(Mi) Value</th>
-                <th></th>
+                <th i18n>Value</th>
             </tr>
         </thead>
         <tbody>
@@ -18,14 +17,11 @@
                           nzShape="circle"
                           [nzSize]="32">
                         </nz-avatar>
-                        <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark font-bold text-lg ml-3">{{ t.name }}</div>
+                        <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
                     </div>
                 </td>
-                <td class="font-medium">{{ 123 }}</td>
-                <td class="font-medium">{{ 312 }}</td>
-                <td style="text-align: right">
-                    <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" (click)="null">{{ 't.type' }}</a>
-                </td>
+                <td class="font-medium">{{ formatBest(t.distribution.tokenOwned, t.symbol) }}</td>
+                <td class="font-medium">{{ formatBest((t.distribution.tokenOwned || 0) * (t.avg24h || t.avg7d || t.pricePerToken || 0)) }}</td>
             </tr>
         </tbody>
     </nz-table>

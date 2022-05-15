@@ -6,6 +6,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
 import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
+import { TimeModule } from '@core/pipes/time/time.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -28,6 +29,7 @@ import { TokenBidComponent } from './token-bid.component';
     NzCheckboxModule,
     NzAvatarModule,
     NzInputModule,
+    TimeModule,
     FormsModule,
     ReactiveFormsModule,
     ModalDrawerModule,

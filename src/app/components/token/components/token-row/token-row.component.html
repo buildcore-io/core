@@ -20,23 +20,23 @@
 
 
         <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
-            <ng-container *ngIf="(preMinted() ? token?.avgBuy : token?.pricePerToken)">
+            <ng-container *ngIf="(preMinted() ? token?.avg24h : token?.pricePerToken)">
               <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Buy
               </div>
               <div class="mt-0.5">
-                  {{ formatBest(preMinted() ? token?.avgBuy : token?.pricePerToken)}}
+                  {{ formatBest(preMinted() ? token?.avg24h : token?.pricePerToken)}}
               </div>
             </ng-container>
         </div>
 
         <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
-            <ng-container *ngIf="preMinted() && token?.avgSell">
+            <ng-container *ngIf="preMinted() && token?.avg24h">
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Sell
                 </div>
                 <div class="mt-0.5">
-                    {{ formatBest(token?.avgSell) }}
+                    {{ formatBest(token?.avg24h ) }}
                 </div>
             </ng-container>
         </div>
@@ -75,7 +75,7 @@
                 Market Cap
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ formatBest((this.token?.totalSupply || 0) * (token?.avgBuy || token?.pricePerToken || 0))}}
+                {{ formatBest((this.token?.totalSupply || 0) * (token?.avg24h || token?.avg7d || token?.pricePerToken || 0))}}
             </div>
         </div>
 

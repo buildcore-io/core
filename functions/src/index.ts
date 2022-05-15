@@ -6,7 +6,7 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
-import { cancelBuyOrSell } from './controls/token-buy-sell.controller';
+import { buyToken, cancelBuyOrSell, sellToken } from './controls/token-buy-sell.controller';
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
@@ -73,13 +73,15 @@ exports['trigger_collectionWrite'] = collectionWrite;
 exports['trigger_nftWrite'] = nftWrite;
 
 // Token functions
-exports[WEN_FUNC.cToken] = createToken
-exports[WEN_FUNC.uToken] = updateToken
-exports[WEN_FUNC.setTokenAvailableForSale] = setTokenAvailableForSale
-exports[WEN_FUNC.orderToken] = orderToken
-exports[WEN_FUNC.creditToken] = creditToken
-exports[WEN_FUNC.airdropToken] = airdropToken
-exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken
-exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate
-exports['trigger_onTokenBuySellCreated'] = onTokenBuySellCreated
-exports[WEN_FUNC.cancelBuyOrSell] = cancelBuyOrSell
+exports[WEN_FUNC.cToken] = createToken;
+exports[WEN_FUNC.uToken] = updateToken;
+exports[WEN_FUNC.setTokenAvailableForSale] = setTokenAvailableForSale;
+exports[WEN_FUNC.orderToken] = orderToken;
+exports[WEN_FUNC.creditToken] = creditToken;
+exports[WEN_FUNC.airdropToken] = airdropToken;
+exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken;
+exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate;
+exports['trigger_onTokenBuySellCreated'] = onTokenBuySellCreated;
+exports[WEN_FUNC.cancelBuyOrSell] = cancelBuyOrSell;
+exports[WEN_FUNC.sellToken] = sellToken;
+exports[WEN_FUNC.buyToken] = buyToken;

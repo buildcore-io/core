@@ -678,7 +678,9 @@ export class ProcessingService {
     const distributionDoc = await this.transaction.get(distributionDocRef)
     if (!distributionDoc.exists) {
       const data = {
-        member: order.member,
+        uid: order.member,
+        parentId: order.payload.token,
+        parentCol: COL.TOKEN,
         totalDeposit: 0,
         totalPaid: 0,
         refundedAmount: 0,

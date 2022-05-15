@@ -52,14 +52,14 @@ export const sellToken = functions.runWith({
       owner,
       token: params.body.token,
       type: TokenBuySellOrderType.SELL,
-      count: params.body.count,
-      price: params.body.price,
+      count: Number(params.body.count),
+      price: Number(params.body.price),
       fulfilled: 0,
       status: TokenBuySellOrderStatus.ACTIVE,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
     }, URL_PATHS.TOKEN_MARKET)
     transaction.create(sellDocRef, data)
-    transaction.update(distributionDocRef, { lockedForSale: admin.firestore.FieldValue.increment(params.body.count) })
+    transaction.update(distributionDocRef, { lockedForSale: admin.firestore.FieldValue.increment(Number(params.body.count)) })
   });
   return <TokenBuySellOrder>(await sellDocRef.get()).data()
 })
@@ -83,7 +83,7 @@ export const cancelBuyOrSell = functions.runWith({
 })
 
 export const buyToken = functions.runWith({
-  minInstances: scale(WEN_FUNC.sellToken),
+  minInstances: scale(WEN_FUNC.buyToken),
 }).https.onCall(async (req: WenRequest) => {
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -115,7 +115,9 @@ export const buyToken = functions.runWith({
       reconciled: false,
       void: false,
       chainReference: null,
-      ...params.body,
+      token: params.body.token,
+      count: Number(params.body.count),
+      price: Number(params.body.price)
     },
     linkedTransactions: []
   }

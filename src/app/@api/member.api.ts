@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollectionGroup } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from '@functions/interfaces/models';
-import { Token } from '@functions/interfaces/models/token';
+import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import * as dayjs from 'dayjs';
 import { map, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
@@ -12,6 +12,10 @@ import { Proposal } from './../../../functions/interfaces/models/proposal';
 import { Space, SpaceGuardian, SpaceMember } from './../../../functions/interfaces/models/space';
 import { Transaction, TransactionType } from './../../../functions/interfaces/models/transaction';
 import { BaseApi, DEFAULT_LIST_SIZE, FULL_LIST } from './base.api';
+
+export interface TokenWithMemberDistribution extends Token {
+  distribution: TokenDistribution;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -54,14 +58,19 @@ export class MemberApi extends BaseApi<Member> {
     });
   }
 
-  public topTokens(memberId: EthAddress, _orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
+  public topTokens(memberId: EthAddress, _orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<TokenWithMemberDistribution[]> {
     return this.topParent({
       col: COL.TOKEN,
       subCol: SUB_COL.DISTRIBUTION,
       memberId: memberId,
       orderBy: [],
       lastValue: lastValue,
-      def: def
+      def: def,
+      refCust: undefined,
+      frRef: (obj: any, subCollection: any) => {
+        obj.distribution = subCollection;
+        return obj;
+      }
     });
   }
 

@@ -10,7 +10,7 @@ import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenBidModule } from '@components/token/components/token-bid/token-bid.module';
-import { TokenOfferModule } from '@components/token/components/token-offer/token-offer.module';
+import { TokenOfferPreMintModule } from '@components/token/components/token-offer-pre-mint/token-offer-pre-mint.module';
 import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
@@ -107,7 +107,7 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenPublicSaleModule,
     NzSkeletonModule,
     TokenBidModule,
-    TokenOfferModule
+    TokenOfferPreMintModule
   ]
 })
 export class TokenModule { }

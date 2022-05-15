@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
-import { MemberApi } from '@api/member.api';
+import { MemberApi, TokenWithMemberDistribution } from '@api/member.api';
 import { TokenItemType } from '@components/token/components/token-claim-refund/token-claim-refund.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UnitsHelper } from '@core/utils/units-helper';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
@@ -17,7 +18,7 @@ import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokensPage implements OnInit, OnDestroy {
-  public tokens$: BehaviorSubject<Token[] | undefined> = new BehaviorSubject<Token[] | undefined>(undefined);
+  public tokens$: BehaviorSubject<TokenWithMemberDistribution[] | undefined> = new BehaviorSubject<TokenWithMemberDistribution[] | undefined>(undefined);
   private dataStore: Token[][] = [];
   private subscriptions$: Subscription[] = [];
   public openClaimRefundType: TokenItemType | null = null;
@@ -36,6 +37,14 @@ export class TokensPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
+  }
+
+  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+    if (!amount) {
+      return '0 ' + symbol;
+    }
+
+    return UnitsHelper.formatBest(amount, 2, symbol);
   }
 
   private listen(search?: string): void {

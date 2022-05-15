@@ -319,9 +319,11 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
       totalAirdropped: 0,
-      avgBuy: 0,
-      avgSell: 0,
+      avg24h: 0,
+      avg7d: 0,
       volume24h: 0,
+      volume7d: 0,
+      volumeTotal: 0,
       change24hPrc: 0,
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
     })
@@ -579,9 +581,11 @@ describe('Order and claim airdropped token test', () => {
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
       totalAirdropped: 0,
-      avgBuy: 0,
-      avgSell: 0,
+      avg24h: 0,
+      avg7d: 0,
       volume24h: 0,
+      volume7d: 0,
+      volumeTotal: 0,
       change24hPrc: 0,
       termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
     })
