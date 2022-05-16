@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { ProposalApi } from './../../../../@api/proposal.api';
+import { discoverSections } from "@pages/discover/pages/discover/discover.page";
+import { Timestamp } from "firebase/firestore";
+import { defaultPaginationItems } from "src/app/@algolia/algolia.options";
+import { AlgoliaService } from "src/app/@algolia/services/algolia.service";
 import { FilterService } from './../../services/filter.service';
-import {discoverSections} from "@pages/discover/pages/discover/discover.page";
-import {defaultPaginationItems} from "@Algolia/algolia.options";
-import {AlgoliaService} from "@Algolia/services/algolia.service";
-import {Timestamp} from "firebase/firestore";
 
 export enum HOT_TAGS {
   ALL = 'All',

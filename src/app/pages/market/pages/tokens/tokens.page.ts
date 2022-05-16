@@ -9,13 +9,13 @@ import { StorageService } from '@core/services/storage';
 import { Space } from '@functions/interfaces/models';
 import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
-import {marketSections} from "@pages/market/pages/market/market.page";
-import {defaultPaginationItems} from "@Algolia/algolia.options";
-import {Timestamp} from "firebase/firestore";
-import {AlgoliaService} from "@Algolia/services/algolia.service";
 import { SortOptions } from '@pages/market/services/sort-options.interface';
+import { Timestamp } from "firebase/firestore";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
+import { defaultPaginationItems } from "src/app/@algolia/algolia.options";
+import { AlgoliaService } from "src/app/@algolia/services/algolia.service";
 
 export enum AddedCategories {
   ALL = 'All'

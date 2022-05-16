@@ -4,7 +4,7 @@ import { environment } from '@env/environment';
 import { CollectionAccess, Space } from "@functions/interfaces/models";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
-import {RefinementMappings} from "@Algolia/refinement/refinement.component";
+import { RefinementMappings } from "src/app/@algolia/refinement/refinement.component";
 
 const spaceMapping: RefinementMappings = {};
 const accessMapping: RefinementMappings = {};
@@ -39,7 +39,7 @@ export class AlgoliaService {
 
   public convertToSpaceName(algoliaItems: any[]) {
     return algoliaItems.map(algolia => {
-      const name = spaceMapping[algolia.value] || algolia.label.substring(0, 10) + '... (no name found???)'
+      const name = spaceMapping[algolia.value] || algolia.label.substring(0, 10)
       return {
         ...algolia,
         label: name,
@@ -50,11 +50,21 @@ export class AlgoliaService {
 
   public convertToAccessName(algoliaItems: any[]) {
     return algoliaItems.map(algolia => {
-      const name = accessMapping[algolia.value] || algolia.label;
+      let label = $localize`Open`;
+      if (Number(algolia.value) === CollectionAccess.GUARDIANS_ONLY) {
+        label = $localize`Guardians of Space Only`;
+      } else if (Number(algolia.value) === CollectionAccess.MEMBERS_ONLY) {
+        label = $localize`Members of Space Only`;
+      } else if (Number(algolia.value) === CollectionAccess.MEMBERS_WITH_BADGE) {
+        label = $localize`Members With Badge Only`;
+      } else if (Number(algolia.value) === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
+        label = $localize`Members With NFT only`;
+      }
+
       return {
         ...algolia,
-        label: name,
-        highlighted: name,
+        label: label,
+        highlighted: label,
       }
     });
   }

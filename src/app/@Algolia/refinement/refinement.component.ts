@@ -1,14 +1,11 @@
-import {Component, Input, Inject, forwardRef, Optional, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
+import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from "angular-instantsearch";
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
-
 import {
-  RefinementListConnectorParams,
-  RefinementListWidgetDescription,
-  RefinementListRenderState,
-  RefinementListItem,
+  RefinementListConnectorParams, RefinementListItem, RefinementListRenderState, RefinementListWidgetDescription
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
-import {NgAisIndex, NgAisInstantSearch, TypedBaseWidget} from "angular-instantsearch";
-import {noop, parseNumberInput} from "@Algolia/util";
+import { noop, parseNumberInput } from "src/app/@algolia/util";
+
 
 export type RefinementMappings = { [v: string]: string };
 

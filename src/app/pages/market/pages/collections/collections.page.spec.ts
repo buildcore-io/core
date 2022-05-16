@@ -2,13 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CollectionApi } from '@api/collection.api';
 import { SpaceApi } from '@api/space.api';
 import { CacheService } from '@core/services/cache/cache.service';
+import { Collection, Space } from "@functions/interfaces/models";
 import { FilterService } from '@pages/market/services/filter.service';
 import { MockProvider } from 'ng-mocks';
+import { BehaviorSubject } from "rxjs";
+import { AlgoliaService } from "src/app/@algolia/services/algolia.service";
 import { CollectionsPage } from './collections.page';
-import {BehaviorSubject} from "rxjs";
-import {Collection, Space} from "@functions/interfaces/models";
-import {AlgoliaModule} from "@Algolia/algolia.module";
-import {AlgoliaService} from "@Algolia/services/algolia.service";
 
 describe('CollectionsPage', () => {
   let component: CollectionsPage;

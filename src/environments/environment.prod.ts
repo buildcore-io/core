@@ -12,6 +12,6 @@ export const environment = {
   },
   algolia: {
     appId: '2WGM1RPQKZ',
-    key: '4c4da0d2d8b2d582b6f5f232b75314b4'
+    key: 'ed51a01fc204688339e89ac8e9d53028'
   }
 };

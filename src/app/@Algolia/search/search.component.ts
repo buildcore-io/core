@@ -1,27 +1,20 @@
 import {
-  Component,
-  Inject,
-  forwardRef,
-  Optional,
-  ChangeDetectionStrategy,
-  Input,
-  ChangeDetectorRef, NgZone, OnInit, OnDestroy
+  ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional
 } from '@angular/core';
-import { TypedBaseWidget, NgAisInstantSearch, NgAisIndex } from 'angular-instantsearch';
-
+import { FormControl } from "@angular/forms";
+import { NavigationEnd, Router } from "@angular/router";
+import { TabSection } from "@components/tabs/tabs.component";
+import { DeviceService } from "@core/services/device";
+import { GLOBAL_DEBOUNCE_TIME } from "@functions/interfaces/config";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { FilterService } from "@pages/market/services/filter.service";
+import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import connectSearchBox, {
-  SearchBoxWidgetDescription,
-  SearchBoxConnectorParams
+  SearchBoxConnectorParams, SearchBoxWidgetDescription
 } from 'instantsearch.js/es/connectors/search-box/connectSearchBox';
-import {DeviceService} from "@core/services/device";
-import {FormControl} from "@angular/forms";
-import {TabSection} from "@components/tabs/tabs.component";
-import {debounceTime} from "rxjs";
-import {GLOBAL_DEBOUNCE_TIME} from "@functions/interfaces/config";
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
-import {NavigationEnd, Router} from "@angular/router";
-import {FilterService} from "@pages/market/services/filter.service";
-import {noop} from "@Algolia/util";
+import { debounceTime } from "rxjs";
+import { noop } from "src/app/@algolia/util";
+
 
 
 @UntilDestroy()
@@ -92,7 +85,6 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
   }
 
   private setSelectedSection() {
-    console.log('setSelectedSection')
     this.selectedSection =
       this.sections.find((r: TabSection) =>
         (this.router.url || '').includes((r.route instanceof Array ? r.route : [r.route]).join('/').toLowerCase().substring(3)));

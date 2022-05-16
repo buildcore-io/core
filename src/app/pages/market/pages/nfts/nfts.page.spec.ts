@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NftApi } from '@api/nft.api';
 import { CacheService } from '@core/services/cache/cache.service';
+import { Collection, Space } from "@functions/interfaces/models";
 import { FilterService } from '@pages/market/services/filter.service';
 import { MockProvider } from 'ng-mocks';
+import { BehaviorSubject } from "rxjs";
 import { NFTsPage } from './nfts.page';
-import {BehaviorSubject} from "rxjs";
-import {Collection, Space} from "@functions/interfaces/models";
-import {AlgoliaModule} from "@Algolia/algolia.module";
 
 
 describe('NFTsPage', () => {

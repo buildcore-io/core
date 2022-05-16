@@ -1,15 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DeviceService } from '@core/services/device';
-import { StorageService } from '@core/services/storage';
 import { UntilDestroy } from '@ngneat/until-destroy';
-import { MemberApi } from './../../../../@api/member.api';
+import { discoverSections } from "@pages/discover/pages/discover/discover.page";
+import { Timestamp } from "firebase/firestore";
+import { defaultPaginationItems } from "src/app/@algolia/algolia.options";
+import { AlgoliaService } from "src/app/@algolia/services/algolia.service";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
-import { AuthService } from './../../../../components/auth/services/auth.service';
 import { FilterService } from './../../services/filter.service';
-import {discoverSections} from "@pages/discover/pages/discover/discover.page";
-import {defaultPaginationItems} from "@Algolia/algolia.options";
-import {AlgoliaService} from "@Algolia/services/algolia.service";
-import {Timestamp} from "firebase/firestore";
 
 @UntilDestroy()
 @Component({

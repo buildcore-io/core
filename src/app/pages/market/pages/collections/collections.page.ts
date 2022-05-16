@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy } from '@ngneat/until-destroy';
+import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
-
 import { Timestamp } from "firebase/firestore";
-import {AlgoliaService} from "@Algolia/services/algolia.service";
-import {marketSections} from "@pages/market/pages/market/market.page";
-import {defaultPaginationItems} from "@Algolia/algolia.options";
+import { defaultPaginationItems } from "src/app/@algolia/algolia.options";
+import { AlgoliaService } from "src/app/@algolia/services/algolia.service";
+
 
 @UntilDestroy()
 @Component({

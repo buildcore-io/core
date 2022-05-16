@@ -33,7 +33,7 @@
       "@pages/*": ["src/app/pages/*"],
       "@env/*": ["src/environments/*"],
       "@functions/*": ["functions/*"],
-      "@Algolia/*": ["src/app/@Algolia/*"]
+      "@Algolia/*": ["src/app/@algolia/*"]
     }
   },
   "angularCompilerOptions": {
