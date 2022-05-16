@@ -2,7 +2,7 @@ import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from "../../interfaces/models/token";
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
@@ -20,7 +20,7 @@ describe('Buy sell controller, sell token', () => {
     memberAddress = await createMember(walletSpy, true)
 
     const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', }
+    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', status: TokenStatus.PRE_MINTED }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
@@ -55,6 +55,12 @@ describe('Buy sell controller, sell token', () => {
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
     await expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
   })
+
+  it('Should throw, token not pre minted', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
+    await expectThrow(testEnv.wrap(sellToken)({}), WenError.token_not_pre_minted.key);
+  })
 })
 
 describe('Buy sell controller, buy token', () => {
@@ -66,7 +72,7 @@ describe('Buy sell controller, buy token', () => {
     memberAddress = await createMember(walletSpy, true)
 
     const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace' }
+    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
@@ -80,7 +86,6 @@ describe('Buy sell controller, buy token', () => {
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
     const order = await testEnv.wrap(buyToken)({});
-
     const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
     await milestoneProcessed(milestone.milestone, milestone.tranId);
 
@@ -103,5 +108,12 @@ describe('Buy sell controller, buy token', () => {
       .get()
     expect(creditSnap.docs.length).toBe(1)
     expect(creditSnap.docs[0].data()?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT)
+  })
+
+  it('Should throw, token not pre minted', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.AVAILABLE });
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
+    mockWalletReturnValue(walletSpy, memberAddress, request);
+    await expectThrow(testEnv.wrap(buyToken)({}), WenError.token_not_pre_minted.key)
   })
 })
