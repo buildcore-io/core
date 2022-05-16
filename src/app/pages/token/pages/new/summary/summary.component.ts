@@ -3,6 +3,7 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { Space } from '@functions/interfaces/models';
 import { NewService } from '@pages/token/services/new.service';
 import { StepType } from '../new.page';
 
@@ -39,7 +40,7 @@ export class NewSummaryComponent {
     return UnitsHelper.formatBest(amount, 2, symbol);
   }
 
-  public getSpaceAvatar(spaceId: string): string | undefined {
-    return this.cache.allSpaces$?.getValue().find(s => s.uid === spaceId)?.avatarUrl;
+  public getSpace(spaceId: string): Space | undefined {
+    return this.cache.allSpaces$?.getValue().find(s => s.uid === spaceId);
   }
 }
