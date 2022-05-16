@@ -10,6 +10,10 @@ import { Space } from '@functions/interfaces/models';
 import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FilterService } from '@pages/market/services/filter.service';
+import {marketSections} from "@pages/market/pages/market/market.page";
+import {defaultPaginationItems} from "@Algolia/algolia.options";
+import {Timestamp} from "firebase/firestore";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
@@ -27,9 +31,24 @@ export enum HOT_TAGS {
   selector: 'wen-tokens',
   templateUrl: './tokens.page.html',
   styleUrls: ['./tokens.page.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
+  // TODO investigate how to bypass this....
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TokensPage implements OnInit, OnDestroy {
+  config = {
+    indexName: 'collection',
+    searchClient: this.algoliaService.searchClient,
+  };
+  sections = marketSections;
+  sortItems = [
+    { value: 'collection', label: 'Recent' },
+    { value: 'collection_price_asc', label: 'Low to High' },
+    { value: 'collection_price_desc', label: 'High to Low' },
+  ];
+  paginationItems = defaultPaginationItems;
+
   public sortControl: FormControl;
   public statusControl: FormControl;
   public tokens$: BehaviorSubject<Token[]|undefined> = new BehaviorSubject<Token[]|undefined>(undefined);
@@ -43,8 +62,9 @@ export class TokensPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public cache: CacheService,
     public filter: FilterService,
+    private storageService: StorageService,
+    public readonly algoliaService: AlgoliaService,
     public tokenApi: TokenApi,
-    private storageService: StorageService
   ) {
     this.sortControl = new FormControl(this.filter.selectedSort$.value);
     this.statusControl = new FormControl(AddedCategories.ALL);
@@ -143,10 +163,6 @@ export class TokensPage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.getHandler(this.tokens$.value[this.tokens$.value.length - 1]._doc).subscribe(this.store.bind(this, this.dataStore.length)));
   }
 
-  public trackByUid(index: number, item: any): number {
-    return item.uid;
-  }
-
   public isLoading(arr: any): boolean {
     return arr === undefined;
   }
@@ -188,4 +204,19 @@ export class TokensPage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.tokens$.next(undefined);
   }
+
+  public trackByUid(index: number, item: any): number {
+    return item.uid;
+  }
+
+  public convertAllToSoonaverseModel(algoliaItems: any[]) {
+    return algoliaItems.map(algolia => ({
+      ...algolia,
+      createdOn: Timestamp.fromMillis(+algolia.createdOn),
+      updatedOn: Timestamp.fromMillis(+algolia.updatedOn),
+      lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
+      availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
+    }));
+  }
+
 }

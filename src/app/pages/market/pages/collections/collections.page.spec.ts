@@ -5,11 +5,17 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { FilterService } from '@pages/market/services/filter.service';
 import { MockProvider } from 'ng-mocks';
 import { CollectionsPage } from './collections.page';
-
+import {BehaviorSubject} from "rxjs";
+import {Collection, Space} from "@functions/interfaces/models";
+import {AlgoliaModule} from "@Algolia/algolia.module";
+import {AlgoliaService} from "@Algolia/services/algolia.service";
 
 describe('CollectionsPage', () => {
   let component: CollectionsPage;
   let fixture: ComponentFixture<CollectionsPage>;
+  const allSpaces$ = new BehaviorSubject<Space[]>([]);
+  const allCollections$ = new BehaviorSubject<Collection[]>([]);
+
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
@@ -18,8 +24,9 @@ describe('CollectionsPage', () => {
         FilterService,
         MockProvider(CollectionApi),
         MockProvider(SpaceApi),
-        MockProvider(CacheService)
-      ]
+        MockProvider(CacheService, {allSpaces$, allCollections$}),
+        MockProvider(AlgoliaService)
+      ],
     })
       .compileComponents();
   });
@@ -34,3 +41,4 @@ describe('CollectionsPage', () => {
     expect(component).toBeTruthy();
   });
 });
+

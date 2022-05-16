@@ -24,6 +24,7 @@ import { MarketPage } from './pages/market/market.page';
 import { NFTsPage } from './pages/nfts/nfts.page';
 import { TokensPage } from './pages/tokens/tokens.page';
 import { FilterService } from './services/filter.service';
+import {AlgoliaModule} from "@Algolia/algolia.module";
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { FilterService } from './services/filter.service';
     InfiniteScrollModule,
     NzSkeletonModule,
     NftCardModule,
-    TokenRowModule
+    TokenRowModule,
+    AlgoliaModule,
   ],
   providers: [FilterService]
 })

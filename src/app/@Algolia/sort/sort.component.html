@@ -1,0 +1,16 @@
+<ng-template #defaultTemplate let-selected>
+      <div class="flex items-center">
+        <div nz-typography nzType="secondary" class="mr-1 text-xs">
+          <ng-container *ngIf="selected.nzLabel === 'Recent'; else notRecent" i18n>Sort by</ng-container>
+          <ng-template #notRecent i18n>sort by</ng-template>
+        </div>
+        <span>{{ selected.nzLabel }}</span>
+      </div>
+    </ng-template>
+<nz-select   #select class="mt-6 wen-sort-button xl:mt-0" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
+             [formControl]="sortControl" nz-tooltip>
+(ngModelChange)="state.refine($event)">
+  <nz-option *ngFor="let option of state.options" [nzValue]="option.value" [nzLabel]="option.label">
+    {{ option.label }}
+  </nz-option>
+</nz-select>

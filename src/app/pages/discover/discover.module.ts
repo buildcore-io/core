@@ -32,7 +32,7 @@ import { MembersPage } from './pages/members/members.page';
 import { ProposalsPage } from './pages/proposals/proposals.page';
 import { SpacesPage } from './pages/spaces/spaces.page';
 import { FilterService } from './services/filter.service';
-
+import {AlgoliaModule} from "@Algolia/algolia.module";
 
 @NgModule({
   declarations: [
@@ -73,7 +73,8 @@ import { FilterService } from './services/filter.service';
     NzCheckboxModule,
     MobileSearchModule,
     SelectSpaceModule,
-    CollectionCardModule
+    CollectionCardModule,
+    AlgoliaModule,
   ]
 })
 export class DiscoverModule { }

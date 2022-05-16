@@ -1,78 +1,71 @@
-<form class="flex flex-col items-end justify-between lg:flex-row" [formGroup]="spaceForm">
-  <wen-select-space
-    *ngIf="deviceService.isMobile$ | async"
-    class="block w-full mt-6 mb-6"
-    formControlName="space"
-    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-    size="large">
-  </wen-select-space>
-
-  <div class="flex items-center justify-between w-full lg:mt-12">
-    <div class="flex items-center">
-      <wen-select-space
-        *ngIf="deviceService.isDesktop$ | async"
-        class="block w-44"
-        formControlName="space"
-        [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-        size="small">
-      </wen-select-space>
-
-      <label class="text-base font-medium lg:ml-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
-        nz-checkbox formControlName="includeAlliances"
-        [nzDisabled]="spaceForm.value.space === defaultSpace.value">
-          <span i18n>Include connections </span>
-          <ng-container *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value" i18n>(Select some space)</ng-container>
-      </label>
+<ais-instantsearch [config]="config">
+  <header class="header" id="header">
+    <div class="header-searchbox">
+      <wen-search-box [sections]="sections"></wen-search-box>
     </div>
-
-    <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-      <nz-select class="w-48 wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
-        [formControl]="sortControl" nz-tooltip>
-        <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-        <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-      </nz-select>
-      <ng-template #defaultTemplate let-selected>
-        <span nz-typography nzType="secondary" class="text-xs" i18n>Sort by</span>
-        <span>{{ selected.nzLabel }}</span>
-      </ng-template>
-    </ng-container>
-    <ng-template #sortMobileBlock>
-      <div class="relative">
-        <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-          <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-          <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-        </nz-select>
-        <ng-template #mobileSuffixIcon>
-          <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
+  </header>
+  <main class="container">
+    <section class="container-results mr-10">
+      <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
+        <ng-template let-hits="hits" let-refine="showMore">
+          <div class="mt-10 xl:grid place-items-start">
+            <div class="wen-cards-wrapper mb-10">
+              <wen-member-card class="relative w-full h-full outline-none"
+                               *ngFor="let member of hits; trackBy: trackByUid"
+                               [member]="member"
+                               [includeAlliances]="true"
+                               [selectedSpace]="undefined"
+                               [fullWidth]="(deviceService.isMobile$ | async) || false"
+              >
+              </wen-member-card>
+            </div>
+          </div>
+          <div (visible)="refine()"></div>
         </ng-template>
-      </div>
-    </ng-template>
-  </div>
-</form>
+      </ais-infinite-hits>
+    </section>
+      <section class="container-filters">
+        <div class="container-header">
+          <h4>Filters&Sorts</h4>
+          <wen-sort-by
+            [items]="sortItems"
+          ></wen-sort-by>
+          <ais-clear-refinements
+            class="clear-filters"
+            data-layout="desktop"
+            resetLabel="Clear filters"
+          ></ais-clear-refinements>
 
-<div class="mt-10 lg:grid place-items-start">
-  <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">
-    {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>members</span>
-  </p>
-  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
-    (scrolled)="onScroll()">
-
-    <nz-skeleton *ngIf="isLoading(members$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
-      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-
-    <nz-card class="w-76" *ngIf="isEmpty(members$ | async)">
-      <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-          No Members
-        </span>
-      </div>
-    </nz-card>
-
-    <wen-member-card class="relative w-full h-full outline-none"
-      *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member" [includeAlliances]="spaceForm.value.includeAlliances"
-      [selectedSpace]="spaceForm.value.space === defaultSpace.value ? undefined : spaceForm.value.space">
-    </wen-member-card>
-  </div>
-</div>
+          <ais-stats data-layout="mobile">
+            <ng-template let-state="state">
+              <span class="ais-Stats-text">
+                <strong>{{ state.nbHits | number }}</strong> results in <strong>{{state.processingTimeMS}}</strong> ms.
+              </span>
+            </ng-template>
+          </ais-stats>
+        </div>
 
 
+        <div class="container-body">
+          <nz-collapse>
+
+            <nz-collapse-panel
+              nzHeader="Spaces"
+              nzActive="true"
+            >
+              <wen-refinement-list
+                attribute="spaces2"
+                [transformItems]="algoliaService.convertToSpaceName"
+                [searchable]="false"
+                searchPlaceholder="Search for space…"
+              >
+              </wen-refinement-list>
+            </nz-collapse-panel>
+
+          </nz-collapse>
+        </div>
+
+
+      </section>
+  </main>
+</ais-instantsearch>
