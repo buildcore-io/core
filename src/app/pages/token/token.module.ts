@@ -5,6 +5,7 @@ import { CountdownModule } from '@components/countdown/countdown.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
@@ -45,6 +46,7 @@ import { NewOverviewComponent } from './pages/new/overview/overview.component';
 import { NewSummaryComponent } from './pages/new/summary/summary.component';
 import { OverviewPage } from './pages/overview/overview.page';
 import { TokenBuyComponent } from './pages/token/token-buy/token-buy.component';
+import { TokenEditComponent } from './pages/token/token-edit/token-edit.component';
 import { TokenInfoComponent } from './pages/token/token-info/token-info.component';
 import { TokenProgressComponent } from './pages/token/token-progress/token-progress.component';
 import { TokenPage } from './pages/token/token.page';
@@ -66,7 +68,8 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenBuyComponent,
     TokenProgressComponent,
     NewIntroductionComponent,
-    TradePage
+    TradePage,
+    TokenEditComponent
   ],
   imports: [
     CommonModule,
@@ -107,7 +110,8 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenPublicSaleModule,
     NzSkeletonModule,
     TokenBidModule,
-    TokenOfferPreMintModule
+    TokenOfferPreMintModule,
+    ModalDrawerModule
   ]
 })
 export class TokenModule { }

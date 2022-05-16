@@ -21,6 +21,7 @@ import { CrownIconComponent } from './crown/crown.component';
 import { DefaultSpaceIconComponent } from './default-space/default-space.component';
 import { DiscordIconComponent } from './discord/discord.component';
 import { DollarIconComponent } from './dollar/dollar.component';
+import { EditUnderlineIconComponent } from './edit-underline/edit-underline.component';
 import { EditIconComponent } from './edit/edit.component';
 import { EraseIconComponent } from './erase/erase.component';
 import { EyeIconComponent } from './eye/eye.component';
@@ -142,7 +143,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FileCheckIconComponent,
     SwitchIconComponent,
     FileExportIconComponent,
-    TokenIconComponent
+    TokenIconComponent,
+    EditUnderlineIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -214,7 +216,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FileCheckIconComponent,
     SwitchIconComponent,
     FileExportIconComponent,
-    TokenIconComponent
+    TokenIconComponent,
+    EditUnderlineIconComponent
   ],
   imports: [
     CommonModule

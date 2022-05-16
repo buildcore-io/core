@@ -13,7 +13,7 @@
     </button>
 
     <button
-        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved"
+        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved && (isGuardianWithinSpace$ | async)"
         nz-button
         nzSize="large"
         class="w-full wen-secondary"
@@ -21,6 +21,13 @@
         i18n
     >
         Schedule public sale
+    </button>
+
+    <button nz-button nzType="default" nzSize="default"
+        *ngIf="isGuardianWithinSpace$ | async" (click)="isEditTokenVisible = true"
+        class="w-full text-foregrounds-primary dark:text-foregrounds-primary-dark">
+            <wen-icon-edit-underline></wen-icon-edit-underline>
+            <div class="ml-2.5 text-sm font-medium" i18n>Edit token info</div>
     </button>
 
     <wen-share
@@ -34,3 +41,4 @@
 
 <wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" [token]="(data.token$ | async) || undefined" [space]="(data.space$ | async) || undefined"  (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>
 <wen-token-public-sale *ngIf="isScheduleSaleVisible" [isOpen]="isScheduleSaleVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isScheduleSaleVisible = false"></wen-token-public-sale>
+<wen-token-edit *ngIf="isEditTokenVisible" [isOpen]="isEditTokenVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isEditTokenVisible = false"></wen-token-edit>
