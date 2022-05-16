@@ -111,6 +111,7 @@ describe('Buy sell trigger', () => {
       .get()
     expect(creditSnap.docs.length).toBe(1)
     expect(creditSnap.docs[0].data().payload.amount).toBe(MIN_IOTA_AMOUNT * 5)
+    expect(creditSnap.docs[0].data().payload.sourceTransaction).toContain(buySnap.docs[0].data().paymentTransactionId)
 
     const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)

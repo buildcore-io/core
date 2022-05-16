@@ -277,7 +277,7 @@ export const creditToken = functions.runWith({
         amount: params.body.amount,
         sourceAddress: order.data()?.payload.targetAddress,
         targetAddress: member.validatedAddress,
-        sourceTransactions: payments.map(d => d.uid),
+        sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
         void: false

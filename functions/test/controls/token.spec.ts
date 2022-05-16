@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
 import { WenError } from "../../interfaces/errors";
 import { WEN_FUNC } from "../../interfaces/functions";
-import { Space, TransactionType } from "../../interfaces/models";
+import { Space, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
@@ -520,15 +520,15 @@ describe('Claim airdropped token test', () => {
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
-    const types = [TransactionType.ORDER, TransactionType.PAYMENT, TransactionType.BILL_PAYMENT]
-    for (const type of types) {
-      const snap = await admin.firestore().collection(COL.TRANSACTION)
-        .where('type', '==', type)
-        .where('payload.amount', '==', MIN_IOTA_AMOUNT)
-        .where('member', '==', guardianAddress)
-        .get();
-      expect(snap.docs.length).toBe(1)
-    }
+    const orderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data();
+    expect(orderTran.member).toBe(guardianAddress)
+    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP)
+
+    const paymentsSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('payload.sourceTransaction', 'array-contains', orderTran.uid).get()
+    const types = paymentsSnap.docs.map(d => d.data().type).sort()
+    expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT])
+
     const airdrop = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
     expect(airdrop?.tokenClaimed).toBe(900)
     expect(airdrop?.tokenOwned).toBe(900)
