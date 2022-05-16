@@ -34,7 +34,7 @@ export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurc
       amount: refundAmount,
       sourceAddress: order.payload.targetAddress,
       targetAddress: member.validatedAddress,
-      sourceTransactions: [buy.paymentTransactionId],
+      sourceTransaction: [buy.paymentTransactionId],
       token: token.uid,
       reconciled: true,
       void: false,

@@ -15,6 +15,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cancelSale } from '../utils/token-buy-sell.utils';
+import { assertIsTokenPreMinted } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const buySellTokenSchema = {
@@ -31,6 +32,8 @@ export const sellToken = functions.runWith({
   const owner = params.address.toLowerCase();
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
+
+  await assertIsTokenPreMinted(params.body.token);
 
   const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
   const sellDocId = getRandomEthAddress();
@@ -89,6 +92,8 @@ export const buyToken = functions.runWith({
   const owner = params.address.toLowerCase();
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
+
+  await assertIsTokenPreMinted(params.body.token);
 
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get();
   if (!tokenDoc.exists) {
