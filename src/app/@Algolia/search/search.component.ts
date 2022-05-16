@@ -15,8 +15,6 @@ import connectSearchBox, {
 import { debounceTime } from "rxjs";
 import { noop } from "src/app/@algolia/util";
 
-
-
 @UntilDestroy()
 @Component({
   selector: 'wen-search-box',
