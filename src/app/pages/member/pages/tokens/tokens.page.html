@@ -9,7 +9,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let t of tokens$ | async">
+            <tr *ngFor="let t of tokens$ | async" class="cursor-pointer" [routerLink]="['/token', t.uid, 'trade']">
                 <td>
                     <div class="flex items-center">
                         <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
@@ -20,8 +20,8 @@
                         <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
                     </div>
                 </td>
-                <td class="font-medium">{{ formatBest(t.distribution.tokenOwned, t.symbol) }}</td>
-                <td class="font-medium">{{ formatBest((t.distribution.tokenOwned || 0) * (t.avg24h || t.avg7d || t.pricePerToken || 0)) }}</td>
+                <td class="font-medium">{{ formatBest(t.distribution.totalDeposit / (t.avg24h || t.avg7d || t.pricePerToken  || 1), t.symbol) }}</td>
+                <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
             </tr>
         </tbody>
     </nz-table>
