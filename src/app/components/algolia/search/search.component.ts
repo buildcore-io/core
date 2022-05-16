@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 import { FormControl } from "@angular/forms";
 import { NavigationEnd, Router } from "@angular/router";
+import { noop } from "@components/algolia/util";
 import { TabSection } from "@components/tabs/tabs.component";
 import { DeviceService } from "@core/services/device";
 import { GLOBAL_DEBOUNCE_TIME } from "@functions/interfaces/config";
@@ -13,7 +14,6 @@ import connectSearchBox, {
   SearchBoxConnectorParams, SearchBoxWidgetDescription
 } from 'instantsearch.js/es/connectors/search-box/connectSearchBox';
 import { debounceTime } from "rxjs";
-import { noop } from "src/app/@algolia/util";
 
 @UntilDestroy()
 @Component({

@@ -1,11 +1,11 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
 import { FormControl } from "@angular/forms";
+import { noop } from "@components/algolia/util";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import connectSortBy, {
   SortByConnectorParams, SortByWidgetDescription
 } from 'instantsearch.js/es/connectors/sort-by/connectSortBy';
-import { noop } from "src/app/@algolia/util";
 
 
 @UntilDestroy()

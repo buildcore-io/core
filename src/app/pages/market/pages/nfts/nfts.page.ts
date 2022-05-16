@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NftApi } from '@api/nft.api';
+import { defaultPaginationItems } from "@components/algolia/algolia.options";
+import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
@@ -8,8 +10,6 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { Timestamp } from "firebase/firestore";
-import { defaultPaginationItems } from "src/app/@algolia/algolia.options";
-import { AlgoliaService } from "src/app/@algolia/services/algolia.service";
 
 // used in src/app/pages/collection/pages/collection/collection.page.ts
 export enum HOT_TAGS {

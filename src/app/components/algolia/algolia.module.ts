@@ -2,6 +2,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { RefinementListComponent } from "@components/algolia/refinement/refinement.component";
+import { SearchBoxComponent } from "@components/algolia/search/search.component";
+import { SortByComponent } from "@components/algolia/sort/sort.component";
+import { VisibleDirective } from "@components/algolia/visible.directive";
 import { CollectionCardModule } from "@components/collection/components/collection-card/collection-card.module";
 import { DropdownTabsModule } from "@components/dropdown-tabs/dropdown-tabs.module";
 import { IconModule } from "@components/icon/icon.module";
@@ -20,10 +24,6 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzSkeletonModule } from "ng-zorro-antd/skeleton";
 import { NzTagModule } from "ng-zorro-antd/tag";
 import { InfiniteScrollModule } from "ngx-infinite-scroll";
-import { RefinementListComponent } from "src/app/@algolia/refinement/refinement.component";
-import { SearchBoxComponent } from "src/app/@algolia/search/search.component";
-import { SortByComponent } from "src/app/@algolia/sort/sort.component";
-import { VisibleDirective } from "src/app/@algolia/visible.directive";
 import { AlgoliaService } from "./services/algolia.service";
 
 @NgModule({

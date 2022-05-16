@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
+import { RefinementMappings } from "@components/algolia/refinement/refinement.component";
 import { CacheService } from "@core/services/cache/cache.service";
 import { environment } from '@env/environment';
 import { CollectionAccess, Space } from "@functions/interfaces/models";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
-import { RefinementMappings } from "src/app/@algolia/refinement/refinement.component";
 
 const spaceMapping: RefinementMappings = {};
 const accessMapping: RefinementMappings = {};

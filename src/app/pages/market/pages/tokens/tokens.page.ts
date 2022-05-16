@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { TokenApi } from '@api/token.api';
+import { defaultPaginationItems } from "@components/algolia/algolia.options";
+import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
@@ -14,8 +16,6 @@ import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import { Timestamp } from "firebase/firestore";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
-import { defaultPaginationItems } from "src/app/@algolia/algolia.options";
-import { AlgoliaService } from "src/app/@algolia/services/algolia.service";
 
 export enum AddedCategories {
   ALL = 'All'
