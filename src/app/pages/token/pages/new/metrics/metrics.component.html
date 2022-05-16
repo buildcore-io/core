@@ -63,7 +63,7 @@
                         <input
                         nz-input
                         i18n-placeholder
-                        [placeholder]="newService.symbolControl.value ? 'Total token supply (m' + newService.symbolControl.value + ')' : 'Total token supply (in Megas)'"
+                        [placeholder]="newService.symbolControl?.value ? 'Total token supply (m' + newService.symbolControl?.value + ')' : 'Total token supply (in Megas)'"
                         nzSize="large"
                         [formControl]="newService.totalSupplyControl"
                         />
