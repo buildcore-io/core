@@ -36,49 +36,42 @@ const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(
 const reTryWallet = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.TRANSACTION)
     .where('payload.walletReference.confirmed', '==', false)
-    .where('payload.walletReference.count', '<', MAX_WALLET_RETRY).get();
-  if (qry.size > 0) {
-    for (const t of qry.docs) {
-      // We ignore while there are errors.
-      if (t.data().payload.walletReference.chainReference) {
-        // If processed on does not exists something went wrong and try again.
-        const readyToRun: dayjs.Dayjs = t.data().payload.walletReference.processedOn ? dayjs(t.data().payload.walletReference.processedOn.toDate()).add(DEFAULT_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
-        const readyToReprocessedWallet: dayjs.Dayjs = t.data().payload.walletReference.processedOn ? dayjs(t.data().payload.walletReference.processedOn.toDate()).add(EXTENDED_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
-        // This is one is not ready yet.
-        if (
-          readyToRun.isAfter(dayjs()) ||
-          // It can take up to 10 minutes when servers are overloaded.
-          (readyToReprocessedWallet.isAfter(dayjs()) && t.data().payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS))
-        ) {
-          continue;
-        }
-
-        // Does it exists in sub-collection?
-        const ref = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS).where('messageId', '==', t.data().payload.walletReference.chainReference).get();
-        const refSource = admin.firestore().collection(COL.TRANSACTION).doc(t.data().uid);
-        await admin.firestore().runTransaction(async (transaction) => {
-          const sfDoc = await transaction.get(refSource);
-          if (sfDoc.data()) {
-            const data = <Transaction>sfDoc.data();
-            const payload = <PaymentTransaction>data.payload
-            if (ref.size > 0) {
-              payload.walletReference.confirmed = true;
-            } else {
-              // Save old and retry.
-              payload.walletReference.chainReferences = payload.walletReference.chainReferences || [];
-              payload.walletReference.chainReference && payload.walletReference.chainReferences.push(payload.walletReference.chainReference);
-              payload.walletReference.chainReference = null;
-            }
-
-            transaction.update(refSource, data);
-          }
-        });
+    .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
+    .get();
+  for (const t of qry.docs) {
+    const walletReference = t.data().payload.walletReference
+    // We ignore while there are errors.
+    if (walletReference.chainReference) {
+      // If processed on does not exists something went wrong and try again.
+      const readyToRun = walletReference.processedOn ? dayjs(walletReference.processedOn.toDate()).add(DEFAULT_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
+      const readyToReprocessedWallet = walletReference.processedOn ? dayjs(walletReference.processedOn.toDate()).add(EXTENDED_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
+      // This is one is not ready yet.
+      if (
+        readyToRun.isAfter(dayjs()) ||
+        // It can take up to 10 minutes when servers are overloaded.
+        (readyToReprocessedWallet.isAfter(dayjs()) && walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS))
+      ) {
+        continue;
       }
+
+      // Does it exists in sub-collection?
+      const ref = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS).where('messageId', '==', walletReference.chainReference).get();
+      await admin.firestore().runTransaction(async (transaction) => {
+        const sfDoc = await transaction.get(t.ref);
+        if (sfDoc.data()) {
+          const data = <Transaction>sfDoc.data();
+          const payload = <PaymentTransaction>data.payload
+          if (ref.size > 0) {
+            payload.walletReference.confirmed = true;
+          } else {
+            data.shouldRetry = true
+          }
+          transaction.update(t.ref, data);
+        }
+      });
     }
   }
 
-  // Finished.
-  return null;
 });
 
 const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').onRun(async () => {

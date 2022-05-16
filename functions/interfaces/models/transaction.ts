@@ -145,7 +145,8 @@ export interface Transaction extends BaseRecord {
   member?: EthAddress;
   space?: EthAddress;
   linkedTransactions: EthAddress[];
-  payload: any; // TransactionPayload
+  payload: any;
+  shouldRetry?: boolean;
 }
 
 export interface TransactionBillPayment extends Transaction {
