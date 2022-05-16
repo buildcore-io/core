@@ -20,6 +20,10 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.cToken, req);
   }
 
+  public update(req: WenRequest): Observable<Token | undefined> {
+    return this.request(WEN_FUNC.uToken, req);
+  }
+
   public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {
     return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
