@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -22,15 +22,7 @@ import { DataService } from './../../services/data.service';
 })
 export class MemberPage implements OnInit, OnDestroy {
   public memberId = ''
-  public sections = [
-    { route: 'activity', label: $localize`Activity` },
-    { route: 'awards', label: $localize`Awards` },
-    { route: 'badges', label: $localize`Badges` },
-    { route: 'spaces', label: $localize`Spaces` },
-    { route: 'nfts', label: $localize`NFTs` },
-    { route: 'tokens', label: $localize`Tokens` },
-    { route: 'transactions', label: $localize`Transactions` }
-  ]
+  public sections: Array<{ route: string; label: string }> = [];
   public isAboutMemberVisible = false;
   public height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   @ViewChild('sidebar') private sidebar?: ElementRef;
@@ -41,6 +33,7 @@ export class MemberPage implements OnInit, OnDestroy {
     private memberApi: MemberApi,
     private auth: AuthService,
     private router: Router,
+    private cd: ChangeDetectorRef,
     public nav: NavigationService,
     public data: DataService,
     public deviceService: DeviceService
@@ -54,6 +47,18 @@ export class MemberPage implements OnInit, OnDestroy {
       this.cancelSubscriptions();
       if (params?.memberId) {
         this.listenMember(params.memberId);
+        this.sections = [
+          { route: 'activity', label: $localize`Activity` },
+          { route: 'awards', label: $localize`Awards` },
+          { route: 'badges', label: $localize`Badges` },
+          { route: 'spaces', label: $localize`Spaces` },
+          { route: 'nfts', label: $localize`NFTs` },
+          { route: 'tokens', label: $localize`Tokens` }
+        ];
+        if (params.memberId === this.auth.member$.getValue()?.uid) {
+          this.sections.push({ route: 'transactions', label: $localize`Transactions` });
+        }
+        this.cd.markForCheck();
       } else {
         this.notFound();
       }
