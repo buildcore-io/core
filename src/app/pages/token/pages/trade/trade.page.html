@@ -124,7 +124,7 @@
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #openBidsBlock>
                         <tr *ngFor="let item of (bids$ | async)">
-                            <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                            <td>{{ formatBest(item.price) }}</td>
                             <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
                             <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         </tr>
@@ -154,7 +154,7 @@
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #myRequestsBlock>
                       <tr *ngFor="let item of (myBids$ | async)">
-                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td>{{ formatBest(item.price) }}</td>
                         <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
@@ -209,7 +209,7 @@
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #openAsksBlock>
                       <tr *ngFor="let item of (asks$ | async)">
-                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td>{{ formatBest(item.price) }}</td>
                         <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                       </tr>
@@ -239,7 +239,7 @@
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #myAsksBlock>
                       <tr *ngFor="let item of (myAsks$ | async)">
-                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td>{{ formatBest(item.price) }}</td>
                         <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
