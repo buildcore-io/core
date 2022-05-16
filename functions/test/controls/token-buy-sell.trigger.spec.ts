@@ -33,7 +33,7 @@ describe('Buy sell trigger', () => {
     buyer = await createMember(walletSpy, true)
 
     const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED }
+    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED, approved: true }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 10 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
@@ -305,7 +305,6 @@ describe('Buy sell trigger', () => {
   })
 })
 
-
 describe('Expired sales cron', () => {
   let seller: string;
 
@@ -316,7 +315,7 @@ describe('Expired sales cron', () => {
     seller = await createMember(walletSpy, true)
 
     const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED }
+    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED, approved: true }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: 1000 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);

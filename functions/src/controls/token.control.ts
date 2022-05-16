@@ -157,6 +157,9 @@ export const setTokenAvailableForSale = functions.runWith({
     if (!data) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
+    if (!data.approved) {
+      throw throwInvalidArgument(WenError.token_not_approved)
+    }
     if (data.saleStartDate) {
       throw throwInvalidArgument(WenError.public_sale_already_set)
     }
@@ -169,10 +172,8 @@ export const setTokenAvailableForSale = functions.runWith({
   return <Token>(await tokenDocRef.get()).data();
 })
 
-
 const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
   dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
-
 
 const tokenCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength &&
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
@@ -191,6 +192,7 @@ export const orderToken = functions.runWith({
   if (!tokenDoc.exists) {
     throw throwInvalidArgument(WenError.invalid_params)
   }
+
   const token = <Token>tokenDoc.data()
   if (!tokenOrderIsWithinPublicSalePeriod(token)) {
     throw throwInvalidArgument(WenError.no_token_public_sale)
@@ -323,10 +325,13 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       }
 
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
-      const token = <Token>(await transaction.get(tokenDocRef)).data();
+      const token = <Token | undefined>(await transaction.get(tokenDocRef)).data();
 
       if (!token) {
         throw throwInvalidArgument(WenError.invalid_params);
+      }
+      if (!token.approved) {
+        throw throwInvalidArgument(WenError.token_not_approved)
       }
       await assertIsGuardian(token.space, owner);
 
