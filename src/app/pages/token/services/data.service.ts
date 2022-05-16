@@ -38,6 +38,10 @@ export class DataService {
     return dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms');
   }
 
+  public isInProcessing(token?: Token): boolean {
+    return token?.status === TokenStatus.PROCESSING;
+  }
+
   public isScheduledForSale(token?: Token): boolean {
     return (
       !!token?.approved &&

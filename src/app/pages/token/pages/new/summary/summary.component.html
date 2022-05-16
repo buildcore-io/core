@@ -53,11 +53,11 @@
             </div>
 
             <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Price per token (mIOTAs)
+                Price per token
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ newService.priceControl?.value }}
+                {{ formatBest(newService.priceControl?.value * 1000 * 1000) }}
             </div>
 
             <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -65,7 +65,7 @@
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ newService.totalSupplyControl?.value }}
+                {{ formatBest(newService.totalSupplyControl?.value * 1000 * 1000, newService.symbolControl?.value) }}
             </div>
         </div>
 

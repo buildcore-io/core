@@ -641,7 +641,7 @@ export class ProcessingService {
   private async updateTokenDistribution(order: Transaction, tran: TransactionMatch) {
     const distributionRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
     const distribution = {
-      member: order.member,
+      uid: order.member,
       totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
       parentId: order.payload.token,
       parentCol: COL.TOKEN,

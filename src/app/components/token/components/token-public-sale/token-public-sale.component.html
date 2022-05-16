@@ -72,7 +72,7 @@
     </div>
 
     <wen-description [items]="[
-        { title: allocationInfoLabels[0], value: formatBest(token?.pricePerToken) },
+        { title: allocationInfoLabels[0], value: formatBest((token?.pricePerToken || 0) * 1000 * 1000) },
         { title: allocationInfoLabels[1], value: publicAllocation(token?.allocations)?.percentage + '%', extraValue: '(' + percentageMarketCap() + ')' }
     ]"></wen-description>
 

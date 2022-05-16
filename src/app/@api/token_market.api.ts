@@ -16,7 +16,7 @@ export class TokenMarketApi extends BaseApi<TokenBuySellOrder> {
     super(afs, fns);
   }
 
-  public bids(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenBuySellOrder[]> {
+  public bidsActive(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenBuySellOrder[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
@@ -30,7 +30,7 @@ export class TokenMarketApi extends BaseApi<TokenBuySellOrder> {
     });
   }
 
-  public asks(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenBuySellOrder[]> {
+  public asksActive(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenBuySellOrder[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
@@ -53,7 +53,7 @@ export class TokenMarketApi extends BaseApi<TokenBuySellOrder> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('token', '==', token).where('owner', '==', member).where('type', '==', TokenBuySellOrderType.BUY).where('status', '==', TokenBuySellOrderStatus.ACTIVE);
+        return ref.where('token', '==', token).where('owner', '==', member).where('type', '==', TokenBuySellOrderType.BUY);
       }
     });
   }
@@ -67,7 +67,7 @@ export class TokenMarketApi extends BaseApi<TokenBuySellOrder> {
       search: search,
       def: def,
       refCust: (ref: any) => {
-        return ref.where('token', '==', token).where('owner', '==', member).where('type', '==', TokenBuySellOrderType.SELL).where('status', '==', TokenBuySellOrderStatus.ACTIVE);
+        return ref.where('token', '==', token).where('owner', '==', member).where('type', '==', TokenBuySellOrderType.SELL);
       }
     });
   }

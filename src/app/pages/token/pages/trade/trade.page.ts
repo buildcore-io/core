@@ -14,7 +14,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
-import { Token, TokenBuySellOrder, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 
@@ -112,8 +112,8 @@ export class TradePage implements OnInit, OnDestroy {
 
   private listenToTrades(tokenId: string): void {
     // TODO Add pagging.
-    this.subscriptions$.push(this.tokenMarketApi.asks(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.asks$));
-    this.subscriptions$.push(this.tokenMarketApi.bids(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.bids$));
+    this.subscriptions$.push(this.tokenMarketApi.asksActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.asks$));
+    this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.bids$));
   }
 
   public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
@@ -130,6 +130,10 @@ export class TradePage implements OnInit, OnDestroy {
 
   public get askListingTypes(): typeof AskListingType {
     return AskListingType;
+  }
+
+  public get bidAskStatuses(): typeof TokenBuySellOrderStatus {
+    return TokenBuySellOrderStatus;
   }
 
   public preMinted(token?: Token): boolean {

@@ -15,9 +15,8 @@
                 [options]="lineChartOptions"
                 [type]="lineChartType"></canvas>
 
-            <div class="absolute z-10 text-center -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
-                <span class="text-2xl font bold">{{ (data.token$ | async)?.totalSupply }}</span>
-                <span class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary"> {{ (data.token$ | async)?.symbol }}</span>
+            <div class="absolute z-10 text-center -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2" *ngIf="(data.token$ | async)?.totalSupply">
+                <span class="text-2xl font bold">{{ data.formatBest((data.token$ | async)?.totalSupply, (data.token$ | async)?.symbol) }}</span>
             </div>
         </div>
 

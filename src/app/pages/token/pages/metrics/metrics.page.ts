@@ -39,7 +39,7 @@ export class MetricsPage implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(token => {
         this.breakdownData = [
-          { title: $localize`Totak token supply`, value: token?.totalSupply },
+          { title: $localize`Total token supply`, value: this.data.formatBest(token?.totalSupply, token?.symbol) },
           { title: $localize`Price per token`, value: this.data.formatBest(token?.pricePerToken) },
           ...(token?.allocations || []).map(a => ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, token)})` }))
         ];

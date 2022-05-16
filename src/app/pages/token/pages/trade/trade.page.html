@@ -138,7 +138,7 @@
 
             <nz-table *ngIf="currentBidsListing === bidListingTypes.MY"
                 class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                [nzData]="(bids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyRequests" [nzPageSize]="10">
+                [nzData]="(myBids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyRequests" [nzPageSize]="10">
                 <thead>
                     <tr>
                         <th i18n>Price</th>
@@ -157,15 +157,27 @@
                         <td>{{ formatBest(item.price) }}</td>
                         <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
-                        <td class="right">{{ (item.fulfilled / item.count) | percent }}</td>
-                        <td class="right"><a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n (click)="cancelOrder(item.uid)">Cancel</a></td>
+                        <td class="right">
+                          <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
+                            {{ (item.fulfilled / item.count) | percent }}
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
+                            Cancelled
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.EXPIRED" i18n>
+                            Expired
+                          </ng-container>
+                        </td>
+                        <td class="right">
+                          <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
+                        </td>
                         </tr>
                     </ng-template>
                 </tbody>
             </nz-table>
 
             <ng-template #noMyRequests>
-                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no your requests</div>
+                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no bids</div>
             </ng-template>
         </nz-card>
 
@@ -211,7 +223,7 @@
 
           <nz-table *ngIf="currentAskListing === askListingTypes.MY"
               class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-              [nzData]="(asks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyAsks">
+              [nzData]="(myAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyAsks">
               <thead>
                   <tr>
                       <th i18n>Price</th>
@@ -230,15 +242,27 @@
                         <td>{{ formatBest(item.price) }}</td>
                         <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
-                        <td class="right">{{ (item.fulfilled / item.count) | percent }}</td>
-                        <td class="right"><a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"  (click)="cancelOrder(item.uid)" i18n>Cancel</a></td>
+                        <td class="right">
+                          <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
+                            {{ (item.fulfilled / item.count) | percent }}
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
+                            Cancelled
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.EXPIRED" i18n>
+                            Expired
+                          </ng-container>
+                        </td>
+                        <td class="right">
+                          <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
+                        </td>
                       </tr>
                   </ng-template>
               </tbody>
           </nz-table>
 
           <ng-template #noMyAsks>
-              <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no your asks</div>
+              <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no asks</div>
           </ng-template>
       </nz-card>
     </div>

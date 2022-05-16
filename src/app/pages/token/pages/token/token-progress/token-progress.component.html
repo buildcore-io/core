@@ -45,7 +45,7 @@
         size="default">
     </wen-countdown>
 
-    <wen-countdown *ngIf="data.isScheduledForSale(token) && !data.isAvailableForSale(token) && !data.isInCooldown(token)"
+    <wen-countdown *ngIf="data.isScheduledForSale(token) && !data.isAvailableForSale(token) && !data.isInCooldown(token) && !data.isInProcessing(token)"
       class="block"
       wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
       tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
