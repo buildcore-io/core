@@ -40,7 +40,7 @@ export class MetricsPage implements OnInit {
       .subscribe(token => {
         this.breakdownData = [
           { title: $localize`Total token supply`, value: this.data.formatBest(token?.totalSupply, token?.symbol) },
-          { title: $localize`Price per token`, value: this.data.formatBest(token?.pricePerToken) },
+          { title: $localize`Price per token`, value: this.data.formatBest((token?.pricePerToken || 0) * 1000 * 1000) },
           ...(token?.allocations || []).map(a => ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, token)})` }))
         ];
         this.setLineChartData(token);
