@@ -40,7 +40,7 @@
 <ng-template #confirmTemplate>
     <wen-description [items]="[
         { title: 'Sale ends', titleIcon: timeIcon, value: ( getEndDate() | relativeTime:'from') },
-        { title: 'Token price', titleIcon: coinIcon, value: formatBest((token?.pricePerToken || 0) * 1000 * 1000) }
+        { title: 'Token price', titleIcon: coinIcon, value: formatBest((token?.pricePerToken || 0)) }
     ]"></wen-description>
     <ng-template #timeIcon>
         <wen-icon-time [size]="20"></wen-icon-time>
@@ -89,9 +89,6 @@
         </div>
 
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                Mi
-            </div>
             <div class="mt-1">{{formatBest(amountControl.value * (token?.pricePerToken || 0) * 1000 * 1000)}}</div>
         </div>
 

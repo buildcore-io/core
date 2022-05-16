@@ -76,6 +76,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     const startFrom = dayjs();
     const listeningToTransaction: string[] = [];
     this.transaction$.pipe(untilDestroyed(this)).subscribe((val) => {
+      console.log(val);
       const historical = dayjs(val?.createdOn?.toDate()).isBefore(startFrom);
 
       if (val && val.type === TransactionType.ORDER) {

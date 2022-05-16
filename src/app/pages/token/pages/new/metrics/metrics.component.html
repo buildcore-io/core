@@ -49,7 +49,7 @@
                         <input
                         nz-input
                         i18n-placeholder
-                        placeholder="Price per token (mIOTAs)"
+                        placeholder="Price per token (IOTA)"
                         nzSize="large"
                         [formControl]="newService.priceControl"
                         />
@@ -63,7 +63,7 @@
                         <input
                         nz-input
                         i18n-placeholder
-                        [placeholder]="newService.symbolControl?.value ? 'Total token supply (m' + newService.symbolControl?.value + ')' : 'Total token supply (in Megas)'"
+                        [placeholder]="newService.symbolControl?.value ? 'Total token supply (' + newService.symbolControl?.value + ')' : 'Total token supply'"
                         nzSize="large"
                         [formControl]="newService.totalSupplyControl"
                         />

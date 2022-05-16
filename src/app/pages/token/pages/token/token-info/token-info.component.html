@@ -18,7 +18,7 @@
             { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
             { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
             { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
-            { title: tokenInfoLabels[3], value: '1 m' + (data.token$ | async)?.symbol + ' = ' + (((data.token$ | async)?.pricePerToken || 0)).toFixed(0) + ' mIOTA' },
+            { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + data.formatBest((data.token$ | async)?.pricePerToken || 0) },
             { title: tokenInfoLabels[4], value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
             { title: tokenInfoLabels[5], value:  data.formatBest((data.token$ | async)?.totalSupply, (data.token$ | async)?.symbol) },
             { title: tokenInfoLabels[6], value: 'Fixed' }
