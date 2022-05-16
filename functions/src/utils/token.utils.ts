@@ -24,9 +24,12 @@ export const assertIsGuardian = async (space: string, member: string) => {
   }
 }
 
-export const assertIsTokenPreMinted = async (tokenId: string) => {
+export const assertIsTokenPreMintedAndApproved = async (tokenId: string) => {
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get()).data()
   if (token?.status !== TokenStatus.PRE_MINTED) {
     throw throwInvalidArgument(WenError.token_not_pre_minted)
+  }
+  if (!token?.approved) {
+    throw throwInvalidArgument(WenError.token_not_approved)
   }
 }

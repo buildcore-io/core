@@ -26,7 +26,7 @@ const dummyToken = (space: string) => ({
   allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
   icon: 'icon',
   overviewGraphics: 'overviewGraphics',
-  termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
+  termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
 }) as any
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
@@ -248,7 +248,15 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     space = await createSpace(walletSpy, memberAddress)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true })
   });
+
+  it('Should throw, not approved', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false })
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
+  })
 
   it('Should throw, not on public sale', async () => {
     const updateData = { token: token.uid, ...publicTime }
@@ -445,7 +453,15 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardianAddress, dummyTokenData)
     token = await testEnv.wrap(createToken)({});
     memberAddress = await createMember(walletSpy)
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true })
   });
+
+  it('Should fail, token not approved', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false })
+    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }] }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    await expectThrow(testEnv.wrap(airdropToken)({}), WenError.token_not_approved.key)
+  })
 
   it('Should airdrop token', async () => {
     const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }] }
@@ -508,6 +524,7 @@ describe('Claim airdropped token test', () => {
     dummyTokenData.allocations = [{ title: 'Private', percentage: 90 }, { title: 'Public', percentage: 10, isPublicSale: true }]
     mockWalletReturnValue(walletSpy, guardianAddress, dummyTokenData)
     token = await testEnv.wrap(createToken)({});
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true })
 
     const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }], }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
