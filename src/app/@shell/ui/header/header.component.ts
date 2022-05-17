@@ -174,12 +174,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!t?.payload.nft || !t.payload.collection) {
       return;
     }
-
-    let nft: Nft | undefined = await firstValueFrom(this.nftApi.listen(t?.payload.nft));
     const collection: Collection | undefined = await firstValueFrom(this.collectionApi.listen(t?.payload.collection));
-    if (collection?.placeholderNft) {
-      nft = await firstValueFrom(this.nftApi.listen(collection.placeholderNft));
-    }
+    const nft = await firstValueFrom(this.nftApi.listen(collection?.placeholderNft || t?.payload?.nft));
     if (nft && collection) {
       this.currentCheckoutCollection = collection;
       this.currentCheckoutNft = nft;
