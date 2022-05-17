@@ -66,7 +66,7 @@ const createBillPayment = async (
       royalty: false,
       void: false,
       token: token.uid,
-      tokenCount: count
+      quantity: count
     }
   }
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
