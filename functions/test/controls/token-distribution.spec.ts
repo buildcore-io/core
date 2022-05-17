@@ -165,11 +165,18 @@ describe('Token trigger test', () => {
     for (let i = 0; i < members.length; ++i) {
       const member = members[i]
       const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()).data()
+      const refundedAmount = Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT))
       expect(distribution.totalDeposit).toBe(Number(bigDecimal.multiply(input.totalDeposit[i], MIN_IOTA_AMOUNT)))
       expect(distribution.totalPaid).toBe(Number(bigDecimal.multiply(input.totalPaid[i], MIN_IOTA_AMOUNT)))
-      expect(distribution.refundedAmount).toBe(Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT)))
+      expect(distribution.refundedAmount).toBe(refundedAmount)
       expect(distribution.totalBought).toBe(input.tokenOwned[i])
       expect(distribution.tokenOwned).toBe(input.tokenOwned[i])
+      const paymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.billPaymentId}`).get()
+      expect(paymentDoc.exists).toBe(true)
+      if (refundedAmount) {
+        const creditPaymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`).get()
+        expect(creditPaymentDoc.exists).toBe(true)
+      }
     }
   })
 })
