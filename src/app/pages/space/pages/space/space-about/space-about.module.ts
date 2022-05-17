@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
 import { ShareModule } from '@components/share/share.module';
 import { SpaceAlliancesTableModule } from '@components/space/components/space-alliances-table/space-alliances-table.module';
@@ -51,7 +52,8 @@ import { SpaceAboutComponent } from './space-about.component';
     NzDrawerModule,
     SpaceNewAllianceModule,
     WalletAddressModule,
-    ShareModule
+    ShareModule,
+    DescriptionModule
   ],
   exports: [
     SpaceAboutComponent

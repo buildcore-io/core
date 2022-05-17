@@ -28,6 +28,38 @@
   </p>
 </nz-card>
 
+<nz-card i18n-nzTitle nzTitle="Token Info" class="lg:mt-4"
+  *ngIf="(data.token$ | async) && ((data.isGuardianWithinSpace$ | async) || ((data.token$ | async)?.approved && (data.token$ | async)?.saleStartDate))">
+  
+  <div class="absolute top-6 right-6">
+    <a nz-button nzType="default" [routerLink]="['/token', (data.token$ | async)?.uid, 'metrics']" nzSize="small">
+      <div class="text-xs mr-0.5" i18n>Detail</div>
+      <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
+    </a>
+  </div>
+  
+  <wen-description [items]="[
+      { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
+      { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
+      { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
+      { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + formatBest((data.token$ | async)?.pricePerToken || 0) },
+      { title: tokenInfoLabels[4], value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
+      { title: tokenInfoLabels[5], value:  formatBest((data.token$ | async)?.totalSupply, (data.token$ | async)?.symbol) },
+      { title: tokenInfoLabels[6], value: 'Fixed' }
+  ]"></wen-description>
+  <ng-template #tokenAvatar>
+      <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+          nzShape="circle"
+          [nzSize]="32">
+      </nz-avatar>
+  </ng-template>
+  <ng-template #networkTooltipIcon>
+      <wen-icon-question-circle class="cursor-help" [size]="20"
+          nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Guardian's of the space will be able to decide where this token will be minted."></wen-icon-question-circle>
+  </ng-template>
+</nz-card>
+
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
     <div class="w-full flex items-center justify-between">

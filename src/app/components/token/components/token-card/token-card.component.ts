@@ -22,7 +22,6 @@ export class TokenCardComponent {
   @Input() 
   set token(value: Token | undefined) {
     this._token = value;
-    console.log(this.token);
     this.setCardType();
   }
   get token(): Token | undefined {

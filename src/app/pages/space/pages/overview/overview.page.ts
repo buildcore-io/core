@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class OverviewPage implements OnInit, OnDestroy {
   public spaceId?: string;
-  public filteredTokens: Token[] = [];
+  public filteredToken?: Token | null;
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -38,10 +38,12 @@ export class OverviewPage implements OnInit, OnDestroy {
       }
     });
 
-    this.data.tokens$
-      .pipe(untilDestroyed(this))
-      .subscribe((tokens: Token[] | undefined) => {
-        this.filteredTokens = (tokens || []).filter(t => t.saleStartDate);
+    this.data.token$
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe((token: Token | undefined) => {
+        this.filteredToken = token?.saleStartDate ? token : null;
         this.cd.markForCheck();
       });
   }
