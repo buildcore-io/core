@@ -84,6 +84,7 @@ export interface TokenPurchase extends BaseRecord {
   readonly buy: string;
   readonly count: number;
   readonly price: number;
+  readonly billPaymentId?: string;
 }
 
 export enum TokenBuySellOrderType {
@@ -109,5 +110,6 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly status: TokenBuySellOrderStatus;
   readonly orderTransactionId?: string;
   readonly paymentTransactionId?: string;
+  readonly creditTransactionId?: string;
   readonly expiresAt: Timestamp;
 }

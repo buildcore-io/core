@@ -16,31 +16,27 @@ export const onTokenBuySellCreated = functions.runWith({ timeoutSeconds: 540, me
     await guardedRerun(async () => !(await fulfillSales(data.uid)))
   })
 
+const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => ({
+  ...sale,
+  fulfilled: sale.fulfilled + purchase.count,
+  status: sale.count === sale.fulfilled + purchase.count ? TokenBuySellOrderStatus.SETTLED : TokenBuySellOrderStatus.ACTIVE
+})
 
-const fulfillSale = (buy: TokenBuySellOrder, sell: TokenBuySellOrder, transaction: admin.firestore.Transaction) => {
+const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder): TokenPurchase | undefined => {
   const tokensNeeded = buy.count - buy.fulfilled
   const tokensLeft = sell.count - sell.fulfilled
   if (tokensLeft === 0) {
     return undefined
   }
   const tokens = Math.min(tokensLeft, tokensNeeded);
-
-  const purchase = {
+  return ({
     uid: getRandomEthAddress(),
     sell: sell.uid,
     buy: buy.uid,
     count: tokens,
     price: sell.price,
-    createdOn: serverTime()
-  }
-  transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), purchase)
-
-  const update = (sale: TokenBuySellOrder) => ({
-    ...sale,
-    fulfilled: sale.fulfilled + tokens,
-    status: sale.count === sale.fulfilled + tokens ? TokenBuySellOrderStatus.SETTLED : TokenBuySellOrderStatus.ACTIVE
+    createdOn: serverTime(),
   })
-  return { buy: update(buy), sell: update(sell), purchase }
 }
 
 
@@ -71,6 +67,7 @@ const createBillPayment = async (
     }
   }
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
+  return data.uid
 }
 
 const updateSaleLock = (prev: TokenBuySellOrder, sell: TokenBuySellOrder, transaction: admin.firestore.Transaction) => {
@@ -108,21 +105,25 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
       continue
     }
     const isSell = doc.type === TokenBuySellOrderType.SELL
-    const buy = isSell ? b : update
-    const sell = isSell ? update : b
-    const sale = fulfillSale(buy, sell, transaction)
-    if (!sale) {
+    const prevBuy = isSell ? b : update
+    const prevSell = isSell ? update : b
+    const purchase = createPurchase(prevBuy, prevSell)
+    if (!purchase) {
       continue
     }
+    const sell = updateSale(prevSell, purchase)
+    const buy = updateSale(prevBuy, purchase)
     const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${b.uid}`)
-    transaction.update(docRef, uOn(isSell ? sale.buy : sale.sell))
+    transaction.update(docRef, uOn(isSell ? buy : sell))
 
-    updateSaleLock(sell, sale.sell, transaction)
-    updateBuy(buy, sale.buy, transaction)
-    await createBillPayment((sale.sell.fulfilled - sell.fulfilled) * sell.price, token, sell, buy, transaction)
-    purchases.push(sale.purchase)
+    updateSaleLock(prevSell, sell, transaction)
+    updateBuy(prevBuy, buy, transaction)
+    const billPaymentId = await createBillPayment((sell.fulfilled - prevSell.fulfilled) * sell.price, token, sell, buy, transaction)
 
-    update = isSell ? sale.sell : sale.buy
+    transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), { ...purchase, billPaymentId })
+    purchases.push({ ...purchase, billPaymentId })
+
+    update = isSell ? sell : buy
   }
   transaction.update(docRef, uOn(update))
 
