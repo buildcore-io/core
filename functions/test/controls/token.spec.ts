@@ -51,7 +51,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress)
+    space = await createSpace(walletSpy, memberAddress, true)
     token = dummyToken(space.uid)
   });
 
@@ -103,6 +103,13 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     delete token.space
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+  })
+
+  it('Should throw, no valid space address', async () => {
+    space = await createSpace(walletSpy, memberAddress)
+    token.space = space.uid
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.space_must_have_validated_address.key)
   })
 
   it('Should throw, no pricePerToken', async () => {
@@ -205,7 +212,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress)
+    space = await createSpace(walletSpy, memberAddress, true)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
   });
@@ -245,7 +252,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress)
+    space = await createSpace(walletSpy, memberAddress, true)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true })
@@ -444,7 +451,7 @@ describe('Token airdrop test', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardianAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, guardianAddress)
+    space = await createSpace(walletSpy, guardianAddress, true)
     const dummyTokenData = dummyToken(space.uid)
     dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
     dummyTokenData.saleLength = 86400000
