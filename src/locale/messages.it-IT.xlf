@@ -3984,7 +3984,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">250,251</context>
         </context-group>
-        <target state="needs-translation">The ability to give a discount on NFTs in this collection to your space members/guardians or members who hold certain NFTs. You can apply up to a 100% discount (an airdrop). Use XP &gt; -1 if you don't require members purchasing to have any XP from your space. Please note, 1Mi will always be required to purchase the NFT due to the IOTA protocol's dust protection mechanism.</target>
+        <target state="translated">Ai membri/guardiani dello spazio e ai membri in possesso di determinati NFT viene data la possibilità di usufruire di uno sconto fino al 100% (un AirDrop) applicabile sui NFT di questa collezione, nonché di utilizzare XP &gt; -1 per impedire a membri acquirenti di adottare XP dal proprio spazio. Nota: a causa del meccanismo di protezione dalla polvere di dati del protocollo IOTA, sarà sempre necessario 1Mi per acquistare un NFT.</target>
       </trans-unit>
       <trans-unit id="4808411315981120788" datatype="html">
         <source>Discount</source>
@@ -4840,7 +4840,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
-        <target state="needs-translation">Space members only</target>
+        <target state="translated">Spazio membri</target>
       </trans-unit>
       <trans-unit id="6440237901704041057" datatype="html">
         <source>Space guardians only</source>
@@ -4856,7 +4856,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">114</context>
         </context-group>
-        <target state="needs-translation">Space guardians only</target>
+        <target state="translated">Spazio guardiani</target>
       </trans-unit>
       <trans-unit id="5736509563819802106" datatype="html">
         <source>Space members with badge only</source>
@@ -4872,7 +4872,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">115</context>
         </context-group>
-        <target state="needs-translation">Space members with badge only</target>
+        <target state="translated">Spazio membri con badge</target>
       </trans-unit>
       <trans-unit id="3384193708202662679" datatype="html">
         <source>At least one NFT from collections</source>
