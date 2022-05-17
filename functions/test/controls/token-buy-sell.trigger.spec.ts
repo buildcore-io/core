@@ -21,6 +21,11 @@ const buyTokenFunc = async (memberAddress: string, request: any) => {
   await milestoneProcessed(milestone.milestone, milestone.tranId);
 }
 
+const assertVolumeTotal = async (tokenId: string, volumeTotal: number) => {
+  const statDoc = admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.STATS}/${tokenId}`)
+  await wait(async () => (await statDoc.get()).data()?.volumeTotal === volumeTotal)
+}
+
 describe('Buy sell trigger', () => {
   let seller: string;
   let buyer: string;
@@ -86,6 +91,8 @@ describe('Buy sell trigger', () => {
       .get()
     expect(paymentSnap.docs.length).toBe(1)
     expect(paymentSnap.docs[0].data().payload.amount).toBe(MIN_IOTA_AMOUNT * 5)
+
+    await assertVolumeTotal(token.uid, 5)
   })
 
   it('Should fulfill buy with two sell and credit owner', async () => {
@@ -124,6 +131,8 @@ describe('Buy sell trigger', () => {
     expect(paymentSnap.docs.length).toBe(2)
     const amounts = paymentSnap.docs.map(doc => doc.data().payload.amount).sort()
     expect(amounts).toEqual([2 * MIN_IOTA_AMOUNT, 3 * MIN_IOTA_AMOUNT])
+
+    await assertVolumeTotal(token.uid, 5)
   })
 
   it('Should fulfill sell with two buy', async () => {
@@ -145,6 +154,8 @@ describe('Buy sell trigger', () => {
     const sell = <TokenBuySellOrder>sellSnap.docs[0].data()
     expect(sell.status).toBe(TokenBuySellOrderStatus.SETTLED)
     expect(sell.fulfilled).toBe(10)
+
+    await assertVolumeTotal(token.uid, 10)
   })
 
   it('Should buy in parallel', async () => {
@@ -174,6 +185,8 @@ describe('Buy sell trigger', () => {
     expect(buyFulfillmentCount).toBe(10)
     const sellFulfillmentCount = sales.reduce((sum, sale) => sum + (sale.type === TokenBuySellOrderType.SELL ? sale.fulfilled : 0), 0)
     expect(sellFulfillmentCount).toBe(10)
+
+    await assertVolumeTotal(token.uid, 10)
   })
 
   it('Should buy and sell in parallel', async () => {
@@ -239,10 +252,12 @@ describe('Buy sell trigger', () => {
     expect(paymentSnap.docs.length).toBe(3)
     const amounts = paymentSnap.docs.map(doc => doc.data().payload.amount).sort()
     expect(amounts).toEqual([5 * MIN_IOTA_AMOUNT, 5 * MIN_IOTA_AMOUNT, 5 * MIN_IOTA_AMOUNT])
+
+    await assertVolumeTotal(token.uid, 15)
   })
 
   it('Should settle after second run on more than batch limit', async () => {
-    const distribution = <TokenDistribution>{ tokenOwned: 120 }
+    const distribution = <TokenDistribution>{ tokenOwned: 70 }
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
     const sellTokenFunc = async (count: number, price: number) => {
       const sellDocId = wallet.getRandomEthAddress();
@@ -283,6 +298,8 @@ describe('Buy sell trigger', () => {
 
     const purchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buyDocs[0].data()?.uid).get()).docs
     expect(purchases.length).toBe(count)
+
+    await assertVolumeTotal(token.uid, 70)
   })
 
   it('Should cancel buy after half fulfilled', async () => {
@@ -306,6 +323,8 @@ describe('Buy sell trigger', () => {
       .get()
     expect(creditSnap.docs.length).toBe(1)
     expect(creditSnap.docs[0].data()?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT)
+
+    await assertVolumeTotal(token.uid, 5)
   })
 })
 

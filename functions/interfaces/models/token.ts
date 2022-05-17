@@ -40,20 +40,6 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
-  readonly errors?: string[];
-
-  // TODO
-  readonly avg24h: number;
-
-  readonly avg7d: number;
-
-  // Total token volume traded (fullfilled) in past 24h
-  readonly volume24h: number;
-  readonly volume7d: number;
-
-  readonly volumeTotal: number;
-  // percentage change as integer.
-  readonly change24hPrc: number;
 }
 
 export interface TokenDistribution extends BaseSubCollection {
@@ -80,6 +66,7 @@ export interface TokenDistribution extends BaseSubCollection {
 }
 
 export interface TokenPurchase extends BaseRecord {
+  readonly token: string;
   readonly sell: string;
   readonly buy: string;
   readonly count: number;
@@ -112,4 +99,8 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly paymentTransactionId?: string;
   readonly creditTransactionId?: string;
   readonly expiresAt: Timestamp;
+}
+
+export interface TokenStats extends BaseSubCollection {
+  readonly volumeTotal: number;
 }

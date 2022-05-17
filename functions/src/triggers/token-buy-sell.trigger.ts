@@ -31,6 +31,7 @@ const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder): TokenP
   const tokens = Math.min(tokensLeft, tokensNeeded);
   return ({
     uid: getRandomEthAddress(),
+    token: buy.token,
     sell: sell.uid,
     buy: buy.uid,
     count: tokens,

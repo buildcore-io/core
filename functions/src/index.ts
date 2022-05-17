@@ -13,6 +13,7 @@ import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onTokenBuySellCreated } from './triggers/token-buy-sell.trigger';
+import { onTokenPurchaseCreated } from './triggers/token-purchase.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
 
@@ -82,6 +83,7 @@ exports[WEN_FUNC.airdropToken] = airdropToken;
 exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken;
 exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate;
 exports['trigger_onTokenBuySellCreated'] = onTokenBuySellCreated;
+exports['trigger_onTokenPurchaseCreated'] = onTokenPurchaseCreated;
 exports[WEN_FUNC.cancelBuyOrSell] = cancelBuyOrSell;
 exports[WEN_FUNC.sellToken] = sellToken;
 exports[WEN_FUNC.buyToken] = buyToken;
