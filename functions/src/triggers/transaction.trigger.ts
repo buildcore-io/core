@@ -20,12 +20,12 @@ export const transactionWrite = functions.runWith({
   const prev = <Transaction | undefined>change.before.data();
   const curr = <Transaction>change.after.data();
 
-  const isCreditOrBillPayment = curr.type === TransactionType.CREDIT || curr.type === TransactionType.BILL_PAYMENT
-  const isCreate = prev === undefined
-  const shouldRetry = !prev?.shouldRetry && curr.shouldRetry
+  const isCreditOrBillPayment = (curr.type === TransactionType.CREDIT || curr.type === TransactionType.BILL_PAYMENT);
+  const isCreate = (prev === undefined);
+  const shouldRetry = (!prev?.shouldRetry && curr.shouldRetry);
 
   if (isCreditOrBillPayment && (isCreate || shouldRetry)) {
-    await execute(curr, WALLET_PAY_IN_PROGRESS)
+    await execute(curr, WALLET_PAY_IN_PROGRESS);
   }
 });
 
@@ -41,7 +41,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
 
     // Data object.
     const tranData = <Transaction>sfDoc.data();
-    const payload = <PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction>tranData.payload
+    const payload = <BillPaymentTransaction | CreditPaymentTransaction>tranData.payload
     if (
       !(payload.walletReference?.chainReference && payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS)) &&
       // Either not on chain yet or there was an error.
@@ -56,6 +56,10 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
         chainReferences: [],
         count: 0
       };
+
+      if (payload.walletReference?.chainReference) {
+        payload.walletReference.chainReferences?.push(payload.walletReference.chainReference);
+      }
 
       // Reset defaults.
       walletResponse.error = null;
@@ -86,14 +90,9 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   const payload = <BillPaymentTransaction>tranData.payload
 
   // If process is required.
-  if (payload.walletReference.chainReference !== WALLET_PAY_IN_PROGRESS) {
+  if (payload.walletReference?.chainReference !== WALLET_PAY_IN_PROGRESS) {
     return;
   }
-
-  // Delay because it's retry --- this is no longer required.
-  // if (payload.walletReference.count > 1) {
-  //   await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY)));
-  // } else
 
   if (payload.delay > 0) { // Standard Delay required.
     await new Promise(resolve => setTimeout(resolve, payload.delay));
