@@ -54,6 +54,8 @@ const createBillPayment =
         reconciled: true,
         royalty: false,
         void: false,
+        token: token.uid,
+        quantity: distribution.totalBought || 0
       }
     };
     batch.create(docRef, data)
