@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DescriptionItem } from '@components/description/description.component';
 import { getRandomColor, INITIAL_COLORS } from '@core/utils/colors.utils';
@@ -32,6 +33,7 @@ export class MetricsPage implements OnInit {
 
   constructor(
     public data: DataService,
+    private decimalPipe: DecimalPipe,
     private cd: ChangeDetectorRef
   ) {}
 
@@ -40,8 +42,8 @@ export class MetricsPage implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(token => {
         this.breakdownData = [
-          { title: $localize`Total token supply`, value: this.data.formatBest(token?.totalSupply, token?.symbol) },
-          { title: $localize`Price per token`, value: this.data.formatBest((token?.pricePerToken || 0)) },
+          { title: $localize`Total token supply`, value: this.decimalPipe.transform(this.data.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol },
+          { title: $localize`Price per token`, value: (token?.pricePerToken || 0) + ' Mi'},
           ...(token?.allocations || []).map(a => ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, token)})` }))
         ];
         this.setLineChartData(token);
@@ -70,6 +72,6 @@ export class MetricsPage implements OnInit {
 
   public percentageTokenAmount(a: TokenAllocation, token?: Token): string {
     if (!token) return '';
-    return this.data.formatBest(Math.floor(token.totalSupply * Number(a.percentage) / 100), token.symbol);
+    return this.decimalPipe.transform((token.totalSupply / 1000 / 1000 * Number(a.percentage) / 100).toFixed(2), '1.0-2') + ' ' + token.symbol;
   }
 }

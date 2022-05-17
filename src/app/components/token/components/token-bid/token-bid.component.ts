@@ -142,12 +142,12 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+  public formatBest(amount: number | undefined | null): string {
     if (!amount) {
       return '-';
     }
 
-    return UnitsHelper.formatBest(amount, 2, symbol);
+    return UnitsHelper.formatBest(amount, 2);
   }
 
   public getExplorerLink(link: string): string {
@@ -183,7 +183,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     const params: any = {
       token: this.token.uid,
-      count: Number(this.amountControl.value),
+      count: Number(this.amountControl.value * 1000 * 1000),
       price: Number(this.offeredRateControl.value)
     };
 

@@ -57,7 +57,7 @@
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ formatBest(newService.priceControl?.value) }}
+                {{ newService.priceControl?.value }} Mi
             </div>
 
             <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
@@ -65,7 +65,7 @@
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ formatBest(newService.totalSupplyControl?.value, newService.symbolControl?.value) }}
+                {{ newService.totalSupplyControl?.value + ' ' + newService.symbolControl?.value }}
             </div>
         </div>
 

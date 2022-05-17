@@ -1,6 +1,6 @@
 <ng-container *ngIf="deviceService.isMobile$ | async">
   <div class="flex items-center mt-5 ml-6">
-    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-2 border-tags-border dark:border-tags-border-dark min-w-10" nzShape="circle">
+    <nz-avatar [nzSrc]="avatarUrl" [nzSize]="40" class="border-2 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-10" nzShape="circle">
     </nz-avatar>
     <h1 class="w-2/3 mb-0 ml-4 text-2xl">{{ (data.space$ | async)?.name }}</h1>
   </div>
@@ -16,7 +16,7 @@
 </ng-container>
 
 <wen-share
-  class="block mb-4 p-6 lg:p-0"
+  class="block p-6 mb-4 lg:p-0"
   i18n-shareText
   shareText="Check out space"
   [shareUrl]="getShareUrl(data.space$ | async)">
@@ -24,28 +24,28 @@
 
 <nz-card nzTitle="About">
   <p nz-typography [innerHtml]="(data.space$ | async)?.about | markdown"
-    class="text-base font-medium whitespace-pre-line text-foregrounds-primary dark:text-foregrounds-primary-dark break-words">
+    class="text-base font-medium break-words whitespace-pre-line text-foregrounds-primary dark:text-foregrounds-primary-dark">
   </p>
 </nz-card>
 
 <nz-card i18n-nzTitle nzTitle="Token Info" class="lg:mt-4"
   *ngIf="(data.token$ | async) && ((data.isGuardianWithinSpace$ | async) || ((data.token$ | async)?.approved && (data.token$ | async)?.saleStartDate))">
-  
+
   <div class="absolute top-6 right-6">
     <a nz-button nzType="default" [routerLink]="['/token', (data.token$ | async)?.uid, 'metrics']" nzSize="small">
       <div class="text-xs mr-0.5" i18n>Detail</div>
       <wen-icon-angle-right [size]="18"></wen-icon-angle-right>
     </a>
   </div>
-  
+
   <wen-description [items]="[
-      { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
-      { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
-      { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
-      { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + formatBest((data.token$ | async)?.pricePerToken || 0) },
-      { title: tokenInfoLabels[4], value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
-      { title: tokenInfoLabels[5], value:  formatBest((data.token$ | async)?.totalSupply, (data.token$ | async)?.symbol) },
-      { title: tokenInfoLabels[6], value: 'Fixed' }
+    { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
+    { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
+    { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
+    { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + (data.token$ | async)?.pricePerToken + ' Mi' },
+    { title: tokenInfoLabels[4], value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
+    { title: tokenInfoLabels[5], value:  (data.formatTokenBest((data.token$ | async)?.totalSupply) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol },
+    { title: tokenInfoLabels[6], value: 'Fixed' }
   ]"></wen-description>
   <ng-template #tokenAvatar>
       <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
@@ -62,7 +62,7 @@
 
 <nz-card *ngIf="deviceService.isDesktop$ | async" class="lg:mt-4">
   <div class="flex flex-col items-baseline space-y-3">
-    <div class="w-full flex items-center justify-between">
+    <div class="flex items-center justify-between w-full">
       <a nz-button nzType="link" class="wen-space-links" style="border-radius: 0px" [routerLink]="['members']">
         <div>
           <div class="flex items-center">
@@ -70,7 +70,7 @@
             <div class="ml-2">{{ (data.space$ | async)?.totalMembers }}</div>
             <div class="ml-1" i18n>members</div>
           </div>
-          <div *ngIf="(data.space$ | async)?.totalPendingMembers" class="ml-6 flex items-center">
+          <div *ngIf="(data.space$ | async)?.totalPendingMembers" class="flex items-center ml-6">
              <div>({{ (data.space$ | async)?.totalPendingMembers }}</div>
              <div class="ml-1" i18n>pending</div>)
           </div>
@@ -86,7 +86,7 @@
           <wen-icon-refresh [size]="16" class="animate-spin" ></wen-icon-refresh>
           <div class="ml-2" i18n>Exporting members</div>
         </ng-container>
-        
+
       </button>
     </div>
     <nz-tag class="px-2 py-1 text-xs border-none rounded-md bg-tags-commencing dark:bg-tags-commencing-dark border-tags-member dark:border-tags-member-dark text-foregrounds-primary dark:text-foregrounds-primary-dark">

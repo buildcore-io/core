@@ -57,12 +57,20 @@ export class TokenOfferPreMintComponent {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+  public formatBest(amount: number | undefined | null): string {
     if (!amount) {
       return '-';
     }
 
-    return UnitsHelper.formatBest(amount, 2, symbol);
+    return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public reset(): void {
@@ -82,7 +90,7 @@ export class TokenOfferPreMintComponent {
 
     const params: any = {
       token: this.token.uid,
-      count: Number(this.amountControl.value),
+      count: Number(this.amountControl.value * 1000 * 1000),
       price: Number(this.offeredRateControl.value)
     };
 

@@ -84,7 +84,7 @@
                 Volume (24h)
             </div>
             <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-                {{ formatBest(this.token?.volume24h || 0, this.token?.symbol)}}
+                {{ (formatTokenBest(this.token?.volume24h || 0) | number : '1.0-2') + ' ' + this.token?.symbol}}
             </div>
         </div>
 

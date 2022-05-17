@@ -154,12 +154,20 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+  public formatBest(amount: number | undefined | null): string {
     if (!amount) {
-      return '0 ' + symbol;
+      return '0 i';
     }
 
-    return UnitsHelper.formatBest(amount, 2, symbol);
+    return UnitsHelper.formatBest(amount, 2);
+  }
+
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public getEndDate(): dayjs.Dayjs {

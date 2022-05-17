@@ -125,7 +125,7 @@ export class SpaceAboutComponent implements OnDestroy {
   public exportMembers(): void {
     if (this.exportingMembers) return;
     this.exportingMembers = true;
-    
+
     const space = this.data.space$.value;
     if (!space?.uid) return;
 
@@ -150,12 +150,12 @@ export class SpaceAboutComponent implements OnDestroy {
       });
   }
 
-  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+  public formatBest(amount: number | undefined | null): string {
     if (!amount) {
-      return '0 ' + symbol;
+      return '0 i';
     }
 
-    return UnitsHelper.formatBest(amount, 2, symbol);
+    return UnitsHelper.formatBest(amount, 2);
   }
 
   public ngOnDestroy(): void {

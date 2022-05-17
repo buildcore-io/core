@@ -83,7 +83,7 @@ export class NewPage implements OnInit {
     res.description = data.description;
     res.space = data.space;
     res.pricePerToken = Number(data.price);
-    res.totalSupply = Number(data.totalSupply);
+    res.totalSupply = Number(data.totalSupply * 1000 * 1000);
     res.allocations = data.allocations;
     res.links = data.links.map((l: { url: string }) => l.url);
     res.icon = data.icon;

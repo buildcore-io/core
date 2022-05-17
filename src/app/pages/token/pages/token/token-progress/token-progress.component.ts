@@ -56,7 +56,11 @@ export class TokenProgressComponent {
   }
 
   public getPotentialTokens(): number {
-    return Math.floor((this.memberDistribution?.totalDeposit || 0) / (this.token?.pricePerToken || 0));
+    if (!this.memberDistribution?.totalDeposit) {
+      return 0;
+    }
+
+    return ((this.memberDistribution?.totalDeposit || 0) / (this.token?.pricePerToken || 0));
   }
 
   public getPrc(): number {

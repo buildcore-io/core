@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CountdownModule } from '@components/countdown/countdown.module';
@@ -70,6 +70,9 @@ import { TokenRoutingModule } from './token-routing.module';
     NewIntroductionComponent,
     TradePage,
     TokenEditComponent
+  ],
+  providers: [
+    DecimalPipe
   ],
   imports: [
     CommonModule,

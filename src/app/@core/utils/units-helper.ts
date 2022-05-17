@@ -1,6 +1,6 @@
 // Copyright 2020 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
-export type Units = "pIOTA" | "tIOTA" | "gIOTA" | "mIOTA" | "kIOTA" | "IOTA";
+export type Units = "Pi" | "Ti" | "Gi" | "Mi" | "Ki" | "i";
 
 // Thank you IOTA for this file. I include it manually instead of including whole @iota/iota.js as
 // that would require node polyfill I don't want to mix in this project.
@@ -13,12 +13,12 @@ export class UnitsHelper {
    * Map units.
    */
   public static readonly UNIT_MAP: { [unit in Units]: { val: number; dp: number } } = {
-    IOTA: { val: 1, dp: 0 },
-    kIOTA: { val: 1000, dp: 3 },
-    mIOTA: { val: 1000000, dp: 6 },
-    gIOTA: { val: 1000000000, dp: 9 },
-    tIOTA: { val: 1000000000000, dp: 12 },
-    pIOTA: { val: 1000000000000000, dp: 15 }
+    i: { val: 1, dp: 0 },
+    Ki: { val: 1000, dp: 3 },
+    Mi: { val: 1000000, dp: 6 },
+    Gi: { val: 1000000000, dp: 9 },
+    Ti: { val: 1000000000000, dp: 12 },
+    Pi: { val: 1000000000000000, dp: 15 }
   };
 
   /**
@@ -27,8 +27,8 @@ export class UnitsHelper {
    * @param decimalPlaces The number of decimal places to display.
    * @returns The formated value.
    */
-  public static formatBest(value: number, decimalPlaces = 2, symbol = 'IOTA'): string {
-    return UnitsHelper.formatUnits(value, UnitsHelper.calculateBest(value), decimalPlaces, symbol);
+  public static formatBest(value: number, decimalPlaces = 2): string {
+    return UnitsHelper.formatUnits(value, UnitsHelper.calculateBest(value), decimalPlaces);
   }
 
   /**
@@ -38,7 +38,7 @@ export class UnitsHelper {
    * @param decimalPlaces The number of decimal places to display.
    * @returns The formated value.
    */
-  public static formatUnits(value: number, unit: Units, decimalPlaces = 2, symbol = 'IOTA'): string {
+  public static formatUnits(value: number, unit: Units, decimalPlaces = 2): string {
     if (!UnitsHelper.UNIT_MAP[unit]) {
       throw new Error(`Unrecognized unit ${unit}`);
     }
@@ -47,9 +47,9 @@ export class UnitsHelper {
       return `0 ${unit}`;
     }
 
-    return unit === "IOTA"
-      ? `${value} ${symbol}`
-      : `${UnitsHelper.convertUnits(value, "IOTA", unit).toFixed(decimalPlaces)} ${unit.replace('IOTA', symbol)}`;
+    return unit === "i"
+      ? `${value} i`
+      : `${UnitsHelper.convertUnits(value, "i", unit).toFixed(decimalPlaces)} ${unit}`;
   }
 
   /**
@@ -58,7 +58,7 @@ export class UnitsHelper {
    * @returns The best units for the value.
    */
   public static calculateBest(value: number): Units {
-    let bestUnits: Units = "IOTA";
+    let bestUnits: Units = "i";
 
     if (!value) {
       return bestUnits;
@@ -66,16 +66,16 @@ export class UnitsHelper {
 
     const checkLength = Math.abs(value).toString().length;
 
-    if (checkLength > UnitsHelper.UNIT_MAP.pIOTA.dp) {
-      bestUnits = "pIOTA";
-    } else if (checkLength > UnitsHelper.UNIT_MAP.tIOTA.dp) {
-      bestUnits = "tIOTA";
-    } else if (checkLength > UnitsHelper.UNIT_MAP.gIOTA.dp) {
-      bestUnits = "gIOTA";
-    } else if (checkLength > UnitsHelper.UNIT_MAP.mIOTA.dp) {
-      bestUnits = "mIOTA";
-    } else if (checkLength > UnitsHelper.UNIT_MAP.kIOTA.dp) {
-      bestUnits = "kIOTA";
+    if (checkLength > UnitsHelper.UNIT_MAP.Pi.dp) {
+      bestUnits = "Pi";
+    } else if (checkLength > UnitsHelper.UNIT_MAP.Ti.dp) {
+      bestUnits = "Ti";
+    } else if (checkLength > UnitsHelper.UNIT_MAP.Gi.dp) {
+      bestUnits = "Gi";
+    } else if (checkLength > UnitsHelper.UNIT_MAP.Mi.dp) {
+      bestUnits = "Mi";
+    } else if (checkLength > UnitsHelper.UNIT_MAP.Ki.dp) {
+      bestUnits = "Ki";
     }
 
     return bestUnits;
@@ -98,7 +98,7 @@ export class UnitsHelper {
     if (!UnitsHelper.UNIT_MAP[toUnit]) {
       throw new Error(`Unrecognized toUnit ${toUnit}`);
     }
-    if (fromUnit === "IOTA" && value % 1 !== 0) {
+    if (fromUnit === "i" && value % 1 !== 0) {
       throw new Error("If fromUnit is 'i' the value must be an integer value");
     }
 

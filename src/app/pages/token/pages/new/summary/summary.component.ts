@@ -32,12 +32,12 @@ export class NewSummaryComponent {
     return $localize`Allocation` + ` #${index >= 10 ? index : '0' + index}`;
   }
 
-  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+  public formatBest(amount: number | undefined | null): string {
     if (!amount) {
-      return '0 ' + symbol;
+      return '0 i';
     }
 
-    return UnitsHelper.formatBest(amount, 2, symbol);
+    return UnitsHelper.formatBest(amount, 2);
   }
 
   public getSpace(spaceId: string): Space | undefined {

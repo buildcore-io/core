@@ -1,9 +1,9 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,17 +23,17 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Units } from '@core/utils/units-helper';
 import { environment } from '@env/environment';
 import {
-  DISCORD_REGEXP,
-  MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT,
-  NftAvailableFromDateMin,
-  TWITTER_REGEXP,
-  URL_REGEXP
+    DISCORD_REGEXP,
+    MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT,
+    NftAvailableFromDateMin,
+    TWITTER_REGEXP,
+    URL_REGEXP
 } from '@functions/interfaces/config';
 import {
-  Award,
-  Categories,
-  CollectionType,
-  Space
+    Award,
+    Categories,
+    CollectionType,
+    Space
 } from '@functions/interfaces/models';
 import { PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -41,17 +41,17 @@ import * as dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
-  NzUploadChangeParam,
-  NzUploadFile,
-  NzUploadXHRArgs
+    NzUploadChangeParam,
+    NzUploadFile,
+    NzUploadXHRArgs
 } from 'ng-zorro-antd/upload';
 import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import {
-  Collection,
-  CollectionAccess,
-  DiscountLine
+    Collection,
+    CollectionAccess,
+    DiscountLine
 } from './../../../../../../functions/interfaces/models/collection';
 
 const MAX_DISCOUNT_COUNT = 3;
@@ -586,6 +586,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   }
 
   private getRawPrice(price: number, unit: Units): number {
-    return price * (unit === 'gIOTA' ? 1000 * 1000 * 1000 : 1000 * 1000);
+    return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
   }
 }

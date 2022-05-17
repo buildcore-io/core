@@ -33,7 +33,7 @@
       <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
         <div class="flex items-center">
           <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary rounded-xl px-2.5 py-1 text-xs mr-6">
-              <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap" i18n>Offered rate (IOTA)</div>
+              <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap" i18n>Offered rate (Mi)</div>
           </div>
         </div>
         <input class="w-full p-0 outline-0"
@@ -47,7 +47,7 @@
             <div class="flex items-center">
                 <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary rounded-xl px-2.5 py-1 text-xs mr-6">
                     <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap" i18n>Your ballance</div>
-                    <div class="mt-1">{{ formatBest(memberDistribution?.tokenOwned, token?.symbol) }}</div>
+                    <div class="mt-1">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-2' }}</div>
                 </div>
             </div>
             <input class="w-full p-0 outline-0"
@@ -58,7 +58,7 @@
         </div>
 
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-            <div class="mt-1">{{formatBest(amountControl.value * (offeredRateControl.value))}}</div>
+            <div class="mt-1">{{formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl.value))}}</div>
         </div>
     </div>
 

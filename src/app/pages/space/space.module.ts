@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
+import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
@@ -88,6 +89,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzIconModule,
     NzTagModule,
     NzAlertModule,
+    DescriptionModule,
     NzUploadModule,
     NzAvatarModule,
     LayoutModule,

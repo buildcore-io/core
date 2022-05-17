@@ -46,7 +46,7 @@ export class TokenPublicSaleComponent {
     this.reset();
     this.wenOnClose.next();
   }
-  
+
   public reset(): void {
     this.isOpen = false;
     this.cd.markForCheck();
@@ -73,11 +73,11 @@ export class TokenPublicSaleComponent {
     return allocations?.find(a => a.isPublicSale);
   }
 
-  public percentageMarketCap(): string {
+  public percentageMarketCap(): number {
     if (!this.token) {
-      return '';
+      return 0;
     }
-    return this.formatBest(this.token?.pricePerToken * this.token?.totalSupply / 100 * Number(this.publicAllocation(this.token?.allocations)?.percentage || 0));
+    return (this.token?.pricePerToken * (this.token?.totalSupply) / 100 * Number(this.publicAllocation(this.token?.allocations)?.percentage || 0));
   }
 
   private validateForm(): boolean {

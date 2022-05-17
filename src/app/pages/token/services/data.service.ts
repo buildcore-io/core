@@ -19,19 +19,28 @@ export class DataService {
     this.space$.next(undefined);
   }
 
-  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+  public formatBest(amount: number | undefined | null): string {
     if (!amount) {
-      return '0 ' + symbol;
+      return '0 i';
     }
 
-    return UnitsHelper.formatBest(amount, 2, symbol);
+    return UnitsHelper.formatBest(amount, 2);
   }
 
-  public percentageMarketCap(percentage: number, token?: Token, symbol = 'IOTA'): string {
+  public percentageMarketCap(percentage: number, token?: Token): string {
     if (!token) {
       return '';
     }
-    return this.formatBest(token?.pricePerToken * (token?.totalSupply * percentage / 100), symbol);
+    return this.formatBest(token?.pricePerToken * (token?.totalSupply * percentage / 100));
+  }
+
+
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2);
   }
 
   public saleEndDate(token?: Token): dayjs.Dayjs {

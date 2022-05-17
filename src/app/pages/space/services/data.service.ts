@@ -46,7 +46,7 @@ export class DataService implements OnDestroy {
   public rejectedCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
   public pendingCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
   public availableCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
-  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(undefined); 
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -136,6 +136,14 @@ export class DataService implements OnDestroy {
 
     this.completedProposalsOn = true;
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsCompleted$));
+  }
+
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public listenToRejectedProposals(spaceId: string): void {

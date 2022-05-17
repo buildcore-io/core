@@ -124,8 +124,8 @@
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #openBidsBlock>
                         <tr *ngFor="let item of (bids$ | async)">
-                            <td>{{ formatBest(item.price) }}</td>
-                            <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
+                            <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                            <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
                             <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         </tr>
                     </ng-template>
@@ -154,8 +154,8 @@
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #myRequestsBlock>
                       <tr *ngFor="let item of (myBids$ | async)">
-                        <td>{{ formatBest(item.price) }}</td>
-                        <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
+                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
@@ -209,8 +209,8 @@
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #openAsksBlock>
                       <tr *ngFor="let item of (asks$ | async)">
-                        <td>{{ formatBest(item.price) }}</td>
-                        <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
+                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                       </tr>
                   </ng-template>
@@ -239,8 +239,8 @@
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #myAsksBlock>
                       <tr *ngFor="let item of (myAsks$ | async)">
-                        <td>{{ formatBest(item.price) }}</td>
-                        <td class="right">{{ formatBest(item.count, (token$ | async)?.symbol) }}</td>
+                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">

@@ -5,7 +5,6 @@
             <tr>
                 <th i18n>Item</th>
                 <th i18n>Amount</th>
-                <th i18n>Value</th>
             </tr>
         </thead>
         <tbody>
@@ -20,8 +19,7 @@
                         <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
                     </div>
                 </td>
-                <td class="font-medium">{{ formatBest(t.distribution.totalDeposit / (t.avg24h || t.avg7d || t.pricePerToken  || 1), t.symbol) }}</td>
-                <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
+                <td class="font-medium">{{ (formatTokenBest(t.distribution.tokenOwned) | number : '1.0-2') + ' ' + t.symbol  }}</td>
             </tr>
         </tbody>
     </nz-table>
