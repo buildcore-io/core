@@ -2,11 +2,11 @@ import chance from 'chance';
 import { Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { TokenStatus } from '../../interfaces/models/token';
+import admin from '../../src/admin.config';
 import { createMember as createMemberFunc } from "../../src/controls/member.control";
 import { createSpace as createSpaceFunc } from "../../src/controls/space.control";
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import admin from '../../src/admin.config';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
 
@@ -88,7 +88,7 @@ export const createSpace = async (spy: any, guardian: string, validate?: boolean
     const nextMilestone = await submitMilestoneFunc(spaceValidation.payload.targetAddress, spaceValidation.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
   }
-  return space
+  return <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data()
 }
 
 export const tokenProcessed = async (tokenId: string, distributionLength: number, reconciled: boolean) => {

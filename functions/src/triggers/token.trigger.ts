@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
+import { isEmpty } from 'lodash';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
@@ -56,6 +57,7 @@ const createBillPayment =
       }
     };
     batch.create(docRef, data)
+    return tranId
   }
 
 const createCredit = async (
@@ -65,8 +67,12 @@ const createCredit = async (
   orderTargetAddress: string,
   batch: admin.firestore.WriteBatch
 ) => {
+  if (!distribution.refundedAmount) {
+    return ''
+  }
   const member = <Member>(await memberDocRef(distribution.uid!).get()).data()
   const tranId = getRandomEthAddress();
+  const docRef = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
   const data = <Transaction>{
     type: TransactionType.CREDIT,
     uid: tranId,
@@ -85,13 +91,13 @@ const createCredit = async (
       invalidPayment: true
     }
   };
-  batch.create(admin.firestore().collection(COL.TRANSACTION).doc(tranId), data)
+  batch.create(docRef, data)
+  return tranId
 }
 
 const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution) => {
   const batch = admin.firestore().batch();
   const distributionDoc = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.uid}`)
-  batch.update(distributionDoc, { ...distribution, tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0), reconciled: true })
 
   const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
 
@@ -99,8 +105,16 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
   const orderTargetAddress = orderDoc.data()?.payload?.targetAddress
   const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
-  createBillPayment(token, distribution, payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
-  distribution.refundedAmount && await createCredit(token, distribution, payments, orderTargetAddress, batch)
+  const billPaymentId = createBillPayment(token, distribution, payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
+  const creditPaymentId = await createCredit(token, distribution, payments, orderTargetAddress, batch)
+
+  batch.update(distributionDoc, {
+    ...distribution,
+    tokenOwned: admin.firestore.FieldValue.increment(distribution.totalBought || 0),
+    reconciled: true,
+    billPaymentId,
+    creditPaymentId
+  })
   await batch.commit()
 }
 
@@ -152,7 +166,11 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     }
 
     const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
-    await Promise.all(promises);
+    const results = await Promise.allSettled(promises);
+    const errors = results.filter(r => r.status === 'rejected').map(r => JSON.stringify((<PromiseRejectedResult>r).reason))
 
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status: TokenStatus.PRE_MINTED })
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({
+      status: isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR,
+      errors
+    })
   })
