@@ -41,7 +41,8 @@ const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder): TokenP
 
 
 const createBillPayment = async (
-  amount: number,
+  count: number,
+  price: number,
   token: Token,
   sell: TokenBuySellOrder,
   buy: TokenBuySellOrder,
@@ -56,7 +57,7 @@ const createBillPayment = async (
     member: sell.owner,
     createdOn: serverTime(),
     payload: {
-      amount,
+      amount: count * price,
       sourceAddress: buyer.validatedAddress,
       previousOwnerEntity: 'member',
       previousOwner: buyer.uid,
@@ -64,7 +65,8 @@ const createBillPayment = async (
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
-      token: token.uid
+      token: token.uid,
+      tokenCount: count
     }
   }
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
@@ -119,7 +121,7 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
 
     updateSaleLock(prevSell, sell, transaction)
     updateBuy(prevBuy, buy, transaction)
-    const billPaymentId = await createBillPayment((sell.fulfilled - prevSell.fulfilled) * sell.price, token, sell, buy, transaction)
+    const billPaymentId = await createBillPayment((sell.fulfilled - prevSell.fulfilled), sell.price, token, sell, buy, transaction)
 
     transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), { ...purchase, billPaymentId })
     purchases.push({ ...purchase, billPaymentId })
