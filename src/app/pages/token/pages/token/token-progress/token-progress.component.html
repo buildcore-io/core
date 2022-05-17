@@ -2,7 +2,7 @@
     <nz-card i18n-nzTitle nzTitle="My purchased tokens" *ngIf="data.isAfterSaleStarted(token)">
         <wen-description *ngIf="!isPreMinted()" [items]="[
             { title: 'Total Deposit', value: data.formatBest((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
-            { title: 'Potential Tokens', value: data.formatBest((memberDistribution?.totalDeposit || 0) / (token?.pricePerToken || 0), token?.symbol), backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: 'Potential Tokens', value: data.formatBest(getPotentialTokens(), token?.symbol), backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <wen-description *ngIf="isPreMinted()" [items]="[
@@ -27,7 +27,7 @@
                 <div class="w-1/3 text-left break-words line-clamp-2 grow">
                     {{getPrc() | number : '1.2-2'}}% </div>
                 <div class="w-2/3 text-right break-words line-clamp-2 grow">
-                    <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{data.formatBest((token?.totalDeposit || 0) / (token?.pricePerToken || 0), token?.symbol)}}</span>
+                    <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{data.formatBest(getPotentialTokens(), token?.symbol)}}</span>
                     <span> / </span>
                     <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark" i18n>{{data.formatBest(getPublicSaleSupply(), token?.symbol)}}</span>
                 </div>

@@ -55,6 +55,10 @@ export class TokenProgressComponent {
     return (this.token?.totalSupply || 0) * sup;
   }
 
+  public getPotentialTokens(): number {
+    return Math.floor((this.memberDistribution?.totalDeposit || 0) / (this.token?.pricePerToken || 0));
+  }
+
   public getPrc(): number {
     const prc = ((this.token?.totalDeposit || 0) / (this.token?.pricePerToken || 0) / this.getPublicSaleSupply());
     return (prc > 1 ? 1 : prc) * 100;

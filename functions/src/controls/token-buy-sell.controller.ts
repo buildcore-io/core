@@ -9,6 +9,7 @@ import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
+import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
@@ -126,6 +127,7 @@ export const buyToken = functions.runWith({
     },
     linkedTransactions: []
   }
+  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await orderDoc.create(data);
   return <Transaction>(await orderDoc.get()).data()
 })

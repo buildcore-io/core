@@ -9,6 +9,7 @@ import { Member, Transaction, TransactionCreditType, TransactionOrderType, Trans
 import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
+import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
@@ -203,7 +204,7 @@ export const orderToken = functions.runWith({
   const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
   const newWallet = new WalletService();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
-
+  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await admin.firestore().runTransaction(async (transaction) => {
     const order = await transaction.get(orderDoc)
     if (!order.exists) {
@@ -377,6 +378,10 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     const tranId = getRandomEthAddress()
     const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 
+    const newWallet = new WalletService();
+    const targetAddress = await newWallet.getNewIotaAddressDetails();
+    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+
     await admin.firestore().runTransaction(async (transaction) => {
       const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
       const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
@@ -389,8 +394,6 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
         throw throwInvalidArgument(WenError.airdrop_already_claimed)
       }
 
-      const newWallet = new WalletService();
-      const targetAddress = await newWallet.getNewIotaAddressDetails();
       const orderData = <Transaction>{
         type: TransactionType.ORDER,
         uid: tranId,
