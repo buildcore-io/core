@@ -87,7 +87,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   const sfDoc = await refSource.get();
   const tranData = <Transaction>sfDoc.data();
 
-  const payload = <BillPaymentTransaction>tranData.payload
+  const payload = tranData.payload
 
   // If process is required.
   if (payload.walletReference?.chainReference !== WALLET_PAY_IN_PROGRESS) {
@@ -130,6 +130,10 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
       if (docNftData && docNftData.ipfsMetadata) {
         details.ipfsMetadata = docNftData.ipfsMetadata;
       }
+    }
+    if (payload.token) {
+      details.token = payload.token;
+      details.quantity = payload.quantity || 0
     }
   }
 

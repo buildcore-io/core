@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
-import { TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
@@ -74,6 +74,12 @@ describe('Buy sell trigger', () => {
     expect(purchase[0].data().price).toBe(MIN_IOTA_AMOUNT)
     expect(purchase[0].data().count).toBe(5)
 
+    const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
+    expect(billPayment.exists).toBe(true)
+    expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress)
+    const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
+    expect(billPayment.data()?.payload?.targetAddress).toBe(sellerAddress)
+
     const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
       .where('member', '==', seller)
@@ -104,14 +110,12 @@ describe('Buy sell trigger', () => {
     const buy = <TokenBuySellOrder>buySnap.docs[0].data()
     expect(buy.status).toBe(TokenBuySellOrderStatus.SETTLED)
 
-    const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.CREDIT)
-      .where('payload.type', '==', TransactionCreditType.TOKEN_BUY)
-      .where('member', '==', buyer)
-      .get()
-    expect(creditSnap.docs.length).toBe(1)
-    expect(creditSnap.docs[0].data().payload.amount).toBe(MIN_IOTA_AMOUNT * 5)
-    expect(creditSnap.docs[0].data().payload.sourceTransaction).toContain(buySnap.docs[0].data().paymentTransactionId)
+    const credit = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.creditTransactionId}`).get()).data()
+    expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT * 5)
+    expect(credit.payload.sourceTransaction).toContain(buySnap.docs[0].data().paymentTransactionId)
+    expect(credit?.payload?.sourceAddress).toBe(order.payload.targetAddress)
+    const buyerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()?.validatedAddress
+    expect(credit?.payload?.targetAddress).toBe(buyerAddress)
 
     const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)

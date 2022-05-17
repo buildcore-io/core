@@ -11,7 +11,8 @@ export interface TokenAllocation {
 export enum TokenStatus {
   AVAILABLE = 'available',
   PROCESSING = 'processing',
-  PRE_MINTED = 'pre_minted'
+  PRE_MINTED = 'pre_minted',
+  ERROR = ''
 }
 
 export enum TokenDistributionType {
@@ -39,6 +40,7 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
+  readonly errors?: string[];
 
   // TODO
   readonly avg24h: number;
@@ -62,6 +64,8 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly refundedAmount?: number;
   readonly totalBought?: number;
   readonly reconciled?: boolean;
+  readonly billPaymentId?: string;
+  readonly creditPaymentId?: string;
 
   readonly tokenDropped?: number;
   readonly tokenClaimed?: number;
@@ -80,6 +84,7 @@ export interface TokenPurchase extends BaseRecord {
   readonly buy: string;
   readonly count: number;
   readonly price: number;
+  readonly billPaymentId?: string;
 }
 
 export enum TokenBuySellOrderType {
@@ -105,5 +110,6 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly status: TokenBuySellOrderStatus;
   readonly orderTransactionId?: string;
   readonly paymentTransactionId?: string;
+  readonly creditTransactionId?: string;
   readonly expiresAt: Timestamp;
 }

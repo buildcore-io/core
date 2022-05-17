@@ -43,6 +43,7 @@ export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurc
   };
   const docRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
   transaction.create(docRef, data)
+  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`), uOn({ creditTransactionId: tranId }))
 }
 
 

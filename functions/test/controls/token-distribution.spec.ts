@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import bigDecimal from 'js-big-decimal';
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
-import { Space } from "../../interfaces/models";
+import { Space, Transaction } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
@@ -156,20 +156,34 @@ describe('Token trigger test', () => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
       const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, Number(bigDecimal.multiply(input.totalDeposit[i], MIN_IOTA_AMOUNT)));
       await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+      return <Transaction>order
     })
 
-    await Promise.all(orderPromises)
+    const orders = await Promise.all(orderPromises)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, input.totalDeposit.length, true)
 
     for (let i = 0; i < members.length; ++i) {
       const member = members[i]
       const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()).data()
+      const refundedAmount = Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT))
       expect(distribution.totalDeposit).toBe(Number(bigDecimal.multiply(input.totalDeposit[i], MIN_IOTA_AMOUNT)))
       expect(distribution.totalPaid).toBe(Number(bigDecimal.multiply(input.totalPaid[i], MIN_IOTA_AMOUNT)))
-      expect(distribution.refundedAmount).toBe(Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT)))
+      expect(distribution.refundedAmount).toBe(refundedAmount)
       expect(distribution.totalBought).toBe(input.tokenOwned[i])
       expect(distribution.tokenOwned).toBe(input.tokenOwned[i])
+      const paymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.billPaymentId}`).get()
+      expect(paymentDoc.exists).toBe(true)
+      expect(paymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(input.totalPaid[i], MIN_IOTA_AMOUNT)))
+      expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
+      expect(paymentDoc.data()?.payload?.targetAddress).toBe(space.validatedAddress)
+      if (refundedAmount) {
+        const creditPaymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`).get()
+        expect(creditPaymentDoc.exists).toBe(true)
+        const memberAddress = (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()?.validatedAddress
+        expect(creditPaymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
+        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(memberAddress)
+      }
     }
   })
 })
