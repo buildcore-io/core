@@ -90,7 +90,6 @@ const submitOrderFunc = async <T>(address: string, params: T) => {
 }
 
 describe('Ordering flows', () => {
-  jest.setTimeout(180000);
   let member: Member;
   let space: Space
 
