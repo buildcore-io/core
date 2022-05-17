@@ -133,6 +133,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
     }
     if (payload.token) {
       details.token = payload.token;
+      details.tokenCount = payload.tokenCount || 0
     }
   }
 

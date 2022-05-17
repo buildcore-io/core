@@ -135,6 +135,7 @@ export interface IOTATangleTransaction {
   owner?: EthAddress;
   nft?: EthAddress;
   token?: EthAddress;
+  tokenCount?: number;
   royalty: boolean;
   collection?: EthAddress;
 }
