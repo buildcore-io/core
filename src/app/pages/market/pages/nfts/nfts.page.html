@@ -8,12 +8,12 @@
     </div>
   </header>
   <main class="container">
-    <section class="container-results mr-5">
+    <section class="mr-5 container-results">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-results="results" let-refine="showMore">
           <div class="mt-10 xl:grid place-items-start">
-            <div class="wen-cards-wrapper mb-10">
-              <wen-nft-card class="outline-none w-full h-full"
+            <div class="mb-10 wen-cards-wrapper">
+              <wen-nft-card class="w-full h-full outline-none"
                             *ngFor="let hit of hits; trackBy: trackByUid"
                             [nft]="hit"
                             [collection]="getCollection(hit.collection)"
@@ -28,7 +28,7 @@
 
     </section>
 
-    <div class="container-wrapper">
+    <div class="container-wrapper" *ngIf="(deviceService.isMobile$ | async) !== true">
       <section class="container-filters">
         <div class="container-header">
           <h4>Filters&Sorts</h4>

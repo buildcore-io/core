@@ -6,11 +6,11 @@
   </header>
   <main class="container">
     <div class="container-wrapper">
-      <div class="container-results mr-5">
+      <div class="mr-5 container-results">
         <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
           <ng-template let-hits="hits" let-refine="showMore">
             <div class="mt-10 xl:grid place-items-start">
-            <div class="wen-cards-wrapper mb-10">
+            <div class="mb-10 wen-cards-wrapper">
               <wen-space-card class="w-full h-full outline-none"
                               *ngFor="let space of hits; trackBy: trackByUid"
                               [space]="space">
@@ -22,7 +22,7 @@
         </ais-infinite-hits>
       </div>
     </div>
-      <section class="container-filters w-[150px]">
+      <section class="container-filters w-[150px]" *ngIf="(deviceService.isMobile$ | async) !== true">
         <div class="container-header">
           <h4>Filters&Sorts</h4>
           <wen-sort-by

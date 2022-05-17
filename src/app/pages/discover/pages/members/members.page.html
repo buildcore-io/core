@@ -5,11 +5,11 @@
     </div>
   </header>
   <main class="container">
-    <section class="container-results mr-10">
+    <section class="mr-10 container-results">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
           <div class="mt-10 xl:grid place-items-start">
-            <div class="wen-cards-wrapper mb-10">
+            <div class="mb-10 wen-cards-wrapper">
               <wen-member-card class="relative w-full h-full outline-none"
                                *ngFor="let member of hits; trackBy: trackByUid"
                                [member]="member"
@@ -46,10 +46,10 @@
         </div>
 
 
-        <div class="container-body">
+        <div class="container-body" *ngIf="(deviceService.isMobile$ | async) !== true">
           <nz-collapse>
 
-            <nz-collapse-panel
+            <!-- <nz-collapse-panel
               nzHeader="Spaces"
               nzActive="true"
             >
@@ -60,7 +60,7 @@
                 searchPlaceholder="Search for space…"
               >
               </wen-refinement-list>
-            </nz-collapse-panel>
+            </nz-collapse-panel> -->
 
           </nz-collapse>
         </div>

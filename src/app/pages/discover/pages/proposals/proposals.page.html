@@ -6,12 +6,12 @@
   </header>
 
   <main class="container">
-    <section class="container-results mr-5">
+    <section class="mr-5 container-results">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
           <div class="mt-10 xl:grid place-items-start">
-            <div class="wen-cards-wrapper mb-10">
-              <wen-proposal-card class="w-full outline-none w-full h-full"
+            <div class="mb-10 wen-cards-wrapper">
+              <wen-proposal-card class="w-full h-full outline-none"
                                  *ngFor="let proposal of hits; trackBy: trackByUid"
                                  [proposal]="proposal"
                                  [fullWidth]="(deviceService.isMobile$ | async) || false"
@@ -23,7 +23,7 @@
         </ng-template>
       </ais-infinite-hits>
     </section>
-      <section class="container-filters">
+      <section class="container-filters" *ngIf="(deviceService.isMobile$ | async) !== true">
         <div class="container-header">
           <h4>Filters&Sorts</h4>
           <wen-sort-by
@@ -44,7 +44,7 @@
           </ais-stats>
         </div>
         <div class="container-body">
-          <ais-panel
+          <!-- <ais-panel
             header="ALL / Approved only"
           >
             <ais-toggle
@@ -62,7 +62,7 @@
               label="active"
               [on]="true"
             ></ais-toggle>
-          </ais-panel>
+          </ais-panel> -->
         </div>
       </section>
   </main>
