@@ -183,7 +183,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     const params: any = {
       token: this.token.uid,
-      count: Number(this.amountControl.value * 1000 * 1000),
+      count: Number(this.amountControl.value),
       price: Number(this.offeredRateControl.value)
     };
 

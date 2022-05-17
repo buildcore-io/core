@@ -100,7 +100,7 @@
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <span i18n>Send</span> {{ formatBest(amountControl.value * (token?.pricePerToken || 0) * 1000 * 1000) }} <span i18n>IOTA to following address:</span>
+          <span i18n>Send</span> {{ formatBest(amountControl.value * (token?.pricePerToken || 0)) }} <span i18n>IOTA to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -123,7 +123,7 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0))?.toString()">
+        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0)/1000/1000)?.toString()">
     </wen-wallet-deeplink>
 </ng-template>
 
@@ -143,13 +143,13 @@
 
         <div class="flex-1 px-6 py-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark h-14">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Price</div>
-            <div class="mt-1">{{ formatBest(amountControl.value * (token?.pricePerToken || 0) * 1000 * 1000) }}</div>
+            <div class="mt-1">{{ formatBest(amountControl.value * (token?.pricePerToken || 0)) }}</div>
         </div>
     </div>
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <span i18n>Send</span> {{ formatBest(amountControl.value * (token?.pricePerToken || 0) * 1000 * 1000) }} <span i18n>IOTA to following address:</span>
+          <span i18n>Send</span> {{ formatBest(amountControl.value * (token?.pricePerToken || 0)) }} <span i18n>IOTA to following address:</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -172,7 +172,7 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0))?.toString()">
+        [targetAmount]="((amountControl.value * (token?.pricePerToken || 0) || 0)/1000/1000)?.toString()">
     </wen-wallet-deeplink>
 
     <div class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
