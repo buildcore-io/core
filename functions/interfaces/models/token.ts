@@ -40,7 +40,7 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
-  readonly errors: string[];
+  readonly errors?: string[];
 
   // TODO
   readonly avg24h: number;
