@@ -50,6 +50,7 @@ const createBillPayment = async (
 ) => {
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
+  const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
   const data = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -58,10 +59,10 @@ const createBillPayment = async (
     createdOn: serverTime(),
     payload: {
       amount: count * price,
-      sourceAddress: buyer.validatedAddress,
+      sourceAddress: order.payload.targetAddress,
+      targetAddress: seller.validatedAddress,
       previousOwnerEntity: 'member',
       previousOwner: buyer.uid,
-      targetAddress: seller.validatedAddress,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,

@@ -76,6 +76,9 @@ describe('Buy sell trigger', () => {
 
     const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
     expect(billPayment.exists).toBe(true)
+    expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress)
+    const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
+    expect(billPayment.data()?.payload?.targetAddress).toBe(sellerAddress)
 
     const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
@@ -110,6 +113,9 @@ describe('Buy sell trigger', () => {
     const credit = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.creditTransactionId}`).get()).data()
     expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT * 5)
     expect(credit.payload.sourceTransaction).toContain(buySnap.docs[0].data().paymentTransactionId)
+    expect(credit?.payload?.sourceAddress).toBe(order.payload.targetAddress)
+    const buyerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()?.validatedAddress
+    expect(credit?.payload?.targetAddress).toBe(buyerAddress)
 
     const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BILL_PAYMENT)
