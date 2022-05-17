@@ -7,6 +7,7 @@ import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
 import { Award, Collection } from '@functions/interfaces/models';
 import { Token } from '@functions/interfaces/models/token';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
 import { AwardApi, AwardFilter } from './../../../@api/award.api';
@@ -45,7 +46,7 @@ export class DataService implements OnDestroy {
   public rejectedCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
   public pendingCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
   public availableCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
-  public tokens$: BehaviorSubject<Token[] | undefined> = new BehaviorSubject<Token[] | undefined>(undefined); 
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(undefined); 
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -210,7 +211,13 @@ export class DataService implements OnDestroy {
   }
 
   public listenToTokens(spaceId: string): void {
-    this.subscriptions$.push(this.tokenApi.space(spaceId).subscribe(this.tokens$));
+    this.subscriptions$.push(
+      this.tokenApi.space(spaceId)
+        .pipe(
+          map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null)
+        )
+        .subscribe(this.token$)
+    );
   }
 
   public isLoading(arr: any): boolean {

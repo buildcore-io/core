@@ -3,6 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
+import { UnitsHelper } from '@core/utils/units-helper';
 import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import Papa from 'papaparse';
@@ -31,6 +32,15 @@ export class SpaceAboutComponent implements OnDestroy {
   public exportingMembers = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
+  public tokenInfoLabels: string[] = [
+    $localize`Icon`,
+    $localize`Name`,
+    $localize`Symbol`,
+    $localize`Price`,
+    $localize`Network`,
+    $localize`Total supply`,
+    $localize`Type`
+  ];
   private spacesSubscription?: Subscription;
   constructor(
     public deviceService: DeviceService,
@@ -138,6 +148,14 @@ export class SpaceAboutComponent implements OnDestroy {
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${filteredSpaceName}_members.csv`);
         this.cd.markForCheck();
       });
+  }
+
+  public formatBest(amount: number | undefined | null, symbol = 'IOTA'): string {
+    if (!amount) {
+      return '0 ' + symbol;
+    }
+
+    return UnitsHelper.formatBest(amount, 2, symbol);
   }
 
   public ngOnDestroy(): void {
