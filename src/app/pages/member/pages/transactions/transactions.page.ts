@@ -117,7 +117,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
           fields,
           data: transactions.map(t => [t.uid, this.transactionService.getTitle(t), t.createdOn, t.payload.amount, this.transactionService.getExplorerLink(t)])
         });
-    
+
         download(`data:text/csv;charset=utf-8${csv}`, `soonaverse_${this.data.member$.value?.uid}_transactions.csv`);
         this.cd.markForCheck();
       });
@@ -132,7 +132,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   private cancelSubscriptions(): void {

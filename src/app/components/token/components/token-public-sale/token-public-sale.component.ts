@@ -67,7 +67,7 @@ export class TokenPublicSaleComponent {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public publicAllocation(allocations?: TokenAllocation[]): TokenAllocation| undefined {

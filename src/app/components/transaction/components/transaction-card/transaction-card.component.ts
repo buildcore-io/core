@@ -19,12 +19,12 @@ export class TransactionCardComponent {
     public deviceService: DeviceService,
     public transactionService: TransactionService
   ) {}
-  
+
   public formatBest(amount: number | undefined | null): string {
     if (!amount) {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 }

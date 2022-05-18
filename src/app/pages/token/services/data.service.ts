@@ -24,7 +24,7 @@ export class DataService {
       return '0 i';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public percentageMarketCap(percentage: number, token?: Token): string {

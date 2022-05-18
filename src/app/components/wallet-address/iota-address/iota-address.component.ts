@@ -196,7 +196,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public isSpaceVerification(): boolean {

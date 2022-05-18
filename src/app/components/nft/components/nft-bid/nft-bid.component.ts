@@ -61,7 +61,7 @@ export class NftBidComponent implements OnInit {
     return this._nft;
   }
 
-  @Input() 
+  @Input()
   set collection(value: Collection|null|undefined) {
     this._collection = value;
     if (this.collection) {
@@ -205,7 +205,7 @@ export class NftBidComponent implements OnInit {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public goToNft(): void {

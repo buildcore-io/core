@@ -44,7 +44,7 @@ export class TokensPage implements OnInit, OnDestroy {
       return '0 i';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public formatTokenBest(amount?: number|null): string {

@@ -32,6 +32,7 @@
             </ng-container>
 
             <wen-countdown
+                *ngIf="data.getCountdownDate(data.nft$ | async)"
                 class="my-5"
                 wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
                 tabClassName="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
@@ -314,9 +315,9 @@
             </nz-card>
 
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
-                
+
                 <wen-description [items]="[
-                    getOnChainInfo(data.orders$ | async) ? 
+                    getOnChainInfo(data.orders$ | async) ?
                         { title: systemInfoLabels[0], value: getOnChainInfo(data.orders$ | async), link: { label: systemInfoValues.view, href: getExplorerLink(getOnChainInfo(data.orders$ | async)!) }, valueTemplate: onChaingRecordTooltipIcon } :
                         { title: systemInfoLabels[0], value: systemInfoValues.preparing },
                     { title: systemInfoLabels[1], value: systemInfoValues.tokenization, valueTemplate: migrateTooltipIcon },

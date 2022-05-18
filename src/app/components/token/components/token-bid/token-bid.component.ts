@@ -147,7 +147,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       return '-';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public getExplorerLink(link: string): string {
