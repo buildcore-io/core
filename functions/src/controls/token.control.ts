@@ -18,7 +18,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, canAccessToken, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
@@ -54,7 +54,8 @@ const createSchema = () => ({
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
-  termsAndConditions: Joi.string().uri().required()
+  termsAndConditions: Joi.string().uri().required(),
+  access: Joi.number().min(0).max(4).integer().required()
 })
 
 const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
@@ -212,7 +213,12 @@ export const orderToken = functions.runWith({
 
   const tranId = tokenOrderTransactionDocId(owner, token)
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
-  const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+
+  if (!await canAccessToken(space, token, owner)) {
+    throw throwInvalidArgument(WenError.can_not_access_token)
+  }
+
   const newWallet = new WalletService();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
@@ -231,7 +237,7 @@ export const orderToken = functions.runWith({
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: space?.validatedAddress,
+          beneficiaryAddress: space.validatedAddress,
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,

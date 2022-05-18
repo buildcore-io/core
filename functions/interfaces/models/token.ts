@@ -19,6 +19,14 @@ export enum TokenDistributionType {
   FIXED = 'fixed'
 }
 
+export enum TokenAccess {
+  OPEN = 0,
+  MEMBERS_ONLY = 1,
+  GUARDIANS_ONLY = 2,
+  MEMBERS_WITH_BADGE = 3,
+  MEMBERS_WITH_NFT_FROM_SPACE = 4
+}
+
 export interface Token extends BaseRecord {
   readonly name: string;
   readonly symbol: string;
@@ -42,6 +50,7 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
+  readonly access: TokenAccess;
 }
 
 export interface TokenDrop {
