@@ -43,25 +43,11 @@
             </div>
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    24h Volume
-                </div>
-                <div class="mt-2 text-lg font-bold">
-                  {{ formatTokenBest((listenVolume24h$ | async)) | number : '1.0' }} {{ (data.token$ | async)?.symbol }}
-                </div>
-            </div>
-            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
-              <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    7d Volume
-              </div>
-              <div class="mt-2 text-lg font-bold">
-                {{ formatTokenBest(listenVolume7d$ | async) | number : '1.0' }} {{ (data.token$ | async)?.symbol }}
-              </div>
-            </div>
-            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
-                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Change 24h
                 </div>
-                <div class="mt-2 text-lg font-bold">
+                <div
+                [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+                class="mt-2 text-lg font-bold">
                   {{ (listenChangePrice24h$ | async) | percent }}
                 </div>
             </div>
