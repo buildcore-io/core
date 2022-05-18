@@ -1,8 +1,12 @@
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { DescriptionItem } from '@components/description/description.component';
 import { DeviceService } from '@core/services/device';
-import { TokenAllocation } from '@functions/interfaces/models/token';
+import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from '@pages/token/services/data.service';
 import { NewService } from '@pages/token/services/new.service';
+import { merge } from 'rxjs';
 import { StepType } from '../new.page';
 
 @UntilDestroy()
@@ -17,11 +21,14 @@ export class NewMetricsComponent implements OnInit {
 
   public isTotalValid = true;
   public isPublicSaleValid = true;
+  public breakdownData: DescriptionItem[] = [];
 
   constructor(
     public newService: NewService,
     public deviceService: DeviceService,
-    private cd: ChangeDetectorRef
+    public data: DataService,
+    private cd: ChangeDetectorRef,
+    private decimalPipe: DecimalPipe
   ) {}
 
   public ngOnInit(): void {
@@ -32,6 +39,16 @@ export class NewMetricsComponent implements OnInit {
         const publicSales = allocations.filter((a) => a.isPublicSale);
         this.isTotalValid = total === 100;
         this.isPublicSaleValid = publicSales.length <= 1;
+        this.cd.markForCheck();
+      });
+
+    merge(
+      this.newService.allocations?.valueChanges,
+      this.newService.priceControl?.valueChanges,
+      this.newService.totalSupplyControl?.valueChanges  
+    ).pipe(untilDestroyed(this))
+      .subscribe(() => {
+        this.setBreakdownData();
         this.cd.markForCheck();
       });
   }
@@ -48,5 +65,20 @@ export class NewMetricsComponent implements OnInit {
     return index === 1 ?
       $localize`Please make sure that there is one allocation market as Public Sale as this could be later sold on Soonaverse. 
         ou can initiate Public sale once the token is created and approved.` : '';
+  }
+
+  private setBreakdownData(): void {
+    if (!this.newService.allocations.value?.length || !this.newService.totalSupplyControl?.value || !this.newService.priceControl?.value) {
+      this.breakdownData = [];
+    } else {
+      this.breakdownData = [
+        { title: $localize`Total token supply`, value: this.decimalPipe.transform(this.data.formatTokenBest(Number(this.newService.totalSupplyControl?.value) * 1000 * 1000), '1.0-2') },
+        { title: $localize`Price per token`, value: (this.newService.priceControl?.value || 0) + ' Mi'},
+        ...(this.newService.allocations.value || [])
+          .filter((a: TokenAllocation) => a.title && a.percentage)
+          .map((a: TokenAllocation) =>
+            ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, { pricePerToken: Number(this.newService.priceControl?.value) * 1000 * 1000, totalSupply: this.newService.totalSupplyControl?.value } as Token)})` }))
+      ];
+    }
   }
 }

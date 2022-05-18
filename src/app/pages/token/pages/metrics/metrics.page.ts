@@ -21,13 +21,19 @@ export class MetricsPage implements OnInit {
   public lineChartData?: ChartConfiguration['data'] = {
     datasets: []
   };
-  public lineChartOptions?: ChartConfiguration['options'] = {
+  public lineChartOptions?: any = {
     events: [],
     plugins: {
       legend: {
         display: false
       }
-    }
+    },
+    elements: {
+      arc: {
+        borderWidth: 0
+      }
+    },
+    cutout: '75%'
   };
   public breakdownData: DescriptionItem[] = [];
 

@@ -30,6 +30,9 @@
             <div class="ml-2.5 text-sm font-medium" i18n>Edit token info</div>
     </button>
 
+    <div *ngIf="data.isAvailableForSale((data.token$ | async) || undefined) || (isGuardianWithinSpace$ | async)"
+        class="h-px w-1/5 bg-foregrounds-tertiary dark:bg-backgrounds-tertiary-dark mx-auto"></div>
+
     <wen-share
         class="block mb-4"
         i18n-shareText
