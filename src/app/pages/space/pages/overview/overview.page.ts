@@ -49,9 +49,10 @@ export class OverviewPage implements OnInit, OnDestroy {
       });
   }
 
-  public available(token: Token): boolean {
+  public available(token?: Token): boolean {
     return (
-      // dayjs(token.saleStartDate?.toDate()).isAfter(dayjs()) &&
+      !!token &&
+      !!token.saleStartDate &&
       dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms').isAfter(dayjs()) &&
       token?.status === TokenStatus.AVAILABLE &&
       token?.approved === true

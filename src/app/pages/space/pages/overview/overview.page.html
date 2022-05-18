@@ -1,5 +1,5 @@
 <div class="space-y-12">
-  <div class="space-y-4"  *ngIf="filteredToken">
+  <div class="space-y-4" *ngIf="available(filteredToken || undefined)">
     <h3 i18n>Upcoming Sale</h3>
 
     <!-- We only show whole thing when there is one. -->
@@ -12,7 +12,7 @@
         </span>
       </div>
     </nz-card> -->
-    <wen-token-card [token]="filteredToken" class="block">
+    <wen-token-card [token]="filteredToken!" class="block">
     </wen-token-card>
   </div>
 
