@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
-import { merge } from 'lodash';
+import { isEmpty, merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
@@ -20,7 +20,7 @@ import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
-import { Token, TokenAllocation, TokenDistribution, TokenStatus } from './../../interfaces/models/token';
+import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
 const createSchema = () => ({
   name: Joi.string().required(),
@@ -306,6 +306,7 @@ export const creditToken = functions.runWith({
 const airdropTokenSchema = ({
   token: Joi.string().required(),
   drops: Joi.array().required().items(Joi.object().keys({
+    vestingAt: Joi.date().required(),
     count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
     recipient: Joi.string().required()
   })).min(1)
@@ -355,15 +356,18 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       transaction.update(tokenDocRef, { totalAirdropped: admin.firestore.FieldValue.increment(totalDropped) })
 
       for (let i = 0; i < params.body.drops.length; ++i) {
-        const drop = params.body.drops[i]
+        const drop = params.body.drops[i];
         const airdropData = {
           parentId: token.uid,
           parentCol: COL.TOKEN,
           uid: drop.recipient.toLowerCase(),
-          createdOn: serverTime(),
-          tokenDropped: admin.firestore.FieldValue.increment(drop.count)
+          updatedOn: serverTime(),
+          tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
+            vestingAt: dateToTimestamp(drop.vestingAt),
+            count: drop.count
+          })
         }
-        transaction.create(distributionDocRefs[i], airdropData);
+        transaction.set(distributionDocRefs[i], airdropData, { merge: true });
       }
     })
 
@@ -401,8 +405,11 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
         throw throwInvalidArgument(WenError.invalid_params)
       }
 
-      if (distribution.tokenDropped == (distribution.tokenClaimed || 0)) {
-        throw throwInvalidArgument(WenError.airdrop_already_claimed)
+      const claimableDrops = distribution.tokenDrops?.filter(d => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || []
+      const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0)
+
+      if (isEmpty(claimableDrops)) {
+        throw throwInvalidArgument(WenError.no_airdrop_to_claim)
       }
 
       const orderData = <Transaction>{
@@ -423,7 +430,8 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
           reconciled: false,
           void: false,
           chainReference: null,
-          token: tokenDoc.id
+          token: tokenDoc.id,
+          quantity: dropCount
         },
         linkedTransactions: []
       }
