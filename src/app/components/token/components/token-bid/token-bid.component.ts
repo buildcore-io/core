@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { FormControl } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
+import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -57,6 +58,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
+  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public isCopied = false;
   private _isOpen = false;
@@ -67,6 +69,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     private auth: AuthService,
     private notification: NotificationService,
+    private tokenPurchaseApi: TokenPurchaseApi,
     private orderApi: OrderApi,
     private tokenMarketApi: TokenMarketApi,
     private cd: ChangeDetectorRef
@@ -135,6 +138,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
       this.cd.markForCheck();
     });
+
+    if (this.token?.uid) {
+      this.tokenPurchaseApi.listenAvgPrice24h(this.token.uid).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$)
+    }
   }
 
   public close(): void {
@@ -142,12 +149,12 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null): string {
+  public formatBest(amount: number | undefined | null, mega = false): string {
     if (!amount) {
       return '-';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatBest(Number(amount) * (mega ? (1000 * 1000) : 1), 2);
   }
 
   public getExplorerLink(link: string): string {

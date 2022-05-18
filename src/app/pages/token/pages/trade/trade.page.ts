@@ -6,6 +6,7 @@ import { FULL_LIST } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
+import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -51,6 +52,11 @@ export class TradePage implements OnInit, OnDestroy {
   public asks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
+  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenVolume7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public chartLengthControl: FormControl = new FormControl(ChartLengthType.WEEK, Validators.required);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
@@ -68,11 +74,12 @@ export class TradePage implements OnInit, OnDestroy {
     private auth: AuthService,
     private titleService: Title,
     private tokenApi: TokenApi,
+    private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token Trading`);
@@ -81,6 +88,7 @@ export class TradePage implements OnInit, OnDestroy {
       if (id) {
         this.listenToToken(id);
         this.listenToTrades(id);
+        this.listenToStats(id);
       }
     });
 
@@ -117,15 +125,24 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.bids$));
   }
 
-  public formatBest(amount: number | undefined | null): string {
+  private listenToStats(tokenId: string): void {
+    // TODO Add pagging.
+    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
+  }
+
+  public formatBest(amount: number | undefined | null, mega = false): string {
     if (!amount) {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatBest(Number(amount) * (mega ? (1000 * 1000) : 1), 2);
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }

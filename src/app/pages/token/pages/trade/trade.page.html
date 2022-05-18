@@ -21,7 +21,7 @@
           <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Token</nz-tag>
           <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"  *ngIf="preMinted((data.token$ | async) || undefined)" i18n>Pre-Minted</nz-tag>
         </div>
-        
+
         <h1 class="mt-2">{{ (data.token$ | async)?.name }}</h1>
 
         <div class="flex items-center justify-between mt-8 space-x-3">
@@ -30,7 +30,7 @@
                     24h VWAP
                 </div>
                 <div class="mt-2 text-lg font-bold">
-                    {{ formatBest(0) }}
+                    {{ formatBest((listenAvgPrice24h$ | async), true) }}
                 </div>
             </div>
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -38,15 +38,31 @@
                     7-day VWAP
                 </div>
                 <div class="mt-2 text-lg font-bold">
-                  {{ formatBest(0) }}
+                  {{ formatBest((listenAvgPrice7d$ | async), true) }}
                 </div>
             </div>
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
                 <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                    Total Volume
+                    24h Volume
                 </div>
                 <div class="mt-2 text-lg font-bold">
-                  {{ (0) }}
+                  {{ formatTokenBest((listenVolume24h$ | async)) | number : '1.0' }} {{ (data.token$ | async)?.symbol }}
+                </div>
+            </div>
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+              <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    7d Volume
+              </div>
+              <div class="mt-2 text-lg font-bold">
+                {{ formatTokenBest(listenVolume7d$ | async) | number : '1.0' }} {{ (data.token$ | async)?.symbol }}
+              </div>
+            </div>
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    Change 24h
+                </div>
+                <div class="mt-2 text-lg font-bold">
+                  {{ (listenChangePrice24h$ | async) | percent }}
                 </div>
             </div>
         </div>

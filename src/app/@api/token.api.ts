@@ -27,7 +27,7 @@ export class TokenApi extends BaseApi<Token> {
   public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {
     return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
-
+  
   public getMembersDistribution(tokenId: string, memberId: string): Observable<TokenDistribution | undefined> {
     if (!tokenId || !memberId) {
       return of(undefined);
