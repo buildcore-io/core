@@ -63,15 +63,16 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should create, one public sale', async () => {
     token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
-    token.saleStartDate = dayjs().add(8, 'day').toDate()
+    const saleStartDate = dayjs().add(8, 'day')
+    token.saleStartDate = saleStartDate.toDate()
     token.saleLength = 86400000
     token.coolDownLength = 86400000
     mockWalletReturnValue(walletSpy, memberAddress, token)
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
-    expect(result?.saleStartDate).toBeDefined()
-    expect(result?.saleLength).toBeDefined()
-    expect(result?.coolDownEnd).toBeDefined()
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(saleStartDate, true).toDate())
+    expect(result?.saleLength).toBe(86400000)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(saleStartDate).add(token.saleLength + token.coolDownLength, 'ms'), true).toDate())
   })
 
   it('Should not allow two tokens', async () => {
@@ -301,9 +302,10 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     const updateData = { token: token.uid, ...publicTime }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
-    expect(result.saleStartDate).toBeDefined()
-    expect(result.saleLength).toBeDefined()
-    expect(result.coolDownEnd).toBeDefined()
+    expect(result?.uid).toBeDefined();
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
+    expect(result?.saleLength).toBe(2 * 86400000)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'), true).toDate())
   })
 
   it('Should throw, can not set public availability twice', async () => {
@@ -489,7 +491,7 @@ describe('Token airdrop test', () => {
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(1)
     expect(airdrops[0].tokenDropped).toBe(900)
-    expect(airdrops[0].member).toBe(guardianAddress)
+    expect(airdrops[0].uid).toBe(guardianAddress)
   })
 
   it('Should airdrop batch token', async () => {
@@ -498,9 +500,9 @@ describe('Token airdrop test', () => {
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(2)
     expect(airdrops[0].tokenDropped).toBe(800)
-    expect(airdrops[0].member).toBe(guardianAddress)
+    expect(airdrops[0].uid).toBe(guardianAddress)
     expect(airdrops[1].tokenDropped).toBe(100)
-    expect(airdrops[1].member).toBe(memberAddress)
+    expect(airdrops[1].uid).toBe(memberAddress)
   })
 
   it('Should throw, not enough tokens', async () => {
@@ -520,7 +522,7 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops[0].tokenDropped).toBe(900)
-    expect(airdrops[0].member).toBe(guardianAddress)
+    expect(airdrops[0].uid).toBe(guardianAddress)
 
     const airdropRequest2 = { token: token.uid, drops: [{ count: 100, recipient: guardianAddress }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest2)

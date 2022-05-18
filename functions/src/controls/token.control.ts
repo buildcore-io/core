@@ -59,7 +59,7 @@ const createSchema = () => ({
 
 const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
   const coolDownEnd = dayjs(saleStartDate.toDate()).add(saleLength + coolDownLength, 'ms')
-  return { saleStartDate, saleLength, coolDownEnd: dateToTimestamp(coolDownEnd) }
+  return { saleStartDate, saleLength, coolDownEnd: dateToTimestamp(coolDownEnd, true) }
 }
 
 // eslint-disable-next-line
@@ -103,7 +103,7 @@ export const createToken = functions.runWith({
   }
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
-    getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength) : {}
+    getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
 
   const tokenUid = getRandomEthAddress();
   const extraData = { uid: tokenUid, createdBy: owner, approved: false, rejected: false, status: TokenStatus.AVAILABLE, totalDeposit: 0, totalAirdropped: 0 }
@@ -176,7 +176,7 @@ export const setTokenAvailableForSale = functions.runWith({
     }
     await assertIsGuardian(data.space, owner)
     shouldSetPublicSaleTimeFrames(params.body, data.allocations);
-    const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength);
+    const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength);
     transaction.update(tokenDocRef, timeFrames);
   })
 
