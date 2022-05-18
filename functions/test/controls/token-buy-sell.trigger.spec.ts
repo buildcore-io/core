@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import * as functions from 'firebase-functions';
 import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
 import { Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
@@ -10,7 +11,7 @@ import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { cancelExpiredSale } from '../../src/utils/token-buy-sell.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { createMember, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
+import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
 
 let walletSpy: any;
 
@@ -24,6 +25,25 @@ const buyTokenFunc = async (memberAddress: string, request: any) => {
 const assertVolumeTotal = async (tokenId: string, volumeTotal: number) => {
   const statDoc = admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.STATS}/${tokenId}`)
   await wait(async () => (await statDoc.get()).data()?.volumeTotal === volumeTotal)
+}
+
+const createRoyaltySpace = async () => {
+  const spaceOneId = functions.config().tokenSale.spaceOne
+  const spaceTwoId = functions.config().tokenSale.spaceTwo
+  const guardian = await createMember(walletSpy, true);
+  const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
+  spaceIdSpy.mockReturnValue(spaceOneId)
+  await createSpace(walletSpy, guardian, true);
+  spaceIdSpy.mockReturnValue(spaceTwoId)
+  await createSpace(walletSpy, guardian, true);
+  spaceIdSpy.mockRestore()
+}
+
+const cleanupRoyaltySpaces = async () => {
+  const spaceOneId = functions.config().tokenSale.spaceOne
+  const spaceTwoId = functions.config().tokenSale.spaceTwo
+  await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).delete()
+  await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).delete()
 }
 
 describe('Buy sell trigger', () => {
@@ -256,7 +276,7 @@ describe('Buy sell trigger', () => {
     await assertVolumeTotal(token.uid, 15)
   })
 
-  it('Should settle after second run on more than batch limit', async () => {
+  it('Should settle after second run on more than batch limit, no royalties', async () => {
     const distribution = <TokenDistribution>{ tokenOwned: 70 }
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
     const sellTokenFunc = async (count: number, price: number) => {
@@ -325,6 +345,108 @@ describe('Buy sell trigger', () => {
     expect(creditSnap.docs[0].data()?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT)
 
     await assertVolumeTotal(token.uid, 5)
+  })
+
+  it('Should fulfill buy with one sell and royalties', async () => {
+    await createRoyaltySpace()
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 5 });
+    await testEnv.wrap(sellToken)({});
+
+    const request = { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 5 }
+    mockWalletReturnValue(walletSpy, buyer, request);
+    const order = await testEnv.wrap(buyToken)({});
+    const milestone = await submitMilestoneFunc(order.payload.targetAddress, 2 * MIN_IOTA_AMOUNT * 5);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    await wait(async () => {
+      const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+      return buySnap.docs[0].data().fulfilled === 5
+    })
+
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+    expect(buySnap.docs.length).toBe(1)
+    const buy = <TokenBuySellOrder>buySnap.docs[0].data()
+    expect(buy.status).toBe(TokenBuySellOrderStatus.SETTLED)
+    const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
+    expect(sellDistribution.lockedForSale).toBe(0)
+    expect(sellDistribution.sold).toBe(5)
+    expect(sellDistribution.tokenOwned).toBe(5)
+    const buyDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${buyer}`).get()).data()
+    expect(buyDistribution.totalPurchased).toBe(5)
+    expect(buyDistribution.tokenOwned).toBe(5)
+
+    const purchase = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs
+    expect(purchase.length).toBe(1)
+    expect(purchase[0].data().buy).toBe(buy.uid)
+    expect(purchase[0].data().sell).toBeDefined()
+    expect(purchase[0].data().price).toBe(2 * MIN_IOTA_AMOUNT)
+    expect(purchase[0].data().count).toBe(5)
+
+    const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
+    expect(billPayment.exists).toBe(true)
+    expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress)
+    const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
+    expect(billPayment.data()?.payload?.targetAddress).toBe(sellerAddress)
+
+    const paymentSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('member', '==', seller)
+      .get()
+    expect(paymentSnap.docs.length).toBe(3)
+    const amounts = paymentSnap.docs.map(d => d.data().payload.amount).sort((a, b) => a - b)
+    const percentage = functions.config().tokenSale.percentage
+    expect(amounts).toEqual([2 * MIN_IOTA_AMOUNT * 5 * percentage * 0.1, 2 * MIN_IOTA_AMOUNT * 5 * percentage * 0.9, 2 * MIN_IOTA_AMOUNT * 5 * (1 - percentage)])
+
+    await assertVolumeTotal(token.uid, 5)
+    await cleanupRoyaltySpaces()
+  })
+
+  it('Should settle after second run on more than batch limit, no royalties', async () => {
+    await createRoyaltySpace()
+    const distribution = <TokenDistribution>{ tokenOwned: 70 }
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
+    const sellTokenFunc = async (count: number, price: number) => {
+      const sellDocId = wallet.getRandomEthAddress();
+      const data = cOn(<TokenBuySellOrder>{
+        uid: sellDocId,
+        owner: seller,
+        token: token.uid,
+        type: TokenBuySellOrderType.SELL,
+        count: count,
+        price: price,
+        fulfilled: 0,
+        status: TokenBuySellOrderStatus.ACTIVE
+      }, URL_PATHS.TOKEN_MARKET)
+      await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sellDocId}`).create(data)
+    }
+    const promises = Array.from(Array(TOKEN_SALE_ORDER_FETCH_LIMIT + 50)).map(() => sellTokenFunc(1, MIN_IOTA_AMOUNT))
+    await Promise.all(promises)
+
+    const count = TOKEN_SALE_ORDER_FETCH_LIMIT + 20
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count }
+    mockWalletReturnValue(walletSpy, buyer, request);
+    const order = await testEnv.wrap(buyToken)({});
+    const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * count);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    await wait(async () => {
+      return (await admin.firestore().collection(COL.TOKEN_MARKET)
+        .where('type', '==', TokenBuySellOrderType.BUY)
+        .where('owner', '==', buyer).get())
+        .docs[0].data().status === TokenBuySellOrderStatus.SETTLED
+    })
+    const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
+      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
+    expect(buyDocs.length).toBe(1)
+    expect(buyDocs[0].data()?.fulfilled).toBe(count)
+    expect(buyDocs[0].data()?.status).toBe(TokenBuySellOrderStatus.SETTLED)
+
+    console.log('ok')
+    const purchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buyDocs[0].data()?.uid).get()).docs
+    expect(purchases.length).toBe(count)
+
+    await assertVolumeTotal(token.uid, 70)
+    await cleanupRoyaltySpaces()
   })
 })
 
