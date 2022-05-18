@@ -202,12 +202,23 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.you_are_not_guardian_of_space.key)
   })
+
+  it('Should create with short description', async () => {
+    token.shortDescriptionTitle = 'shortDescriptionTitle'
+    token.shortDescription = 'shortDescription'
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    const result = await testEnv.wrap(createToken)({})
+    expect(result.shortDescriptionTitle).toBe('shortDescriptionTitle')
+    expect(result.shortDescription).toBe('shortDescription')
+  })
 })
 
 describe('Token controller: ' + WEN_FUNC.uToken, () => {
   let memberAddress: string;
   let space: Space;
   let token: any
+
+  const data = ({ shortDescriptionTitle: null, shortDescription: null, name: null, uid: null, title: null, description: null })
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -218,7 +229,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
   });
 
   it('Should update token', async () => {
-    const updateData = { name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
+    const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(updateData.name)
@@ -227,7 +238,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
   })
 
   it('Should update token - remove description', async () => {
-    const updateData = { name: token.name, uid: token.uid, title: 'title2', description: null }
+    const updateData = { ...data, name: token.name, uid: token.uid, title: 'title2', }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(updateToken)({});
     expect(result.name).toBe(token.name)
@@ -236,9 +247,17 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
   })
 
   it('Should throw, not owner ', async () => {
-    const updateData = { name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
+    const updateData = { ...data, name: 'TokenName2', uid: token.uid, title: 'title', description: 'description' }
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), updateData)
     await expectThrow(testEnv.wrap(updateToken)({}), WenError.you_are_not_guardian_of_space.key)
+  })
+
+  it('Should update short description', async () => {
+    const updateData = { ...data, uid: token.uid, shortDescriptionTitle: 'shortDescriptionTitle', shortDescription: 'shortDescription' }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    const result = await testEnv.wrap(updateToken)({});
+    expect(result.shortDescriptionTitle).toBe('shortDescriptionTitle')
+    expect(result.shortDescription).toBe('shortDescription')
   })
 
 })
