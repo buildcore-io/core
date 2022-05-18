@@ -303,9 +303,9 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
     const result = await testEnv.wrap(setTokenAvailableForSale)({});
     expect(result?.uid).toBeDefined();
-    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(), true).toDate())
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
     expect(result?.saleLength).toBe(2 * 86400000)
-    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(dayjs()).add(86400000 * 2 + 86400000, 'ms'), true).toDate())
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'), true).toDate())
   })
 
   it('Should throw, can not set public availability twice', async () => {
