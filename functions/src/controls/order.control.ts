@@ -11,6 +11,7 @@ import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
+import { generateRandomAmount } from '../utils/common.utils';
 import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -329,8 +330,6 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   // Get new target address.
   const newWallet: WalletService = new WalletService();
   const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-  const min = (MIN_AMOUNT_TO_TRANSFER / 1000 / 10); // Reduce number of decimals.
-  const randomAmount: number = (Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 1000 * 10);
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
   const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
@@ -343,7 +342,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
     createdOn: serverTime(),
     payload: {
       type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
-      amount: randomAmount,
+      amount: generateRandomAmount(),
       targetAddress: targetAddress.bech32,
       beneficiary: isSpaceValidation ? 'space' : 'member',
       beneficiaryUid: isSpaceValidation ? params.body.space : owner,

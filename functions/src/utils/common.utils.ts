@@ -1,3 +1,4 @@
+import { MIN_AMOUNT_TO_TRANSFER } from "../../interfaces/config";
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction } from "../../interfaces/models";
 
 export type OrderPayBillCreditTransaction = OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction
@@ -14,4 +15,9 @@ export const guardedRerun = async (func: () => Promise<boolean>, maxRuns = MAX_R
     shouldRerun = await func()
     ++runGuard;
   }
+}
+
+export const generateRandomAmount = () => {
+  const min = MIN_AMOUNT_TO_TRANSFER / 1000 / 10;
+  return Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 1000 * 10;
 }

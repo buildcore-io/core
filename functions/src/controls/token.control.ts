@@ -11,6 +11,7 @@ import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
+import { generateRandomAmount } from '../utils/common.utils';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
@@ -407,13 +408,13 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
         createdOn: serverTime(),
         payload: {
           type: TransactionOrderType.TOKEN_AIRDROP,
-          amount: MIN_IOTA_AMOUNT,
+          amount: generateRandomAmount(),
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: tokenDoc.data()?.space,
           beneficiaryAddress: spaceDoc.data()?.validatedAddress,
           expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
-          validationType: TransactionValidationType.ADDRESS,
+          validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,
           void: false,
           chainReference: null,
