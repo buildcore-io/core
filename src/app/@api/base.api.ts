@@ -14,7 +14,7 @@ export interface FbRef {
 
 export interface QueryArgs {
   collection: string;
-  orderBy: string | string[];
+  orderBy?: string | string[];
   direction?: any;
   lastValue?: number;
   search?: string;

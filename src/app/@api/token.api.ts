@@ -27,27 +27,7 @@ export class TokenApi extends BaseApi<Token> {
   public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {
     return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
-
-  public listenAvgPrice24h(_tokenId: string): Observable<number | undefined> {
-    return of(0);
-  }
-
-  public listenAvgPrice7d(_tokenId: string): Observable<number | undefined> {
-    return of(0);
-  }
-
-  public listenVolume24h(_tokenId: string): Observable<number | undefined> {
-    return of(0);
-  }
-
-  public listenVolume7d(_tokenId: string): Observable<number | undefined> {
-    return of(0);
-  }
-
-  public listenChangePrice24h(_tokenId: string): Observable<number | undefined> {
-    return of(0);
-  }
-
+  
   public getMembersDistribution(tokenId: string, memberId: string): Observable<TokenDistribution | undefined> {
     if (!tokenId || !memberId) {
       return of(undefined);

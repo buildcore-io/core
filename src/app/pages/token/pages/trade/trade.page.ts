@@ -6,6 +6,7 @@ import { FULL_LIST } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
+import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -68,11 +69,12 @@ export class TradePage implements OnInit, OnDestroy {
     private auth: AuthService,
     private titleService: Title,
     private tokenApi: TokenApi,
+    private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token Trading`);
@@ -125,7 +127,7 @@ export class TradePage implements OnInit, OnDestroy {
     return UnitsHelper.formatBest(Number(amount), 2);
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }
@@ -137,8 +139,8 @@ export class TradePage implements OnInit, OnDestroy {
     if (!tokenId) {
       return of(undefined);
     }
-
-    return this.tokenApi.listenAvgPrice24h(tokenId);
+    
+    return this.tokenPurchaseApi.listenAvgPrice24h(tokenId);
   }
 
   public listenAvgPrice7d$(tokenId?: string): Observable<number | undefined> {
@@ -146,7 +148,7 @@ export class TradePage implements OnInit, OnDestroy {
       return of(undefined);
     }
 
-    return this.tokenApi.listenAvgPrice7d(tokenId);
+    return this.tokenPurchaseApi.listenAvgPrice7d(tokenId);
   }
 
   public listenVolume24h$(tokenId?: string): Observable<number | undefined> {
@@ -154,7 +156,7 @@ export class TradePage implements OnInit, OnDestroy {
       return of(undefined);
     }
 
-    return this.tokenApi.listenVolume24h(tokenId);
+    return this.tokenPurchaseApi.listenVolume24h(tokenId);
   }
 
   public listenVolume7d$(tokenId?: string): Observable<number | undefined> {
@@ -162,7 +164,7 @@ export class TradePage implements OnInit, OnDestroy {
       return of(undefined);
     }
 
-    return this.tokenApi.listenVolume7d(tokenId);
+    return this.tokenPurchaseApi.listenVolume7d(tokenId);
   }
 
   public listenChangePrice24h$(tokenId?: string): Observable<number | undefined> {
@@ -170,7 +172,7 @@ export class TradePage implements OnInit, OnDestroy {
       return of(undefined);
     }
 
-    return this.tokenApi.listenChangePrice24h(tokenId);
+    return this.tokenPurchaseApi.listenChangePrice24h(tokenId);
   }
 
   public get chartLengthTypes(): typeof ChartLengthType {
