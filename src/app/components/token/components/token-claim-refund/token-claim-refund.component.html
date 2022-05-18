@@ -7,13 +7,13 @@
 
 <ng-template #content>
     <div class="mt-8 lg:mt-6 flex items-center">
-        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
           class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
         </nz-avatar>
-        <div class="font-bold text-lg ml-4">{{ 'SoonLabs Token' }}</div>
-        <div class="font-medium ml-3">{{ '(SOON)' }}</div>
+        <div class="font-bold text-lg ml-4">{{ token?.name }}</div>
+        <div class="font-medium ml-3">({{ token?.symbol }})</div>
     </div>
 
     <div class="flex items-center mt-5">
@@ -21,14 +21,36 @@
         <div class="font-medium ml-2.5" i18n>Cooldown period ends in 2 hours</div>
     </div>
 
-    <div class="mt-4 py-3 px-5 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-        <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-            <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Tokens claim amount</ng-container>
-            <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Tokens refund amount</ng-container>
+    <div *ngIf="type === tokenItemTypes.CLAIM"
+        class="mt-4 py-3 px-5 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Tokens claim amount
+            </div>
+            <div class="text-lg font-bold">
+                100
+            </div>
+    </div>
+
+    <div *ngIf="type === tokenItemTypes.REFUND" class="relative flex flex-col mt-4 font-medium">
+        <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                {{token?.symbol}}
+            </div>
+            <input class="w-full p-0 outline-0"
+                    [formControl]="amountControl"
+                    nz-input
+                    nzSize="small"
+                    [nzBorderless]="true">
         </div>
-        <div class="text-lg font-bold">
-            100
+
+        <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+            <div class="mt-1">{{ formatTokenBest(amountControl.value / (token?.pricePerToken || 0)) + ' ' + token?.symbol }}</div>
         </div>
+
+        <button nz-button nzType="primary" nzShape="circle" nzSize="default"
+            class="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+                <wen-icon-switch></wen-icon-switch>
+        </button>
     </div>
 
     <wen-terms-and-conditions
@@ -39,7 +61,7 @@
     </wen-terms-and-conditions>
 
     <div class="w-full mt-10 flex justify-center item-center">
-        <button nz-button nzType="primary" nzSize="large">
+        <button nz-button nzType="primary" nzSize="large" (click)="confirm()">
             <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Confirm and claim</ng-container>
             <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Confirm and refund</ng-container>
         </button>
