@@ -326,7 +326,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
 
     const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
       params.body.drops.map(({ recipient }: { recipient: string }) =>
-        admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient}`)
+        admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient.toLowerCase()}`)
       );
 
     await admin.firestore().runTransaction(async (transaction) => {
@@ -358,7 +358,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
         const airdropData = {
           parentId: token.uid,
           parentCol: COL.TOKEN,
-          uid: drop.recipient,
+          uid: drop.recipient.toLowerCase(),
           createdOn: serverTime(),
           tokenDropped: admin.firestore.FieldValue.increment(drop.count)
         }
