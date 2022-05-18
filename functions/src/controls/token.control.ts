@@ -86,7 +86,8 @@ export const createToken = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const snapshot = await admin.firestore().collection(COL.TOKEN).where('space', '==', params.body.space).get()
-  if (snapshot.size > 0) {
+  const nonOrAllRejected = snapshot.docs.reduce((sum, doc) => sum && !doc.data()?.approve && doc.data()?.rejected, true)
+  if (!nonOrAllRejected) {
     throw throwInvalidArgument(WenError.token_already_exists_for_space);
   }
 
