@@ -82,6 +82,15 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     await expectThrow(testEnv.wrap(createToken)({}), WenError.token_already_exists_for_space.key)
   })
 
+  it('Should only allow two tokens if first rejected', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    const cToken = await testEnv.wrap(createToken)({});
+    await admin.firestore().doc(`${COL.TOKEN}/${cToken.uid}`).update({ approved: false, rejected: true })
+    mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
+    const secondToken = await testEnv.wrap(createToken)({});
+    expect(secondToken.uid).toBeDefined()
+  })
+
   it('Should throw, no name', async () => {
     delete token.name
     mockWalletReturnValue(walletSpy, memberAddress, token)
