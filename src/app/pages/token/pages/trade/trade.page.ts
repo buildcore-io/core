@@ -17,7 +17,7 @@ import { Member, Space } from '@functions/interfaces/models';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
-import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, Observable, of, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
   DAY = '24h',
@@ -131,6 +131,46 @@ export class TradePage implements OnInit, OnDestroy {
     }
 
     return (amount / 1000 / 1000).toFixed(2);
+  }
+
+  public listenAvgPrice24h$(tokenId?: string): Observable<number | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return this.tokenApi.listenAvgPrice24h(tokenId);
+  }
+
+  public listenAvgPrice7d$(tokenId?: string): Observable<number | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return this.tokenApi.listenAvgPrice7d(tokenId);
+  }
+
+  public listenVolume24h$(tokenId?: string): Observable<number | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return this.tokenApi.listenVolume24h(tokenId);
+  }
+
+  public listenVolume7d$(tokenId?: string): Observable<number | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return this.tokenApi.listenVolume7d(tokenId);
+  }
+
+  public listenChangePrice24h$(tokenId?: string): Observable<number | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return this.tokenApi.listenChangePrice24h(tokenId);
   }
 
   public get chartLengthTypes(): typeof ChartLengthType {
