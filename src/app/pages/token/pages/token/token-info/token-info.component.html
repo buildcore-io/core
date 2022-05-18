@@ -36,7 +36,7 @@
         </ng-template>
     </nz-card>
 
-    <nz-card i18n-nzTitle nzTitle="Related Links" *ngIf="true">
+    <nz-card i18n-nzTitle nzTitle="Related Links">
       <div *ngFor="let l of (data.token$ | async)?.links">
         <a nz-button class="wen-links" nzType="link" target="new" [href]="l">
           <wen-icon-link></wen-icon-link>

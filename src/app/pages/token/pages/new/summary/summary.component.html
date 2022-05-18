@@ -205,6 +205,32 @@
                 </nz-form-control>
             </nz-form-item>
         </nz-card>
+
+        <nz-card i18n-nzTitle nzTitle="Links">
+            <div *ngFor="let link of newService.links?.controls">
+              <a nz-button class="wen-links" nzType="link" target="new" [href]="newService.gForm(link, 'url')?.value">
+                <wen-icon-link class="link-icon"></wen-icon-link>
+                <span>{{ newService.gForm(link, 'url')?.value.toString() | truncate:[24] }}</span>
+              </a>
+            </div>
+          </nz-card>
+
+        <nz-card>
+            <nz-card-meta
+                i18n-nzTitle
+                nzTitle="Token terms and conditions"
+                i18n-nzDescription
+                nzDescription="Some description"
+            >
+            </nz-card-meta>
+
+            <a nz-button class="wen-links mt-6" nzType="link" target="new" [href]="newService.termsAndConditionsLinkControl?.value">
+                <wen-icon-file-check class="link-icon" [size]="20"></wen-icon-file-check>
+                <span>
+                    {{ newService.nameControl?.value | truncate:[16] }}: <ng-container i18n>Terms&conditions</ng-container>
+                </span>
+            </a>
+        </nz-card>
     </div>
 </div>
 
