@@ -358,7 +358,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
         const airdropData = {
           parentId: token.uid,
           parentCol: COL.TOKEN,
-          member: drop.recipient,
+          uid: drop.recipient,
           createdOn: serverTime(),
           tokenDropped: admin.firestore.FieldValue.increment(drop.count)
         }
