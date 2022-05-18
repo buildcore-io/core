@@ -46,7 +46,7 @@ export class TokenCardComponent {
 
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
-      return '';
+      return '0';
     }
 
     return (amount / 1000 / 1000).toFixed(2);
@@ -54,6 +54,22 @@ export class TokenCardComponent {
 
   public getEndDate(): dayjs.Dayjs {
     return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms');
+  }
+
+  public getPrc(): number {
+    const prc = ((this.token?.totalDeposit || 0) / (this.token?.pricePerToken || 0) / this.getPublicSaleSupply());
+    return (prc > 1 ? 1 : prc) * 100;
+  }
+
+  public getPublicSaleSupply(): number {
+    let sup = 0;
+    this.token?.allocations.forEach((b) => {
+      if (b.isPublicSale) {
+        sup = b.percentage / 100;
+      }
+    });
+
+    return (this.token?.totalSupply || 0) * sup;
   }
 
   private setCardType(): void {
