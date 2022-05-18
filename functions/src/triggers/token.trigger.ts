@@ -23,7 +23,7 @@ const getBoughtByMember = (token: Token, totalDeposit: number, totalSupply: numb
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
-  const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
+  const totalPaid = Number(bigDecimal.floor(bigDecimal.multiply(token.pricePerToken, boughtByMember)))
   const refundedAmount = totalDeposit - totalPaid
   return { ...distribution, totalPaid, totalBought: boughtByMember, refundedAmount }
 }

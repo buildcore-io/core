@@ -92,17 +92,29 @@ const scenario5 = ({
   publicPercentage: 50
 })
 
+const scenario6 = ({
+  totalDeposit: [5, 7, 9, 3].map(a => a / MIN_IOTA_AMOUNT),
+  totalPaid: [4, 6, 8, 2].map(a => a / MIN_IOTA_AMOUNT),
+  refundedAmount: [1, 1, 1, 1].map(a => a / MIN_IOTA_AMOUNT),
+  tokenOwned: [2, 3, 4, 1],
+
+  totalSupply: 10,
+  pricePerToken: 2.1,
+  publicPercentage: 100
+})
+
 const custom = ({
   totalDeposit: [4, 8, 2],
   totalPaid: [3, 6, 1],
   refundedAmount: [1, 2, 1],
   tokenOwned: [3, 6, 1],
+
   totalSupply: 10,
   pricePerToken: MIN_IOTA_AMOUNT,
   publicPercentage: 100
 })
 
-const scenarios = [mainPage, scenario1, scenario2, scenario3, scenario4, scenario5, custom]
+const scenarios = [mainPage, scenario1, scenario2, scenario3, scenario4, scenario5, scenario6, custom]
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
   mockWalletReturnValue(spy, address, params);

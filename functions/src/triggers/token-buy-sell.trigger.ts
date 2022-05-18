@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import bigDecimal from 'js-big-decimal';
 import { Member, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
@@ -52,6 +53,7 @@ const createBillPayment = async (
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
   const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
+  const amount = Number(bigDecimal.floor(bigDecimal.multiply(count, price)))
   const data = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
@@ -59,7 +61,7 @@ const createBillPayment = async (
     member: sell.owner,
     createdOn: serverTime(),
     payload: {
-      amount: count * price,
+      amount,
       sourceAddress: order.payload.targetAddress,
       targetAddress: seller.validatedAddress,
       previousOwnerEntity: 'member',

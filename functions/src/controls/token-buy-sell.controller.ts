@@ -22,7 +22,7 @@ import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 const buySellTokenSchema = {
   token: Joi.string().required(),
   count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
-  price: Joi.number().min(1).max(MAX_IOTA_AMOUNT).integer().required()
+  price: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required()
 }
 
 export const sellToken = functions.runWith({
