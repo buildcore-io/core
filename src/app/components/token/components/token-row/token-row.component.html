@@ -25,7 +25,7 @@
                 Buy
               </div>
               <div class="mt-0.5">
-                  {{ formatBest(((preMinted() ? 0 : token?.pricePerToken) || 0))}}
+                  {{ formatBest(((preMinted() ? 0 : (token?.pricePerToken || 0) * 1000 * 1000) || 0))}}
               </div>
             </ng-container>
         </div>
