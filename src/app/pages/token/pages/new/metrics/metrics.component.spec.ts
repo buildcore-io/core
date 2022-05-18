@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NewService } from '@pages/token/services/new.service';
 import { MockProvider } from 'ng-mocks';
@@ -12,7 +13,8 @@ describe('MetricsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ NewMetricsComponent ],
       providers: [
-        MockProvider(NewService)
+        MockProvider(NewService),
+        MockProvider(DecimalPipe)
       ]
     })
       .compileComponents();
