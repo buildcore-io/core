@@ -65,6 +65,10 @@ export class DataService {
     );
   }
 
+  public isProcessing(token?: Token): boolean {
+    return token?.status === TokenStatus.PROCESSING;
+  }
+
   public isInCooldown(token?: Token): boolean {
     return (
       !!token?.approved &&
