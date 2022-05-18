@@ -20,23 +20,23 @@
 
 
         <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
-            <ng-container *ngIf="(preMinted() ? token?.avg24h : token?.pricePerToken)">
+            <ng-container *ngIf="(preMinted() ? 0 : token?.pricePerToken)">
               <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Buy
               </div>
               <div class="mt-0.5">
-                  {{ formatBest(((preMinted() ? token?.avg24h : token?.pricePerToken) || 0))}}
+                  {{ formatBest(((preMinted() ? 0 : token?.pricePerToken) || 0))}}
               </div>
             </ng-container>
         </div>
 
         <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
-            <ng-container *ngIf="preMinted() && token?.avg24h">
+            <ng-container *ngIf="preMinted() && 0">
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Sell
                 </div>
                 <div class="mt-0.5">
-                    {{ formatBest((token?.avg24h || 0)) }}
+                    {{ formatBest((0 || 0)) }}
                 </div>
             </ng-container>
         </div>
@@ -70,21 +70,22 @@
             </div>
         </div>
 
-        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:text-right lg:px-0 lg:mt-0">
+        <!-- Market cap -->
+        <!-- <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:text-right lg:px-0 lg:mt-0">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Market Cap
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ formatBest((this.token?.totalSupply || 0) * (token?.avg24h || token?.avg7d || token?.pricePerToken || 0))}}
+                {{ formatBest((this.token?.totalSupply || 0) * (0 || token?.avg7d || token?.pricePerToken || 0))}}
             </div>
-        </div>
+        </div> -->
 
-        <div class="w-full px-6 mt-6 font-medium lg:w-1/12 lg:text-right lg:px-0 lg:mt-0" *ngIf="preMinted() && this.token?.volume24h">
+        <div class="w-full px-6 mt-6 font-medium lg:w-1/12 lg:text-right lg:px-0 lg:mt-0" *ngIf="preMinted() && 0">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Volume (24h)
             </div>
             <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-                {{ (formatTokenBest(this.token?.volume24h || 0) | number : '1.0-2') + ' ' + this.token?.symbol}}
+                {{ (formatTokenBest(0) | number : '1.0-2') + ' ' + this.token?.symbol}}
             </div>
         </div>
 
@@ -93,7 +94,7 @@
                 Change (24h)
             </div>
             <div class="mt-0.5 text-alerts-success dark:text-alerts-success-dark lg:w-full lg:text-right whitespace-nowrap">
-              {{((this.token?.volume24h || 0) / 100) | percent}}
+              {{0 | percent}}
             </div>
         </div>
 
