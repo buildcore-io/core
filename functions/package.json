@@ -6,7 +6,7 @@
     "serve": "tsc --watch & firebase -c ../firebase.json emulators:start --only functions,firestore,storage,ui",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "test": "export LOCAL_TEST=true && jest test",
+    "test": "export LOCAL_TEST=true && jest token-buy-sell.trigger.spec.ts",
     "test-online": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\" && jest test",
     "test:watch": "jest test/ --watch-all --detect-open-handles",
     "deploy": "firebase deploy --only functions -f",

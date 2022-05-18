@@ -276,9 +276,10 @@ describe('Buy sell trigger', () => {
     expect(buyDistribution.tokenOwned).toBe(15)
 
     const paymentSnap = await getBillPayments(seller)
-    expect(paymentSnap.docs.length).toBe(3)
+    expect(paymentSnap.docs.length).toBe(9)
     const amounts = paymentSnap.docs.map(d => d.data().payload.amount).sort((a, b) => a - b)
-    expect(amounts).toEqual(getRoyaltyDistribution(MIN_IOTA_AMOUNT * 5))
+    const sortedAmount = getRoyaltyDistribution(MIN_IOTA_AMOUNT * 5)
+    expect(amounts).toEqual([...sortedAmount, ...sortedAmount, ...sortedAmount].sort((a, b) => a - b))
 
     await assertVolumeTotal(token.uid, 15)
   })
