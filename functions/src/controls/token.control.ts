@@ -27,6 +27,8 @@ const createSchema = () => ({
   symbol: Joi.string().required().length(4).regex(RegExp('^[A-Z]+$')),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
+  shortDescriptionTitle: Joi.string().optional(),
+  shortDescription: Joi.string().optional(),
   space: Joi.string().required(),
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
   totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPPLY).max(MAX_TOTAL_TOKEN_SUPPLY).integer(),
@@ -57,7 +59,7 @@ const createSchema = () => ({
 
 const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
   const coolDownEnd = dayjs(saleStartDate.toDate()).add(saleLength + coolDownLength, 'ms')
-  return { saleStartDate, saleLength, coolDownEnd: dateToTimestamp(coolDownEnd) }
+  return { saleStartDate, saleLength, coolDownEnd: dateToTimestamp(coolDownEnd, true) }
 }
 
 // eslint-disable-next-line
@@ -84,7 +86,8 @@ export const createToken = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const snapshot = await admin.firestore().collection(COL.TOKEN).where('space', '==', params.body.space).get()
-  if (snapshot.size > 0) {
+  const nonOrAllRejected = snapshot.docs.reduce((sum, doc) => sum && !doc.data()?.approve && doc.data()?.rejected, true)
+  if (!nonOrAllRejected) {
     throw throwInvalidArgument(WenError.token_already_exists_for_space);
   }
 
@@ -101,7 +104,7 @@ export const createToken = functions.runWith({
   }
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
-    getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength) : {}
+    getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
 
   const tokenUid = getRandomEthAddress();
   const extraData = { uid: tokenUid, createdBy: owner, approved: false, rejected: false, status: TokenStatus.AVAILABLE, totalDeposit: 0, totalAirdropped: 0 }
@@ -114,6 +117,8 @@ const updateSchema = {
   name: Joi.string().required().allow(null, ''),
   title: Joi.string().required().allow(null, ''),
   description: Joi.string().required().allow(null, ''),
+  shortDescriptionTitle: Joi.string().required().allow(null, ''),
+  shortDescription: Joi.string().required().allow(null, ''),
   uid: Joi.string().required()
 }
 
@@ -172,7 +177,7 @@ export const setTokenAvailableForSale = functions.runWith({
     }
     await assertIsGuardian(data.space, owner)
     shouldSetPublicSaleTimeFrames(params.body, data.allocations);
-    const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate), params.body.saleLength, params.body.coolDownLength);
+    const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength);
     transaction.update(tokenDocRef, timeFrames);
   })
 
@@ -322,7 +327,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
 
     const distributionDocRefs: admin.firestore.DocumentReference<admin.firestore.DocumentData>[] =
       params.body.drops.map(({ recipient }: { recipient: string }) =>
-        admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient}`)
+        admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${recipient.toLowerCase()}`)
       );
 
     await admin.firestore().runTransaction(async (transaction) => {
@@ -354,7 +359,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
         const airdropData = {
           parentId: token.uid,
           parentCol: COL.TOKEN,
-          member: drop.recipient,
+          uid: drop.recipient.toLowerCase(),
           createdOn: serverTime(),
           tokenDropped: admin.firestore.FieldValue.increment(drop.count)
         }

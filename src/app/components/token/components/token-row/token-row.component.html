@@ -20,26 +20,26 @@
 
 
         <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
-            <ng-container *ngIf="(preMinted() ? 0 : token?.pricePerToken)">
+            <ng-container *ngIf="(preMinted() ? ((listenAvgPrice24h$ | async)  || (listenAvgPrice7d$ | async)) : token?.pricePerToken)">
               <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Buy
+                Avg. Price
               </div>
               <div class="mt-0.5">
-                  {{ formatBest(((preMinted() ? 0 : (token?.pricePerToken || 0) * 1000 * 1000) || 0))}}
+                  {{ formatBest(((preMinted() ? (listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) : (token?.pricePerToken || 0)) || 0), true)}}
               </div>
             </ng-container>
         </div>
 
-        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
-            <ng-container *ngIf="preMinted() && 0">
+        <!-- <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:px-0 lg:mt-0">
+            <ng-container *ngIf="preMinted() && ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async))">
                 <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                     Sell
                 </div>
                 <div class="mt-0.5">
-                    {{ formatBest((0 || 0)) }}
+                    {{ formatBest((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async), true) }}
                 </div>
             </ng-container>
-        </div>
+        </div> -->
 
         <div class="w-full px-6 mt-6 font-medium lg:w-3/12 lg:px-0 lg:mt-0" *ngIf="available() && !saleEnded()">
           <ng-container *ngIf="saleNotStarted()">
@@ -71,21 +71,21 @@
         </div>
 
         <!-- Market cap -->
-        <!-- <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:text-right lg:px-0 lg:mt-0">
+        <div class="w-full px-6 mt-6 font-medium lg:w-2/12 lg:text-right lg:px-0 lg:mt-0">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Market Cap
             </div>
             <div class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
-                {{ formatBest((this.token?.totalSupply || 0) * (0 || token?.avg7d || token?.pricePerToken || 0))}}
+                {{ formatBest((this.token?.totalSupply || 0) * ((listenAvgPrice24h$ | async) || (listenAvgPrice7d$ | async) || token?.pricePerToken || 0))}}
             </div>
-        </div> -->
+        </div>
 
-        <div class="w-full px-6 mt-6 font-medium lg:w-1/12 lg:text-right lg:px-0 lg:mt-0" *ngIf="preMinted() && 0">
+        <div class="w-full px-6 mt-6 font-medium lg:w-1/12 lg:text-right lg:px-0 lg:mt-0" *ngIf="preMinted() && (listenVolume24h$ | async)">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Volume (24h)
             </div>
             <div class="mt-0.5 lg:w-full lg:text-rights whitespace-nowrap">
-                {{ (formatTokenBest(0) | number : '1.0-2') + ' ' + this.token?.symbol}}
+                {{ (formatTokenBest(listenVolume24h$ | async) | number : '1.0-2') + ' ' + this.token?.symbol}}
             </div>
         </div>
 
@@ -93,8 +93,10 @@
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-full lg:text-right whitespace-nowrap" i18n>
                 Change (24h)
             </div>
-            <div class="mt-0.5 text-alerts-success dark:text-alerts-success-dark lg:w-full lg:text-right whitespace-nowrap">
-              {{0 | percent}}
+            <div
+            [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+            class="mt-0.5 lg:w-full lg:text-right whitespace-nowrap">
+              {{(listenChangePrice24h$ | async) | percent}}
             </div>
         </div>
 

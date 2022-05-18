@@ -6,6 +6,7 @@ import { FULL_LIST } from '@api/base.api';
 import { SpaceApi } from '@api/space.api';
 import { TokenApi } from '@api/token.api';
 import { TokenMarketApi } from '@api/token_market.api';
+import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -16,6 +17,7 @@ import { WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenDistribution, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DataService } from '@pages/token/services/data.service';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
@@ -49,8 +51,12 @@ export class TradePage implements OnInit, OnDestroy {
   public myBids$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public asks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
-  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(undefined);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
+  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgPrice7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenVolume24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenVolume7d$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenChangePrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public chartLengthControl: FormControl = new FormControl(ChartLengthType.WEEK, Validators.required);
   public memberDistribution$?: BehaviorSubject<TokenDistribution | undefined> = new BehaviorSubject<TokenDistribution | undefined>(undefined);
   public currentAskListing = AskListingType.OPEN;
@@ -64,14 +70,16 @@ export class TradePage implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public data: DataService,
     private auth: AuthService,
     private titleService: Title,
     private tokenApi: TokenApi,
+    private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token Trading`);
@@ -80,12 +88,13 @@ export class TradePage implements OnInit, OnDestroy {
       if (id) {
         this.listenToToken(id);
         this.listenToTrades(id);
+        this.listenToStats(id);
       }
     });
 
-    this.token$.pipe(skip(1), first()).subscribe((t) => {
+    this.data.token$.pipe(skip(1), first()).subscribe((t) => {
       if (t) {
-        this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.space$));
+        this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
         this.listenToMemberSubs(this.auth.member$.value);
       }
     });
@@ -100,11 +109,11 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptionsMembersBids$?.forEach((s) => {
       s.unsubscribe();
     });
-    if (member?.uid && this.token$.value?.uid) {
-      this.memberDistributionSub$ = this.tokenApi.getMembersDistribution(this.token$.value?.uid, member.uid).subscribe(this.memberDistribution$);
+    if (member?.uid && this.data.token$.value?.uid) {
+      this.memberDistributionSub$ = this.tokenApi.getMembersDistribution(this.data.token$.value?.uid, member.uid).subscribe(this.memberDistribution$);
       // TODO paging?
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
-      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myBids$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersAsks(member.uid, this.data.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myAsks$));
+      this.subscriptionsMembersBids$.push(this.tokenMarketApi.membersBids(member.uid, this.data.token$.value?.uid, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.myBids$));
     } else {
       this.memberDistribution$?.next(undefined);
     }
@@ -116,15 +125,24 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenMarketApi.bidsActive(tokenId, undefined, undefined, FULL_LIST).pipe(untilDestroyed(this)).subscribe(this.bids$));
   }
 
-  public formatBest(amount: number | undefined | null): string {
+  private listenToStats(tokenId: string): void {
+    // TODO Add pagging.
+    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenVolume7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume7d$));
+    this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
+  }
+
+  public formatBest(amount: number | undefined | null, mega = false): string {
     if (!amount) {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatBest(Number(amount) * (mega ? (1000 * 1000) : 1), 2);
   }
 
-  public formatTokenBest(amount?: number|null): string {
+  public formatTokenBest(amount?: number | null): string {
     if (!amount) {
       return '0';
     }
@@ -152,7 +170,7 @@ export class TradePage implements OnInit, OnDestroy {
     this.cancelSubscriptions();
     this.subscriptions$.push(this.tokenApi.listen(id)
       .pipe(untilDestroyed(this))
-      .subscribe(this.token$));
+      .subscribe(this.data.token$));
   }
 
   private cancelSubscriptions(): void {

@@ -35,12 +35,11 @@
                 nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Guardian's of the space will be able to decide where this token will be minted."></wen-icon-question-circle>
         </ng-template>
     </nz-card>
-
-    <nz-card i18n-nzTitle nzTitle="Related Links" *ngIf="true">
-      <div *ngFor="let l of (data.token$ | async)?.links">
+    <nz-card i18n-nzTitle nzTitle="Related Links">
+      <div *ngFor="let l of (data.token$ | async)?.links" class="truncate">
         <a nz-button class="wen-links" nzType="link" target="new" [href]="l">
           <wen-icon-link></wen-icon-link>
-          <span>{{ l.toString() | truncate:[24] }}</span>
+          <div>{{ l.toString() }}</div>
         </a>
       </div>
     </nz-card>

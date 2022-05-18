@@ -26,7 +26,7 @@
 
 <ng-template #confirmTemplate>
     <wen-description [items]="[
-        { title: '24h VWAP', value: (formatBest(0)) }
+        { title: '24h VWAP', value: (formatBest((listenAvgPrice24h$ | async), true)) }
     ]"></wen-description>
 
     <div class="relative flex flex-col mt-6 font-medium lg:mt-6">

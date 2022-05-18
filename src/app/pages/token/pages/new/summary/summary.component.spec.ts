@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SpaceApi } from '@api/space.api';
+import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { CacheService } from '@core/services/cache/cache.service';
 import { NewService } from '@pages/token/services/new.service';
-import { MockProvider } from 'ng-mocks';
+import { MockModule, MockProvider } from 'ng-mocks';
 import { NewSummaryComponent } from './summary.component';
 
 
@@ -17,6 +18,9 @@ describe('NewSummaryComponent', () => {
         MockProvider(NewService),
         MockProvider(CacheService),
         MockProvider(SpaceApi)
+      ],
+      imports: [
+        MockModule(TruncateModule)
       ]
     })
       .compileComponents();

@@ -37,6 +37,7 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.creditToken, req);
   }
 
+  
   public getMembersDistribution(tokenId: string, memberId: string): Observable<TokenDistribution | undefined> {
     if (!tokenId || !memberId) {
       return of(undefined);

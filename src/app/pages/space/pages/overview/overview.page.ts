@@ -55,8 +55,18 @@ export class OverviewPage implements OnInit, OnDestroy {
       !!token.saleStartDate &&
       dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms').isAfter(dayjs()) &&
       token?.status === TokenStatus.AVAILABLE &&
-      token?.approved === true
+      token?.approved
     );
+  }
+
+  public isBeforeSale(token?: Token): boolean {
+    return (
+      !!token &&
+      !!token.saleStartDate &&
+      dayjs(token.saleStartDate?.toDate()).isAfter(dayjs()) &&
+      token?.status === TokenStatus.AVAILABLE &&
+      token?.approved
+    )
   }
 
   public trackByUid(index: number, item: Award | Proposal) {

@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { OrderApi } from '@api/order.api';
 import { TokenMarketApi } from '@api/token_market.api';
+import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
@@ -9,18 +10,21 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space } from '@functions/interfaces/models';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { BehaviorSubject } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm'
 }
 
+@UntilDestroy()
 @Component({
   selector: 'wen-token-offer-pre-mint',
   templateUrl: './token-offer-pre-mint.component.html',
   styleUrls: ['./token-offer-pre-mint.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TokenOfferPreMintComponent {
+export class TokenOfferPreMintComponent implements OnInit {
   @Input() currentStep = StepType.CONFIRM;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
@@ -40,6 +44,7 @@ export class TokenOfferPreMintComponent {
   public targetAddress?: string = 'dummy_address';
   public targetAmount?: number;
   public isCopied = false;
+  public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   private _isOpen = false;
 
   constructor(
@@ -47,22 +52,29 @@ export class TokenOfferPreMintComponent {
     public orderApi: OrderApi,
     public tokenMarketApi: TokenMarketApi,
     public deviceService: DeviceService,
+    private tokenPurchaseApi: TokenPurchaseApi,
     private notification: NotificationService,
     public previewImageService: PreviewImageService,
     private cd: ChangeDetectorRef
   ) { }
+
+  public ngOnInit() {
+    if (this.token?.uid) {
+      this.tokenPurchaseApi.listenAvgPrice24h(this.token.uid).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$)
+    }
+  }
 
   public close(): void {
     this.reset();
     this.wenOnClose.next();
   }
 
-  public formatBest(amount: number | undefined | null): string {
+  public formatBest(amount: number | undefined | null, mega = false): string {
     if (!amount) {
       return '-';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatBest(Number(amount) * (mega ? (1000 * 1000) : 1), 2);
   }
 
   public formatTokenBest(amount?: number|null): string {
