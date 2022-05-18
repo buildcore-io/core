@@ -14,6 +14,7 @@
   },
   "tokenSale": {
     "percentage": 2.5,
+    "spaceOnePercentage": 10,
     "spaceOne": "0x8689034481721d519b1d6924a19d271164678584",
     "spaceTwo": "0xdbdaf4078dd9db71f6bba3ba0ea812ce9d78e8ce"
   }

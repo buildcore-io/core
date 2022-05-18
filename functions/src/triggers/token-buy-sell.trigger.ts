@@ -6,7 +6,7 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { guardedRerun } from '../utils/common.utils';
-import { getRoyaltyPercentage, getRoyaltySpaces } from '../utils/config.utils';
+import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../utils/config.utils';
 import { serverTime, uOn } from '../utils/dateTime.utils';
 import { creditBuyer } from '../utils/token-buy-sell.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -50,16 +50,17 @@ interface Royalties {
 
 const getRoyalties = (count: number, price: number): Royalties => {
   const percentage = getRoyaltyPercentage()
+  const spaceOnePercentage = getSpaceOneRoyaltyPercentage()
   const royaltySpaces = getRoyaltySpaces()
   const totalAmount = Number(bigDecimal.floor(bigDecimal.multiply(count, price)))
 
-  if (isNaN(percentage) || !percentage || royaltySpaces.length !== 2) {
+  if (isNaN(percentage) || !percentage || isNaN(spaceOnePercentage) || !spaceOnePercentage || royaltySpaces.length !== 2) {
     functions.logger.error('Token sale config is missing');
     return { amount: totalAmount, royalties: [] }
   }
 
   const royalties = Number(bigDecimal.ceil(bigDecimal.multiply(totalAmount, percentage / 100)))
-  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royalties, 0.1)))
+  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royalties, spaceOnePercentage / 100)))
   return { amount: totalAmount - royalties, royalties: [royaltiesSpaceOne, royalties - royaltiesSpaceOne] }
 }
 
