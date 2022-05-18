@@ -4,9 +4,25 @@
         [ngStyle]="{
           'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
-        <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Token</nz-tag>
-        <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"  *ngIf="preMinted((token$ | async) || undefined)" i18n>Pre-Minted</nz-tag>
-        <h1 class="mt-2">{{ (token$ | async)?.name }}</h1>
+        <div class="flex items-center mb-8 space-x-3">
+          <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center">
+            <nz-avatar
+              [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+              [nzSize]="32"
+              class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-8"
+              nzShape="circle"
+            >
+            </nz-avatar>
+            <div class="font-medium">
+              {{ (data.space$ | async)?.name }}
+            </div>
+          </a>
+
+          <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Token</nz-tag>
+          <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"  *ngIf="preMinted((data.token$ | async) || undefined)" i18n>Pre-Minted</nz-tag>
+        </div>
+        
+        <h1 class="mt-2">{{ (data.token$ | async)?.name }}</h1>
 
         <div class="flex items-center justify-between mt-8 space-x-3">
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -53,7 +69,7 @@
       </div>
       <div class="mt-6 lg:mt-30 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
         [ngStyle]="{
-          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+          'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
         }">
 
         <button
@@ -64,7 +80,7 @@
           (click)="isBidTokenOpen = true"
         >
           <div class="mr-1" i18n>Buy</div>
-          <div> {{ (token$ | async)?.symbol }}</div>
+          <div> {{ (data.token$ | async)?.symbol }}</div>
         </button>
 
         <button
@@ -75,22 +91,22 @@
           (click)="isAskTokenOpen = true"
         >
           <div class="mr-1" i18n>Sell</div>
-          <div> {{ (token$ | async)?.symbol }}</div>
+          <div> {{ (data.token$ | async)?.symbol }}</div>
         </button>
 
         <wen-share
           class="block p-6 mt-6 lg:p-0"
           i18n-shareText
           shareText="Check out token"
-          [shareUrl]="getShareUrl(token$ | async)">
+          [shareUrl]="getShareUrl(data.token$ | async)">
         </wen-share>
 
         <div class="mt-12 text-2xl font-bold">
-            <span i18n>What is</span> {{ (token$ | async)?.name }} ({{(token$ | async)?.symbol}})?
+            <span i18n>What is</span> {{ (data.token$ | async)?.name }} ({{(data.token$ | async)?.symbol}})?
         </div>
 
         <div class="mt-6 font-medium">
-            {{ (token$ | async)?.description }}
+            {{ (data.token$ | async)?.description }}
         </div>
       </div>
     </div>
@@ -125,7 +141,7 @@
                     <ng-template #openBidsBlock>
                         <tr *ngFor="let item of (bids$ | async)">
                             <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                            <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
+                            <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
                             <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         </tr>
                     </ng-template>
@@ -155,7 +171,7 @@
                     <ng-template #myRequestsBlock>
                       <tr *ngFor="let item of (myBids$ | async)">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
@@ -210,7 +226,7 @@
                   <ng-template #openAsksBlock>
                       <tr *ngFor="let item of (asks$ | async)">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                       </tr>
                   </ng-template>
@@ -240,7 +256,7 @@
                   <ng-template #myAsksBlock>
                       <tr *ngFor="let item of (myAsks$ | async)">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (token$ | async)?.symbol}}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
@@ -269,8 +285,8 @@
 </wen-content>
 
 <wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen"
-              [token]="(token$ | async) || undefined" [space]="(space$ | async) || undefined"
+              [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
               (wenOnClose)="isBidTokenOpen = false"></wen-token-bid>
 <wen-token-offer-pre-mint *ngIf="isAskTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"
-              [token]="(token$ | async) || undefined" [space]="(space$ | async) || undefined"
+              [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
               [isOpen]="isAskTokenOpen" (wenOnClose)="isAskTokenOpen = false"></wen-token-offer-pre-mint>

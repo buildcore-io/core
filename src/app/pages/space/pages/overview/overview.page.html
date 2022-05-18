@@ -1,17 +1,10 @@
 <div class="space-y-12">
   <div class="space-y-4" *ngIf="available(filteredToken || undefined)">
-    <h3 i18n>Upcoming Sale</h3>
+    <h3 *ngIf="isBeforeSale(filteredToken || undefined); else liveSaleTitle" i18n>Upcoming Sale</h3>
+    <ng-template #liveSaleTitle>
+      <h3 i18n>Live Token Sale</h3>
+    </ng-template>
 
-    <!-- We only show whole thing when there is one. -->
-    <!-- <nz-skeleton *ngIf="filteredToken === undefined" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl" [nzActive]="true"
-      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton> -->
-    <!-- <nz-card class="w-full" *ngIf="filteredToken === null">
-      <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-          No Upcoming Sale
-        </span>
-      </div>
-    </nz-card> -->
     <wen-token-card [token]="filteredToken!" class="block">
     </wen-token-card>
   </div>
