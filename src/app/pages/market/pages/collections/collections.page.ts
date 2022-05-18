@@ -22,7 +22,6 @@ import { Timestamp } from "firebase/firestore";
 
 })
 export class CollectionsPage {
-
   config = {
     indexName: 'collection',
     searchClient: this.algoliaService.searchClient,

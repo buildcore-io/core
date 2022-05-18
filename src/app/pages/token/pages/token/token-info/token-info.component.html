@@ -3,7 +3,7 @@
         <wen-description type="card" i18n-title title="Schedule" [items]="[
             { title: tokenScheduleLabels[0], value: (data.token$ | async)?.saleStartDate?.toDate() | date: 'medium' },
             { title: tokenScheduleLabels[1], value: data.saleEndDate((data.token$ | async) || undefined).toDate() | date: 'medium' },
-            { title: tokenScheduleLabels[2], value: '24h', titleTemplate: cooldownTooltipIcon },
+            { title: tokenScheduleLabels[2], value: getCooldownDuration((data.token$ | async) || undefined), titleTemplate: cooldownTooltipIcon },
             { title: tokenScheduleLabels[3], value: (data.token$ | async)?.coolDownEnd?.toDate() | date: 'medium' }
         ]"></wen-description>
         <ng-template #cooldownTooltipIcon>

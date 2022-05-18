@@ -70,7 +70,7 @@
 
 <ng-template #transactionTemplate>
     <wen-description [items]="[
-        { title: 'Cooldown period ends in', titleIcon: timeIcon, value: '2 h' }
+        { title: 'Sale ends in', titleIcon: timeIcon, value: (getEndDate() | relativeTime) }
     ]"></wen-description>
     <ng-template #timeIcon>
         <wen-icon-time [size]="20"></wen-icon-time>
@@ -129,7 +129,7 @@
 
 <ng-template #waitTemplate>
     <wen-description [items]="[
-        { title: 'Cooldown period ends in', titleIcon: timeIcon, value: '2 h' }
+        { title: 'Sale ends in', titleIcon: timeIcon, value: (getEndDate() | relativeTime) }
     ]"></wen-description>
     <ng-template #timeIcon>
         <wen-icon-time [size]="20"></wen-icon-time>
@@ -194,7 +194,7 @@
 
 <ng-template #completeTemplate>
     <wen-description [items]="[
-        { title: 'Cooldown period ends in', titleIcon: timeIcon, value: '2 h' }
+        { title: 'Sale ends in', titleIcon: timeIcon, value:  (getEndDate() | relativeTime) }
     ]"></wen-description>
     <ng-template #timeIcon>
         <wen-icon-time [size]="20"></wen-icon-time>

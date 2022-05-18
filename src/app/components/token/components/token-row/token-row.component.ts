@@ -32,7 +32,7 @@ export class TokenRowComponent {
 
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
-      return '';
+      return '0';
     }
 
     return (amount / 1000 / 1000).toFixed(2).toString();

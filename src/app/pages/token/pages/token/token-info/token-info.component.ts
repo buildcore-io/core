@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PreviewImageService } from '@core/services/preview-image';
+import { Token } from '@functions/interfaces/models/token';
 import { DataService } from '@pages/token/services/data.service';
+import * as dayjs from 'dayjs';
+import * as duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 
 @Component({
   selector: 'wen-token-info',
@@ -30,4 +34,13 @@ export class TokenInfoComponent {
     public previewImageService: PreviewImageService,
     public data: DataService
   ) {}
+
+  public getCooldownDuration(token?: Token): string {
+    if (!token || !token.coolDownEnd || !token.saleStartDate) {
+      return '-';
+    }
+
+    const v: number = dayjs(token.coolDownEnd.toDate()).diff(dayjs(token.saleStartDate.toDate()).add(token.saleLength || 0, 'ms'), 'ms');
+    return dayjs.duration({ milliseconds: v }).humanize();
+  }
 }

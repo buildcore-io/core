@@ -3,6 +3,7 @@ import { RefinementMappings } from "@components/algolia/refinement/refinement.co
 import { CacheService } from "@core/services/cache/cache.service";
 import { environment } from '@env/environment';
 import { CollectionAccess, Space } from "@functions/interfaces/models";
+import { NftAvailable } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
 
@@ -69,4 +70,22 @@ export class AlgoliaService {
     });
   }
 
+  public convertNftAvailable(algoliaItems: any[]) {
+    return algoliaItems.map(algolia => {
+      let label = $localize`Unavailable for sale`;
+      if (Number(algolia.value) === NftAvailable.AUCTION) {
+        label = $localize`Auction`;
+      } else if (Number(algolia.value) === NftAvailable.AUCTION_AND_SALE) {
+        label = $localize`Available`;
+      } else if (Number(algolia.value) === NftAvailable.SALE) {
+        label = $localize`On Sale`;
+      }
+
+      return {
+        ...algolia,
+        label: label,
+        highlighted: label,
+      }
+    });
+  }
 }

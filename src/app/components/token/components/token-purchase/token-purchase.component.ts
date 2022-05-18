@@ -156,7 +156,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
 
   public formatBest(amount: number | undefined | null): string {
     if (!amount) {
-      return '0 i';
+      return '0 Mi';
     }
 
     return UnitsHelper.formatBest(Number(amount), 2);
@@ -164,7 +164,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
 
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
-      return '';
+      return '0';
     }
 
     return (amount / 1000 / 1000).toFixed(2).toString();

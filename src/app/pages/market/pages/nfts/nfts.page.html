@@ -55,6 +55,26 @@
 
           <nz-collapse nzExpandIconPosition="right">
             <nz-collapse-panel
+              nzHeader="Status"
+              nzActive="true"
+            >
+              <wen-refinement-list
+                attribute="available"
+                [transformItems]="algoliaService.convertNftAvailable"
+                [showIcon]="false"
+              >
+              </wen-refinement-list>
+            </nz-collapse-panel>
+
+            <ais-panel header="Is Owned">
+              <ais-toggle
+                attribute="isOwned"
+                label="Is&nbsp;Owned&nbsp;"
+                [on]="true"
+              ></ais-toggle>
+            </ais-panel>
+
+            <nz-collapse-panel
               nzHeader="Spaces"
               nzActive="true"
             >

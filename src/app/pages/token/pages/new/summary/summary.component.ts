@@ -34,7 +34,7 @@ export class NewSummaryComponent {
 
   public formatBest(amount: number | undefined | null): string {
     if (!amount) {
-      return '0 i';
+      return '0 Mi';
     }
 
     return UnitsHelper.formatBest(Number(amount), 2);

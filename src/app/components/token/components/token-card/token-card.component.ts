@@ -52,6 +52,10 @@ export class TokenCardComponent {
     return (amount / 1000 / 1000).toFixed(2);
   }
 
+  public getStartDate(): dayjs.Dayjs {
+    return dayjs(this.token?.saleStartDate?.toDate());
+  }
+
   public getEndDate(): dayjs.Dayjs {
     return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms');
   }
