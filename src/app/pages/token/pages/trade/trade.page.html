@@ -30,7 +30,7 @@
                     24h VWAP
                 </div>
                 <div class="mt-2 text-lg font-bold">
-                    {{ (listenAvgPrice24h$((data.token$ | async)?.uid) | async) | number : '1.0-2' }}
+                    {{ formatBest((listenAvgPrice24h$ | async), true) }}
                 </div>
             </div>
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -38,7 +38,7 @@
                     7-day VWAP
                 </div>
                 <div class="mt-2 text-lg font-bold">
-                  {{ (listenAvgPrice7d$((data.token$ | async)?.uid) | async) | number : '1.0-2' }}
+                  {{ formatBest((listenAvgPrice7d$ | async), true) }}
                 </div>
             </div>
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -46,7 +46,7 @@
                     24h Volume
                 </div>
                 <div class="mt-2 text-lg font-bold">
-                  {{ (listenVolume24h$((data.token$ | async)?.uid) | async) | number : '1.0-2' }}
+                  {{ formatTokenBest((listenVolume24h$ | async)) | number : '1.0' }} {{ (data.token$ | async)?.symbol }}
                 </div>
             </div>
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -54,7 +54,7 @@
                     7d Volume
               </div>
               <div class="mt-2 text-lg font-bold">
-                {{ (listenVolume7d$((data.token$ | async)?.uid) | async) | number : '1.0-2' }}
+                {{ formatTokenBest(listenVolume7d$ | async) | number : '1.0' }} {{ (data.token$ | async)?.symbol }}
               </div>
             </div>
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
@@ -62,7 +62,7 @@
                     Change 24h
                 </div>
                 <div class="mt-2 text-lg font-bold">
-                  {{ (listenChangePrice24h$((data.token$ | async)?.uid) | async) | percent }}
+                  {{ (listenChangePrice24h$ | async) | percent }}
                 </div>
             </div>
         </div>

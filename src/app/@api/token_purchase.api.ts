@@ -41,7 +41,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     }
     const start = purchases[purchases.length - 1].price
     const close = purchases[0].price
-    return (close - start) / start * 100
+    return (close - start) / start;
   }
 
   public listenVolume7d = (tokenId: string): Observable<number | undefined> => this._query({
