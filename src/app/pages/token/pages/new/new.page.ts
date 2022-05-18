@@ -6,7 +6,6 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { environment } from '@env/environment';
 import { TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NewService } from '@pages/token/services/new.service';
@@ -90,13 +89,6 @@ export class NewPage implements OnInit {
     res.icon = data.icon;
     res.overviewGraphics = data.introductionary;
     res.termsAndConditions = data.termsAndConditionsLink;
-
-    // For testing purposes.
-    if (!environment.production) {
-      res.saleLength = 10 * 60 * 1000;
-      res.coolDownLength = 5 * 60 * 1000;
-    }
-
     return res;
   }
 

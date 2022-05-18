@@ -19,7 +19,7 @@ export enum TokenCardType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenCardComponent {
-  @Input() 
+  @Input()
   set token(value: Token | undefined) {
     this._token = value;
     this.setCardType();
@@ -44,18 +44,29 @@ export class TokenCardComponent {
     return TokenCardType;
   }
 
-  public getCountdownDate(): Date {
-    return this.token?.coolDownEnd?.toDate() || new Date();
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2);
+  }
+
+  public getEndDate(): dayjs.Dayjs {
+    return dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms');
   }
 
   private setCardType(): void {
-    if (dayjs(this.token?.saleStartDate?.toDate()).add(this.token?.saleLength || 0, 'ms').isBefore(dayjs())) {
+    const endDate = this.getEndDate();
+    // 1 / 5 is close to ending.
+    if (endDate.clone().subtract((this.token?.saleLength || 0) / 5).isBefore(dayjs())) {
       this.cardType = TokenCardType.ENDING;
-    } else if (dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs())) {
+    } else if (dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs()) && endDate.isAfter(dayjs())) {
       this.cardType = TokenCardType.ONGOING;
     } else {
       this.cardType = TokenCardType.UPCOMING;
     }
+
     this.cd.markForCheck();
   }
 }

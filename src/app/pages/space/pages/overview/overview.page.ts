@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Award, Proposal } from '@functions/interfaces/models';
-import { Token } from '@functions/interfaces/models/token';
+import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from "@pages/space/services/data.service";
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @UntilDestroy()
@@ -43,9 +44,18 @@ export class OverviewPage implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe((token: Token | undefined) => {
-        this.filteredToken = token?.saleStartDate ? token : null;
+        this.filteredToken = (token?.saleStartDate && this.available(token)) ? token : token;
         this.cd.markForCheck();
       });
+  }
+
+  public available(token: Token): boolean {
+    return (
+      // dayjs(token.saleStartDate?.toDate()).isAfter(dayjs()) &&
+      dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms').isAfter(dayjs()) &&
+      token?.status === TokenStatus.AVAILABLE &&
+      token?.approved === true
+    );
   }
 
   public trackByUid(index: number, item: Award | Proposal) {

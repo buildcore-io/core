@@ -34,7 +34,6 @@ export class DataService {
     return this.formatBest(token?.pricePerToken * (token?.totalSupply * percentage / 100));
   }
 
-
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
       return '';

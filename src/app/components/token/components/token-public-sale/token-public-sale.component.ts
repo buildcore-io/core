@@ -4,6 +4,7 @@ import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { environment } from '@env/environment';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 
@@ -99,8 +100,15 @@ export class TokenPublicSaleComponent {
 
     res.token = this.token?.uid;
     res.saleStartDate = data.startDate;
-    res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
-    res.coolDownLength = 24 * 60 * 60 * 1000;
+
+    // For testing purposes.
+    if (!environment.production) {
+      res.saleLength = 10 * 60 * 1000;
+      res.coolDownLength = 5 * 60 * 1000;
+    } else {
+      res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
+      res.coolDownLength = 24 * 60 * 60 * 1000;
+    }
 
     return res;
   }
