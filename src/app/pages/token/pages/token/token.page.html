@@ -41,13 +41,13 @@
 
         <div *ngIf="deviceService.isMobile$ | async" class="w-screen h-px mt-6 -ml-5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"></div>
 
-        <div class="w-full py-12">
+        <div class="w-full py-6">
           <router-outlet></router-outlet>
         </div>
       </div>
-      <div class="mt-4 space-y-4 lg:space-y-6 lg:mt-36 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+      <div class="mt-4 space-y-4 lg:space-y-6 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
         [ngStyle]="{
-          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+          'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
         }">
         <wen-token-buy *ngIf="deviceService.isDesktop$ | async"></wen-token-buy>
         <wen-token-progress [token]="(data.token$ | async) || undefined" [memberDistribution]="(data.memberDistribution$ | async) || undefined" *ngIf="deviceService.isDesktop$ | async"></wen-token-progress>

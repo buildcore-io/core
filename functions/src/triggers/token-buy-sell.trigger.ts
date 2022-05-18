@@ -1,10 +1,12 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
-import { Member, Transaction, TransactionType } from '../../interfaces/models';
+import { isEmpty } from 'lodash';
+import { Member, Space, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { guardedRerun } from '../utils/common.utils';
+import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../utils/config.utils';
 import { serverTime, uOn } from '../utils/dateTime.utils';
 import { creditBuyer } from '../utils/token-buy-sell.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -41,6 +43,26 @@ const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder): TokenP
   })
 }
 
+interface Royalties {
+  readonly amount: number;
+  readonly royalties: number[];
+}
+
+const getRoyalties = (count: number, price: number): Royalties => {
+  const percentage = getRoyaltyPercentage()
+  const spaceOnePercentage = getSpaceOneRoyaltyPercentage()
+  const royaltySpaces = getRoyaltySpaces()
+  const totalAmount = Number(bigDecimal.floor(bigDecimal.multiply(count, price)))
+
+  if (isNaN(percentage) || !percentage || isNaN(spaceOnePercentage) || !spaceOnePercentage || royaltySpaces.length !== 2) {
+    functions.logger.error('Token sale config is missing');
+    return { amount: totalAmount, royalties: [] }
+  }
+
+  const royalties = Number(bigDecimal.ceil(bigDecimal.multiply(totalAmount, percentage / 100)))
+  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royalties, spaceOnePercentage / 100)))
+  return { amount: totalAmount - royalties, royalties: [royaltiesSpaceOne, royalties - royaltiesSpaceOne] }
+}
 
 const createBillPayment = async (
   count: number,
@@ -53,8 +75,9 @@ const createBillPayment = async (
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
   const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
   const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
-  const amount = Number(bigDecimal.floor(bigDecimal.multiply(count, price)))
-  const data = <Transaction>{
+  const { amount, royalties } = getRoyalties(count, price)
+
+  const sellerBillPayment = <Transaction>{
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
@@ -73,8 +96,36 @@ const createBillPayment = async (
       quantity: count
     }
   }
-  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
-  return data.uid
+  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${sellerBillPayment.uid}`), sellerBillPayment)
+
+  if (!isEmpty(royalties)) {
+    const royaltyPaymentPromises = getRoyaltySpaces().map(async (space, index) => {
+      const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
+      return <Transaction>{
+        type: TransactionType.BILL_PAYMENT,
+        uid: getRandomEthAddress(),
+        space: token.space,
+        member: sell.owner,
+        createdOn: serverTime(),
+        payload: {
+          amount: royalties[index],
+          sourceAddress: order.payload.targetAddress,
+          targetAddress: spaceData.validatedAddress,
+          previousOwnerEntity: 'member',
+          previousOwner: buyer.uid,
+          sourceTransaction: [buy.paymentTransactionId],
+          royalty: true,
+          void: false,
+          token: token.uid,
+          quantity: count
+        }
+      }
+    })
+    const royaltyPayments = (await Promise.all(royaltyPaymentPromises))
+    royaltyPayments.forEach(royaltyPayment => transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${royaltyPayment.uid}`), royaltyPayment))
+  }
+
+  return sellerBillPayment.uid
 }
 
 const updateSaleLock = (prev: TokenBuySellOrder, sell: TokenBuySellOrder, transaction: admin.firestore.Transaction) => {
