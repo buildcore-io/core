@@ -27,6 +27,8 @@ const createSchema = () => ({
   symbol: Joi.string().required().length(4).regex(RegExp('^[A-Z]+$')),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
+  shortDescriptionTitle: Joi.string().optional(),
+  shortDescription: Joi.string().optional(),
   space: Joi.string().required(),
   pricePerToken: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required(),
   totalSupply: Joi.number().required().min(MIN_TOTAL_TOKEN_SUPPLY).max(MAX_TOTAL_TOKEN_SUPPLY).integer(),
@@ -114,6 +116,8 @@ const updateSchema = {
   name: Joi.string().required().allow(null, ''),
   title: Joi.string().required().allow(null, ''),
   description: Joi.string().required().allow(null, ''),
+  shortDescriptionTitle: Joi.string().required().allow(null, ''),
+  shortDescription: Joi.string().required().allow(null, ''),
   uid: Joi.string().required()
 }
 
