@@ -10,9 +10,9 @@
             </tr>
         </thead>
         <tbody>
-            <ng-container *ngFor="let t of tokens$ | async" class="cursor-pointer">
+            <ng-container *ngFor="let t of tokens$ | async">
               <tr *ngIf="t.distribution.tokenOwned">
-                  <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]">
+                  <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                       <div class="flex items-center">
                           <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
                             class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
@@ -22,13 +22,13 @@
                           <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
                       </div>
                   </td>
-                  <td class="font-medium" i18n>owned</td>
+                  <td class="font-medium" i18n>Owned</td>
                   <td class="font-medium">{{ formatTokenBest(t.distribution.tokenOwned) + ' ' + t.symbol  }}</td>
                   <td class="right"></td>
               </tr>
 
               <tr *ngIf="t.distribution.tokenDrops?.length">
-                <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]">
+                <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                   <div class="flex items-center">
                       <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
                         class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
@@ -37,8 +37,8 @@
                       </nz-avatar>
                       <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
                   </div>
-              </td>
-                <td class="font-medium" i18n>airdropped</td>
+                </td>
+                <td class="font-medium" i18n>Airdropped</td>
                 <td class="font-medium">{{  (formatTokenBest(sum(t.distribution.tokenDrops!)) + ' ' + t.symbol)  }}</td>
                 <td class="right">
                     <button *ngIf="getTokenAction(t) !== null"
@@ -50,7 +50,7 @@
               </tr>
 
               <tr *ngIf="salesInProgressOrUpcoming(t) && t.distribution.totalDeposit">
-                <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]">
+                <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                   <div class="flex items-center">
                       <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
                         class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
@@ -60,7 +60,7 @@
                       <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
                   </div>
                 </td>
-                <td class="font-medium" i18n>deposit for purchase</td>
+                <td class="font-medium" i18n>Deposit for purchase</td>
                 <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
                 <td class="right">
                     <button *ngIf="getTokenAction(t) !== null"

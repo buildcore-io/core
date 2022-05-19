@@ -16,9 +16,12 @@
         <div class="font-medium ml-3">({{ token?.symbol }})</div>
     </div>
 
-    <div class="flex items-center mt-5">
+    <div class="flex items-center mt-5" *ngIf="token?.coolDownEnd">
         <wen-icon-time class="text-icons-secondary dark:text-icons-secondary-dark" [size]="20"></wen-icon-time>
-        <div class="font-medium ml-2.5" i18n>Cooldown period ends in 2 hours</div>
+        <div class="font-medium ml-2.5 flex items-center">
+            <div class="mr-1" i18n>Cooldown period ends</div>
+            <div>{{ (token?.coolDownEnd || null) | relativeTime:'from' }}</div>
+        </div>
     </div>
 
     <div *ngIf="type === tokenItemTypes.CLAIM"
@@ -27,7 +30,7 @@
                 Tokens claim amount
             </div>
             <div class="text-lg font-bold">
-                100
+                {{ dropsSum() }}
             </div>
     </div>
 
