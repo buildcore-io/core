@@ -109,6 +109,20 @@ export class TokensPage implements OnInit, OnDestroy {
     return TokenItemType;
   }
 
+
+  public preMinted(token: Token): boolean {
+    return token.status === TokenStatus.PRE_MINTED;
+  }
+
+  public salesInProgressOrUpcoming(token: Token): boolean {
+    return (
+      !!token.saleStartDate &&
+      dayjs(token.saleStartDate?.toDate()).isAfter(dayjs()) &&
+      token?.status !== TokenStatus.PRE_MINTED &&
+      token?.approved
+    );
+  }
+
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.
     if (!this.tokens$.value) {

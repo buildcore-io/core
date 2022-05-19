@@ -64,6 +64,9 @@ const reTryWallet = functions.pubsub.schedule('every 1 minutes').onRun(async () 
           if (ref.size > 0) {
             payload.walletReference.confirmed = true;
           } else {
+            if (data.payload.walletReference) {
+              data.payload.walletReference.error = 'Unable to find on chain. Retry.';
+            }
             data.shouldRetry = true
           }
           transaction.update(t.ref, data);

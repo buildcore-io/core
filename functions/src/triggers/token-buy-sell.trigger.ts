@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
+import { SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { Member, Space, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
@@ -116,6 +117,8 @@ const createBillPayment = async (
           sourceTransaction: [buy.paymentTransactionId],
           royalty: true,
           void: false,
+          // We delay royalty.
+          delay: SECONDARY_TRANSACTION_DELAY * (index + 1),
           token: token.uid,
           quantity: count
         }

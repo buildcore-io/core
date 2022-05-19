@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
+import { SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
@@ -55,6 +56,8 @@ const createBillPayment =
         royalty: false,
         void: false,
         token: token.uid,
+        // We delay royalty.
+        delay: SECONDARY_TRANSACTION_DELAY,
         quantity: distribution.totalBought || 0
       }
     };
