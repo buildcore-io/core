@@ -5,7 +5,7 @@ import { TokenItemType } from '@components/token/components/token-claim-refund/t
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Token, TokenStatus } from '@functions/interfaces/models/token';
+import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import dayjs from 'dayjs';
@@ -41,16 +41,16 @@ export class TokensPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
-    setTimeout(() => {
-      console.log(this.tokens$.value);
-    }, 2000);
   }
 
   public getTokenAction(token: TokenWithMemberDistribution): TokenItemType | null {
     if (this.isInCooldown(token)) {
-      return TokenItemType.REFUND
+      return TokenItemType.REFUND;
     }
 
+    if (this.sum(token.distribution.tokenDrops || []) > 0) {
+      return TokenItemType.CLAIM;
+    }
     return null;
   }
 
@@ -79,6 +79,10 @@ export class TokensPage implements OnInit, OnDestroy {
     return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
+  public sum(arr: TokenDrop[]): number {
+    return arr.reduce((pv, cv) => pv + cv.count, 0);
+  }
+
   private listen(search?: string): void {
     this.cancelSubscriptions();
     this.tokens$.next(undefined);
@@ -104,7 +108,7 @@ export class TokensPage implements OnInit, OnDestroy {
   public get tokenItemTypes(): typeof TokenItemType {
     return TokenItemType;
   }
-  
+
   public onScroll(): void {
     // In this case there is no value, no need to infinite scroll.
     if (!this.tokens$.value) {

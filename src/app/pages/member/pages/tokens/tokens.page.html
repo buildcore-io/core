@@ -4,7 +4,8 @@
         <thead>
             <tr>
                 <th i18n>Item</th>
-                <th i18n>Amount</th>
+                <th i18n>To claim (Airdrops)</th>
+                <th i18n>Total Owned</th>
                 <th></th>
             </tr>
         </thead>
@@ -20,6 +21,7 @@
                         <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
                     </div>
                 </td>
+                <td class="font-medium">{{ formatTokenBest(sum(t.distribution.tokenDrops || [])) + ' ' + t.symbol  }}</td>
                 <td class="font-medium">{{ formatTokenBest(t.distribution.totalDeposit) + ' ' + t.symbol  }}</td>
                 <td class="right">
                     <button *ngIf="getTokenAction(t) !== null"

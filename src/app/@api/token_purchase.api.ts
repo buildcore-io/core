@@ -69,4 +69,13 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     refCust: this.getPurchases(tokenId, 1)
   }).pipe(map(this.calcChangePrice24h));
 
+  public listenToPurchases24h = (tokenId: string): Observable<TokenPurchase[]> => this._query({
+    collection: this.collection,
+    refCust: this.getPurchases(tokenId, 1)
+  });
+
+  public listenToPurchases7d = (tokenId: string): Observable<TokenPurchase[]> => this._query({
+    collection: this.collection,
+    refCust: this.getPurchases(tokenId, 7)
+  });
 }

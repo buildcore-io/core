@@ -6,8 +6,8 @@ import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
 import { MAX_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
-import { Token } from '@functions/interfaces/models/token';
 import { DataService } from '@pages/token/services/data.service';
+import * as dayjs from 'dayjs';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
 import { Observable } from 'rxjs';
@@ -20,6 +20,7 @@ export enum StepType {
 export interface AirdropItem {
   address: string;
   amount: string;
+  vestingAt: dayjs.Dayjs;
 }
 
 @Component({
@@ -32,7 +33,8 @@ export class AirdropsPage {
 
   public tableConfig = [
     { label: $localize`EthAddress`, key: 'address' },
-    { label: $localize`Amount`, key: 'amount' }
+    { label: $localize`Amount`, key: 'amount' },
+    { label: $localize`VestingAt`, key: 'vestingAt' }
   ];
   public errors: string[] = [];
   public airdropData: AirdropItem[] = [];
@@ -58,7 +60,7 @@ export class AirdropsPage {
             results.data
               .slice(1)
               .filter((r: string[]) => {
-                if (r.length === 2 && !isNaN(Number(r[1])) && (Number(r[1]) > 1) && (Number(r[1]) <= MAX_TOTAL_TOKEN_SUPPLY)) {
+                if (r.length === this.tableConfig.length && !isNaN(Number(r[1])) && (Number(r[1]) > 1) && (Number(r[1]) <= MAX_TOTAL_TOKEN_SUPPLY)) {
                   return true;
                 }
                 this.errors.push(r[0] + $localize` row is not valid`);
@@ -90,23 +92,24 @@ export class AirdropsPage {
 
     download(`data:text/csv;charset=utf-8${csv}`, 'soonaverse_airdrop_template.csv');
   }
-  
+
   public formatSubmitData(): any {
     return {
       token: this.data.token$.value?.uid,
       drops: this.airdropData.map((r) => ({
         recipient: r.address,
-        count: Number(r.amount)
+        count: Number(r.amount),
+        vestingAt: dayjs(r.vestingAt).toISOString()
       }))
     };
   }
 
-  public async submit(token?: Token): Promise<void> {
+  public async submit(): Promise<void> {
     if (!this.airdropData.length) return;
 
     await this.auth.sign(this.formatSubmitData(), (sc, finish) => {
       this.notification.processRequest(this.tokenApi.airdropToken(sc), 'Submitted.', finish).subscribe(() => {
-        this.router.navigate(['/', ROUTER_UTILS.config.token.root, token?.uid, ROUTER_UTILS.config.token.overview]);
+        this.router.navigate(['/', ROUTER_UTILS.config.token.root, this.data.token$.value?.uid]);
       });
     });
   }
