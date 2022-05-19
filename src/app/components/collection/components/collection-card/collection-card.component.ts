@@ -5,8 +5,8 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from '@functions/interfaces/models';
-import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
-import { Collection, CollectionAccess } from '@functions/interfaces/models/collection';
+import { Access, FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { Collection } from '@functions/interfaces/models/collection';
 import dayjs from 'dayjs';
 
 @Component({
@@ -28,7 +28,7 @@ export class CollectionCardComponent {
     // none.
   }
 
-  public get space(): Space|undefined {
+  public get space(): Space | undefined {
     if (!this.collection?.space) {
       return undefined;
     }
@@ -39,7 +39,7 @@ export class CollectionCardComponent {
 
     return space;
   }
-  public get spaceAvatarUrl(): string|undefined {
+  public get spaceAvatarUrl(): string | undefined {
     if (this.space) {
       return this.space.avatarUrl ? FileApi.getUrl(this.space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
     }
@@ -47,11 +47,11 @@ export class CollectionCardComponent {
     return undefined;
   }
 
-  public get targetAccess(): typeof CollectionAccess {
-    return CollectionAccess;
+  public get targetAccess(): typeof Access {
+    return Access;
   }
 
-  public getStatusProperties(): { label: string; className: string} {
+  public getStatusProperties(): { label: string; className: string } {
     if (this.collection?.approved !== true && this.collection?.rejected !== true) {
       return {
         label: $localize`Pending approval`,
@@ -70,7 +70,7 @@ export class CollectionCardComponent {
     }
   }
 
-  public isDateInFuture(date?: Timestamp|null): boolean {
+  public isDateInFuture(date?: Timestamp | null): boolean {
     if (!date) {
       return false;
     }

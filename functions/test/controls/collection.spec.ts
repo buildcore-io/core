@@ -3,8 +3,8 @@ import dayjs from "dayjs";
 import admin from '../../src/admin.config';
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
-import { COL, SUB_COL } from "../../interfaces/models/base";
-import { Categories, CollectionAccess, CollectionType } from "../../interfaces/models/collection";
+import { Access, COL, SUB_COL } from "../../interfaces/models/base";
+import { Categories, CollectionType } from "../../interfaces/models/collection";
 import { serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
@@ -37,7 +37,7 @@ const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   description: 'babba',
   type: CollectionType.CLASSIC,
   category: Categories.ART,
-  access: CollectionAccess.OPEN,
+  access: Access.OPEN,
   royaltiesFee,
   space: spaceId,
   royaltiesSpace: spaceId,

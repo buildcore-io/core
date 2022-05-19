@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Collection, CollectionAccess } from "functions/interfaces/models";
+import { Collection } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { Access, COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum CollectionFilter {
@@ -79,7 +79,7 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public topAccess(access: CollectionAccess, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public topAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'createdOn',
@@ -93,7 +93,7 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public lowToHighAccess(access: CollectionAccess, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public lowToHighAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',
@@ -107,7 +107,7 @@ export class CollectionApi extends BaseApi<Collection> {
     });
   }
 
-  public highToLowAccess(access: CollectionAccess, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+  public highToLowAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
     return this._query({
       collection: this.collection,
       orderBy: 'price',

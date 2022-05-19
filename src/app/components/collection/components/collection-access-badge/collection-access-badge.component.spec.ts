@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CollectionAccessBadgeComponent } from './collection-access-badge.component';
+import { AccessBadgeComponent } from './collection-access-badge.component';
 
 
-describe('CollectionAccessBadgeComponent', () => {
-  let component: CollectionAccessBadgeComponent;
-  let fixture: ComponentFixture<CollectionAccessBadgeComponent>;
+describe('AccessBadgeComponent', () => {
+  let component: AccessBadgeComponent;
+  let fixture: ComponentFixture<AccessBadgeComponent>;
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CollectionAccessBadgeComponent]
+      declarations: [AccessBadgeComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CollectionAccessBadgeComponent);
+    fixture = TestBed.createComponent(AccessBadgeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
