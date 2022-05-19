@@ -24,20 +24,10 @@
         </div>
     </div>
 
-    <div *ngIf="type === tokenItemTypes.CLAIM"
-        class="px-5 py-3 mt-4 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
-            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-                Tokens claim amount
-            </div>
-            <div class="text-lg font-bold">
-                {{ formatTokenBest(dropsSum()) | number: '1.0-2' }} {{token?.symbol}}
-            </div>
-    </div>
-
-    <div *ngIf="type === tokenItemTypes.REFUND" class="relative flex flex-col mt-4 font-medium">
+    <div class="relative flex flex-col mt-4 font-medium">
         <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                {{token?.symbol}}
+                Mi
             </div>
             <input class="w-full p-0 outline-0"
                     [formControl]="amountControl"
@@ -65,8 +55,7 @@
 
     <div class="flex justify-center w-full mt-10 item-center">
         <button nz-button nzType="primary" nzSize="large" (click)="confirm()">
-            <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Confirm and claim</ng-container>
-            <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Confirm and refund</ng-container>
+            <ng-container i18n>Confirm and refund</ng-container>
         </button>
     </div>
 </ng-template>

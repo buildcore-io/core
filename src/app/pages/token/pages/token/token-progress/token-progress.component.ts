@@ -12,6 +12,8 @@ import dayjs from 'dayjs';
 export class TokenProgressComponent {
   @Input() token?: Token;
   @Input() memberDistribution?: TokenDistribution;
+  public openTokenRefund?: TokenDistribution | null;
+  public tokenActionTypeLabel = $localize`Refund`;
   constructor(
     public data: DataService
   ) {}

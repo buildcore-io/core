@@ -11,12 +11,12 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { TokenClaimRefundComponent } from './token-claim-refund.component';
+import { TokenRefundComponent } from './token-refund.component';
 
 
 @NgModule({
   declarations: [
-    TokenClaimRefundComponent
+    TokenRefundComponent
   ],
   imports: [
     CommonModule,
@@ -34,7 +34,7 @@ import { TokenClaimRefundComponent } from './token-claim-refund.component';
     RelativeTimeModule
   ],
   exports: [
-    TokenClaimRefundComponent
+    TokenRefundComponent
   ]
 })
-export class TokenClaimRefundModule { }
+export class TokenRefundModule { }
