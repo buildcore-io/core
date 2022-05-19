@@ -42,6 +42,11 @@ export interface Token extends BaseRecord {
   readonly termsAndConditions: string;
 }
 
+export interface TokenDrop {
+  readonly vestingAt: Timestamp;
+  readonly count: number;
+}
+
 export interface TokenDistribution extends BaseSubCollection {
   readonly uid?: EthAddress;
 
@@ -53,7 +58,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly billPaymentId?: string;
   readonly creditPaymentId?: string;
 
-  readonly tokenDropped?: number;
+  readonly tokenDrops?: TokenDrop[];
   readonly tokenClaimed?: number;
 
   readonly lockedForSale?: number;

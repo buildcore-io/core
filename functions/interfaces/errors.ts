@@ -85,7 +85,7 @@ export const WenError = {
   not_enough_funds: { code: 2076, key: 'Not enough funds to credit' },
   token_not_in_cool_down_period: { code: 2077, key: 'Token not in cool down period.' },
   no_tokens_available_for_airdrop: { code: 2078, key: 'No more tokens are available for airdrop.' },
-  airdrop_already_claimed: { code: 2079, key: 'Airdrop was claimed before.' },
+  no_airdrop_to_claim: { code: 2079, key: 'No airdrop to claim.' },
   public_sale_already_set: { code: 2080, key: 'Public sale already set.' },
   no_available_tokens_for_sale: { code: 2081, key: 'No available tokens for sale.' },
   token_not_pre_minted: { code: 2082, key: 'Token not pre-minted.' },
