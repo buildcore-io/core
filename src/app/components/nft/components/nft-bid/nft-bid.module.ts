@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CountdownModule } from '@components/countdown/countdown.module';
 import { IconModule } from '@components/icon/icon.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
+import { TermsAndConditionsModule } from '@components/terms-and-conditions/terms-and-conditions.module';
+import { WalletDeeplinkModule } from '@components/wallet-deeplink/wallet-deeplink.module';
 import { CountdownTimeModule } from '@core/pipes/countdown-time/countdown-time.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { RelativeTimeModule } from '@core/pipes/relative-time/relative-time.module';
@@ -16,7 +20,6 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NftCountdownModule } from '../nft-countdown/nft-countdown.module';
 import { NftBidComponent } from './nft-bid.component';
 
 
@@ -42,7 +45,10 @@ import { NftBidComponent } from './nft-bid.component';
     NzTableModule,
     NzAvatarModule,
     IpfsAvatarModule,
-    NftCountdownModule
+    CountdownModule,
+    ModalDrawerModule,
+    WalletDeeplinkModule,
+    TermsAndConditionsModule
   ],
   exports: [
     NftBidComponent

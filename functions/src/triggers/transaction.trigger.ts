@@ -1,10 +1,11 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { BillPaymentTransaction, CreditPaymentTransaction, IOTATangleTransaction, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Nft } from '../../interfaces/models/nft';
-import { superPump } from '../scale.settings';
+import admin from '../admin.config';
+import { scale } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
 import { WalletService } from "../services/wallet/wallet";
 import { serverTime } from "../utils/dateTime.utils";
@@ -12,17 +13,26 @@ import { serverTime } from "../utils/dateTime.utils";
 // Listen for changes in all documents in the 'users' collection
 export const transactionWrite = functions.runWith({
   timeoutSeconds: 540,
-  minInstances: superPump,
+  minInstances: scale(WEN_FUNC.transactionWrite),
   memory: "512MB",
-}).firestore.document(COL.TRANSACTION + '/{tranId}').onUpdate(async (change) => {
-  const newValue = <Transaction>change.after.data();
+}).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const WALLET_PAY_IN_PROGRESS = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
-  if (!newValue || (newValue.type !== TransactionType.CREDIT && newValue.type !== TransactionType.BILL_PAYMENT)) {
-    return;
-  }
+  const prev = <Transaction | undefined>change.before.data();
+  const curr = <Transaction>change.after.data();
 
+  const isCreditOrBillPayment = (curr.type === TransactionType.CREDIT || curr.type === TransactionType.BILL_PAYMENT);
+  const isCreate = (prev === undefined);
+  const shouldRetry = (!prev?.shouldRetry && curr.shouldRetry);
+
+  if (isCreditOrBillPayment && (isCreate || shouldRetry)) {
+    await execute(curr, WALLET_PAY_IN_PROGRESS);
+  }
+});
+
+
+const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) => {
   // Let's wrap this into a transaction.
-  await admin.firestore().runTransaction(async (transaction) => {
+  const shouldProcess = await admin.firestore().runTransaction(async (transaction) => {
     const refSource = admin.firestore().collection(COL.TRANSACTION).doc(newValue.uid);
     const sfDoc = await transaction.get(refSource);
     if (!sfDoc.data()) {
@@ -31,7 +41,7 @@ export const transactionWrite = functions.runWith({
 
     // Data object.
     const tranData = <Transaction>sfDoc.data();
-    const payload = <PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction>tranData.payload
+    const payload = <BillPaymentTransaction | CreditPaymentTransaction>tranData.payload
     if (
       !(payload.walletReference?.chainReference && payload.walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS)) &&
       // Either not on chain yet or there was an error.
@@ -47,6 +57,10 @@ export const transactionWrite = functions.runWith({
         count: 0
       };
 
+      if (payload.walletReference?.chainReference) {
+        payload.walletReference.chainReferences?.push(payload.walletReference.chainReference);
+      }
+
       // Reset defaults.
       walletResponse.error = null;
       walletResponse.chainReference = WALLET_PAY_IN_PROGRESS;
@@ -55,28 +69,30 @@ export const transactionWrite = functions.runWith({
       walletResponse.count = walletResponse.count + 1;
       walletResponse.processedOn = serverTime();
       payload.walletReference = walletResponse;
+      tranData.shouldRetry = false;
       transaction.update(refSource, tranData);
+      return true
     } else {
       console.log('Nothing to process.');
+      return false
     }
   });
+
+  if (!shouldProcess) {
+    return;
+  }
 
   // Trigger wallet
   const refSource = admin.firestore().collection(COL.TRANSACTION).doc(newValue.uid);
   const sfDoc = await refSource.get();
   const tranData = <Transaction>sfDoc.data();
 
-  const payload = <BillPaymentTransaction>tranData.payload
+  const payload = tranData.payload
 
   // If process is required.
-  if (payload.walletReference.chainReference !== WALLET_PAY_IN_PROGRESS) {
+  if (payload.walletReference?.chainReference !== WALLET_PAY_IN_PROGRESS) {
     return;
   }
-
-  // Delay because it's retry --- this is no longer required.
-  // if (payload.walletReference.count > 1) {
-  //   await new Promise(resolve => setTimeout(resolve, (DEFAULT_TRANSACTION_DELAY)));
-  // } else
 
   if (payload.delay > 0) { // Standard Delay required.
     await new Promise(resolve => setTimeout(resolve, payload.delay));
@@ -91,8 +107,8 @@ export const transactionWrite = functions.runWith({
 
     // Once space can own NFT this will be expanded.
     if (tranData.member) {
-      details.previusOwner = payload.previusOwner;
-      details.previusOwnerEntity = payload.previusOwnerEntity;
+      details.previousOwner = payload.previousOwner;
+      details.previousOwnerEntity = payload.previousOwnerEntity;
       details.owner = tranData.member;
       details.ownerEntity = 'member';
     }
@@ -114,6 +130,10 @@ export const transactionWrite = functions.runWith({
       if (docNftData && docNftData.ipfsMetadata) {
         details.ipfsMetadata = docNftData.ipfsMetadata;
       }
+    }
+    if (payload.token) {
+      details.token = payload.token;
+      details.quantity = payload.quantity || 0
     }
   }
 
@@ -168,5 +188,4 @@ export const transactionWrite = functions.runWith({
     transaction.update(refSource, tranDataLatest);
   });
 
-  return;
-});
+}

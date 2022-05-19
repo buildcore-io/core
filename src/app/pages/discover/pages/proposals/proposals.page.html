@@ -1,66 +1,69 @@
-<div class="flex items-end justify-between">
-  <div class="flex items-center mt-6 lg:mt-12">
-    <ng-container *ngIf="deviceService.isDesktop$ | async; else hotTagsMobileBlock">
-      <nz-tag *ngFor="let tag of hotTags" nzMode="checkable" [nzChecked]="(selectedTags$ | async)!.indexOf(tag) > -1"
-        (nzCheckedChange)="handleChange(tag)">
-        {{ tag }}
-      </nz-tag>
-    </ng-container>
-
-    <ng-template #hotTagsMobileBlock>
-      <nz-select class="w-fit wen-sort-button min-w-32" [ngModel]="hotTags[0]" (ngModelChange)="handleChange($event)">
-        <nz-option *ngFor="let tag of hotTags" i18n-nzLabel [nzLabel]="tag" [nzValue]="tag"></nz-option>
-      </nz-select>
-    </ng-template>
-  </div>
-
-  <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-    <nz-select class="w-48 wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
-      [formControl]="sortControl" nz-tooltip>
-      <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-      <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-    </nz-select>
-    <ng-template #defaultTemplate let-selected>
-      <span nz-typography nzType="secondary" class="text-xs" i18n>Sort by</span>
-      <span>{{ selected.nzLabel }}</span>
-    </ng-template>
-  </ng-container>
-  <ng-template #sortMobileBlock>
-    <div class="relative">
-      <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-        <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-        <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-      </nz-select>
-      <ng-template #mobileSuffixIcon>
-        <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
-      </ng-template>
+<ais-instantsearch [config]="config">
+  <header class="header" id="header">
+    <div class="header-searchbox">
+      <wen-search-box [sections]="sections"></wen-search-box>
     </div>
-  </ng-template>
-</div>
+  </header>
 
-<div class="mt-10 lg:grid place-items-start">
-  <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(proposal$ | async)">
-    {{ ((proposal$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>proposals</span>
-  </p>
+  <main class="container">
+    <section class="mr-5 container-results">
+      <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
+        <ng-template let-hits="hits" let-refine="showMore">
+          <div class="mt-10 xl:grid place-items-start">
+            <div class="mb-10 wen-cards-wrapper">
+              <wen-proposal-card class="w-full h-full outline-none"
+                                 *ngFor="let proposal of hits; trackBy: trackByUid"
+                                 [proposal]="proposal"
+                                 [fullWidth]="(deviceService.isMobile$ | async) || false"
+                >
+              </wen-proposal-card>
+            </div>
+          </div>
+          <div (visible)="refine()"></div>
+        </ng-template>
+      </ais-infinite-hits>
+    </section>
+      <section class="container-filters" *ngIf="(deviceService.isMobile$ | async) !== true">
+        <div class="container-header">
+          <h4>Filters&Sorts</h4>
+          <wen-sort-by
+            [items]="sortItems"
+          ></wen-sort-by>
+          <ais-clear-refinements
+            class="clear-filters"
+            data-layout="desktop"
+            resetLabel="Clear filters"
+          ></ais-clear-refinements>
 
-  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
-    (scrolled)="onScroll()">
+          <ais-stats data-layout="mobile">
+            <ng-template let-state="state">
+              <span class="ais-Stats-text">
+                <strong>{{ state.nbHits | number }}</strong> records
+              </span>
+            </ng-template>
+          </ais-stats>
+        </div>
+        <div class="container-body">
+          <!-- <ais-panel
+            header="ALL / Approved only"
+          >
+            <ais-toggle
+              attribute="approved"
+              label="active"
+              [on]="true"
+            ></ais-toggle>
+          </ais-panel>
 
-    <nz-skeleton *ngIf="isLoading(proposal$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
-      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-
-    <nz-card class="w-76" *ngIf="isEmpty((proposal$ | async))">
-      <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-          No Proposals
-        </span>
-      </div>
-    </nz-card>
-
-    <wen-proposal-card class="w-full outline-none" *ngFor="let proposal of proposal$ | async; trackBy: trackByUid"
-      [proposal]="proposal">
-    </wen-proposal-card>
-  </div>
-</div>
-
-
+          <ais-panel
+            header="ALL / Rejected only"
+          >
+            <ais-toggle
+              attribute="rejected"
+              label="active"
+              [on]="true"
+            ></ais-toggle>
+          </ais-panel> -->
+        </div>
+      </section>
+  </main>
+</ais-instantsearch>

@@ -1,4 +1,4 @@
-<ng-container *ngIf="deviceService.isDesktop$ | async">
+<div [ngClass]="{ 'hidden': (deviceService.isMobile$ | async) }">
     <form nz-form nzLayout="vertical" [formGroup]="nftForm">
         <div class="py-4" nz-row [nzGutter]="24">
             <div
@@ -130,7 +130,7 @@
                 </nz-card>
 
                 <div class="relative mt-6">
-                    <nz-card [nzBordered]="false" [ngClass]="{ 'opacity-50': uploadedFiles.length === 0 }">
+                    <nz-card [nzBordered]="false" [ngClass]="{ 'opacity-50': !generateClicked }">
                         <nz-card-meta
                             i18n-nzTitle
                             nzTitle="Upload existing CSV"
@@ -147,7 +147,7 @@
                                         nzName="banner"
                                         nzType="drag"
                                         nzListType="picture-card"
-                                        [nzDisabled]="uploadedFiles.length === 0"
+                                        [nzDisabled]="!generateClicked"
                                         [nzDirectory]="false"
                                         [nzBeforeUpload]="beforeCSVUpload.bind(this)"
                                         nzFileType="text/csv,application/vnd.ms-excel"
@@ -161,7 +161,7 @@
                         </div>
                     </nz-card>
 
-                    <div class="absolute top-0 left-0 w-full h-full" *ngIf="uploadedFiles.length === 0">
+                    <div class="absolute top-0 left-0 w-full h-full" *ngIf="!generateClicked">
                         <div class="absolute z-10 flex items-center justify-center px-5 py-3 text-base font-medium -translate-x-1/2 -translate-y-1/2 rounded-lg top-1/2 left-1/2 bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary dark:text-foregrounds-primary whitespace-nowrap" i18n>
                                 You have to upload images first.
                         </div>
@@ -171,7 +171,7 @@
         </div>
     </form>
 
-    <button *ngIf="uploadedFiles.length"
+    <button *ngIf="startSuccessCounter === 0 && uploadedFiles.length"
         nz-button
         nzType="primary"
         class="w-auto mb-6"
@@ -180,11 +180,12 @@
         (click)="buttonClick()"
         [disabled]="isNftError()"
     >
-        {{ currentStep === stepType.GENERATE ? 'Generate CSV' : 'Publish NFTs'}}
+        <ng-container *ngIf="currentStep === stepType.GENERATE" i18n>Generate CSV</ng-container>
+        <ng-container *ngIf="currentStep !== stepType.GENERATE" i18n>Publish NFTs</ng-container>
     </button>
 
     <wen-nft-preview [nft]="previewNft" (wenOnClose)="previewNft = null"></wen-nft-preview>
-</ng-container>
+</div>
 
 <div *ngIf="deviceService.isMobile$ | async" class="flex p-4 mt-6 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl text-foregrounds-secondary">
     <wen-icon-info-circle></wen-icon-info-circle>

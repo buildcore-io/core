@@ -77,6 +77,7 @@ export class IpfsService {
       uid: nft.uid,
       properties: this.formatPropsStats(nft.properties),
       stats: this.formatPropsStats(nft.stats),
+      collectionId: nft.collection
     });
 
     await fs.promises.rm('/tmp/' + filename);

@@ -28,7 +28,7 @@ export class UnitsHelper {
    * @returns The formated value.
    */
   public static formatBest(value: number, decimalPlaces = 2): string {
-    return UnitsHelper.formatUnits(value, UnitsHelper.calculateBest(value), decimalPlaces);
+    return UnitsHelper.formatUnits(Number(value || 0), UnitsHelper.calculateBest(Number(value || 0)), decimalPlaces);
   }
 
   /**

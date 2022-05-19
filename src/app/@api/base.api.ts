@@ -9,8 +9,41 @@ export const WHERE_IN_BATCH = 10;
 export const FULL_LIST = 10000;
 
 export interface FbRef {
-  (ref: any): any;
+  (ref: any, ref2: any): any;
 };
+
+export interface QueryArgs {
+  collection: string;
+  orderBy?: string | string[];
+  direction?: any;
+  lastValue?: number;
+  search?: string;
+  def?: number;
+  refCust?: (subRef: any) => any;
+}
+
+export interface SubCollectionMembersArgs {
+  docId: string;
+  subCol: SUB_COL;
+  lastValue?: number;
+  searchIds?: string[];
+  manipulateOutput?: (original: any, finObj: any) => any;
+  orderBy?: string | string[];
+  direction?: any;
+  def?: number;
+  refCust?: (subRef: any) => any;
+}
+
+export interface TopParentArgs {
+  col: COL;
+  subCol: SUB_COL;
+  memberId: EthAddress;
+  orderBy?: string | string[];
+  lastValue?: number;
+  def?: number;
+  refCust?: (subRef: any) => any;
+  frRef?: FbRef;
+}
 
 export class BaseApi<T> {
   // Collection is always defined on above.
@@ -22,26 +55,40 @@ export class BaseApi<T> {
   }
 
   public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
-    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def
+    });
   }
 
   public top(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def
+    });
   }
 
   public alphabetical(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
-    return this._query(this.collection, 'name', 'asc', lastValue, search, def);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'name',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def
+    });
   }
 
-  protected _query(
-    collection: string,
-    orderBy: string | string[] = 'createdOn',
-    direction: any = 'desc',
-    lastValue?: number,
-    search?: string,
-    def = DEFAULT_LIST_SIZE,
-    refCust?: (subRef: any) => any,
-  ): Observable<T[]> {
+  protected _query(args: QueryArgs): Observable<T[]> {
+    const { collection, orderBy = 'createdOn', direction = 'desc', lastValue, search, def = DEFAULT_LIST_SIZE, refCust } = args;
     const ref: AngularFirestoreCollection<T> = this.afs.collection<T>(
       collection,
       // We limit this to last record only. CreatedOn is always defined part of every record.
@@ -76,18 +123,8 @@ export class BaseApi<T> {
     }));
   }
 
-  // TODO Redo arguments into an object
-  public subCollectionMembers<T>(
-    docId: string,
-    subCol: SUB_COL,
-    lastValue?: number,
-    searchIds?: string[],
-    manipulateOutput?: (original: any, finObj: any) => any,
-    orderBy: string | string[] = 'createdOn',
-    direction: any = 'desc',
-    def = DEFAULT_LIST_SIZE,
-    refCust?: (subRef: any) => any,
-  ): Observable<T[]> {
+  public subCollectionMembers<T>(args: SubCollectionMembersArgs): Observable<T[]> {
+    const { docId, subCol, lastValue, searchIds, manipulateOutput, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, refCust } = args;
     const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
       let query: any = refCust ? refCust(subRef) : subRef;
 
@@ -137,6 +174,32 @@ export class BaseApi<T> {
     }));
   }
 
+  public subCollectionMembersWithoutData<T>(args: SubCollectionMembersArgs): Observable<T[]> {
+    const { docId, subCol, lastValue, searchIds, orderBy = 'createdOn', direction = 'desc', def = DEFAULT_LIST_SIZE, refCust } = args;
+    const ref: any = this.afs.collection(this.collection).doc(docId.toLowerCase()).collection(subCol, (subRef) => {
+      let query: any = refCust ? refCust(subRef) : subRef;
+
+      // Apply search on IDS.
+      if (searchIds && searchIds.length > 0) {
+        query = query.where('uid', 'in', searchIds);
+      }
+
+      const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+      order.forEach((o) => {
+        query = query.orderBy(o, direction);
+      });
+      if (lastValue) {
+        query = query.startAfter(lastValue).limit(def);
+      } else {
+        query = query.limit(def);
+      }
+
+      return query;
+    });
+
+    return ref.valueChanges();
+  }
+
   protected async getSubRecordsInBatches(col: COL, records: string[]): Promise<any[]> {
     const out: any = [];
     for (let i = 0, j = records.length; i < j; i += WHERE_IN_BATCH) {
@@ -155,16 +218,8 @@ export class BaseApi<T> {
   }
 
   // TODO Implement proper typings.
-  protected topParent(
-    col: COL,
-    subCol: SUB_COL,
-    memberId: EthAddress,
-    orderBy: string | string[] = 'createdOn',
-    lastValue?: number,
-    def = DEFAULT_LIST_SIZE,
-    refCust?: (subRef: any) => any,
-    frRef?: FbRef
-  ): Observable<any[]> {
+  protected topParent(args: TopParentArgs): Observable<any[]> {
+    const { col, subCol, memberId, orderBy = 'createdOn', lastValue, def = DEFAULT_LIST_SIZE, refCust, frRef } = args;
     const ref: AngularFirestoreCollectionGroup = this.afs.collectionGroup(
       subCol,
       (ref: any) => {
@@ -197,7 +252,7 @@ export class BaseApi<T> {
         if (!finObj) {
           console.warn('Missing record in database');
         } else {
-          if ((frRef && frRef(finObj)) || !frRef) {
+          if ((frRef && frRef(finObj, o)) || !frRef) {
             out.push(finObj);
           }
         }

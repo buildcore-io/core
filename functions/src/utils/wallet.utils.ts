@@ -1,8 +1,8 @@
 import { recoverPersonalSignature } from '@metamask/eth-sig-util';
 import { randomBytes } from 'crypto';
 import { Wallet } from 'ethers';
-import * as admin from 'firebase-admin';
 import { WenError } from "../../interfaces/errors";
+import admin from '../admin.config';
 import { DecodedToken } from './../../interfaces/functions/index';
 import { COL, WenRequest } from './../../interfaces/models/base';
 import { throwUnAuthenticated } from "./error.utils";

@@ -1,4 +1,14 @@
 <div class="space-y-12">
+  <div class="space-y-4" *ngIf="available(filteredToken || undefined)">
+    <h3 *ngIf="isBeforeSale(filteredToken || undefined); else liveSaleTitle" i18n>Upcoming Sale</h3>
+    <ng-template #liveSaleTitle>
+      <h3 i18n>Live Token Sale</h3>
+    </ng-template>
+
+    <wen-token-card [token]="filteredToken!" class="block">
+    </wen-token-card>
+  </div>
+
   <div class="space-y-4">
     <h3 i18n>Active Proposals</h3>
 
@@ -10,8 +20,6 @@
         <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
           No Active Proposals
         </span>
-        <!-- <button nz-button nzType="primary" class="self-center w-48" [routerLink]="['/discover', 'spaces']">Discover
-          Spaces</button> -->
       </div>
     </nz-card>
 

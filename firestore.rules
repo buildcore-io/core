@@ -27,6 +27,10 @@ service cloud.firestore {
       allow read;
     }
 
+    match /tokens/{document=**} {
+      allow read;
+    }
+
     match /notification/{document=**} {
       allow read;
     }
@@ -68,6 +72,10 @@ service cloud.firestore {
       allow read;
     }
 
+    match /{path=**}/distribution/{doc} {
+      allow read;
+    }
+
     // Specific transactions can't be listed.
     match /transaction/{transactionId} {
       // Anyone can ready anything.
@@ -76,5 +84,6 @@ service cloud.firestore {
       // Orders can't be searched, user must know the exact order.
       allow list: if resource.data.type != 'ORDER';
     }
+
   }
 }

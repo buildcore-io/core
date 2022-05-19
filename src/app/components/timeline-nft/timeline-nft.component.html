@@ -67,7 +67,7 @@
                       "short"}}</div>
 
                     <a class="absolute text-sm font-medium underline left-32 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_new"
-                      [href]="getExplorerLink(tt.payload.chainReference || tt.payload?.walletReference?.chainReference)">{{getTitle(tt)}}</a>
+                      [href]="transactionService.getExplorerLink(tt)">{{transactionService.getTitle(tt)}}</a>
 
                     <span class="absolute text-sm font-medium text-red-500 left-56"
                       *ngIf="tt.payload.invalidPayment" i18n>Invalid</span>

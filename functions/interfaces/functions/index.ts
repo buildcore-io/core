@@ -35,6 +35,7 @@ export const enum WEN_FUNC {
   uCollection = "uCollection",
   approveCollection = "approveCollection",
   rejectCollection = "rejectCollection",
+  collectionWrite = 'collectionWrite',
 
   // NFT functions.
   cNft = "cNft",
@@ -45,6 +46,22 @@ export const enum WEN_FUNC {
   orderNft = "orderNft",
   openBid = "openBid",
   validateAddress = "validateAddress",
+
+  // TOKEN functions
+  cToken = 'cToken',
+  uToken = 'uToken',
+  setTokenAvailableForSale = 'setTokenAvailableForSale',
+  orderToken = 'orderToken',
+  creditToken = 'creditToken',
+  airdropToken = 'airdropToken',
+  claimAirdroppedToken = 'claimAirdroppedToken',
+  sellToken = 'sellToken',
+  buyToken = 'buyToken',
+  cancelBuyOrSell = 'cancelBuyOrSell',
+
+  milestoneTransactionWrite = 'milestoneTransactionWrite',
+  nftWrite = 'nftWrite',
+  transactionWrite = 'transactionWrite'
 }
 
 export interface cMemberNotExists {
@@ -57,6 +74,6 @@ export interface DecodedToken {
 }
 
 export interface StandardResponse {
-  status: 'error'|'success';
+  status: 'error' | 'success';
   error?: string;
 }

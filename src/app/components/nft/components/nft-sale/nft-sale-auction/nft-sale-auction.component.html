@@ -56,21 +56,21 @@
 
     <nz-form-item class="mt-4" nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Various auction length coming next sprint once community have a vote!">
         <nz-form-control>
-          <nz-select
+            <nz-select
             class="w-full"
             nzSize="large"
             nzShowSearch
             nzAllowClear
             [nzPlaceHolder]="placeholderTpl"
             [nzDisabled]="true"
-          >
-          </nz-select>
-          <ng-template #placeholderTpl>
+            >
+            </nz-select>
+            <ng-template #placeholderTpl>
             <div class="flex items-center space-x-4">
-              <wen-icon-time class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-time>
-              <span i18n>Duration of auction is 3 days</span>
+                <wen-icon-time class="text-accent-secondary dark:text-accent-secondary-dark"></wen-icon-time>
+                <span i18n>Duration of auction is 3 days</span>
             </div>
-          </ng-template>
+            </ng-template>
         </nz-form-control>
     </nz-form-item>
 <!--
@@ -152,9 +152,16 @@
             </nz-option>
             </nz-select>
         </nz-form-control>
-      </nz-form-item> -->
+        </nz-form-item> -->
 
-    <div class="flex flex-col items-center w-full mt-10 text-xs font-medium text-foregrounds-tertiary">
+    <div class="flex items-center px-5 py-4 mt-4 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary dark:text-foregrounds-primary">
+        <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
+        <div class="text-base font-bold" i18n>
+            Auction can't be canceled after start date
+        </div>
+    </div>
+
+    <div class="flex flex-col items-center w-full mt-8 text-xs font-medium text-foregrounds-tertiary">
         <div class="mb-3" i18n>Once your listing is complete, you will get a confirmation message.</div>
         <button nz-button nzType="primary" nzSize="large" [disabled]="form.invalid" (click)="submit()" i18n>Confirm listing</button>
     </div>

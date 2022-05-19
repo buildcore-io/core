@@ -1,13 +1,14 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { Collection } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
-import { medium } from '../scale.settings';
+import admin from '../admin.config';
+import { scale } from '../scale.settings';
 
 // Listen for changes in all documents in the 'users' collection
 export const collectionWrite = functions.runWith({
   timeoutSeconds: 300,
-  minInstances: medium
+  minInstances: scale(WEN_FUNC.collectionWrite)
 }).firestore.document(COL.COLLECTION + '/{collectionId}').onUpdate(async (change) => {
   const newValue = <Collection>change.after.data();
   const previousValue = <Collection>change.before.data();

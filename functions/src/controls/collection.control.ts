@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
@@ -8,6 +7,7 @@ import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
@@ -67,7 +67,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
 
 export const createCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.cCollection),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -165,7 +165,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
 
 export const updateCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.uCollection),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -241,7 +241,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
 export const approveCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.approveCollection),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -290,7 +290,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
 
 export const rejectCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.rejectCollection),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);

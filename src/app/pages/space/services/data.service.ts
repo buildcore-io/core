@@ -1,10 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { MemberApi } from '@api/member.api';
+import { TokenApi } from '@api/token.api';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { BADGE_TO_CREATE_COLLECTION } from '@functions/interfaces/config';
 import { Award, Collection } from '@functions/interfaces/models';
+import { Token } from '@functions/interfaces/models/token';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Member } from './../../../../../functions/interfaces/models/member';
 import { Proposal } from './../../../../../functions/interfaces/models/proposal';
 import { AwardApi, AwardFilter } from './../../../@api/award.api';
@@ -43,6 +46,7 @@ export class DataService implements OnDestroy {
   public rejectedCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
   public pendingCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
   public availableCollections$: BehaviorSubject<Collection[] | undefined> = new BehaviorSubject<Collection[] | undefined>(undefined);
+  public token$: BehaviorSubject<Token | undefined> = new BehaviorSubject<Token | undefined>(undefined);
   private subscriptions$: Subscription[] = [];
   private subscriptionsRelatedRecords$: Subscription[] = [];
   private completedProposalsOn = false;
@@ -64,7 +68,8 @@ export class DataService implements OnDestroy {
     private awardApi: AwardApi,
     private memberApi: MemberApi,
     private proposalApi: ProposalApi,
-    private collectionApi: CollectionApi
+    private collectionApi: CollectionApi,
+    private tokenApi: TokenApi
   ) {
     // none.
   }
@@ -131,6 +136,14 @@ export class DataService implements OnDestroy {
 
     this.completedProposalsOn = true;
     this.subscriptions$.push(this.proposalApi.listenSpace(spaceId, ProposalFilter.COMPLETED).subscribe(this.proposalsCompleted$));
+  }
+
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '0';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2).toString();
   }
 
   public listenToRejectedProposals(spaceId: string): void {
@@ -203,6 +216,16 @@ export class DataService implements OnDestroy {
 
     this.rejectedCollectionOn = true;
     this.subscriptions$.push(this.collectionApi.allRejectedSpace(spaceId).subscribe(this.rejectedCollections$));
+  }
+
+  public listenToTokens(spaceId: string): void {
+    this.subscriptions$.push(
+      this.tokenApi.space(spaceId)
+        .pipe(
+          map((tokens: Token[] | undefined) => (tokens || [])?.[0] || null)
+        )
+        .subscribe(this.token$)
+    );
   }
 
   public isLoading(arr: any): boolean {

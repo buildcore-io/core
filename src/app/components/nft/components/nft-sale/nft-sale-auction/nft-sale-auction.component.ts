@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { environment } from '@env/environment';
@@ -73,9 +73,12 @@ export class NftSaleAuctionComponent implements OnInit {
   public buyAvailableControl: FormControl = new FormControl(false);
   public minimumPrice = MIN_IOTA_AMOUNT;
   public maximumPrice = MAX_IOTA_AMOUNT;
+  public isSubmitted = false;
   private _nft?: Nft|null;
 
-  constructor() {
+  constructor(
+    private cd: ChangeDetectorRef
+  ) {
     this.form = new FormGroup({
       floorPrice: this.floorPriceControl,
       floorUnit: this.floorUnitControl,
@@ -126,7 +129,7 @@ export class NftSaleAuctionComponent implements OnInit {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public get priceUnits(): Units[] {
@@ -169,5 +172,6 @@ export class NftSaleAuctionComponent implements OnInit {
     // }
 
     this.wenOnUpdate.next(up);
+    this.cd.markForCheck();
   }
 }

@@ -41,8 +41,7 @@ describe('AwardController: ' + WEN_FUNC.cAward, () => {
     expect(returns?.uid).toEqual(memberAddress.toLowerCase());
     mockWalletReturnValue(walletSpy, memberAddress, { name: 'Space A' })
 
-    const wCreate = testEnv.wrap(createSpace);
-    space = await wCreate({});
+    space = await testEnv.wrap(createSpace)({});
     expect(space?.uid).toBeDefined();
     walletSpy.mockRestore();
   });

@@ -30,13 +30,16 @@
                     [shareUrl]="getShareUrl(data.nft$ | async)">
                 </wen-share>
             </ng-container>
-          
-            <wen-nft-countdown
+
+            <wen-countdown
+                *ngIf="data.getCountdownDate(data.nft$ | async)"
                 class="my-5"
                 wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
                 tabClassName="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
+                [title]="data.getCountdownTitle(data.nft$ | async)"
+                [finalDate]="data.getCountdownDate(data.nft$ | async)?.toDate()"
                 size="large">
-            </wen-nft-countdown>
+            </wen-countdown>
 
             <div class="flex flex-wrap items-center mt-5">
                 <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
@@ -143,7 +146,7 @@
             </div>
 
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
-            <wen-collapse i18n-nzTitle title="Bidding" class="mt-4" [isCollapsed]="true">
+            <wen-collapse i18n-title title="Bidding" class="mt-4" [isCollapsed]="true">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
                     <nz-tag nzMode="checkable" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
                         (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
@@ -290,7 +293,7 @@
                 </wen-share>
             </ng-container>
 
-            <wen-collapse i18n-nzTitle title="History" class="mt-8" [isCollapsed]="false">
+            <wen-collapse i18n-title title="History" class="mt-8" [isCollapsed]="false">
                 <div style="display: block;">
                     <canvas baseChart width="400" height="180"
                                 [data]="lineChartData"
@@ -312,65 +315,37 @@
             </nz-card>
 
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
-                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-                    <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>On-Chain Record</span>
-                    <p nz-typography class="flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark" *ngIf="!getOnChainInfo(data.orders$ | async)" i18n>Preparing...</p>
-                    <div nz-typography *ngIf="getOnChainInfo(data.orders$ | async)" class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                        <div class="w-3/5 break-words line-clamp-2">{{ getOnChainInfo(data.orders$ | async) }}</div>
-                        <a class="ml-1 underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" [href]="getExplorerLink(getOnChainInfo(data.orders$ | async)!)" target="_blank" i18n>View</a>
-                        <wen-icon-question-circle
-                            class="ml-2.5"
-                            nz-tooltip
-                            i18n-nzTooltipTitle
-                            nzTooltipTitle="View all of the transaction details of this NFT on the Tangle"
-                        ></wen-icon-question-circle>
-                    </div>
-                </div>
 
-                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-                    <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Migrate</span>
-                    <div nz-typography class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                        <div class="w-3/5 break-words line-clamp-2" i18n>Shimmer/Mainnet (Tokenization)...SOON.</div>
-
-                        <wen-icon-question-circle
-                            class="ml-2.5"
-                            nz-tooltip
-                            i18n-nzTooltipTitle
-                            nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
-                        ></wen-icon-question-circle>
-                    </div>
-                </div>
-
-                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-                  <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Metadata</span>
-                  <div nz-typography class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                      <div class="w-3/5 break-words line-clamp-2">{{ ((data.nft$ | async)?.ipfsMetadata || 'Preparing...') }}</div>
-                      <a class="ml-1 underline left-16" *ngIf="(data.nft$ | async)?.ipfsMetadata" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata" target="_blank" i18n>View</a>
-                  </div>
-                </div>
-                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-                  <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>IPFS Image</span>
-                  <div nz-typography class="flex flex-wrap items-center justify-end text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                      <div class="w-3/5 break-words line-clamp-2">{{ ((data.nft$ | async)?.ipfsMedia || 'Preparing...') }}</div>
-                      <a class="ml-1 underline left-16" *ngIf="(data.nft$ | async)?.ipfsMedia" [href]="'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia" target="_blank" i18n>View</a>
-                  </div>
-              </div>
+                <wen-description [items]="[
+                    getOnChainInfo(data.orders$ | async) ?
+                        { title: systemInfoLabels[0], value: getOnChainInfo(data.orders$ | async), link: { label: systemInfoValues.view, href: getExplorerLink(getOnChainInfo(data.orders$ | async)!) }, valueTemplate: onChaingRecordTooltipIcon } :
+                        { title: systemInfoLabels[0], value: systemInfoValues.preparing },
+                    { title: systemInfoLabels[1], value: systemInfoValues.tokenization, valueTemplate: migrateTooltipIcon },
+                    { title: systemInfoLabels[2], value: (data.nft$ | async)?.ipfsMetadata ? (data.nft$ | async)?.ipfsMetadata : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMetadata ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata } : undefined },
+                    { title: systemInfoLabels[3], value: (data.nft$ | async)?.ipfsMedia ? (data.nft$ | async)?.ipfsMedia : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMedia ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMedia } : undefined }
+                ]"></wen-description>
+                <ng-template #onChaingRecordTooltipIcon>
+                    <wen-icon-question-circle
+                        nz-tooltip
+                        i18n-nzTooltipTitle
+                        nzTooltipTitle="View all of the transaction details of this NFT on the Tangle"
+                    ></wen-icon-question-circle>
+                </ng-template>
+                <ng-template #migrateTooltipIcon>
+                    <wen-icon-question-circle
+                        nz-tooltip
+                        i18n-nzTooltipTitle
+                        nzTooltipTitle="The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice."
+                    ></wen-icon-question-circle>
+                </ng-template>
             </wen-collapse>
 
             <wen-collapse class="mt-4" title="Properties" *ngIf="data.getPropStats((data.nft$ | async)?.properties).length">
-                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
-                    *ngFor="let prop of data.getPropStats((data.nft$ | async)?.properties)">
-                        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ prop.label }}</span>
-                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ prop.value }}</p>
-                </div>
+                <wen-description [items]="data.getPropStats((data.nft$ | async)?.properties)"></wen-description>
             </wen-collapse>
 
             <wen-collapse class="mt-4" title="Stats" *ngIf="data.getPropStats((data.nft$ | async)?.stats).length">
-                <div class="wen-description-item bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
-                    *ngFor="let stat of data.getPropStats((data.nft$ | async)?.stats)">
-                        <span nz-typography class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">{{ stat.label }}</span>
-                        <p nz-typography class="text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ stat.value }}</p>
-                </div>
+                <wen-description [items]="data.getPropStats((data.nft$ | async)?.stats)"></wen-description>
             </wen-collapse>
         </div>
     </div>

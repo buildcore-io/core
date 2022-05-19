@@ -17,6 +17,7 @@ export class RouterService {
   public urlToNewAward = '/' + ROUTER_UTILS.config.award.root + '/new';
   public urlToNewCollection = '/' + ROUTER_UTILS.config.collection.root + '/new';
   public urlToNewNft = '/' + ROUTER_UTILS.config.nft.root + '/new';
+  public urlToNewToken = '/' + ROUTER_UTILS.config.token.root + '/new';
 
   constructor(
     private router: Router
@@ -37,6 +38,6 @@ export class RouterService {
 
   private updateVariables(): void {
     this.isHomeRoute$.next((this.router.url || '/').substring(1) === this.homeRoute);
-    this.isNewRoute$.next([this.urlToNewSpace, this.urlToNewProposal, this.urlToNewAward, this.urlToNewCollection].includes(this.router.url));
+    this.isNewRoute$.next([this.urlToNewSpace, this.urlToNewProposal, this.urlToNewAward, this.urlToNewCollection, this.urlToNewNft, this.urlToNewToken].includes(this.router.url));
   }
 }

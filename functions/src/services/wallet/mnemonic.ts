@@ -1,7 +1,7 @@
 import { AES, enc } from 'crypto-js';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { serverTime } from '../../utils/dateTime.utils';
+import admin from '../../admin.config';
 
 export class MnemonicService {
   public static async store(address: string, mnemonic: string): Promise<void> {
