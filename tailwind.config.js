@@ -40,12 +40,15 @@ module.exports = {
       },
       spacing: {
         18: '4.5rem',
+        30: '7.5rem',
         75: '18.75rem',
       },
       minWidth: {
         6: '1.5rem',
         8: '2rem',
         10: '2.5rem',
+        12: '3rem',
+        30: '7.5rem',
         32: '8rem',
         40: '10rem',
         60: '15rem',
@@ -75,6 +78,7 @@ module.exports = {
         6: '1.5rem',
         8: '2rem',
         10: '2.5rem',
+        14: '3.5rem',
         24: '6rem',
         76: '19rem',
         180: '45rem',
@@ -107,6 +111,9 @@ module.exports = {
       fontSize: {
         xxs: '0.625rem',
       },
+      flex: {
+        '2': '2 2 0%'
+      }
     },
   },
   plugins: [require('@tailwindcss/line-clamp')],

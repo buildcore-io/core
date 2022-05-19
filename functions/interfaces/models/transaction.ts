@@ -16,6 +16,14 @@ export enum TransactionOrderType {
   NFT_BID = "NFT_BID",
   SPACE_ADDRESS_VALIDATION = "SPACE_ADDRESS_VALIDATION",
   MEMBER_ADDRESS_VALIDATION = "MEMBER_ADDRESS_VALIDATION",
+  TOKEN_PURCHASE = 'TOKEN_PURCHASE',
+  TOKEN_AIRDROP = 'TOKEN_AIRDROP',
+  TOKEN_BUY = 'TOKEN_BUY'
+}
+
+export enum TransactionCreditType {
+  TOKEN_PURCHASE = "TOKEN_PURCHASE",
+  TOKEN_BUY = 'TOKEN_BUY'
 }
 
 export enum TransactionValidationType {
@@ -62,6 +70,7 @@ export interface OrderTransaction {
   expiresOn: Timestamp;
   validationType: TransactionValidationType;
   collection?: EthAddress;
+  token?: EthAddress
 }
 
 export interface PaymentTransaction {
@@ -72,7 +81,7 @@ export interface PaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: string;
+  sourceTransaction: string[];
   nft?: EthAddress;
   collection?: EthAddress;
   invalidPayment: boolean;
@@ -84,13 +93,13 @@ export interface BillPaymentTransaction {
   targetAddress: IotaAddress;
   reconciled: boolean;
   void: boolean;
-  previusOwnerEntity?: 'space' | 'member',
-  previusOwner?: EthAddress,
+  previousOwnerEntity?: 'space' | 'member',
+  previousOwner?: EthAddress,
   ownerEntity?: 'space' | 'member',
   owner?: EthAddress,
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: string;
+  sourceTransaction: string[];
   nft?: EthAddress;
   royalty: boolean,
   collection?: EthAddress;
@@ -98,6 +107,7 @@ export interface BillPaymentTransaction {
 }
 
 export interface CreditPaymentTransaction {
+  type?: TransactionCreditType;
   amount: number;
   sourceAddress: IotaAddress;
   targetAddress: IotaAddress;
@@ -105,7 +115,7 @@ export interface CreditPaymentTransaction {
   void: boolean;
   chainReference: string;
   walletReference: WalletResult;
-  sourceTransaction: string;
+  sourceTransaction: string[];
   nft?: EthAddress;
   collection?: EthAddress;
 }
@@ -119,11 +129,13 @@ export interface IOTATangleTransaction {
   refund: boolean;
   member?: EthAddress;
   space?: EthAddress;
-  previusOwnerEntity?: 'space' | 'member';
-  previusOwner?: EthAddress;
+  previousOwnerEntity?: 'space' | 'member';
+  previousOwner?: EthAddress;
   ownerEntity?: 'space' | 'member';
   owner?: EthAddress;
   nft?: EthAddress;
+  token?: EthAddress;
+  quantity?: number;
   royalty: boolean;
   collection?: EthAddress;
 }
@@ -135,7 +147,8 @@ export interface Transaction extends BaseRecord {
   member?: EthAddress;
   space?: EthAddress;
   linkedTransactions: EthAddress[];
-  payload: any; // TransactionPayload
+  payload: any;
+  shouldRetry?: boolean;
 }
 
 export interface TransactionBillPayment extends Transaction {

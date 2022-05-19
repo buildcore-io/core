@@ -94,14 +94,14 @@ export class HomePage implements OnInit {
 
   public goToManifesto(): void {
     window.open(
-      'https://github.com/soonlabs/soonaverse-dao/blob/main/MANIFESTO.md',
+      'https://github.com/soonaverse/soonaverse-dao/blob/main/MANIFESTO.md',
       '_blank'
     );
   }
 
   public goToSoonLabsUrl(): void {
     window.open(
-      'https://github.com/soonlabs/soonaverse-dao',
+      'https://github.com/soonaverse/soonaverse-dao',
       '_blank'
     );
   }
@@ -115,7 +115,7 @@ export class HomePage implements OnInit {
 
   public goToIotaUrl(): void {
     window.open(
-      'https://github.com/soonlabs/soonaverse-dao',
+      'https://github.com/soonaverse/soonaverse-dao',
       '_blank'
     );
   }

@@ -319,7 +319,7 @@ export class NewPage implements OnInit, OnDestroy {
   }
 
   public getAnswerTitle(index: number): string {
-    return $localize`Choice` + ' #' + (index + 1);
+    return $localize`Choice` + ` #${index >= 10 ? index : '0' + index}`;
   }
 
   public getAwardLabel(award: Award): string {

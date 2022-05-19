@@ -1,0 +1,46 @@
+<div class="space-y-4 lg:space-y-6">
+    <nz-card i18n-nzTitle nzTitle="Schedule" *ngIf="data.isScheduledForSale((data.token$ | async) || undefined)">
+        <wen-description type="card" i18n-title title="Schedule" [items]="[
+            { title: tokenScheduleLabels[0], value: (data.token$ | async)?.saleStartDate?.toDate() | date: 'medium' },
+            { title: tokenScheduleLabels[1], value: data.saleEndDate((data.token$ | async) || undefined).toDate() | date: 'medium' },
+            { title: tokenScheduleLabels[2], value: getCooldownDuration((data.token$ | async) || undefined), titleTemplate: cooldownTooltipIcon },
+            { title: tokenScheduleLabels[3], value: (data.token$ | async)?.coolDownEnd?.toDate() | date: 'medium' }
+        ]"></wen-description>
+        <ng-template #cooldownTooltipIcon>
+            <wen-icon-question-circle class="cursor-help" [size]="20"
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="During cooldown period you are able to trigger refund."></wen-icon-question-circle>
+        </ng-template>
+    </nz-card>
+
+
+    <nz-card i18n-nzTitle nzTitle="Token Info">
+        <wen-description [items]="[
+            { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
+            { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
+            { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
+            { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + (data.token$ | async)?.pricePerToken + ' Mi' },
+            { title: tokenInfoLabels[4], value: 'Shimmer comming', titleTemplate: networkTooltipIcon },
+            { title: tokenInfoLabels[5], value:  (data.formatTokenBest((data.token$ | async)?.totalSupply) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol },
+            { title: tokenInfoLabels[6], value: 'Fixed' }
+        ]"></wen-description>
+        <ng-template #tokenAvatar>
+            <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
+                class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                nzShape="circle"
+                [nzSize]="32">
+            </nz-avatar>
+        </ng-template>
+        <ng-template #networkTooltipIcon>
+            <wen-icon-question-circle class="cursor-help" [size]="20"
+                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Guardian's of the space will be able to decide where this token will be minted."></wen-icon-question-circle>
+        </ng-template>
+    </nz-card>
+    <nz-card i18n-nzTitle nzTitle="Related Links">
+      <div *ngFor="let l of (data.token$ | async)?.links" class="truncate">
+        <a nz-button class="wen-links" nzType="link" target="new" [href]="l">
+          <wen-icon-link></wen-icon-link>
+          <div>{{ l.toString() }}</div>
+        </a>
+      </div>
+    </nz-card>
+</div>

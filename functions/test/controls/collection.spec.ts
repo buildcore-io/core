@@ -1,6 +1,6 @@
 import chance from 'chance';
 import dayjs from "dayjs";
-import * as admin from 'firebase-admin';
+import admin from '../../src/admin.config';
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";

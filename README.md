@@ -1,9 +1,9 @@
 [![SoonLabs](https://badgen.net/discord/online-members/eYy9Ru9qRd)](https://discord.gg/eYy9Ru9qRd)
 [![TypeScript](https://img.shields.io/badge/--3178C6?logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org/)
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
-[![Front End Unit Tests](https://github.com/soonlabs/soonaverse/actions/workflows/front-end-unit-tests.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/front-end-unit-tests.yml)
-[![Smart Contract Tests](https://github.com/soonlabs/soonaverse/actions/workflows/smart-contracts-unit-test.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/smart-contracts-unit-test.yml)
-[![Functions Unit Tests](https://github.com/soonlabs/soonaverse/actions/workflows/functions-unit-tests.yml/badge.svg)](https://github.com/soonlabs/soonaverse/actions/workflows/functions-unit-tests.yml)
+[![Front End Unit Tests](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-unit-tests.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-unit-tests.yml)
+[![Smart Contract Tests](https://github.com/soonaverse/soonaverse/actions/workflows/smart-contracts-unit-test.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/smart-contracts-unit-test.yml)
+[![Functions Unit Tests](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/functions-unit-tests.yml)
 
 # About 
 The Soonaverse is a decentralized platform for communities, enabling the seamless creation, management, and interoperability of DAOs.
@@ -65,8 +65,8 @@ Run unit tests: ```npm run test```
 
 # 🤝 Contributing
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/soonlabs/soonaverse/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/soonaverse/soonaverse/pulls)
 
-We welcome all contributions. Please read our [CONTRIBUTING.md](https://github.com/soonlabs/soonaverse/blob/master/CONTRIBUTING.md) first. You can submit any ideas as [pull requests](https://github.com/soonlabs/soonaverse/pulls) or as [GitHub issues](https://github.com/soonlabs/soonaverse/issues).
+We welcome all contributions. Please read our [CONTRIBUTING.md](https://github.com/soonaverse/soonaverse/blob/master/CONTRIBUTING.md) first. You can submit any ideas as [pull requests](https://github.com/soonaverse/soonaverse/pulls) or as [GitHub issues](https://github.com/soonaverse/soonaverse/issues).
 
 Thank you for supporting us free open source licenses.

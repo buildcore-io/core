@@ -20,6 +20,10 @@ export class OrderApi extends BaseApi<Transaction> {
     return this.request(WEN_FUNC.orderNft, req);
   }
 
+  public orderToken(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.orderToken, req);
+  }
+
   public validateAddress(req: WenRequest): Observable<Transaction | undefined> {
     return this.request(WEN_FUNC.validateAddress, req);
   }

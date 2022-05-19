@@ -75,9 +75,20 @@ export const WenError = {
   you_must_be_the_owner_of_nft: { code: 2066, key: 'You must be the owner of NFT.' },
   nft_auction_already_in_progress: { code: 2067, key: 'NFT already have auction in progress.' },
   nft_placeholder_cant_be_updated: { code: 2068, key: 'Can\'t update placeholder NFT.' },
-  you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!'},
-  you_are_not_allowed_member_to_purchase_this_nft: { code: 2070, key: 'You are not allowed member to purchase this NFT!'},
+  you_cant_buy_your_nft: { code: 2069, key: 'You already own this NFT!' },
+  you_are_not_allowed_member_to_purchase_this_nft: { code: 2070, key: 'You are not allowed member to purchase this NFT!' },
   this_is_limited_addition_collection: { code: 2071, key: 'Collection is limited edition. No NFT can be added after approval.' },
   royalty_fees_can_only_be_reduced: { code: 2072, key: 'Royalty fees can only be reduced.' },
+  token_already_exists_for_space: { code: 2073, key: 'Only one token is allowed per space.' },
+  token_symbol_must_be_globally_unique: { code: 2074, key: 'Token symbol must be globally unique.' },
+  no_token_public_sale: { code: 2075, key: 'Token not on public sale.' },
+  not_enough_funds: { code: 2076, key: 'Not enough funds to credit' },
+  token_not_in_cool_down_period: { code: 2077, key: 'Token not in cool down period.' },
+  no_tokens_available_for_airdrop: { code: 2078, key: 'No more tokens are available for airdrop.' },
+  no_airdrop_to_claim: { code: 2079, key: 'No airdrop to claim.' },
+  public_sale_already_set: { code: 2080, key: 'Public sale already set.' },
+  no_available_tokens_for_sale: { code: 2081, key: 'No available tokens for sale.' },
+  token_not_pre_minted: { code: 2082, key: 'Token not pre-minted.' },
+  token_not_approved: { code: 2083, key: 'Token not approved.' }
 }
 

@@ -62,11 +62,12 @@
           [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
           *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
         >
-          {{(data.isPendingMemberWithSpace$ | async) === true ? 'Pending
-          Request' : 'Ask to Join Space'}}
+          <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n>Pending Request</ng-container>
+          <ng-template #askBlock i18n>Ask to Join Space</ng-template>
         </button>
         <div>
           <button
+            class="wen-secondary"
             nz-button
             nzBlock
             nzSize="large"
@@ -122,13 +123,13 @@
         [disabled]="(data.isPendingMemberWithSpace$ | async) === true"
         *ngIf="(data.isMemberWithinSpace$ | async) === false && (member$ | async) && (data.space$ | async)!.open === false"
       >
-        {{(data.isPendingMemberWithSpace$ | async) ? 'Pending Request' : 'Ask to
-        Join Space'}}
+        <ng-container *ngIf="data.isPendingMemberWithSpace$ | async; else askBlock" i18n>Pending Request</ng-container>
+        <ng-template #askBlock i18n>Ask toJoin Space</ng-template>
       </button>
 
       <div>
         <button
-          class="mb-4"
+          class="mb-4 wen-secondary"
           nz-button
           nzBlock
           nzSize="large"

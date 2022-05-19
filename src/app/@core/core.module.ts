@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
 
 @NgModule({
-  declarations: [],
-  imports: [CommonModule, HttpClientModule, NzNotificationModule]
+  imports: [CommonModule, HttpClientModule, NzNotificationModule],
 })
 export class CoreModule {}

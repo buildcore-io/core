@@ -1,0 +1,56 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "nft",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "collection",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "locked",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "placeholderNft",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sold",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "position",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+     {
+       "collectionGroup": "nft",
+       "queryScope": "COLLECTION",
+       "fields": [
+         {
+           "fieldPath": "collection",
+           "order": "ASCENDING"
+         },
+         {
+           "fieldPath": "locked",
+           "order": "ASCENDING"
+         },
+         {
+           "fieldPath": "placeholderNft",
+           "order": "ASCENDING"
+         },
+         {
+           "fieldPath": "sold",
+           "order": "ASCENDING"
+         },
+         {
+           "fieldPath": "position",
+           "order": "DESCENDING"
+         }
+       ]
+     }
+  ]
+}

@@ -1,0 +1,62 @@
+<nz-card *ngIf="deviceService.isDesktop$ | async">
+    <nz-table class="block"
+        [nzData]="(tokens$ | async) || []" [nzShowPagination]="false">
+        <thead>
+            <tr>
+                <th i18n>Item</th>
+                <th i18n>To claim (Airdrops)</th>
+                <th i18n>Total Owned</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let t of tokens$ | async" class="cursor-pointer">
+                <td [routerLink]="['/token', t.uid, 'trade']">
+                    <div class="flex items-center">
+                        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
+                          class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                          nzShape="circle"
+                          [nzSize]="32">
+                        </nz-avatar>
+                        <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
+                    </div>
+                </td>
+                <td class="font-medium">{{ formatTokenBest(sum(t.distribution.tokenDrops || [])) + ' ' + t.symbol  }}</td>
+                <td class="font-medium">{{ formatTokenBest(t.distribution.totalDeposit) + ' ' + t.symbol  }}</td>
+                <td class="right">
+                    <button *ngIf="getTokenAction(t) !== null"
+                        class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                        (click)="openToken = t">
+                            {{ tokenActionTypeLabels[getTokenAction(t) || tokenItemTypes.CLAIM] }}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</nz-card>
+
+
+<div class="mt-3" *ngIf="deviceService.isMobile$ | async">
+    <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(tokens$ | async)">
+      {{ ((tokens$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} NFTs
+    </p>
+    <div class="mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
+        (scrolled)="onScroll()">
+
+        <nz-skeleton *ngIf="isLoading(tokens$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 lg:w-full h-76 lg:h-16" [nzActive]="true"
+            [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+
+        <nz-card class="w-76" *ngIf="isEmpty(tokens$ | async)">
+            <div class="flex flex-col justify-center text-center h-36">
+                <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    No tokens
+                </span>
+            </div>
+        </nz-card>
+
+        <wen-token-row *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token" class="block mt-3">
+        </wen-token-row>
+    </div>
+</div>
+
+<wen-token-claim-refund *ngIf="!!openToken" [isOpen]="!!openToken" [type]="getTokenAction(openToken)" [token]="openToken" (wenOnClose)="openToken = null"></wen-token-claim-refund>

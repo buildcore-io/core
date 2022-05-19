@@ -14,16 +14,20 @@ import { CalendarIconComponent } from './calendar/calendar.component';
 import { CheckCircleIconComponent } from './check-circle/check-circle.component';
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
+import { CoinIconComponent } from './coin/coin.component';
 import { CollectionIconComponent } from './collection/collection.component';
 import { CopyIconComponent } from './copy/copy.component';
 import { CrownIconComponent } from './crown/crown.component';
 import { DefaultSpaceIconComponent } from './default-space/default-space.component';
 import { DiscordIconComponent } from './discord/discord.component';
 import { DollarIconComponent } from './dollar/dollar.component';
+import { EditUnderlineIconComponent } from './edit-underline/edit-underline.component';
 import { EditIconComponent } from './edit/edit.component';
 import { EraseIconComponent } from './erase/erase.component';
 import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
+import { FileCheckIconComponent } from './file-check/file-check.component';
+import { FileExportIconComponent } from './file-export/file-export.component';
 import { GithubIconComponent } from './github/github.component';
 import { GlobeIconComponent } from './globe/globe.component';
 import { GuardiansOnlyIconComponent } from './guardians-only/guardians-only.component';
@@ -47,6 +51,7 @@ import { PlusIconComponent } from './plus/plus.component';
 import { QuestionCircleIconComponent } from './question-circle/question-circle.component';
 import { RedditIconComponent } from './reddit/reddit.component';
 import { RefreshIconComponent } from './refresh/refresh.component';
+import { RevertIconComponent } from './revert/revert.component';
 import { RocketIconComponent } from './rocket/rocket.component';
 import { SadIconComponent } from './sad/sad.component';
 import { SearchIconComponent } from './search/search.component';
@@ -56,9 +61,11 @@ import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
 import { StopwatchIconComponent } from './stopwatch/stopwatch.component';
 import { SunIconComponent } from './sun/sun.component';
+import { SwitchIconComponent } from './switch/switch.component';
 import { TagIconComponent } from './tag/tag.component';
 import { TerminatedIconComponent } from './terminated/terminated.component';
 import { TimeIconComponent } from './time/time.component';
+import { TokenIconComponent } from './token/token.component';
 import { TrashIconComponent } from './trash/trash.component';
 import { TwitterIconComponent } from './twitter/twitter.component';
 import { UnamusedIconComponent } from './unamused/unamused.component';
@@ -130,7 +137,14 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersWithBadgeIconComponent,
     MembersWithNftFromCollectionIconComponent,
     NineDotsIconComponent,
-    OpenSaleIconComponent
+    OpenSaleIconComponent,
+    RevertIconComponent,
+    CoinIconComponent,
+    FileCheckIconComponent,
+    SwitchIconComponent,
+    FileExportIconComponent,
+    TokenIconComponent,
+    EditUnderlineIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -196,7 +210,14 @@ import { WalletIconComponent } from './wallet/wallet.component';
     MembersWithBadgeIconComponent,
     MembersWithNftFromCollectionIconComponent,
     NineDotsIconComponent,
-    OpenSaleIconComponent
+    OpenSaleIconComponent,
+    RevertIconComponent,
+    CoinIconComponent,
+    FileCheckIconComponent,
+    SwitchIconComponent,
+    FileExportIconComponent,
+    TokenIconComponent,
+    EditUnderlineIconComponent
   ],
   imports: [
     CommonModule

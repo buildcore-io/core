@@ -3,10 +3,12 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AwardCardModule } from "@components/award/components/award-card/award-card.module";
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
+import { DescriptionModule } from '@components/description/description.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { RadioModule } from '@components/radio/radio.module';
+import { TokenCardModule } from '@components/token/components/token-card/token-card.module';
 import { SpaceAboutModule } from '@pages/space/pages/space/space-about/space-about.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -87,6 +89,7 @@ import { SpaceRoutingModule } from './space-routing.module';
     NzIconModule,
     NzTagModule,
     NzAlertModule,
+    DescriptionModule,
     NzUploadModule,
     NzAvatarModule,
     LayoutModule,
@@ -99,7 +102,8 @@ import { SpaceRoutingModule } from './space-routing.module';
     FixedCreateButtonModule,
     FormsModule,
     CollectionCardModule,
-    MobileSearchModule
+    MobileSearchModule,
+    TokenCardModule
   ]
 })
 export class SpaceModule { }

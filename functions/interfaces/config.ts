@@ -21,7 +21,9 @@ export enum URL_PATHS {
   PROPOSAL = 'proposal',
   AWARD = 'award',
   MEMBER = 'member',
-  COLLECTION = 'collection'
+  COLLECTION = 'collection',
+  TOKEN = 'token',
+  TOKEN_MARKET = 'token_market'
 }
 
 export const WEN_NAME = 'Soonaverse';
@@ -61,3 +63,6 @@ export const RPC_CHAIN = {
   // blockExplorerUrls?: string[];
   // iconUrls?: string[]; // Currently ignored.
 }
+export const MIN_TOTAL_TOKEN_SUPPLY = 100;
+export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000;
+export const MIN_TOKEN_START_DATE_DAY = 7

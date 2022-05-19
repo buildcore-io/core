@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from 'joi';
@@ -8,6 +7,7 @@ import { URL_PATHS } from '../../interfaces/config';
 import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
@@ -60,7 +60,7 @@ function defaultJoiUpdateCreateSchema(): Award {
 
 export const createAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.cAward),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<Award> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Award> => {
   appCheck(WEN_FUNC.cAward, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -135,7 +135,7 @@ export const createAward: functions.CloudFunction<Award> = functions.runWith({
 
 export const addOwner: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.addOwnerAward),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addOwnerAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -178,7 +178,7 @@ export const addOwner: functions.CloudFunction<Award> = functions.runWith({
 
 export const approveAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.aAward),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -219,7 +219,7 @@ export const approveAward: functions.CloudFunction<Award> = functions.runWith({
 
 export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.rAward),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -264,7 +264,7 @@ export const rejectAward: functions.CloudFunction<Award> = functions.runWith({
 
 export const participate: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.participateAward),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.participateAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -328,7 +328,7 @@ export const participate: functions.CloudFunction<Award> = functions.runWith({
 
 export const approveParticipant: functions.CloudFunction<Award> = functions.runWith({
   minInstances: scale(WEN_FUNC.aParticipantAward),
-}).https.onCall(async(req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aParticipantAward, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -377,7 +377,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     }
 
     // Increase count via transaction.
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refAward);
       const newCount = (sfDoc.data().issued || 0) + 1;
       transaction.update(refAward, {
@@ -416,7 +416,7 @@ export const approveParticipant: functions.CloudFunction<Award> = functions.runW
     // - We need to track it per space as well.
     // - We need to track on space who they have alliance with and use that to determine which XP/awards to pick
     const refMember: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(params.body.member);
-    await admin.firestore().runTransaction(async(transaction) => {
+    await admin.firestore().runTransaction(async (transaction) => {
       const sfDoc: DocumentSnapshotType = await transaction.get(refMember);
       const awardsCompleted = (sfDoc.data().awardsCompleted || 0) + 1;
       const totalReputation = (sfDoc.data().totalReputation || 0) + xp;

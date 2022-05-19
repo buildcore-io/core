@@ -32,7 +32,8 @@
       "@components/*": ["src/app/components/*"],
       "@pages/*": ["src/app/pages/*"],
       "@env/*": ["src/environments/*"],
-      "@functions/*": ["functions/*"]
+      "@functions/*": ["functions/*"],
+      "@algolia/*": ["src/app/components/algolia/*"]
     }
   },
   "angularCompilerOptions": {

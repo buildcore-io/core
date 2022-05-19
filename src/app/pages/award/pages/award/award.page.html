@@ -76,7 +76,7 @@
       </span>
 
       <wen-share
-        class="block mb-4 p-6 lg:p-0"
+        class="block p-6 mb-4 lg:p-0"
         i18n-shareText
         shareText="Check out award"
         [shareUrl]="getShareUrl(data.award$ | async)">
@@ -171,7 +171,7 @@
       <h1 class="w-3/4 mt-10 mb-12 ml-5">{{(data.award$ | async)?.name}}</h1>
 
       <wen-share
-        class="block mb-4 p-6 lg:p-0"
+        class="block p-6 mb-4 lg:p-0"
         i18n-shareText
         shareText="Check out award"
         [shareUrl]="getShareUrl(data.award$ | async)">

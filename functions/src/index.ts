@@ -1,4 +1,3 @@
-import * as admin from 'firebase-admin';
 import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
@@ -7,14 +6,17 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
-import { finaliseAuctionNft, hidePlaceholderAfterSoldOut, ipfsForNft, markAwardsAsComplete, reTryWallet, voidExpiredOrders } from "./cron";
+import { buyToken, cancelBuyOrSell, sellToken } from './controls/token-buy-sell.controller';
+import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
+import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
 import { milestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
+import { onTokenBuySellCreated } from './triggers/token-buy-sell.trigger';
+import { onTokenPurchaseCreated } from './triggers/token-purchase.trigger';
+import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
-admin.initializeApp();
 
-// List all various functions supported by Firebase functions.
 // Members functions.
 exports[WEN_FUNC.cMemberNotExists] = createMember;
 exports[WEN_FUNC.uMember] = updateMember;
@@ -63,15 +65,25 @@ exports[WEN_FUNC.openBid] = openBid;
 exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
-exports['cron_reTryWallet'] = reTryWallet;
-exports['cron_markAwardsAsComplete'] = markAwardsAsComplete;
-exports['cron_voidExpiredOrders'] = voidExpiredOrders;
-exports['cron_finaliseAuctionNft'] = finaliseAuctionNft;
-exports['cron_ipfsForNft'] = ipfsForNft;
-exports['cron_hidePlaceholderAfterSoldOut'] = hidePlaceholderAfterSoldOut;
+export { cron };
 
 // TRIGGER Tasks
 exports['trigger_milestoneTransactionWrite'] = milestoneTransactionWrite;
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;
 exports['trigger_nftWrite'] = nftWrite;
+
+// Token functions
+exports[WEN_FUNC.cToken] = createToken;
+exports[WEN_FUNC.uToken] = updateToken;
+exports[WEN_FUNC.setTokenAvailableForSale] = setTokenAvailableForSale;
+exports[WEN_FUNC.orderToken] = orderToken;
+exports[WEN_FUNC.creditToken] = creditToken;
+exports[WEN_FUNC.airdropToken] = airdropToken;
+exports[WEN_FUNC.claimAirdroppedToken] = claimAirdroppedToken;
+exports['trigger_onTokenStatusUpdate'] = onTokenStatusUpdate;
+exports['trigger_onTokenBuySellCreated'] = onTokenBuySellCreated;
+exports['trigger_onTokenPurchaseCreated'] = onTokenPurchaseCreated;
+exports[WEN_FUNC.cancelBuyOrSell] = cancelBuyOrSell;
+exports[WEN_FUNC.sellToken] = sellToken;
+exports[WEN_FUNC.buyToken] = buyToken;

@@ -99,7 +99,7 @@ export class NftSaleComponent {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public get priceUnits(): Units[] {

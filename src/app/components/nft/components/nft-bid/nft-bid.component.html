@@ -1,39 +1,10 @@
-<nz-modal *ngIf="deviceService.isDesktop$ | async"
-    [(nzVisible)]="isOpen"
-    nzCentered
-    [nzClosable]="false"
-    [nzMaskClosable]="true"
-    [nzMask]="true"
-    (nzOnCancel)="close()"
-    [nzContent]="nftBidModalContent"
-    [nzFooter]="null"
-    [nzBodyStyle]="{ padding: '28px 24px 24px 24px' }"
-    [nzWidth]="760"
-    >
-    <ng-template #nftBidModalContent>
-        <div class="flex items-start justify-between">
-            <div class="text-2xl font-bold" i18n>Make a bid</div>
-            <wen-icon-close class="cursor-pointer" (click)="close()"></wen-icon-close>
-        </div>
-
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-    </ng-template>
-</nz-modal>
-
-<nz-drawer *ngIf="deviceService.isMobile$ | async"
-    [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-    [nzWidth]="'100vw'" #drawer
-    [nzClosable]="false"
-    [nzVisible]="isOpen">
-    <div *nzDrawerContent class="relative min-h-full h-max">
-        <div class="pb-4 text-3xl font-bold" i18n>Make a bid</div>
-        <button class="absolute right-0 z-10 top-1" (click)="close()">
-            <wen-icon-close></wen-icon-close>
-        </button>
-
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-    </div>
-</nz-drawer>
+<wen-modal-drawer
+    i18n-title
+    title="Make a bid"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
 
 <ng-template #content>
     <div class="flex flex-col mt-12 lg:flex-row lg:mt-6">
@@ -83,17 +54,19 @@
                     >
                     </nz-avatar>
                     <div class="ml-3 text-xs font-medium">
-                        <div class="text-foregrounds-secondary" i18n>Royalties goes to</div>
+                        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Royalties goes to</div>
                         <div class="" i18n>{{ royaltySpace?.name | truncate:[20] }}</div>
                     </div>
                 </a>
 
-                <wen-nft-countdown
+                <wen-countdown
                     class="my-5"
                     wrapperClassName="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     tabClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
-                    size="small">
-                </wen-nft-countdown>
+                    [title]="data.getCountdownTitle(data.nft$ | async)"
+                    [finalDate]="data.getCountdownDate(data.nft$ | async)?.toDate()"
+                    size="default">
+                </wen-countdown>
 
                 <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
                     [ngClass]="{
@@ -130,7 +103,7 @@
                         i18n-nzTooltipTitle
                         nzTooltipTitle="Royalties are automatically deducted and paid to artists."
                     ></wen-icon-question-circle>
-                    <div class="text-xs font-medium text-foregrounds-secondary" i18n>
+                    <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Current price is refreshing in real time</div>
                 </div>
             </div>
@@ -163,23 +136,21 @@
 
 <ng-template #confirmTemplate>
     <div class="flex flex-col justify-between h-full mt-10 lg:items-center lg:justify-start">
-        <div class="text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" >
+        <div class="text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" >
             <span i18n>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be
             locked, if there is a higher bid, you will be refunded immediately.</span>
         </div>
-        <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+        <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             If there is a higher bid, you will be refunded immediately. If you want to make another bid,
              send higher amount directly to the same address.
         </div>
 
-        <label class="w-full mt-6 lg:ml-6 lg:w-auto" nz-checkbox [nzValue]="agreeTermsConditions" (nzCheckedChange)="agreeTermsConditions = $event">
-            <div class="text-base font-medium">
-                <span class="text-foregrounds-primary dark:text-foregrounds-primary-dark mr-0.5" i18n>By checking this box, you agree with</span>
-                <br *ngIf="deviceService.isMobile$ | async" />
-                <a href="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ" target="_new" class="inline underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                    (click)="$event.stopPropagation()" i18n>Terms and Conditions</a>
-            </div>
-        </label>
+        <wen-terms-and-conditions
+            class="mt-6 lg:ml-6"
+            [isChecked]="agreeTermsConditions"
+            documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+            (wenOnCheckChange)="agreeTermsConditions = $event">
+        </wen-terms-and-conditions>
 
         <button nz-button nzType="primary" nzSize="large" class="w-full mt-6 lg:w-auto"
             [disabled]="!agreeTermsConditions" i18n (click)="proceedWithBid()">
@@ -207,35 +178,20 @@
             </div>
         </div>
 
-        <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+        <div class="mt-4 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             If there is a higher bid, you will be refunded immediately.
             If you want to make another bid, send higher amount directly to the same address.
         </div>
 
-        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             Do not send funds from an exchange, always use wallets you fully control.
         </div>
 
-        <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto">
-            <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Firefly
-                    </div>
-                </div>
-            </a>
-            <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Tanglepay
-                    </div>
-                </div>
-              </a>
-        </div>
+        <wen-wallet-deeplink
+            class="mt-6"
+            [targetAddress]="targetAddress"
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+        </wen-wallet-deeplink>
     </div>
 </ng-template>
 
@@ -288,35 +244,20 @@
             </tbody>
         </nz-table>
 
-        <div class="mt-10 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+        <div class="mt-10 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             If there is a higher bid, you will be refunded immediately.
             If you want to make another bid, send higher amount directly to the same address.
         </div>
 
-        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary lg:w-4/5" i18n>
+        <div class="mt-3 text-xs font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark lg:w-4/5" i18n>
             Do not send funds from an exchange, use only a Firefly or TanglePay wallet.
         </div>
 
-        <div class="flex flex-col items-center justify-center w-full mt-6 lg:flex-row lg:w-auto">
-            <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Firefly
-                    </div>
-                </div>
-            </a>
-            <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Tanglepay
-                    </div>
-                </div>
-              </a>
-        </div>
+        <wen-wallet-deeplink
+            class="mt-6"
+            [targetAddress]="targetAddress"
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+        </wen-wallet-deeplink>
     </div>
 </ng-template>
 
@@ -324,7 +265,7 @@
   <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
       <div class="flex lg:items-center">
           <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
-              <wen-icon-check class="text-white"></wen-icon-check>
+              <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
           </div>
           <div class="ml-3.5 text-lg font-medium" i18n>Congratulations you won the NFT.</div>
       </div>
@@ -347,7 +288,7 @@
   <div class="flex flex-col items-center justify-between h-full mt-10 lg:justify-start">
       <div class="flex lg:items-center">
           <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
-              <wen-icon-check class="text-white"></wen-icon-check>
+              <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
           </div>
           <div class="ml-3.5 text-lg font-medium" i18n>Bidding is expired. Good luck next time :) </div>
       </div>

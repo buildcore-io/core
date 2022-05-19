@@ -40,7 +40,7 @@ describe('MemberController: ' + WEN_FUNC.uMember, () => {
   it('successfully update member', async () => {
     const updateParams = {
       uid: dummyAddress,
-      name: 'abc' + Math.floor(Math.random() * 1000),
+      name: wallet.getRandomEthAddress(),
       about: 'He rocks',
       discord: 'adamkun#1233',
       twitter: 'asdasd',

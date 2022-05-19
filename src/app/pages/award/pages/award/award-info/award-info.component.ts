@@ -9,6 +9,12 @@ import { FILE_SIZES } from '../../../../../../../functions/interfaces/models/bas
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AwardInfoComponent {
+
+  public descriptionTitles: string[] = [
+    $localize`Badges used / available`,
+    $localize`End Date`
+  ];
+
   constructor(
     public data: DataService
   ) {}
