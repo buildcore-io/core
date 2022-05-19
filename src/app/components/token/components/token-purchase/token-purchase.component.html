@@ -77,23 +77,28 @@
     </ng-template>
 
     <div class="relative flex flex-col mt-6 font-medium lg:mt-0">
-        <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
-            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                {{token?.symbol}}
-            </div>
+        <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
             <input class="w-full p-0 outline-0"
-                    [formControl]="amountControl"
+                    [formControl]="isAmountInput ? amountControl : iotaControl"
                     nz-input
                     nzSize="small"
                     [nzBorderless]="true">
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                {{ isAmountInput ? token?.symbol : 'Mi' }}
+            </div>
         </div>
 
-        <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-            <div class="mt-1">{{formatBest(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))}}</div>
+        <div class="flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+            <div class="mt-1">
+                {{ isAmountInput ? extractAmount(formatBest(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0))) : formatTokenBest(amountControl.value * 1000 * 1000)  }}
+            </div>
+            <div class="mt-1">
+                {{ isAmountInput ? formatBest(amountControl.value * 1000 * 1000 * (token?.pricePerToken || 0)).substr(-2) : token?.symbol }}
+            </div>
         </div>
 
         <button nz-button nzType="primary" nzShape="circle" nzSize="default"
-            class="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+            (click)="isAmountInput = !isAmountInput" class="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
                 <wen-icon-switch></wen-icon-switch>
         </button>
     </div>
