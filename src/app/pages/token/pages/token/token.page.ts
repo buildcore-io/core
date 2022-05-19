@@ -102,8 +102,12 @@ export class TokenPage implements OnInit, OnDestroy {
   }
 
   public getLatestStatus(token?: Token): string {
-    if (token?.status === TokenStatus.AVAILABLE) {
+    if (this.data.isSalesInProgress(token) && !this.data.isInCooldown(token)) {
       return $localize`Available`;
+    } else if (this.data.isScheduledForSale(token) && !this.data.isInCooldown(token)) {
+      return $localize`Scheduled`;
+    } else if (this.data.isInCooldown(token)) {
+      return $localize`Cooldown`;
     } else if (token?.status === TokenStatus.PROCESSING) {
       return $localize`Processing`;
     } else {

@@ -6,14 +6,14 @@
 </wen-modal-drawer>
 
 <ng-template #content>
-    <div class="mt-8 lg:mt-6 flex items-center">
+    <div class="flex items-center mt-8 lg:mt-6">
         <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
           class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
         </nz-avatar>
-        <div class="font-bold text-lg ml-4">{{ token?.name }}</div>
-        <div class="font-medium ml-3">({{ token?.symbol }})</div>
+        <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
+        <div class="ml-3 font-medium">({{ token?.symbol }})</div>
     </div>
 
     <div class="flex items-center mt-5" *ngIf="token?.coolDownEnd">
@@ -25,12 +25,12 @@
     </div>
 
     <div *ngIf="type === tokenItemTypes.CLAIM"
-        class="mt-4 py-3 px-5 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
+        class="px-5 py-3 mt-4 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
             <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                 Tokens claim amount
             </div>
             <div class="text-lg font-bold">
-                {{ dropsSum() }}
+                {{ formatTokenBest(dropsSum()) | number: '1.0-2' }} {{token?.symbol}}
             </div>
     </div>
 
@@ -63,7 +63,7 @@
         (wenOnCheckChange)="agreeTermsConditions = $event">
     </wen-terms-and-conditions>
 
-    <div class="w-full mt-10 flex justify-center item-center">
+    <div class="flex justify-center w-full mt-10 item-center">
         <button nz-button nzType="primary" nzSize="large" (click)="confirm()">
             <ng-container *ngIf="type === tokenItemTypes.CLAIM" i18n>Confirm and claim</ng-container>
             <ng-container *ngIf="type === tokenItemTypes.REFUND" i18n>Confirm and refund</ng-container>

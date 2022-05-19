@@ -65,7 +65,7 @@
             </div>
 
             <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
-                {{ newService.totalSupplyControl?.value + ' ' + newService.symbolControl?.value }}
+                {{ (newService.totalSupplyControl?.value | number: '1.0-2') + ' ' + newService.symbolControl?.value}}
             </div>
         </div>
 

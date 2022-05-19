@@ -58,4 +58,14 @@
       [showDate]="false"
       size="default">
     </wen-countdown>
+
+    <wen-countdown *ngIf="data.isInCooldown(token)"
+    class="block"
+    wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
+    tabClassName="bg-tags-closed dark:bg-tags-closed-dark"
+    [title]="getCountdownCoolDownTitleStart()"
+    [finalDate]="getCountdownCooldownDate()"
+    [showDate]="false"
+    size="default">
+  </wen-countdown>
 </div>

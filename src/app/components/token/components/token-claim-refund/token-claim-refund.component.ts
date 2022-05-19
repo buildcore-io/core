@@ -29,7 +29,7 @@ export class TokenClaimRefundComponent {
   }
   @Input() token?: TokenWithMemberDistribution | null;
   @Output() wenOnClose = new EventEmitter<void>();
-  
+
   public amountControl: FormControl = new FormControl(null);
   public agreeTermsConditions = false;
   private _isOpen = false;
@@ -46,12 +46,12 @@ export class TokenClaimRefundComponent {
   public get tokenItemTypes(): typeof TokenItemType {
     return TokenItemType;
   }
-  
+
   public close(): void {
     this.reset();
     this.wenOnClose.next();
   }
-  
+
   public reset(): void {
     this.isOpen = false;
     this.type = TokenItemType.CLAIM;
@@ -78,7 +78,7 @@ export class TokenClaimRefundComponent {
       return '0';
     }
 
-    return (amount).toFixed(2);
+    return (amount / 1000 / 1000).toFixed(2);
   }
 
   public async confirm(): Promise<void> {
