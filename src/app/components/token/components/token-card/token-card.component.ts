@@ -86,7 +86,6 @@ export class TokenCardComponent {
     } else {
       this.cardType = TokenCardType.UPCOMING;
     }
-
     this.cd.markForCheck();
   }
 }
