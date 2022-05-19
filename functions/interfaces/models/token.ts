@@ -47,6 +47,7 @@ export interface Token extends BaseRecord {
 export interface TokenDrop {
   readonly vestingAt: Timestamp;
   readonly count: number;
+  readonly uid: string;
 }
 
 export interface TokenDistribution extends BaseSubCollection {

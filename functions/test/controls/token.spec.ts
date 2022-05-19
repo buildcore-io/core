@@ -500,7 +500,7 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(1)
-    expect(airdrops[0].tokenDrops).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }])
+    expect(airdrops[0].tokenDrops.map((d: any) => { delete d.uid; return d })).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[0].uid).toBe(guardianAddress)
   })
 
@@ -512,9 +512,9 @@ describe('Token airdrop test', () => {
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(2)
-    expect(airdrops[0].tokenDrops).toEqual([{ count: 800, vestingAt: dateToTimestamp(vestingAt) }])
+    expect(airdrops[0].tokenDrops.map((d: any) => { delete d.uid; return d })).toEqual([{ count: 800, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[0].uid).toBe(guardianAddress)
-    expect(airdrops[1].tokenDrops).toEqual([{ count: 100, vestingAt: dateToTimestamp(vestingAt) }])
+    expect(airdrops[1].tokenDrops.map((d: any) => { delete d.uid; return d })).toEqual([{ count: 100, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[1].uid).toBe(memberAddress)
   })
 
@@ -541,12 +541,25 @@ describe('Token airdrop test', () => {
     const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress, vestingAt }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     const airdrops = await testEnv.wrap(airdropToken)({});
-    expect(airdrops[0].tokenDrops).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }])
+    expect(airdrops[0].tokenDrops.map((d: any) => { delete d.uid; return d })).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[0].uid).toBe(guardianAddress)
 
     const airdropRequest2 = { token: token.uid, drops: [{ count: 100, recipient: guardianAddress, vestingAt: dayjs().toDate() }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest2)
     await expectThrow(testEnv.wrap(airdropToken)({}), WenError.no_tokens_available_for_airdrop.key)
+  })
+
+  it('Should drop multiple for same user', async () => {
+    const vestingAt = dayjs().toDate()
+    const airdropRequest = {
+      token: token.uid, drops: [{ count: 400, recipient: guardianAddress, vestingAt }, { count: 50, recipient: memberAddress, vestingAt }]
+    }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    await testEnv.wrap(airdropToken)({});
+    await testEnv.wrap(airdropToken)({});
+
+    const guardDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    expect(guardDistribution.tokenDrops?.length).toBe(2)
   })
 })
 
