@@ -127,7 +127,7 @@
 
         <div class="w-full px-4 py-3 mt-14 lg:mt-4 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send</span> {{formatBest(targetAmount) }} <span i18n>IOTA to following address (please restake after!):</span>
+              <span i18n>Send</span> {{formatBest(targetAmount) }} <span i18n> to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -141,8 +141,8 @@
                 </button>
             </div>
         </div>
-        
-    
+
+
         <wen-wallet-deeplink
             *ngIf="!isExpired((transaction$ | async))"
             class="mt-10"

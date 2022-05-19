@@ -28,7 +28,7 @@
                     {{getPrc() | number : '1.2-2'}}% </div>
                 <div class="w-2/3 text-right break-words line-clamp-2 grow">
                     <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">
-                      {{ data.formatTokenBest(getPotentialTokens()) | number : '1.0-2' }} {{token?.symbol}}
+                      {{ data.formatTokenBest(getTotalPotentialTokens()) | number : '1.0-2' }} {{token?.symbol}}
                     </span>
                     <span> / </span>
                     <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark" i18n>
