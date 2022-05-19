@@ -1,6 +1,5 @@
 import { WEN_FUNC } from '../interfaces/functions';
 import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
-import * as functions from 'firebase-functions';
 
 export const low = 1;
 export const medium = isProdEnv ? 3 : 2;
