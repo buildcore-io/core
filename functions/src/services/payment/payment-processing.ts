@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
-import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
+import { MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
 import { WenError } from '../../../interfaces/errors';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
@@ -323,7 +323,7 @@ export class ProcessingService {
           royalty: true,
           void: false,
           // We delay royalty.
-          delay: ROYALTY_TRANSACTION_DELAY,
+          delay: SECONDARY_TRANSACTION_DELAY,
           nft: orderPayload.nft || null,
           collection: orderPayload.collection || null
         }

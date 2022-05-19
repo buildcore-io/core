@@ -29,7 +29,6 @@ export const transactionWrite = functions.runWith({
   }
 });
 
-
 const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) => {
   // Let's wrap this into a transaction.
   const shouldProcess = await admin.firestore().runTransaction(async (transaction) => {
