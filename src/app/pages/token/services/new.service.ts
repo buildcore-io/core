@@ -36,6 +36,8 @@ export class NewService {
   public iconControl: FormControl = new FormControl('', Validators.required);
   public titleControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
+  public shortTitleControl: FormControl = new FormControl('');
+  public shortDescriptionControl: FormControl = new FormControl('');
   public distributionControl: FormControl = new FormControl(TokenDistributionType.FIXED, Validators.required);
   public introductionaryControl: FormControl = new FormControl('', Validators.required);
   public termsAndConditionsLinkControl: FormControl = new FormControl('', [Validators.required, getUrlValidator()]);
@@ -66,7 +68,9 @@ export class NewService {
       description: this.descriptionControl,
       allocations: this.allocations,
       links: this.links,
-      termsAndConditionsLink: this.termsAndConditionsLinkControl
+      termsAndConditionsLink: this.termsAndConditionsLinkControl,
+      shortDescription: this.shortDescriptionControl,
+      shortTitle: this.shortTitleControl
     });
 
     this.addAllocation();

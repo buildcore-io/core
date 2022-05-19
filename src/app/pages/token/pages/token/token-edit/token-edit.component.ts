@@ -19,6 +19,8 @@ export class TokenEditComponent {
     this.nameControl.setValue(this.token?.name);
     this.titleControl.setValue(this.token?.title);
     this.descriptionControl.setValue(this.token?.description);
+    this.shortDescriptionTitleControl.setValue(this.token?.shortDescriptionTitle);
+    this.shortDescriptionControl.setValue(this.token?.shortDescription);
   }
   get token(): Token | undefined {
     return this._token;
@@ -28,6 +30,8 @@ export class TokenEditComponent {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public titleControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
+  public shortDescriptionTitleControl: FormControl = new FormControl('', Validators.required);
+  public shortDescriptionControl: FormControl = new FormControl('', Validators.required);
   public form: FormGroup;
   private _token?: Token;
 
@@ -40,7 +44,9 @@ export class TokenEditComponent {
     this.form = new FormGroup({
       name: this.nameControl,
       title: this.titleControl,
-      description: this.descriptionControl
+      description: this.descriptionControl,
+      shortDescriptionTitle: this.shortDescriptionTitleControl,
+      shortDescription: this.shortDescriptionControl
     });
   }
 

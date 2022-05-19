@@ -101,6 +101,37 @@
         </div>
 
         <div class="flex items-center justify-between mt-10">
+            <div class="text-lg font-bold" i18n>Short description</div>
+            <button
+                nz-button
+                nzType="link"
+                class="wen-secondary"
+                (click)="wenOnTabChange.emit(stepTypes.OVERVIEW)"
+                i18n
+            >
+                Edit
+            </button>
+        </div>
+
+        <div class="px-8 pt-6 pb-8 mt-6 rounded-2xl bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark">
+            <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Short description title
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.shortTitleControl?.value }}
+            </div>
+
+            <div class="mt-6 text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                Short description
+            </div>
+
+            <div class="mt-0.5 text-foregrounds-primary dark:text-foregrounds-primary-dark">
+                {{ newService.shortDescriptionControl?.value }}
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-10">
             <div class="text-lg font-bold" i18n>Token allocation</div>
             <button
                 nz-button

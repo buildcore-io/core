@@ -89,6 +89,8 @@ export class NewPage implements OnInit {
     res.icon = data.icon;
     res.overviewGraphics = data.introductionary;
     res.termsAndConditions = data.termsAndConditionsLink;
+    res.shortDescriptionTitle = data.shortTitle;
+    res.shortDescription = data.shortDescription;
     return res;
   }
 

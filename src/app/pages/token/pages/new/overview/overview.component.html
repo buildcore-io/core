@@ -34,6 +34,34 @@
             </div>
         </nz-card>
 
+        <nz-card class="relative mt-4" i18n-nzTitle nzTitle="Short description">
+            <div class="pt-4">
+                <nz-form-item>
+                    <nz-form-control i18n-nzErrorTip nzErrorTip="Short title is invalid.">
+                        <input
+                            nz-input
+                            nzSize="large"
+                            i18n-placeholder
+                            placeholder="Short description title"
+                            [formControl]="newService.shortTitleControl"
+                        />
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-control i18n-nzErrorTip nzErrorTip="Short description is invalid.">
+                        <textarea
+                            nz-input
+                            nzSize="large"
+                            i18n-placeholder
+                            placeholder="Token short description"
+                            rows="4"
+                            [formControl]="newService.shortDescriptionControl"
+                        ></textarea>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+        </nz-card>
+
         <button *ngIf="deviceService.isDesktop$ | async"
             nz-button nzType="primary" nzSize="large" class="w-full mt-12" (click)="wenOnTabChange.emit(stepTypes.SUMMARY)" i18n>
                 Continue
