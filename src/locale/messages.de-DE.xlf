@@ -98,7 +98,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">160</context>
+          <context context-type="linenumber">191</context>
         </context-group>
         <target state="translated">Gruppe</target>
       </trans-unit>
@@ -646,7 +646,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">71</context>
         </context-group>
         <target state="translated"> Abbrechen </target>
       </trans-unit>
@@ -1328,7 +1328,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">74</context>
         </context-group>
         <target state="translated"> Änderungen speichern </target>
       </trans-unit>
@@ -1446,7 +1446,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">212,213</context>
+          <context context-type="linenumber">217,218</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
@@ -1458,11 +1458,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
-          <context context-type="linenumber">39,40</context>
+          <context context-type="linenumber">40,41</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
@@ -1578,11 +1578,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">117</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">166</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
@@ -1614,11 +1614,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">118</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">167</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
@@ -1646,11 +1646,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">119,120</context>
+          <context context-type="linenumber">124,125</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">168,169</context>
+          <context context-type="linenumber">173,174</context>
         </context-group>
         <target state="translated"> Sende keine Guthaben von einer Börse aus, verwende immer Wallets, die du vollständig kontrollierst. </target>
       </trans-unit>
@@ -1670,11 +1670,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">108</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">152</context>
+          <context context-type="linenumber">157</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
@@ -1722,11 +1722,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">172,173</context>
+          <context context-type="linenumber">171,172</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">257,258</context>
+          <context context-type="linenumber">256,257</context>
         </context-group>
         <target state="translated">Aktion</target>
       </trans-unit>
@@ -1753,24 +1753,20 @@
           <context context-type="linenumber">243,244</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
+          <context context-type="linenumber">140,141</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">141,142</context>
+          <context context-type="linenumber">168,169</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">169,170</context>
+          <context context-type="linenumber">225,226</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">226,227</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">254,255</context>
+          <context context-type="linenumber">253,254</context>
         </context-group>
         <target state="translated">Anzahl</target>
       </trans-unit>
@@ -1850,7 +1846,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">242</context>
+          <context context-type="linenumber">247</context>
         </context-group>
         <target state="translated"> Kasse schließen </target>
       </trans-unit>
@@ -1918,11 +1914,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">145,146</context>
+          <context context-type="linenumber">150,151</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">211,212</context>
+          <context context-type="linenumber">216,217</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
@@ -1958,19 +1954,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">140,141</context>
+          <context context-type="linenumber">139,140</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">168,169</context>
+          <context context-type="linenumber">167,168</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">225,226</context>
+          <context context-type="linenumber">224,225</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">253,254</context>
+          <context context-type="linenumber">252,253</context>
         </context-group>
         <target state="translated">Preis</target>
       </trans-unit>
@@ -2073,8 +2069,8 @@
         </context-group>
         <target state="translated">Wir haben einen ungültigen Betrag erhalten. Versuche es erneut.</target>
       </trans-unit>
-      <trans-unit id="2448339751576066057" datatype="html">
-        <source>IOTA to following address (please restake after!):</source>
+      <trans-unit id="5152806824415842786" datatype="html">
+        <source> to following address (please restake after!):</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.html</context>
           <context context-type="linenumber">125,126</context>
@@ -2083,7 +2079,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="translated">IOTA an die folgende Adresse (bitte anschließend erneut staken!):</target>
+        <target state="needs-translation"> to following address (please restake after!):</target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -2105,11 +2101,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">180</context>
+          <context context-type="linenumber">185</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">218</context>
+          <context context-type="linenumber">223</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
@@ -2137,7 +2133,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">236,237</context>
+          <context context-type="linenumber">241,242</context>
         </context-group>
         <target state="translated">Transaktion abgeschlossen. Herzlichen Glückwunsch.</target>
       </trans-unit>
@@ -2153,7 +2149,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">105</context>
         </context-group>
         <target state="needs-translation">Payment received.</target>
       </trans-unit>
@@ -2169,7 +2165,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">111</context>
         </context-group>
         <target state="needs-translation">Confirming transaction.</target>
       </trans-unit>
@@ -2185,7 +2181,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
-          <context context-type="linenumber">114</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <target state="needs-translation">Transaction confirmed.</target>
       </trans-unit>
@@ -2201,7 +2197,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">126</context>
         </context-group>
         <target state="needs-translation">Invalid amount received. Refunding transaction...</target>
       </trans-unit>
@@ -2217,7 +2213,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
-          <context context-type="linenumber">129</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <target state="needs-translation">Invalid payment refunded.</target>
       </trans-unit>
@@ -2229,7 +2225,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
-          <context context-type="linenumber">216</context>
+          <context context-type="linenumber">241</context>
         </context-group>
         <target state="needs-translation">Order created.</target>
       </trans-unit>
@@ -2245,7 +2241,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
-          <context context-type="linenumber">219</context>
+          <context context-type="linenumber">244</context>
         </context-group>
         <target state="needs-translation">Waiting for transaction...</target>
       </trans-unit>
@@ -3001,8 +2997,8 @@
         </context-group>
         <target state="needs-translation">Token terms and Conditions</target>
       </trans-unit>
-      <trans-unit id="3967268749166465579" datatype="html">
-        <source> Confirm and generate adress </source>
+      <trans-unit id="8562795996489852351" datatype="html">
+        <source> Confirm and generate address </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">96</context>
@@ -3011,23 +3007,23 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="needs-translation"> Confirm and generate adress </target>
+        <target state="needs-translation"> Confirm and generate address </target>
       </trans-unit>
-      <trans-unit id="3071038594639879916" datatype="html">
-        <source>IOTA to following address:</source>
+      <trans-unit id="6559976317018164845" datatype="html">
+        <source> to following address:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">147,148</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">103,104</context>
+          <context context-type="linenumber">108,109</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">152,153</context>
+          <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="needs-translation">IOTA to following address:</target>
+        <target state="needs-translation"> to following address:</target>
       </trans-unit>
       <trans-unit id="8281145888073153213" datatype="html">
         <source>Bid complete. Congratulations.</source>
@@ -3105,19 +3101,19 @@
         </context-group>
         <target state="needs-translation">Sale ends</target>
       </trans-unit>
-      <trans-unit id="7518918151822479219" datatype="html">
-        <source>Cooldown period ends in 2 hours</source>
+      <trans-unit id="8723042657452219176" datatype="html">
+        <source>Cooldown period ends</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim-refund/token-claim-refund.component.html</context>
-          <context context-type="linenumber">21,22</context>
+          <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Cooldown period ends in 2 hours</target>
+        <target state="needs-translation">Cooldown period ends</target>
       </trans-unit>
       <trans-unit id="4042383799859047990" datatype="html">
         <source> Tokens claim amount </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim-refund/token-claim-refund.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <target state="needs-translation"> Tokens claim amount </target>
       </trans-unit>
@@ -3125,7 +3121,7 @@
         <source>Confirm and claim</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim-refund/token-claim-refund.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">68</context>
         </context-group>
         <target state="needs-translation">Confirm and claim</target>
       </trans-unit>
@@ -3133,7 +3129,7 @@
         <source>Confirm and refund</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-claim-refund/token-claim-refund.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">69</context>
         </context-group>
         <target state="needs-translation">Confirm and refund</target>
       </trans-unit>
@@ -3161,13 +3157,13 @@
         </context-group>
         <target state="needs-translation">Open Token Offer</target>
       </trans-unit>
-      <trans-unit id="3335511369170111370" datatype="html">
-        <source>Your ballance</source>
+      <trans-unit id="1772467272261533431" datatype="html">
+        <source>Your balance</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Your ballance</target>
+        <target state="needs-translation">Your balance</target>
       </trans-unit>
       <trans-unit id="1417450416023766429" datatype="html">
         <source> Confirm and create an offer </source>
@@ -3225,13 +3221,13 @@
         </context-group>
         <target state="needs-translation">Offering length is required.</target>
       </trans-unit>
-      <trans-unit id="920698561077476221" datatype="html">
-        <source>Select token offering lenght (Default 2 days)</source>
+      <trans-unit id="5066202217652800772" datatype="html">
+        <source>Select token offering length (Default 2 days)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="needs-translation">Select token offering lenght (Default 2 days)</target>
+        <target state="needs-translation">Select token offering length (Default 2 days)</target>
       </trans-unit>
       <trans-unit id="4458368036022259369" datatype="html">
         <source> Token allocation info </source>
@@ -3273,7 +3269,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">142,143</context>
+          <context context-type="linenumber">173,174</context>
         </context-group>
         <target state="needs-translation">Public sale</target>
       </trans-unit>
@@ -3289,7 +3285,7 @@
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{token?.symbol}}"/>)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">140,141</context>
+          <context context-type="linenumber">145,146</context>
         </context-group>
         <target state="needs-translation">Amount (<x id="INTERPOLATION" equiv-text="{{token?.symbol}}"/>)</target>
       </trans-unit>
@@ -3297,7 +3293,7 @@
         <source>Tokens to purchase</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">205,206</context>
+          <context context-type="linenumber">210,211</context>
         </context-group>
         <target state="needs-translation">Tokens to purchase</target>
       </trans-unit>
@@ -3307,7 +3303,7 @@
         </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
-          <context context-type="linenumber">207,208</context>
+          <context context-type="linenumber">212,213</context>
         </context-group>
         <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-2') + ' ' + token?.symbol}}"/> </target>
       </trans-unit>
@@ -3315,7 +3311,7 @@
         <source> Avg. Price </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">24</context>
         </context-group>
         <target state="needs-translation"> Avg. Price </target>
       </trans-unit>
@@ -3323,7 +3319,7 @@
         <source> Cooldown period ends </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">67</context>
         </context-group>
         <target state="needs-translation"> Cooldown period ends </target>
       </trans-unit>
@@ -3331,7 +3327,7 @@
         <source> Market Cap </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">79</context>
         </context-group>
         <target state="needs-translation"> Market Cap </target>
       </trans-unit>
@@ -3339,7 +3335,7 @@
         <source> Volume (24h) </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">89</context>
         </context-group>
         <target state="needs-translation"> Volume (24h) </target>
       </trans-unit>
@@ -3347,7 +3343,7 @@
         <source> Change (24h) </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">94</context>
+          <context context-type="linenumber">100</context>
         </context-group>
         <target state="needs-translation"> Change (24h) </target>
       </trans-unit>
@@ -3355,7 +3351,7 @@
         <source> Coming soon </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">121</context>
         </context-group>
         <target state="needs-translation"> Coming soon </target>
       </trans-unit>
@@ -3363,7 +3359,7 @@
         <source> In Cooldown </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">124</context>
         </context-group>
         <target state="needs-translation"> In Cooldown </target>
       </trans-unit>
@@ -3371,7 +3367,7 @@
         <source> Buy </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">119</context>
+          <context context-type="linenumber">127</context>
         </context-group>
         <target state="needs-translation"> Buy </target>
       </trans-unit>
@@ -3379,7 +3375,7 @@
         <source> Buy / Sell </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <target state="needs-translation"> Buy / Sell </target>
       </trans-unit>
@@ -3747,7 +3743,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
@@ -4687,11 +4683,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">86</context>
+          <context context-type="linenumber">114</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">210</context>
+          <context context-type="linenumber">241</context>
         </context-group>
         <target state="translated">Links</target>
       </trans-unit>
@@ -4711,7 +4707,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">87,88</context>
+          <context context-type="linenumber">115,116</context>
         </context-group>
         <target state="translated">Ungültige URL.</target>
       </trans-unit>
@@ -4727,7 +4723,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">94</context>
+          <context context-type="linenumber">122</context>
         </context-group>
         <target state="translated">URL</target>
       </trans-unit>
@@ -5015,7 +5011,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/services/new.service.ts</context>
-          <context context-type="linenumber">158</context>
+          <context context-type="linenumber">162</context>
         </context-group>
         <target state="translated">Das Mitglied scheint sich während der Datei-Upload-Anfrage abzumelden.</target>
       </trans-unit>
@@ -5463,7 +5459,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">93</context>
         </context-group>
         <target state="needs-translation"> No tokens </target>
       </trans-unit>
@@ -5691,21 +5687,85 @@
         </context-group>
         <target state="needs-translation">Item</target>
       </trans-unit>
-      <trans-unit id="3171431176411205344" datatype="html">
-        <source>To claim (Airdrops)</source>
+      <trans-unit id="8650499415827640724" datatype="html">
+        <source>Type</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">7,8</context>
         </context-group>
-        <target state="needs-translation">To claim (Airdrops)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
+          <context context-type="linenumber">209,210</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
+          <context context-type="linenumber">242,243</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
+          <context context-type="linenumber">42,35</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
+          <context context-type="linenumber">30,23</context>
+        </context-group>
+        <target state="translated">Typ</target>
       </trans-unit>
-      <trans-unit id="5292599606639650939" datatype="html">
-        <source>Total Owned</source>
+      <trans-unit id="3448462145758383019" datatype="html">
+        <source>Total</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
-        <target state="needs-translation">Total Owned</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
+          <context context-type="linenumber">141,142</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
+          <context context-type="linenumber">169,170</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
+          <context context-type="linenumber">226,227</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
+          <context context-type="linenumber">254,255</context>
+        </context-group>
+        <target state="needs-translation">Total</target>
+      </trans-unit>
+      <trans-unit id="6985267139889676910" datatype="html">
+        <source>Owned</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
+          <context context-type="linenumber">6,8</context>
+        </context-group>
+        <target state="translated">In Besitz</target>
+      </trans-unit>
+      <trans-unit id="9029642046549199046" datatype="html">
+        <source>Airdropped</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
+          <context context-type="linenumber">41,42</context>
+        </context-group>
+        <target state="needs-translation">Airdropped</target>
+      </trans-unit>
+      <trans-unit id="3422683202099217996" datatype="html">
+        <source>Deposit for purchase</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
+          <context context-type="linenumber">63,64</context>
+        </context-group>
+        <target state="needs-translation">Deposit for purchase</target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
@@ -5746,30 +5806,6 @@
           <context context-type="linenumber">14,15</context>
         </context-group>
         <target state="needs-translation">Exporting CSV</target>
-      </trans-unit>
-      <trans-unit id="8650499415827640724" datatype="html">
-        <source>Type</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
-          <context context-type="linenumber">25,26</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">209,210</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">242,243</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
-          <context context-type="linenumber">42,35</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
-          <context context-type="linenumber">30,23</context>
-        </context-group>
-        <target state="translated">Typ</target>
       </trans-unit>
       <trans-unit id="3973931101896534797" datatype="html">
         <source>Date</source>
@@ -5867,13 +5903,13 @@
         </context-group>
         <target state="translated">Bestehendes CSV hochladen</target>
       </trans-unit>
-      <trans-unit id="189367192793231292" datatype="html">
-        <source>Upload back once you generate bellow</source>
+      <trans-unit id="7608437179935502715" datatype="html">
+        <source>Upload back once you generate below</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="translated">Erneut hochladen sobald du unten generiert hast</target>
+        <target state="needs-translation">Upload back once you generate below</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -6158,14 +6194,6 @@
           <context context-type="linenumber">4,5</context>
         </context-group>
         <target state="translated">NFT</target>
-      </trans-unit>
-      <trans-unit id="6985267139889676910" datatype="html">
-        <source>Owned</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
-          <context context-type="linenumber">6,8</context>
-        </context-group>
-        <target state="translated">In Besitz</target>
       </trans-unit>
       <trans-unit id="7569328933686823220" datatype="html">
         <source>Check out nft</source>
@@ -7808,27 +7836,27 @@
         </context-group>
         <target state="needs-translation">Download CSV template</target>
       </trans-unit>
-      <trans-unit id="2871866932659495335" datatype="html">
-        <source> You can create a governance token airdrops for your DAO members. You can upload CSV with users that are legit for the token airdrops and they will be properly rewarded. </source>
+      <trans-unit id="2401438647973775706" datatype="html">
+        <source> You can create a governance token airdrop for your members. You can upload CSV with users (ETH Address) that are legit for the token airdrops and they will be properly rewarded. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation"> You can create a governance token airdrops for your DAO members. You can upload CSV with users that are legit for the token airdrops and they will be properly rewarded. </target>
+        <target state="needs-translation"> You can create a governance token airdrop for your members. You can upload CSV with users (ETH Address) that are legit for the token airdrops and they will be properly rewarded. </target>
       </trans-unit>
-      <trans-unit id="109869674152960558" datatype="html">
-        <source> If you don’t know how to prepare CSV file, you can download ours template made for you. </source>
+      <trans-unit id="5396117322147562409" datatype="html">
+        <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">14</context>
         </context-group>
-        <target state="needs-translation"> If you don’t know how to prepare CSV file, you can download ours template made for you. </target>
+        <target state="needs-translation"> If you don’t know how to prepare CSV file, you can download our template made for you. </target>
       </trans-unit>
       <trans-unit id="1009318303091166329" datatype="html">
         <source>Some rows have been removed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
-          <context context-type="linenumber">66,67</context>
+          <context context-type="linenumber">67,68</context>
         </context-group>
         <target state="needs-translation">Some rows have been removed</target>
       </trans-unit>
@@ -7837,26 +7865,10 @@
 </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
-          <context context-type="linenumber">78,79</context>
+          <context context-type="linenumber">79,80</context>
         </context-group>
         <target state="needs-translation"> Submit airdrop
 </target>
-      </trans-unit>
-      <trans-unit id="527110502159320163" datatype="html">
-        <source>EthAddress</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.ts</context>
-          <context context-type="linenumber">35</context>
-        </context-group>
-        <target state="needs-translation">EthAddress</target>
-      </trans-unit>
-      <trans-unit id="140862064428156260" datatype="html">
-        <source>VestingAt</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.ts</context>
-          <context context-type="linenumber">37</context>
-        </context-group>
-        <target state="needs-translation">VestingAt</target>
       </trans-unit>
       <trans-unit id="8797154131183772212" datatype="html">
         <source> row is not valid</source>
@@ -7906,13 +7918,13 @@
         </context-group>
         <target state="needs-translation"> You can create only ONE token per space and it can never be changed. </target>
       </trans-unit>
-      <trans-unit id="365387083299348316" datatype="html">
-        <source> Important information for creating token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we would need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </source>
+      <trans-unit id="2051746505226219363" datatype="html">
+        <source> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we would need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">18,20</context>
         </context-group>
-        <target state="needs-translation"> Important information for creating token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we would need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </target>
+        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we would need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -7926,7 +7938,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">67</context>
         </context-group>
         <target state="needs-translation"> Continue </target>
       </trans-unit>
@@ -7938,13 +7950,13 @@
         </context-group>
         <target state="needs-translation">Application form</target>
       </trans-unit>
-      <trans-unit id="3155115918217912389" datatype="html">
-        <source>To apply you need to fill form bellow.</source>
+      <trans-unit id="9009423145099491777" datatype="html">
+        <source>To apply you need to fill form below.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">To apply you need to fill form bellow.</target>
+        <target state="needs-translation">To apply you need to fill form below.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -7967,7 +7979,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">126,127</context>
+          <context context-type="linenumber">154,155</context>
         </context-group>
         <target state="needs-translation"> Continue
 </target>
@@ -8132,7 +8144,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">173,174</context>
+          <context context-type="linenumber">204,205</context>
         </context-group>
         <target state="needs-translation">Token icon</target>
       </trans-unit>
@@ -8141,10 +8153,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">184,185</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">175,176</context>
         </context-group>
         <target state="needs-translation">(Recomended size: 400 x 400px)</target>
       </trans-unit>
@@ -8164,7 +8172,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">189,190</context>
+          <context context-type="linenumber">220,221</context>
         </context-group>
         <target state="needs-translation">Token price</target>
       </trans-unit>
@@ -8176,17 +8184,17 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">191,192</context>
+          <context context-type="linenumber">222,223</context>
         </context-group>
         <target state="needs-translation">Distribution of the token happens after the token offering end date.</target>
       </trans-unit>
-      <trans-unit id="2980077991877747359" datatype="html">
-        <source>Configure the token suply first to see breakdown.</source>
+      <trans-unit id="4545637469732220398" datatype="html">
+        <source>Configure the token supply first to see breakdown.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">245,246</context>
         </context-group>
-        <target state="needs-translation">Configure the token suply first to see breakdown.</target>
+        <target state="needs-translation">Configure the token supply first to see breakdown.</target>
       </trans-unit>
       <trans-unit id="1752313125925892847" datatype="html">
         <source>Token terms and conditions</source>
@@ -8196,7 +8204,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">221,222</context>
+          <context context-type="linenumber">252,253</context>
         </context-group>
         <target state="needs-translation">Token terms and conditions</target>
       </trans-unit>
@@ -8224,7 +8232,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">104,105</context>
+          <context context-type="linenumber">135,136</context>
         </context-group>
         <target state="needs-translation">Token allocation</target>
       </trans-unit>
@@ -8240,15 +8248,15 @@
         </context-group>
         <target state="needs-translation">Allocation</target>
       </trans-unit>
-      <trans-unit id="5664697698527569880" datatype="html">
-        <source>Please make sure that there is one allocation market as Public Sale as this could be later sold on Soonaverse. 
-        ou can initiate Public sale once the token is created and approved.</source>
+      <trans-unit id="1934262462016753585" datatype="html">
+        <source>Please make sure that there is only one allocation marked for Public Sale as this could be later sold on Soonaverse.
+        You can initiate Public sale once the token is created and approved.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">66,65</context>
         </context-group>
-        <target state="needs-translation">Please make sure that there is one allocation market as Public Sale as this could be later sold on Soonaverse. 
-        ou can initiate Public sale once the token is created and approved.</target>
+        <target state="needs-translation">Please make sure that there is only one allocation marked for Public Sale as this could be later sold on Soonaverse.
+        You can initiate Public sale once the token is created and approved.</target>
       </trans-unit>
       <trans-unit id="5385408710926538560" datatype="html">
         <source>Create token</source>
@@ -8262,7 +8270,7 @@
         <source>Introduction</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <target state="needs-translation">Introduction</target>
       </trans-unit>
@@ -8270,7 +8278,7 @@
         <source>Metrics</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
@@ -8282,7 +8290,7 @@
         <source>Summary</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <target state="needs-translation">Summary</target>
       </trans-unit>
@@ -8342,11 +8350,63 @@
         </context-group>
         <target state="needs-translation">Description is invalid.</target>
       </trans-unit>
+      <trans-unit id="2973928033612762715" datatype="html">
+        <source>Short description</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
+          <context context-type="linenumber">37,38</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
+          <context context-type="linenumber">104,105</context>
+        </context-group>
+        <target state="needs-translation">Short description</target>
+      </trans-unit>
+      <trans-unit id="4703172347259778984" datatype="html">
+        <source>Short title is invalid.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
+          <context context-type="linenumber">40,41</context>
+        </context-group>
+        <target state="needs-translation">Short title is invalid.</target>
+      </trans-unit>
+      <trans-unit id="8028189988232054703" datatype="html">
+        <source>Short description title</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
+          <context context-type="linenumber">51,52</context>
+        </context-group>
+        <target state="needs-translation">Short description title</target>
+      </trans-unit>
+      <trans-unit id="4589670471608761987" datatype="html">
+        <source>Short description is invalid.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
+          <context context-type="linenumber">51,52</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
+          <context context-type="linenumber">57,58</context>
+        </context-group>
+        <target state="needs-translation">Short description is invalid.</target>
+      </trans-unit>
+      <trans-unit id="6995936411627610524" datatype="html">
+        <source>Token short description</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
+          <context context-type="linenumber">56,57</context>
+        </context-group>
+        <target state="needs-translation">Token short description</target>
+      </trans-unit>
       <trans-unit id="2762600949893496442" datatype="html">
         <source>Overview graphics</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">53,54</context>
+          <context context-type="linenumber">81,82</context>
         </context-group>
         <target state="needs-translation">Overview graphics</target>
       </trans-unit>
@@ -8354,7 +8414,7 @@
         <source>Token introductionary video / image</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">83,84</context>
         </context-group>
         <target state="needs-translation">Token introductionary video / image</target>
       </trans-unit>
@@ -8362,7 +8422,7 @@
         <source>Introductionary media is invalid.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">64,65</context>
+          <context context-type="linenumber">92,93</context>
         </context-group>
         <target state="needs-translation">Introductionary media is invalid.</target>
       </trans-unit>
@@ -8370,7 +8430,7 @@
         <source>Add link</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
-          <context context-type="linenumber">110,111</context>
+          <context context-type="linenumber">138,139</context>
         </context-group>
         <target state="needs-translation">Add link</target>
       </trans-unit>
@@ -8391,6 +8451,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">112</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
+          <context context-type="linenumber">143</context>
         </context-group>
         <target state="needs-translation"> Edit </target>
       </trans-unit>
@@ -8442,11 +8506,27 @@
         </context-group>
         <target state="needs-translation"> Description </target>
       </trans-unit>
+      <trans-unit id="6891628983187662494" datatype="html">
+        <source> Short description title </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
+          <context context-type="linenumber">118</context>
+        </context-group>
+        <target state="needs-translation"> Short description title </target>
+      </trans-unit>
+      <trans-unit id="2095208344683449172" datatype="html">
+        <source> Short description </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
+          <context context-type="linenumber">126</context>
+        </context-group>
+        <target state="needs-translation"> Short description </target>
+      </trans-unit>
       <trans-unit id="8019883656144509081" datatype="html">
         <source> Allocation title </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">153</context>
         </context-group>
         <target state="needs-translation"> Allocation title </target>
       </trans-unit>
@@ -8454,7 +8534,7 @@
         <source> % of tokens for sale (Default 100%) </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">161</context>
         </context-group>
         <target state="needs-translation"> % of tokens for sale (Default 100%) </target>
       </trans-unit>
@@ -8462,15 +8542,23 @@
         <source> Submit token </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">179</context>
         </context-group>
         <target state="needs-translation"> Submit token </target>
+      </trans-unit>
+      <trans-unit id="3673557186016963521" datatype="html">
+        <source>(Recommended size: 400 x 400px)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
+          <context context-type="linenumber">206,207</context>
+        </context-group>
+        <target state="needs-translation">(Recommended size: 400 x 400px)</target>
       </trans-unit>
       <trans-unit id="291348833230444676" datatype="html">
         <source>Some description</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">223,224</context>
+          <context context-type="linenumber">254,255</context>
         </context-group>
         <target state="needs-translation">Some description</target>
       </trans-unit>
@@ -8478,7 +8566,7 @@
         <source>Terms&amp;conditions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">230</context>
+          <context context-type="linenumber">261</context>
         </context-group>
         <target state="needs-translation">Terms&amp;conditions</target>
       </trans-unit>
@@ -8487,7 +8575,7 @@
 </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
-          <context context-type="linenumber">239,240</context>
+          <context context-type="linenumber">270,271</context>
         </context-group>
         <target state="needs-translation"> Submit token
 </target>
@@ -8527,6 +8615,22 @@
           <context context-type="linenumber">108,109</context>
         </context-group>
         <target state="needs-translation">Check out token</target>
+      </trans-unit>
+      <trans-unit id="4323196109181894705" datatype="html">
+        <source>Short description title is invalid.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+        <target state="needs-translation">Short description title is invalid.</target>
+      </trans-unit>
+      <trans-unit id="6290744321118620010" datatype="html">
+        <source>Short token description</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
+          <context context-type="linenumber">62,63</context>
+        </context-group>
+        <target state="needs-translation">Short token description</target>
       </trans-unit>
       <trans-unit id="5433782699501161466" datatype="html">
         <source>Schedule</source>
@@ -8687,19 +8791,11 @@
         </context-group>
         <target state="needs-translation">Sell</target>
       </trans-unit>
-      <trans-unit id="6501051414313693569" datatype="html">
-        <source>What is</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">113</context>
-        </context-group>
-        <target state="needs-translation">What is</target>
-      </trans-unit>
       <trans-unit id="2276968796389493513" datatype="html">
         <source>Bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">123</context>
+          <context context-type="linenumber">122</context>
         </context-group>
         <target state="needs-translation">Bids</target>
       </trans-unit>
@@ -8707,7 +8803,7 @@
         <source>Open bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">127,128</context>
+          <context context-type="linenumber">126,127</context>
         </context-group>
         <target state="needs-translation">Open bids</target>
       </trans-unit>
@@ -8715,35 +8811,15 @@
         <source>My bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">131,132</context>
+          <context context-type="linenumber">130,131</context>
         </context-group>
         <target state="needs-translation">My bids</target>
-      </trans-unit>
-      <trans-unit id="3448462145758383019" datatype="html">
-        <source>Total</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">142,143</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">170,171</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">227,228</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">255,256</context>
-        </context-group>
-        <target state="needs-translation">Total</target>
       </trans-unit>
       <trans-unit id="2669161424614781464" datatype="html">
         <source>There are no open requests</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">160,161</context>
+          <context context-type="linenumber">159,160</context>
         </context-group>
         <target state="needs-translation">There are no open requests</target>
       </trans-unit>
@@ -8751,11 +8827,11 @@
         <source>Fulfilled</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">171,172</context>
+          <context context-type="linenumber">170,171</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">256,257</context>
+          <context context-type="linenumber">255,256</context>
         </context-group>
         <target state="needs-translation">Fulfilled</target>
       </trans-unit>
@@ -8763,11 +8839,11 @@
         <source> Cancelled </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">189</context>
+          <context context-type="linenumber">188</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">274</context>
+          <context context-type="linenumber">273</context>
         </context-group>
         <target state="needs-translation"> Cancelled </target>
       </trans-unit>
@@ -8775,11 +8851,11 @@
         <source> Expired </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">192</context>
+          <context context-type="linenumber">191</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">277</context>
+          <context context-type="linenumber">276</context>
         </context-group>
         <target state="needs-translation"> Expired </target>
       </trans-unit>
@@ -8787,11 +8863,11 @@
         <source>Cancel</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">196,197</context>
+          <context context-type="linenumber">195,196</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">281,282</context>
+          <context context-type="linenumber">280,281</context>
         </context-group>
         <target state="needs-translation">Cancel</target>
       </trans-unit>
@@ -8799,7 +8875,7 @@
         <source>There are no bids</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">204,205</context>
+          <context context-type="linenumber">203,204</context>
         </context-group>
         <target state="needs-translation">There are no bids</target>
       </trans-unit>
@@ -8807,7 +8883,7 @@
         <source>Asks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">208</context>
+          <context context-type="linenumber">207</context>
         </context-group>
         <target state="needs-translation">Asks</target>
       </trans-unit>
@@ -8815,7 +8891,7 @@
         <source>Open asks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">212,213</context>
+          <context context-type="linenumber">211,212</context>
         </context-group>
         <target state="needs-translation">Open asks</target>
       </trans-unit>
@@ -8823,7 +8899,7 @@
         <source>My asks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">216,217</context>
+          <context context-type="linenumber">215,216</context>
         </context-group>
         <target state="needs-translation">My asks</target>
       </trans-unit>
@@ -8831,7 +8907,7 @@
         <source>There are no open asks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">245,246</context>
+          <context context-type="linenumber">244,245</context>
         </context-group>
         <target state="needs-translation">There are no open asks</target>
       </trans-unit>
@@ -8839,7 +8915,7 @@
         <source>There are no asks</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
-          <context context-type="linenumber">289,290</context>
+          <context context-type="linenumber">288,289</context>
         </context-group>
         <target state="needs-translation">There are no asks</target>
       </trans-unit>
