@@ -101,3 +101,4 @@
 </div>
 
 <wen-token-refund *ngIf="!!openTokenRefund" [isOpen]="!!openTokenRefund" [token]="openTokenRefund" [memberDistribution]="openTokenRefund.distribution" (wenOnClose)="openTokenRefund = null"></wen-token-refund>
+<wen-token-claim *ngIf="!!openTokenClaim" [isOpen]="!!openTokenClaim" [token]="openTokenClaim" [memberDistribution]="openTokenClaim.distribution" (wenOnClose)="openTokenClaim = null"></wen-token-claim>
