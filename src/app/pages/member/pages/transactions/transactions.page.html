@@ -34,7 +34,7 @@
                 <td class="font-medium">{{ transactionService.getTitle(t) }}</td>
                 <td class="font-medium">{{ t.createdOn?.toDate() | date: 'medium' }}</td>
                 <td class="font-medium">{{ formatBest(t.payload.amount) }}</td>
-                <td style="text-align: right">
+                <td class="right">
                     <a *ngIf="transactionService.getExplorerLink(t)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         [href]="transactionService.getExplorerLink(t)"

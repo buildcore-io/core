@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
+import { Transaction } from "@functions/interfaces/models";
 import { COL, SUB_COL, WenRequest } from "@functions/interfaces/models/base";
 import { Token, TokenDistribution } from "@functions/interfaces/models/token";
 import { Observable, of } from "rxjs";
@@ -27,6 +28,15 @@ export class TokenApi extends BaseApi<Token> {
   public setTokenAvailableForSale(req: WenRequest): Observable<Token | undefined> {
     return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
+
+  public airdropToken(req: WenRequest): Observable<TokenDistribution[] | undefined> {
+    return this.request(WEN_FUNC.airdropToken, req);
+  }
+
+  public creditToken(req: WenRequest): Observable<Transaction[] | undefined> {
+    return this.request(WEN_FUNC.creditToken, req);
+  }
+
   
   public getMembersDistribution(tokenId: string, memberId: string): Observable<TokenDistribution | undefined> {
     if (!tokenId || !memberId) {

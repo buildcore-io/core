@@ -1,5 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { TokenApi } from '@api/token.api';
+import { AuthService } from '@components/auth/services/auth.service';
+import { NotificationService } from '@core/services/notification';
+import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { download } from '@core/utils/tools.utils';
+import { MAX_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
+import { Token } from '@functions/interfaces/models/token';
+import { DataService } from '@pages/token/services/data.service';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
 import Papa from 'papaparse';
 import { Observable } from 'rxjs';
@@ -11,10 +19,7 @@ export enum StepType {
 
 export interface AirdropItem {
   address: string;
-  member: string;
   amount: string;
-  action: string;
-  link: string;
 }
 
 @Component({
@@ -26,18 +31,21 @@ export interface AirdropItem {
 export class AirdropsPage {
 
   public tableConfig = [
-    { label: $localize`Member`, key: 'member' },
-    { label: $localize`Address`, key: 'address' },
-    { label: $localize`Amount`, key: 'amount' },
-    { label: $localize`Action`, key: 'action' },
-    { label: $localize`xxx`, key: 'link' },
+    { label: $localize`EthAddress`, key: 'address' },
+    { label: $localize`Amount`, key: 'amount' }
   ];
-  public data: AirdropItem[] = [];
+  public errors: string[] = [];
+  public airdropData: AirdropItem[] = [];
   public fileName: string | null = null;
 
   constructor(
-    private cd: ChangeDetectorRef
-  ) { }
+    public data: DataService,
+    private cd: ChangeDetectorRef,
+    private auth: AuthService,
+    private notification: NotificationService,
+    private router: Router,
+    private tokenApi: TokenApi
+  ) {}
 
   public beforeCSVUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
@@ -46,9 +54,16 @@ export class AirdropsPage {
       complete: (results: any) => {
         try {
           this.fileName = file.name;
-          this.data =
+          this.airdropData =
             results.data
               .slice(1)
+              .filter((r: string[]) => {
+                if (r.length === 2 && !isNaN(Number(r[1])) && (Number(r[1]) > 1) && (Number(r[1]) <= MAX_TOTAL_TOKEN_SUPPLY)) {
+                  return true;
+                }
+                this.errors.push(r[0] + $localize` row is not valid`);
+                return false;
+              })
               .map((r: string[]) =>
                 this.tableConfig
                   .map((c, index) => ({ [c.key]: r[index] }))
@@ -56,7 +71,7 @@ export class AirdropsPage {
         } catch (err) {
           console.log('Error while parsing CSV file', err);
           this.fileName = null;
-          this.data = [];
+          this.airdropData = [];
         }
         this.cd.markForCheck();
       }
@@ -74,5 +89,25 @@ export class AirdropsPage {
     });
 
     download(`data:text/csv;charset=utf-8${csv}`, 'soonaverse_airdrop_template.csv');
+  }
+  
+  public formatSubmitData(): any {
+    return {
+      token: this.data.token$.value?.uid,
+      drops: this.airdropData.map((r) => ({
+        recipient: r.address,
+        count: Number(r.amount)
+      }))
+    };
+  }
+
+  public async submit(token?: Token): Promise<void> {
+    if (!this.airdropData.length) return;
+
+    await this.auth.sign(this.formatSubmitData(), (sc, finish) => {
+      this.notification.processRequest(this.tokenApi.airdropToken(sc), 'Submitted.', finish).subscribe(() => {
+        this.router.navigate(['/', ROUTER_UTILS.config.token.root, token?.uid, ROUTER_UTILS.config.token.overview]);
+      });
+    });
   }
 }

@@ -8,7 +8,7 @@
 
 <ng-template #content>
     <div class="flex items-center mt-8 lg:mt-6">
-        <nz-avatar [nzSrc]="previewImageService.getAvatarSize('space_avatar_url')"
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
           class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
           nzShape="circle"
           [nzSize]="48">
@@ -86,7 +86,7 @@
                 Confirm and create an offer
         </button>
 
-        <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+        <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
             Once you agree with the terms, the  generated address will remain active during the whole sale.
         </div>
     </div>

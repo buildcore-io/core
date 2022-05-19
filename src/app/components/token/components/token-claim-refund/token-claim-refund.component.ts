@@ -1,11 +1,15 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { TokenWithMemberDistribution } from '@api/member.api';
+import { TokenApi } from '@api/token.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
+import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
-import { Token } from '@functions/interfaces/models/token';
 
 export enum TokenItemType {
-  CLAIM = 0,
-  REFUND = 1
+  CLAIM = 'Claim',
+  REFUND = 'Refund'
 };
 
 
@@ -16,23 +20,27 @@ export enum TokenItemType {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TokenClaimRefundComponent {
-  @Input() type = TokenItemType.CLAIM;
+  @Input() type: TokenItemType | null = null;
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
   }
   public get isOpen(): boolean {
     return this._isOpen;
   }
-  @Input() token?: Token;
+  @Input() token?: TokenWithMemberDistribution | null;
   @Output() wenOnClose = new EventEmitter<void>();
   
+  public amountControl: FormControl = new FormControl(null);
   public agreeTermsConditions = false;
   private _isOpen = false;
 
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
-    private cd: ChangeDetectorRef
+    private tokenApi: TokenApi,
+    private cd: ChangeDetectorRef,
+    private auth: AuthService,
+    private notification: NotificationService
   ) { }
 
   public get tokenItemTypes(): typeof TokenItemType {
@@ -58,6 +66,36 @@ export class TokenClaimRefundComponent {
       return $localize`Refund token`;
     default:
       return '';
+    }
+  }
+
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '0';
+    }
+
+    return (amount).toFixed(2);
+  }
+
+  public async confirm(): Promise<void> {
+    switch (this.type) {
+    case TokenItemType.CLAIM: {
+      break;
+    }
+    case TokenItemType.REFUND: {
+      const data = {
+        token: this.token?.uid,
+        amount: Number(this.amountControl.value) * 1000 * 1000
+      };
+      await this.auth.sign(
+        data,
+        (sc, finish) => {
+          this.notification
+            .processRequest(this.tokenApi.creditToken(sc), 'Token successfully refunded.', finish)
+            .subscribe(() => this.close());
+        },
+      );
+    }
     }
   }
 }
