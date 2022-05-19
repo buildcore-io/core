@@ -18,3 +18,9 @@ const getConfig = () => {
 }
 
 export const testEnv = process.env.LOCAL_TEST ? test(getConfig()) : test(getConfig(), './test-service-account-key.json')
+
+beforeEach(async () => {
+  if (process.env.LOCAL_TEST) {
+    await testEnv.firestore.clearFirestoreData({ projectId: 'soonaverse-dev' })
+  }
+});

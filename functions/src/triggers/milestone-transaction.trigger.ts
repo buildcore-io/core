@@ -11,8 +11,11 @@ import { serverTime } from '../utils/dateTime.utils';
 export const milestoneTransactionWrite = functions.runWith({
   timeoutSeconds: 300,
   minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
-}).firestore.document(COL.MILESTONE + '/{milestoneId}/' + SUB_COL.TRANSACTIONS + '/{tranId}').onWrite((change) =>
-  admin.firestore().runTransaction(async (transaction) => {
+}).firestore.document(COL.MILESTONE + '/{milestoneId}/' + SUB_COL.TRANSACTIONS + '/{tranId}').onWrite((change) => {
+  if (!change.after.data()) {
+    return
+  }
+  return admin.firestore().runTransaction(async (transaction) => {
     const data = <MilestoneTransaction>(await transaction.get(change.after.ref)).data()
     if (data.processed !== true) {
       const service = new ProcessingService(transaction);
@@ -24,4 +27,5 @@ export const milestoneTransactionWrite = functions.runWith({
       return;
     }
   })
-);
+});
+
