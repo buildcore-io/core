@@ -9,6 +9,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NewService } from '@pages/token/services/new.service';
+import { first } from 'rxjs';
 
 export enum StepType {
   INTRODUCTION = 'Introduction',
@@ -46,7 +47,9 @@ export class NewPage implements OnInit {
   public ngOnInit(): void {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe((o) => {
       if (o?.uid) {
-        this.memberApi.allSpacesAsMember(o.uid).pipe(untilDestroyed(this)).subscribe(this.newService.spaces$);
+        this.memberApi.allSpacesAsMember(o.uid).pipe(first(), untilDestroyed(this)).subscribe(r => {
+          this.newService.spaces$.next(r);
+        });
       }
     });
   }
