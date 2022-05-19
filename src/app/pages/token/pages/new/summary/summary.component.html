@@ -203,7 +203,7 @@
                 i18n-nzTitle
                 nzTitle="Token icon"
                 i18n-nzDescription
-                nzDescription="(Recomended size: 400 x 400px)"
+                nzDescription="(Recommended size: 400 x 400px)"
                 >
             </nz-card-meta>
 
@@ -255,7 +255,7 @@
             >
             </nz-card-meta>
 
-            <a nz-button class="wen-links mt-6" nzType="link" target="new" [href]="newService.termsAndConditionsLinkControl?.value">
+            <a nz-button class="mt-6 wen-links" nzType="link" target="new" [href]="newService.termsAndConditionsLinkControl?.value">
                 <wen-icon-file-check class="link-icon" [size]="20"></wen-icon-file-check>
                 <span>
                     {{ newService.nameControl?.value | truncate:[16] }}: <ng-container i18n>Terms&conditions</ng-container>

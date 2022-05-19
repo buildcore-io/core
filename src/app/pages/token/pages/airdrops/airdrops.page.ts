@@ -32,9 +32,9 @@ export interface AirdropItem {
 export class AirdropsPage {
 
   public tableConfig = [
-    { label: $localize`EthAddress`, key: 'address' },
-    { label: $localize`Amount`, key: 'amount' },
-    { label: $localize`VestingAt`, key: 'vestingAt' }
+    { label: `EthAddress`, key: 'address' },
+    { label: `Amount`, key: 'amount' },
+    { label: `VestingAt`, key: 'vestingAt' }
   ];
   public errors: string[] = [];
   public airdropData: AirdropItem[] = [];

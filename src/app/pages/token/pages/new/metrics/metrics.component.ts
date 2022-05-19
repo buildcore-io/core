@@ -45,14 +45,14 @@ export class NewMetricsComponent implements OnInit {
     merge(
       this.newService.allocations?.valueChanges,
       this.newService.priceControl?.valueChanges,
-      this.newService.totalSupplyControl?.valueChanges  
+      this.newService.totalSupplyControl?.valueChanges
     ).pipe(untilDestroyed(this))
       .subscribe(() => {
         this.setBreakdownData();
         this.cd.markForCheck();
       });
   }
-  
+
   public get stepTypes(): typeof StepType {
     return StepType;
   }
@@ -63,8 +63,8 @@ export class NewMetricsComponent implements OnInit {
 
   public getAllocationDescription(index: number): string {
     return index === 1 ?
-      $localize`Please make sure that there is one allocation market as Public Sale as this could be later sold on Soonaverse. 
-        ou can initiate Public sale once the token is created and approved.` : '';
+      $localize`Please make sure that there is only one allocation marked for Public Sale as this could be later sold on Soonaverse.
+        You can initiate Public sale once the token is created and approved.` : '';
   }
 
   private setBreakdownData(): void {
