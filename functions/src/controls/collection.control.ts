@@ -9,7 +9,7 @@ import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
-import { isProdEnv } from '../utils/config.utils';
+import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
@@ -91,7 +91,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   // Temporary. They must have special badge.
-  if (functions.config()?.environment?.type !== 'emulator') {
+  if (!isEmulatorEnv) {
     const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BADGE)
       .where('payload.award', 'in', BADGE_TO_CREATE_COLLECTION)
