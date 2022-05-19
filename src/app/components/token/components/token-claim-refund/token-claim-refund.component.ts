@@ -69,6 +69,10 @@ export class TokenClaimRefundComponent {
     }
   }
 
+  public dropsSum(): number | undefined {
+    return this.token?.distribution?.tokenDrops?.reduce((pv, cv) => pv + cv.count, 0);
+  }
+
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
       return '0';
@@ -80,6 +84,17 @@ export class TokenClaimRefundComponent {
   public async confirm(): Promise<void> {
     switch (this.type) {
     case TokenItemType.CLAIM: {
+      const data = {
+        token: this.token?.uid
+      };
+      await this.auth.sign(
+        data,
+        (sc, finish) => {
+          this.notification
+            .processRequest(this.tokenApi.claimAirdroppedToken(sc), 'Token successfully claimed.', finish)
+            .subscribe(() => this.close());
+        },
+      );
       break;
     }
     case TokenItemType.REFUND: {
@@ -95,6 +110,7 @@ export class TokenClaimRefundComponent {
             .subscribe(() => this.close());
         },
       );
+      break;
     }
     }
   }

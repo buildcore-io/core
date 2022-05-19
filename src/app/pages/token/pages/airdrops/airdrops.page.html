@@ -53,9 +53,9 @@
             <tbody>
                 <!-- Had to use inline style to overwrite ng-zorro -->
                 <tr *ngFor="let item of airdropData">
-                    <ng-container *ngFor="let r of (item | keyvalue); let last = last">
+                    <ng-container *ngFor="let r of (item | keyvalue); let first = first">
                         <td class="font-medium text-foregrounds-primary dark:text-foregrounds-primary text-sm"
-                            [ngClass]="{ 'text-right': last }">{{ r.value }}</td>
+                            [ngClass]="{ 'text-right': !first }">{{ r.value }}</td>
                     </ng-container>
                 </tr>
             </tbody>

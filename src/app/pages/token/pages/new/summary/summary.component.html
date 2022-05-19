@@ -238,10 +238,10 @@
         </nz-card>
 
         <nz-card i18n-nzTitle nzTitle="Links">
-            <div *ngFor="let link of newService.links?.controls">
+            <div *ngFor="let link of newService.links?.controls" class="truncate">
               <a nz-button class="wen-links" nzType="link" target="new" [href]="newService.gForm(link, 'url')?.value">
                 <wen-icon-link class="link-icon"></wen-icon-link>
-                <span>{{ newService.gForm(link, 'url')?.value.toString() | truncate:[24] }}</span>
+                <span>{{ newService.gForm(link, 'url')?.value.toString() }}</span>
               </a>
             </div>
           </nz-card>

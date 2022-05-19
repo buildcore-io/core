@@ -37,6 +37,9 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.creditToken, req);
   }
 
+  public claimAirdroppedToken(req: WenRequest): Observable<Transaction | undefined> {
+    return this.request(WEN_FUNC.claimAirdroppedToken, req);
+  }
   
   public getMembersDistribution(tokenId: string, memberId: string): Observable<TokenDistribution | undefined> {
     if (!tokenId || !memberId) {
