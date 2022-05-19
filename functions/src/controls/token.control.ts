@@ -19,7 +19,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
@@ -175,18 +175,20 @@ export const setTokenAvailableForSale = functions.runWith({
   const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
 
   await admin.firestore().runTransaction(async (transaction) => {
-    const data = <Token | undefined>(await transaction.get(tokenDocRef)).data()
-    if (!data) {
+    const token = <Token | undefined>(await transaction.get(tokenDocRef)).data()
+    if (!token) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
-    if (!data.approved) {
-      throw throwInvalidArgument(WenError.token_not_approved)
-    }
-    if (data.saleStartDate) {
+
+    assertTokenApproved(token)
+
+    if (token.saleStartDate) {
       throw throwInvalidArgument(WenError.public_sale_already_set)
     }
-    await assertIsGuardian(data.space, owner)
-    shouldSetPublicSaleTimeFrames(params.body, data.allocations);
+
+    await assertIsGuardian(token.space, owner)
+
+    shouldSetPublicSaleTimeFrames(params.body, token.allocations);
     const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength);
     transaction.update(tokenDocRef, timeFrames);
   })
@@ -359,9 +361,9 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       if (!token) {
         throw throwInvalidArgument(WenError.invalid_params);
       }
-      if (!token.approved) {
-        throw throwInvalidArgument(WenError.token_not_approved)
-      }
+
+      assertTokenApproved(token)
+
       await assertIsGuardian(token.space, owner);
 
       const totalDropped = params.body.drops.reduce((sum: number, { count }: { count: number }) => sum + count, 0)

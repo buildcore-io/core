@@ -316,6 +316,13 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
   })
 
+  it('Should throw, rejected', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true, rejected: true })
+    const updateData = { token: token.uid, ...publicTime }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.token_not_approved.key);
+  })
+
   it('Should throw, not on public sale', async () => {
     const updateData = { token: token.uid, ...publicTime }
     mockWalletReturnValue(walletSpy, memberAddress, updateData)
