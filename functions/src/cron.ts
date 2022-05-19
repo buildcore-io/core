@@ -9,6 +9,7 @@ import admin from './admin.config';
 import { finalizeAllNftAuctions } from './cron/nft.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
+import { isEmulatorEnv } from './utils/config.utils';
 import { dateToTimestamp } from './utils/dateTime.utils';
 import { cancelExpiredSale } from './utils/token-buy-sell.utils';
 
@@ -165,7 +166,7 @@ const tokenCoolDownOver = functions.pubsub.schedule('every 1 minutes').onRun(asy
 
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale)
 
-export const cron = (functions.config()?.environment?.type === 'emulator')
+export const cron = isEmulatorEnv
   ? {} : {
     reTryWallet,
     markAwardsAsComplete,

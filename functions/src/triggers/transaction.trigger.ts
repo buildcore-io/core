@@ -8,6 +8,7 @@ import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
 import { WalletService } from "../services/wallet/wallet";
+import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { serverTime } from "../utils/dateTime.utils";
 
 // Listen for changes in all documents in the 'users' collection
@@ -93,14 +94,14 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
     return;
   }
 
-  if (payload.delay > 0) { // Standard Delay required.
+  if (!isEmulatorEnv && payload.delay > 0) { // Standard Delay required.
     await new Promise(resolve => setTimeout(resolve, payload.delay));
   }
 
   // Prepare NFT details.
   const details = <IOTATangleTransaction>{};
   details.tranId = tranData.uid;
-  details.network = (functions.config()?.environment?.type === 'prod') ? 'soon' : 'wen';
+  details.network = isProdEnv ? 'soon' : 'wen';
   if (tranData.type === TransactionType.BILL_PAYMENT) {
     details.payment = true;
 
