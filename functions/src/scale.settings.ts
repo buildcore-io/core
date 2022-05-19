@@ -1,6 +1,5 @@
 import { WEN_FUNC } from '../interfaces/functions';
-import { isProdEnv } from './utils/config.utils';
-import * as functions from 'firebase-functions';
+import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
 
 export const low = 1;
 export const medium = isProdEnv ? 3 : 2;
@@ -58,5 +57,5 @@ export function scale(func: WEN_FUNC): number {
   scaleSettings[WEN_FUNC.nftWrite] = medium
   scaleSettings[WEN_FUNC.transactionWrite] = superPump
 
-  return functions.config()?.environment?.type === 'emulator' ? 0 : scaleSettings[func] || low;
+  return isEmulatorEnv ? 0 : scaleSettings[func] || low;
 }

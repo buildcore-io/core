@@ -3,6 +3,8 @@ import { isEmpty } from 'lodash';
 
 export const isProdEnv = functions.config()?.environment?.type === 'prod'
 
+export const isEmulatorEnv = functions.config()?.environment?.type === 'emulator'
+
 export const getRoyaltyPercentage = () => Number(functions.config()?.tokenSale?.percentage)
 
 export const getSpaceOneRoyaltyPercentage = () => Number(functions.config()?.tokenSale?.spaceOnePercentage)
