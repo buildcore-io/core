@@ -11,7 +11,7 @@ import { MobileSearchModule } from '@components/mobile-search/mobile-search.modu
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TimelineBadgesModule } from '@components/timeline-badges/timeline-badges.module';
-import { TokenClaimRefundModule } from '@components/token/components/token-claim-refund/token-claim-refund.module';
+import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
 import { TransactionCardModule } from '@components/transaction/components/transaction-card/transaction-card.module';
 import { IpfsAvatarModule } from "@core/pipes/ipfs-avatar/ipfs-avatar.module";
@@ -93,7 +93,7 @@ import { DataService } from './services/data.service';
     SelectCollectionModule,
     NgChartsModule,
     NzTableModule,
-    TokenClaimRefundModule,
+    TokenRefundModule,
     TransactionCardModule,
     TokenRowModule
   ],

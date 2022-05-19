@@ -41,10 +41,10 @@
                 <td class="font-medium" i18n>Airdropped</td>
                 <td class="font-medium">{{  (formatTokenBest(sum(t.distribution.tokenDrops!)) + ' ' + t.symbol)  }}</td>
                 <td class="right">
-                    <button *ngIf="getTokenAction(t) !== null"
+                    <button
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                        (click)="openToken = t">
-                            {{ tokenActionTypeLabels[getTokenAction(t) || tokenItemTypes.CLAIM] }}
+                        (click)="openTokenClaim = t">
+                            {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
                     </button>
                 </td>
               </tr>
@@ -63,10 +63,10 @@
                 <td class="font-medium" i18n>Deposit for purchase</td>
                 <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
                 <td class="right">
-                    <button *ngIf="getTokenAction(t) !== null"
+                    <button
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                        (click)="openToken = t">
-                            {{ tokenActionTypeLabels[getTokenAction(t) || tokenItemTypes.CLAIM] }}
+                        (click)="openTokenRefund = t">
+                            {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}
                     </button>
                 </td>
               </tr>
@@ -100,4 +100,4 @@
     </div>
 </div>
 
-<wen-token-claim-refund *ngIf="!!openToken" [isOpen]="!!openToken" [type]="getTokenAction(openToken)" [token]="openToken" (wenOnClose)="openToken = null"></wen-token-claim-refund>
+<wen-token-refund *ngIf="!!openTokenRefund" [isOpen]="!!openTokenRefund" [token]="openTokenRefund" [memberDistribution]="openTokenRefund.distribution" (wenOnClose)="openTokenRefund = null"></wen-token-refund>

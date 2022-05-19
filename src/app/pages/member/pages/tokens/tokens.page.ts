@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { MemberApi, TokenWithMemberDistribution } from '@api/member.api';
-import { TokenItemType } from '@components/token/components/token-claim-refund/token-claim-refund.component';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
@@ -10,6 +9,11 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import dayjs from 'dayjs';
 import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
+
+export enum TokenItemType {
+  CLAIM = 'Claim',
+  REFUND = 'Refund'
+};
 
 @UntilDestroy()
 @Component({
@@ -20,7 +24,8 @@ import { BehaviorSubject, map, Observable, of, Subscription } from 'rxjs';
 })
 export class TokensPage implements OnInit, OnDestroy {
   public tokens$: BehaviorSubject<TokenWithMemberDistribution[] | undefined> = new BehaviorSubject<TokenWithMemberDistribution[] | undefined>(undefined);
-  public openToken?: TokenWithMemberDistribution | null;
+  public openTokenRefund?: TokenWithMemberDistribution | null;
+  public openTokenClaim?: TokenWithMemberDistribution | null;
   public tokenActionTypeLabels = {
     [TokenItemType.CLAIM]: $localize`Claim`,
     [TokenItemType.REFUND]: $localize`Refund`
@@ -41,17 +46,6 @@ export class TokensPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
-  }
-
-  public getTokenAction(token: TokenWithMemberDistribution): TokenItemType | null {
-    if (this.isInCooldown(token)) {
-      return TokenItemType.REFUND;
-    }
-
-    if (this.sum(token.distribution.tokenDrops || []) > 0) {
-      return TokenItemType.CLAIM;
-    }
-    return null;
   }
 
   public isInCooldown(token?: Token): boolean {

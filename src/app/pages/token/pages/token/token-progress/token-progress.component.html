@@ -9,11 +9,11 @@
             { title: 'Token Owned', value: (data.formatTokenBest(memberDistribution?.tokenOwned || 0) | number : '1.0-2') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
-        <div class="flex justify-end w-full" *ngIf="data.isInCooldown(token) && (memberDistribution?.totalBought || 0) > 0">
+        <div class="flex justify-end w-full" *ngIf="data.isInCooldown(token) && (memberDistribution?.totalDeposit || 0) > 0">
             <button class="ml-auto wen-secondary" nz-button nzType="link" nzSize="default">
                 <wen-icon-revert [size]="20"></wen-icon-revert>
-                <div class="ml-2 text-sm font-semibold">
-                    Refund
+                <div class="ml-2 text-sm font-semibold" (click)="openTokenRefund = memberDistribution">
+                  {{ tokenActionTypeLabel }}
                 </div>
             </button>
         </div>
@@ -69,3 +69,5 @@
     size="default">
   </wen-countdown>
 </div>
+
+<wen-token-refund *ngIf="!!openTokenRefund" [isOpen]="!!openTokenRefund" [token]="token" [memberDistribution]="openTokenRefund" (wenOnClose)="openTokenRefund = null"></wen-token-refund>
