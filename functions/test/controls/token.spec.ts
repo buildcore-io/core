@@ -489,51 +489,62 @@ describe('Token airdrop test', () => {
 
   it('Should fail, token not approved', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false })
-    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }] }
+    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress, vestingAt: dayjs().toDate() }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     await expectThrow(testEnv.wrap(airdropToken)({}), WenError.token_not_approved.key)
   })
 
   it('Should airdrop token', async () => {
-    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }] }
+    const vestingAt = dayjs().toDate()
+    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress, vestingAt }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(1)
-    expect(airdrops[0].tokenDropped).toBe(900)
+    expect(airdrops[0].tokenDrops).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[0].uid).toBe(guardianAddress)
   })
 
   it('Should airdrop batch token', async () => {
-    const airdropRequest = { token: token.uid, drops: [{ count: 800, recipient: guardianAddress }, { count: 100, recipient: memberAddress }] }
+    const vestingAt = dayjs().toDate()
+    const airdropRequest = {
+      token: token.uid, drops: [{ count: 800, recipient: guardianAddress, vestingAt }, { count: 100, recipient: memberAddress, vestingAt }]
+    }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     const airdrops = await testEnv.wrap(airdropToken)({});
     expect(airdrops.length).toBe(2)
-    expect(airdrops[0].tokenDropped).toBe(800)
+    expect(airdrops[0].tokenDrops).toEqual([{ count: 800, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[0].uid).toBe(guardianAddress)
-    expect(airdrops[1].tokenDropped).toBe(100)
+    expect(airdrops[1].tokenDrops).toEqual([{ count: 100, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[1].uid).toBe(memberAddress)
   })
 
   it('Should throw, not enough tokens', async () => {
-    const airdropRequest = { token: token.uid, drops: [{ count: 1000, recipient: guardianAddress }] }
+    const airdropRequest = { token: token.uid, drops: [{ count: 1000, recipient: guardianAddress, vestingAt: dayjs().toDate() }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     await expectThrow(testEnv.wrap(airdropToken)({}), WenError.no_tokens_available_for_airdrop.key)
   })
 
+  it('Should throw, no vesting', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 1000, recipient: guardianAddress, }] }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    await expectThrow(testEnv.wrap(airdropToken)({}), WenError.invalid_params.key)
+  })
+
   it('Should throw, not guardian', async () => {
-    const airdropRequest = { token: token.uid, drops: [{ count: 50, recipient: guardianAddress }] }
+    const airdropRequest = { token: token.uid, drops: [{ count: 50, recipient: guardianAddress, vestingAt: dayjs().toDate() }] }
     mockWalletReturnValue(walletSpy, memberAddress, airdropRequest)
     await expectThrow(testEnv.wrap(airdropToken)({}), WenError.you_are_not_guardian_of_space.key)
   })
 
   it('Should throw at second drop', async () => {
-    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }] }
+    const vestingAt = dayjs().toDate()
+    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress, vestingAt }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     const airdrops = await testEnv.wrap(airdropToken)({});
-    expect(airdrops[0].tokenDropped).toBe(900)
+    expect(airdrops[0].tokenDrops).toEqual([{ count: 900, vestingAt: dateToTimestamp(vestingAt) }])
     expect(airdrops[0].uid).toBe(guardianAddress)
 
-    const airdropRequest2 = { token: token.uid, drops: [{ count: 100, recipient: guardianAddress }] }
+    const airdropRequest2 = { token: token.uid, drops: [{ count: 100, recipient: guardianAddress, vestingAt: dayjs().toDate() }] }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest2)
     await expectThrow(testEnv.wrap(airdropToken)({}), WenError.no_tokens_available_for_airdrop.key)
   })
@@ -557,7 +568,7 @@ describe('Claim airdropped token test', () => {
     token = await testEnv.wrap(createToken)({});
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true })
 
-    const airdropRequest = { token: token.uid, drops: [{ count: 900, recipient: guardianAddress }], }
+    const airdropRequest = { token: token.uid, drops: [{ count: 450, recipient: guardianAddress, vestingAt: dayjs().toDate() }], }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
     await testEnv.wrap(airdropToken)({});
   });
@@ -578,19 +589,71 @@ describe('Claim airdropped token test', () => {
     expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT])
 
     const airdrop = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    expect(airdrop?.tokenDrops.length).toBe(0)
+    expect(airdrop?.tokenClaimed).toBe(450)
+    expect(airdrop?.tokenOwned).toBe(450)
+  })
+
+  it('Should claim multiple drops token', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 450, recipient: guardianAddress, vestingAt: dayjs().toDate() }], }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    await testEnv.wrap(airdropToken)({});
+
+    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
+    const order = await testEnv.wrap(claimAirdroppedToken)({});
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    const orderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data();
+    expect(orderTran.member).toBe(guardianAddress)
+    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP)
+
+    const paymentsSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('payload.sourceTransaction', 'array-contains', orderTran.uid).get()
+    const types = paymentsSnap.docs.map(d => d.data().type).sort()
+    expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT])
+
+    const airdrop = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    expect(airdrop?.tokenDrops.length).toBe(0)
     expect(airdrop?.tokenClaimed).toBe(900)
     expect(airdrop?.tokenOwned).toBe(900)
   })
 
-  it('Should throw, can not claim twice', async () => {
+  it('Should claim only vested drops', async () => {
+    const airdropRequest = { token: token.uid, drops: [{ count: 450, recipient: guardianAddress, vestingAt: dayjs().add(1, 'd').toDate() }], }
+    mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
+    await testEnv.wrap(airdropToken)({});
+
+    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
+    const order = await testEnv.wrap(claimAirdroppedToken)({});
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    const orderTran = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${order.uid}`).get()).data();
+    expect(orderTran.member).toBe(guardianAddress)
+    expect(orderTran.payload.type).toBe(TransactionOrderType.TOKEN_AIRDROP)
+
+    const paymentsSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('payload.sourceTransaction', 'array-contains', orderTran.uid).get()
+    const types = paymentsSnap.docs.map(d => d.data().type).sort()
+    expect(types).toEqual([TransactionType.BILL_PAYMENT, TransactionType.PAYMENT])
+
+    const airdrop = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    expect(airdrop?.tokenDrops.length).toBe(1)
+    expect(airdrop?.tokenClaimed).toBe(450)
+    expect(airdrop?.tokenOwned).toBe(450)
+  })
+
+  it('Should throw, nothing to claim', async () => {
     mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
     const order = await testEnv.wrap(claimAirdroppedToken)({});
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
     await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
 
     mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
-    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.airdrop_already_claimed.key)
+    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.no_airdrop_to_claim.key)
   })
+
 })
 
 describe('Order and claim airdropped token test', () => {
@@ -633,7 +696,7 @@ describe('Order and claim airdropped token test', () => {
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 
-    const airdropRequest = { token: token.uid, drops: [{ count: 5, recipient: memberAddress }], }
+    const airdropRequest = { token: token.uid, drops: [{ count: 5, recipient: memberAddress, vestingAt: dayjs().toDate() }], }
     mockWalletReturnValue(walletSpy, memberAddress, airdropRequest)
     await testEnv.wrap(airdropToken)({});
   });

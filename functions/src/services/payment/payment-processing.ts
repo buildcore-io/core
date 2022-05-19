@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-import { last } from 'lodash';
+import { isEmpty, last } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
+import { WenError } from '../../../interfaces/errors';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
@@ -11,6 +12,7 @@ import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, Pay
 import admin from '../../admin.config';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { NotificationService } from '../notification/notification';
 
@@ -662,15 +664,23 @@ export class ProcessingService {
   }
 
   private async claimAirdroppedTokens(order: Transaction) {
-    await admin.firestore().runTransaction(async (transaction) => {
-      const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
-      const distribution = <TokenDistribution>(await transaction.get(distributionDocRef)).data();
-      const data = {
-        tokenClaimed: distribution.tokenDropped!,
-        tokenOwned: admin.firestore.FieldValue.increment(distribution.tokenDropped! - (distribution.tokenClaimed || 0))
-      }
-      transaction.update(distributionDocRef, data)
-    })
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distribution = <TokenDistribution>(await this.transaction.get(distributionDocRef)).data();
+    const claimableDrops = distribution.tokenDrops?.filter(d => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || []
+    if (isEmpty(claimableDrops)) {
+      throw throwInvalidArgument(WenError.no_airdrop_to_claim)
+    }
+    const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0)
+    const data = {
+      tokenDrops: admin.firestore.FieldValue.arrayRemove(...claimableDrops),
+      tokenClaimed: admin.firestore.FieldValue.increment(dropCount),
+      tokenOwned: admin.firestore.FieldValue.increment(dropCount)
+    }
+    this.updates.push({
+      ref: distributionDocRef,
+      data: data,
+      action: 'update'
+    });
   }
 
   private async createTokenBuyRequest(order: Transaction, payment: Transaction) {
