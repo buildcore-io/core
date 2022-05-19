@@ -110,11 +110,10 @@
         </wen-share>
 
         <div class="mt-12 text-2xl font-bold">
-            <span i18n>What is</span> {{ (data.token$ | async)?.name }} ({{(data.token$ | async)?.symbol}})?
+            {{ (data.token$ | async)?.shortDescriptionTitle }}
         </div>
 
-        <div class="mt-6 font-medium">
-            {{ (data.token$ | async)?.description }}
+        <div class="mt-6 font-medium" [innerHtml]="(data.token$ | async)?.shortDescription">
         </div>
       </div>
     </div>

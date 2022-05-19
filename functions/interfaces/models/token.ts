@@ -24,6 +24,8 @@ export interface Token extends BaseRecord {
   readonly symbol: string;
   readonly title?: string;
   readonly description?: string;
+  readonly shortDescriptionTitle?: string;
+  readonly shortDescription?: string;
   readonly space: string;
   readonly pricePerToken: number;
   readonly totalSupply: number;

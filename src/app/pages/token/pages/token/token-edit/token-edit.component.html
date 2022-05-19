@@ -42,6 +42,29 @@
                 ></textarea>
             </nz-form-control>
         </nz-form-item>
+        <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Short description title is invalid.">
+                <input
+                    nz-input
+                    nzSize="large"
+                    i18n-placeholder
+                    placeholder="Short description title"
+                    [formControl]="shortDescriptionTitleControl"
+                />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Short description is invalid.">
+                <textarea
+                    nz-input
+                    nzSize="large"
+                    i18n-placeholder
+                    placeholder="Short token description"
+                    rows="4"
+                    [formControl]="shortDescriptionControl"
+                ></textarea>
+            </nz-form-control>
+        </nz-form-item>
     </form>
     <div class="flex items-center justify-center mt-10">
         <button nz-button nzSize="large" class="mr-10 wen-secondary" (click)="close()" i18n>
