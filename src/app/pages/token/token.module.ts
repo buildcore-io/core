@@ -114,7 +114,8 @@ import { TokenRoutingModule } from './token-routing.module';
     NzSkeletonModule,
     TokenBidModule,
     TokenOfferPreMintModule,
-    ModalDrawerModule
+    ModalDrawerModule,
+    NgChartsModule
   ]
 })
 export class TokenModule { }

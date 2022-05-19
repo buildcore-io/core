@@ -66,6 +66,12 @@
                             {{ l.label }}
                     </button>
                 </div>
+              </div>
+              <div style="display: block;" class="mt-6">
+                <canvas baseChart width="400" height="180"
+                            [data]="lineChartData"
+                            [options]="lineChartOptions"
+                            [type]="lineChartType"></canvas>
             </div>
         </nz-card>
       </div>
