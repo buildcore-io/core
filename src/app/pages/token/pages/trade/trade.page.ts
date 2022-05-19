@@ -267,7 +267,7 @@ export class TradePage implements OnInit, OnDestroy {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Number(amount) * (mega ? (1000 * 1000) : 1), 2);
+    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
   }
 
   public formatTokenBest(amount?: number | null): string {
