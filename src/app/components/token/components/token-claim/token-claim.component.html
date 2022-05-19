@@ -1,0 +1,159 @@
+<wen-modal-drawer
+    i18n-title
+    title="Token Claim"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
+
+<ng-template #content>
+    <div class="flex items-center mt-8 lg:mt-6">
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
+          nzShape="circle"
+          [nzSize]="48">
+        </nz-avatar>
+        <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
+        <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
+    </div>
+
+    <div [ngSwitch]="currentStep" class="w-full mt-6">
+        <ng-container *ngSwitchCase="stepType.CONFIRM">
+            <ng-container *ngTemplateOutlet="confirmTemplate"></ng-container>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="stepType.TRANSACTION">
+            <ng-container *ngTemplateOutlet="transactionTemplate"></ng-container>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="stepType.COMPLETE">
+            <ng-container *ngTemplateOutlet="completeTemplate"></ng-container>
+        </ng-container>
+    </div>
+</ng-template>
+
+<ng-template #confirmTemplate>
+    <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
+        <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+          <div class="mt-1">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}} {{token?.symbol}}</div>
+          <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            Total available tokens to claim as of today
+          </div>
+        </div>
+    </div>
+
+    <wen-terms-and-conditions
+        class="mt-10"
+        [isChecked]="agreeTermsConditions"
+        documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+        (wenOnCheckChange)="agreeTermsConditions = $event">
+    </wen-terms-and-conditions>
+
+    <wen-terms-and-conditions
+        class="mt-4"
+        [isChecked]="agreeTokenTermsConditions"
+        i18n-label
+        label="I agree with"
+        i18n-linkLabel
+        linkLabel="Token terms and Conditions"
+        documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+        (wenOnCheckChange)="agreeTokenTermsConditions = $event">
+    </wen-terms-and-conditions>
+
+    <div class="flex flex-col items-center w-full">
+        <button nz-button nzType="primary" nzSize="large" class="w-full mt-10 lg:w-auto"
+            [disabled]="!agreeTermsConditions || !agreeTokenTermsConditions" i18n (click)="claimToken()">
+                Confirm and generate address
+        </button>
+
+        <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            Once you agree with the terms, the  generated address will remain active during the whole sale.
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #transactionTemplate>
+    <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
+      <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+        <div class="mt-1">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}} {{token?.symbol}}</div>
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+          Total available tokens to claim as of today
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
+        <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+          <span i18n>Send</span> {{formatBest(targetAmount)}} <span i18n> to following address:</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between mt-2 break-all">
+            <div class="text-base font-medium break-words">
+                {{ targetAddress }}
+            </div>
+
+            <button nz-button nzBlock nzType="primary" nzSize="small" class="w-16 mt-4 lg:mt-0" (click)="copyAddress()">
+                <ng-container *ngIf="isCopied; else isNotCopied" i18n>Copied</ng-container>
+                <ng-template #isNotCopied i18n>Copy</ng-template>
+            </button>
+        </div>
+    </div>
+
+    <div class="w-full mt-10 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+        Do not send funds from an exchange, always use wallets you fully control.
+    </div>
+
+    <wen-wallet-deeplink
+        class="mt-6"
+        [targetAddress]="targetAddress"
+        [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+    </wen-wallet-deeplink>
+
+    <div class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
+        <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
+            Transaction history
+        </div>
+
+        <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
+            <div *ngFor="let t of history; let first=first"
+                class="relative flex items-center my-1">
+                    <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                    >{{ t.label }}</a>
+                    <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #completeTemplate>
+    <div class="w-full my-8 mt-10 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
+        <div class="px-5 pt-3 pb-2 text-sm font-bold border-b" i18n>
+            Transaction history
+        </div>
+
+        <div class="h-32 px-5 pt-4 pb-2 mr-2 overflow-y-scroll">
+            <div *ngFor="let t of history; let first=first"
+                class="relative flex items-center my-1">
+                    <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                    >{{ t.label }}</a>
+                    <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex mt-10 lg:items-center lg:justify-center">
+        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
+            <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
+        </div>
+        <div class="ml-3.5 text-lg font-medium" i18n>Claim complete. Congratulations.</div>
+    </div>
+
+    <div class="flex flex-col items-center w-full mt-10 lg:flex-row lg:w-auto lg:justify-center">
+        <button nz-button nzType="primary"
+            nzSize="large" class="w-full lg:w-auto lg:mr-2" (click)="close()" i18n>
+            Close
+        </button>
+    </div>
+</ng-template>

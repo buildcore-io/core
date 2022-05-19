@@ -70,7 +70,8 @@ export interface OrderTransaction {
   expiresOn: Timestamp;
   validationType: TransactionValidationType;
   collection?: EthAddress;
-  token?: EthAddress
+  token?: EthAddress;
+  quantity?: number;
 }
 
 export interface PaymentTransaction {

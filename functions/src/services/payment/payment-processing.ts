@@ -290,7 +290,9 @@ export class ProcessingService {
           reconciled: true,
           royalty: false,
           void: false,
-          collection: orderPayload.collection || null
+          collection: orderPayload.collection || null,
+          token: orderPayload.token || null,
+          quantity: orderPayload.quantity || null
         }
       };
       this.updates.push({
@@ -325,7 +327,9 @@ export class ProcessingService {
           // We delay royalty.
           delay: SECONDARY_TRANSACTION_DELAY,
           nft: orderPayload.nft || null,
-          collection: orderPayload.collection || null
+          collection: orderPayload.collection || null,
+          token: orderPayload.token || null,
+          quantity: orderPayload.quantity || null
         }
       };
       this.updates.push({
