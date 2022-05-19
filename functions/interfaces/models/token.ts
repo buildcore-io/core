@@ -1,5 +1,5 @@
 import { Url } from "url";
-import { BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
+import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
 
 
 export interface TokenAllocation {
@@ -17,14 +17,6 @@ export enum TokenStatus {
 
 export enum TokenDistributionType {
   FIXED = 'fixed'
-}
-
-export enum TokenAccess {
-  OPEN = 0,
-  MEMBERS_ONLY = 1,
-  GUARDIANS_ONLY = 2,
-  MEMBERS_WITH_BADGE = 3,
-  MEMBERS_WITH_NFT_FROM_SPACE = 4
 }
 
 export interface Token extends BaseRecord {
@@ -50,7 +42,9 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
-  readonly access: TokenAccess;
+  readonly access: Access;
+  readonly accessAwards?: string[];
+  readonly accessCollections?: string[];
 }
 
 export interface TokenDrop {

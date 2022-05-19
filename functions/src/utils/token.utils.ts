@@ -1,8 +1,7 @@
 
 import { WenError } from '../../interfaces/errors';
-import { Space, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenAccess, TokenStatus } from "../../interfaces/models/token";
+import { Token, TokenStatus } from "../../interfaces/models/token";
 import admin from '../admin.config';
 import { throwInvalidArgument } from './error.utils';
 
@@ -33,48 +32,4 @@ export const assertIsTokenPreMintedAndApproved = async (tokenId: string) => {
   if (!token?.approved) {
     throw throwInvalidArgument(WenError.token_not_approved)
   }
-}
-
-const isMember = async (space: Space, member: string) => (await admin.firestore().doc(`${COL.SPACE}/${space.uid}/${SUB_COL.MEMBERS}/${member}`).get()).exists
-
-const isGuardian = async (space: Space, member: string) => (await admin.firestore().doc(`${COL.SPACE}/${space.uid}/${SUB_COL.GUARDIANS}/${member}`).get()).exists
-
-export const canAccessToken = async (space: Space, token: Token, member: string) => {
-  if (token.access === TokenAccess.OPEN) {
-    return true;
-  }
-
-  if (token.access === TokenAccess.MEMBERS_ONLY) {
-    return await isMember(space, member)
-  }
-
-  if (token.access === TokenAccess.GUARDIANS_ONLY) {
-    return await isGuardian(space, member)
-  }
-
-  if (token.access === TokenAccess.MEMBERS_WITH_BADGE) {
-    if (!(await isMember(space, member))) {
-      return false
-    }
-    const snapshot = await admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.BADGE)
-      .where('member', '==', member)
-      .limit(1)
-      .get()
-    return !snapshot.empty;
-  }
-
-  if (token.access === TokenAccess.MEMBERS_WITH_NFT_FROM_SPACE) {
-    if (!(await isMember(space, member))) {
-      return false
-    }
-    const snapshot = await admin.firestore().collection(COL.NFT)
-      .where('owner', '==', member)
-      .where('space', '==', space.uid)
-      .limit(1)
-      .get()
-    return !snapshot.empty;
-  }
-
-  return true
 }

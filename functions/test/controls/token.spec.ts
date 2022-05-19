@@ -3,8 +3,8 @@ import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
 import { WenError } from "../../interfaces/errors";
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Space, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
-import { COL, SUB_COL } from "../../interfaces/models/base";
-import { Token, TokenAccess, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import { Access, COL, SUB_COL } from "../../interfaces/models/base";
+import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { joinSpace } from "../../src/controls/space.control";
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
@@ -222,6 +222,26 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     const result = await testEnv.wrap(createToken)({})
     expect(result.shortDescriptionTitle).toBe('shortDescriptionTitle')
     expect(result.shortDescription).toBe('shortDescription')
+  })
+
+  it('Should throw, accessAwards required if access is MEMBERS_WITH_BADGE', async () => {
+    token.access = Access.MEMBERS_WITH_BADGE
+    token.accessAwards = [wallet.getRandomEthAddress()]
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await testEnv.wrap(createToken)({})
+    token.accessAwards = []
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}),WenError.invalid_params.key)
+  })
+
+  it('Should throw, accessCollections required if access is MEMBERS_WITH_NFT_FROM_COLLECTION', async () => {
+    token.access = Access.MEMBERS_WITH_NFT_FROM_COLLECTION
+    token.accessCollections = [wallet.getRandomEthAddress()]
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await testEnv.wrap(createToken)({})
+    token.accessCollections = []
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
   })
 })
 
@@ -468,15 +488,15 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
   })
 
   it('Should allow only for members', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: TokenAccess.MEMBERS_ONLY })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_ONLY })
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
     await testEnv.wrap(orderToken)({});
     mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { token: token.uid });
-    await expectThrow(testEnv.wrap(orderToken)({}), WenError.can_not_access_token.key);
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_are_not_part_of_space.key);
   })
 
   it('Should allow only for guardians', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: TokenAccess.GUARDIANS_ONLY })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.GUARDIANS_ONLY })
 
     const newMember = await createMember(walletSpy, true)
     mockWalletReturnValue(walletSpy, newMember, { uid: space.uid })
@@ -486,19 +506,19 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     await testEnv.wrap(orderToken)({});
 
     mockWalletReturnValue(walletSpy, newMember, { token: token.uid });
-    await expectThrow(testEnv.wrap(orderToken)({}), WenError.can_not_access_token.key);
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_are_not_guardian_of_space.key);
   })
 
   it('Should throw, no badge so can not access', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: TokenAccess.MEMBERS_WITH_BADGE })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_WITH_BADGE, accessAwards: [wallet.getRandomEthAddress()] })
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
-    await expectThrow(testEnv.wrap(orderToken)({}), WenError.can_not_access_token.key);
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_dont_have_required_badge.key);
   })
 
   it('Should throw, no nft so can not access', async () => {
-    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: TokenAccess.MEMBERS_WITH_NFT_FROM_SPACE })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_WITH_NFT_FROM_COLLECTION, accessCollections: [wallet.getRandomEthAddress()] })
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
-    await expectThrow(testEnv.wrap(orderToken)({}), WenError.can_not_access_token.key);
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_dont_have_required_NFTs.key);
   })
 
 })

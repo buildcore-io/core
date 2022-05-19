@@ -6,9 +6,10 @@ import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_STA
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
-import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
+import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
+import { assertHasAccess } from '../services/validators/access';
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
 import { generateRandomAmount } from '../utils/common.utils';
@@ -18,8 +19,8 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, canAccessToken, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
+import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
 const createSchema = () => ({
@@ -55,7 +56,15 @@ const createSchema = () => ({
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
   termsAndConditions: Joi.string().uri().required(),
-  access: Joi.number().min(0).max(4).integer().required()
+  access: Joi.number().equal(...Object.values(Access)).required(),
+  accessAwards: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
+    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+  }),
+  accessCollections: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
+    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+  }),
 })
 
 const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
@@ -215,9 +224,7 @@ export const orderToken = functions.runWith({
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
   const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
 
-  if (!await canAccessToken(space, token, owner)) {
-    throw throwInvalidArgument(WenError.can_not_access_token)
-  }
+  await assertHasAccess(space.uid, owner, token.access, token.accessAwards || [], token.accessCollections || [])
 
   const newWallet = new WalletService();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
