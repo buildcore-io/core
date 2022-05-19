@@ -364,7 +364,8 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
           updatedOn: serverTime(),
           tokenDrops: admin.firestore.FieldValue.arrayUnion(<TokenDrop>{
             vestingAt: dateToTimestamp(drop.vestingAt),
-            count: drop.count
+            count: drop.count,
+            uid: getRandomEthAddress()
           })
         }
         transaction.set(distributionDocRefs[i], airdropData, { merge: true });
