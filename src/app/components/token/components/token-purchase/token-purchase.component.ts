@@ -14,7 +14,7 @@ import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, Subscription } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -22,7 +22,6 @@ export enum StepType {
   WAIT = 'Wait',
   COMPLETE = 'Complete'
 }
-
 interface HistoryItem {
   uniqueId: string;
   date: dayjs.Dayjs|Timestamp|null;
@@ -50,6 +49,8 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
   @Output() wenOnClose = new EventEmitter<void>();
 
   public amountControl: FormControl = new FormControl(null);
+  public iotaControl: FormControl = new FormControl(null);
+  public isAmountInput = true;
   public agreeTermsConditions = false;
   public targetAddress?: string = 'dummy_address';
   public invalidPayment = false;
@@ -141,6 +142,26 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
 
       this.cd.markForCheck();
     });
+
+    this.amountControl.valueChanges
+      .pipe(
+        filter(() => this.isAmountInput),
+        untilDestroyed(this)
+      )
+      .subscribe((val: string) => {
+        this.iotaControl.setValue((Number(val) * (this.token?.pricePerToken || 0)).toFixed(2));
+        this.cd.markForCheck();
+      });
+      
+    this.iotaControl.valueChanges
+      .pipe(
+        filter(() => !this.isAmountInput),
+        untilDestroyed(this)
+      )
+      .subscribe((val: string) => {
+        this.amountControl.setValue((Number(val) / (this.token?.pricePerToken || 0)).toFixed(2));
+        this.cd.markForCheck();
+      });
   }
 
   public close(): void {
@@ -168,6 +189,10 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
     }
 
     return (amount / 1000 / 1000).toFixed(2).toString();
+  }
+
+  public extractAmount(formattedText: string): string {
+    return formattedText.substring(0, formattedText.length - 3);
   }
 
   public getEndDate(): dayjs.Dayjs {
