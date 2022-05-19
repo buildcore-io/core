@@ -6,7 +6,7 @@ describe('AccessBadgeComponent', () => {
   let component: AccessBadgeComponent;
   let fixture: ComponentFixture<AccessBadgeComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [AccessBadgeComponent]
     })

@@ -292,7 +292,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        const value = this.getRawPrice(Number(this.priceControl.value), <Units>this.unitControl.value);
+        const value = this.getRawPrice(Number(this.priceControl.value), <Units> this.unitControl.value);
         const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
         this.priceControl.setErrors(errors);
       });
