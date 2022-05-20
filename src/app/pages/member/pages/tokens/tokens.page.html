@@ -41,7 +41,7 @@
                 <td class="font-medium" i18n>Airdropped</td>
                 <td class="font-medium">{{  (formatTokenBest(sum(t.distribution.tokenDrops!)) + ' ' + t.symbol)  }}</td>
                 <td class="right">
-                    <button
+                    <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         (click)="openTokenClaim = t">
                             {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
@@ -63,7 +63,7 @@
                 <td class="font-medium" i18n>Deposit for purchase</td>
                 <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
                 <td class="right">
-                    <button
+                    <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         (click)="openTokenRefund = t">
                             {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}

@@ -176,40 +176,69 @@ export class TradePage implements OnInit, OnDestroy {
       this.listenToMemberSubs(member);
     });
 
-    this.chartLengthControl.valueChanges.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.refreshDataSets();
-    });
+    // TODO This should be done differently.
+    setTimeout(() => {
+      this.chartLengthControl.valueChanges.pipe(untilDestroyed(this)).subscribe(() => {
+        this.refreshDataSets();
+      });
 
-    this.listenToPurchases24h$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
-      this.refreshDataSets();
-    });
+      this.listenToPurchases24h$.pipe(untilDestroyed(this)).subscribe(() => {
+        this.refreshDataSets();
+      });
 
-    this.listenToPurchases7d$.pipe(skip(1), untilDestroyed(this)).subscribe(() => {
+      this.listenToPurchases7d$.pipe(untilDestroyed(this)).subscribe(() => {
+        this.refreshDataSets();
+      });
+
       this.refreshDataSets();
-    });
+    }, 750);
   }
 
   private refreshDataSets(): void {
+    const range24h: string[] = [];
+    for (let i=0; i <= 7 ; i++) {
+      range24h.unshift((dayjs().subtract(4 * i, 'h')).format('HH'));
+    }
+
+    const range7d: string[] = [];
+    for (let i=0; i <= 7 ; i++) {
+      range7d.unshift((dayjs().subtract(i, 'd')).format('dd'));
+    }
+
     const dataToShow: { data: number[]; labels: string[]} = {
       data: [],
       labels: []
     };
 
     if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
-      const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
-      dataToShow.data = sortedData.map((v) => {
-        return ((v.price || 0));
-      });
-      dataToShow.labels = this.listenToPurchases24h$.value.map((v) => {
-        return dayjs(v.createdOn?.toDate()).format('HH');
+      const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
+      dataToShow.labels = range24h;
+      range24h.forEach((v, index) => {
+        const prev = range24h[index - 1];
+        if (!prev) {
+          dataToShow.data.push(this.listenAvgPrice24h$.value || 0);
+        } else {
+          const purchases: TokenPurchase[] = sortedData.filter((b) => {
+            return (dayjs(b.createdOn?.toDate()).hour() > Number(prev) && dayjs(b.createdOn?.toDate()).hour() < Number(v));
+          });
+
+          dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice24h$.value || 0));
+        }
       });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
-      const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds);
-      dataToShow.data = sortedData.map((v) => {
-        return ((v.price || 0));
-      });
-      dataToShow.labels = this.listenToPurchases7d$.value.map((v) => {
-        return dayjs(v.createdOn?.toDate()).format('dd');
+      const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
+      dataToShow.labels = range7d;
+      range7d.forEach((v, index) => {
+        const prev = range7d[index - 1];
+        if (!prev) {
+          dataToShow.data.push(this.listenAvgPrice7d$.value || 0);
+        } else {
+          const purchases: TokenPurchase[] = sortedData.filter((b) => {
+            return (dayjs(b.createdOn?.toDate()).hour() > Number(prev) && dayjs(b.createdOn?.toDate()).hour() < Number(v));
+          });
+
+          dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
+        }
       });
     }
 

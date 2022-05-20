@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { MemberApi, TokenWithMemberDistribution } from '@api/member.api';
+import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
+import { Member } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
@@ -37,6 +39,7 @@ export class TokensPage implements OnInit, OnDestroy {
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     public data: DataService,
+    private auth: AuthService,
     private memberApi: MemberApi
   ) { }
 
@@ -46,6 +49,10 @@ export class TokensPage implements OnInit, OnDestroy {
         this.listen();
       }
     });
+  }
+
+  public get loggedInMember$(): BehaviorSubject<Member|undefined> {
+    return this.auth.member$;
   }
 
   public isInCooldown(token?: Token): boolean {

@@ -23,7 +23,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
   private calcVolume = (purchases: TokenPurchase[]) =>
     purchases.reduce((sum, purchase) => sum + purchase.count, 0)
 
-  private calcVWAP = (purchases: TokenPurchase[]) => {
+  public calcVWAP = (purchases: TokenPurchase[]) => {
     if (!purchases.length) {
       return 0
     }
