@@ -9,8 +9,8 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { MIN_AMOUNT_TO_TRANSFER } from '@functions/interfaces/config';
-import { Collection, CollectionAccess, CollectionType, Member } from '@functions/interfaces/models';
-import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { Collection, CollectionType, Member } from '@functions/interfaces/models';
+import { Access, FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
@@ -26,7 +26,7 @@ import { BehaviorSubject, Subscription, take } from 'rxjs';
 export class NftCardComponent {
   @Input() fullWidth?: boolean;
   @Input()
-  set nft(value: Nft|null|undefined) {
+  set nft(value: Nft | null | undefined) {
     if (this.memberApiSubscription) {
       this.memberApiSubscription.unsubscribe();
     }
@@ -50,18 +50,18 @@ export class NftCardComponent {
       });
     }
   }
-  get nft(): Nft|null|undefined {
+  get nft(): Nft | null | undefined {
     return this._nft;
   }
-  @Input() collection?: Collection|null;
+  @Input() collection?: Collection | null;
 
-  public mediaType: 'video'|'image'|undefined;
+  public mediaType: 'video' | 'image' | undefined;
   public isCheckoutOpen = false;
   public isBidOpen = false;
   public path = ROUTER_UTILS.config.nft.root;
-  public owner$: BehaviorSubject<Member|undefined> = new BehaviorSubject<Member|undefined>(undefined);
+  public owner$: BehaviorSubject<Member | undefined> = new BehaviorSubject<Member | undefined>(undefined);
   private memberApiSubscription?: Subscription;
-  private _nft?: Nft|null;
+  private _nft?: Nft | null;
 
   constructor(
     public deviceService: DeviceService,
@@ -72,7 +72,7 @@ export class NftCardComponent {
     private memberApi: MemberApi,
     private fileApi: FileApi,
     private cache: CacheService
-  ) {}
+  ) { }
 
   public onBuy(event: MouseEvent): void {
     event.stopPropagation();
@@ -128,7 +128,7 @@ export class NftCardComponent {
     return finalPrice;
   }
 
-  public formatBest(amount?: number|null): string {
+  public formatBest(amount?: number | null): string {
     if (!amount) {
       return '';
     }
@@ -140,11 +140,11 @@ export class NftCardComponent {
     return FILE_SIZES;
   }
 
-  public get targetAccess(): typeof CollectionAccess {
-    return CollectionAccess;
+  public get targetAccess(): typeof Access {
+    return Access;
   }
 
-  public getBadgeProperties(): { label: string; className: string} {
+  public getBadgeProperties(): { label: string; className: string } {
     if (this.nft?.owner) {
       return {
         label: $localize`Available`,
@@ -164,7 +164,7 @@ export class NftCardComponent {
     }
   }
 
-  public isDateInFuture(date?: Timestamp|null): boolean {
+  public isDateInFuture(date?: Timestamp | null): boolean {
     if (!date) {
       return false;
     }
@@ -172,7 +172,7 @@ export class NftCardComponent {
     return dayjs(date.toDate()).isAfter(dayjs(), 's');
   }
 
-  public getDaysLeft(availableFrom?: Timestamp|null): number {
+  public getDaysLeft(availableFrom?: Timestamp | null): number {
     if (!availableFrom) return 0;
     return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }

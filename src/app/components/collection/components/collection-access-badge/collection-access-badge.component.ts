@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CollectionAccess } from '@functions/interfaces/models';
+import { Access } from '@functions/interfaces/models/base';
 
 @Component({
   selector: 'wen-collection-access-badge',
@@ -7,10 +7,10 @@ import { CollectionAccess } from '@functions/interfaces/models';
   styleUrls: ['./collection-access-badge.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CollectionAccessBadgeComponent {
-  @Input() type!: CollectionAccess;
+export class AccessBadgeComponent {
+  @Input() type!: Access;
 
-  public get accessTypes(): typeof CollectionAccess {
-    return CollectionAccess;
+  public get accessTypes(): typeof Access {
+    return Access;
   }
 }

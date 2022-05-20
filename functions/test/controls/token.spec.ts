@@ -3,9 +3,10 @@ import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
 import { WenError } from "../../interfaces/errors";
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Space, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
-import { COL, SUB_COL } from "../../interfaces/models/base";
+import { Access, COL, SUB_COL } from "../../interfaces/models/base";
 import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
+import { joinSpace } from "../../src/controls/space.control";
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
@@ -27,6 +28,7 @@ const dummyToken = (space: string) => ({
   icon: 'icon',
   overviewGraphics: 'overviewGraphics',
   termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
+  access: 0
 }) as any
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
@@ -221,6 +223,26 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     expect(result.shortDescriptionTitle).toBe('shortDescriptionTitle')
     expect(result.shortDescription).toBe('shortDescription')
   })
+
+  it('Should throw, accessAwards required if access is MEMBERS_WITH_BADGE', async () => {
+    token.access = Access.MEMBERS_WITH_BADGE
+    token.accessAwards = [wallet.getRandomEthAddress()]
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await testEnv.wrap(createToken)({})
+    token.accessAwards = []
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}),WenError.invalid_params.key)
+  })
+
+  it('Should throw, accessCollections required if access is MEMBERS_WITH_NFT_FROM_COLLECTION', async () => {
+    token.access = Access.MEMBERS_WITH_NFT_FROM_COLLECTION
+    token.accessCollections = [wallet.getRandomEthAddress()]
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await testEnv.wrap(createToken)({})
+    token.accessCollections = []
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
+  })
 })
 
 describe('Token controller: ' + WEN_FUNC.uToken, () => {
@@ -364,7 +386,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
       totalAirdropped: 0,
-      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
+      access: 0
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
   });
@@ -462,6 +485,40 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, amount: token.pricePerToken });
     await expectThrow(testEnv.wrap(creditToken)({}), WenError.not_enough_funds.key)
+  })
+
+  it('Should allow only for members', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_ONLY })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
+    await testEnv.wrap(orderToken)({});
+    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { token: token.uid });
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_are_not_part_of_space.key);
+  })
+
+  it('Should allow only for guardians', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.GUARDIANS_ONLY })
+
+    const newMember = await createMember(walletSpy, true)
+    mockWalletReturnValue(walletSpy, newMember, { uid: space.uid })
+    await testEnv.wrap(joinSpace)({});
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
+    await testEnv.wrap(orderToken)({});
+
+    mockWalletReturnValue(walletSpy, newMember, { token: token.uid });
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_are_not_guardian_of_space.key);
+  })
+
+  it('Should throw, no badge so can not access', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_WITH_BADGE, accessAwards: [wallet.getRandomEthAddress()] })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_dont_have_required_badge.key);
+  })
+
+  it('Should throw, no nft so can not access', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_WITH_NFT_FROM_COLLECTION, accessCollections: [wallet.getRandomEthAddress()] })
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
+    await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_dont_have_required_NFTs.key);
   })
 
 })
@@ -657,14 +714,36 @@ describe('Claim airdropped token test', () => {
     expect(airdrop?.tokenOwned).toBe(450)
   })
 
-  it('Should throw, nothing to claim', async () => {
+  it('Should claim same in parallel', async () => {
     mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
-    const order = await testEnv.wrap(claimAirdroppedToken)({});
-    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    const claimToken = async () => {
+      const order = await testEnv.wrap(claimAirdroppedToken)({});
+      await new Promise((r) => setTimeout(r, 1000));
+      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+      return order
+    }
+    const promises = [claimToken(), claimToken()]
+    await Promise.all(promises)
 
-    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
-    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.no_airdrop_to_claim.key)
+    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    expect(distribution.tokenDrops?.length).toBe(0)
+    expect(distribution.tokenClaimed).toBe(450)
+    expect(distribution.tokenOwned).toBe(450)
+
+    const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', guardianAddress)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('payload.token', '==', token.uid)
+      .get()
+    expect(creditSnap.size).toBe(1)
+
+    const billPaymentSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', guardianAddress)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', token.uid)
+      .get()
+    expect(billPaymentSnap.size).toBe(1)
   })
 
 })
@@ -705,7 +784,8 @@ describe('Order and claim airdropped token test', () => {
       status: TokenStatus.AVAILABLE,
       totalDeposit: 0,
       totalAirdropped: 0,
-      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions'
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
+      access: 0
     })
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
 

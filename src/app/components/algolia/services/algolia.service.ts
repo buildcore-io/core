@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { RefinementMappings } from "@components/algolia/refinement/refinement.component";
 import { CacheService } from "@core/services/cache/cache.service";
 import { environment } from '@env/environment';
-import { CollectionAccess, Space } from "@functions/interfaces/models";
+import { Space } from "@functions/interfaces/models";
+import { Access } from '@functions/interfaces/models/base';
 import { NftAvailable } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
@@ -20,20 +21,20 @@ export class AlgoliaService {
     environment.algolia.key
   );
 
-  constructor( private readonly cacheService: CacheService,
+  constructor(private readonly cacheService: CacheService,
   ) {
     this.cacheService.allSpaces$
-      .pipe(untilDestroyed(this)).subscribe( (spaces) => {
+      .pipe(untilDestroyed(this)).subscribe((spaces) => {
         spaces.forEach((space: Space) => {
           if (space.name) {
             spaceMapping[space.uid] = space.name;
           }
         });
       })
-    Object.values(CollectionAccess)
+    Object.values(Access)
       .forEach((value, index) => {
         if (typeof value === 'string') {
-          accessMapping[''+index] = value
+          accessMapping['' + index] = value
         }
       })
   }
@@ -52,13 +53,13 @@ export class AlgoliaService {
   public convertToAccessName(algoliaItems: any[]) {
     return algoliaItems.map(algolia => {
       let label = $localize`Open`;
-      if (Number(algolia.value) === CollectionAccess.GUARDIANS_ONLY) {
+      if (Number(algolia.value) === Access.GUARDIANS_ONLY) {
         label = $localize`Guardians of Space Only`;
-      } else if (Number(algolia.value) === CollectionAccess.MEMBERS_ONLY) {
+      } else if (Number(algolia.value) === Access.MEMBERS_ONLY) {
         label = $localize`Members of Space Only`;
-      } else if (Number(algolia.value) === CollectionAccess.MEMBERS_WITH_BADGE) {
+      } else if (Number(algolia.value) === Access.MEMBERS_WITH_BADGE) {
         label = $localize`Members With Badge Only`;
-      } else if (Number(algolia.value) === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
+      } else if (Number(algolia.value) === Access.MEMBERS_WITH_NFT_FROM_COLLECTION) {
         label = $localize`Members With NFT only`;
       }
 

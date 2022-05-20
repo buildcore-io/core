@@ -73,16 +73,19 @@
                 Confirm and generate address
         </button>
 
-        <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+        <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
             Once you agree with the terms, the  generated address will remain active during the whole sale.
         </div>
     </div>
 </ng-template>
 
 <ng-template #transactionTemplate>
-    <wen-description [items]="[
-        { title: 'Sale ends in', titleIcon: timeIcon, value: (getEndDate() | relativeTime) }
-    ]"></wen-description>
+    <div class="w-full px-4 py-2 mt-2 rounded-xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark
+        text-sm font-medium mb-4 text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+        <ng-container *ngIf="isAmountInput" i18n>Enter amount of tokens you want to buy. Price in IOTA will be calculated.</ng-container>
+        <ng-container *ngIf="!isAmountInput" i18n>Enter how much you want to spend. Amount of tokens will be calculated.</ng-container>
+    </div>
+
     <ng-template #timeIcon>
         <wen-icon-time [size]="20"></wen-icon-time>
     </ng-template>
@@ -218,7 +221,7 @@
 
     <div class="flex items-center justify-between w-full mt-6 space-x-4" *ngIf="token?.pricePerToken">
         <div class="flex flex-col items-center flex-1 py-3 border border-foregrounds-separator dark:border-foregrounds-separator-dark rounded-2xl">
-            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Tokens to purchase</div>
+            <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Purchased tokens</div>
             <div class="mt-2 text-lg font-bold" i18n>
               {{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-2') + ' ' + token?.symbol}}
             </div>

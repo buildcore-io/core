@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from "../../interfaces/errors";
 import { Space, Transaction, TransactionOrderType, TransactionType, TransactionValidationType } from '../../interfaces/models';
-import { COL } from "../../interfaces/models/base";
-import { Categories, Collection, CollectionAccess, CollectionType } from "../../interfaces/models/collection";
+import { Access, COL } from "../../interfaces/models/base";
+import { Categories, Collection, CollectionType } from "../../interfaces/models/collection";
 import { Nft, NftAccess } from '../../interfaces/models/nft';
 import { NotificationType } from '../../interfaces/models/notification';
 import admin from "../../src/admin.config";
@@ -68,7 +68,7 @@ beforeEach(async () => {
     type: CollectionType.CLASSIC,
     royaltiesFee: 0.6,
     category: Categories.ART,
-    access: CollectionAccess.OPEN,
+    access: Access.OPEN,
     space: space.uid,
     royaltiesSpace: space.uid,
     onePerMemberOnly: false,
@@ -178,40 +178,40 @@ describe('Nft bidding', () => {
     expect(tran.payload.sourceTransaction.length).toBe(1)
   })
 
-it('Should reject smaller bid', async () => {
-  await bidNft(members[0], 2 * MIN_IOTA_AMOUNT)
-  const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
-  expect(nftData.auctionHighestBidder).toBe(members[0])
+  it('Should reject smaller bid', async () => {
+    await bidNft(members[0], 2 * MIN_IOTA_AMOUNT)
+    const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
+    expect(nftData.auctionHighestBidder).toBe(members[0])
 
-  await bidNft(members[1], MIN_IOTA_AMOUNT)
-  const updated = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
-  expect(updated.auctionHighestBidder).toBe(members[0])
+    await bidNft(members[1], MIN_IOTA_AMOUNT)
+    const updated = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
+    expect(updated.auctionHighestBidder).toBe(members[0])
 
-  const snap = await admin.firestore().collection(COL.TRANSACTION)
-    .where('type', '==', TransactionType.CREDIT)
-    .where('member', '==', members[1])
-    .where('payload.nft', '==', nft.uid)
-    .get()
-  expect(snap.docs.length).toBe(1)
-})
+    const snap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', members[1])
+      .where('payload.nft', '==', nft.uid)
+      .get()
+    expect(snap.docs.length).toBe(1)
+  })
 
-it('Should bid in parallel', async () => {
-  const bidPromises = [
-    bidNft(members[0], 2 * MIN_IOTA_AMOUNT),
-    bidNft(members[1], 3 * MIN_IOTA_AMOUNT),
-    bidNft(members[2], MIN_IOTA_AMOUNT)
-  ]
-  await Promise.all(bidPromises)
-  const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
-  expect(nftData.auctionHighestBidder).toBe(members[1])
+  it('Should bid in parallel', async () => {
+    const bidPromises = [
+      bidNft(members[0], 2 * MIN_IOTA_AMOUNT),
+      bidNft(members[1], 3 * MIN_IOTA_AMOUNT),
+      bidNft(members[2], MIN_IOTA_AMOUNT)
+    ]
+    await Promise.all(bidPromises)
+    const nftData = <Nft>(await admin.firestore().doc(`${COL.NFT}/${nft.uid}`).get()).data()
+    expect(nftData.auctionHighestBidder).toBe(members[1])
 
-  const transactionSnap = await admin.firestore().collection(COL.TRANSACTION)
-    .where('type', '==', TransactionType.CREDIT)
-    .where('member', 'in', [members[0], members[2]])
-    .where('payload.nft', '==', nft.uid)
-    .get()
-  expect(transactionSnap.docs.length).toBe(2)
-})
+    const transactionSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', 'in', [members[0], members[2]])
+      .where('payload.nft', '==', nft.uid)
+      .get()
+    expect(transactionSnap.docs.length).toBe(2)
+  })
 })
 
 describe('Should finalize bidding', () => {
