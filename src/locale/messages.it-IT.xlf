@@ -3071,7 +3071,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">18,17</context>
         </context-group>
-        <target state="needs-translation">Sale starts</target>
+        <target state="translated">Asta di apertura</target>
       </trans-unit>
       <trans-unit id="4709671887663533947" datatype="html">
         <source>Sale ends</source>
@@ -3099,7 +3099,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">19,17</context>
         </context-group>
-        <target state="needs-translation">Sale ends</target>
+        <target state="translated">Asta di chiusura</target>
       </trans-unit>
       <trans-unit id="8723042657452219176" datatype="html">
         <source>Cooldown period ends</source>
