@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy } from '@ngneat/until-destroy';
@@ -28,9 +29,9 @@ export class CollectionsPage {
   };
   sections = marketSections;
   sortItems = [
-    { value: 'collection', label: 'Recent' },
-    { value: 'collection_price_asc', label: 'Low to High' },
-    { value: 'collection_price_desc', label: 'High to Low' },
+    { value: 'collection', label: $localize`Recent` },
+    { value: 'collection_price_asc', label: $localize`Low to High` },
+    { value: 'collection_price_desc', label: $localize`High to Low`},
   ];
   paginationItems = defaultPaginationItems;
 
@@ -56,5 +57,9 @@ export class CollectionsPage {
       lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
       availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
     }));
+  }
+
+  public get collapseTypes(): typeof CollapseType {
+    return CollapseType;
   }
 }

@@ -24,7 +24,10 @@
 
     <div class="container-filters" *ngIf="(deviceService.isMobile$ | async) !== true">
       <div class="container-header">
-        <h4>Filters&Sorts</h4>
+        <button class="wen-secondary px-3" nz-button nzSize="small" (click)="null">
+            <wen-icon-collapse-arrow [size]="16"></wen-icon-collapse-arrow>
+            <div i18n>Filters&Sort</div>
+        </button>
         <wen-sort-by
           [items]="sortItems"
         ></wen-sort-by>
@@ -45,42 +48,38 @@
 
 
       <div class="container-body">
-        <nz-collapse>
-          <nz-collapse-panel
-            nzHeader="Saletype"
-            nzActive="true"
+        <wen-collapse i18n-title title="Saletype" [isCollapsed]="false" [type]="collapseTypes.UNDERLINE">
+          <wen-refinement-list
+            attribute="access"
+            [transformItems]="algoliaService.convertToAccessName"
           >
-            <wen-refinement-list
-              attribute="access"
-              [transformItems]="algoliaService.convertToAccessName"
-            >
-            </wen-refinement-list>
-          </nz-collapse-panel>
-          <nz-collapse-panel
-            nzHeader="Spaces"
-            nzActive="true"
+          </wen-refinement-list>
+        </wen-collapse>
+        <wen-collapse i18n-title title="Saletype" [isCollapsed]="false" [type]="collapseTypes.UNDERLINE">
+          <wen-algolia-radio
+            attribute="access"
+            [transformItems]="algoliaService.convertToAccessName"
           >
-              <wen-refinement-list
-                attribute="space"
-                [transformItems]="algoliaService.convertToSpaceName"
-                [limit]="15"
-                [showMoreLimit]="5"
-                showMoreLabel="See more"
-                showLessLabel="See less"
-              >
-              </wen-refinement-list>
-          </nz-collapse-panel>
-          <nz-collapse-panel
-            nzHeader="Category"
-            nzActive="true"
+          </wen-algolia-radio>
+        </wen-collapse>
+        <wen-collapse i18n-title title="Spaces" [isCollapsed]="false" [type]="collapseTypes.UNDERLINE">
+          <wen-refinement-list
+            attribute="space"
+            [transformItems]="algoliaService.convertToSpaceName"
+            [limit]="15"
+            [showMoreLimit]="5"
+            showMoreLabel="See more"
+            showLessLabel="See less"
           >
-            <wen-refinement-list
-              attribute="category"
-              [showIcon]="false"
-            >
-            </wen-refinement-list>
-          </nz-collapse-panel>
-        </nz-collapse>
+          </wen-refinement-list>
+        </wen-collapse>
+        <wen-collapse i18n-title title="Category" [isCollapsed]="false" [type]="collapseTypes.UNDERLINE">
+          <wen-refinement-list
+            attribute="category"
+            [showIcon]="false"
+          >
+          </wen-refinement-list>
+        </wen-collapse>
         <ais-panel header="Price range">
           <ais-range-slider
             attribute="price"
