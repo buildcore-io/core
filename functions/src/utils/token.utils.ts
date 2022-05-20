@@ -1,7 +1,7 @@
 
 import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenStatus } from "../../interfaces/models/token";
+import { Token } from "../../interfaces/models/token";
 import admin from '../admin.config';
 import { throwInvalidArgument } from './error.utils';
 
@@ -30,9 +30,3 @@ export const assertTokenApproved = (token: Token) => {
   }
 }
 
-export const assertIsTokenPreMintedAndApproved = (token: Token) => {
-  if (token.status !== TokenStatus.PRE_MINTED) {
-    throw throwInvalidArgument(WenError.token_not_pre_minted)
-  }
-  assertTokenApproved(token)
-}

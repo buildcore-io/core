@@ -16,7 +16,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cancelSale } from '../utils/token-buy-sell.utils';
-import { assertIsTokenPreMintedAndApproved } from '../utils/token.utils';
+import { assertTokenApproved } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const buySellTokenSchema = {
@@ -38,7 +38,7 @@ export const sellToken = functions.runWith({
   if (!token) {
     throw throwInvalidArgument(WenError.invalid_params);
   }
-  assertIsTokenPreMintedAndApproved(token);
+  assertTokenApproved(token);
 
   const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
   const sellDocId = getRandomEthAddress();
@@ -98,11 +98,11 @@ export const buyToken = functions.runWith({
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
 
-  const token = <Token|undefined> (await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data();
+  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data();
   if (!token) {
     throw throwInvalidArgument(WenError.invalid_params)
   }
-  assertIsTokenPreMintedAndApproved(token);
+  assertTokenApproved(token);
 
   const tranId = getRandomEthAddress();
   const newWallet = new WalletService();
