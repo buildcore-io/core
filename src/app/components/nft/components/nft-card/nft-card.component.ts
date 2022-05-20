@@ -91,7 +91,7 @@ export class NftCardComponent {
       return false;
     }
 
-    return (this.collection.approved === true && !!this.nft?.availableFrom && dayjs(this.nft.availableFrom.toDate()).isBefore(dayjs()));
+    return (this.collection.approved === true && !!this.nft?.availableFrom && dayjs(this.getAuctionDate()).isBefore(dayjs()));
   }
 
   public isAvailableForAuction(): boolean {
@@ -99,8 +99,22 @@ export class NftCardComponent {
       return false;
     }
 
-    return (this.collection.approved === true && !!this.nft?.auctionFrom && dayjs(this.nft.auctionFrom.toDate()).isBefore(dayjs()));
+    return (this.collection.approved === true && !!this.nft?.auctionFrom && dayjs(this.getAuctionDate()).isBefore(dayjs()));
   }
+
+  /**
+   * As we are now using Algolia it does not have to be only timestamp.
+   * @param date
+   * @returns
+   */
+  public getAuctionDate(date: any = this.nft?.auctionFrom): any {
+    if (typeof date === 'object' && date?.toDate) {
+      return date.toDate();
+    } else {
+      return date || undefined;
+    }
+  }
+
 
   private discount(): number {
     if (!this.collection?.space || !this.auth.member$.value || this._nft?.owner) {
@@ -169,11 +183,11 @@ export class NftCardComponent {
       return false;
     }
 
-    return dayjs(date.toDate()).isAfter(dayjs(), 's');
+    return dayjs(this.getAuctionDate(date)).isAfter(dayjs(), 's');
   }
 
   public getDaysLeft(availableFrom?: Timestamp | null): number {
-    if (!availableFrom) return 0;
-    return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
+    if (!this.getAuctionDate(availableFrom)) return 0;
+    return dayjs(this.getAuctionDate(availableFrom)).diff(dayjs(new Date()), 'day');
   }
 }
