@@ -714,14 +714,36 @@ describe('Claim airdropped token test', () => {
     expect(airdrop?.tokenOwned).toBe(450)
   })
 
-  it('Should throw, nothing to claim', async () => {
+  it('Should claim same in parallel', async () => {
     mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
-    const order = await testEnv.wrap(claimAirdroppedToken)({});
-    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    const claimToken = async () => {
+      const order = await testEnv.wrap(claimAirdroppedToken)({});
+      await new Promise((r) => setTimeout(r, 1000));
+      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+      return order
+    }
+    const promises = [claimToken(), claimToken()]
+    await Promise.all(promises)
 
-    mockWalletReturnValue(walletSpy, guardianAddress, { token: token.uid })
-    await expectThrow(testEnv.wrap(claimAirdroppedToken)({}), WenError.no_airdrop_to_claim.key)
+    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
+    expect(distribution.tokenDrops?.length).toBe(0)
+    expect(distribution.tokenClaimed).toBe(450)
+    expect(distribution.tokenOwned).toBe(450)
+
+    const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', guardianAddress)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('payload.token', '==', token.uid)
+      .get()
+    expect(creditSnap.size).toBe(1)
+
+    const billPaymentSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('member', '==', guardianAddress)
+      .where('type', '==', TransactionType.BILL_PAYMENT)
+      .where('payload.token', '==', token.uid)
+      .get()
+    expect(billPaymentSnap.size).toBe(1)
   })
 
 })
