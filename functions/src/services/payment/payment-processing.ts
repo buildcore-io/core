@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import { isEmpty, last } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
-import { WenError } from '../../../interfaces/errors';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
@@ -12,7 +11,6 @@ import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, Pay
 import admin from '../../admin.config';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
-import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { NotificationService } from '../notification/notification';
 
@@ -667,13 +665,15 @@ export class ProcessingService {
     });
   }
 
-  private async claimAirdroppedTokens(order: Transaction) {
+  private async claimAirdroppedTokens(order: Transaction, payment: Transaction, match: TransactionMatch) {
     const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
     const distribution = <TokenDistribution>(await this.transaction.get(distributionDocRef)).data();
     const claimableDrops = distribution.tokenDrops?.filter(d => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || []
     if (isEmpty(claimableDrops)) {
-      throw throwInvalidArgument(WenError.no_airdrop_to_claim)
+      await this.createCredit(payment, match)
+      return;
     }
+    await this.createBillPayment(order, payment);
     const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0)
     const data = {
       tokenDrops: admin.firestore.FieldValue.arrayRemove(...claimableDrops),
@@ -810,9 +810,8 @@ export class ProcessingService {
                   await this.updateTokenDistribution(orderData, match)
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
                   const payment = await this.createPayment(orderData, match);
-                  await this.createBillPayment(orderData, payment);
                   await this.markAsReconciled(orderData, match.msgId);
-                  await this.claimAirdroppedTokens(orderData);
+                  await this.claimAirdroppedTokens(orderData, payment, match);
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_BUY) {
                   const payment = await this.createPayment(orderData, match);
                   await this.createTokenBuyRequest(orderData, payment)
