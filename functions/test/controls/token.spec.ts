@@ -435,6 +435,9 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const updatedDistribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(updatedDistribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+
+    const updatedToken = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(updatedToken?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
   })
 
   it('Should create token order and should credit all amount', async () => {
@@ -456,6 +459,9 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const updatedDistribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(updatedDistribution?.totalDeposit).toBe(0)
+
+    const updatedToken = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(updatedToken?.totalDeposit).toBe(0)
   })
 
   it('Should throw, amount too much to refund', async () => {

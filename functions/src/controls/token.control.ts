@@ -284,7 +284,8 @@ export const creditToken = functions.runWith({
     if (!distribution || distribution.totalDeposit < params.body.amount) {
       throw throwInvalidArgument(WenError.not_enough_funds)
     }
-    const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
+    const token = <Token | undefined>(await tokenDocRef.get()).data()
     if (!token || !tokenCoolDownPeriod(token)) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
@@ -293,6 +294,8 @@ export const creditToken = functions.runWith({
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
     transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+    transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+    
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,
       uid: tranId,
