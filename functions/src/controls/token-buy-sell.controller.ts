@@ -6,7 +6,7 @@ import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
-import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { MnemonicService } from '../services/wallet/mnemonic';
@@ -16,7 +16,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cancelSale } from '../utils/token-buy-sell.utils';
-import { assertIsTokenPreMintedAndApproved } from '../utils/token.utils';
+import { assertTokenApproved } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const buySellTokenSchema = {
@@ -34,7 +34,11 @@ export const sellToken = functions.runWith({
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
 
-  await assertIsTokenPreMintedAndApproved(params.body.token);
+  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
+  if (!token) {
+    throw throwInvalidArgument(WenError.invalid_params);
+  }
+  assertTokenApproved(token);
 
   const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
   const sellDocId = getRandomEthAddress();
@@ -94,12 +98,11 @@ export const buyToken = functions.runWith({
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
 
-  await assertIsTokenPreMintedAndApproved(params.body.token);
-
-  const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get();
-  if (!tokenDoc.exists) {
+  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data();
+  if (!token) {
     throw throwInvalidArgument(WenError.invalid_params)
   }
+  assertTokenApproved(token);
 
   const tranId = getRandomEthAddress();
   const newWallet = new WalletService();
@@ -110,7 +113,7 @@ export const buyToken = functions.runWith({
     type: TransactionType.ORDER,
     uid: tranId,
     member: owner,
-    space: tokenDoc.data()?.space,
+    space: token.space,
     createdOn: serverTime(),
     payload: {
       type: TransactionOrderType.TOKEN_BUY,
