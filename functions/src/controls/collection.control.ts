@@ -5,7 +5,7 @@ import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { TransactionType } from '../../interfaces/models';
-import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { Access, COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
@@ -17,7 +17,7 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
-import { Categories, Collection, CollectionAccess, CollectionType, SchemaCollection } from './../../interfaces/models/collection';
+import { Categories, Collection, CollectionType, SchemaCollection } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
@@ -41,13 +41,13 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0).max(1).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
-    access: Joi.number().equal(CollectionAccess.OPEN, CollectionAccess.MEMBERS_ONLY, CollectionAccess.GUARDIANS_ONLY, CollectionAccess.MEMBERS_WITH_BADGE, CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION).required(),
+    access: Joi.number().equal(...Object.values(Access)).required(),
     accessAwards: Joi.when('access', {
-      is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_BADGE),
+      is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
       then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
     }),
     accessCollections: Joi.when('access', {
-      is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION),
+      is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
       then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
     }),
     // TODO Validate XP is not the same.

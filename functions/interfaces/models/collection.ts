@@ -1,17 +1,9 @@
-import { BaseRecord, EthAddress, Timestamp } from "./base";
+import { Access, BaseRecord, EthAddress, Timestamp } from "./base";
 
 export enum CollectionType {
   CLASSIC = 0,
   GENERATED = 1,
   SFT = 2
-}
-
-export enum CollectionAccess {
-  OPEN = 0,
-  MEMBERS_ONLY = 1,
-  GUARDIANS_ONLY = 2,
-  MEMBERS_WITH_BADGE = 3,
-  MEMBERS_WITH_NFT_FROM_COLLECTION = 4
 }
 
 export interface DiscountLine {
@@ -52,11 +44,11 @@ export interface CollectionBase extends BaseRecord {
 }
 
 export interface Collection extends CollectionBase {
-  category: Categories,
-  type: CollectionType,
-  access: CollectionAccess,
-  accessAwards: string[],
-  accessCollections: string[],
+  category: Categories;
+  type: CollectionType;
+  access: Access;
+  accessAwards: string[];
+  accessCollections: string[];
   space: string;
   availableFrom: Timestamp;
   price: number;
@@ -68,7 +60,7 @@ export interface Collection extends CollectionBase {
 export interface SchemaCollection extends CollectionBase {
   category?: Categories,
   type?: CollectionType,
-  access?: CollectionAccess,
+  access?: Access,
   accessAwards?: string[],
   accessCollections?: string[],
   space?: string;

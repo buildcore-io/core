@@ -1,5 +1,5 @@
 import { Url } from "url";
-import { BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
+import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
 
 
 export interface TokenAllocation {
@@ -42,6 +42,9 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
+  readonly access: Access;
+  readonly accessAwards?: string[];
+  readonly accessCollections?: string[];
 }
 
 export interface TokenDrop {

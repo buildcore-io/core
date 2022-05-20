@@ -35,6 +35,7 @@ import {
   CollectionType,
   Space
 } from '@functions/interfaces/models';
+import { Access } from '@functions/interfaces/models/base';
 import { PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
@@ -48,11 +49,7 @@ import {
 import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
-import {
-  Collection,
-  CollectionAccess,
-  DiscountLine
-} from './../../../../../../functions/interfaces/models/collection';
+import { Collection, DiscountLine } from './../../../../../../functions/interfaces/models/collection';
 
 const MAX_DISCOUNT_COUNT = 3;
 
@@ -90,7 +87,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public accessCollectionsControl: FormControl = new FormControl([]);
   public bannerUrlControl: FormControl = new FormControl('', Validators.required);
   public categoryControl: FormControl = new FormControl('', Validators.required);
-  public selectedAccessControl: FormControl = new FormControl(CollectionAccess.OPEN, Validators.required);
+  public selectedAccessControl: FormControl = new FormControl(Access.OPEN, Validators.required);
   public spaceControl: FormControl = new FormControl('', Validators.required);
   public royaltiesSpaceControl: FormControl = new FormControl(
     '',
@@ -357,8 +354,8 @@ export class UpsertPage implements OnInit, OnDestroy {
     );
   }
 
-  public get targetAccess(): typeof CollectionAccess {
-    return CollectionAccess;
+  public get targetAccess(): typeof Access {
+    return Access;
   }
 
   public uploadChangePlaceholder(event: NzUploadChangeParam): void {
@@ -422,7 +419,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public getTooltip(type: number, tooltip: string): string {
     type === 0
       ? (tooltip =
-          'Classic NFTs are the most straightforward in that you upload your images, they’re all visible right away, and people can browse through your collection and purchase what they like. Simply upload and sell!')
+        'Classic NFTs are the most straightforward in that you upload your images, they’re all visible right away, and people can browse through your collection and purchase what they like. Simply upload and sell!')
       : type === 1
         ? (tooltip =
           'Generated NFTs add a little mystery into the mix. The buyer won’t know what their NFT looks like until they mint it. The owner of the collection has the ability to put in a placeholder image for the entire collection to give the buyer an idea of what the NFT may look like, but their mint will still be a surprise. This is the most common type of NFT (it’s what IOTABOTs did).')
@@ -455,7 +452,7 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public disabledDateTime(startValue: Date | Date[]): DisabledTimeConfig {
     if (
-      !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day') ) {
+      !Array.isArray(startValue) && dayjs(startValue).isSame(dayjs().add(NftAvailableFromDateMin.value, 'ms'), 'day')) {
       return {
         nzDisabledHours: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').hour()),
         nzDisabledMinutes: () => this.range(0, dayjs().add(NftAvailableFromDateMin.value, 'ms').minute()),

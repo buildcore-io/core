@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import { TransactionType } from '../../../functions/interfaces/models';
-import { COL } from '../../../functions/interfaces/models/base';
+import { Access, COL } from '../../../functions/interfaces/models/base';
 import { approveCollection, createCollection } from '../../../functions/src/controls/collection.control';
 import { createNft } from '../../../functions/src/controls/nft.control';
 import { createSpace } from '../../../functions/src/controls/space.control';
 import { WenError } from "../../interfaces/errors";
-import { Categories, Collection, CollectionAccess, CollectionType } from '../../interfaces/models/collection';
+import { Categories, Collection, CollectionType } from '../../interfaces/models/collection';
 import { Member } from '../../interfaces/models/member';
 import { Nft } from '../../interfaces/models/nft';
 import { Space } from '../../interfaces/models/space';
@@ -29,7 +29,7 @@ const dummyCollection = (space: Space, type: CollectionType, ro: number, priceMi
   description: 'babba',
   type,
   category: Categories.ART,
-  access: CollectionAccess.OPEN,
+  access: Access.OPEN,
   royaltiesFee: ro,
   space: space.uid,
   royaltiesSpace: space.uid,

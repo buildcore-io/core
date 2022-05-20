@@ -91,3 +91,11 @@ export enum FILE_SIZES {
   medium = 'medium',
   large = 'large'
 }
+
+export enum Access {
+  OPEN = 0,
+  MEMBERS_ONLY = 1,
+  GUARDIANS_ONLY = 2,
+  MEMBERS_WITH_BADGE = 3,
+  MEMBERS_WITH_NFT_FROM_COLLECTION = 4
+}
