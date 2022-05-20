@@ -34,8 +34,5 @@ export const assertIsTokenPreMintedAndApproved = (token: Token) => {
   if (token.status !== TokenStatus.PRE_MINTED) {
     throw throwInvalidArgument(WenError.token_not_pre_minted)
   }
-  if (!token.approved || token.rejected) {
-    throw throwInvalidArgument(WenError.token_not_approved)
-  }
   assertTokenApproved(token)
 }
