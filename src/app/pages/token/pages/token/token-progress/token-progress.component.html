@@ -1,7 +1,7 @@
 <div class="space-y-4 lg:space-y-6">
     <nz-card i18n-nzTitle nzTitle="My purchased tokens" *ngIf="data.isAfterSaleStarted(token) && !data.isProcessing(token)">
         <wen-description *ngIf="!isPreMinted()" [items]="[
-            { title: 'Total Deposit', value: data.formatBest((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
+            { title: 'Your Deposit', value: data.formatBest((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
             { title: 'Potential Tokens', value: (data.formatTokenBest(getPotentialTokens()) || 0 | number : '1.0-2') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
@@ -36,6 +36,10 @@
                     </span>
                 </div>
             </div>
+
+            <wen-description class="block mt-6" *ngIf="!isPreMinted()" [items]="[
+            { title: 'Total Deposit', value: data.formatBest(token?.totalDeposit), backgroundClass: 'dark:bg-tags-available-dark' }
+            ]"></wen-description>
         </div>
     </nz-card>
 

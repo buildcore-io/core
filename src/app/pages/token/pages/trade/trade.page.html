@@ -18,8 +18,14 @@
             </div>
           </a>
 
-          <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Token</nz-tag>
-          <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"  *ngIf="preMinted((data.token$ | async) || undefined)" i18n>Pre-Minted</nz-tag>
+          <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Token Trading</nz-tag>
+          <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark"
+                  *ngIf="!(data.token$ | async)?.approved && !(data.token$ | async)?.rejected" i18n>Pending
+          </nz-tag>
+          <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"
+                  *ngIf="(data.token$ | async)?.approved" i18n>
+            Available
+          </nz-tag>
         </div>
 
         <h1 class="mt-2">{{ (data.token$ | async)?.name }}</h1>

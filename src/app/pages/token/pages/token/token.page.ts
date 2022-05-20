@@ -103,7 +103,7 @@ export class TokenPage implements OnInit, OnDestroy {
 
   public getLatestStatus(token?: Token): string {
     if (this.data.isSalesInProgress(token) && !this.data.isInCooldown(token)) {
-      return $localize`Available`;
+      return $localize`Ongoing Sale`;
     } else if (this.data.isScheduledForSale(token) && !this.data.isInCooldown(token)) {
       return $localize`Scheduled`;
     } else if (this.data.isInCooldown(token)) {
@@ -111,7 +111,7 @@ export class TokenPage implements OnInit, OnDestroy {
     } else if (token?.status === TokenStatus.PROCESSING) {
       return $localize`Processing`;
     } else {
-      return $localize`Pre-Minted`;
+      return $localize`Available`;
     }
   }
 

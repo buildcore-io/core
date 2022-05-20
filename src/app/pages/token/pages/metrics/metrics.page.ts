@@ -48,9 +48,9 @@ export class MetricsPage implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(token => {
         this.breakdownData = [
-          { title: $localize`Total token supply`, value: this.decimalPipe.transform(this.data.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol, extraValue: `(${this.data.percentageMarketCap(100, token)})` },
-          { title: $localize`Price per token`, value: (token?.pricePerToken || 0) + ' Mi'},
-          ...(token?.allocations || []).map(a => ({ title: a.title, value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, token)})` }))
+          { title: $localize`Total token supply (Initial market cap)`, value: this.decimalPipe.transform(this.data.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol, extraValue: `(${this.data.percentageMarketCap(100, token)})` },
+          { title: $localize`Initial price per token`, value: (token?.pricePerToken || 0) + ' Mi'},
+          ...(token?.allocations || []).map(a => ({ title: a.title + ' (Initial Cap)', value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, token)})` }))
         ];
         this.setLineChartData(token);
         this.cd.markForCheck();
