@@ -86,7 +86,7 @@
         label="I agree with"
         i18n-linkLabel
         linkLabel="Token terms and Conditions"
-        documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+        [documentLink]="token?.termsAndConditions || ''"
         (wenOnCheckChange)="agreeTokenTermsConditions = $event">
     </wen-terms-and-conditions>
 

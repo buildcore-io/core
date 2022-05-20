@@ -26,6 +26,7 @@ export class TokenRefundComponent {
 
   public amountControl: FormControl = new FormControl(null);
   public agreeTermsConditions = false;
+  public agreeTokenTermsConditions = false;
   private _isOpen = false;
 
   constructor(

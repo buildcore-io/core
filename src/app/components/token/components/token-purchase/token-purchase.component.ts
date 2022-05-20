@@ -52,6 +52,7 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
   public iotaControl: FormControl = new FormControl(null);
   public isAmountInput = true;
   public agreeTermsConditions = false;
+  public agreeTokenTermsConditions = false;
   public targetAddress?: string = '';
   public invalidPayment = false;
   public receivedTransactions = false;
