@@ -46,10 +46,10 @@
                 <nz-option
                     *ngFor="let opt of offeringLengthOptions"
                     nzCustomContent
-                    [nzLabel]="opt"
+                    [nzLabel]="opt + ' days'"
                     [nzValue]="opt"
                 >
-                {{ opt }}
+                {{ opt + ' days' }}
                 </nz-option>
             </nz-select>
             <ng-template #placeholderTpl>

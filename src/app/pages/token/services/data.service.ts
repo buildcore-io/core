@@ -24,14 +24,14 @@ export class DataService {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatBest(Math.floor(Number(amount)), 2);
   }
 
   public percentageMarketCap(percentage: number, token?: Token): string {
     if (!token) {
       return '';
     }
-    return this.formatBest(token?.pricePerToken * (token?.totalSupply * percentage / 100));
+    return this.formatBest(Math.floor(token?.pricePerToken * (token?.totalSupply * percentage / 100)));
   }
 
   public formatTokenBest(amount?: number|null): string {

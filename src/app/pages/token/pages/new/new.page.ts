@@ -6,6 +6,7 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { Access } from '@functions/interfaces/models/base';
 import { TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NewService } from '@pages/token/services/new.service';
@@ -85,6 +86,7 @@ export class NewPage implements OnInit {
     res.title = data.title;
     res.description = data.description;
     res.space = data.space;
+    res.access = Access.OPEN;
     res.pricePerToken = Number(data.price);
     res.totalSupply = Number(data.totalSupply * 1000 * 1000);
     res.allocations = data.allocations;

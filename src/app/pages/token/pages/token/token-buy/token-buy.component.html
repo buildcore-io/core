@@ -13,7 +13,7 @@
     </button>
 
     <button
-        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved && (isGuardianWithinSpace$ | async)"
+        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved && (isGuardianWithinSpace$ | async) && hasPublicSale((data.token$ | async) || undefined)"
         nz-button
         nzSize="large"
         class="w-full wen-secondary"
@@ -31,7 +31,7 @@
     </button>
 
     <div *ngIf="data.isAvailableForSale((data.token$ | async) || undefined) || (isGuardianWithinSpace$ | async)"
-        class="h-px w-1/5 bg-foregrounds-tertiary dark:bg-backgrounds-tertiary-dark mx-auto"></div>
+        class="w-1/5 h-px mx-auto bg-foregrounds-tertiary dark:bg-backgrounds-tertiary-dark"></div>
 
     <wen-share
         class="block mb-4"

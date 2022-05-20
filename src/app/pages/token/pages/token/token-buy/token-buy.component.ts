@@ -44,10 +44,14 @@ export class TokenBuyComponent implements OnInit {
       });
   }
 
+  public hasPublicSale(token?: Token): boolean {
+    return !!(token?.allocations && token.allocations.filter(a => a.isPublicSale).length > 0);
+  }
+
   public getShareUrl(token?: Token | null): string {
     return token?.wenUrlShort || token?.wenUrl || window.location.href;
   }
-  
+
   public get shareSizes(): typeof ShareComponentSize {
     return ShareComponentSize;
   }
