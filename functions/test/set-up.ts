@@ -2,7 +2,7 @@ import test from 'firebase-functions-test';
 import { AppCheck } from './../interfaces/config';
 
 AppCheck.enabled = false;
-const projectId = 'soonaverse-dev'
+export const projectId = 'soonaverse-dev'
 process.env.GCLOUD_PROJECT = projectId;
 
 const getConfig = () => {
@@ -18,9 +18,3 @@ const getConfig = () => {
 }
 
 export const testEnv = process.env.LOCAL_TEST ? test(getConfig()) : test(getConfig(), './test-service-account-key.json')
-
-beforeEach(async () => {
-  if (process.env.LOCAL_TEST) {
-    await testEnv.firestore.clearFirestoreData({ projectId: 'soonaverse-dev' })
-  }
-});
