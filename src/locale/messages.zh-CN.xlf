@@ -2077,7 +2077,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="needs-translation"> to following address (please restake after!):</target>
+        <target state="translated"> 发送至以下地址(请在之后重新质押！):</target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -3004,7 +3004,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="needs-translation"> Confirm and generate address </target>
+        <target state="translated"> 确认并生成地址 </target>
       </trans-unit>
       <trans-unit id="6559976317018164845" datatype="html">
         <source> to following address:</source>
@@ -3020,7 +3020,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="needs-translation"> to following address:</target>
+        <target state="translated"> 至以下地址：</target>
       </trans-unit>
       <trans-unit id="8281145888073153213" datatype="html">
         <source>Bid complete. Congratulations.</source>
@@ -3104,7 +3104,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim-refund/token-claim-refund.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Cooldown period ends</target>
+        <target state="translated">冷却期结束</target>
       </trans-unit>
       <trans-unit id="4042383799859047990" datatype="html">
         <source> Tokens claim amount </source>
@@ -3160,7 +3160,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Your balance</target>
+        <target state="translated">您的余额</target>
       </trans-unit>
       <trans-unit id="1417450416023766429" datatype="html">
         <source> Confirm and create an offer </source>
@@ -3224,7 +3224,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="needs-translation">Select token offering length (Default 2 days)</target>
+        <target state="translated">选择代币竞价时长(默认2天)</target>
       </trans-unit>
       <trans-unit id="4458368036022259369" datatype="html">
         <source> Token allocation info </source>
@@ -5754,7 +5754,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">41,42</context>
         </context-group>
-        <target state="needs-translation">Airdropped</target>
+        <target state="translated">已空投</target>
       </trans-unit>
       <trans-unit id="3422683202099217996" datatype="html">
         <source>Deposit for purchase</source>
@@ -5762,7 +5762,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">63,64</context>
         </context-group>
-        <target state="needs-translation">Deposit for purchase</target>
+        <target state="translated">存款以买入</target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
@@ -5906,7 +5906,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate below</target>
+        <target state="translated">一旦您在下面生成，请上传回来。</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -7839,7 +7839,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation"> You can create a governance token airdrop for your members. You can upload CSV with users (ETH Address) that are legit for the token airdrops and they will be properly rewarded. </target>
+        <target state="translated"> 您可以为您的成员创建一个治理代币的空投。 你可以上传一个包含用户（ETH地址）的CSV文件，这些用户将会获得你的代币空投，而得到适当的奖励。 </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -7847,7 +7847,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
-        <target state="needs-translation"> If you don’t know how to prepare CSV file, you can download our template made for you. </target>
+        <target state="translated"> 如果你不知道如何准备CSV文件，你可以下载我们为你制作的模板。 </target>
       </trans-unit>
       <trans-unit id="1009318303091166329" datatype="html">
         <source>Some rows have been removed</source>
@@ -7921,7 +7921,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">18,20</context>
         </context-group>
-        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we would need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </target>
+        <target state="translated"> 在Soonaverse创建代币的重要信息：请阅读说明并填写此屏幕上的申请表，因为我们需要在审批前手动批准您的代币申请。您可以在任何时候（在您在Soonaverse上配置您的代币之前或之后）提交此表格。 </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -7953,7 +7953,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">To apply you need to fill form below.</target>
+        <target state="translated">请填写下面的表单进行申请</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -8191,7 +8191,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">245,246</context>
         </context-group>
-        <target state="needs-translation">Configure the token supply first to see breakdown.</target>
+        <target state="translated">请先配置代币供应，才能查看明细。</target>
       </trans-unit>
       <trans-unit id="1752313125925892847" datatype="html">
         <source>Token terms and conditions</source>
@@ -8252,8 +8252,8 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">66,65</context>
         </context-group>
-        <target state="needs-translation">Please make sure that there is only one allocation marked for Public Sale as this could be later sold on Soonaverse.
-        You can initiate Public sale once the token is created and approved.</target>
+        <target state="translated">请确保有一个市场分配作为公开销售，因为这以后可能会在Soonaverse销售。
+        一旦代币被创建和批准，你可以启动公开销售。</target>
       </trans-unit>
       <trans-unit id="5385408710926538560" datatype="html">
         <source>Create token</source>
@@ -8357,7 +8357,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">Short description</target>
+        <target state="translated">简短描述</target>
       </trans-unit>
       <trans-unit id="4703172347259778984" datatype="html">
         <source>Short title is invalid.</source>
@@ -8365,7 +8365,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">Short title is invalid.</target>
+        <target state="translated">简短标题无效。</target>
       </trans-unit>
       <trans-unit id="8028189988232054703" datatype="html">
         <source>Short description title</source>
@@ -8377,7 +8377,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation">Short description title</target>
+        <target state="translated">简短描述的标题</target>
       </trans-unit>
       <trans-unit id="4589670471608761987" datatype="html">
         <source>Short description is invalid.</source>
@@ -8389,7 +8389,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">57,58</context>
         </context-group>
-        <target state="needs-translation">Short description is invalid.</target>
+        <target state="translated">简短描述无效。</target>
       </trans-unit>
       <trans-unit id="6995936411627610524" datatype="html">
         <source>Token short description</source>
@@ -8397,7 +8397,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="needs-translation">Token short description</target>
+        <target state="translated">代币简短描述</target>
       </trans-unit>
       <trans-unit id="2762600949893496442" datatype="html">
         <source>Overview graphics</source>
@@ -8509,7 +8509,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">118</context>
         </context-group>
-        <target state="needs-translation"> Short description title </target>
+        <target state="translated"> 简短描述的标题 </target>
       </trans-unit>
       <trans-unit id="2095208344683449172" datatype="html">
         <source> Short description </source>
@@ -8517,7 +8517,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">126</context>
         </context-group>
-        <target state="needs-translation"> Short description </target>
+        <target state="translated"> 简短描述 </target>
       </trans-unit>
       <trans-unit id="8019883656144509081" datatype="html">
         <source> Allocation title </source>
@@ -8549,7 +8549,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">206,207</context>
         </context-group>
-        <target state="needs-translation">(Recommended size: 400 x 400px)</target>
+        <target state="translated">(建议尺寸：400 x 400px)</target>
       </trans-unit>
       <trans-unit id="291348833230444676" datatype="html">
         <source>Some description</source>
@@ -8619,7 +8619,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation">Short description title is invalid.</target>
+        <target state="translated">简短描述标题无效。</target>
       </trans-unit>
       <trans-unit id="6290744321118620010" datatype="html">
         <source>Short token description</source>
@@ -8627,7 +8627,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">62,63</context>
         </context-group>
-        <target state="needs-translation">Short token description</target>
+        <target state="translated">代币简短描述</target>
       </trans-unit>
       <trans-unit id="5433782699501161466" datatype="html">
         <source>Schedule</source>
