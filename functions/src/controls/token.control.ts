@@ -25,7 +25,7 @@ import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } fro
 
 const createSchema = () => ({
   name: Joi.string().required(),
-  symbol: Joi.string().required().length(4).regex(RegExp('^[A-Z]+$')),
+  symbol: Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required(),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   shortDescriptionTitle: Joi.string().optional(),
@@ -295,7 +295,7 @@ export const creditToken = functions.runWith({
 
     transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
     transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
-    
+
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,
       uid: tranId,
