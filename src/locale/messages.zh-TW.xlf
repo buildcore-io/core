@@ -164,7 +164,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Token</target>
+        <target state="translated">代幣</target>
       </trans-unit>
       <trans-unit id="821740044721286718" datatype="html">
         <source> None. </source>
@@ -352,7 +352,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/mobile-header/create-dropdown/create-dropdown.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation"> Token </target>
+        <target state="translated"> 代幣 </target>
       </trans-unit>
       <trans-unit id="9002287905742257858" datatype="html">
         <source>Connect to your MetaMask wallet</source>
@@ -424,7 +424,7 @@
           <context context-type="sourcefile">src/app/components/algolia/search/search.component.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation">Start typing...</target>
+        <target state="translated">從這裡輸入...</target>
       </trans-unit>
       <trans-unit id="7593555694782789615" datatype="html">
         <source>Open</source>
@@ -544,7 +544,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">81</context>
         </context-group>
-        <target state="needs-translation">On Sale</target>
+        <target state="translated">出售</target>
       </trans-unit>
       <trans-unit id="7699622144571229146" datatype="html">
         <source>Sort by</source>
@@ -576,7 +576,7 @@
           <context context-type="sourcefile">src/app/components/algolia/sort/sort.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <target state="needs-translation">sort by</target>
+        <target state="translated">排序根據</target>
       </trans-unit>
       <trans-unit id="3612321595619972457" datatype="html">
         <source>Metamask</source>
@@ -1468,7 +1468,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
           <context context-type="linenumber">34,36</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ace?.name | truncate:[20] }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ace?.name | truncate:[20] }}"/></target>
       </trans-unit>
       <trans-unit id="6300210647237660616" datatype="html">
         <source>Current highest bid</source>
@@ -2151,7 +2151,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">Payment received.</target>
+        <target state="translated">已收到付款。</target>
       </trans-unit>
       <trans-unit id="3899675963881802897" datatype="html">
         <source>Confirming transaction.</source>
@@ -2167,7 +2167,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
-        <target state="needs-translation">Confirming transaction.</target>
+        <target state="translated">交易確認中。</target>
       </trans-unit>
       <trans-unit id="2538082719897429511" datatype="html">
         <source>Transaction confirmed.</source>
@@ -2183,7 +2183,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">115</context>
         </context-group>
-        <target state="needs-translation">Transaction confirmed.</target>
+        <target state="translated">交易已確認。</target>
       </trans-unit>
       <trans-unit id="774650643056330030" datatype="html">
         <source>Invalid amount received. Refunding transaction...</source>
@@ -2199,7 +2199,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">126</context>
         </context-group>
-        <target state="needs-translation">Invalid amount received. Refunding transaction...</target>
+        <target state="translated">收到無效的金額，退款進行中...</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
@@ -2215,7 +2215,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">130</context>
         </context-group>
-        <target state="needs-translation">Invalid payment refunded.</target>
+        <target state="translated">無效的支付已退款。</target>
       </trans-unit>
       <trans-unit id="7663095631938257541" datatype="html">
         <source>Order created.</source>
@@ -2227,7 +2227,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation">Order created.</target>
+        <target state="translated">訂單已建立。</target>
       </trans-unit>
       <trans-unit id="3978157429994044725" datatype="html">
         <source>Waiting for transaction...</source>
