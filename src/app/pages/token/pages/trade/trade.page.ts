@@ -305,7 +305,7 @@ export class TradePage implements OnInit, OnDestroy {
       return '0';
     }
 
-    return (amount / 1000 / 1000).toFixed(2);
+    return (amount / 1000 / 1000).toFixed(6);
   }
 
   public get chartLengthTypes(): typeof ChartLengthType {

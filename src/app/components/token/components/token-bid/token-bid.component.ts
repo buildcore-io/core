@@ -9,12 +9,12 @@ import { NotificationService } from '@core/services/notification';
 import { PreviewImageService } from '@core/services/preview-image';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Space, Transaction, TransactionType } from '@functions/interfaces/models';
+import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -58,6 +58,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   public receivedTransactions = false;
   public purchasedAmount = 0;
   public history: HistoryItem[] = [];
+  public expiryTicker$: BehaviorSubject<dayjs.Dayjs|null> = new BehaviorSubject<dayjs.Dayjs|null>(null);
   public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public transaction$: BehaviorSubject<Transaction|undefined> = new BehaviorSubject<Transaction|undefined>(undefined);
   public isCopied = false;
@@ -99,6 +100,8 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         } else if (!val.linkedTransactions || val.linkedTransactions.length === 0) {
           this.currentStep = StepType.TRANSACTION;
         }
+
+        this.expiryTicker$.next(expiresOn);
       }
 
       if (val && val.type === TransactionType.PAYMENT && val.payload.reconciled === true) {
@@ -142,6 +145,30 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     if (this.token?.uid) {
       this.tokenPurchaseApi.listenAvgPrice24h(this.token.uid).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$)
     }
+
+    // Run ticker.
+    const int: Subscription = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
+      this.expiryTicker$.next(this.expiryTicker$.value);
+
+      // If it's in the past.
+      if (this.expiryTicker$.value) {
+        const expiresOn: dayjs.Dayjs = dayjs(this.expiryTicker$.value).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+        if (expiresOn.isBefore(dayjs())) {
+          this.expiryTicker$.next(null);
+          int.unsubscribe();
+          this.reset();
+        }
+      }
+    });
+  }
+
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
   public close(): void {

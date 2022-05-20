@@ -23,7 +23,7 @@
                       </div>
                   </td>
                   <td class="font-medium" i18n>Owned</td>
-                  <td class="font-medium">{{ formatTokenBest(t.distribution.tokenOwned) + ' ' + t.symbol  }}</td>
+                  <td class="font-medium">{{ (formatTokenBest(t.distribution.tokenOwned) | number: '1.0-6') + ' ' + t.symbol  }}</td>
                   <td class="right"></td>
               </tr>
 
@@ -39,7 +39,7 @@
                   </div>
                 </td>
                 <td class="font-medium" i18n>Airdropped</td>
-                <td class="font-medium">{{  (formatTokenBest(sum(t.distribution.tokenDrops!)) + ' ' + t.symbol)  }}</td>
+                <td class="font-medium">{{ ((formatTokenBest(sum(t.distribution.tokenDrops!)) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
                 <td class="right">
                     <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"

@@ -2,11 +2,11 @@
     <nz-card i18n-nzTitle nzTitle="My purchased tokens" *ngIf="data.isAfterSaleStarted(token) && !data.isProcessing(token)">
         <wen-description *ngIf="!isPreMinted()" [items]="[
             { title: 'Your Deposit', value: data.formatBest((memberDistribution?.totalDeposit || 0)), backgroundClass: 'dark:bg-tags-available-dark' },
-            { title: 'Potential Tokens', value: (data.formatTokenBest(getPotentialTokens()) || 0 | number : '1.0-2') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: 'Potential Tokens', value: (data.formatTokenBest(getPotentialTokens()) || 0 | number : '1.0-6') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <wen-description *ngIf="isPreMinted()" [items]="[
-            { title: 'Token Owned', value: (data.formatTokenBest(memberDistribution?.tokenOwned || 0) | number : '1.0-2') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
+            { title: 'Token Owned', value: (data.formatTokenBest(memberDistribution?.tokenOwned) || 0 | number : '1.0-6') + ' ' + token?.symbol, backgroundClass: 'bg-tags-available dark:bg-tags-available-dark' }
         ]"></wen-description>
 
         <div class="flex justify-end w-full" *ngIf="data.isInCooldown(token) && (memberDistribution?.totalDeposit || 0) > 0">
