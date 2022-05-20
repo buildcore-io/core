@@ -53,9 +53,21 @@
         (wenOnCheckChange)="agreeTermsConditions = $event">
     </wen-terms-and-conditions>
 
+    <wen-terms-and-conditions
+        class="mt-4"
+        [isChecked]="agreeTokenTermsConditions"
+        i18n-label
+        label="I agree with"
+        i18n-linkLabel
+        linkLabel="Token terms and Conditions"
+        [documentLink]="token?.termsAndConditions || ''"
+        (wenOnCheckChange)="agreeTokenTermsConditions = $event">
+    </wen-terms-and-conditions>
+
     <div class="flex justify-center w-full mt-10 item-center">
-        <button nz-button nzType="primary" nzSize="large" (click)="confirm()">
-            <ng-container i18n>Confirm and refund</ng-container>
+        <button nz-button nzType="primary" nzSize="large"
+            [disabled]="!agreeTermsConditions || !agreeTokenTermsConditions" (click)="confirm()" i18n>
+                Confirm and refund
         </button>
     </div>
 </ng-template>
