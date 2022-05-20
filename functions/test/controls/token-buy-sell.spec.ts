@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
@@ -7,7 +8,7 @@ import admin from '../../src/admin.config';
 import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { createMember, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from "./common";
+import { createMember, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
 
 let walletSpy: any;
 
@@ -29,11 +30,16 @@ describe('Buy sell controller, sell token', () => {
   it('Should create sell order and cancel it', async () => {
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
-    const sell = await testEnv.wrap(sellToken)({});
+    const sell = <TokenBuySellOrder>(await testEnv.wrap(sellToken)({}));
     expect(sell.count).toBe(5)
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
     const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
     expect(distribution.data()?.lockedForSale).toBe(5)
+
+    await wait(async () => {
+      const doc = <TokenBuySellOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
+      return doc.updatedOn !== undefined && dayjs(doc.updatedOn.toDate()).isAfter(doc.createdOn!.toDate())
+    })
 
     const cancelRequest = { uid: sell.uid }
     mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
