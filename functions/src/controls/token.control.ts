@@ -25,7 +25,7 @@ import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } fro
 
 const createSchema = () => ({
   name: Joi.string().required(),
-  symbol: Joi.string().required().length(4).regex(RegExp('^[A-Z]+$')),
+  symbol: Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required(),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   shortDescriptionTitle: Joi.string().optional(),
@@ -284,7 +284,8 @@ export const creditToken = functions.runWith({
     if (!distribution || distribution.totalDeposit < params.body.amount) {
       throw throwInvalidArgument(WenError.not_enough_funds)
     }
-    const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
+    const token = <Token | undefined>(await tokenDocRef.get()).data()
     if (!token || !tokenCoolDownPeriod(token)) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
@@ -293,6 +294,8 @@ export const creditToken = functions.runWith({
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
     transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+    transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,
       uid: tranId,
