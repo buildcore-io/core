@@ -58,7 +58,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
 
   public getHandler(last?: any): Observable<Transaction[]> {
     if (this.data.member$.value) {
-      return this.memberApi.topTransactions(this.data.member$.value.uid, undefined, last);
+      return this.memberApi.topTransactions(this.data.member$.value.uid, undefined, last, FULL_LIST);
     } else {
       return of([]);
     }
@@ -112,7 +112,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
       .subscribe((transactions: Transaction[]) => {
         this.exportingTransactions = false;
         const fields =
-          ['', 'Item', 'Type', 'Date', 'Amount', 'Transaction'];
+          ['', 'tranId', 'type', 'date', 'amount', 'tangle'];
         const csv = Papa.unparse({
           fields,
           data: transactions.map(t => [t.uid, this.transactionService.getTitle(t), t.createdOn, t.payload.amount, this.transactionService.getExplorerLink(t)])

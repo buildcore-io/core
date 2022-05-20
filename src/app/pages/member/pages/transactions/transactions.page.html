@@ -21,6 +21,7 @@
         [nzData]="(transactions$ | async) || []" [nzShowPagination]="false">
         <thead>
             <tr>
+                <th i18n>TranId</th>
                 <th i18n>Item</th>
                 <th i18n>Type</th>
                 <th i18n>Date</th>
@@ -31,14 +32,20 @@
         <tbody>
             <tr *ngFor="let t of transactions$ | async">
                 <td class="font-bold">{{ t.uid | truncate: [12] }}</td>
+                <td class="font-medium">
+                  <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  *ngIf="t.payload.nft" [routerLink]="['/', 'nft', t.payload.nft]">NFT</a>
+                  <a class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                  *ngIf="t.payload.token" [routerLink]="['/', 'token', t.payload.token]">Token</a>
+                </td>
                 <td class="font-medium">{{ transactionService.getTitle(t) }}</td>
-                <td class="font-medium">{{ t.createdOn?.toDate() | date: 'medium' }}</td>
+                <td class="font-medium">{{ t.createdOn?.toDate() | date: 'short' }}</td>
                 <td class="font-medium">{{ formatBest(t.payload.amount) }}</td>
                 <td class="right">
                     <a *ngIf="transactionService.getExplorerLink(t)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         [href]="transactionService.getExplorerLink(t)"
-                        target="_blank" i18n>Transaction</a>
+                        target="_blank" i18n>Tangle</a>
                 </td>
             </tr>
         </tbody>

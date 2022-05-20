@@ -90,6 +90,7 @@ export class TradePage implements OnInit, OnDestroy {
         }
       },
       yAxis: {
+        beginAtZero: true,
         ticks: {
           color: '#959388',
           font: {
@@ -334,16 +335,6 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.forEach((s) => {
       s.unsubscribe();
     });
-  }
-
-  public getLatestStatus(token?: Token): string {
-    if (token?.status === TokenStatus.AVAILABLE) {
-      return $localize`Available`;
-    } else if (token?.status === TokenStatus.PROCESSING) {
-      return $localize`Processing`;
-    } else {
-      return $localize`Pre-Minted`;
-    }
   }
 
   public getShareUrl(token?: Token | null): string {

@@ -20,6 +20,6 @@ export class NewIntroductionComponent {
   }
 
   public onFillForm(): void {
-    window.open('https://tailwindcss.com/docs/display', '_blank');
+    window.open('https://github.com/soonaverse/soonaverse-dao/issues/new/choose', '_blank');
   }
 }
