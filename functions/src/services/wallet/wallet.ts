@@ -28,8 +28,10 @@ interface Output {
 
 export class WalletService {
   private API_ENDPOINT = [
-    'https://us3.svrs.io',
-    'https://us4.svrs.io',
+    'https://us3.svrs.io/',
+    'https://us4.svrs.io/',
+    'https://hs5.svrs.io/',
+    'https://hs6.svrs.io/',
     'https://chrysalis-nodes.iota.org'
   ]; // Mainnet
   // private API_ENDPOINT = ['https://api.lb-0.h.chrysalis-devnet.iota.cafe'];   // DEV NET
