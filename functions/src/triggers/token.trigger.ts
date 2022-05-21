@@ -145,7 +145,7 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
 
 }
 
-export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
+export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB" })
   .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
     const tokenId = context.params.tokenId
     const prev = change.before.data();
