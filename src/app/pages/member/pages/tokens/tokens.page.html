@@ -63,7 +63,7 @@
                 <td class="font-medium" i18n>Deposit for purchase</td>
                 <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
                 <td class="right">
-                    <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+                    <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && isInCooldown(t)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         (click)="openTokenRefund = t">
                             {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}
