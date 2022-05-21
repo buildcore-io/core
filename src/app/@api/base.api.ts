@@ -54,6 +54,22 @@ export class BaseApi<T> {
     return this.afs.collection<T>(this.collection).doc(id.toLowerCase()).valueChanges();
   }
 
+  // TODO TokenPurchase | TokenBuySellOrder typings
+  public calcVolume = (purchases: any[]) => purchases.reduce((sum, purchase) => sum + purchase.count, 0)
+
+  // TODO TokenPurchase | TokenBuySellOrder typings
+  public calcVWAP = (purchases: any[]) => {
+    if (!purchases.length) {
+      return 0
+    }
+    const high = purchases.reduce((max, act) => Math.max(max, act.price), Number.MIN_SAFE_INTEGER)
+    const low = purchases.reduce((min, act) => Math.min(min, act.price), Number.MAX_SAFE_INTEGER)
+    const close = purchases[0].price || 0
+    const volume = this.calcVolume(purchases)
+    const avg = (high + low + close) / 3
+    return volume * avg / volume
+  }
+
   public last(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<T[]> {
     return this._query({
       collection: this.collection,

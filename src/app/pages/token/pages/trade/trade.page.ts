@@ -54,6 +54,8 @@ export class TradePage implements OnInit, OnDestroy {
   public asks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
+  public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
+  public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgPrice24h$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenToPurchases24h$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
   public listenToPurchases7d$: BehaviorSubject<TokenPurchase[]> = new BehaviorSubject<TokenPurchase[]>([]);
@@ -287,8 +289,8 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenPurchaseApi.listenToPurchases7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenToPurchases7d$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice24h$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenAvgPrice7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgPrice7d$));
-    // this.subscriptions$.push(this.tokenPurchaseApi.listenVolume24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume24h$));
-    // this.subscriptions$.push(this.tokenPurchaseApi.listenVolume7d(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenVolume7d$));
+    this.subscriptions$.push(this.tokenMarketApi.listenToAvgBuy(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgBuy$));
+    this.subscriptions$.push(this.tokenMarketApi.listenToAvgSell(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenAvgSell$));
     this.subscriptions$.push(this.tokenPurchaseApi.listenChangePrice24h(tokenId).pipe(untilDestroyed(this)).subscribe(this.listenChangePrice24h$));
   }
 
@@ -329,6 +331,14 @@ export class TradePage implements OnInit, OnDestroy {
     this.subscriptions$.push(this.tokenApi.listen(id)
       .pipe(untilDestroyed(this))
       .subscribe(this.data.token$));
+  }
+
+  public getBidsTitle(_avg?: number): string {
+    return $localize`Bids`; // + ' ' + ((avg && avg > 0) ? '(' + $localize`avg price ` + this.formatBest(avg * 1000 * 1000) + ')' : '');
+  }
+
+  public getAsksTitle(_avg?: number): string {
+    return $localize`Asks`; // + ' ' + ((avg && avg > 0) ? '(' + $localize`avg price ` + this.formatBest(avg * 1000 * 1000) + ')' : '');
   }
 
   private cancelSubscriptions(): void {

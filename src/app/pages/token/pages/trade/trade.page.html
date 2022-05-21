@@ -125,7 +125,7 @@
     </div>
 
     <div class="flex flex-col w-full mt-10 lg:flex-row lg:space-x-10">
-        <nz-card i18n-nzTitle nzTitle="Bids" class="flex-1 w-full mt-6 h-max lg:mt-0">
+        <nz-card [nzTitle]="getBidsTitle((listenAvgBuy$ | async) || undefined)" class="flex-1 w-full mt-6 h-max lg:mt-0">
             <div class="flex items-center px-6 mb-4">
                 <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentBidsListing === bidListingTypes.OPEN"
                     (nzCheckedChange)="currentBidsListing = bidListingTypes.OPEN">
@@ -210,7 +210,7 @@
             </ng-template>
         </nz-card>
 
-        <nz-card i18n-nzTitle nzTitle="Asks" class="flex-1 w-full h-max">
+        <nz-card [nzTitle]="getAsksTitle((listenAvgSell$ | async) || undefined)" class="flex-1 w-full h-max">
           <div class="flex items-center px-6 mb-4">
               <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentAskListing === askListingTypes.OPEN"
                   (nzCheckedChange)="currentAskListing = askListingTypes.OPEN">

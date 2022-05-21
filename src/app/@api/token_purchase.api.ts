@@ -20,21 +20,6 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     .where('token', '==', tokenId)
     .where('createdOn', '>=', dayjs().subtract(days, 'd').toDate())
 
-  private calcVolume = (purchases: TokenPurchase[]) =>
-    purchases.reduce((sum, purchase) => sum + purchase.count, 0)
-
-  public calcVWAP = (purchases: TokenPurchase[]) => {
-    if (!purchases.length) {
-      return 0
-    }
-    const high = purchases.reduce((max, act) => Math.max(max, act.price), Number.MIN_SAFE_INTEGER)
-    const low = purchases.reduce((min, act) => Math.min(min, act.price), Number.MAX_SAFE_INTEGER)
-    const close = purchases[0].price || 0
-    const volume = this.calcVolume(purchases)
-    const avg = (high + low + close) / 3
-    return volume * avg / volume
-  }
-
   private calcChangePrice24h = (purchases: TokenPurchase[]) => {
     if (purchases.length < 2) {
       return 0
