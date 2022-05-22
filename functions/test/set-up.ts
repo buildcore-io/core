@@ -2,7 +2,7 @@ import test from 'firebase-functions-test';
 import { AppCheck } from './../interfaces/config';
 
 AppCheck.enabled = false;
-const projectId = 'soonaverse-dev'
+export const projectId = 'soonaverse-dev'
 process.env.GCLOUD_PROJECT = projectId;
 
 const getConfig = () => {

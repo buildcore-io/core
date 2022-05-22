@@ -1,6 +1,6 @@
 name: Functions Online Unit Tests
 
-on: push
+on: workflow_dispatch
 
 jobs:
   functions_unit_tests_online:

@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
+import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
@@ -24,9 +24,22 @@ const getBoughtByMember = (token: Token, totalDeposit: number, totalSupply: numb
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
-  const totalPaid = Number(bigDecimal.floor(bigDecimal.multiply(token.pricePerToken, boughtByMember)))
-  const refundedAmount = totalDeposit - totalPaid
-  return { ...distribution, totalPaid, totalBought: boughtByMember, refundedAmount }
+  const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
+  const refundedAmount = Number(bigDecimal.subtract(totalDeposit, totalPaid))
+  return <TokenDistribution>{
+    uid: distribution.uid,
+    totalDeposit: distribution.totalDeposit || 0,
+    totalPaid,
+    refundedAmount,
+    totalBought: boughtByMember,
+    reconciled: distribution.reconciled || false
+  }
+}
+
+const getFlooredDistribution = (distribution: TokenDistribution): TokenDistribution => {
+  const totalPaid = Math.floor(distribution.totalPaid!);
+  const refundedAmount = Number(bigDecimal.subtract(distribution.totalDeposit!, totalPaid));
+  return { ...distribution, totalPaid, refundedAmount }
 }
 
 const createBillPayment =
@@ -37,6 +50,9 @@ const createBillPayment =
     space: Space,
     batch: admin.firestore.WriteBatch
   ) => {
+    if (!distribution.totalPaid) {
+      return ''
+    }
     const tranId = getRandomEthAddress();
     const docRef = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
     const data = <Transaction>{
@@ -46,7 +62,7 @@ const createBillPayment =
       member: distribution.uid,
       createdOn: serverTime(),
       payload: {
-        amount: distribution.totalPaid,
+        amount: distribution.totalPaid + (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0),
         sourceAddress: orderTargetAddress,
         targetAddress: space.validatedAddress,
         previousOwnerEntity: 'space',
@@ -93,8 +109,9 @@ const createCredit = async (
       token: token.uid,
       reconciled: true,
       void: false,
-      invalidPayment: true
-    }
+      invalidPayment: distribution.refundedAmount! < MIN_IOTA_AMOUNT
+    },
+    ignoreWallet: distribution.refundedAmount! < MIN_IOTA_AMOUNT
   };
   batch.create(docRef, data)
   return tranId
@@ -110,8 +127,8 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
   const orderTargetAddress = orderDoc.data()?.payload?.targetAddress
   const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
-  const billPaymentId = createBillPayment(token, distribution, payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
-  const creditPaymentId = await createCredit(token, distribution, payments, orderTargetAddress, batch)
+  const billPaymentId = createBillPayment(token, getFlooredDistribution(distribution), payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
+  const creditPaymentId = await createCredit(token, getFlooredDistribution(distribution), payments, orderTargetAddress, batch)
 
   batch.update(distributionDoc, {
     ...distribution,
@@ -129,12 +146,12 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
   let sell = false;
   while (tokensLeft) {
     const distribution = { ...distributions[i] }
-    if (distribution.refundedAmount! > token.pricePerToken) {
+    if (distribution.refundedAmount! >= token.pricePerToken) {
       sell = true;
       tokensLeft--;
-      distribution.refundedAmount! -= token.pricePerToken
+      distribution.refundedAmount = Number(bigDecimal.subtract(distribution.refundedAmount, token.pricePerToken))
       distribution.totalBought! += 1
-      distribution.totalPaid! += token.pricePerToken
+      distribution.totalPaid = Number(bigDecimal.add(distribution.totalPaid, token.pricePerToken))
       distributions[i] = distribution
     }
     i = (i + 1) % distributions.length
@@ -145,7 +162,7 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
 
 }
 
-export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
+export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB" })
   .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
     const tokenId = context.params.tokenId
     const prev = change.before.data();
@@ -155,14 +172,13 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       return;
     }
 
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).where('totalDeposit', '>', 0).get()
     const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
 
     const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
     const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
 
     const distributions = distributionsSnap.docs
-      .filter(doc => doc.data().totalDeposit > 0)
       .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
       .map(doc => getMemberDistribution(<TokenDistribution>doc.data(), token, totalPublicSupply, totalBought))
 
@@ -172,10 +188,11 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
 
     const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
     const results = await Promise.allSettled(promises);
-    const errors = results.filter(r => r.status === 'rejected').map(r => JSON.stringify((<PromiseRejectedResult>r).reason))
+    const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
+    const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status, errors })
 
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({
-      status: isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR,
-      errors
-    })
+    if (status === TokenStatus.ERROR) {
+      functions.logger.error('Token processing error', token.uid)
+    }
   })

@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { IconModule } from '@components/icon/icon.module';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { CollectionAccessBadgeComponent } from './collection-access-badge.component';
+import { AccessBadgeComponent } from './collection-access-badge.component';
 
 
 @NgModule({
   declarations: [
-    CollectionAccessBadgeComponent
+    AccessBadgeComponent
   ],
   imports: [
     CommonModule,
@@ -15,7 +15,7 @@ import { CollectionAccessBadgeComponent } from './collection-access-badge.compon
     IconModule
   ],
   exports: [
-    CollectionAccessBadgeComponent
+    AccessBadgeComponent
   ]
 })
-export class CollectionAccessBadgeModule { }
+export class AccessBadgeModule { }

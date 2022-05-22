@@ -125,7 +125,7 @@
     </div>
 
     <div class="flex flex-col w-full mt-10 lg:flex-row lg:space-x-10">
-        <nz-card i18n-nzTitle nzTitle="Bids" class="flex-1 w-full mt-6 h-max lg:mt-0">
+        <nz-card [nzTitle]="getBidsTitle((listenAvgBuy$ | async) || undefined)" class="flex-1 w-full mt-6 h-max lg:mt-0">
             <div class="flex items-center px-6 mb-4">
                 <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentBidsListing === bidListingTypes.OPEN"
                     (nzCheckedChange)="currentBidsListing = bidListingTypes.OPEN">
@@ -154,7 +154,7 @@
                     <ng-template #openBidsBlock>
                         <tr *ngFor="let item of (bids$ | async)">
                             <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                            <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
+                            <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                             <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         </tr>
                     </ng-template>
@@ -184,7 +184,7 @@
                     <ng-template #myRequestsBlock>
                       <tr *ngFor="let item of (myBids$ | async)">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
@@ -210,7 +210,7 @@
             </ng-template>
         </nz-card>
 
-        <nz-card i18n-nzTitle nzTitle="Asks" class="flex-1 w-full h-max">
+        <nz-card [nzTitle]="getAsksTitle((listenAvgSell$ | async) || undefined)" class="flex-1 w-full h-max">
           <div class="flex items-center px-6 mb-4">
               <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentAskListing === askListingTypes.OPEN"
                   (nzCheckedChange)="currentAskListing = askListingTypes.OPEN">
@@ -239,7 +239,7 @@
                   <ng-template #openAsksBlock>
                       <tr *ngFor="let item of (asks$ | async)">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                       </tr>
                   </ng-template>
@@ -269,7 +269,7 @@
                   <ng-template #myAsksBlock>
                       <tr *ngFor="let item of (myAsks$ | async)">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">

@@ -1,5 +1,5 @@
 import { Url } from "url";
-import { BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
+import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
 
 
 export interface TokenAllocation {
@@ -12,7 +12,7 @@ export enum TokenStatus {
   AVAILABLE = 'available',
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
-  ERROR = ''
+  ERROR = 'error'
 }
 
 export enum TokenDistributionType {
@@ -42,6 +42,9 @@ export interface Token extends BaseRecord {
   readonly totalDeposit: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
+  readonly access: Access;
+  readonly accessAwards?: string[];
+  readonly accessCollections?: string[];
 }
 
 export interface TokenDrop {
@@ -53,7 +56,7 @@ export interface TokenDrop {
 export interface TokenDistribution extends BaseSubCollection {
   readonly uid?: EthAddress;
 
-  readonly totalDeposit: number;
+  readonly totalDeposit?: number;
   readonly totalPaid?: number;
   readonly refundedAmount?: number;
   readonly totalBought?: number;
@@ -101,6 +104,8 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly type: TokenBuySellOrderType;
   readonly count: number;
   readonly price: number;
+  readonly totalDeposit: number;
+  readonly balance: number;
   readonly fulfilled: number;
   readonly status: TokenBuySellOrderStatus;
   readonly orderTransactionId?: string;

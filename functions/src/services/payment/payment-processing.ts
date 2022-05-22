@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
+import bigDecimal from 'js-big-decimal';
 import { isEmpty, last } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
-import { WenError } from '../../../interfaces/errors';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
 import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
@@ -12,7 +12,6 @@ import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, Pay
 import admin from '../../admin.config';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
-import { throwInvalidArgument } from '../../utils/error.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { NotificationService } from '../notification/notification';
 
@@ -667,13 +666,15 @@ export class ProcessingService {
     });
   }
 
-  private async claimAirdroppedTokens(order: Transaction) {
+  private async claimAirdroppedTokens(order: Transaction, payment: Transaction, match: TransactionMatch) {
     const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
     const distribution = <TokenDistribution>(await this.transaction.get(distributionDocRef)).data();
     const claimableDrops = distribution.tokenDrops?.filter(d => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || []
     if (isEmpty(claimableDrops)) {
-      throw throwInvalidArgument(WenError.no_airdrop_to_claim)
+      await this.createCredit(payment, match)
+      return;
     }
+    await this.createBillPayment(order, payment);
     const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0)
     const data = {
       tokenDrops: admin.firestore.FieldValue.arrayRemove(...claimableDrops),
@@ -695,19 +696,8 @@ export class ProcessingService {
         uid: order.member,
         parentId: order.payload.token,
         parentCol: COL.TOKEN,
-        totalDeposit: 0,
-        totalPaid: 0,
-        refundedAmount: 0,
-        totalBought: 0,
-        reconciled: false,
-        tokenDropped: 0,
-        tokenClaimed: 0,
-        lockedForSale: 0,
-        sold: 0,
-        totalPurchased: 0,
-        tokenOwned: 0
       }
-      this.updates.push({ ref: distributionDocRef, data, action: 'set' });
+      this.updates.push({ ref: distributionDocRef, data, action: 'set', merge: true });
     }
     const buyDocId = getRandomEthAddress()
     const data = cOn(<TokenBuySellOrder>{
@@ -717,6 +707,8 @@ export class ProcessingService {
       type: TokenBuySellOrderType.BUY,
       count: order.payload.count,
       price: order.payload.price,
+      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
+      balance: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
       fulfilled: 0,
       status: TokenBuySellOrderStatus.ACTIVE,
       orderTransactionId: order.uid,
@@ -810,9 +802,8 @@ export class ProcessingService {
                   await this.updateTokenDistribution(orderData, match)
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
                   const payment = await this.createPayment(orderData, match);
-                  await this.createBillPayment(orderData, payment);
                   await this.markAsReconciled(orderData, match.msgId);
-                  await this.claimAirdroppedTokens(orderData);
+                  await this.claimAirdroppedTokens(orderData, payment, match);
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_BUY) {
                   const payment = await this.createPayment(orderData, match);
                   await this.createTokenBuyRequest(orderData, payment)
