@@ -74,28 +74,28 @@
 
 <ng-template #transactionTemplate>
     <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
-      <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-        <div class="mt-1">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}} {{token?.symbol}}</div>
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          Total available tokens to claim as of today
+        <div class="flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+              Total available tokens to claim as of today
+            </div>
+            <div class="mt-1 font-bold text-lg">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}}</div>
         </div>
-      </div>
     </div>
 
-    <div class="max-w-md mt-10 text-lg font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-        <span *ngIf="!isExpired((transaction$ | async))">
-          <span i18n>Send a small </span>{{formatBest(targetAmount) }}
-          <span i18n>amount to validate your address. This expires in </span>{{(expiryTicker$ | async) | countdownTime}}.
-        </span>
-        <span *ngIf="isExpired((transaction$ | async))" i18n>Expired.</span>
+    <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center w-max mx-auto mt-6">
+        <wen-icon-stopwatch class="mr-2 lg:mr-3 text-alerts-error"></wen-icon-stopwatch>
+        <div class="text-base font-medium">
+            <span *ngIf="!isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
+            <span class="text-alerts-error" *ngIf="!isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
+            <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))" i18n>Expired</span>
+        </div>
     </div>
 
     <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
 
-    <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
+    <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           <span *ngIf="!isExpired((transaction$ | async))">
-            <span>This expires in </span>{{(expiryTicker$ | async) | countdownTime}}.
             <span i18n>Send</span> {{formatBest(targetAmount)}} <span i18n> to following address:</span>
           </span>
           <span *ngIf="isExpired((transaction$ | async))" i18n>Expired.</span>

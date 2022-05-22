@@ -6,7 +6,14 @@
             'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
         }">
 
-        <nz-card class="relative mt-4" i18n-nzTitle nzTitle="Token description">
+        <nz-card class="relative mt-4">
+            <nz-card-meta
+                i18n-nzTitle
+                nzTitle="Token description"
+                i18n-nzDescription
+                nzDescription="This text will be displayed on the main token page."
+            >
+            </nz-card-meta>
             <div class="pt-4">
                 <nz-form-item>
                     <nz-form-control i18n-nzErrorTip nzErrorTip="Title is invalid.">
@@ -34,7 +41,14 @@
             </div>
         </nz-card>
 
-        <nz-card class="relative mt-4" i18n-nzTitle nzTitle="Short description">
+        <nz-card class="relative mt-4">
+            <nz-card-meta
+                i18n-nzTitle
+                nzTitle="Short description"
+                i18n-nzDescription
+                nzDescription="Short description of the token which will be displayed on the token trading page."
+            >
+            </nz-card-meta>
             <div class="pt-4">
                 <nz-form-item>
                     <nz-form-control i18n-nzErrorTip nzErrorTip="Short title is invalid.">
