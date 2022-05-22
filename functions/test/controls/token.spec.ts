@@ -500,7 +500,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_ONLY })
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
     await testEnv.wrap(orderToken)({});
-    mockWalletReturnValue(walletSpy, wallet.getRandomEthAddress(), { token: token.uid });
+    const newMember = await createMember(walletSpy, true)
+    mockWalletReturnValue(walletSpy, newMember, { token: token.uid });
     await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_are_not_part_of_space.key);
   })
 

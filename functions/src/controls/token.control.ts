@@ -212,6 +212,11 @@ export const orderToken = functions.runWith({
   const schema = Joi.object({ token: Joi.string().required() });
   assertValidation(schema.validate(params.body));
 
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+  if (!member?.validatedAddress) {
+    throw throwInvalidArgument(WenError.member_must_have_validated_address)
+  }
+
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
     throw throwInvalidArgument(WenError.invalid_params)
