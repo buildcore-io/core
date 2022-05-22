@@ -36,14 +36,14 @@ export class CollectionsPage {
     { value: 'collection_price_desc', label: $localize`High to Low`},
   ];
   paginationItems = defaultPaginationItems;
-  openFilters = true;
+  openFilters = false;
   reset$ = new Subject<void>();
   spacesLoaded$?: Observable<boolean>;
   sortOpen = true;
   saleFilterOpen = true;
   spaceFilterOpen = true;
   categoryFilterOpen = false;
-  priceFilterOpen = true;
+  priceFilterOpen = false;
 
   constructor(
     public filter: FilterService,

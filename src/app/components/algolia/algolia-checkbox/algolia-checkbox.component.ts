@@ -17,9 +17,10 @@ export interface AlgoliaCheckboxType {
 }
 
 export enum AlgoliaCheckboxFilterType {
+  DEFAULT = 'Default',
   SALE = 'Sale',
   SPACE = 'Space',
-  DEFAULT = 'Default'
+  STATUS = 'Status'
 }
 
 @UntilDestroy()

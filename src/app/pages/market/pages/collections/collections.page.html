@@ -8,7 +8,7 @@
     <ais-stats data-layout="mobile">
       <ng-template let-state="state">
         <span class="ais-Stats-text font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          {{ state.nbHits | number }} records
+          {{ state.nbHits | number }} <ng-container i18n>records</ng-container>
         </span>
       </ng-template>
     </ais-stats>
@@ -16,7 +16,7 @@
       <wen-icon-collapse-arrow *ngIf="deviceService.isDesktop$ | async" [size]="16"
         class="transition-all mr-1" [ngClass]="{ 'rotate-180': !openFilters}"></wen-icon-collapse-arrow>
       <div i18n>Filters&Sort</div>
-  </button>
+    </button>
   </div>
   <main class="flex mx-auto">
     <div class="container-results" [ngClass]="{ 'mr-5' : openFilters }">
@@ -102,18 +102,11 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <!-- <ais-panel header="Price range">
-          <ais-range-slider
-            attribute="price"
-            [pips]="false"
-            [tooltips]="true"
-            [precision]="0"
-          >
-          </ais-range-slider>
-        </ais-panel> -->
-        <wen-collapse class="transition-all mb-2" i18n-title title="Price range" [isCollapsed]="false"
+        <wen-collapse class="transition-all mb-2" i18n-title title="Price range" [isCollapsed]="true"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="priceFilterOpen = !$event" [ngClass]="{ 'mb-10': priceFilterOpen || (deviceService.isMobile$ | async) }">
-            <wen-algolia-range class="w-11/12 mx-auto">
+            <wen-algolia-range
+              class="w-11/12 mx-auto"
+              [reset$]="reset$">
             </wen-algolia-range>
         </wen-collapse>
         <div>
