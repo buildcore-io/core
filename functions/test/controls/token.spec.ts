@@ -231,7 +231,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     await testEnv.wrap(createToken)({})
     token.accessAwards = []
     mockWalletReturnValue(walletSpy, memberAddress, token)
-    await expectThrow(testEnv.wrap(createToken)({}),WenError.invalid_params.key)
+    await expectThrow(testEnv.wrap(createToken)({}), WenError.invalid_params.key)
   })
 
   it('Should throw, accessCollections required if access is MEMBERS_WITH_NFT_FROM_COLLECTION', async () => {
@@ -436,9 +436,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       coolDownEnd: dateToTimestamp(dayjs().add(1, 'd').toDate())
     });
 
-    const credit = await submitCreditTokenFunc(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
-    const nextMilestone2 = await submitMilestoneFunc(credit.payload.targetAddress, credit.payload.amount);
-    await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
+    await submitCreditTokenFunc(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
 
     const updatedDistribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(updatedDistribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
@@ -460,9 +458,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
       coolDownEnd: dateToTimestamp(dayjs().add(1, 'd').toDate())
     });
 
-    const credit = await submitCreditTokenFunc(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
-    const nextMilestone2 = await submitMilestoneFunc(credit.payload.targetAddress, credit.payload.amount);
-    await milestoneProcessed(nextMilestone2.milestone, nextMilestone2.tranId);
+    await submitCreditTokenFunc(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
 
     const updatedDistribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(updatedDistribution?.totalDeposit).toBe(0)
@@ -532,6 +528,23 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_WITH_NFT_FROM_COLLECTION, accessCollections: [wallet.getRandomEthAddress()] })
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
     await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_dont_have_required_NFTs.key);
+  })
+
+  it('Should create token order and should credit, not leave less then MIN amount', async () => {
+    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, 1.5 * MIN_IOTA_AMOUNT);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution?.totalDeposit).toBe(1.5 * MIN_IOTA_AMOUNT)
+
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
+      saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
+      coolDownEnd: dateToTimestamp(dayjs().add(1, 'd').toDate())
+    });
+
+    const credit = await submitCreditTokenFunc(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
+    expect(credit.payload.amount).toBe(1.5 * MIN_IOTA_AMOUNT)
   })
 
 })

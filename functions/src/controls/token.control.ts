@@ -295,8 +295,11 @@ export const creditToken = functions.runWith({
     const order = await transaction.get(orderDocRef(owner, token))
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
-    transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
-    transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+    const totalDepositLeft = distribution.totalDeposit - params.body.amount
+    const refundAmount = params.body.amount + (totalDepositLeft < MIN_IOTA_AMOUNT ? totalDepositLeft : 0)
+
+    transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-refundAmount) })
+    transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-refundAmount) })
 
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,
@@ -306,7 +309,7 @@ export const creditToken = functions.runWith({
       createdOn: serverTime(),
       payload: {
         type: TransactionCreditType.TOKEN_PURCHASE,
-        amount: params.body.amount,
+        amount: refundAmount,
         sourceAddress: order.data()?.payload.targetAddress,
         targetAddress: member.validatedAddress,
         sourceTransaction: payments.map(d => d.uid),
