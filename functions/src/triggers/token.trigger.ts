@@ -24,15 +24,15 @@ const getBoughtByMember = (token: Token, totalDeposit: number, totalSupply: numb
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
-  const totalPaid = Number(bigDecimal.floor(bigDecimal.multiply(token.pricePerToken, boughtByMember)))
+  const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
   const refundedAmount = totalDeposit - totalPaid
   return <TokenDistribution>{
     uid: distribution.uid,
-    totalDeposit: distribution.totalDeposit,
+    totalDeposit: distribution.totalDeposit || 0,
     totalPaid,
     refundedAmount,
     totalBought: boughtByMember,
-    reconciled: distribution.reconciled
+    reconciled: distribution.reconciled || false
   }
 }
 
@@ -140,7 +140,7 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
   let sell = false;
   while (tokensLeft) {
     const distribution = { ...distributions[i] }
-    if (distribution.refundedAmount! > token.pricePerToken) {
+    if (distribution.refundedAmount! >= token.pricePerToken) {
       sell = true;
       tokensLeft--;
       distribution.refundedAmount! -= token.pricePerToken
@@ -181,7 +181,12 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       distributeLeftoverTokens(distributions, totalPublicSupply, token);
     }
 
-    const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
+    const promises = distributions.filter(p => !p.reconciled)
+      .map(d => {
+        const totalPaid = Math.floor(d.totalPaid!);
+        return { ...d, totalPaid, refundedAmount: d.totalDeposit! - totalPaid }
+      })
+      .map(reconcileBuyer(token))
     const results = await Promise.allSettled(promises);
     const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
     const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR
