@@ -424,7 +424,7 @@
           <context context-type="sourcefile">src/app/components/algolia/search/search.component.html</context>
           <context context-type="linenumber">20,21</context>
         </context-group>
-        <target state="needs-translation">Start typing...</target>
+        <target state="translated">Iniziare a digitare...</target>
       </trans-unit>
       <trans-unit id="7593555694782789615" datatype="html">
         <source>Open</source>
@@ -484,7 +484,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="needs-translation">Unavailable for sale</target>
+        <target state="translated">Non disponibile alla vendita</target>
       </trans-unit>
       <trans-unit id="2109630812434101777" datatype="html">
         <source>Auction</source>
@@ -540,7 +540,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">82</context>
         </context-group>
-        <target state="needs-translation">On Sale</target>
+        <target state="translated">In vendita</target>
       </trans-unit>
       <trans-unit id="7699622144571229146" datatype="html">
         <source>Sort by</source>
@@ -572,7 +572,7 @@
           <context context-type="sourcefile">src/app/components/algolia/sort/sort.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <target state="needs-translation">sort by</target>
+        <target state="translated">ordinare per</target>
       </trans-unit>
       <trans-unit id="3612321595619972457" datatype="html">
         <source>Metamask</source>
@@ -1460,7 +1460,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ace?.name | truncate:[20] }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ace?.name | truncate:[20] }}"/></target>
       </trans-unit>
       <trans-unit id="6300210647237660616" datatype="html">
         <source>Current highest bid</source>
@@ -2083,7 +2083,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">130,131</context>
         </context-group>
-        <target state="needs-translation"> to following address (please restake after!):</target>
+        <target state="translated"> al seguente indirizzo (in seguito riavviare lo staking!):</target>
       </trans-unit>
       <trans-unit id="6703363698270507349" datatype="html">
         <source> Transaction history </source>
@@ -2247,7 +2247,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <target state="needs-translation">Invalid payment refunded.</target>
+        <target state="translated">Pagamento non valido rimborsato.</target>
       </trans-unit>
       <trans-unit id="7663095631938257541" datatype="html">
         <source>Order created.</source>
@@ -2259,7 +2259,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">242</context>
         </context-group>
-        <target state="needs-translation">Order created.</target>
+        <target state="translated">Ordine assegnato.</target>
       </trans-unit>
       <trans-unit id="3978157429994044725" datatype="html">
         <source>Waiting for transaction...</source>
@@ -2279,7 +2279,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">245</context>
         </context-group>
-        <target state="needs-translation">Waiting for transaction...</target>
+        <target state="translated">In attesa di transazione...</target>
       </trans-unit>
       <trans-unit id="1295614462098694869" datatype="html">
         <source>Preview</source>
