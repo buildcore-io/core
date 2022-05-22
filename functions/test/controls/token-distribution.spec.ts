@@ -20,6 +20,7 @@ interface Inputs {
   readonly refundedAmount: number[];
   readonly tokenOwned: number[];
   readonly paymentAmount?: number[];
+  readonly creditAmount?: number[];
 
   readonly totalSupply: number;
   readonly pricePerToken: number;
@@ -101,12 +102,42 @@ const scenario5 = ({
 //No decimal test
 const scenario6 = ({
   totalDeposit: [5, 7, 9, 3],
-  totalPaid: [4, 6, 8, 2],
-  refundedAmount: [1, 1, 1, 1],
+  totalPaid: [4.0000002, 6.0000003, 8.0000004, 2.0000001],
+  refundedAmount: [0.9999998, 0.9999997, 0.9999996, 0.9999999],
   tokenOwned: [2, 3, 4, 1],
+
+  paymentAmount: [4, 6, 8, 2],
+  creditAmount: [1, 1, 1, 1],
 
   totalSupply: 10,
   pricePerToken: 2 * MIN_IOTA_AMOUNT + 0.1,
+  publicPercentage: 100
+})
+
+//No decimal after leftover test
+const scenario7 = ({
+  totalDeposit: [20, 12],
+  totalPaid: [14.0000007, 6.0000003],
+  refundedAmount: [5.9999993, 5.9999997],
+  tokenOwned: [7, 3],
+  paymentAmount: [14, 6],
+  creditAmount: [6, 6],
+  totalSupply: 10,
+  pricePerToken: 2 * MIN_IOTA_AMOUNT + 0.1,
+  publicPercentage: 100
+})
+
+//No decimal no credit
+const scenario8 = ({
+  totalDeposit: [1.5],
+  totalPaid: [1],
+  refundedAmount: [0.5],
+  tokenOwned: [1],
+
+  paymentAmount: [1.5],
+
+  totalSupply: 1,
+  pricePerToken: 1 * MIN_IOTA_AMOUNT,
   publicPercentage: 100
 })
 
@@ -121,7 +152,7 @@ const custom = ({
   publicPercentage: 100
 })
 
-const scenarios = [mainPage, scenario1, scenario2, scenario3, scenario4, scenario5, scenario6, custom]
+const scenarios = [mainPage, scenario1, scenario2, scenario3, scenario4, scenario5, scenario6, scenario7, scenario8, custom]
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
   mockWalletReturnValue(spy, address, params);
@@ -156,20 +187,20 @@ describe('Token trigger test', () => {
   let guardian: string;
   let space: Space;
   let token: any;
+  let members: string[]
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardian = await createMember(walletSpy)
     space = await createSpace(walletSpy, guardian, true)
-  });
-
+    const maxMembers = scenarios.reduce((max, scenario) => Math.max(max, scenario.totalDeposit.length), 0)
+    const memberPromises = Array.from(Array(maxMembers)).map(() => createMember(walletSpy, true))
+    members = await Promise.all(memberPromises)
+  })
 
   it.each(scenarios)('Should buy tokens', async (input: Inputs) => {
     token = dummyToken(input.totalSupply, space, input.pricePerToken, input.publicPercentage, guardian)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
-
-    const memberPromises = Array.from(Array(input.totalDeposit.length)).map(() => createMember(walletSpy, true))
-    const members = await Promise.all(memberPromises)
 
     const orderPromises = Array.from(Array(input.totalDeposit.length)).map(async (_, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
@@ -182,7 +213,7 @@ describe('Token trigger test', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status: TokenStatus.PROCESSING });
     await tokenProcessed(token.uid, input.totalDeposit.length, true)
 
-    for (let i = 0; i < members.length; ++i) {
+    for (let i = 0; i < input.totalDeposit.length; ++i) {
       const member = members[i]
       const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()).data()
       const refundedAmount = Number(bigDecimal.multiply(input.refundedAmount[i], MIN_IOTA_AMOUNT))
@@ -202,9 +233,11 @@ describe('Token trigger test', () => {
         expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
         expect(paymentDoc.data()?.payload?.targetAddress).toBe(space.validatedAddress)
       }
-      if (refundedAmount) {
+      if (distribution.creditPaymentId) {
         const creditPaymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`).get()
         expect(creditPaymentDoc.exists).toBe(true)
+        const creditAmount = isEmpty(input.creditAmount) ? input.refundedAmount[i] : input.creditAmount![i]
+        expect(creditPaymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)))
         const memberAddress = (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()?.validatedAddress
         expect(creditPaymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
         expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(memberAddress)

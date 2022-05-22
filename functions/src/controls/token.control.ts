@@ -283,7 +283,7 @@ export const creditToken = functions.runWith({
   await admin.firestore().runTransaction(async (transaction) => {
     const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`)
     const distribution = <TokenDistribution | undefined>(await transaction.get(distributionDocRef)).data()
-    if (!distribution || distribution.totalDeposit < params.body.amount) {
+    if (!distribution || (distribution.totalDeposit || 0) < params.body.amount) {
       throw throwInvalidArgument(WenError.not_enough_funds)
     }
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
@@ -295,7 +295,7 @@ export const creditToken = functions.runWith({
     const order = await transaction.get(orderDocRef(owner, token))
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
-    const totalDepositLeft = distribution.totalDeposit - params.body.amount
+    const totalDepositLeft = (distribution.totalDeposit || 0) - params.body.amount
     const refundAmount = params.body.amount + (totalDepositLeft < MIN_IOTA_AMOUNT ? totalDepositLeft : 0)
 
     transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-refundAmount) })

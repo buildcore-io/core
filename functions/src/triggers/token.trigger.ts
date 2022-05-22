@@ -25,7 +25,7 @@ const getMemberDistribution = (distribution: TokenDistribution, token: Token, to
   const totalDeposit = distribution.totalDeposit || 0;
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
   const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
-  const refundedAmount = totalDeposit - totalPaid
+  const refundedAmount = Number(bigDecimal.subtract(totalDeposit, totalPaid))
   return <TokenDistribution>{
     uid: distribution.uid,
     totalDeposit: distribution.totalDeposit || 0,
@@ -34,6 +34,12 @@ const getMemberDistribution = (distribution: TokenDistribution, token: Token, to
     totalBought: boughtByMember,
     reconciled: distribution.reconciled || false
   }
+}
+
+const getFlooredDistribution = (distribution: TokenDistribution): TokenDistribution => {
+  const totalPaid = Math.floor(distribution.totalPaid!);
+  const refundedAmount = Number(bigDecimal.subtract(distribution.totalDeposit!, totalPaid));
+  return { ...distribution, totalPaid, refundedAmount }
 }
 
 const createBillPayment =
@@ -121,8 +127,8 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
   const orderTargetAddress = orderDoc.data()?.payload?.targetAddress
   const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
-  const billPaymentId = createBillPayment(token, distribution, payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
-  const creditPaymentId = await createCredit(token, distribution, payments, orderTargetAddress, batch)
+  const billPaymentId = createBillPayment(token, getFlooredDistribution(distribution), payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
+  const creditPaymentId = await createCredit(token, getFlooredDistribution(distribution), payments, orderTargetAddress, batch)
 
   batch.update(distributionDoc, {
     ...distribution,
@@ -143,9 +149,9 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
     if (distribution.refundedAmount! >= token.pricePerToken) {
       sell = true;
       tokensLeft--;
-      distribution.refundedAmount! -= token.pricePerToken
+      distribution.refundedAmount = Number(bigDecimal.subtract(distribution.refundedAmount, token.pricePerToken))
       distribution.totalBought! += 1
-      distribution.totalPaid! += token.pricePerToken
+      distribution.totalPaid = Number(bigDecimal.add(distribution.totalPaid, token.pricePerToken))
       distributions[i] = distribution
     }
     i = (i + 1) % distributions.length
@@ -181,12 +187,7 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       distributeLeftoverTokens(distributions, totalPublicSupply, token);
     }
 
-    const promises = distributions.filter(p => !p.reconciled)
-      .map(d => {
-        const totalPaid = Math.floor(d.totalPaid!);
-        return { ...d, totalPaid, refundedAmount: d.totalDeposit! - totalPaid }
-      })
-      .map(reconcileBuyer(token))
+    const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
     const results = await Promise.allSettled(promises);
     const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
     const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR
