@@ -104,7 +104,8 @@ const createCredit = async (
       reconciled: true,
       void: false,
       invalidPayment: distribution.refundedAmount! < MIN_IOTA_AMOUNT
-    }
+    },
+    ignoreWallet: distribution.refundedAmount! < MIN_IOTA_AMOUNT
   };
   batch.create(docRef, data)
   return tranId
