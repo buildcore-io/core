@@ -1,17 +1,16 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from "@angular/platform-browser";
-import { Router } from '@angular/router';
 import { TabSection } from '@components/tabs/tabs.component';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { WEN_NAME } from '@functions/interfaces/config';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { FilterService } from '../../services/filter.service';
-import { WEN_NAME } from '@functions/interfaces/config';
 
 export const marketSections = [
   { route: `../${ROUTER_UTILS.config.market.collections}`, label: $localize`Collections` },
-  { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFT\'s` },
-  { route: `../${ROUTER_UTILS.config.market.tokens}`, label: $localize`Token\'s` }
+  { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFTs` },
+  { route: `../${ROUTER_UTILS.config.market.tokens}`, label: $localize`Tokens` }
 
 ];
 @UntilDestroy()
