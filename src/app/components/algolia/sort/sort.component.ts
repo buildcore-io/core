@@ -47,6 +47,7 @@ export class SortByComponent extends TypedBaseWidget<SortByWidgetDescription, So
     });
     super.ngOnInit();
   }
+  
   ngAfterViewInit() {
     this.sortControl.setValue(this.items && this.items.length > 0 ? this.items[0].value : '');
     this.sortControl.valueChanges.pipe(untilDestroyed(this))

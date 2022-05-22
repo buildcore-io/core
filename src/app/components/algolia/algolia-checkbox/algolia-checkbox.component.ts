@@ -1,31 +1,45 @@
-import { ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
+import { ChangeDetectorRef, Component, forwardRef, Inject, Input, OnInit, Optional, TemplateRef } from '@angular/core';
 import { noop, parseNumberInput } from "@components/algolia/util";
-import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from "angular-instantsearch";
+import { PreviewImageService } from '@core/services/preview-image';
+import { Access } from '@functions/interfaces/models/base';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
 import {
   RefinementListConnectorParams, RefinementListItem, RefinementListRenderState, RefinementListWidgetDescription
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
+import { Subject } from 'rxjs';
 
+export interface AlgoliaCheckboxType {
+  label: string;
+  value: string;
+  icon?: TemplateRef<unknown>;
+}
 
-export type RefinementMappings = { [v: string]: string };
+export enum AlgoliaCheckboxFilterType {
+  SALE = 'Sale',
+  SPACE = 'Space',
+  DEFAULT = 'Default'
+}
 
+@UntilDestroy()
+// eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
 @Component({
-  selector: 'wen-refinement-list',
-  templateUrl: './refinement.component.html',
-  styleUrls: ['./refinement.component.less'],
-  // changeDetection: ChangeDetectionStrategy.OnPush
-  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  selector: 'wen-algolia-checkbox',
+  templateUrl: './algolia-checkbox.component.html',
+  styleUrls: ['./algolia-checkbox.component.less']
 })
-export class RefinementListComponent extends TypedBaseWidget<
-  RefinementListWidgetDescription,
-  RefinementListConnectorParams
+export class AlgoliaCheckboxComponent extends TypedBaseWidget<
+    RefinementListWidgetDescription,
+    RefinementListConnectorParams
   > implements OnInit {
   // rendering options
   @Input() public showMoreLabel = 'Show more';
   @Input() public showLessLabel = 'Show less';
   @Input() public searchable?: boolean;
   @Input() public searchPlaceholder = 'Search here...';
+  @Input() public showSearch = false;
+  @Input() public reset$ = new Subject<void>();
 
   // instance options
   @Input() public attribute!: RefinementListConnectorParams['attribute'];
@@ -37,6 +51,9 @@ export class RefinementListComponent extends TypedBaseWidget<
   @Input()
   public transformItems?: RefinementListConnectorParams['transformItems'];
   @Input() public showIcon = true;
+  @Input() public filterType: AlgoliaCheckboxFilterType = AlgoliaCheckboxFilterType.DEFAULT;
+  public initialItemsList: RefinementListItem[] = [];
+  public initialValue = '';
 
   public state: RefinementListRenderState = {
     canRefine: false,
@@ -62,7 +79,9 @@ export class RefinementListComponent extends TypedBaseWidget<
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
-    public instantSearchInstance: NgAisInstantSearch
+    public instantSearchInstance: NgAisInstantSearch,
+    public previewImageService: PreviewImageService,
+    private cd: ChangeDetectorRef
   ) {
     super('RefinementList');
   }
@@ -80,12 +99,32 @@ export class RefinementListComponent extends TypedBaseWidget<
     });
 
     super.ngOnInit();
+
+    this.reset$.pipe(untilDestroyed(this))
+      .subscribe(() => {
+        if (this.initialItemsList.length === 0) {
+          this.initialItemsList = this.state.items;
+        }
+        this.initialItemsList.forEach(item => item.isRefined = false);
+        this.cd.markForCheck();
+      });
+  }
+
+  public get algoliaCheckboxFilterTypes(): typeof AlgoliaCheckboxFilterType {
+    return AlgoliaCheckboxFilterType;
+  }
+
+  public get collectionAccesses(): typeof Access {
+    return Access;
   }
 
   public refine(event: MouseEvent, item: RefinementListItem) {
     event.preventDefault();
     event.stopPropagation();
 
+    if (!this.initialItemsList.length) {
+      this.initialItemsList = this.state.items;
+    }
     if (this.state.canRefine) {
       // update UI directly, it will update the checkbox state
       item.isRefined = !item.isRefined;
@@ -93,5 +132,9 @@ export class RefinementListComponent extends TypedBaseWidget<
       // refine through Algolia API
       this.state.refine(item.value);
     }
+  }
+
+  public itemToAny(item: any): any {
+    return item as unknown as any;
   }
 }

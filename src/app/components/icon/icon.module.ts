@@ -15,6 +15,7 @@ import { CheckCircleIconComponent } from './check-circle/check-circle.component'
 import { CheckIconComponent } from './check/check.component';
 import { CloseIconComponent } from './close/close.component';
 import { CoinIconComponent } from './coin/coin.component';
+import { CollapseArrowIconComponent } from './collapse-arrow/collapse-arrow.component';
 import { CollectionIconComponent } from './collection/collection.component';
 import { CopyIconComponent } from './copy/copy.component';
 import { CrownIconComponent } from './crown/crown.component';
@@ -144,7 +145,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SwitchIconComponent,
     FileExportIconComponent,
     TokenIconComponent,
-    EditUnderlineIconComponent
+    EditUnderlineIconComponent,
+    CollapseArrowIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -217,7 +219,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     SwitchIconComponent,
     FileExportIconComponent,
     TokenIconComponent,
-    EditUnderlineIconComponent
+    EditUnderlineIconComponent,
+    CollapseArrowIconComponent
   ],
   imports: [
     CommonModule

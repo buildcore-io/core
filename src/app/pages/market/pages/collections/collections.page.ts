@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
+import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { Timestamp } from "firebase/firestore";
+import { map, Observable, Subject } from 'rxjs';
 
 
 @UntilDestroy()
@@ -28,19 +31,28 @@ export class CollectionsPage {
   };
   sections = marketSections;
   sortItems = [
-    { value: 'collection', label: 'Recent' },
-    { value: 'collection_price_asc', label: 'Low to High' },
-    { value: 'collection_price_desc', label: 'High to Low' },
+    { value: 'collection', label: $localize`Recent` },
+    { value: 'collection_price_asc', label: $localize`Low to High` },
+    { value: 'collection_price_desc', label: $localize`High to Low`},
   ];
   paginationItems = defaultPaginationItems;
+  openFilters = false;
+  reset$ = new Subject<void>();
+  spacesLoaded$?: Observable<boolean>;
+  sortOpen = this.deviceService.isMobile$.value;
+  saleFilterOpen = this.deviceService.isMobile$.value;
+  spaceFilterOpen = this.deviceService.isMobile$.value;
+  categoryFilterOpen = this.deviceService.isMobile$.value;
+  priceFilterOpen = this.deviceService.isMobile$.value;
 
   constructor(
     public filter: FilterService,
     public collectionApi: CollectionApi,
     public deviceService: DeviceService,
     public cache: CacheService,
-    public readonly algoliaService: AlgoliaService,
+    public readonly algoliaService: AlgoliaService
   ) {
+    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
   }
 
   public trackByUid(_index: number, item: any): number {
@@ -56,5 +68,13 @@ export class CollectionsPage {
       lastmodified: Timestamp.fromMillis(+algolia.lastmodified),
       availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
     }));
+  }
+
+  public get collapseTypes(): typeof CollapseType {
+    return CollapseType;
+  }
+
+  public get algoliaCheckboxFilterTypes(): typeof AlgoliaCheckboxFilterType {
+    return AlgoliaCheckboxFilterType;
   }
 }

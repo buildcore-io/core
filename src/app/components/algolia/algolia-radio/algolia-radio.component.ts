@@ -1,31 +1,31 @@
-import { ChangeDetectionStrategy, Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
+import { ChangeDetectorRef, Component, forwardRef, Inject, Input, OnInit, Optional } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { noop, parseNumberInput } from "@components/algolia/util";
-import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from "angular-instantsearch";
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
 import {
   RefinementListConnectorParams, RefinementListItem, RefinementListRenderState, RefinementListWidgetDescription
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
+import { Subject } from 'rxjs';
 
-
-export type RefinementMappings = { [v: string]: string };
-
+@UntilDestroy()
+// eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
 @Component({
-  selector: 'wen-refinement-list',
-  templateUrl: './refinement.component.html',
-  styleUrls: ['./refinement.component.less'],
-  // changeDetection: ChangeDetectionStrategy.OnPush
-  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
-  changeDetection: ChangeDetectionStrategy.Default
+  selector: 'wen-algolia-radio',
+  templateUrl: './algolia-radio.component.html',
+  styleUrls: ['./algolia-radio.component.less']
 })
-export class RefinementListComponent extends TypedBaseWidget<
-  RefinementListWidgetDescription,
-  RefinementListConnectorParams
+export class AlgoliaRadioComponent extends TypedBaseWidget<
+    RefinementListWidgetDescription,
+    RefinementListConnectorParams
   > implements OnInit {
   // rendering options
-  @Input() public showMoreLabel = 'Show more';
-  @Input() public showLessLabel = 'Show less';
+  @Input() public showMoreLabel = $localize`Show more`;
+  @Input() public showLessLabel = $localize`Show less`;
   @Input() public searchable?: boolean;
-  @Input() public searchPlaceholder = 'Search here...';
+  @Input() public searchPlaceholder = $localize`Search here...`;
+  @Input() public reset$ = new Subject<void>();
 
   // instance options
   @Input() public attribute!: RefinementListConnectorParams['attribute'];
@@ -36,7 +36,8 @@ export class RefinementListComponent extends TypedBaseWidget<
   @Input() public sortBy: RefinementListConnectorParams['sortBy'];
   @Input()
   public transformItems?: RefinementListConnectorParams['transformItems'];
-  @Input() public showIcon = true;
+  @Input() public showIcon=true;
+  public initialItemsList: RefinementListItem[] = [];
 
   public state: RefinementListRenderState = {
     canRefine: false,
@@ -52,9 +53,10 @@ export class RefinementListComponent extends TypedBaseWidget<
     sendEvent: noop,
   };
 
-  get isHidden() {
+  public get isHidden() {
     return this.state.items.length === 0 && this.autoHideContainer;
   }
+  public formControl = new FormControl();
 
   constructor(
     @Inject(forwardRef(() => NgAisIndex))
@@ -62,7 +64,8 @@ export class RefinementListComponent extends TypedBaseWidget<
     @Optional()
     public parentIndex: NgAisIndex,
     @Inject(forwardRef(() => NgAisInstantSearch))
-    public instantSearchInstance: NgAisInstantSearch
+    public instantSearchInstance: NgAisInstantSearch,
+    private cd: ChangeDetectorRef
   ) {
     super('RefinementList');
   }
@@ -74,24 +77,31 @@ export class RefinementListComponent extends TypedBaseWidget<
       showMoreLimit: parseNumberInput(this.showMoreLimit),
       attribute: this.attribute,
       operator: this.operator,
-      sortBy: this.sortBy,
       escapeFacetValues: true,
+      sortBy: this.sortBy,
       transformItems: this.transformItems,
     });
 
     super.ngOnInit();
-  }
 
-  public refine(event: MouseEvent, item: RefinementListItem) {
-    event.preventDefault();
-    event.stopPropagation();
+    this.formControl.valueChanges
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe(value => {
+        if (!this.initialItemsList.length) {
+          this.initialItemsList = this.state.items;
+        }
+        this.state.items.filter(item => item.isRefined).forEach(item => {
+          item.isRefined = false;
+          this.state.refine(item.value);
+        });
+        this.state.refine(value);
+      });
 
-    if (this.state.canRefine) {
-      // update UI directly, it will update the checkbox state
-      item.isRefined = !item.isRefined;
-
-      // refine through Algolia API
-      this.state.refine(item.value);
-    }
+    this.reset$.pipe(untilDestroyed(this))
+      .subscribe(() => {
+        console.log(this.state.items);
+      });
   }
 }
