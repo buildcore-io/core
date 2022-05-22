@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NftApi } from '@api/nft.api';
+import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
@@ -10,6 +12,7 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { Timestamp } from "firebase/firestore";
+import { map, Observable, Subject } from 'rxjs';
 
 // used in src/app/pages/collection/pages/collection/collection.page.ts
 export enum HOT_TAGS {
@@ -43,6 +46,13 @@ export class NFTsPage {
     { value: 'nft_price_desc', label: 'High to Low' },
   ];
   paginationItems = defaultPaginationItems;
+  openFilters = false;
+  reset$ = new Subject<void>();
+  spacesLoaded$?: Observable<boolean>;
+  sortOpen = true;
+  statusFilterOpen = true;
+  isOwnedFilterOpen = true;
+  spaceFilterOpen = true;
 
   constructor(
     public filter: FilterService,
@@ -53,6 +63,7 @@ export class NFTsPage {
     private cacheService: CacheService,
     public readonly algoliaService: AlgoliaService
   ) {
+    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
   }
 
   public trackByUid(_index: number, item: any): number {
@@ -73,5 +84,13 @@ export class NFTsPage {
     return algoliaItems.map(algolia => ({
       ...algolia, availableFrom: Timestamp.fromMillis(+algolia.availableFrom),
     }));
+  }
+
+  public get collapseTypes(): typeof CollapseType {
+    return CollapseType;
+  }
+
+  public get algoliaCheckboxFilterTypes(): typeof AlgoliaCheckboxFilterType {
+    return AlgoliaCheckboxFilterType;
   }
 }

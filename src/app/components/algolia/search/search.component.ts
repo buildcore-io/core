@@ -13,7 +13,7 @@ import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instant
 import connectSearchBox, {
   SearchBoxConnectorParams, SearchBoxWidgetDescription
 } from 'instantsearch.js/es/connectors/search-box/connectSearchBox';
-import { debounceTime } from "rxjs";
+import { debounceTime, Subject } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -26,6 +26,7 @@ import { debounceTime } from "rxjs";
 })
 export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescription, SearchBoxConnectorParams> implements OnInit {
   @Input() sections: TabSection[] = [];
+  @Input() public reset$ = new Subject<void>();
 
   public state: SearchBoxWidgetDescription['renderState'] = {
     clear: noop,
@@ -71,6 +72,11 @@ export class SearchBoxComponent extends TypedBaseWidget<SearchBoxWidgetDescripti
         if (obj instanceof NavigationEnd) {
           this.setSelectedSection();
         }
+      });
+  
+    this.reset$.pipe(untilDestroyed(this))
+      .subscribe(() => {
+        this.filterControl.setValue(undefined);
       });
 
     super.ngOnInit();

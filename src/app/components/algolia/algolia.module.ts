@@ -27,12 +27,14 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzSkeletonModule } from "ng-zorro-antd/skeleton";
 import { NzSliderModule } from 'ng-zorro-antd/slider';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTagModule } from "ng-zorro-antd/tag";
 import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import { AlgoliaCheckboxComponent } from './algolia-checkbox/algolia-checkbox.component';
 import { AlgoliaClearComponent } from './algolia-clear/algolia-clear.component';
 import { AlgoliaRadioComponent } from './algolia-radio/algolia-radio.component';
 import { AlgoliaRangeComponent } from './algolia-range/algolia-range.component';
+import { AlgoliaToggleComponent } from './algolia-toggle/algolia-toggle.component';
 import { AlgoliaService } from "./services/algolia.service";
 
 @NgModule({
@@ -64,9 +66,10 @@ import { AlgoliaService } from "./services/algolia.service";
     NzAvatarModule,
     NzCheckboxModule,
     NzSliderModule,
+    NzSwitchModule,
     NgAisModule.forRoot(),
   ],
-  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective, AlgoliaRadioComponent, AlgoliaCheckboxComponent, AlgoliaRangeComponent, AlgoliaClearComponent,
+  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective, AlgoliaRadioComponent, AlgoliaCheckboxComponent, AlgoliaRangeComponent, AlgoliaClearComponent, AlgoliaToggleComponent,
   ],
   providers: [AlgoliaService],
   exports: [
@@ -79,7 +82,8 @@ import { AlgoliaService } from "./services/algolia.service";
     AlgoliaRadioComponent,
     AlgoliaCheckboxComponent,
     AlgoliaRangeComponent,
-    AlgoliaClearComponent
+    AlgoliaClearComponent,
+    AlgoliaToggleComponent
   ]
 })
 export class AlgoliaModule {}

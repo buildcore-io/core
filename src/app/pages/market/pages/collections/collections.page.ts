@@ -39,11 +39,11 @@ export class CollectionsPage {
   openFilters = false;
   reset$ = new Subject<void>();
   spacesLoaded$?: Observable<boolean>;
-  sortOpen = this.deviceService.isMobile$.value;
-  saleFilterOpen = this.deviceService.isMobile$.value;
-  spaceFilterOpen = this.deviceService.isMobile$.value;
-  categoryFilterOpen = this.deviceService.isMobile$.value;
-  priceFilterOpen = this.deviceService.isMobile$.value;
+  sortOpen = true;
+  saleFilterOpen = true;
+  spaceFilterOpen = true;
+  categoryFilterOpen = false;
+  priceFilterOpen = false;
 
   constructor(
     public filter: FilterService,

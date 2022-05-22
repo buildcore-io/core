@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { discoverSections } from "@pages/discover/pages/discover/discover.page";
 import { Timestamp } from "firebase/firestore";
+import { Subject } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { FilterService } from './../../services/filter.service';
 
@@ -33,6 +35,9 @@ export class SpacesPage {
     { value: 'space_createdOn_desc', label: 'Oldest' },
   ];
   paginationItems = defaultPaginationItems;
+  openFilters = false;
+  reset$ = new Subject<void>();
+  sortOpen = true;
 
   constructor(
     private spaceApi: SpaceApi,
@@ -56,4 +61,7 @@ export class SpacesPage {
     }));
   }
 
+  public get collapseTypes(): typeof CollapseType {
+    return CollapseType;
+  }
 }

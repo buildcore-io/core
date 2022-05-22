@@ -20,6 +20,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzSliderModule } from 'ng-zorro-antd/slider';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MarketRoutingModule } from './market-routing.module';
@@ -61,7 +62,8 @@ import { FilterService } from './services/filter.service';
     AlgoliaModule,
     NzButtonModule,
     CollapseModule,
-    NzDrawerModule
+    NzDrawerModule,
+    NzSliderModule
   ],
   providers: [FilterService]
 })

@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
+import { CollapseType } from '@components/collapse/collapse.component';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { discoverSections } from "@pages/discover/pages/discover/discover.page";
 import { Timestamp } from "firebase/firestore";
+import { Subject } from 'rxjs';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { FilterService } from './../../services/filter.service';
 
@@ -27,6 +29,9 @@ export class MembersPage {
     { value: 'member_createdOn_desc', label: 'Oldest' },
   ];
   paginationItems = defaultPaginationItems;
+  openFilters = false;
+  reset$ = new Subject<void>();
+  sortOpen = true;
 
   constructor(
     public filter: FilterService,
@@ -50,5 +55,9 @@ export class MembersPage {
       spaces: !algolia.spaces ? null : Object.entries(algolia.spaces)
         .forEach((key: any[], value) => ({ [key[0]]: {...key[1], updateOn: Timestamp.fromMillis(+key[1].updateOn), createOn: Timestamp.fromMillis(+key[1].createOn)}}))
     }));
+  }
+
+  public get collapseTypes(): typeof CollapseType {
+    return CollapseType;
   }
 }
