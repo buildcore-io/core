@@ -56,7 +56,7 @@ export interface TokenDrop {
 export interface TokenDistribution extends BaseSubCollection {
   readonly uid?: EthAddress;
 
-  readonly totalDeposit: number;
+  readonly totalDeposit?: number;
   readonly totalPaid?: number;
   readonly refundedAmount?: number;
   readonly totalBought?: number;

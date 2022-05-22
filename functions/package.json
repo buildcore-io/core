@@ -7,7 +7,7 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "test": "export LOCAL_TEST=true && jest test --runInBand",
-    "test-online": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\" && jest test",
+    "test-online": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\" && jest test  --runInBand",
     "test:watch": "jest test/ --watch-all --detect-open-handles",
     "deploy": "firebase deploy --only functions -f",
     "logs": "firebase functions:log"

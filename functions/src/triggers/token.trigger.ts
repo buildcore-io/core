@@ -24,16 +24,22 @@ const getBoughtByMember = (token: Token, totalDeposit: number, totalSupply: numb
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
-  const totalPaid = Number(bigDecimal.floor(bigDecimal.multiply(token.pricePerToken, boughtByMember)))
-  const refundedAmount = totalDeposit - totalPaid
+  const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
+  const refundedAmount = Number(bigDecimal.subtract(totalDeposit, totalPaid))
   return <TokenDistribution>{
     uid: distribution.uid,
-    totalDeposit: distribution.totalDeposit,
+    totalDeposit: distribution.totalDeposit || 0,
     totalPaid,
     refundedAmount,
     totalBought: boughtByMember,
-    reconciled: distribution.reconciled
+    reconciled: distribution.reconciled || false
   }
+}
+
+const getFlooredDistribution = (distribution: TokenDistribution): TokenDistribution => {
+  const totalPaid = Math.floor(distribution.totalPaid!);
+  const refundedAmount = Number(bigDecimal.subtract(distribution.totalDeposit!, totalPaid));
+  return { ...distribution, totalPaid, refundedAmount }
 }
 
 const createBillPayment =
@@ -121,8 +127,8 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
   const orderTargetAddress = orderDoc.data()?.payload?.targetAddress
   const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
-  const billPaymentId = createBillPayment(token, distribution, payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
-  const creditPaymentId = await createCredit(token, distribution, payments, orderTargetAddress, batch)
+  const billPaymentId = createBillPayment(token, getFlooredDistribution(distribution), payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
+  const creditPaymentId = await createCredit(token, getFlooredDistribution(distribution), payments, orderTargetAddress, batch)
 
   batch.update(distributionDoc, {
     ...distribution,
@@ -140,12 +146,12 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
   let sell = false;
   while (tokensLeft) {
     const distribution = { ...distributions[i] }
-    if (distribution.refundedAmount! > token.pricePerToken) {
+    if (distribution.refundedAmount! >= token.pricePerToken) {
       sell = true;
       tokensLeft--;
-      distribution.refundedAmount! -= token.pricePerToken
+      distribution.refundedAmount = Number(bigDecimal.subtract(distribution.refundedAmount, token.pricePerToken))
       distribution.totalBought! += 1
-      distribution.totalPaid! += token.pricePerToken
+      distribution.totalPaid = Number(bigDecimal.add(distribution.totalPaid, token.pricePerToken))
       distributions[i] = distribution
     }
     i = (i + 1) % distributions.length
@@ -166,14 +172,13 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       return;
     }
 
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).where('totalDeposit', '>', 0).get()
     const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
 
     const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
     const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
 
     const distributions = distributionsSnap.docs
-      .filter(doc => doc.data().totalDeposit > 0)
       .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
       .map(doc => getMemberDistribution(<TokenDistribution>doc.data(), token, totalPublicSupply, totalBought))
 
