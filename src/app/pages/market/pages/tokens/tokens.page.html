@@ -2,8 +2,8 @@
   <wen-tabs *ngIf="deviceService.isDesktop$ | async" [tabs]="sections" class="mr-10"></wen-tabs>
 
   <nz-input-group *ngIf="deviceService.isDesktop$ | async" nzSize="large" [nzPrefix]="prefixIconSearch"
-  class="mr-8 shadow-none border-inputs-border dark:border-inputs-border-dark outline-0" nzSearch>
-  <input type="text" nz-input i18n-placeholder placeholder="Tokens..." class="text-base bg-inputs-background dark:bg-inputs-background-dark" [disabled]="true"/>
+    class="mr-8 shadow-none border-inputs-border dark:border-inputs-border-dark outline-0" nzSearch>
+    <input type="text" nz-input i18n-placeholder placeholder="Tokens..." class="text-base bg-inputs-background dark:bg-inputs-background-dark" [disabled]="true"/>
   </nz-input-group>
 
   <ng-template #prefixIconSearch>
@@ -13,7 +13,7 @@
 
 <div *ngIf="deviceService.isMobile$ | async" class="w-full h-px mt-6 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark"></div>
 
-<div class="flex flex-col items-end justify-between xl:flex-row">
+<!-- <div class="flex flex-col items-end justify-between xl:flex-row">
     <div class="flex items-end justify-between w-full lg:items-start xl:items-end lg:mt-12">
         <div class="flex flex-col items-start xl:flex-row xl:items-center">
             <div class="mt-4 xl:mt-0">
@@ -69,7 +69,7 @@
             </div>
         </ng-template>
     </div>
-</div>
+</div> -->
 <div class="mt-10">
   <p nz-typography nzType="secondary" class="mb-6 text-sm font-medium text-foregrounds-secondary" *ngIf="!isLoading(tokens$ | async)">
       {{ ((tokens$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>tokens</span>
