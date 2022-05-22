@@ -172,14 +172,13 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
       return;
     }
 
-    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
+    const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).where('totalDeposit', '>', 0).get()
     const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
 
     const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
     const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
 
     const distributions = distributionsSnap.docs
-      .filter(doc => doc.data().totalDeposit > 0)
       .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
       .map(doc => getMemberDistribution(<TokenDistribution>doc.data(), token, totalPublicSupply, totalBought))
 
