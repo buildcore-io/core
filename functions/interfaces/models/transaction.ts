@@ -150,6 +150,7 @@ export interface Transaction extends BaseRecord {
   linkedTransactions: EthAddress[];
   payload: any;
   shouldRetry?: boolean;
+  ignoreWallet?: boolean;
 }
 
 export interface TransactionBillPayment extends Transaction {

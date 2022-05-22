@@ -25,7 +25,7 @@ export const transactionWrite = functions.runWith({
   const isCreate = (prev === undefined);
   const shouldRetry = (!prev?.shouldRetry && curr?.shouldRetry);
 
-  if (isCreditOrBillPayment && (isCreate || shouldRetry)) {
+  if (isCreditOrBillPayment && !(curr?.ignoreWallet) && (isCreate || shouldRetry)) {
     await execute(curr, WALLET_PAY_IN_PROGRESS);
   }
 });

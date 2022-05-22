@@ -12,7 +12,7 @@ export enum TokenStatus {
   AVAILABLE = 'available',
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
-  ERROR = ''
+  ERROR = 'error'
 }
 
 export enum TokenDistributionType {
