@@ -406,6 +406,13 @@ describe('Buy sell trigger', () => {
     const sellData = <TokenBuySellOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
     expect(dayjs(sellData.expiresAt.toDate()).isBefore(dayjs())).toBe(true)
     expect(sellData.fulfilled === tokenCount - 1)
+
+    await cancelExpiredSale()
+
+    const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
+    expect(sellDistribution.lockedForSale).toBe(0)
+    expect(sellDistribution.sold).toBe(tokenCount - 1)
+    expect(sellDistribution.tokenOwned).toBe(2 * tokenCount + 1)
   })
 })
 
