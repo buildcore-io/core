@@ -5,7 +5,7 @@ import bigDecimal from 'js-big-decimal';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
 import admin from '../admin.config';
@@ -34,6 +34,11 @@ export const sellToken = functions.runWith({
   const owner = params.address.toLowerCase();
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
+
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+  if (!member?.validatedAddress) {
+    throw throwInvalidArgument(WenError.member_must_have_validated_address)
+  }
 
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
   if (!token) {
@@ -100,6 +105,11 @@ export const buyToken = functions.runWith({
   const owner = params.address.toLowerCase();
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
+  
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+  if (!member?.validatedAddress) {
+    throw throwInvalidArgument(WenError.member_must_have_validated_address)
+  }
 
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data();
   if (!token) {
