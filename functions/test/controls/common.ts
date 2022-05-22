@@ -91,18 +91,17 @@ export const createSpace = async (spy: any, guardian: string, validate?: boolean
   return <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data()
 }
 
-export const tokenProcessed = async (tokenId: string, distributionLength: number, reconciled: boolean) => {
-  for (let attempt = 0; attempt < 400; ++attempt) {
-    await new Promise((r) => setTimeout(r, 1000));
+export const tokenProcessed = (tokenId: string, distributionLength: number, reconciled: boolean) =>
+  wait(async () => {
     const doc = await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get();
     const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).get()
     const distributionsOk = distributionsSnap.docs.reduce((acc, doc) => acc && ((doc.data()?.reconciled || false) === reconciled), distributionLength === distributionsSnap.docs.length)
-    if (distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED) {
-      return
+    if (doc.data()?.status === TokenStatus.ERROR) {
+      throw new Error("Token not processed: " + tokenId);
     }
-  }
-  throw new Error("Token not processed: " + tokenId);
-}
+    return distributionsOk && doc.data()?.status === TokenStatus.PRE_MINTED
+  })
+
 
 export const wait = async (func: () => Promise<boolean>) => {
   for (let attempt = 0; attempt < 60; ++attempt) {

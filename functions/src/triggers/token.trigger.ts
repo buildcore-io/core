@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
+import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
@@ -26,7 +26,14 @@ const getMemberDistribution = (distribution: TokenDistribution, token: Token, to
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
   const totalPaid = Number(bigDecimal.floor(bigDecimal.multiply(token.pricePerToken, boughtByMember)))
   const refundedAmount = totalDeposit - totalPaid
-  return { ...distribution, totalPaid, totalBought: boughtByMember, refundedAmount }
+  return <TokenDistribution>{
+    uid: distribution.uid,
+    totalDeposit: distribution.totalDeposit,
+    totalPaid,
+    refundedAmount,
+    totalBought: boughtByMember,
+    reconciled: distribution.reconciled
+  }
 }
 
 const createBillPayment =
@@ -37,6 +44,9 @@ const createBillPayment =
     space: Space,
     batch: admin.firestore.WriteBatch
   ) => {
+    if (!distribution.totalPaid) {
+      return ''
+    }
     const tranId = getRandomEthAddress();
     const docRef = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
     const data = <Transaction>{
@@ -46,7 +56,7 @@ const createBillPayment =
       member: distribution.uid,
       createdOn: serverTime(),
       payload: {
-        amount: distribution.totalPaid,
+        amount: distribution.totalPaid + (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0),
         sourceAddress: orderTargetAddress,
         targetAddress: space.validatedAddress,
         previousOwnerEntity: 'space',
@@ -93,7 +103,7 @@ const createCredit = async (
       token: token.uid,
       reconciled: true,
       void: false,
-      invalidPayment: true
+      invalidPayment: distribution.refundedAmount! < MIN_IOTA_AMOUNT
     }
   };
   batch.create(docRef, data)
@@ -172,10 +182,11 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
 
     const promises = distributions.filter(p => !p.reconciled).map(reconcileBuyer(token))
     const results = await Promise.allSettled(promises);
-    const errors = results.filter(r => r.status === 'rejected').map(r => JSON.stringify((<PromiseRejectedResult>r).reason))
+    const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
+    const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status, errors })
 
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({
-      status: isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR,
-      errors
-    })
+    if (status === TokenStatus.ERROR) {
+      functions.logger.error('Token processing error', token.uid)
+    }
   })
