@@ -5,6 +5,7 @@ import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instant
 import connectRange, {
   RangeConnectorParams, RangeWidgetDescription
 } from 'instantsearch.js/es/connectors/range/connectRange';
+import { filter } from 'rxjs/operators';
 
 
 @UntilDestroy()
@@ -17,6 +18,8 @@ import connectRange, {
 export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescription, RangeConnectorParams> implements OnInit {
   public state?: RangeWidgetDescription['renderState']; // Rendering options
   public formControl = new FormControl([this.state?.range.min, this.state?.range.max]);
+  public minControl = new FormControl(this.state?.range?.min);
+  public maxControl = new FormControl(this.state?.range?.max);
   constructor(
     @Inject(forwardRef(() => NgAisIndex))
     // eslint-disable-next-line new-cap
@@ -35,11 +38,39 @@ export class AlgoliaRangeComponent extends TypedBaseWidget<RangeWidgetDescriptio
     });
     super.ngOnInit();
 
+    // TODO: this needs to be refactored and written some other way
+    const interval = setInterval(() => {
+      if (this.state?.range?.max) {
+        this.minControl.setValue((this.state?.range?.min || 0) / 1000 / 1000);
+        this.maxControl.setValue((this.state?.range?.max || 0) / 1000 / 1000);
+        clearInterval(interval);
+      }
+    }, 100);
+
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((val: [number, number]) => {
-        console.log(val);
+        this.minControl.setValue(val[0] / 1000 / 1000);
+        this.maxControl.setValue(val[1] / 1000 / 1000);
         this.state?.refine(val);
+      });
+
+    this.minControl.valueChanges
+      .pipe(
+        filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl.value[0] && !isNaN(Number(val))),
+        untilDestroyed(this)
+      )
+      .subscribe((val: string) => {
+        this.formControl.setValue([Number(val) * 1000 * 1000, this.formControl.value[1]]);
+      });
+
+    this.maxControl.valueChanges
+      .pipe(
+        filter((val: string) => (Number(val) * 1000 * 1000) !== this.formControl.value[1] && !isNaN(Number(val))),
+        untilDestroyed(this)
+      )
+      .subscribe((val: string) => {
+        this.formControl.setValue([this.formControl.value[0], Number(val) * 1000 * 1000]);
       });
   }
 }

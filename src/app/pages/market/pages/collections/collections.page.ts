@@ -10,7 +10,7 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { Timestamp } from "firebase/firestore";
-import { map, Observable, Subject, tap } from 'rxjs';
+import { map, Observable, Subject } from 'rxjs';
 
 
 @UntilDestroy()
@@ -36,14 +36,14 @@ export class CollectionsPage {
     { value: 'collection_price_desc', label: $localize`High to Low`},
   ];
   paginationItems = defaultPaginationItems;
-  openFilters = false;
+  openFilters = true;
   reset$ = new Subject<void>();
   spacesLoaded$?: Observable<boolean>;
-  sortOpen = this.deviceService.isMobile$.value;
-  saleFilterOpen = this.deviceService.isMobile$.value;
-  spaceFilterOpen = this.deviceService.isMobile$.value;
-  categoryFilterOpen = this.deviceService.isMobile$.value;
-  priceFilterOpen = this.deviceService.isMobile$.value;
+  sortOpen = true;
+  saleFilterOpen = true;
+  spaceFilterOpen = true;
+  categoryFilterOpen = false;
+  priceFilterOpen = true;
 
   constructor(
     public filter: FilterService,
@@ -52,7 +52,7 @@ export class CollectionsPage {
     public cache: CacheService,
     public readonly algoliaService: AlgoliaService
   ) {
-    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0), tap(r => console.log(r)));
+    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
   }
 
   public trackByUid(_index: number, item: any): number {

@@ -98,10 +98,5 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
         });
         this.state.refine(value);
       });
-
-    this.reset$.pipe(untilDestroyed(this))
-      .subscribe(() => {
-        console.log(this.state.items);
-      });
   }
 }

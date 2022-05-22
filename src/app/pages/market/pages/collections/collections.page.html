@@ -1,7 +1,7 @@
 <ais-instantsearch [config]="config">
   <header class="header" id="header">
     <div class="header-searchbox">
-      <wen-search-box [sections]="sections"></wen-search-box>
+      <wen-search-box [sections]="sections" [reset$]="reset$"></wen-search-box>
     </div>
   </header>
   <div class="relative mt-11 lg:mt-10">
@@ -62,13 +62,13 @@
 
     <ng-template #filters>
       <div class="container-body mt-8 lg:mt-6">
-        <wen-collapse i18n-title title="Sort by" class="transition-all mb-2" [isCollapsed]="(deviceService.isDesktop$ | async) || false"
+        <wen-collapse i18n-title title="Sort by" class="transition-all mb-2" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="sortOpen = !$event" [ngClass]="{ 'mb-10': sortOpen }">
             <wen-sort-by
               [items]="sortItems"
             ></wen-sort-by>
         </wen-collapse>
-        <wen-collapse i18n-title title="Saletype" class="transition-all mb-2" [isCollapsed]="(deviceService.isDesktop$ | async) || false"
+        <wen-collapse i18n-title title="Saletype" class="transition-all mb-2" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="saleFilterOpen = !$event" [ngClass]="{ 'mb-10': saleFilterOpen }">
             <wen-algolia-checkbox
               attribute="access"
@@ -78,7 +78,7 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse *ngIf="spacesLoaded$ | async" class="transition-all mb-2" i18n-title title="Spaces" [isCollapsed]="(deviceService.isDesktop$ | async) || false"
+        <wen-collapse *ngIf="spacesLoaded$ | async" class="transition-all mb-2" i18n-title title="Spaces" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="spaceFilterOpen = !$event" [ngClass]="{ 'mb-10': spaceFilterOpen }">
             <wen-algolia-checkbox
               attribute="space"
@@ -92,7 +92,7 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse class="transition-all mb-2" i18n-title title="Category" [isCollapsed]="(deviceService.isDesktop$ | async) || false"
+        <wen-collapse class="transition-all mb-2" i18n-title title="Category" [isCollapsed]="true"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="categoryFilterOpen = !$event" [ngClass]="{ 'mb-10': categoryFilterOpen }">
             <wen-algolia-checkbox
               attribute="category"
@@ -111,9 +111,9 @@
           >
           </ais-range-slider>
         </ais-panel> -->
-        <wen-collapse class="transition-all mb-2" i18n-title title="Price range" [isCollapsed]="(deviceService.isDesktop$ | async) || false"
+        <wen-collapse class="transition-all mb-2" i18n-title title="Price range" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="priceFilterOpen = !$event" [ngClass]="{ 'mb-10': priceFilterOpen || (deviceService.isMobile$ | async) }">
-            <wen-algolia-range>
+            <wen-algolia-range class="w-11/12 mx-auto">
             </wen-algolia-range>
         </wen-collapse>
         <div>
