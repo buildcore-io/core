@@ -104,6 +104,8 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly type: TokenBuySellOrderType;
   readonly count: number;
   readonly price: number;
+  readonly totalDeposit: number;
+  readonly balance: number;
   readonly fulfilled: number;
   readonly status: TokenBuySellOrderStatus;
   readonly orderTransactionId?: string;

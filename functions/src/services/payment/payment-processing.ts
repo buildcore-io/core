@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import bigDecimal from 'js-big-decimal';
 import { isEmpty, last } from 'lodash';
 import { MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
 import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
@@ -695,19 +696,8 @@ export class ProcessingService {
         uid: order.member,
         parentId: order.payload.token,
         parentCol: COL.TOKEN,
-        totalDeposit: 0,
-        totalPaid: 0,
-        refundedAmount: 0,
-        totalBought: 0,
-        reconciled: false,
-        tokenDropped: 0,
-        tokenClaimed: 0,
-        lockedForSale: 0,
-        sold: 0,
-        totalPurchased: 0,
-        tokenOwned: 0
       }
-      this.updates.push({ ref: distributionDocRef, data, action: 'set' });
+      this.updates.push({ ref: distributionDocRef, data, action: 'set', merge: true });
     }
     const buyDocId = getRandomEthAddress()
     const data = cOn(<TokenBuySellOrder>{
@@ -717,6 +707,8 @@ export class ProcessingService {
       type: TokenBuySellOrderType.BUY,
       count: order.payload.count,
       price: order.payload.price,
+      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
+      balance: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
       fulfilled: 0,
       status: TokenBuySellOrderStatus.ACTIVE,
       orderTransactionId: order.uid,

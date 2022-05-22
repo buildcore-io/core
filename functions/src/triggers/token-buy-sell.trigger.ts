@@ -1,14 +1,14 @@
+import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
-import { isEmpty } from 'lodash';
-import { SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
+import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { Member, Space, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { guardedRerun } from '../utils/common.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../utils/config.utils';
-import { serverTime, uOn } from '../utils/dateTime.utils';
+import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { creditBuyer } from '../utils/token-buy-sell.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
@@ -20,19 +20,37 @@ export const onTokenBuySellCreated = functions.runWith({ timeoutSeconds: 540, me
     await guardedRerun(async () => !(await fulfillSales(data.uid)))
   })
 
-const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => ({
-  ...sale,
-  fulfilled: sale.fulfilled + purchase.count,
-  status: sale.count === sale.fulfilled + purchase.count ? TokenBuySellOrderStatus.SETTLED : TokenBuySellOrderStatus.ACTIVE
-})
+const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => {
+  const fulfilled = sale.fulfilled + purchase.count
+  const balanceFunc = sale.type === TokenBuySellOrderType.BUY ? bigDecimal.subtract : bigDecimal.add
+  const purchaseAmount = bigDecimal.floor(bigDecimal.multiply(purchase.count, purchase.price))
+  const balance = Number(balanceFunc(sale.balance, purchaseAmount))
+  const balanceLeft = sale.type === TokenBuySellOrderType.BUY ? balance : (sale.totalDeposit - balance)
+  const status = sale.count === fulfilled ? TokenBuySellOrderStatus.SETTLED : TokenBuySellOrderStatus.ACTIVE
+  return ({
+    ...sale,
+    fulfilled,
+    balance,
+    status,
+    expiresAt: balanceLeft > 0 && balanceLeft < MIN_IOTA_AMOUNT ? dateToTimestamp(dayjs().toDate()) : sale.expiresAt
+  })
+}
 
-const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder): TokenPurchase | undefined => {
-  const tokensNeeded = buy.count - buy.fulfilled
+const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder) => {
+  if (buy.status === TokenBuySellOrderStatus.SETTLED || sell.status === TokenBuySellOrderStatus.SETTLED) {
+    return undefined;
+  }
   const tokensLeft = sell.count - sell.fulfilled
   if (tokensLeft === 0) {
     return undefined
   }
-  const tokens = Math.min(tokensLeft, tokensNeeded);
+  const tokens = Math.min(tokensLeft, buy.count - buy.fulfilled);
+  const tokensPrice = Number(bigDecimal.floor(bigDecimal.multiply(tokens, sell.price)))
+  const buyBalanceLeft = Number(bigDecimal.subtract(buy.balance, tokensPrice))
+  if (tokensPrice < MIN_IOTA_AMOUNT || (buyBalanceLeft > 0 && buyBalanceLeft < MIN_IOTA_AMOUNT)) {
+    return undefined;
+  }
+
   return ({
     uid: getRandomEthAddress(),
     token: buy.token,
@@ -54,18 +72,20 @@ const getRoyalties = (count: number, price: number): Royalties => {
   const spaceOnePercentage = getSpaceOneRoyaltyPercentage()
   const royaltySpaces = getRoyaltySpaces()
   const totalAmount = Number(bigDecimal.floor(bigDecimal.multiply(count, price)))
-
   if (isNaN(percentage) || !percentage || isNaN(spaceOnePercentage) || !spaceOnePercentage || royaltySpaces.length !== 2) {
     functions.logger.error('Token sale config is missing');
-    return { amount: totalAmount, royalties: [] }
+    return { amount: totalAmount, royalties: royaltySpaces.map(_ => 0) }
   }
 
-  const royalties = Number(bigDecimal.ceil(bigDecimal.multiply(totalAmount, percentage / 100)))
-  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royalties, spaceOnePercentage / 100)))
-  return { amount: totalAmount - royalties, royalties: [royaltiesSpaceOne, royalties - royaltiesSpaceOne] }
+  const royaltyAmount = Number(bigDecimal.ceil(bigDecimal.multiply(totalAmount, percentage / 100)))
+  const royaltiesSpaceOne = Number(bigDecimal.ceil(bigDecimal.multiply(royaltyAmount, spaceOnePercentage / 100)))
+  const royaltiesSpaceTwo = Number(bigDecimal.subtract(royaltyAmount, royaltiesSpaceOne))
+  const royaltySum = [royaltiesSpaceOne, royaltiesSpaceTwo].map(r => r >= MIN_IOTA_AMOUNT ? r : 0)
+    .reduce((sum, act) => Number(bigDecimal.add(sum, act)), 0)
+  return { amount: Number(bigDecimal.subtract(totalAmount, royaltySum)), royalties: [royaltiesSpaceOne, royaltiesSpaceTwo] }
 }
 
-const createBillPayment = async (
+const createBillPayments = async (
   count: number,
   price: number,
   token: Token,
@@ -95,38 +115,37 @@ const createBillPayment = async (
       void: false,
       token: token.uid,
       quantity: count
-    }
+    },
   }
   transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${sellerBillPayment.uid}`), sellerBillPayment)
 
-  if (!isEmpty(royalties)) {
-    const royaltyPaymentPromises = getRoyaltySpaces().map(async (space, index) => {
-      const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
-      return <Transaction>{
-        type: TransactionType.BILL_PAYMENT,
-        uid: getRandomEthAddress(),
-        space: token.space,
-        member: sell.owner,
-        createdOn: serverTime(),
-        payload: {
-          amount: royalties[index],
-          sourceAddress: order.payload.targetAddress,
-          targetAddress: spaceData.validatedAddress,
-          previousOwnerEntity: 'member',
-          previousOwner: buyer.uid,
-          sourceTransaction: [buy.paymentTransactionId],
-          royalty: true,
-          void: false,
-          // We delay royalty.
-          delay: SECONDARY_TRANSACTION_DELAY * (index + 1),
-          token: token.uid,
-          quantity: count
-        }
-      }
-    })
-    const royaltyPayments = (await Promise.all(royaltyPaymentPromises))
-    royaltyPayments.forEach(royaltyPayment => transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${royaltyPayment.uid}`), royaltyPayment))
-  }
+  const royaltyPaymentPromises = getRoyaltySpaces().map(async (space, index) => {
+    const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space}`).get()).data()
+    return <Transaction>{
+      type: TransactionType.BILL_PAYMENT,
+      uid: getRandomEthAddress(),
+      space: token.space,
+      member: sell.owner,
+      createdOn: serverTime(),
+      payload: {
+        amount: royalties[index],
+        sourceAddress: order.payload.targetAddress,
+        targetAddress: spaceData.validatedAddress,
+        previousOwnerEntity: 'member',
+        previousOwner: buyer.uid,
+        sourceTransaction: [buy.paymentTransactionId],
+        royalty: true,
+        void: false,
+        // We delay royalty.
+        delay: SECONDARY_TRANSACTION_DELAY * (index + 1),
+        token: token.uid,
+        quantity: count
+      },
+      ignoreWallet: royalties[index] < MIN_IOTA_AMOUNT
+    }
+  })
+  const royaltyPayments = (await Promise.all(royaltyPaymentPromises))
+  royaltyPayments.forEach(royaltyPayment => transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${royaltyPayment.uid}`), royaltyPayment))
 
   return sellerBillPayment.uid
 }
@@ -139,7 +158,7 @@ const updateSaleLock = (prev: TokenBuySellOrder, sell: TokenBuySellOrder, transa
     sold: admin.firestore.FieldValue.increment(diff),
     tokenOwned: admin.firestore.FieldValue.increment(-diff)
   }
-  transaction.update(docRef, data)
+  transaction.set(docRef, data, { merge: true })
 }
 
 const updateBuy = (prev: TokenBuySellOrder, buy: TokenBuySellOrder, transaction: admin.firestore.Transaction) => {
@@ -149,7 +168,7 @@ const updateBuy = (prev: TokenBuySellOrder, buy: TokenBuySellOrder, transaction:
     totalPurchased: admin.firestore.FieldValue.increment(diff),
     tokenOwned: admin.firestore.FieldValue.increment(diff)
   }
-  transaction.update(docRef, data)
+  transaction.set(docRef, data, { merge: true })
 }
 
 const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (transaction) => {
@@ -162,9 +181,6 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
 
   let update = doc
   for (const b of docs) {
-    if (update.status === TokenBuySellOrderStatus.SETTLED || b.status === TokenBuySellOrderStatus.SETTLED) {
-      continue
-    }
     const isSell = doc.type === TokenBuySellOrderType.SELL
     const prevBuy = isSell ? b : update
     const prevSell = isSell ? update : b
@@ -179,7 +195,7 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
 
     updateSaleLock(prevSell, sell, transaction)
     updateBuy(prevBuy, buy, transaction)
-    const billPaymentId = await createBillPayment((sell.fulfilled - prevSell.fulfilled), sell.price, token, sell, buy, transaction)
+    const billPaymentId = await createBillPayments(purchase.count, purchase.price, token, sell, buy, transaction)
 
     transaction.create(admin.firestore().doc(`${COL.TOKEN_PURCHASE}/${purchase.uid}`), { ...purchase, billPaymentId })
     purchases.push({ ...purchase, billPaymentId })
@@ -192,7 +208,7 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
     await creditBuyer(update, purchases, transaction)
   }
 
-  return update.status === TokenBuySellOrderStatus.SETTLED || docs.length === 0
+  return update.status === TokenBuySellOrderStatus.SETTLED || update.fulfilled === doc.fulfilled
 })
 
 

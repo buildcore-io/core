@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
+import bigDecimal from 'js-big-decimal';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
@@ -62,6 +63,8 @@ export const sellToken = functions.runWith({
       type: TokenBuySellOrderType.SELL,
       count: Number(params.body.count),
       price: Number(params.body.price),
+      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(params.body.count, params.body.price))),
+      balance: 0,
       fulfilled: 0,
       status: TokenBuySellOrderStatus.ACTIVE,
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
@@ -117,7 +120,7 @@ export const buyToken = functions.runWith({
     createdOn: serverTime(),
     payload: {
       type: TransactionOrderType.TOKEN_BUY,
-      amount: params.body.count * params.body.price,
+      amount: Number(bigDecimal.floor(bigDecimal.multiply(params.body.count, params.body.price))),
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
