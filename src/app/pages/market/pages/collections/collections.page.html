@@ -55,7 +55,7 @@
             <button class="absolute right-0 z-10 top-1" (click)="openFilters = false">
                 <wen-icon-close></wen-icon-close>
             </button>
-    
+
             <ng-container *ngTemplateOutlet="filters"></ng-container>
         </div>
     </nz-drawer>
@@ -68,7 +68,7 @@
               [items]="sortItems"
             ></wen-sort-by>
         </wen-collapse>
-        <wen-collapse i18n-title title="Saletype" class="transition-all mb-2" [isCollapsed]="(deviceService.isDesktop$ | async) || false"
+        <wen-collapse i18n-title title="Sale type" class="transition-all mb-2" [isCollapsed]="(deviceService.isDesktop$ | async) || false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="saleFilterOpen = !$event" [ngClass]="{ 'mb-10': saleFilterOpen }">
             <wen-algolia-checkbox
               attribute="access"

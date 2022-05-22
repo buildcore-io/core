@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, forwardRef, Inject, Input, OnInit, Optional, TemplateRef } from '@angular/core';
 import { noop, parseNumberInput } from "@components/algolia/util";
 import { PreviewImageService } from '@core/services/preview-image';
-import { CollectionAccess } from '@functions/interfaces/models';
+import { Access } from '@functions/interfaces/models/base';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NgAisIndex, NgAisInstantSearch, TypedBaseWidget } from 'angular-instantsearch';
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
@@ -113,9 +113,9 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
   public get algoliaCheckboxFilterTypes(): typeof AlgoliaCheckboxFilterType {
     return AlgoliaCheckboxFilterType;
   }
-  
-  public get collectionAccesses(): typeof CollectionAccess {
-    return CollectionAccess;
+
+  public get collectionAccesses(): typeof Access {
+    return Access;
   }
 
   public refine(event: MouseEvent, item: RefinementListItem) {

@@ -3,7 +3,7 @@ import { RefinementMappings } from "@components/algolia/refinement/refinement.co
 import { CacheService } from "@core/services/cache/cache.service";
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { environment } from '@env/environment';
-import { Categories, CollectionAccess, Space } from "@functions/interfaces/models";
+import { Categories, Space } from "@functions/interfaces/models";
 import { Access } from '@functions/interfaces/models/base';
 import { NftAvailable } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
