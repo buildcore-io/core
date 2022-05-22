@@ -18,7 +18,7 @@
       <div i18n>Filters&Sort</div>
     </button>
   </div>
-  <main class="flex mx-auto">
+  <main class="flex mx-auto justify-between">
     <div class="container-results" [ngClass]="{ 'mr-5' : openFilters }">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">

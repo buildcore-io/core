@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AlgoliaModule } from "@components/algolia/algolia.module";
+import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -13,6 +14,7 @@ import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -75,6 +77,8 @@ import { FilterService } from './services/filter.service';
     SelectSpaceModule,
     CollectionCardModule,
     AlgoliaModule,
+    CollapseModule,
+    NzDrawerModule
   ]
 })
 export class DiscoverModule { }
