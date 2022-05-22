@@ -15,6 +15,7 @@ import { TokenRowModule } from '@components/token/components/token-row/token-row
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -59,7 +60,8 @@ import { FilterService } from './services/filter.service';
     TokenRowModule,
     AlgoliaModule,
     NzButtonModule,
-    CollapseModule
+    CollapseModule,
+    NzDrawerModule
   ],
   providers: [FilterService]
 })

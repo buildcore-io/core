@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
+import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
@@ -9,6 +10,7 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { Timestamp } from "firebase/firestore";
+import { map, Observable, Subject, tap } from 'rxjs';
 
 
 @UntilDestroy()
@@ -34,14 +36,23 @@ export class CollectionsPage {
     { value: 'collection_price_desc', label: $localize`High to Low`},
   ];
   paginationItems = defaultPaginationItems;
+  openFilters = false;
+  reset$ = new Subject<void>();
+  spacesLoaded$?: Observable<boolean>;
+  sortOpen = this.deviceService.isMobile$.value;
+  saleFilterOpen = this.deviceService.isMobile$.value;
+  spaceFilterOpen = this.deviceService.isMobile$.value;
+  categoryFilterOpen = this.deviceService.isMobile$.value;
+  priceFilterOpen = this.deviceService.isMobile$.value;
 
   constructor(
     public filter: FilterService,
     public collectionApi: CollectionApi,
     public deviceService: DeviceService,
     public cache: CacheService,
-    public readonly algoliaService: AlgoliaService,
+    public readonly algoliaService: AlgoliaService
   ) {
+    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0), tap(r => console.log(r)));
   }
 
   public trackByUid(_index: number, item: any): number {
@@ -61,5 +72,9 @@ export class CollectionsPage {
 
   public get collapseTypes(): typeof CollapseType {
     return CollapseType;
+  }
+
+  public get algoliaCheckboxFilterTypes(): typeof AlgoliaCheckboxFilterType {
+    return AlgoliaCheckboxFilterType;
   }
 }

@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { RefinementMappings } from "@components/algolia/refinement/refinement.component";
 import { CacheService } from "@core/services/cache/cache.service";
+import { enumToArray } from '@core/utils/manipulations.utils';
 import { environment } from '@env/environment';
-import { CollectionAccess, Space } from "@functions/interfaces/models";
+import { Categories, CollectionAccess, Space } from "@functions/interfaces/models";
 import { NftAvailable } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import algoliasearch from "algoliasearch/lite";
 
 const spaceMapping: RefinementMappings = {};
 const accessMapping: RefinementMappings = {};
+const spacesObj: { [key: string]: Space } = {};
 
 @UntilDestroy()
 @Injectable({
@@ -23,10 +25,11 @@ export class AlgoliaService {
   constructor( private readonly cacheService: CacheService,
   ) {
     this.cacheService.allSpaces$
-      .pipe(untilDestroyed(this)).subscribe( (spaces) => {
+      .pipe(untilDestroyed(this)).subscribe((spaces) => {
         spaces.forEach((space: Space) => {
           if (space.name) {
             spaceMapping[space.uid] = space.name;
+            spacesObj[space.uid] = space;
           }
         });
       })
@@ -45,6 +48,7 @@ export class AlgoliaService {
         ...algolia,
         label: name,
         highlighted: name,
+        avatar: spacesObj[algolia.value]?.avatarUrl,
       }
     });
   }
@@ -65,7 +69,7 @@ export class AlgoliaService {
       return {
         ...algolia,
         label: label,
-        highlighted: label,
+        highlighted: label
       }
     });
   }
@@ -85,6 +89,18 @@ export class AlgoliaService {
         ...algolia,
         label: label,
         highlighted: label,
+      }
+    });
+  }
+
+  public convertCollectionCategory(algoliaItems: any[]) {
+    const categories = enumToArray(Categories)
+    return algoliaItems.map(algolia => {
+      const label = categories.find(category => category.key === algolia.value)?.value
+      return {
+        ...algolia,
+        label: label,
+        highlighted: label
       }
     });
   }

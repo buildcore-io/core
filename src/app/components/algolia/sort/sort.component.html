@@ -1,16 +1,12 @@
-<ng-template #defaultTemplate let-selected>
-      <div class="flex items-center">
-        <div nz-typography nzType="secondary" class="mr-1 text-xs">
-          <ng-container *ngIf="selected.nzLabel === 'Recent'; else notRecent" i18n>Sort by</ng-container>
-          <ng-template #notRecent i18n>sort by</ng-template>
+<nz-radio-group
+    class="wen-radio-group"
+    [formControl]="sortControl"
+>
+    <wen-radio *ngFor="let item of state.options" [value]="item?.value || ''">
+        <div class="text-xs text-foregrounds-primary dark:text-foregrounds-primary-dark flex items-center -translate-y-1">
+            <div [ngClass]="item.value === sortControl.value ? 'font-bold' : 'font-medium'">
+                {{ item?.label }}
+            </div>
         </div>
-        <span>{{ selected.nzLabel }}</span>
-      </div>
-    </ng-template>
-<nz-select   #select class="mt-6 wen-sort-button xl:mt-0" i18n-nzPlaceHolder nzPlaceHolder="Sort by" [nzCustomTemplate]="defaultTemplate"
-             [formControl]="sortControl" nz-tooltip>
-(ngModelChange)="state.refine($event)">
-  <nz-option *ngFor="let option of state.options" [nzValue]="option.value" [nzLabel]="option.label">
-    {{ option.label }}
-  </nz-option>
-</nz-select>
+    </wen-radio>
+</nz-radio-group>

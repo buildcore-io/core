@@ -36,7 +36,7 @@ export class RefinementListComponent extends TypedBaseWidget<
   @Input() public sortBy: RefinementListConnectorParams['sortBy'];
   @Input()
   public transformItems?: RefinementListConnectorParams['transformItems'];
-  @Input() public showIcon=true;
+  @Input() public showIcon = true;
 
   public state: RefinementListRenderState = {
     canRefine: false,

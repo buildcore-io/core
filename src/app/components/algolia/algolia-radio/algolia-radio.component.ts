@@ -7,6 +7,7 @@ import { connectRefinementList } from 'instantsearch.js/es/connectors';
 import {
   RefinementListConnectorParams, RefinementListItem, RefinementListRenderState, RefinementListWidgetDescription
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList';
+import { Subject } from 'rxjs';
 
 @UntilDestroy()
 // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
@@ -24,6 +25,7 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
   @Input() public showLessLabel = $localize`Show less`;
   @Input() public searchable?: boolean;
   @Input() public searchPlaceholder = $localize`Search here...`;
+  @Input() public reset$ = new Subject<void>();
 
   // instance options
   @Input() public attribute!: RefinementListConnectorParams['attribute'];
@@ -96,18 +98,10 @@ export class AlgoliaRadioComponent extends TypedBaseWidget<
         });
         this.state.refine(value);
       });
-  }
 
-  public refine(event: MouseEvent, item: RefinementListItem) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (this.state.canRefine) {
-      // update UI directly, it will update the checkbox state
-      item.isRefined = !item.isRefined;
-
-      // refine through Algolia API
-      this.state.refine(item.value);
-    }
+    this.reset$.pipe(untilDestroyed(this))
+      .subscribe(() => {
+        console.log(this.state.items);
+      });
   }
 }

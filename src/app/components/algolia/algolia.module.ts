@@ -16,7 +16,9 @@ import { SelectSpaceModule } from "@components/space/components/select-space/sel
 import { TabsModule } from "@components/tabs/tabs.module";
 import { TokenRowModule } from "@components/token/components/token-row/token-row.module";
 import { NgAisModule } from "angular-instantsearch";
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzCardModule } from "ng-zorro-antd/card";
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzCollapseModule } from "ng-zorro-antd/collapse";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzInputModule } from "ng-zorro-antd/input";
@@ -24,15 +26,19 @@ import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzSkeletonModule } from "ng-zorro-antd/skeleton";
+import { NzSliderModule } from 'ng-zorro-antd/slider';
 import { NzTagModule } from "ng-zorro-antd/tag";
 import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import { AlgoliaCheckboxComponent } from './algolia-checkbox/algolia-checkbox.component';
+import { AlgoliaClearComponent } from './algolia-clear/algolia-clear.component';
 import { AlgoliaRadioComponent } from './algolia-radio/algolia-radio.component';
 import { AlgoliaRangeComponent } from './algolia-range/algolia-range.component';
 import { AlgoliaService } from "./services/algolia.service";
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule, NzNotificationModule,
+  imports: [
+    HttpClientModule,
+    NzNotificationModule,
     CommonModule,
     NzCardModule,
     NzInputModule,
@@ -55,9 +61,12 @@ import { AlgoliaService } from "./services/algolia.service";
     TokenRowModule,
     NzRadioModule,
     RadioModule,
+    NzAvatarModule,
+    NzCheckboxModule,
+    NzSliderModule,
     NgAisModule.forRoot(),
   ],
-  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective, AlgoliaRadioComponent, AlgoliaCheckboxComponent, AlgoliaRangeComponent,
+  declarations: [SearchBoxComponent, SortByComponent, RefinementListComponent, VisibleDirective, AlgoliaRadioComponent, AlgoliaCheckboxComponent, AlgoliaRangeComponent, AlgoliaClearComponent,
   ],
   providers: [AlgoliaService],
   exports: [
@@ -69,7 +78,8 @@ import { AlgoliaService } from "./services/algolia.service";
     VisibleDirective,
     AlgoliaRadioComponent,
     AlgoliaCheckboxComponent,
-    AlgoliaRangeComponent
+    AlgoliaRangeComponent,
+    AlgoliaClearComponent
   ]
 })
 export class AlgoliaModule {}
