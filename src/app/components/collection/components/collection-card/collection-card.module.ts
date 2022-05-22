@@ -5,7 +5,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { StripMarkDownModule } from '@core/pipes/strip-markdown/strip-markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { CollectionAccessBadgeModule } from '../collection-access-badge/collection-access-badge.module';
+import { AccessBadgeModule } from '../collection-access-badge/collection-access-badge.module';
 import { CollectionCardComponent } from './collection-card.component';
 
 
@@ -20,7 +20,7 @@ import { CollectionCardComponent } from './collection-card.component';
     TruncateModule,
     NzAvatarModule,
     IconModule,
-    CollectionAccessBadgeModule
+    AccessBadgeModule
   ],
   exports: [
     CollectionCardComponent

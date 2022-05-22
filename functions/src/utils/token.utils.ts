@@ -1,7 +1,7 @@
 
 import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenStatus } from "../../interfaces/models/token";
+import { Token } from "../../interfaces/models/token";
 import admin from '../admin.config';
 import { throwInvalidArgument } from './error.utils';
 
@@ -24,12 +24,9 @@ export const assertIsGuardian = async (space: string, member: string) => {
   }
 }
 
-export const assertIsTokenPreMintedAndApproved = async (tokenId: string) => {
-  const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get()).data()
-  if (token?.status !== TokenStatus.PRE_MINTED) {
-    throw throwInvalidArgument(WenError.token_not_pre_minted)
-  }
-  if (!token?.approved) {
+export const assertTokenApproved = (token: Token) => {
+  if (!token.approved || token.rejected) {
     throw throwInvalidArgument(WenError.token_not_approved)
   }
 }
+

@@ -82,7 +82,7 @@ export class TokenOfferPreMintComponent implements OnInit {
       return '0';
     }
 
-    return (amount / 1000 / 1000).toFixed(2).toString();
+    return (amount / 1000 / 1000).toFixed(6);
   }
 
   public reset(): void {

@@ -20,8 +20,11 @@ const getNftAvailability = (nft: Nft) => {
 
 export const nftWrite = functions.runWith({
   minInstances: scale(WEN_FUNC.nftWrite)
-}).firestore.document(COL.NFT + '/{nftId}').onWrite(async (_, context) =>
-  admin.firestore().runTransaction(async (transaction) => {
+}).firestore.document(COL.NFT + '/{nftId}').onWrite(async (change, context) => {
+  if (!change.after.data()) {
+    return
+  }
+  await admin.firestore().runTransaction(async (transaction) => {
     const docRef = admin.firestore().doc(`${COL.NFT}/${context.params.nftId}`)
     const nft = <Nft | undefined>(await docRef.get()).data()
     if (!nft) {
@@ -32,4 +35,5 @@ export const nftWrite = functions.runWith({
       transaction.update(docRef, data)
     }
   })
+}
 )

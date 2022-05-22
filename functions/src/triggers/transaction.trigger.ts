@@ -19,11 +19,11 @@ export const transactionWrite = functions.runWith({
 }).firestore.document(COL.TRANSACTION + '/{tranId}').onWrite(async (change) => {
   const WALLET_PAY_IN_PROGRESS = DEF_WALLET_PAY_IN_PROGRESS + Date.now();
   const prev = <Transaction | undefined>change.before.data();
-  const curr = <Transaction>change.after.data();
+  const curr = <Transaction | undefined>change.after.data();
 
-  const isCreditOrBillPayment = (curr.type === TransactionType.CREDIT || curr.type === TransactionType.BILL_PAYMENT);
+  const isCreditOrBillPayment = (curr?.type === TransactionType.CREDIT || curr?.type === TransactionType.BILL_PAYMENT);
   const isCreate = (prev === undefined);
-  const shouldRetry = (!prev?.shouldRetry && curr.shouldRetry);
+  const shouldRetry = (!prev?.shouldRetry && curr?.shouldRetry);
 
   if (isCreditOrBillPayment && (isCreate || shouldRetry)) {
     await execute(curr, WALLET_PAY_IN_PROGRESS);

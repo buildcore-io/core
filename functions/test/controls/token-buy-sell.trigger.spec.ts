@@ -10,7 +10,7 @@ import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import { cancelExpiredSale } from '../../src/utils/token-buy-sell.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { testEnv } from '../set-up';
+import { projectId, testEnv } from '../set-up';
 import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
 
 let walletSpy: any;
@@ -359,6 +359,9 @@ describe('Expired sales cron', () => {
   let token: Token
 
   beforeEach(async () => {
+    if (process.env.LOCAL_TEST) {
+      await testEnv.firestore.clearFirestoreData({ projectId })
+    }
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     seller = await createMember(walletSpy, true)
 

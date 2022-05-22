@@ -12,7 +12,7 @@ import { Member } from '@functions/interfaces/models';
 import { Token, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
-import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, interval, skip, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -74,6 +74,16 @@ export class TokenPage implements OnInit, OnDestroy {
 
       this.sections = [...this.sections];
       this.cd.markForCheck();
+    });
+
+    // Ticket to refresh view after sale starts.
+    let activated = false;
+    const intervalSubs = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
+      if (!activated && this.data.isAfterSaleStarted()) {
+        this.data.token$.next(this.data.token$.value);
+        activated = true;
+        intervalSubs.unsubscribe();
+      }
     });
   }
 

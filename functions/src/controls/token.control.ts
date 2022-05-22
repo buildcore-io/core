@@ -6,9 +6,10 @@ import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_STA
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
-import { COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
+import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
+import { assertHasAccess } from '../services/validators/access';
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
 import { generateRandomAmount } from '../utils/common.utils';
@@ -18,13 +19,13 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
-import { cleanParams, decodeAuth, getRandomEthAddress } from "../utils/wallet.utils";
+import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
 const createSchema = () => ({
   name: Joi.string().required(),
-  symbol: Joi.string().required().length(4).regex(RegExp('^[A-Z]+$')),
+  symbol: Joi.string().min(3).max(5).regex(RegExp('^[A-Z]+$')).required(),
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   shortDescriptionTitle: Joi.string().optional(),
@@ -54,7 +55,16 @@ const createSchema = () => ({
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
-  termsAndConditions: Joi.string().uri().required()
+  termsAndConditions: Joi.string().uri().required(),
+  access: Joi.number().equal(...Object.values(Access)).required(),
+  accessAwards: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
+    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+  }),
+  accessCollections: Joi.when('access', {
+    is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
+    then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
+  }),
 })
 
 const getPublicSaleTimeFrames = (saleStartDate: Timestamp, saleLength: number, coolDownLength: number) => {
@@ -165,18 +175,20 @@ export const setTokenAvailableForSale = functions.runWith({
   const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
 
   await admin.firestore().runTransaction(async (transaction) => {
-    const data = <Token | undefined>(await transaction.get(tokenDocRef)).data()
-    if (!data) {
+    const token = <Token | undefined>(await transaction.get(tokenDocRef)).data()
+    if (!token) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
-    if (!data.approved) {
-      throw throwInvalidArgument(WenError.token_not_approved)
-    }
-    if (data.saleStartDate) {
+
+    assertTokenApproved(token)
+
+    if (token.saleStartDate) {
       throw throwInvalidArgument(WenError.public_sale_already_set)
     }
-    await assertIsGuardian(data.space, owner)
-    shouldSetPublicSaleTimeFrames(params.body, data.allocations);
+
+    await assertIsGuardian(token.space, owner)
+
+    shouldSetPublicSaleTimeFrames(params.body, token.allocations);
     const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength);
     transaction.update(tokenDocRef, timeFrames);
   })
@@ -212,7 +224,10 @@ export const orderToken = functions.runWith({
 
   const tranId = tokenOrderTransactionDocId(owner, token)
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
-  const space = (await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
+
+  await assertHasAccess(space.uid, owner, token.access, token.accessAwards || [], token.accessCollections || [])
+
   const newWallet = new WalletService();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
@@ -231,7 +246,7 @@ export const orderToken = functions.runWith({
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: space?.validatedAddress,
+          beneficiaryAddress: space.validatedAddress,
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -271,7 +286,8 @@ export const creditToken = functions.runWith({
     if (!distribution || distribution.totalDeposit < params.body.amount) {
       throw throwInvalidArgument(WenError.not_enough_funds)
     }
-    const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
+    const token = <Token | undefined>(await tokenDocRef.get()).data()
     if (!token || !tokenCoolDownPeriod(token)) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
@@ -280,6 +296,8 @@ export const creditToken = functions.runWith({
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
     transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+    transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-params.body.amount) })
+
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,
       uid: tranId,
@@ -343,9 +361,9 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       if (!token) {
         throw throwInvalidArgument(WenError.invalid_params);
       }
-      if (!token.approved) {
-        throw throwInvalidArgument(WenError.token_not_approved)
-      }
+
+      assertTokenApproved(token)
+
       await assertIsGuardian(token.space, owner);
 
       const totalDropped = params.body.drops.reduce((sum: number, { count }: { count: number }) => sum + count, 0)

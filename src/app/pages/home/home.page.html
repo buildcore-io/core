@@ -1,10 +1,10 @@
 <main class="mx-auto mb-32 lg:mb-40 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark">
-  <div class="w-full relative wen-home-vector" [ngStyle]="{
+  <div class="relative w-full wen-home-vector" [ngStyle]="{
     'background-image': 'url(' + ((themeService.theme$ | async) === theme.Light ? '/assets/mocks/soonaverse_banner.jpg' : '/assets/mocks/soonaverse_banner_dark.jpg') + ')'
   }">
     <div *ngIf="(themeService.theme$ | async) === theme.Dark"
       class="absolute top-0 left-0 w-full h-full dark:bg-backgrounds-secondary-dark opacity-40"></div>
-    <div class="container px-8 relative z-10">
+    <div class="container relative z-10 px-8">
       <h1 class="pt-64 mb-6 text-3xl text-white lg:w-6/12 lg:pt-24 lg:text-6xl xl:pt-52" i18n>
         Welcome to The Soonaverse
       </h1>
@@ -35,7 +35,7 @@
           Marketplace
       </button>
 
-      <a class="mt-4 lg:ml-4 lg:mt-0 w-32"
+      <a class="w-32 mt-4 lg:ml-4 lg:mt-0"
         nz-button
         nzType="default"
         nzSize="large"
@@ -74,8 +74,8 @@
                 Go to Marketplace
               </button>
             </h3>
-            <div class="wen-cards-wrapper px-5 lg:px-0">
-              <wen-collection-card class="outline-none w-full h-full" [collection]="col" *ngFor="let col of collection$ | async; trackBy: trackByUid">
+            <div class="px-5 wen-cards-wrapper lg:px-0">
+              <wen-collection-card class="w-full h-full outline-none" [collection]="col" *ngFor="let col of collection$ | async; trackBy: trackByUid">
               </wen-collection-card>
             </div>
             <button
@@ -106,9 +106,9 @@
                 Discover more
               </button>
             </h3>
-            <div class="wen-cards-wrapper px-5 lg:px-0">
+            <div class="px-5 wen-cards-wrapper lg:px-0">
               <wen-space-card
-                class="outline-none w-full h-full"
+                class="w-full h-full outline-none"
                 *ngFor="let s of spaces$ | async; trackBy: trackByUid"
                 [space]="s"
               ></wen-space-card>
@@ -239,7 +239,7 @@
         nz-button
         href="https://twitter.com/soon_labs"
         target="_new"
-        class="text-foregrounds-primary dark:text-foregrounds-primary-dark flex items-center"
+        class="flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"
         nzType="link"
         type="button"
       >
@@ -249,7 +249,7 @@
         nz-button
         href="https://github.com/soonaverse"
         target="_new"
-        class="text-foregrounds-primary dark:text-foregrounds-primary-dark flex items-center"
+        class="flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"
         nzType="link"
         type="button"
       >
@@ -257,9 +257,9 @@
       </a>
       <a
         nz-button
-        href="https://discord.gg/5h8z23u6Ga"
+        href="https://discord.gg/UffhtduynB"
         target="_new"
-        class="text-foregrounds-primary dark:text-foregrounds-primary-dark flex items-center"
+        class="flex items-center text-foregrounds-primary dark:text-foregrounds-primary-dark"
         nzType="link"
         type="button"
       >

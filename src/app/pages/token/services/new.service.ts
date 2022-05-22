@@ -26,10 +26,10 @@ export class NewService {
   public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
   public maxDescriptionsCount = MAX_DESCRIPTIONS_COUNT;
-  public maxLinksCount = MAX_LINKS_COUNT;  
+  public maxLinksCount = MAX_LINKS_COUNT;
 
   public nameControl: FormControl = new FormControl('', Validators.required);
-  public symbolControl: FormControl = new FormControl('', [Validators.required, Validators.pattern(/^[A-Z]+$/), Validators.minLength(4), Validators.maxLength(4)]);
+  public symbolControl: FormControl = new FormControl('', [Validators.required, Validators.pattern(/^[A-Z]+$/), Validators.minLength(3), Validators.maxLength(5)]);
   public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(MIN_IOTA_AMOUNT / 1000 / 1000), Validators.max(MAX_IOTA_AMOUNT / 1000 / 1000)]);
   public totalSupplyControl: FormControl = new FormControl('', [Validators.required, Validators.min(MIN_TOTAL_TOKEN_SUPPLY), Validators.max(MAX_TOTAL_TOKEN_SUPPLY)]);
   public spaceControl: FormControl = new FormControl('', Validators.required);
@@ -41,7 +41,7 @@ export class NewService {
   public distributionControl: FormControl = new FormControl(TokenDistributionType.FIXED, Validators.required);
   public introductionaryControl: FormControl = new FormControl('', Validators.required);
   public termsAndConditionsLinkControl: FormControl = new FormControl('', [Validators.required, getUrlValidator()]);
-  
+
   public allocations: FormArray;
   public links: FormArray;
   public tokenForm: FormGroup;

@@ -4,7 +4,7 @@ import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import { WEN_FUNC } from "@functions/interfaces/functions";
 import { COL, WenRequest } from "@functions/interfaces/models/base";
 import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType } from "@functions/interfaces/models/token";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 import { BaseApi, DEFAULT_LIST_SIZE } from "./base.api";
 
 @Injectable({
@@ -15,6 +15,12 @@ export class TokenMarketApi extends BaseApi<TokenBuySellOrder> {
   constructor(protected afs: AngularFirestore, protected fns: AngularFireFunctions) {
     super(afs, fns);
   }
+
+  private getBuyOrders = (tokenId: string) => (ref: any) => ref
+    .where('token', '==', tokenId).where('type', '==', TokenBuySellOrderType.BUY);
+
+  private getSellOrders = (tokenId: string) => (ref: any) => ref
+    .where('token', '==', tokenId).where('type', '==', TokenBuySellOrderType.SELL);
 
   public bidsActive(token: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<TokenBuySellOrder[]> {
     return this._query({
@@ -83,4 +89,14 @@ export class TokenMarketApi extends BaseApi<TokenBuySellOrder> {
   public cancel(req: WenRequest): Observable<TokenBuySellOrder | undefined> {
     return this.request(WEN_FUNC.cancelBuyOrSell, req);
   }
+
+  public listenToAvgBuy = (tokenId: string): Observable<number | undefined> => this._query({
+    collection: this.collection,
+    refCust: this.getBuyOrders(tokenId)
+  }).pipe(map(this.calcVWAP));
+
+  public listenToAvgSell = (tokenId: string): Observable<number | undefined> => this._query({
+    collection: this.collection,
+    refCust: this.getSellOrders(tokenId)
+  }).pipe(map(this.calcVWAP));
 }

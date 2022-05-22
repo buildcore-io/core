@@ -6,18 +6,19 @@ import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Space, Transaction } from '../../interfaces/models';
-import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
+import { assertHasAccess } from '../services/validators/access';
 import { generateRandomAmount } from '../utils/common.utils';
 import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
-import { Collection, CollectionAccess, CollectionType } from './../../interfaces/models/collection';
+import { Collection, CollectionType } from './../../interfaces/models/collection';
 import { Nft, NftAccess } from './../../interfaces/models/nft';
 import { TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
@@ -105,54 +106,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Set data object.
   const docNftData: Nft = docNft.data();
 
-  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_ONLY) {
-    if (!(await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).exists) {
-      throw throwInvalidArgument(WenError.you_are_not_part_of_space);
-    }
-  }
-
-  if (!docNftData.owner && docCollectionData.access === CollectionAccess.GUARDIANS_ONLY) {
-    if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).exists) {
-      throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
-    }
-  }
-
-  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_WITH_BADGE) {
-    const includedBadges: string[] = [];
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
-      .where('type', '==', TransactionType.BADGE)
-      .where('member', '==', owner).get();
-    if (qry.size > 0 && docCollectionData.accessAwards?.length) {
-      for (const t of qry.docs) {
-        if (docCollectionData.accessAwards.includes(t.data().payload.award) && !includedBadges.includes(t.data().payload.award)) {
-          includedBadges.push(t.data().payload.award)
-          break;
-        }
-      }
-    }
-
-    if (docCollectionData.accessAwards.length !== includedBadges.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_badge);
-    }
-  }
-
-  if (!docNftData.owner && docCollectionData.access === CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION) {
-    const includedCollections: string[] = [];
-    const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.NFT)
-      .where('owner', '==', owner).get();
-    if (qry.size > 0 && docCollectionData.accessCollections?.length) {
-      for (const t of qry.docs) {
-        if (docCollectionData.accessCollections.includes(t.data().collection) && !includedCollections.includes(t.data().collection)) {
-          includedCollections.push(t.data().collection);
-          break;
-        }
-      }
-    }
-
-    if (docCollectionData.accessCollections.length !== includedCollections.length) {
-      throw throwInvalidArgument(WenError.you_dont_have_required_NFTs);
-    }
-  }
+  await assertHasAccess(docSpace.id, docNftData.owner, docCollectionData.access, docCollectionData.accessAwards || [], docCollectionData.accessCollections || [])
 
   if (!docNftData.owner && docCollectionData.onePerMemberOnly === true) {
     const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
