@@ -1,0 +1,93 @@
+<wen-modal-drawer
+    i18n-title
+    title="Open Token Offer"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
+
+<ng-template #content>
+    <div class="flex items-center mt-8 lg:mt-6">
+        <nz-avatar [nzSrc]="previewImageService.getAvatarSize(token?.icon)"
+          class="border-2 border-tags-border dark:border-tags-border-dark min-w-12"
+          nzShape="circle"
+          [nzSize]="48">
+        </nz-avatar>
+        <div class="ml-4 text-lg font-bold">{{ token?.name }}</div>
+        <div class="ml-2 font-medium">{{ '(' + token?.symbol + ')' }}</div>
+    </div>
+
+    <div [ngSwitch]="currentStep" class="w-full mt-6">
+        <ng-container *ngSwitchCase="stepType.CONFIRM">
+            <ng-container *ngTemplateOutlet="confirmTemplate"></ng-container>
+        </ng-container>
+    </div>
+</ng-template>
+
+<ng-template #confirmTemplate>
+    <wen-description [items]="[
+        { title: '24h VWAP', value: (formatBest((listenAvgPrice24h$ | async), true)) }
+    ]"></wen-description>
+
+    <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
+      <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
+        <div class="flex items-center">
+          <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary rounded-xl px-2.5 py-1 text-xs mr-6">
+              <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap" i18n>Offered rate (Mi)</div>
+          </div>
+        </div>
+        <input class="w-full p-0 outline-0"
+                [formControl]="offeredRateControl"
+                nz-input
+                nzSize="small"
+                [nzBorderless]="true">
+        </div>
+
+        <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
+            <div class="flex items-center">
+                <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary rounded-xl px-2.5 py-1 text-xs mr-6">
+                    <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap" i18n>Your balance</div>
+                    <div class="mt-1">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
+                </div>
+            </div>
+            <input class="w-full p-0 outline-0"
+                    [formControl]="amountControl"
+                    nz-input
+                    nzSize="small"
+                    [nzBorderless]="true">
+        </div>
+
+        <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+            <div class="mt-1">{{formatBest(amountControl.value * offeredRateControl.value, true)}}</div>
+        </div>
+    </div>
+
+    <wen-terms-and-conditions
+        class="mt-10"
+        [isChecked]="agreeTermsConditions"
+        documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+        (wenOnCheckChange)="agreeTermsConditions = $event">
+    </wen-terms-and-conditions>
+
+    <wen-terms-and-conditions
+        class="mt-4"
+        [isChecked]="agreeTokenTermsConditions"
+        i18n-label
+        label="I agree with"
+        i18n-linkLabel
+        linkLabel="Token terms and Conditions"
+        [documentLink]="token?.termsAndConditions || ''"
+        (wenOnCheckChange)="agreeTokenTermsConditions = $event">
+    </wen-terms-and-conditions>
+
+    <div class="flex flex-col items-center w-full">
+        <button nz-button nzType="primary" nzSize="large" class="w-full mt-10 lg:w-auto"
+            [disabled]="!agreeTermsConditions || !agreeTokenTermsConditions" i18n (click)="proceedWithOrder()">
+                Confirm and create an offer
+        </button>
+
+        <div class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+            Once you agree with the terms, the  generated address will remain active during the whole sale.
+        </div>
+    </div>
+</ng-template>

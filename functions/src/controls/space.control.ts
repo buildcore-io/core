@@ -1,4 +1,3 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
@@ -6,6 +5,7 @@ import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/funct
 import { cyrb53 } from "../../interfaces/hash.utils";
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, serverTime, uOn } from "../utils/dateTime.utils";
@@ -21,7 +21,7 @@ import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): Space {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<Space>(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
     open: Joi.boolean().allow(false, true).optional(),
@@ -86,7 +86,7 @@ async function updateLinkedEntityForMember(opp: 'add' | 'remove', space: Space, 
 
 export const createSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.cSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
   appCheck(WEN_FUNC.cSpace, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner: string = params.address.toLowerCase();
@@ -135,9 +135,9 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
   }
 
   // Return member.
-  const membersOut: any = {};
+  const membersOut = {} as { [key: string]: admin.firestore.DocumentData | undefined };
   membersOut[owner] = (await refSpace.collection(SUB_COL.MEMBERS).doc(owner).get()).data();
-  const guardiansOut: any = {};
+  const guardiansOut = {} as { [key: string]: admin.firestore.DocumentData | undefined };
   guardiansOut[owner] = (await refSpace.collection(SUB_COL.GUARDIANS).doc(owner).get()).data();
   return merge(<Space>docSpace.data(), {
     guardians: guardiansOut,
@@ -147,7 +147,7 @@ export const createSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.uSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
   appCheck(WEN_FUNC.uSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -168,7 +168,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
   await SpaceValidator.isGuardian(refSpace, guardian);
 
   // Decline all pending members.
-  let append: any = {};
+  let append = {};
   if (params.body.open === true) {
     const query: admin.firestore.QuerySnapshot = await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).get();
     for (const g of query.docs) {
@@ -193,7 +193,7 @@ export const updateSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.joinSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Space> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Space> => {
   appCheck(WEN_FUNC.joinSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -261,7 +261,7 @@ export const joinSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.leaveSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.leaveSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -321,7 +321,7 @@ export const leaveSpace: functions.CloudFunction<Space> = functions.runWith({
 
 export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.addGuardianSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.addGuardianSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -373,7 +373,7 @@ export const addGuardian: functions.CloudFunction<Space> = functions.runWith({
 
 export const removeGuardian: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.removeGuardianSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.removeGuardianSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -422,7 +422,7 @@ export const removeGuardian: functions.CloudFunction<Space> = functions.runWith(
 
 export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.blockMemberSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.blockMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -434,7 +434,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace!: DocumentSnapshotType;
   await SpaceValidator.spaceExists(refSpace);
 
@@ -485,10 +485,10 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
     }
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refSpace);
-      const totalPendingMembers = (sfDoc.data().totalPendingMembers || 0) - (isKnockingMember ? 1 : 0);
-      const totalMembers = (sfDoc.data().totalMembers || 0) - (isKnockingMember ? 0 : 1);
-      const totalGuardians = (sfDoc.data().totalGuardians || 0) - (isGuardian ? (isKnockingMember ? 0 : 1) : 0);
+      const sfDoc = await transaction.get(refSpace);
+      const totalPendingMembers = (sfDoc.data()?.totalPendingMembers || 0) - (isKnockingMember ? 1 : 0);
+      const totalMembers = (sfDoc.data()?.totalMembers || 0) - (isKnockingMember ? 0 : 1);
+      const totalGuardians = (sfDoc.data()?.totalGuardians || 0) - (isGuardian ? (isKnockingMember ? 0 : 1) : 0);
       transaction.update(refSpace, {
         totalGuardians: totalGuardians,
         totalMembers: totalMembers,
@@ -497,7 +497,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
     });
 
     if (isMember) {
-      await updateLinkedEntityForMember('remove', (await refSpace.get()).data(), params.body.member);
+      await updateLinkedEntityForMember('remove', <Space>(await refSpace.get()).data(), params.body.member);
     }
 
     // Load latest
@@ -509,7 +509,7 @@ export const blockMember: functions.CloudFunction<Space> = functions.runWith({
 
 export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.unblockMemberSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.unblockMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -542,7 +542,7 @@ export const unblockMember: functions.CloudFunction<Space> = functions.runWith({
 
 export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.acceptMemberSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.acceptMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -554,7 +554,7 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   let docSpace!: DocumentSnapshotType;
   await SpaceValidator.spaceExists(refSpace);
 
@@ -576,16 +576,16 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
     await refSpace.collection(SUB_COL.KNOCKING_MEMBERS).doc(params.body.member).delete();
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const sfDoc: any = await transaction.get(refSpace);
-      const totalMembers = (sfDoc.data().totalMembers || 0) + 1;
-      const totalPendingMembers = (sfDoc.data().totalPendingMembers || 0) - 1;
+      const sfDoc = await transaction.get(refSpace);
+      const totalMembers = (sfDoc.data()?.totalMembers || 0) + 1;
+      const totalPendingMembers = (sfDoc.data()?.totalPendingMembers || 0) - 1;
       transaction.update(refSpace, {
         totalMembers: totalMembers,
         totalPendingMembers: totalPendingMembers
       });
     });
 
-    await updateLinkedEntityForMember('add', (await refSpace.get()).data(), params.body.member);
+    await updateLinkedEntityForMember('add', <Space>(await refSpace.get()).data(), params.body.member);
 
     // Load latest
     docSpace = await refSpace.collection(SUB_COL.MEMBERS).doc(params.body.member).get();
@@ -596,7 +596,7 @@ export const acceptMemberSpace: functions.CloudFunction<Space> = functions.runWi
 
 export const declineMemberSpace: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.declineMemberSpace),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.declineMemberSpace, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -608,7 +608,7 @@ export const declineMemberSpace: functions.CloudFunction<Space> = functions.runW
   }));
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refSpace = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
   await SpaceValidator.spaceExists(refSpace);
   await SpaceValidator.isGuardian(refSpace, guardian);
 
@@ -629,7 +629,7 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
   minInstances: scale(WEN_FUNC.setAlliance),
   timeoutSeconds: 300,
   memory: '4GB'
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.setAlliance, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -644,17 +644,17 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
 
   assertValidation(schema.validate(params.body));
 
-  const refSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
-  const refTargetAllianceSpace: any = admin.firestore().collection(COL.SPACE).doc(params.body.targetSpaceId);
-  let docSpace: any;
+  const refSpace = admin.firestore().collection(COL.SPACE).doc(params.body.uid);
+  const refTargetAllianceSpace = admin.firestore().collection(COL.SPACE).doc(params.body.targetSpaceId);
+  let docSpace: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData> | undefined = undefined
   await SpaceValidator.spaceExists(refSpace);
   await SpaceValidator.spaceExists(refTargetAllianceSpace);
   await SpaceValidator.isGuardian(refSpace, guardian);
   if (params.body) {
-    const currentSpace: any = (await refSpace.get()).data();
-    const targetSpace: any = (await refTargetAllianceSpace.get()).data();
+    const currentSpace = <Space>(await refSpace.get()).data();
+    const targetSpace = <Space>(await refTargetAllianceSpace.get()).data();
     let established = true;
-    const targetSpaceAli: any = targetSpace.alliances?.[params.body.uid];
+    const targetSpaceAli = targetSpace.alliances?.[params.body.uid];
     if (!targetSpaceAli || targetSpaceAli.enabled === false || params.body.enabled === false) {
       established = false;
     }
@@ -706,12 +706,12 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
       const chunk = 500;
       for (let i = 0; i < updateMembers.length; i += chunk) {
         await admin.firestore().runTransaction(async (transaction) => {
-          const updates: any[] = [];
+          const updates = [];
           for (const m of updateMembers.slice(i, i + chunk)) {
-            const refMember: any = admin.firestore().collection(COL.MEMBER).doc(m);
-            const sfDoc: any = await transaction.get(refMember);
+            const refMember = admin.firestore().collection(COL.MEMBER).doc(m);
+            const sfDoc = await transaction.get(refMember);
             if (sfDoc.data()) {
-              const linkedEntities: number[] = sfDoc.data().linkedEntities || [];
+              const linkedEntities: number[] = sfDoc.data()?.linkedEntities || [];
               if (prevHash !== cyrb53(params.body.uid)) {
                 if (prevHash && linkedEntities.length > 0) {
                   const index = linkedEntities.indexOf(prevHash);
@@ -746,5 +746,5 @@ export const setAlliance: functions.CloudFunction<Space> = functions.runWith({
     docSpace = await refSpace.get();
   }
 
-  return docSpace.data();
+  return docSpace?.data();
 });

@@ -1,17 +1,7 @@
-export function getAlliancesKeys(alliances?: any, disabled = false): string[] {
-  if (!alliances) {
-    return [];
-  }
+import { Alliance } from "../../interfaces/models";
 
-  const out: string[] = [];
-  for (const [key, space] of Object.entries(alliances)) {
-    if (
-      ((<any>space).enabled || disabled === false) ||
-      (!(<any>space).enabled || disabled === true)
-    ) {
-      out.push(key);
-    }
-  }
-
-  return out;
-}
+export const getAlliancesKeys = (alliances?: { [key: string]: Alliance }, disabled = false): string[] =>
+  Object.entries(alliances || {}).reduce(
+    (out, [key, space]) => (space.enabled !== disabled ? [...out, key] : out),
+    [] as string[]
+  );

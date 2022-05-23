@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconModule } from '@components/icon/icon.module';
+import { ModalDrawerModule } from '@components/modal-drawer/modal-drawer.module';
 import { RadioModule } from '@components/radio/radio.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -15,10 +16,10 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { NftSaleComponent } from './nft-sale.component';
-import { NftSaleNotForSaleComponent } from './nft-sale-not-for-sale/nft-sale-not-for-sale.component';
-import { NftSaleFixedPriceComponent } from './nft-sale-fixed-price/nft-sale-fixed-price.component';
 import { NftSaleAuctionComponent } from './nft-sale-auction/nft-sale-auction.component';
+import { NftSaleFixedPriceComponent } from './nft-sale-fixed-price/nft-sale-fixed-price.component';
+import { NftSaleNotForSaleComponent } from './nft-sale-not-for-sale/nft-sale-not-for-sale.component';
+import { NftSaleComponent } from './nft-sale.component';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { NftSaleAuctionComponent } from './nft-sale-auction/nft-sale-auction.com
     NzRadioModule,
     NzSelectModule,
     NzIconModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    ModalDrawerModule
   ],
   exports: [
     NftSaleComponent

@@ -1,4 +1,3 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { cid } from 'is-ipfs';
 import Joi, { ObjectSchema } from "joi";
@@ -6,6 +5,7 @@ import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { COL, WenRequest } from '../../interfaces/models/base';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { cOn, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument, throwUnAuthenticated } from "../utils/error.utils";
@@ -17,7 +17,7 @@ import { DISCORD_REGEXP, GITHUB_REGEXP, TWITTER_REGEXP, URL_PATHS } from './../.
 import { Member } from './../../interfaces/models/member';
 
 function defaultJoiUpdateCreateSchema(): Member {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<Member>(), {
     name: Joi.string().allow(null, '').optional(),
     about: Joi.string().allow(null, '').optional(),
     currentProfileImage: Joi.object({
@@ -40,7 +40,7 @@ function defaultJoiUpdateCreateSchema(): Member {
 
 export const createMember: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.cMemberNotExists),
-}).https.onCall(async (address: string, context: any): Promise<Member> => {
+}).https.onCall(async (address: string, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.cMemberNotExists, context);
   if (!address || address.length !== ethAddressLength) {
     throw throwUnAuthenticated(WenError.address_must_be_provided);
@@ -65,7 +65,7 @@ export const createMember: functions.CloudFunction<Member> = functions.runWith({
 
 export const updateMember: functions.CloudFunction<Member> = functions.runWith({
   minInstances: scale(WEN_FUNC.uMember),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Member> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Member> => {
   appCheck(WEN_FUNC.uMember, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -96,7 +96,7 @@ export const updateMember: functions.CloudFunction<Member> = functions.runWith({
       throw throwInvalidArgument(WenError.nft_does_not_exists);
     }
 
-    if (doc.data()!.available !== true) {
+    if (doc.data()?.available !== true) {
       throw throwInvalidArgument(WenError.nft_is_no_longer_available);
     }
   }

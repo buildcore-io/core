@@ -56,6 +56,8 @@ export class MultiplePage implements OnInit {
   public uploadErrors: string[] = [];
   public imagesLimit = 500;
   public collection?: Collection;
+  public generateClicked = false;
+  public startSuccessCounter = 0;
   private usedFileNames = new Set<string>();
   public nftObject: NFTObject = {
     media: {
@@ -207,7 +209,11 @@ export class MultiplePage implements OnInit {
   }
 
   public uploadMultipleChange(event: NzUploadChangeParam): void {
+    if (event.type === 'start') {
+      this.startSuccessCounter++;
+    }
     if (event.type === 'success') {
+      this.startSuccessCounter--;
       this.uploadedFiles.push(event.file);
     } else if (event.type === 'removed') {
       this.uploadedFiles = this.uploadedFiles.filter((f: NzUploadFile) => f.name !== event.file.name);
@@ -339,6 +345,7 @@ export class MultiplePage implements OnInit {
     })
     return false;
   }
+
   public beforeImagesUpload(file: NzUploadFile): boolean | Observable<boolean> {
     if (!file) return false;
     return this.uploadedFiles.length < this.imagesLimit;
@@ -347,6 +354,8 @@ export class MultiplePage implements OnInit {
   public buttonClick(): void {
     if (this.currentStep === StepType.GENERATE) {
       this.generate();
+      this.generateClicked = true;
+      this.cd.markForCheck();
     } else {
       this.publish();
     }

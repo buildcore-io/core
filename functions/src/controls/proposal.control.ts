@@ -1,14 +1,12 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
-import { WEN_FUNC } from '../../interfaces/functions';
-import { DecodedToken, StandardResponse } from '../../interfaces/functions/index';
+import { DecodedToken, StandardResponse, WEN_FUNC } from '../../interfaces/functions';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from "../../interfaces/models/firebase";
-import { Proposal } from '../../interfaces/models/proposal';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { getAlliancesKeys } from "../utils/alliance.utils";
 import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
@@ -18,13 +16,13 @@ import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { ProposalStartDateMin, RelatedRecordsResponse, URL_PATHS } from './../../interfaces/config';
-import { ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
-import { Transaction, TransactionType } from './../../interfaces/models/transaction';
+import { Proposal, ProposalAnswer, ProposalMember, ProposalQuestion, ProposalSubType, ProposalType } from './../../interfaces/models/proposal';
+import { Transaction, TransactionType, VoteTransaction } from './../../interfaces/models/transaction';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): Proposal {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<Proposal>(), {
     name: Joi.string().required(),
     space: CommonJoi.uidCheck(),
     additionalInfo: Joi.string().allow(null, '').optional(),
@@ -78,7 +76,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
   minInstances: scale(WEN_FUNC.cProposal),
   timeoutSeconds: 300,
   memory: "2GB",
-}).https.onCall(async (req: WenRequest, context: any): Promise<Proposal> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Proposal> => {
   appCheck(WEN_FUNC.cProposal, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -209,7 +207,7 @@ export const createProposal: functions.CloudFunction<Proposal> = functions.runWi
 
 export const approveProposal: functions.CloudFunction<Proposal> = functions.runWith({
   minInstances: scale(WEN_FUNC.aProposal),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.aProposal, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -250,7 +248,7 @@ export const approveProposal: functions.CloudFunction<Proposal> = functions.runW
 
 export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWith({
   minInstances: scale(WEN_FUNC.rProposal),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.rProposal, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -295,7 +293,7 @@ export const rejectProposal: functions.CloudFunction<Proposal> = functions.runWi
 
 export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWith({
   minInstances: scale(WEN_FUNC.voteOnProposal),
-}).https.onCall(async (req: WenRequest, context: any): Promise<StandardResponse> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<StandardResponse> => {
   appCheck(WEN_FUNC.voteOnProposal, context);
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
@@ -349,7 +347,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
     });
   });
 
-  const found: boolean = params.body.values.some((r: any) => {
+  const found = ((<ProposalMember>params.body).values || []).some((r) => {
     return answers.includes(r);
   });
 
@@ -367,11 +365,13 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
       member: owner,
       space: docProposal.data().space,
       createdOn: serverTime(),
-      payload: {
+      payload: <VoteTransaction>{
         proposalId: params.body.uid,
         weight: docMember.data().weight || 0,
-        values: params.body.values
-      }
+        values: params.body.values,
+        votes: []
+      },
+      linkedTransactions: []
     });
 
     // Mark participant that completed the vote.
@@ -379,16 +379,16 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
       voted: true,
       tranId: tranId,
       values: params.body.values.map((v: number) => {
-        const obj: any = {};
+        const obj = {} as { [key: number]: number };
         obj[v] = docMember.data().weight || 0;
         return obj;
       })
     });
 
-    const results: any = {};
+    const results = {} as { [key: string]: number };
     let voted = 0;
     let total = 0;
-    const allMembers: admin.firestore.QuerySnapshot = await refProposal.collection(SUB_COL.MEMBERS).get();
+    const allMembers = await refProposal.collection(SUB_COL.MEMBERS).get();
     for (const doc of allMembers.docs) {
       // Total is based on number of questions.
       total += doc.data().weight * docProposal.data().questions.length;
@@ -398,7 +398,7 @@ export const voteOnProposal: functions.CloudFunction<Proposal> = functions.runWi
         voted += doc.data().weight * docProposal.data().questions.length;
 
         // We add weight to each answer.
-        doc.data().values.forEach((obj: any) => {
+        (<ProposalMember>doc.data()).values?.forEach((obj) => {
           Object.keys(obj).forEach((k) => {
             results[k] = results[k] || 0;
             results[k] += doc.data().weight;

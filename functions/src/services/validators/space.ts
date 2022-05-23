@@ -1,23 +1,26 @@
 import { SUB_COL } from "../../../interfaces/models/base";
 import { throwInvalidArgument } from "../../utils/error.utils";
+import admin from '../../admin.config';
 import { WenError } from './../../../interfaces/errors';
 
+type DocRefType = admin.firestore.DocumentReference<admin.firestore.DocumentData>
+
 export class SpaceValidator {
-  public static async spaceExists(refSpace: any): Promise<void> {
+  public static async spaceExists(refSpace: DocRefType): Promise<void> {
     if (!(await refSpace.get()).exists) {
       throw throwInvalidArgument(WenError.space_does_not_exists);
     }
   }
 
-  public static async isGuardian(refSpace: any, guardian: string): Promise<void> {
+  public static async isGuardian(refSpace: DocRefType, guardian: string): Promise<void> {
     if (!(await refSpace.collection(SUB_COL.GUARDIANS).doc(guardian).get()).exists) {
       throw throwInvalidArgument(WenError.you_are_not_guardian_of_space);
     }
   }
 
-  public static async hasValidAddress(refSpace: any): Promise<void> {
-    const docSpace: any = await refSpace.get();
-    if (!(await refSpace.get()).exists || !docSpace.data().validatedAddress) {
+  public static async hasValidAddress(refSpace: DocRefType): Promise<void> {
+    const docSpace = await refSpace.get();
+    if (!(await refSpace.get()).exists || !docSpace.data()?.validatedAddress) {
       throw throwInvalidArgument(WenError.space_must_have_validated_address);
     }
   }

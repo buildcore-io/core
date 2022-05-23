@@ -1,36 +1,31 @@
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { Change } from "firebase-functions";
-import { DocumentSnapshot } from "firebase-functions/v1/firestore";
+import { WEN_FUNC } from '../../interfaces/functions';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { superPump } from '../scale.settings';
+import { MilestoneTransaction } from '../../interfaces/models/milestone';
+import admin from '../admin.config';
+import { scale } from '../scale.settings';
 import { ProcessingService } from '../services/payment/payment-processing';
+import { serverTime } from '../utils/dateTime.utils';
 
 // Listen for changes in all documents in the 'users' collection
-export const milestoneTransactionWrite: functions.CloudFunction<Change<DocumentSnapshot>> = functions.runWith({
+export const milestoneTransactionWrite = functions.runWith({
   timeoutSeconds: 300,
-  minInstances: superPump,
-}).firestore.document(COL.MILESTONE + '/{milestoneId}/' + SUB_COL.TRANSACTIONS + '/{tranId}').onWrite(async (change) => {
-  const newValue: any = change.after.data();
-  console.log('Milestone Transaction triggered');
-  if (newValue && newValue?.processed !== true) {
-
-    // We run everything completely inside of the transaction.
-    await admin.firestore().runTransaction(async (transaction) => {
-      const service: ProcessingService = new ProcessingService(transaction);
-      await service.processMilestoneTransaction(newValue);
-
-      // This will trigger all update/set.
-      service.submit();
-    });
-
-    // Mark milestone as processed.
-    return change.after.ref.set({
-      processed: true,
-      processedOn: admin.firestore.Timestamp.now()
-    }, {merge: true});
-  } else {
-    console.log('Nothing to process.');
-    return;
+  minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
+}).firestore.document(COL.MILESTONE + '/{milestoneId}/' + SUB_COL.TRANSACTIONS + '/{tranId}').onWrite((change) => {
+  if (!change.after.data()) {
+    return
   }
+  return admin.firestore().runTransaction(async (transaction) => {
+    const data = <MilestoneTransaction>(await transaction.get(change.after.ref)).data()
+    if (data.processed !== true) {
+      const service = new ProcessingService(transaction);
+      await service.processMilestoneTransaction(data);
+      service.submit();
+      return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() })
+    } else {
+      functions.logger.info('Nothing to process.');
+      return;
+    }
+  })
 });
+

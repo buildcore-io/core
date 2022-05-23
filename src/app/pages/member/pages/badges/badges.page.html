@@ -3,10 +3,10 @@
     <nz-card class="w-full" *ngFor="let t of data.badges$ | async; trackBy: trackByUid">
       <div class="flex justify-between w-full">
         <div class="truncate">
-          <p nz-typography class="text-lg font-bold leading-7 truncate">
+          <p nz-typography class="text-lg font-bold leading-7 truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">
             {{ t.payload.name }}
           </p>
-          <p nz-typography class="text-base font-medium leading-6 truncate">{{t.payload.description}}</p>
+          <p nz-typography class="text-base font-medium leading-6 truncate text-icons-secondary dark:text-icons-secondary-dark">{{t.payload.description}}</p>
         </div>
         <wen-badge-tile [metadata]="t.payload.image" [name]="t.payload.name">
         </wen-badge-tile>

@@ -50,3 +50,6 @@ functions/firestore-debug.log
 functions/database-debug.log
 .angular
 functions/scripts/serviceAccountKey*.json
+functions/scripts/agoliaBackfil.sh
+
+firestore.indexes.json

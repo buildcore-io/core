@@ -1,0 +1,305 @@
+<wen-content [showBackButton]="true">
+    <div class="relative py-12" nz-row [nzGutter]="40">
+      <div nz-col nzFlex="auto"
+        [ngStyle]="{
+          'max-width': (deviceService.isDesktop$ | async) ? 'calc(100% - 450px)' : '100%'
+        }">
+        <div class="flex items-center mb-8 space-x-3">
+          <a [routerLink]="['/space', (data.space$ | async)?.uid]" class="flex items-center">
+            <nz-avatar
+              [nzSrc]="previewImageService.getAvatarSize((data.space$ | async)?.avatarUrl)"
+              [nzSize]="32"
+              class="mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark border-tags-border dark:border-tags-border-dark min-w-8"
+              nzShape="circle"
+            >
+            </nz-avatar>
+            <div class="font-medium">
+              {{ (data.space$ | async)?.name }}
+            </div>
+          </a>
+
+          <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" i18n>Token Trading</nz-tag>
+          <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark"
+                  *ngIf="!(data.token$ | async)?.approved && !(data.token$ | async)?.rejected" i18n>Pending
+          </nz-tag>
+          <nz-tag class="wen-status-tag bg-tags-available dark:bg-tags-available-dark border-tags-available dark:border-tags-available-dark"
+                  *ngIf="(data.token$ | async)?.approved" i18n>
+            Available
+          </nz-tag>
+        </div>
+
+        <h1 class="mt-2">{{ (data.token$ | async)?.name }}</h1>
+
+        <div class="flex items-center justify-between mt-8 space-x-3">
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    24h VWAP
+                </div>
+                <div class="mt-2 text-lg font-bold">
+                    {{ formatBest((listenAvgPrice24h$ | async), true) }}
+                </div>
+            </div>
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    7-day VWAP
+                </div>
+                <div class="mt-2 text-lg font-bold">
+                  {{ formatBest((listenAvgPrice7d$ | async), true) }}
+                </div>
+            </div>
+            <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
+                <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
+                    Change 24h
+                </div>
+                <div
+                [ngClass]="(((listenChangePrice24h$ | async) || 0) > 0 ? 'text-alerts-success class.dark:text-alerts-success-dark' : '') + (((listenChangePrice24h$ | async) || 0) < 0 ? 'text-alerts-error class.dark:text-alerts-error-dark' : '')"
+                class="mt-2 text-lg font-bold">
+                  {{ (listenChangePrice24h$ | async) | percent }}
+                </div>
+            </div>
+        </div>
+
+        <nz-card class="mt-6">
+            <div class="flex items-center justify-between">
+                <div class="text-lg font-bold" i18n>Token chart</div>
+
+                <div class="space-x-1">
+                    <button *ngFor="let l of chartLengthOptions"
+                        nz-button nzShape="circle" nzSize="small"
+                        class="wen-secondary"
+                        [ngClass]="{ 'selected': l.value === chartLengthControl.value }"
+                        (click)="chartLengthControl.setValue(l.value)">
+                            {{ l.label }}
+                    </button>
+                </div>
+              </div>
+              <div style="display: block;" class="mt-6">
+                <canvas baseChart width="400" height="180"
+                            [data]="lineChartData"
+                            [options]="lineChartOptions"
+                            [type]="lineChartType"></canvas>
+            </div>
+        </nz-card>
+      </div>
+      <div class="mt-6 lg:mt-30 lg:max-w-450" nz-col [nzFlex]="(deviceService.isDesktop$ | async) ? '450px' : 'auto'"
+        [ngStyle]="{
+          'max-width': (deviceService.isDesktop$ | async) ? '450px' : '100%'
+        }">
+
+        <button
+          nz-button
+          nzBlock
+          nzSize="large"
+          nzType="primary"
+          (click)="isBidTokenOpen = true"
+        >
+          <div class="mr-1" i18n>Buy</div>
+          <div> {{ (data.token$ | async)?.symbol }}</div>
+        </button>
+
+        <button
+          class="mt-6 wen-secondary"
+          nz-button
+          nzBlock
+          nzSize="large"
+          (click)="isAskTokenOpen = true"
+        >
+          <div class="mr-1" i18n>Sell</div>
+          <div> {{ (data.token$ | async)?.symbol }}</div>
+        </button>
+
+        <wen-share
+          class="block p-6 mt-6 lg:p-0"
+          i18n-shareText
+          shareText="Check out token"
+          [shareUrl]="getShareUrl(data.token$ | async)">
+        </wen-share>
+
+        <div class="mt-12 text-2xl font-bold">
+            {{ (data.token$ | async)?.shortDescriptionTitle }}
+        </div>
+
+        <div class="mt-6 font-medium" [innerHtml]="(data.token$ | async)?.shortDescription">
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col w-full mt-10 lg:flex-row lg:space-x-10">
+        <nz-card [nzTitle]="getBidsTitle((listenAvgBuy$ | async) || undefined)" class="flex-1 w-full mt-6 h-max lg:mt-0">
+            <div class="flex items-center px-6 mb-4">
+                <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentBidsListing === bidListingTypes.OPEN"
+                    (nzCheckedChange)="currentBidsListing = bidListingTypes.OPEN">
+                        <span i18n>Open bids</span>
+                </nz-tag>
+                <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentBidsListing === bidListingTypes.MY"
+                    (nzCheckedChange)="currentBidsListing = bidListingTypes.MY">
+                        <span i18n>My bids</span>
+                </nz-tag>
+            </div>
+
+            <nz-table *ngIf="currentBidsListing === bidListingTypes.OPEN"
+                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="(bids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenBids">
+                <thead>
+                    <tr>
+                        <th i18n>Price</th>
+                        <th class="right" i18n>Amount</th>
+                        <th class="right" i18n>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <nz-skeleton *ngIf="false; else openBidsBlock"  class=""
+                        [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                        [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                    <ng-template #openBidsBlock>
+                        <tr *ngFor="let item of (bids$ | async)">
+                            <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                            <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                            <td class="right">{{ formatBest(item.price * item.count) }}</td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </nz-table>
+
+            <ng-template #noOpenBids>
+                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no open requests</div>
+            </ng-template>
+
+            <nz-table *ngIf="currentBidsListing === bidListingTypes.MY"
+                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="(myBids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyRequests" [nzPageSize]="10">
+                <thead>
+                    <tr>
+                        <th i18n>Price</th>
+                        <th class="right" i18n>Amount</th>
+                        <th class="right" i18n>Total</th>
+                        <th class="right" i18n>Fulfilled</th>
+                        <th class="right" i18n>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <nz-skeleton *ngIf="false; else myRequestsBlock"  class=""
+                        [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                        [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                    <ng-template #myRequestsBlock>
+                      <tr *ngFor="let item of (myBids$ | async)">
+                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="right">{{ formatBest(item.price * item.count) }}</td>
+                        <td class="right">
+                          <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
+                            {{ (item.fulfilled / item.count) | percent }}
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
+                            Cancelled
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.EXPIRED" i18n>
+                            Expired
+                          </ng-container>
+                        </td>
+                        <td class="right">
+                          <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
+                        </td>
+                        </tr>
+                    </ng-template>
+                </tbody>
+            </nz-table>
+
+            <ng-template #noMyRequests>
+                <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no bids</div>
+            </ng-template>
+        </nz-card>
+
+        <nz-card [nzTitle]="getAsksTitle((listenAvgSell$ | async) || undefined)" class="flex-1 w-full h-max">
+          <div class="flex items-center px-6 mb-4">
+              <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentAskListing === askListingTypes.OPEN"
+                  (nzCheckedChange)="currentAskListing = askListingTypes.OPEN">
+                      <span i18n>Open asks</span>
+              </nz-tag>
+              <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentAskListing === askListingTypes.MY"
+                  (nzCheckedChange)="currentAskListing = askListingTypes.MY">
+                      <span i18n>My asks</span>
+              </nz-tag>
+          </div>
+
+          <nz-table *ngIf="currentAskListing === askListingTypes.OPEN"
+              class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+              [nzData]="(asks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenAsks">
+              <thead>
+                  <tr>
+                      <th i18n>Price</th>
+                      <th class="right" i18n>Amount</th>
+                      <th class="right" i18n>Total</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <nz-skeleton *ngIf="false; else openAsksBlock"  class=""
+                      [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                      [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                  <ng-template #openAsksBlock>
+                      <tr *ngFor="let item of (asks$ | async)">
+                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="right">{{ formatBest(item.price * item.count) }}</td>
+                      </tr>
+                  </ng-template>
+              </tbody>
+          </nz-table>
+
+          <ng-template #noOpenAsks>
+              <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no open asks</div>
+          </ng-template>
+
+          <nz-table *ngIf="currentAskListing === askListingTypes.MY"
+              class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
+              [nzData]="(myAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyAsks">
+              <thead>
+                  <tr>
+                      <th i18n>Price</th>
+                      <th class="right" i18n>Amount</th>
+                      <th class="right" i18n>Total</th>
+                      <th class="right" i18n>Fulfilled</th>
+                      <th class="right" i18n>Action</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <nz-skeleton *ngIf="false; else myAsksBlock"  class=""
+                      [nzActive]="true" [nzAvatar]="{ size: 'default' }"
+                      [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
+                  <ng-template #myAsksBlock>
+                      <tr *ngFor="let item of (myAsks$ | async)">
+                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="right">{{ formatBest(item.price * item.count) }}</td>
+                        <td class="right">
+                          <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
+                            {{ (item.fulfilled / item.count) | percent }}
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.CANCELLED || item.status === bidAskStatuses.PARTIALLY_SETTLED_AND_CANCELLED" i18n>
+                            Cancelled
+                          </ng-container>
+                          <ng-container *ngIf="item.status === bidAskStatuses.EXPIRED" i18n>
+                            Expired
+                          </ng-container>
+                        </td>
+                        <td class="right">
+                          <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
+                        </td>
+                      </tr>
+                  </ng-template>
+              </tbody>
+          </nz-table>
+
+          <ng-template #noMyAsks>
+              <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no asks</div>
+          </ng-template>
+      </nz-card>
+    </div>
+</wen-content>
+
+<wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen"
+              [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
+              (wenOnClose)="isBidTokenOpen = false"></wen-token-bid>
+<wen-token-offer-pre-mint *ngIf="isAskTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"
+              [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
+              [isOpen]="isAskTokenOpen" (wenOnClose)="isAskTokenOpen = false"></wen-token-offer-pre-mint>

@@ -1,0 +1,77 @@
+<wen-modal-drawer
+    i18n-title
+    title="Token description"
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
+
+<ng-template #content>
+    <form class="space-y-4 mt-6" [formGroup]="form">
+        <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Name is invalid.">
+                <input
+                    nz-input
+                    nzSize="large"
+                    i18n-placeholder
+                    placeholder="Name"
+                    [formControl]="nameControl"
+                />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Title is invalid.">
+                <input
+                    nz-input
+                    nzSize="large"
+                    i18n-placeholder
+                    placeholder="Title"
+                    [formControl]="titleControl"
+                />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Description is invalid.">
+                <textarea
+                    nz-input
+                    nzSize="large"
+                    i18n-placeholder
+                    placeholder="Token description"
+                    rows="4"
+                    [formControl]="descriptionControl"
+                ></textarea>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Short description title is invalid.">
+                <input
+                    nz-input
+                    nzSize="large"
+                    i18n-placeholder
+                    placeholder="Short description title"
+                    [formControl]="shortDescriptionTitleControl"
+                />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control i18n-nzErrorTip nzErrorTip="Short description is invalid.">
+                <textarea
+                    nz-input
+                    nzSize="large"
+                    i18n-placeholder
+                    placeholder="Short token description"
+                    rows="4"
+                    [formControl]="shortDescriptionControl"
+                ></textarea>
+            </nz-form-control>
+        </nz-form-item>
+    </form>
+    <div class="flex items-center justify-center mt-10">
+        <button nz-button nzSize="large" class="mr-10 wen-secondary" (click)="close()" i18n>
+            Cancel
+        </button>
+        <button nz-button nzType="primary" nzSize="large" (click)="saveChanges()" i18n>
+            Save changes
+        </button>
+    </div>
+</ng-template>

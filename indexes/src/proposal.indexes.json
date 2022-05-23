@@ -1,0 +1,46 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "proposal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "keywords",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "proposal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "proposal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "space",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "settings.endDate",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

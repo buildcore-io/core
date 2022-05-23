@@ -2,12 +2,13 @@ import { Injectable } from "@angular/core";
 import { OffersHistory, SuccesfullOrdersWithFullHistory } from "@api/nft.api";
 import { AuthService } from "@components/auth/services/auth.service";
 import { SelectCollectionOption } from "@components/collection/components/select-collection/select-collection.component";
+import { DescriptionItem } from "@components/description/description.component";
 import { UnitsHelper } from "@core/utils/units-helper";
 import { Timestamp } from "@functions/interfaces/models/base";
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { Collection, Member, Space, Transaction } from "functions/interfaces/models";
-import { Nft } from "functions/interfaces/models/nft";
+import { Nft, PropStats } from "functions/interfaces/models/nft";
 import { BehaviorSubject } from "rxjs";
 dayjs.extend(isSameOrBefore);
 
@@ -66,7 +67,7 @@ export class DataService {
       }));
   }
 
-  public getPropStats(obj: any): any[] {
+  public getPropStats(obj: PropStats | undefined = {}): DescriptionItem[] {
     if (!obj) {
       return [];
     }
@@ -77,7 +78,7 @@ export class DataService {
       if (a.label > b.label) { return 1; }
       return 0;
     })) {
-      final.push(v);
+      final.push({ title: v.label, value: v.value });
     }
 
     return final;
@@ -88,7 +89,7 @@ export class DataService {
       return '';
     }
 
-    return UnitsHelper.formatBest(amount, 2);
+    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public auctionInProgress(nft?: Nft | null, col?: Collection | null): boolean {
@@ -140,56 +141,24 @@ export class DataService {
     return undefined;
   }
 
-  public getCountdownDays(nft?: Nft | null): number {
-    const date = this.getCountdownDate(nft);
-    if (!date) {
-      return 0;
-    }
-
-    return date.diff(dayjs(), 'days');
-  }
-
-  public getCountdownHours(nft?: Nft | null): number {
-    const date = this.getCountdownDate(nft);
-    if (!date) {
-      return 0;
-    }
-
-    let hours = date.diff(dayjs(), 'hour');
-    const days = Math.floor(hours / 24);
-    hours = hours - (days * 24);
-    return hours;
-  }
-
-  public getCountdownMin(nft?: Nft | null): number {
-    const date = this.getCountdownDate(nft);
-    if (!date) {
-      return 0;
-    }
-
-    let minutes = date.diff(dayjs(), 'minute');
-    const hours = Math.floor(minutes / 60);
-    minutes = minutes - (hours * 60);
-    return minutes;
-  }
-
-  public getCountdownSec(nft?: Nft | null): number {
-    const date = this.getCountdownDate(nft);
-    if (!date) {
-      return 0;
-    }
-
-    let seconds = date.diff(dayjs(), 'seconds');
-    const minutes = Math.floor(seconds / 60);
-    seconds = seconds - (minutes * 60);
-    return seconds;
-  }
-
   public isDateInFuture(date?: Timestamp | null): boolean {
     if (!date) {
       return false;
     }
 
     return dayjs(date.toDate()).isAfter(dayjs(), 's');
+  }
+
+  public getCountdownTitle(nft?: Nft | null): string {
+    if (this.isDateInFuture(nft?.availableFrom)) {
+      return $localize`Sale Starts`;
+    }
+    if (this.isDateInFuture(nft?.auctionFrom)) {
+      return $localize`Auction Starts`;
+    }
+    if (this.isDateInFuture(nft?.auctionTo)) {
+      return $localize`Auction Ends`;
+    }
+    return '';
   }
 }

@@ -30,6 +30,9 @@ export const enum COL {
   TRANSACTION = 'transaction',
   BADGES = 'badges',
   AVATARS = 'avatars',
+  TOKEN = 'token',
+  TOKEN_MARKET = 'token_market',
+  TOKEN_PURCHASE = 'token_purchase'
 }
 
 export const enum SUB_COL {
@@ -39,7 +42,9 @@ export const enum SUB_COL {
   GUARDIANS = 'guardians',
   BLOCKED_MEMBERS = 'blockedMembers',
   KNOCKING_MEMBERS = 'knockingMembers',
-  TRANSACTIONS = 'transactions'
+  TRANSACTIONS = 'transactions',
+  DISTRIBUTION = 'distribution',
+  STATS = 'stats'
 }
 
 export const enum AWARD_COL {
@@ -85,4 +90,12 @@ export enum FILE_SIZES {
   small = 'small',
   medium = 'medium',
   large = 'large'
+}
+
+export enum Access {
+  OPEN = 0,
+  MEMBERS_ONLY = 1,
+  GUARDIANS_ONLY = 2,
+  MEMBERS_WITH_BADGE = 3,
+  MEMBERS_WITH_NFT_FROM_COLLECTION = 4
 }

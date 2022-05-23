@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
-import { Collection, CollectionAccess } from "functions/interfaces/models";
+import { Collection } from "functions/interfaces/models";
 import { Observable } from 'rxjs';
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
-import { COL, WenRequest } from '../../../functions/interfaces/models/base';
+import { Access, COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { BaseApi, DEFAULT_LIST_SIZE } from './base.api';
 
 export enum CollectionFilter {
@@ -24,116 +24,268 @@ export class CollectionApi extends BaseApi<Collection> {
   }
 
   public lastApproved(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('approved', '==', true);
+      }
     });
   }
 
   public topApproved(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('approved', '==', true);
+      }
     });
   }
 
   public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('approved', '==', true);
+      }
     });
   }
 
   public highToLow(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('approved', '==', true);
+      }
     });
   }
 
-  public topAccess(access: CollectionAccess, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('access', '==', access).where('approved', '==', true);
+  public topAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('access', '==', access).where('approved', '==', true);
+      }
     });
   }
 
-  public lowToHighAccess(access: CollectionAccess, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('access', '==', access).where('approved', '==', true);
+  public lowToHighAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('access', '==', access).where('approved', '==', true);
+      }
     });
   }
 
-  public highToLowAccess(access: CollectionAccess, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('access', '==', access).where('approved', '==', true);
+  public highToLowAccess(access: Access, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('access', '==', access).where('approved', '==', true);
+      }
     });
   }
 
   public topSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('approved', '==', true);
+      }
     });
   }
 
   public lowToHighSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('approved', '==', true);
+      }
     });
   }
 
   public highToLowSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('approved', '==', true);
+      }
     });
   }
 
   public topCategory(category: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('category', '==', category).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('category', '==', category).where('approved', '==', true);
+      }
     });
   }
 
   public lowToHighCategory(category: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('category', '==', category).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('category', '==', category).where('approved', '==', true);
+      }
     });
   }
 
   public highToLowCategory(category: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'price', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('category', '==', category).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'price',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('category', '==', category).where('approved', '==', true);
+      }
     });
   }
 
   public lastWithinSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'asc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'asc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('approved', '==', true);
+      }
     });
   }
 
   public topWithinSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('approved', '==', true);
+      }
     });
   }
 
   public allPendingSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('approved', '==', false).where('rejected', '==', false);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('approved', '==', false).where('rejected', '==', false);
+      }
     });
   }
 
   public allSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space);
+      }
     });
   }
 
   public allAvailableSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('approved', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('approved', '==', true);
+      }
     });
   }
 
   public allRejectedSpace(space: string, lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Collection[]> {
-    return this._query(this.collection, 'createdOn', 'desc', lastValue, search, def, (ref: any) => {
-      return ref.where('space', '==', space).where('rejected', '==', true);
+    return this._query({
+      collection: this.collection,
+      orderBy: 'createdOn',
+      direction: 'desc',
+      lastValue: lastValue,
+      search: search,
+      def: def,
+      refCust: (ref: any) => {
+        return ref.where('space', '==', space).where('rejected', '==', true);
+      }
     });
   }
 

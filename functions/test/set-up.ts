@@ -1,11 +1,20 @@
-import * as admin from 'firebase-admin';
-import test from "firebase-functions-test";
+import test from 'firebase-functions-test';
 import { AppCheck } from './../interfaces/config';
 
 AppCheck.enabled = false;
-process.env.GCLOUD_PROJECT = 'soonaverse';
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+export const projectId = 'soonaverse-dev'
+process.env.GCLOUD_PROJECT = projectId;
 
-admin.initializeApp({ projectId: process.env.GCLOUD_PROJECT });
-export const testEnv = test({ projectId: process.env.GCLOUD_PROJECT});
+const getConfig = () => {
+  if (process.env.LOCAL_TEST) {
+    process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+    return { projectId }
+  }
+  return {
+    databaseURL: `https://${projectId}.firebaseio.com`,
+    projectId,
+    storageBucket: `${projectId}.appspot.com`
+  }
+}
 
+export const testEnv = process.env.LOCAL_TEST ? test(getConfig()) : test(getConfig(), './test-service-account-key.json')

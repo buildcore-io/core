@@ -1,13 +1,17 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
-import { MIN_AMOUNT_TO_TRANSFER, ROYALTY_TRANSACTION_DELAY } from '../../../interfaces/config';
-import { Transaction, TransactionOrder } from '../../../interfaces/models';
-import { COL, IotaAddress } from '../../../interfaces/models/base';
+import bigDecimal from 'js-big-decimal';
+import { isEmpty, last } from 'lodash';
+import { MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY, URL_PATHS } from '../../../interfaces/config';
+import { Member, Transaction, TransactionOrder } from '../../../interfaces/models';
+import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
-import { TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType } from '../../../interfaces/models/transaction';
-import { dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
+import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
+import admin from '../../admin.config';
+import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
+import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { NotificationService } from '../notification/notification';
 
@@ -18,9 +22,11 @@ interface TransactionMatch {
 }
 
 interface TransactionUpdates {
-  ref: any;
+  ref: admin.firestore.DocumentReference<admin.firestore.DocumentData>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
-  action: 'update'|'set'
+  action: 'update' | 'set';
+  merge?: boolean;
 }
 
 export class ProcessingService {
@@ -34,50 +40,51 @@ export class ProcessingService {
   public submit(): void {
     this.updates.forEach((params) => {
       if (params.action === 'set') {
-        this.transaction.set(params.ref, params.data);
+        this.transaction.set(params.ref, params.data, { merge: params.merge || false });
       } else {
         this.transaction.update(params.ref, params.data);
       }
     });
   }
 
-  private findAllOrdersWithAddress(address: IotaAddress): any {
-    return admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.ORDER).where('payload.targetAddress', '==', address).get();
-  }
+  private findAllOrdersWithAddress = (address: IotaAddress) =>
+    admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.ORDER).where('payload.targetAddress', '==', address).get();
+
 
   private isMatch(tran: MilestoneTransaction, toAddress: string, amount: number, validationType: TransactionValidationType): TransactionMatch | undefined {
     let found: TransactionMatch | undefined;
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];
-      if (fromAddress && tran.outputs) {
-        for (const o of tran.outputs) {
+    if (fromAddress && tran.outputs) {
+      for (const o of tran.outputs) {
 
-          // Ignore output that contains input address. Remaining balance.
-          if (tran.inputs.find((i) => {
-            return o.address === i.address;
-          })) {
-            continue;
-          }
+        // Ignore output that contains input address. Remaining balance.
+        if (tran.inputs.find((i) => {
+          return o.address === i.address;
+        })) {
+          continue;
+        }
 
-          if (o.address === toAddress && (o.amount === amount || validationType === TransactionValidationType.ADDRESS)) {
-            found = {
-              msgId: tran.messageId,
-              from: fromAddress,
-              to: o
-            };
-          }
+        if (o.address === toAddress && (o.amount === amount || validationType === TransactionValidationType.ADDRESS)) {
+          found = {
+            msgId: tran.messageId,
+            from: fromAddress,
+            to: o
+          };
         }
       }
+    }
 
     return found;
   }
 
-  private async markAsReconciled(transaction: Transaction, chainRef: string): Promise<any> {
-    const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
-    const sfDoc: any = await this.transaction.get(refSource);
+  private async markAsReconciled(transaction: Transaction, chainRef: string) {
+    const refSource = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
+    const sfDoc = await this.transaction.get(refSource);
     if (sfDoc.data()) {
-      const data: any = sfDoc.data();
-      data.payload.reconciled = true;
-      data.payload.chainReference = chainRef;
+      const data = <Transaction>sfDoc.data();
+      const payload = <PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction>data.payload
+      payload.reconciled = true;
+      payload.chainReference = chainRef;
       this.updates.push({
         ref: refSource,
         data: data,
@@ -91,30 +98,31 @@ export class ProcessingService {
       throw new Error('NFT auctionFrom is no longer defined');
     }
 
-    const refSource: any = admin.firestore().collection(COL.NFT).doc(nft.uid);
-    const sfDocNft: any = await this.transaction.get(refSource);
-    if (sfDocNft.data().auctionHighestTransaction) {
-      const previousHighestPayRef: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data().auctionHighestTransaction);
-      const previousHighestPayDoc: any = await this.transaction.get(previousHighestPayRef);
+    const refSource = admin.firestore().collection(COL.NFT).doc(nft.uid);
+    const sfDocNft = await this.transaction.get(refSource);
+    if (sfDocNft.data()?.auctionHighestTransaction) {
+      const previousHighestPayRef = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data()?.auctionHighestTransaction);
+      const previousHighestPayDoc = await this.transaction.get(previousHighestPayRef);
 
       // It has been succesfull, let's finalise.
       const pay: TransactionPayment = <TransactionPayment>previousHighestPayDoc.data();
 
       // Let's get the actual order.
-      const refOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(pay.payload.sourceTransaction);
-      const sfDocOrder: any = await this.transaction.get(refOrder);
-      if (!sfDocOrder.data()) {
+      const refOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(pay.payload.sourceTransaction)!);
+      const sfDocOrder = await this.transaction.get(refOrder);
+      const data = <Transaction | undefined>sfDocOrder.data()
+      if (!data) {
         throw new Error('Unable to find ORDER linked to PAYMENT');
       }
 
-      await this.markAsReconciled(sfDocOrder.data(), pay.payload.chainReference);
-      await this.createBillPayment(sfDocOrder.data(), pay);
-      await this.setNftOwner(sfDocOrder.data(), pay);
+      await this.markAsReconciled(data, pay.payload.chainReference);
+      await this.createBillPayment(data, pay);
+      await this.setNftOwner(data, pay);
 
-      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(sfDocOrder.data().member!);
-      const sfDocMember: any = await this.transaction.get(refMember);
-      const bidNotification: Notification = NotificationService.prepareWinBid(sfDocMember.data(), nft, pay);
-      const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+      const refMember = admin.firestore().collection(COL.MEMBER).doc(data.member!);
+      const sfDocMember = await this.transaction.get(refMember);
+      const bidNotification: Notification = NotificationService.prepareWinBid(<Member>sfDocMember.data(), nft, pay);
+      const refNotification = admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
       this.updates.push({
         ref: refNotification,
         data: bidNotification,
@@ -122,12 +130,13 @@ export class ProcessingService {
       });
 
       // Update links
-      const refOrderDoc: any = await this.transaction.get(refOrder);
-      if (refOrderDoc.data()) {
+      const refOrderDoc = await this.transaction.get(refOrder);
+      const refOrderDocData = refOrderDoc.data()
+      if (refOrderDocData) {
         this.updates.push({
           ref: refOrder,
           data: {
-            linkedTransactions: [...(refOrderDoc.data().linkedTransactions || []), ...this.linkedTransactions]
+            linkedTransactions: [...(refOrderDocData.linkedTransactions || []), ...this.linkedTransactions]
           },
           action: 'update'
         });
@@ -151,13 +160,14 @@ export class ProcessingService {
   }
 
   public async markAsVoid(transaction: TransactionOrder): Promise<void> {
-    const refSource: any = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
-    const sfDoc: any = await this.transaction.get(refSource);
+    const refSource = admin.firestore().collection(COL.TRANSACTION).doc(transaction.uid);
+    const sfDoc = await this.transaction.get(refSource);
     if (transaction.payload.nft) {
       if (transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
         // Mark as void.
-        const data: any = sfDoc.data();
-        data.payload.void = true;
+        const data = <Transaction>sfDoc.data();
+        const payload = <OrderPayBillCreditTransaction>data.payload
+        payload.void = true;
         this.updates.push({
           ref: refSource,
           data: data,
@@ -165,7 +175,7 @@ export class ProcessingService {
         });
 
         // Unlock NFT.
-        const refNft: any = await admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+        const refNft = admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
         this.updates.push({
           ref: refNft,
           data: {
@@ -175,13 +185,16 @@ export class ProcessingService {
           action: 'update'
         });
       } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
-        const payments: any = await admin.firestore().collection(COL.TRANSACTION)
-                              .where('payload.invalidPayment', '==', false)
-                              .where('payload.sourceTransaction', '==', transaction.uid).orderBy('payload.amount', 'desc').get();
+        const payments = await admin.firestore().collection(COL.TRANSACTION)
+          .where('payload.invalidPayment', '==', false)
+          .where('payload.sourceTransaction', 'array-contains', transaction.uid)
+          .orderBy('payload.amount', 'desc')
+          .get();
         if (payments.size === 0) {
           // No orders, we just void.
-          const data: any = sfDoc.data();
-          data.payload.void = true;
+          const data = <Transaction>sfDoc.data();
+          const payload = <OrderPayBillCreditTransaction>data.payload
+          payload.void = true;
           this.updates.push({
             ref: refSource,
             data: data,
@@ -190,8 +203,9 @@ export class ProcessingService {
         }
       }
     } else {
-      const data: any = sfDoc.data();
-      data.payload.void = true;
+      const data = <Transaction>sfDoc.data();
+      const payload = <OrderPayBillCreditTransaction>data.payload
+      payload.void = true;
       this.updates.push({
         ref: refSource,
         data: data,
@@ -206,7 +220,7 @@ export class ProcessingService {
     }
 
     const tranId: string = getRandomEthAddress();
-    const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+    const refTran = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
     const tranData: Transaction = <Transaction>{
       type: TransactionType.PAYMENT,
       uid: tranId,
@@ -220,10 +234,11 @@ export class ProcessingService {
         targetAddress: order.payload.targetAddress,
         reconciled: true,
         void: false,
-        sourceTransaction: order.uid,
+        sourceTransaction: [order.uid],
         chainReference: tran.msgId,
         nft: order.payload.nft || null,
         collection: order.payload.collection || null,
+        token: order.payload.token || null,
         invalidPayment: invalidPayment
       }
     };
@@ -242,11 +257,12 @@ export class ProcessingService {
     if (order.type !== TransactionType.ORDER) {
       throw new Error('Order was not provided as transaction.');
     }
+    const orderPayload = <OrderTransaction>order.payload
 
     // Calculate royalties.
     const transOut: Transaction[] = [];
-    let royaltyAmt: number = order.payload.royaltiesSpaceAddress ? Math.ceil(payment.payload.amount * order.payload.royaltiesFee) : 0;
-    let finalAmt: number = payment.payload.amount - royaltyAmt;
+    let royaltyAmt: number = orderPayload.royaltiesSpaceAddress ? Math.ceil(orderPayload.amount * (orderPayload.royaltiesFee || 0)) : 0;
+    let finalAmt: number = (<OrderPayBillCreditTransaction>payment.payload).amount - royaltyAmt;
 
     if (royaltyAmt < MIN_AMOUNT_TO_TRANSFER) {
       finalAmt = finalAmt + royaltyAmt;
@@ -255,25 +271,27 @@ export class ProcessingService {
 
     if (finalAmt > 0) {
       const tranId: string = getRandomEthAddress();
-      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-      const data: any = <Transaction>{
+      const refTran = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+      const data = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: tranId,
-        space: order.payload.beneficiary !== 'member' ? order.space : null,
+        space: orderPayload.beneficiary !== 'member' ? order.space : null,
         member: order.member,
         createdOn: serverTime(),
         payload: {
           amount: finalAmt,
-          sourceAddress: order.payload.targetAddress,
-          previusOwnerEntity: order.payload.beneficiary,
-          previusOwner: order.payload.beneficiaryUid,
-          targetAddress: order.payload.beneficiaryAddress,
-          sourceTransaction: order.uid,
-          nft: order.payload.nft || null,
+          sourceAddress: orderPayload.targetAddress,
+          previousOwnerEntity: orderPayload.beneficiary,
+          previousOwner: orderPayload.beneficiaryUid,
+          targetAddress: orderPayload.beneficiaryAddress,
+          sourceTransaction: [order.uid],
+          nft: orderPayload.nft || null,
           reconciled: true,
           royalty: false,
           void: false,
-          collection: order.payload.collection || null
+          collection: orderPayload.collection || null,
+          token: orderPayload.token || null,
+          quantity: orderPayload.quantity || null
         }
       };
       this.updates.push({
@@ -288,27 +306,29 @@ export class ProcessingService {
     // Pay roaylties.
     if (royaltyAmt > 0) {
       const tranId: string = getRandomEthAddress();
-      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-      const data: any = <Transaction>{
+      const refTran = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+      const data = <Transaction>{
         type: TransactionType.BILL_PAYMENT,
         uid: tranId,
         member: order.member,
-        space: order.payload.royaltiesSpace,
+        space: orderPayload.royaltiesSpace,
         createdOn: serverTime(),
         payload: {
           amount: royaltyAmt,
-          sourceAddress: order.payload.targetAddress,
-          targetAddress: order.payload.royaltiesSpaceAddress,
-          sourceTransaction: order.uid,
-          previusOwnerEntity: order.payload.beneficiary,
-          previusOwner: order.payload.beneficiaryUid,
+          sourceAddress: orderPayload.targetAddress,
+          targetAddress: orderPayload.royaltiesSpaceAddress,
+          sourceTransaction: [order.uid],
+          previousOwnerEntity: orderPayload.beneficiary,
+          previousOwner: orderPayload.beneficiaryUid,
           reconciled: true,
           royalty: true,
           void: false,
           // We delay royalty.
-          delay: ROYALTY_TRANSACTION_DELAY,
-          nft: order.payload.nft || null,
-          collection: order.payload.collection || null
+          delay: SECONDARY_TRANSACTION_DELAY,
+          nft: orderPayload.nft || null,
+          collection: orderPayload.collection || null,
+          token: orderPayload.token || null,
+          quantity: orderPayload.quantity || null
         }
       };
       this.updates.push({
@@ -323,30 +343,32 @@ export class ProcessingService {
     return transOut;
   }
 
-  private async createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Promise<Transaction|undefined> {
+  private async createCredit(payment: Transaction, tran: TransactionMatch, createdOn = serverTime(), setLink = true): Promise<Transaction | undefined> {
     if (payment.type !== TransactionType.PAYMENT) {
       throw new Error('Payment was not provided as transaction.');
     }
-    let transOut: Transaction|undefined;
-    if (payment.payload.amount > 0) {
+    const paymentPayload = payment.payload
+    let transOut: Transaction | undefined;
+    if (paymentPayload.amount > 0) {
       const tranId: string = getRandomEthAddress();
-      const refTran: any = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-      const data: any = <Transaction>{
+      const refTran = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+      const data = <Transaction>{
         type: TransactionType.CREDIT,
         uid: tranId,
         space: payment.space,
         member: payment.member,
         createdOn: createdOn,
         payload: {
-          amount: payment.payload.amount,
+          amount: paymentPayload.amount,
           sourceAddress: tran.to.address,
           targetAddress: tran.from.address,
-          sourceTransaction: payment.uid,
-          nft: payment.payload.nft || null,
+          sourceTransaction: [payment.uid],
+          nft: paymentPayload.nft || null,
+          token: paymentPayload.token || null,
           reconciled: true,
           void: false,
-          collection: payment.payload.collection || null,
-          invalidPayment: payment.payload.invalidPayment
+          collection: paymentPayload.collection || null,
+          invalidPayment: paymentPayload.invalidPayment
         }
       };
       this.updates.push({
@@ -363,27 +385,27 @@ export class ProcessingService {
     return transOut;
   }
 
-  private async setValidatedAddress(credit: Transaction, type: 'member'|'space'): Promise<void> {
+  private async setValidatedAddress(credit: Transaction, type: 'member' | 'space'): Promise<void> {
     if (type === 'member' && credit.member) {
-      const refSource: any = admin.firestore().collection(COL.MEMBER).doc(credit.member);
-      const sfDoc: any = await this.transaction.get(refSource);
+      const refSource = admin.firestore().collection(COL.MEMBER).doc(credit.member);
+      const sfDoc = await this.transaction.get(refSource);
       if (sfDoc.data()) {
         this.updates.push({
           ref: refSource,
           data: {
-            validatedAddress: credit.payload.targetAddress
+            validatedAddress: (<CreditPaymentTransaction>credit.payload).targetAddress
           },
           action: 'update'
         });
       }
     } else if (type === 'space' && credit.space) {
-      const refSource: any = admin.firestore().collection(COL.SPACE).doc(credit.space);
-      const sfDoc: any = await this.transaction.get(refSource);
+      const refSource = admin.firestore().collection(COL.SPACE).doc(credit.space);
+      const sfDoc = await this.transaction.get(refSource);
       if (sfDoc.data()) {
         this.updates.push({
           ref: refSource,
           data: {
-            validatedAddress: credit.payload.targetAddress
+            validatedAddress: (<CreditPaymentTransaction>credit.payload).targetAddress
           },
           action: 'update'
         });
@@ -392,32 +414,33 @@ export class ProcessingService {
   }
 
   private async addNewBid(transaction: Transaction, payment: Transaction): Promise<void> {
-    const refNft: any = admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
-    const refPayment: any = admin.firestore().collection(COL.TRANSACTION).doc(payment.uid);
-    const sfDocNft: any = await this.transaction.get(refNft);
+    const refNft = admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
+    const refPayment = admin.firestore().collection(COL.TRANSACTION).doc(payment.uid);
+    const sfDocNft = await this.transaction.get(refNft);
     let newValidPayment = false;
-    let previousHighestPay: TransactionPayment|undefined;
-    if (sfDocNft.data().auctionHighestTransaction) {
-      const previousHighestPayRef: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data().auctionHighestTransaction);
-      const previousHighestPayDoc: any = await this.transaction.get(previousHighestPayRef);
+    let previousHighestPay: TransactionPayment | undefined;
+    const paymentPayload = <PaymentTransaction>payment.payload
+    if (sfDocNft.data()?.auctionHighestTransaction) {
+      const previousHighestPayRef = admin.firestore().collection(COL.TRANSACTION).doc(sfDocNft.data()?.auctionHighestTransaction);
+      const previousHighestPayDoc = await this.transaction.get(previousHighestPayRef);
 
-      // It has been succesfull, let's finalise.
+      // It has been successful, let's finalize.
       previousHighestPay = <TransactionPayment>previousHighestPayDoc.data();
       if (
-        previousHighestPay.payload.amount < payment.payload.amount &&
-        payment.payload.amount >= sfDocNft.data().auctionFloorPrice
+        previousHighestPay.payload.amount < paymentPayload.amount &&
+        paymentPayload.amount >= sfDocNft.data()?.auctionFloorPrice
       ) {
         newValidPayment = true;
       }
     } else {
-      if (payment.payload.amount >= sfDocNft.data().auctionFloorPrice) {
+      if (paymentPayload.amount >= sfDocNft.data()?.auctionFloorPrice) {
         newValidPayment = true;
       }
     }
 
     // We need to credit the old payment.
     if (newValidPayment && previousHighestPay) {
-      const refPrevPayment: any = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.uid);
+      const refPrevPayment = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.uid);
       previousHighestPay.payload.invalidPayment = true;
       this.updates.push({
         ref: refPrevPayment,
@@ -441,22 +464,22 @@ export class ProcessingService {
 
       // We have to set link on the past order.
       if (!sameOwner) {
-        const refHighTranOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.payload.sourceTransaction);
-        const refHighTranOrderDoc: any = await this.transaction.get(refHighTranOrder);
+        const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(previousHighestPay.payload.sourceTransaction)!);
+        const refHighTranOrderDoc = await this.transaction.get(refHighTranOrder);
         if (refHighTranOrderDoc.data()) {
           this.updates.push({
             ref: refHighTranOrder,
             data: {
-              linkedTransactions: [...(refHighTranOrderDoc.data().linkedTransactions || []), ...[credit!.uid]]
+              linkedTransactions: [...(refHighTranOrderDoc.data()?.linkedTransactions || []), ...[credit?.uid]]
             },
             action: 'update'
           });
 
           // Notify them.
-          const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(refHighTranOrderDoc.data().member!);
-          const sfDocMember: any = await this.transaction.get(refMember);
-          const bidNotification: Notification = NotificationService.prepareLostBid(sfDocMember.data(), sfDocNft.data(), previousHighestPay);
-          const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+          const refMember = admin.firestore().collection(COL.MEMBER).doc(refHighTranOrderDoc.data()?.member!);
+          const sfDocMember = await this.transaction.get(refMember);
+          const bidNotification: Notification = NotificationService.prepareLostBid(<Member>sfDocMember.data(), <Nft>sfDocNft.data(), previousHighestPay);
+          const refNotification = admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
           this.updates.push({
             ref: refNotification,
             data: bidNotification,
@@ -471,17 +494,17 @@ export class ProcessingService {
       this.updates.push({
         ref: refNft,
         data: {
-          auctionHighestBid: payment.payload.amount,
+          auctionHighestBid: (<OrderPayBillCreditTransaction>payment.payload).amount,
           auctionHighestBidder: payment.member,
           auctionHighestTransaction: payment.uid,
         },
         action: 'update'
       });
 
-      const refMember: any = await admin.firestore().collection(COL.MEMBER).doc(transaction.member!);
-      const sfDocMember: any = await this.transaction.get(refMember);
-      const bidNotification: Notification = NotificationService.prepareBid(sfDocMember.data(), sfDocNft.data(), payment);
-      const refNotification = await admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
+      const refMember = admin.firestore().collection(COL.MEMBER).doc(transaction.member!);
+      const sfDocMember = await this.transaction.get(refMember);
+      const bidNotification = NotificationService.prepareBid(<Member>sfDocMember.data(), <Nft>sfDocNft.data(), payment);
+      const refNotification = admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
       this.updates.push({
         ref: refNotification,
         data: bidNotification,
@@ -489,7 +512,7 @@ export class ProcessingService {
       });
     } else {
       // Invalidate payment.
-      payment.payload.invalidPayment = true;
+      paymentPayload.invalidPayment = true;
       this.updates.push({
         ref: refPayment,
         data: payment,
@@ -498,14 +521,14 @@ export class ProcessingService {
 
       // No valid payment so we credit anyways.
       await this.createCredit(payment, {
-        msgId: payment.payload.chainReference,
+        msgId: paymentPayload.chainReference,
         to: {
-          address: payment.payload.targetAddress,
-          amount: payment.payload.amount
+          address: paymentPayload.targetAddress,
+          amount: paymentPayload.amount
         },
         from: {
-          address: payment.payload.sourceAddress,
-          amount: payment.payload.amount
+          address: paymentPayload.sourceAddress,
+          amount: paymentPayload.amount
         }
       });
     }
@@ -513,20 +536,21 @@ export class ProcessingService {
 
   private async setNftOwner(transaction: Transaction, payment: Transaction): Promise<void> {
     if (payment.member) {
-      const refSource: any = admin.firestore().collection(COL.NFT).doc(payment.payload.nft);
-      const sfDoc: any = await this.transaction.get(refSource);
+      const paymentPayload = <PaymentTransaction>payment.payload
+      const refSource = admin.firestore().collection(COL.NFT).doc(paymentPayload.nft!);
+      const sfDoc = await this.transaction.get(refSource);
       if (sfDoc.data()) {
         this.updates.push({
           ref: refSource,
           data: {
             owner: payment.member,
             // If it's to specific member price stays the same.
-            price: sfDoc.data().saleAccess === NftAccess.MEMBERS ? sfDoc.data().price : payment.payload.amount,
+            price: sfDoc.data()?.saleAccess === NftAccess.MEMBERS ? sfDoc.data()?.price : paymentPayload.amount,
             sold: true,
             locked: false,
             lockedBy: null,
             hidden: false,
-            soldOn: admin.firestore.Timestamp.now(),
+            soldOn: serverTime(),
             availableFrom: null,
             availablePrice: null,
             auctionFrom: null,
@@ -542,9 +566,9 @@ export class ProcessingService {
           action: 'update'
         });
 
-        if (sfDoc.data().auctionHighestTransaction && transaction.payload.type === TransactionOrderType.NFT_PURCHASE) {
-          const refHighTran: any = admin.firestore().collection(COL.TRANSACTION).doc(sfDoc.data().auctionHighestTransaction);
-          const refHighTranDoc: any = await this.transaction.get(refHighTran);
+        if (sfDoc.data()?.auctionHighestTransaction && (<OrderTransaction>transaction.payload).type === TransactionOrderType.NFT_PURCHASE) {
+          const refHighTran = admin.firestore().collection(COL.TRANSACTION).doc(sfDoc.data()?.auctionHighestTransaction);
+          const refHighTranDoc = await this.transaction.get(refHighTran);
           if (refHighTranDoc.data()) {
             const highestPay: TransactionPayment = <TransactionPayment>refHighTranDoc.data();
             highestPay.payload.invalidPayment = true;
@@ -569,13 +593,13 @@ export class ProcessingService {
             }, serverTime(), sameOwner);
             // We have to set link on the past order.
             if (!sameOwner) {
-              const refHighTranOrder: any = admin.firestore().collection(COL.TRANSACTION).doc(highestPay.payload.sourceTransaction);
-              const refHighTranOrderDoc: any = await this.transaction.get(refHighTranOrder);
+              const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(highestPay.payload.sourceTransaction)!);
+              const refHighTranOrderDoc = await this.transaction.get(refHighTranOrder);
               if (refHighTranOrderDoc.data()) {
                 this.updates.push({
                   ref: refHighTranOrder,
                   data: {
-                    linkedTransactions: [...(refHighTranOrderDoc.data().linkedTransactions || []), ...[credit!.uid]]
+                    linkedTransactions: [...(refHighTranOrderDoc.data()?.linkedTransactions || []), ...[credit?.uid]]
                   },
                   action: 'update'
                 });
@@ -586,9 +610,9 @@ export class ProcessingService {
       }
 
       // If it's first sale we have to update collection.
-      if (transaction.payload.beneficiary === 'space') {
-        const refCol: any = admin.firestore().collection(COL.COLLECTION).doc(payment.payload.collection);
-        const col: any = await this.transaction.get(refCol);
+      if ((<OrderTransaction>transaction.payload).beneficiary === 'space') {
+        const refCol = admin.firestore().collection(COL.COLLECTION).doc(paymentPayload.collection!);
+        const col = await this.transaction.get(refCol);
         this.updates.push({
           ref: refCol,
           data: {
@@ -598,9 +622,9 @@ export class ProcessingService {
         });
 
         // Let's validate if collection has pending item to sell.
-        if (col.data().placeholderNft && col.data().total === (col.data().sold + 1)) {
-          const refSource: any = admin.firestore().collection(COL.NFT).doc(col.data().placeholderNft);
-          const sfDoc: any = await this.transaction.get(refSource);
+        if (col.data()?.placeholderNft && col.data()?.total === (col.data()?.sold + 1)) {
+          const refSource = admin.firestore().collection(COL.NFT).doc(col.data()?.placeholderNft);
+          const sfDoc = await this.transaction.get(refSource);
           if (sfDoc.data()) {
             this.updates.push({
               ref: refSource,
@@ -608,7 +632,7 @@ export class ProcessingService {
                 sold: true,
                 owner: null,
                 availableFrom: null,
-                soldOn: admin.firestore.Timestamp.now(),
+                soldOn: serverTime(),
                 hidden: false
               },
               action: 'update'
@@ -617,6 +641,82 @@ export class ProcessingService {
         }
       }
     }
+  }
+
+  private async updateTokenDistribution(order: Transaction, tran: TransactionMatch) {
+    const distributionRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distribution = {
+      uid: order.member,
+      totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
+      parentId: order.payload.token,
+      parentCol: COL.TOKEN,
+      createdOn: serverTime()
+    }
+    this.updates.push({
+      ref: distributionRef,
+      data: distribution,
+      action: 'set',
+      merge: true
+    });
+    const tokenRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
+    this.updates.push({
+      ref: tokenRef,
+      data: { totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount) },
+      action: 'update'
+    });
+  }
+
+  private async claimAirdroppedTokens(order: Transaction, payment: Transaction, match: TransactionMatch) {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distribution = <TokenDistribution>(await this.transaction.get(distributionDocRef)).data();
+    const claimableDrops = distribution.tokenDrops?.filter(d => dayjs(d.vestingAt.toDate()).isBefore(dayjs())) || []
+    if (isEmpty(claimableDrops)) {
+      await this.createCredit(payment, match)
+      return;
+    }
+    await this.createBillPayment(order, payment);
+    const dropCount = claimableDrops.reduce((sum, act) => sum + act.count, 0)
+    const data = {
+      tokenDrops: admin.firestore.FieldValue.arrayRemove(...claimableDrops),
+      tokenClaimed: admin.firestore.FieldValue.increment(dropCount),
+      tokenOwned: admin.firestore.FieldValue.increment(dropCount)
+    }
+    this.updates.push({
+      ref: distributionDocRef,
+      data: data,
+      action: 'update'
+    });
+  }
+
+  private async createTokenBuyRequest(order: Transaction, payment: Transaction) {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
+    const distributionDoc = await this.transaction.get(distributionDocRef)
+    if (!distributionDoc.exists) {
+      const data = {
+        uid: order.member,
+        parentId: order.payload.token,
+        parentCol: COL.TOKEN,
+      }
+      this.updates.push({ ref: distributionDocRef, data, action: 'set', merge: true });
+    }
+    const buyDocId = getRandomEthAddress()
+    const data = cOn(<TokenBuySellOrder>{
+      uid: buyDocId,
+      owner: order.member,
+      token: order.payload.token,
+      type: TokenBuySellOrderType.BUY,
+      count: order.payload.count,
+      price: order.payload.price,
+      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
+      balance: Number(bigDecimal.floor(bigDecimal.multiply(order.payload.count, order.payload.price))),
+      fulfilled: 0,
+      status: TokenBuySellOrderStatus.ACTIVE,
+      orderTransactionId: order.uid,
+      paymentTransactionId: payment.uid,
+      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
+    }, URL_PATHS.TOKEN_MARKET)
+    const buyDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${buyDocId}`);
+    this.updates.push({ ref: buyDocRef, data, action: 'set' });
   }
 
   public async processMilestoneTransaction(tran: MilestoneTransaction): Promise<void> {
@@ -630,84 +730,95 @@ export class ProcessingService {
           continue;
         }
 
-        const orders: any = await this.findAllOrdersWithAddress(o.address);
+        const orders = await this.findAllOrdersWithAddress(o.address);
         if (orders.size > 0) {
           // Technically there should only be one as address is unique per order.
           for (const ord of orders.docs) {
             // Let's read the ORDER so we lock it for read. This is important to avoid concurent processes.
-            const orderRef: any = admin.firestore().collection(COL.TRANSACTION).doc(ord.data().uid);
-            const order: any = await this.transaction.get(orderRef);
+            const orderRef = admin.firestore().collection(COL.TRANSACTION).doc(ord.data().uid);
+            const order = await this.transaction.get(orderRef);
+            const orderData = <TransactionOrder>order.data()
 
             if (order.data()) {
               // This happens here on purpose instead of cron to reduce $$$
-              const expireDate = dayjs(order.data().payload.expiresOn?.toDate());
+              const expireDate = dayjs(orderData.payload.expiresOn?.toDate());
               let expired = false;
               if (expireDate.isBefore(dayjs(), 'ms')) {
-                await this.markAsVoid(order.data());
+                await this.markAsVoid(orderData);
                 expired = true;
               }
 
               // Let's process this.'
-              const match: TransactionMatch | undefined = this.isMatch(tran, order.data().payload.targetAddress, order.data().payload.amount, order.data().payload.validationType);
+              const match: TransactionMatch | undefined = this.isMatch(tran, orderData.payload.targetAddress, orderData.payload.amount, orderData.payload.validationType);
               if (
                 !expired &&
-                order.data().payload.reconciled === false &&
-                order.data().payload.void === false &&
+                orderData.payload.reconciled === false &&
+                orderData.payload.void === false &&
                 match
               ) {
-                if (order.data().payload.type === TransactionOrderType.NFT_PURCHASE) {
-                  const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
-                  const sfDocNft: any = await this.transaction.get(refNft);
-                  if (sfDocNft.data().availableFrom !== null) {
+                if (orderData.payload.type === TransactionOrderType.NFT_PURCHASE) {
+                  const refNft = admin.firestore().collection(COL.NFT).doc(orderData.payload.nft!);
+                  const sfDocNft = await this.transaction.get(refNft);
+                  if (sfDocNft.data()?.availableFrom !== null) {
                     // Found transaction, create payment / ( bill payments | credit)
-                    const payment = await this.createPayment(order.data(), match);
-                    await this.createBillPayment(order.data(), payment);
-                    await this.setNftOwner(order.data(), payment);
-                    await this.markAsReconciled(order.data(), match.msgId);
+                    const payment = await this.createPayment(orderData, match);
+                    await this.createBillPayment(orderData, payment);
+                    await this.setNftOwner(orderData, payment);
+                    await this.markAsReconciled(orderData, match.msgId);
                   } else {
                     // NFT has been purchased by someone else.
-                    await this.processAsInvalid(tran, order.data(), o);
+                    await this.processAsInvalid(tran, orderData, o);
                   }
-                } else if (order.data().payload.type === TransactionOrderType.NFT_BID) {
-                  const refNft: any = admin.firestore().collection(COL.NFT).doc(order.data().payload.nft);
-                  const sfDocNft: any = await this.transaction.get(refNft);
-                  if (sfDocNft.data().auctionFrom !== null) {
-                    const payment = await this.createPayment(order.data(), match);
-                    await this.addNewBid(order.data(), payment);
+                } else if (orderData.payload.type === TransactionOrderType.NFT_BID) {
+                  const refNft = admin.firestore().collection(COL.NFT).doc(orderData.payload.nft!);
+                  const sfDocNft = await this.transaction.get(refNft);
+                  if (sfDocNft.data()?.auctionFrom !== null) {
+                    const payment = await this.createPayment(orderData, match);
+                    await this.addNewBid(orderData, payment);
                   } else {
                     // Auction is no longer available.
-                    await this.processAsInvalid(tran, order.data(), o);
+                    await this.processAsInvalid(tran, orderData, o);
                   }
-                } else if (order.data().payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
+                } else if (orderData.payload.type === TransactionOrderType.SPACE_ADDRESS_VALIDATION) {
                   // Found transaction, create payment / ( bill payments | credit)
-                  const payment = await this.createPayment(order.data(), match);
+                  const payment = await this.createPayment(orderData, match);
                   const credit = await this.createCredit(payment, match);
                   if (credit) {
                     await this.setValidatedAddress(credit, 'space');
                   }
 
-                  await this.markAsReconciled(order.data(), match.msgId);
-                } else if (order.data().payload.type === TransactionOrderType.MEMBER_ADDRESS_VALIDATION) {
+                  await this.markAsReconciled(orderData, match.msgId);
+                } else if (orderData.payload.type === TransactionOrderType.MEMBER_ADDRESS_VALIDATION) {
                   // Found transaction, create payment / ( bill payments | credit)
-                  const payment = await this.createPayment(order.data(), match);
+                  const payment = await this.createPayment(orderData, match);
                   const credit = await this.createCredit(payment, match);
                   if (credit) {
                     await this.setValidatedAddress(credit, 'member');
                   }
 
-                  await this.markAsReconciled(order.data(), match.msgId);
+                  await this.markAsReconciled(orderData, match.msgId);
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
+                  await this.createPayment(orderData, match);
+                  await this.updateTokenDistribution(orderData, match)
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
+                  const payment = await this.createPayment(orderData, match);
+                  await this.markAsReconciled(orderData, match.msgId);
+                  await this.claimAirdroppedTokens(orderData, payment, match);
+                } else if (orderData.payload.type === TransactionOrderType.TOKEN_BUY) {
+                  const payment = await this.createPayment(orderData, match);
+                  await this.createTokenBuyRequest(orderData, payment)
                 }
               } else {
                 // Now process all invalid orders.
                 // Wrong amount, Double payments & Expired orders.
-                await this.processAsInvalid(tran, order.data(), o);
+                await this.processAsInvalid(tran, orderData, o);
               }
 
               // Add linked transaction.
               this.updates.push({
                 ref: orderRef,
                 data: {
-                  linkedTransactions: [...(order.data().linkedTransactions || []), ...this.linkedTransactions]
+                  linkedTransactions: [...(orderData.linkedTransactions || []), ...this.linkedTransactions]
                 },
                 action: 'update'
               });
@@ -719,7 +830,6 @@ export class ProcessingService {
 
     return;
   }
-
 
   public async processAsInvalid(tran: MilestoneTransaction, order: TransactionOrder, o: MilestoneTransactionEntry): Promise<void> {
     const fromAddress: MilestoneTransactionEntry = tran.inputs?.[0];

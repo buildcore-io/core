@@ -1,78 +1,78 @@
-<form class="flex flex-col items-end justify-between lg:flex-row" [formGroup]="spaceForm">
-  <wen-select-space
-    *ngIf="deviceService.isMobile$ | async"
-    class="block w-full mt-6 mb-6"
-    formControlName="space"
-    [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-    size="large">
-  </wen-select-space>
+<ais-instantsearch [config]="config">
+  <header class="header" id="header">
+    <div class="header-searchbox">
+      <wen-search-box [sections]="sections" [reset$]="reset$"></wen-search-box>
+    </div>
+  </header>
+  <div class="relative mt-11 lg:mt-10">
+    <ais-stats data-layout="mobile">
+      <ng-template let-state="state">
+        <span class="ais-Stats-text font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+          {{ state.nbHits | number }} <ng-container i18n>records</ng-container>
+        </span>
+      </ng-template>
+    </ais-stats>
+    <button class="wen-secondary absolute top-0 right-0 z-10" nz-button nzSize="small" (click)="openFilters = !openFilters">
+      <wen-icon-collapse-arrow *ngIf="deviceService.isDesktop$ | async" [size]="16"
+        class="transition-all mr-1" [ngClass]="{ 'rotate-180': !openFilters}"></wen-icon-collapse-arrow>
+      <div i18n>Filters&Sort</div>
+    </button>
+  </div>
+  <main class="flex mx-auto justify-between">
+    <section class="container-results" [ngClass]="{ 'mr-5' : openFilters }">
+      <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
+        <ng-template let-hits="hits" let-refine="showMore">
+          <div class="mt-6 xl:grid place-items-start">
+            <div class="mb-10 wen-cards-wrapper">
+              <wen-member-card class="relative w-full h-full outline-none"
+                               *ngFor="let member of hits; trackBy: trackByUid"
+                               [member]="member"
+                               [includeAlliances]="true"
+                               [selectedSpace]="undefined"
+                               [fullWidth]="(deviceService.isMobile$ | async) || false"
+              >
+              </wen-member-card>
+            </div>
+          </div>
+          <div (visible)="refine()"></div>
+        </ng-template>
+      </ais-infinite-hits>
+    </section>
+    <div class="container-filters overflow-hidden -translate-y-5 transition-all"
+      *ngIf="(deviceService.isMobile$ | async) !== true"
+      [ngClass]="openFilters ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
 
-  <div class="flex items-center justify-between w-full lg:mt-12">
-    <div class="flex items-center">
-      <wen-select-space
-        *ngIf="deviceService.isDesktop$ | async"
-        class="block w-44"
-        formControlName="space"
-        [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
-        size="small">
-      </wen-select-space>
+      <wen-algolia-clear (wenOnClear)="reset$.next()"></wen-algolia-clear>
 
-      <label class="text-base font-medium lg:ml-6 text-foregrounds-primary dark:text-foregrounds-primary-dark"
-        nz-checkbox formControlName="includeAlliances"
-        [nzDisabled]="spaceForm.value.space === defaultSpace.value">
-          <span i18n>Include connections </span>
-          <ng-container *ngIf="(deviceService.isDesktop$ | async) && spaceForm.value.space === defaultSpace.value" i18n>(Select some space)</ng-container>
-      </label>
+      <ng-container *ngTemplateOutlet="filters"></ng-container>
     </div>
 
-    <ng-container *ngIf="deviceService.isDesktop$ | async; else sortMobileBlock">
-      <nz-select class="w-48 wen-sort-button" i18n-nzPlaceHolder nzPlaceHolder="Sort by" nzDropdownClassName="wen-select-min-height" [nzCustomTemplate]="defaultTemplate"
-        [formControl]="sortControl" nz-tooltip>
-        <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-        <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-      </nz-select>
-      <ng-template #defaultTemplate let-selected>
-        <span nz-typography nzType="secondary" class="text-xs" i18n>Sort by</span>
-        <span>{{ selected.nzLabel }}</span>
-      </ng-template>
-    </ng-container>
-    <ng-template #sortMobileBlock>
-      <div class="relative">
-        <nz-select class="w-32 wen-sort-button" [formControl]="sortControl" nz-tooltip [nzSuffixIcon]="mobileSuffixIcon">
-          <nz-option i18n-nzLabel nzLabel="Recent" [nzValue]="filter.sortOptions.RECENT"></nz-option>
-          <nz-option i18n-nzLabel nzLabel="Oldest" [nzValue]="filter.sortOptions.OLDEST"></nz-option>
-        </nz-select>
-        <ng-template #mobileSuffixIcon>
-          <wen-icon-sort class="absolute -ml-2" style="margin-top: -6px"></wen-icon-sort>
-        </ng-template>
+    <nz-drawer *ngIf="deviceService.isMobile$ | async"
+        [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
+        [nzWidth]="'100vw'" #drawer
+        [nzClosable]="false"
+        [nzVisible]="openFilters">
+        <div *nzDrawerContent class="relative min-h-full h-max">
+            <div class="pb-4 text-3xl font-bold" i18n>Filters&sort</div>
+            <button class="absolute right-0 z-10 top-1" (click)="openFilters = false">
+                <wen-icon-close></wen-icon-close>
+            </button>
+    
+            <ng-container *ngTemplateOutlet="filters"></ng-container>
+        </div>
+    </nz-drawer>
+
+    <ng-template #filters>
+      <div class="container-body mt-8 lg:mt-6">
+        <wen-collapse i18n-title title="Sort by" class="transition-all mb-2" [isCollapsed]="false"
+          [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="sortOpen = !$event" [ngClass]="{ 'mb-10': sortOpen }">
+            <wen-sort-by
+              [items]="sortItems"
+            ></wen-sort-by>
+        </wen-collapse>
+        <div>
+        </div>
       </div>
     </ng-template>
-  </div>
-</form>
-
-<div class="mt-10 lg:grid place-items-start">
-  <p nz-typography nzType="secondary" class="mb-6" *ngIf="!isLoading(members$ | async)">
-    {{ ((members$ | async)?.length || 0) + ((maxRecords$ | async) === false ? '+' : '') }} <span i18n>members</span>
-  </p>
-  <div class="wen-cards-wrapper mb-10" infiniteScroll [infiniteScrollDistance]="5" [infiniteScrollThrottle]="50"
-    (scrolled)="onScroll()">
-
-    <nz-skeleton *ngIf="isLoading(members$ | async)" class="p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-76 h-76" [nzActive]="true"
-      [nzAvatar]="{ size: 'default' }" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-
-    <nz-card class="w-76" *ngIf="isEmpty(members$ | async)">
-      <div class="flex flex-col justify-center text-center h-36">
-        <span class="leading-7 text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
-          No Members
-        </span>
-      </div>
-    </nz-card>
-
-    <wen-member-card class="relative w-full h-full outline-none"
-      *ngFor="let member of members$ | async; let i = index; trackBy: trackByUid" [member]="member" [includeAlliances]="spaceForm.value.includeAlliances"
-      [selectedSpace]="spaceForm.value.space === defaultSpace.value ? undefined : spaceForm.value.space">
-    </wen-member-card>
-  </div>
-</div>
-
-
+  </main>
+</ais-instantsearch>

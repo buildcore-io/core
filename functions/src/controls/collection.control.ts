@@ -1,28 +1,29 @@
 import dayjs from 'dayjs';
-import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import Joi, { ObjectSchema } from "joi";
 import { merge } from 'lodash';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { TransactionType } from '../../interfaces/models';
-import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
+import { Access, COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
+import admin from '../admin.config';
 import { scale } from "../scale.settings";
-import { cOn, dateToTimestamp, uOn } from "../utils/dateTime.utils";
+import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
+import { cOn, dateToTimestamp, serverTime, uOn } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
 import { keywords } from "../utils/keywords.utils";
 import { assertValidation, getDefaultParams, pSchema } from "../utils/schema.utils";
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { BADGE_TO_CREATE_COLLECTION, DISCORD_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, TWITTER_REGEXP, URL_PATHS } from './../../interfaces/config';
-import { Categories, Collection, CollectionAccess, CollectionType, SchemaCollection } from './../../interfaces/models/collection';
+import { Categories, Collection, CollectionType, SchemaCollection } from './../../interfaces/models/collection';
 import { Member } from './../../interfaces/models/member';
 import { CommonJoi } from './../services/joi/common';
 import { SpaceValidator } from './../services/validators/space';
 
 function defaultJoiUpdateCreateSchema(): SchemaCollection {
-  return merge(getDefaultParams(), {
+  return merge(getDefaultParams<SchemaCollection>(), {
     name: Joi.string().allow(null, '').required(),
     description: Joi.string().allow(null, '').required(),
     space: CommonJoi.uidCheck(),
@@ -33,20 +34,20 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
       scheme: ['https']
     }).optional(),
     // On test we allow now.
-    availableFrom: Joi.date().greater(dayjs().add((functions.config()?.environment?.type === 'prod') ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
+    availableFrom: Joi.date().greater(dayjs().add(isProdEnv ? NftAvailableFromDateMin.value : -600000, 'ms').toDate()).required(),
     // Minimum 10Mi price required and max 1Ti
     price: Joi.number().min(MIN_IOTA_AMOUNT).max(MAX_IOTA_AMOUNT).required(),
     category: Joi.number().equal(...Object.keys(Categories)).required(),
     type: Joi.number().equal(CollectionType.CLASSIC, CollectionType.GENERATED, CollectionType.SFT).required(),
     royaltiesFee: Joi.number().min(0).max(1).required(),
     royaltiesSpace: CommonJoi.uidCheck(),
-    access: Joi.number().equal(CollectionAccess.OPEN, CollectionAccess.MEMBERS_ONLY, CollectionAccess.GUARDIANS_ONLY, CollectionAccess.MEMBERS_WITH_BADGE, CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION).required(),
+    access: Joi.number().equal(...Object.values(Access)).required(),
     accessAwards: Joi.when('access', {
-      is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_BADGE),
+      is: Joi.exist().valid(Access.MEMBERS_WITH_BADGE),
       then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
     }),
     accessCollections: Joi.when('access', {
-      is: Joi.exist().valid(CollectionAccess.MEMBERS_WITH_NFT_FROM_COLLECTION),
+      is: Joi.exist().valid(Access.MEMBERS_WITH_NFT_FROM_COLLECTION),
       then: Joi.array().items(Joi.string().length(ethAddressLength).lowercase()).min(1).required(),
     }),
     // TODO Validate XP is not the same.
@@ -66,7 +67,7 @@ function defaultJoiUpdateCreateSchema(): SchemaCollection {
 
 export const createCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.cCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -90,7 +91,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
   }
 
   // Temporary. They must have special badge.
-  if (functions.config()?.environment?.type !== 'emulator') {
+  if (!isEmulatorEnv) {
     const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
       .where('type', '==', TransactionType.BADGE)
       .where('payload.award', 'in', BADGE_TO_CREATE_COLLECTION)
@@ -132,7 +133,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
         approved: false,
         rejected: false,
         sold: true,
-        soldOn: admin.firestore.Timestamp.now(),
+        soldOn: serverTime(),
         owner: null,
         space: params.body.space,
         type: params.body.type,
@@ -164,7 +165,7 @@ export const createCollection: functions.CloudFunction<Collection> = functions.r
 
 export const updateCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.uCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.cCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -240,7 +241,7 @@ export const updateCollection: functions.CloudFunction<Collection> = functions.r
 
 export const approveCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.approveCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.approveCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);
@@ -289,7 +290,7 @@ export const approveCollection: functions.CloudFunction<Collection> = functions.
 
 export const rejectCollection: functions.CloudFunction<Collection> = functions.runWith({
   minInstances: scale(WEN_FUNC.rejectCollection),
-}).https.onCall(async (req: WenRequest, context: any): Promise<Collection> => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Collection> => {
   appCheck(WEN_FUNC.rejectCollection, context);
   // Validate auth details before we continue
   const params: DecodedToken = await decodeAuth(req);

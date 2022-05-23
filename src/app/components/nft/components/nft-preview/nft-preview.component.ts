@@ -45,6 +45,15 @@ export class NftPreviewComponent {
 
   public space?: Space;
   public mediaType: 'video' | 'image' | undefined;
+  public systemInfoLabels: string[] = [
+    $localize`Migrate`,
+    $localize`IPFS Metadata`,
+    $localize`IPFS Image`
+  ];
+  public systemInfoValues: { [key: string]: string } = {
+    preparing: $localize`Preparing...`,
+    tokenization: $localize`Shimmer/Mainnet (Tokenization)...SOON.`
+  };
   private _nft: any | null;
 
   constructor(
@@ -67,6 +76,6 @@ export class NftPreviewComponent {
   }
 
   public getValues(obj: Nft) {
-    return Object.values(obj);
+    return Object.values(obj).map(({ label, value }) => ({ title: label, value }));
   }
 }

@@ -21,7 +21,9 @@ export enum URL_PATHS {
   PROPOSAL = 'proposal',
   AWARD = 'award',
   MEMBER = 'member',
-  COLLECTION = 'collection'
+  COLLECTION = 'collection',
+  TOKEN = 'token',
+  TOKEN_MARKET = 'token_market'
 }
 
 export const WEN_NAME = 'Soonaverse';
@@ -42,7 +44,7 @@ export const DEF_WALLET_PAY_IN_PROGRESS = 'payment-in-progress-';
 export const TIME_GAP_BETWEEN_MILESTONES = 10;
 export const EXTENDED_TRANSACTION_RETRY = 10 * 60 * 1000;
 export const DEFAULT_TRANSACTION_RETRY = 90 * 1000;
-export const ROYALTY_TRANSACTION_DELAY = 60 * 1000;
+export const SECONDARY_TRANSACTION_DELAY = 60 * 1000;
 export const MAX_WALLET_RETRY = 5;
 export const MIN_AMOUNT_TO_TRANSFER = 1 * 1000 * 1000;
 export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
@@ -67,3 +69,6 @@ export const RPC_CHAIN = {
   // blockExplorerUrls?: string[];
   // iconUrls?: string[]; // Currently ignored.
 }
+export const MIN_TOTAL_TOKEN_SUPPLY = 100;
+export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000;
+export const MIN_TOKEN_START_DATE_DAY = 7

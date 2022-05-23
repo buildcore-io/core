@@ -9,5 +9,9 @@ export const environment = {
     messagingSenderId: "502842886229",
     appId: "1:502842886229:web:fcb7da4040fd19ba742cdc",
     measurementId: "G-CCX9NVPPCR"
+  },
+  algolia: {
+    appId: '2WGM1RPQKZ',
+    key: 'ed51a01fc204688339e89ac8e9d53028'
   }
 };

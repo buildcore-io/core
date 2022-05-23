@@ -15,11 +15,15 @@
 }
 
 .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-selected {
-    @apply text-tabs-text-selected dark:text-tabs-text-selected-dark;
+    @apply text-tabs-text-selected dark:text-tabs-text-selected-dark !important;
 }
   
 .ant-menu-item:active, .ant-menu-submenu-title:active {
     @apply text-tabs-text-selected dark:text-tabs-text-selected-dark bg-tabs-selected dark:bg-tabs-selected-dark;
+}
+
+.ant-menu-item {
+    @apply text-foregrounds-primary dark:text-foregrounds-primary-dark !important;
 }
 
 .ant-menu-horizontal > .ant-menu-item {

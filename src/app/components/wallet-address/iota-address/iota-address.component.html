@@ -127,7 +127,7 @@
 
         <div class="w-full px-4 py-3 mt-14 lg:mt-4 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="!isExpired((transaction$ | async))">
             <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-              <span i18n>Send</span> {{formatBest(targetAmount) }} <span i18n>IOTA to following address (please restake after!):</span>
+              <span i18n>Send</span> {{formatBest(targetAmount) }} <span i18n> to following address (please restake after!):</span>
             </div>
 
             <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -142,26 +142,13 @@
             </div>
         </div>
 
-        <div class="flex flex-col items-center justify-center mt-10 lg:flex-row" *ngIf="!isExpired((transaction$ | async))">
-            <a nz-button nzSize="large" [href]="fireflyDeepLink()" [disabled]="!fireflyDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/firefly.svg" alt="Firefly logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Firefly
-                    </div>
-                </div>
-              </a>
-            <a nz-button nzSize="large" [disabled]="!tanglePayDeepLink()" [href]="tanglePayDeepLink()"
-                class="deep-link">
-                <div class="flex items-center">
-                    <img src="/assets/logos/tanglepay.svg" alt="Tanglepay logo" class="mr-2">
-                    <div class="text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
-                        Tanglepay
-                    </div>
-                </div>
-              </a>
-        </div>
+
+        <wen-wallet-deeplink
+            *ngIf="!isExpired((transaction$ | async))"
+            class="mt-10"
+            [targetAddress]="targetAddress"
+            [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
+        </wen-wallet-deeplink>
     </div>
 </ng-template>
 
@@ -216,9 +203,9 @@
         </div>
         <div class="flex items-center my-auto lg:mt-16">
             <div class="flex items-center justify-center w-10 h-10 rounded-full bg-alerts-success dark:bg-alerts-success-dark">
-                <wen-icon-check class="text-white"></wen-icon-check>
+                <wen-icon-check class="text-foregrounds-on-primary dark:text-foregrounds-on-primary-dark"></wen-icon-check>
             </div>
-            <div class="ml-4 text-lg font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Now you can deal with NFT`s</div>
+            <div class="ml-4 text-lg font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>Now you can deal with NFTs and participate in token trading.</div>
         </div>
 
         <button nz-button nzType="primary" nzSize="large" class="mt-24" i18n (click)="close()">

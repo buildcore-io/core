@@ -1,0 +1,85 @@
+<wen-modal-drawer
+    [isOpen]="isOpen"
+    [content]="content"
+    (wenOnClose)="close()">
+</wen-modal-drawer>
+
+<ng-template #content>
+    <div class="mb-6 text-lg font-bold" i18n>
+        Public sale info
+    </div>
+
+    <nz-form-item class="mb-6">
+        <nz-form-control
+            i18n-nzErrorTip
+            nzErrorTip="Start date is required."
+        >
+            <nz-date-picker
+                class="flex grow"
+                [nzDisabledDate]="disabledStartDate.bind(this)"
+                nzSize="large"
+                [nzShowTime]="{ nzFormat: 'HH:mm', nzMinuteStep: 5, nzHideDisabledOptions: true }"
+                nzFormat="yyyy-MM-dd HH:mm"
+                [formControl]="startDateControl"
+                i18n-nzPlaceHolder
+                nzPlaceHolder="Start date for the token offering"
+            >
+            </nz-date-picker>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="mb-10">
+        <nz-form-control
+            i18n-nzErrorTip
+            nzErrorTip="Offering length is required."
+        >
+            <nz-select
+                class="w-full"
+                nzSize="large"
+                nzShowSearch
+                [nzCustomTemplate]="selectTpl"
+                nzAllowClear
+                [nzDisabled]="true"
+                [nzPlaceHolder]="placeholderTpl"
+                [formControl]="offerLengthControl"
+            >
+                <nz-option
+                    *ngFor="let opt of offeringLengthOptions"
+                    nzCustomContent
+                    [nzLabel]="opt + ' days'"
+                    [nzValue]="opt"
+                >
+                {{ opt + ' days' }}
+                </nz-option>
+            </nz-select>
+            <ng-template #placeholderTpl>
+                <div class="flex items-center space-x-4">
+                    <wen-icon-time [size]="20" class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-time>
+                    <span i18n>Select token offering length (Default 2 days)</span>
+                </div>
+            </ng-template>
+            <ng-template #selectTpl let-s>
+                <div class="flex items-center space-x-4">
+                    <wen-icon-time [size]="20" class="text-icons-primary dark:text-icons-primary-dark"></wen-icon-time>
+                    <span>{{ s.nzLabel }}</span>
+                </div>
+            </ng-template>
+        </nz-form-control>
+    </nz-form-item>
+
+    <div class="mb-6 text-lg font-bold" i18n>
+        Token allocation info
+    </div>
+
+    <wen-description [items]="[
+        { title: allocationInfoLabels[0], value: (token?.pricePerToken || 0) + ' Mi'},
+        { title: allocationInfoLabels[1], value: publicAllocation(token?.allocations)?.percentage + '%', extraValue: '(' + formatBest(percentageMarketCap()) + ')' }
+    ]"></wen-description>
+
+    <div class="flex items-center justify-center mt-10">
+        <button nz-button nzType="primary"
+            nzSize="large" class="w-full lg:w-auto" (click)="scheduleSale()" i18n>
+                Confirm and schedule sale
+        </button>
+    </div>
+</ng-template>
