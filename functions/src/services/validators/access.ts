@@ -6,7 +6,7 @@ import { throwInvalidArgument } from "../../utils/error.utils";
 
 
 export const assertHasAccess = async (spaceId: string, member: string | undefined, access: Access, accessAwards: string[], accessCollections: string[]) => {
-  if (!member || access === Access.OPEN) {
+  if (access === Access.OPEN) {
     return;
   }
 
