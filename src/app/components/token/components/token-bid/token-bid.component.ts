@@ -11,10 +11,10 @@ import { copyToClipboard } from '@core/utils/tools.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
-import { Token } from '@functions/interfaces/models/token';
+import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, interval, Subscription } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -46,13 +46,16 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   }
   @Input() token?: Token;
   @Input() space?: Space;
+  @Input() memberDistribution?: TokenDistribution;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public amountControl: FormControl = new FormControl(null);
+  public iotaControl: FormControl = new FormControl(null);
   public offeredRateControl: FormControl = new FormControl(null);
+  public isAmountInput = false;
   public agreeTermsConditions = false;
   public agreeTokenTermsConditions = false;
-  public targetAddress?: string = 'dummy_address';
+  public targetAddress?: string = '';
   public invalidPayment = false;
   public targetAmount?: number;
   public receivedTransactions = false;
@@ -160,6 +163,40 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    
+    this.amountControl.valueChanges
+      .pipe(
+        filter(() => this.isAmountInput),
+        untilDestroyed(this)
+      )
+      .subscribe((val: string) => {
+        this.iotaControl.setValue((Number(val) * Number(this.offeredRateControl?.value || 0)).toFixed(2));
+        this.cd.markForCheck();
+      });
+      
+    this.iotaControl.valueChanges
+      .pipe(
+        filter(() => !this.isAmountInput),
+        untilDestroyed(this)
+      )
+      .subscribe((val: string) => {
+        this.amountControl.setValue((Number(val) / Number(this.offeredRateControl?.value || 0)).toFixed(2));
+        this.cd.markForCheck();
+      });
+
+    this.offeredRateControl.valueChanges
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe((val: string) => {
+        if (this.isAmountInput) {
+          this.iotaControl.setValue((Number(this.amountControl.value) * Number(val)).toFixed(2));
+        } else {
+          this.amountControl.setValue((Number(this.iotaControl.value) / Number(val)).toFixed(2));
+        }
+        this.cd.markForCheck();
+      });
   }
 
   public isExpired(val?: Transaction | null): boolean {
@@ -184,8 +221,20 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
   }
 
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '0';
+    }
+
+    return (amount / 1000 / 1000).toFixed(2).toString();
+  }
+
   public getExplorerLink(link: string): string {
     return 'https://thetangle.org/search/' + link;
+  }
+  
+  public extractAmount(formattedText: string): string {
+    return formattedText.substring(0, formattedText.length - 3);
   }
 
   public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {

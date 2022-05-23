@@ -33,43 +33,60 @@
 </ng-template>
 
 <ng-template #confirmTemplate>
-    <wen-description [items]="[
-      { title: '24h VWAP', value: (formatBest((listenAvgPrice24h$ | async), true)) }
-    ]"></wen-description>
-
     <div class="relative flex flex-col mt-6 font-medium lg:mt-6">
-        <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
-          <div class="flex items-center">
-            <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary rounded-xl px-2.5 py-1 text-xs mr-6">
-                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap" i18n>Offered rate (Mi)</div>
-            </div>
-          </div>
-          <input class="w-full p-0 outline-0"
-                  [formControl]="offeredRateControl"
-                  nz-input
-                  nzSize="small"
-                  [nzBorderless]="true">
-        </div>
-
-        <div class="relative flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
-            <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-                {{token?.symbol}}
-            </div>
+        <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
             <input class="w-full p-0 outline-0"
-                    [formControl]="amountControl"
+                [formControl]="offeredRateControl"
+                i18n-placeholder
+                placeholder="Your offered rate"
+                nz-input
+                nzSize="small"
+                [nzBorderless]="true">
+            <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
+                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>24h VWAP</div>
+                <div class="text-sm">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
+            </div>
+            <div class="absolute top-1/2 -translate-y-1/2 right-36 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                Mi
+            </div>
+        </div>
+        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark
+            bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-6 py-2 mt-3">
+                <ng-container *ngIf="!isAmountInput" i18n>Enter how much you want to spend. Amount of tokens will be calculated.</ng-container>
+                <ng-container *ngIf="isAmountInput" i18n>Enter amount of tokens you want to buy. Price will be calculated.</ng-container>
+        </div>
+        <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 mt-3 border rounded-3xl border-inputs-border dark:border-inputs-border-dark min-h-14 h-14">
+            <input class="w-full p-0 outline-0"
+                    [formControl]="isAmountInput ? amountControl : iotaControl"
                     nz-input
                     nzSize="small"
                     [nzBorderless]="true">
+            
+            <div *ngIf="isAmountInput" class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
+                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your ballance</div>
+                <div class="text-sm">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
+            </div>
+            <div class="absolute top-1/2 -translate-y-1/2 right-36 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+                {{ isAmountInput ? token?.symbol : 'Mi' }}
+            </div>
         </div>
 
-        <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
-            <div class="mt-1">{{formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl.value))}}</div>
+        <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
+            <div class="mt-1">
+                {{ isAmountInput ? extractAmount(formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl?.value || 0))) : formatTokenBest(amountControl.value * 1000 * 1000)  }}
+            </div>
+            <div *ngIf="!isAmountInput" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
+                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your ballance</div>
+                <div class="text-sm">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
+            </div>
+            <div class="absolute top-1/2 -translate-y-1/2 right-36 font-medium ">
+                {{ isAmountInput ? formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl?.value || 0)).substr(-2) : token?.symbol }}
+            </div>
         </div>
-
-        <!-- <button nz-button nzType="primary" nzShape="circle" nzSize="default"
-            class="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+        <button nz-button nzType="primary" nzShape="circle" nzSize="default"
+            (click)="isAmountInput = !isAmountInput" class="absolute -translate-x-1/2 left-1/2 top-[68%]">
                 <wen-icon-switch></wen-icon-switch>
-        </button> -->
+        </button>
     </div>
 
     <wen-terms-and-conditions
