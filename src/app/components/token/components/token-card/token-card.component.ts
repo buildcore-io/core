@@ -29,7 +29,6 @@ export class TokenCardComponent {
     return this._token;
   }
 
-  // TODO: needs to be set dynamically
   public cardType = TokenCardType.UPCOMING;
   public path = ROUTER_UTILS.config.token.root;
   private _token?: Token;

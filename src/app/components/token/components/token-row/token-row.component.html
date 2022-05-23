@@ -63,7 +63,7 @@
             </ng-container>
 
             <ng-template #notSaleBlock>
-                <ng-container *ngIf="saleEnded() && isInCoolDown()">
+                <ng-container *ngIf="isInCoolDown()">
                     <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Cooldown period ends
                     </div>
