@@ -108,7 +108,8 @@ export class ProcessingService {
       const pay: TransactionPayment = <TransactionPayment>previousHighestPayDoc.data();
 
       // Let's get the actual order.
-      const refOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(pay.payload.sourceTransaction)!);
+      const sourcTran: string = Array.isArray(pay.payload.sourceTransaction) ? last(pay.payload.sourceTransaction)! : pay.payload.sourceTransaction!;
+      const refOrder = admin.firestore().collection(COL.TRANSACTION).doc(sourcTran);
       const sfDocOrder = await this.transaction.get(refOrder);
       const data = <Transaction | undefined>sfDocOrder.data()
       if (!data) {
@@ -464,7 +465,8 @@ export class ProcessingService {
 
       // We have to set link on the past order.
       if (!sameOwner) {
-        const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(previousHighestPay.payload.sourceTransaction)!);
+        const sourcTran: string = Array.isArray(previousHighestPay.payload.sourceTransaction) ? last(previousHighestPay.payload.sourceTransaction)! : previousHighestPay.payload.sourceTransaction!;
+        const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(sourcTran);
         const refHighTranOrderDoc = await this.transaction.get(refHighTranOrder);
         if (refHighTranOrderDoc.data()) {
           this.updates.push({
@@ -593,7 +595,8 @@ export class ProcessingService {
             }, serverTime(), sameOwner);
             // We have to set link on the past order.
             if (!sameOwner) {
-              const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(last(highestPay.payload.sourceTransaction)!);
+              const sourcTran: string = Array.isArray(highestPay.payload.sourceTransaction) ? last(highestPay.payload.sourceTransaction)! : highestPay.payload.sourceTransaction!;
+              const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(sourcTran);
               const refHighTranOrderDoc = await this.transaction.get(refHighTranOrder);
               if (refHighTranOrderDoc.data()) {
                 this.updates.push({

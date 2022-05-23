@@ -1,4 +1,4 @@
-<article class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl w-full wen-card"
+<article class="w-full bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card"
     [ngClass]="fullWidth ? '' : 'h-72 lg:h-99'">
     <a class="flex flex-col h-full text-current hover:text-current" [routerLink]="['/', this.path, nft?.uid]">
         <div class="relative w-full h-40 overflow-hidden lg:h-60 rounded-2xl">
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div class="relative flex flex-col grow w-full px-4 py-3 lg:py-4">
+        <div class="relative flex flex-col w-full px-4 py-3 grow lg:py-4">
             <h3 class="mb-1 text-base font-bold truncate lg:text-lg">{{ nft?.name || nft?.uid }}</h3>
 
             <div class="mt-1 mb-3 text-sm font-medium break-words line-clamp-2 text-foregrounds-primary dark:text-foregrounds-primary-dark">
@@ -61,14 +61,14 @@
             </div>
 
             <div class="flex items-center mt-auto">
-                <div class="grow w-0" *ngIf="isAvailableForSale()">
+                <div class="w-0 grow" *ngIf="isAvailableForSale()">
                   <div class="font-medium text-xxs text-foregrounds-secondary" i18n>Price</div>
                   <div class="text-sm font-medium truncate text-foregrounds-primary dark:text-foregrounds-primary-dark">
                     {{formatBest(applyDiscount(nft?.availablePrice || nft?.price))}}
                   </div>
                 </div>
 
-                <div class="grow w-0" *ngIf="isAvailableForAuction()">
+                <div class="w-0 grow" *ngIf="isAvailableForAuction()">
                   <div class="font-medium text-xxs text-foregrounds-secondary">
                       <ng-container *ngIf="nft?.auctionHighestBid; else minBidBlock" i18n>Current bid</ng-container>
                       <ng-template #minBidBlock>Min bid</ng-template>
@@ -78,7 +78,7 @@
                   </div>
                 </div>
 
-                <a class="flex items-center grow w-0" [routerLink]="['/member', (owner$ | async)?.uid]"
+                <a class="flex items-center w-0 grow" [routerLink]="['/member', (owner$ | async)?.uid]"
                    *ngIf="nft?.owner && !isAvailableForSale() && !isAvailableForAuction()" (click)="$event.stopPropagation()">
                         <nz-avatar [nzSrc]="(owner$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-10"
@@ -92,7 +92,7 @@
                         </div>
                 </a>
 
-                <span *ngIf="!nft?.owner || isAvailableForSale() || isAvailableForAuction()" 
+                <span *ngIf="!nft?.owner || isAvailableForSale() || isAvailableForAuction()"
                     class="ml-auto" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!isAvailableForSale() && !isAvailableForAuction()) ? 'Not Available' : undefined">
                     <button nz-button nzType="primary" class="flex items-center justify-center p-2 rounded-full"
                         [disabled]="!isAvailableForSale() && !isAvailableForAuction()"
