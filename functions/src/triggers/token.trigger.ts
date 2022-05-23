@@ -6,6 +6,7 @@ import { Member, Space, Transaction, TransactionCreditType, TransactionType } fr
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
+import { medium } from '../scale.settings';
 import { serverTime } from '../utils/dateTime.utils';
 import { allPaymentsQuery, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -162,7 +163,7 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
 
 }
 
-export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB" })
+export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB", minInstances: medium })
   .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
     const tokenId = context.params.tokenId
     const prev = change.before.data();
