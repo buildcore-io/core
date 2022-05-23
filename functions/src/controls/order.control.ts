@@ -106,7 +106,9 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Set data object.
   const docNftData: Nft = docNft.data();
 
-  await assertHasAccess(docSpace.id, owner, docCollectionData.access, docCollectionData.accessAwards || [], docCollectionData.accessCollections || [])
+  if (!docNftData.owner) {
+    await assertHasAccess(docSpace.id, owner, docCollectionData.access, docCollectionData.accessAwards || [], docCollectionData.accessCollections || []);
+  }
 
   if (!docNftData.owner && docCollectionData.onePerMemberOnly === true) {
     const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
