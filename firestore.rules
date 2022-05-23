@@ -27,7 +27,15 @@ service cloud.firestore {
       allow read;
     }
 
-    match /tokens/{document=**} {
+    match /token/{document=**} {
+      allow read;
+    }
+
+    match /token_market/{document=**} {
+      allow read;
+    }
+
+    match /token_purchase/{document=**} {
       allow read;
     }
 
