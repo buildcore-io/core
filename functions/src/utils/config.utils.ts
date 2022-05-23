@@ -5,8 +5,8 @@ export const isProdEnv = functions.config()?.environment?.type === 'prod'
 
 export const isEmulatorEnv = functions.config()?.environment?.type === 'emulator'
 
-export const getRoyaltyPercentage = () => Number(functions.config()?.tokenSale?.percentage)
+export const getRoyaltyPercentage = () => Number(functions.config()?.tokensale?.percentage)
 
-export const getSpaceOneRoyaltyPercentage = () => Number(functions.config()?.tokenSale?.spaceOnePercentage)
+export const getSpaceOneRoyaltyPercentage = () => Number(functions.config()?.tokensale?.spaceonepercentage)
 
-export const getRoyaltySpaces = (): string[] => [functions.config()?.tokenSale?.spaceOne, functions.config()?.tokenSale?.spaceTwo].filter(space => !isEmpty(space))
+export const getRoyaltySpaces = (): string[] => [functions.config()?.tokensale?.spaceone, functions.config()?.tokensale?.spacetwo].filter(space => !isEmpty(space))

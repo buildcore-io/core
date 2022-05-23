@@ -63,7 +63,7 @@
             </ng-container>
 
             <ng-template #notSaleBlock>
-                <ng-container *ngIf="saleEnded() && isInCoolDown()">
+                <ng-container *ngIf="isInCoolDown()">
                     <div class="text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark" i18n>
                         Cooldown period ends
                     </div>
@@ -118,7 +118,7 @@
         </div>
 
         <div [ngClass]="(deviceService.isDesktop$ | async) ? 'min-w-[18%] max-w-[18%] overflow-auto flex items-center justify-end' : 'absolute top-0 right-4 -translate-y-1/2 mt-0'">
-            <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="!available() && !preMinted() && !saleNotStarted() && token?.saleStartDate" i18n>
+            <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="!available() && !preMinted() && saleNotStarted() && token?.saleStartDate" i18n>
                 Launching soon
             </nz-tag>
             <nz-tag class="wen-status-tag bg-tags-commencing dark:bg-tags-commencing-dark border-tags-commencing dark:border-tags-commencing-dark" *ngIf="isInCoolDown()" i18n>

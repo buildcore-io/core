@@ -29,8 +29,8 @@ const assertVolumeTotal = async (tokenId: string, volumeTotal: number) => {
 }
 
 const createRoyaltySpaces = async () => {
-  const spaceOneId = functions.config().tokenSale.spaceOne
-  const spaceTwoId = functions.config().tokenSale.spaceTwo
+  const spaceOneId = functions.config().tokensale.spaceone
+  const spaceTwoId = functions.config().tokensale.spacetwo
   const guardian = await createMember(walletSpy, true);
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
 
@@ -54,11 +54,11 @@ const getBillPayments = (seller: string) => admin.firestore().collection(COL.TRA
   .where('member', '==', seller)
   .get()
 
-const { percentage, spaceOnePercentage } = functions.config().tokenSale
+const { percentage, spaceonepercentage } = functions.config().tokensale
 
 const getRoyaltyDistribution = (amount: number) => {
-  const spaceOne = amount * (percentage / 100) * (spaceOnePercentage / 100)
-  const spaceTwo = amount * (percentage / 100) * (1 - (spaceOnePercentage / 100))
+  const spaceOne = amount * (percentage / 100) * (spaceonepercentage / 100)
+  const spaceTwo = amount * (percentage / 100) * (1 - (spaceonepercentage / 100))
   return [spaceOne, spaceTwo, amount - (spaceOne >= MIN_IOTA_AMOUNT ? spaceOne : 0) - (spaceTwo >= MIN_IOTA_AMOUNT ? spaceTwo : 0)]
 }
 

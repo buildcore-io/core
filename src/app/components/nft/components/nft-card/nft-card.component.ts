@@ -91,7 +91,7 @@ export class NftCardComponent {
       return false;
     }
 
-    return (this.collection.approved === true && !!this.nft?.availableFrom && dayjs(this.getAuctionDate()).isBefore(dayjs()));
+    return (this.collection.approved === true && !!this.nft?.availableFrom && dayjs(this.getDate(this.nft.availableFrom)).isBefore(dayjs()));
   }
 
   public isAvailableForAuction(): boolean {
@@ -99,7 +99,7 @@ export class NftCardComponent {
       return false;
     }
 
-    return (this.collection.approved === true && !!this.nft?.auctionFrom && dayjs(this.getAuctionDate()).isBefore(dayjs()));
+    return (this.collection.approved === true && !!this.nft?.auctionFrom && dayjs(this.getDate(this.nft.auctionFrom)).isBefore(dayjs()));
   }
 
   /**
@@ -107,7 +107,7 @@ export class NftCardComponent {
    * @param date
    * @returns
    */
-  public getAuctionDate(date: any = this.nft?.auctionFrom): any {
+  public getDate(date: any): any {
     if (typeof date === 'object' && date?.toDate) {
       return date.toDate();
     } else {
@@ -183,11 +183,11 @@ export class NftCardComponent {
       return false;
     }
 
-    return dayjs(this.getAuctionDate(date)).isAfter(dayjs(), 's');
+    return dayjs(this.getDate(date)).isAfter(dayjs(), 's');
   }
 
   public getDaysLeft(availableFrom?: Timestamp | null): number {
-    if (!this.getAuctionDate(availableFrom)) return 0;
-    return dayjs(this.getAuctionDate(availableFrom)).diff(dayjs(new Date()), 'day');
+    if (!this.getDate(availableFrom)) return 0;
+    return dayjs(this.getDate(availableFrom)).diff(dayjs(new Date()), 'day');
   }
 }

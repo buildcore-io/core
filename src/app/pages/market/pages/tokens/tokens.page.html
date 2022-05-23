@@ -85,7 +85,10 @@
                 </span>
             </div>
         </nz-card>
-        <wen-token-row *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token" class="block mb-6 lg:mb-3">
+        <wen-token-row *ngFor="let token of tokens$ | async; trackBy: trackByUid" [token]="token" class="block mb-6 lg:mb-3 rounded-2xl" [ngClass]="{
+                'ongoing-wrapper': getCardType(token) === tokenCardTypes.ONGOING,
+                'ending-wrapper': getCardType(token) === tokenCardTypes.ENDING
+            }">
         </wen-token-row>
     </div>
 </div>

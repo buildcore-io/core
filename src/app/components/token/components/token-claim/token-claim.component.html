@@ -45,7 +45,7 @@
     <wen-terms-and-conditions
         class="mt-10"
         [isChecked]="agreeTermsConditions"
-        documentLink="https://docs.google.com/document/d/1ng67fXTdINhmgkLpnbS_SkiDlZSsDAqrd13cbwXQCcQ"
+        documentLink="https://docs.google.com/document/d/1oOFhZIip2XTEGVYhtr_3eUeSG6fbLDILFJGBvmtlFgc"
         (wenOnCheckChange)="agreeTermsConditions = $event">
     </wen-terms-and-conditions>
 
@@ -78,7 +78,7 @@
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
               Total available tokens to claim as of today
             </div>
-            <div class="mt-1 font-bold text-lg">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}}</div>
+            <div class="mt-1 text-lg font-bold">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}}</div>
         </div>
     </div>
 

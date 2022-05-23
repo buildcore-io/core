@@ -83,7 +83,7 @@ export class TokenProgressComponent {
   }
 
   public getPrc(): number {
-    const prc = ((this.token?.totalDeposit || 0) / (this.token?.pricePerToken || 0) / this.getPublicSaleSupply());
+    const prc = this.getTotalPotentialTokens() / this.getPublicSaleSupply();
     return (prc > 1 ? 1 : prc) * 100;
   }
 }

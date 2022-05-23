@@ -5,6 +5,7 @@ import { TokenApi } from '@api/token.api';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { TokenCardType } from '@components/token/components/token-card/token-card.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
@@ -14,6 +15,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
+import dayjs from 'dayjs';
 import { Timestamp } from "firebase/firestore";
 import { BehaviorSubject, map, Observable, skip, Subscription } from 'rxjs';
 
@@ -190,6 +192,26 @@ export class TokensPage implements OnInit, OnDestroy {
 
       return (!this.dataStore[this.dataStore.length - 1] || this.dataStore[this.dataStore.length - 1]?.length < DEFAULT_LIST_SIZE);
     }));
+  }
+
+  public getEndDate(token?: Token): dayjs.Dayjs {
+    return dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms');
+  }
+
+  public getCardType(token?: Token): TokenCardType | undefined {
+    const endDate = this.getEndDate(token);
+    // 1 / 5 is close to ending.
+    let cardType;
+    if (endDate.isBefore(dayjs()) && dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs())) {
+      cardType = TokenCardType.ENDING;
+    } else if (dayjs(token?.saleStartDate?.toDate()).isBefore(dayjs()) && endDate.isAfter(dayjs())) {
+      cardType = TokenCardType.ONGOING;
+    }
+    return cardType;
+  }
+
+  public get tokenCardTypes(): typeof TokenCardType {
+    return TokenCardType;
   }
 
   private cancelSubscriptions(): void {
