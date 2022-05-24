@@ -276,7 +276,7 @@ const creditTokenSchema = ({
 export const creditToken = functions.runWith({
   minInstances: scale(WEN_FUNC.creditToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.orderToken, context);
+  appCheck(WEN_FUNC.creditToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema = Joi.object(creditTokenSchema);
@@ -346,7 +346,7 @@ const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
 
 export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.airdropToken) })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-    appCheck(WEN_FUNC.orderToken, context);
+    appCheck(WEN_FUNC.airdropToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object(airdropTokenSchema);
@@ -404,7 +404,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
 
 export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_FUNC.claimAirdroppedToken) })
   .https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-    appCheck(WEN_FUNC.orderToken, context);
+    appCheck(WEN_FUNC.claimAirdroppedToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
     const schema = Joi.object({ token: Joi.string().required() });
