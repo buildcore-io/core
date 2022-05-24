@@ -95,4 +95,11 @@ export class DataService {
       dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs())
     );
   }
+
+  public isAfterCooldown(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      dayjs(token?.coolDownEnd?.toDate()).isBefore(dayjs())
+    );
+  }
 }
