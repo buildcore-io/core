@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MemberApi } from '@api/member.api';
 import { TokenApi } from '@api/token.api';
@@ -35,6 +36,26 @@ export class NewPage implements OnInit {
     { step: StepType.SUMMARY, label: $localize`Summary` }
   ];
 
+  public controlToStepMap: Map<AbstractControl, StepType> = new Map([
+    [ this.newService.nameControl, StepType.METRICS ],
+    [ this.newService.symbolControl, StepType.METRICS ],
+    [ this.newService.priceControl, StepType.METRICS ],
+    [ this.newService.totalSupplyControl, StepType.METRICS ],
+    [ this.newService.spaceControl, StepType.METRICS ],
+    [ this.newService.iconControl, StepType.METRICS ],
+    [ this.newService.termsAndConditionsLinkControl, StepType.METRICS ],
+    [ this.newService.distributionControl, StepType.OVERVIEW ],
+    [ this.newService.titleControl, StepType.OVERVIEW ],
+    [ this.newService.descriptionControl, StepType.OVERVIEW ],
+    [ this.newService.shortTitleControl, StepType.OVERVIEW ],
+    [ this.newService.shortDescriptionControl, StepType.OVERVIEW ],
+  ]);
+
+  public arrayToStepMap: Map<AbstractControl, StepType> = new Map([
+    [ this.newService.allocations, StepType.METRICS ],
+    [ this.newService.links, StepType.OVERVIEW ]
+  ]);
+
   constructor(
     public deviceService: DeviceService,
     public newService: NewService,
@@ -42,7 +63,8 @@ export class NewPage implements OnInit {
     private auth: AuthService,
     private memberApi: MemberApi,
     private tokenApi: TokenApi,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   public ngOnInit(): void {
@@ -66,6 +88,12 @@ export class NewPage implements OnInit {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });
+          this.currentStep =
+            this.controlToStepMap.get(control) ||
+            this.arrayToStepMap.get(control) || 
+            this.currentStep;
+          this.cd.markForCheck();
+          return;
         }
       });
       return false;
@@ -73,6 +101,8 @@ export class NewPage implements OnInit {
     const total = (this.newService.allocations.value as TokenAllocation[]).reduce((acc, act) => acc + Number(act.percentage), 0)
     const publicSales = (this.newService.allocations.value as TokenAllocation[]).filter((a) => a.isPublicSale);
     if (total !== 100 && publicSales.length > 1) {
+      this.currentStep = StepType.METRICS;
+      this.cd.markForCheck();
       return false;
     }
     return true;
