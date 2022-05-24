@@ -12,6 +12,7 @@ import { NftCardModule } from '@components/nft/components/nft-card/nft-card.modu
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
+import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -42,6 +43,7 @@ import { FilterService } from './services/filter.service';
     MarketRoutingModule,
     NzCardModule,
     LayoutModule,
+    OnVisibleModule,
     NzInputModule,
     DropdownTabsModule,
     MobileSearchModule,
