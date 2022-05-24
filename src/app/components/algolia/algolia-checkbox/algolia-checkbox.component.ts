@@ -119,9 +119,11 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
     return Access;
   }
 
-  public refine(event: MouseEvent, item: RefinementListItem) {
-    event.preventDefault();
-    event.stopPropagation();
+  public refine(event: MouseEvent | undefined, item: RefinementListItem) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     if (!this.initialItemsList.length) {
       this.initialItemsList = this.state.items;

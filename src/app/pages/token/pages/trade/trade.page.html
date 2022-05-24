@@ -297,7 +297,7 @@
     </div>
 </wen-content>
 
-<wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen"
+<wen-token-bid *ngIf="isBidTokenOpen" [isOpen]="isBidTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"
               [token]="(data.token$ | async) || undefined" [space]="(space$ | async) || undefined"
               (wenOnClose)="isBidTokenOpen = false"></wen-token-bid>
 <wen-token-offer-pre-mint *ngIf="isAskTokenOpen" [memberDistribution]="(memberDistribution$ | async) || undefined"

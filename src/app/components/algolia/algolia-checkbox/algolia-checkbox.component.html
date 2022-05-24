@@ -22,7 +22,7 @@
                     <wen-icon-members-with-nft-from-collection *ngIf="item.value === collectionAccesses.MEMBERS_WITH_NFT_FROM_COLLECTION + ''" [size]="20"></wen-icon-members-with-nft-from-collection>
             </div>
 
-            <label *ngIf="filterType === algoliaCheckboxFilterTypes.DEFAULT" nz-checkbox [nzChecked]="item.isRefined">
+            <label *ngIf="filterType === algoliaCheckboxFilterTypes.DEFAULT" nz-checkbox [nzChecked]="item.isRefined" (nzCheckedChange)="refine(undefined, item)">
             </label>
         </ng-container>
         

@@ -29,9 +29,9 @@
                               [award]="award"
                               [fullWidth]="(deviceService.isMobile$ | async) || false">
               </wen-award-card>
+              <div (wenVisible)="refine()"></div>
             </div>
           </div>
-          <div (visible)="refine()"></div>
         </ng-template>
       </ais-infinite-hits>
     </section>
@@ -54,7 +54,7 @@
             <button class="absolute right-0 z-10 top-1" (click)="openFilters = false">
                 <wen-icon-close></wen-icon-close>
             </button>
-    
+
             <ng-container *ngTemplateOutlet="filters"></ng-container>
         </div>
     </nz-drawer>

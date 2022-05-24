@@ -40,7 +40,7 @@
 
       <ng-template #mobileSearch>
         <wen-mobile-search *ngIf="deviceService.isMobile$ | async" [formControl]="filterControl"
-          class="ml-auto" i18n-placeholder placeholder="Find Member">
+          class="ml-auto w-full" i18n-placeholder placeholder="Find Member">
         </wen-mobile-search>
       </ng-template>
     </div>

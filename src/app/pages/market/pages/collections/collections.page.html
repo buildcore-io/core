@@ -7,18 +7,18 @@
   <div class="relative mt-11 lg:mt-10">
     <ais-stats data-layout="mobile">
       <ng-template let-state="state">
-        <span class="ais-Stats-text font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+        <span class="font-medium ais-Stats-text text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
           {{ state.nbHits | number }} <ng-container i18n>records</ng-container>
         </span>
       </ng-template>
     </ais-stats>
-    <button class="wen-secondary absolute top-0 right-0 z-10" nz-button nzSize="small" (click)="openFilters = !openFilters">
+    <button class="absolute top-0 right-0 z-10 wen-secondary" nz-button nzSize="small" (click)="openFilters = !openFilters">
       <wen-icon-collapse-arrow *ngIf="deviceService.isDesktop$ | async" [size]="16"
-        class="transition-all mr-1" [ngClass]="{ 'rotate-180': !openFilters}"></wen-icon-collapse-arrow>
+        class="mr-1 transition-all" [ngClass]="{ 'rotate-180': !openFilters}"></wen-icon-collapse-arrow>
       <div i18n>Filters&Sort</div>
     </button>
   </div>
-  <main class="flex mx-auto justify-between">
+  <main class="flex justify-between mx-auto">
     <div class="container-results" [ngClass]="{ 'mr-5' : openFilters }">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
@@ -29,14 +29,14 @@
                                    [collection]="hit"
                                    [fullWidth]="(deviceService.isMobile$ | async) || false">
               </wen-collection-card>
+              <div (wenVisible)="refine()"></div>
             </div>
           </div>
-          <div (visible)="refine()"></div>
         </ng-template>
       </ais-infinite-hits>
     </div>
 
-    <div class="container-filters overflow-hidden -translate-y-5 transition-all"
+    <div class="overflow-hidden transition-all -translate-y-5 container-filters"
       *ngIf="(deviceService.isMobile$ | async) !== true"
       [ngClass]="openFilters ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
 
@@ -61,14 +61,14 @@
     </nz-drawer>
 
     <ng-template #filters>
-      <div class="container-body mt-8 lg:mt-6">
-        <wen-collapse i18n-title title="Sort by" class="transition-all mb-2" [isCollapsed]="false"
+      <div class="mt-8 container-body lg:mt-6">
+        <wen-collapse i18n-title title="Sort by" class="mb-2 transition-all" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="sortOpen = !$event" [ngClass]="{ 'mb-10': sortOpen }">
             <wen-sort-by
               [items]="sortItems"
             ></wen-sort-by>
         </wen-collapse>
-        <wen-collapse i18n-title title="Saletype" class="transition-all mb-2" [isCollapsed]="false"
+        <wen-collapse i18n-title title="Saletype" class="mb-2 transition-all" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="saleFilterOpen = !$event" [ngClass]="{ 'mb-10': saleFilterOpen }">
             <wen-algolia-checkbox
               attribute="access"
@@ -78,7 +78,7 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse *ngIf="spacesLoaded$ | async" class="transition-all mb-2" i18n-title title="Spaces" [isCollapsed]="false"
+        <wen-collapse *ngIf="spacesLoaded$ | async" class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="spaceFilterOpen = !$event" [ngClass]="{ 'mb-10': spaceFilterOpen }">
             <wen-algolia-checkbox
               attribute="space"
@@ -92,7 +92,7 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse class="transition-all mb-2" i18n-title title="Category" [isCollapsed]="true"
+        <wen-collapse class="mb-2 transition-all" i18n-title title="Category" [isCollapsed]="true"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="categoryFilterOpen = !$event" [ngClass]="{ 'mb-10': categoryFilterOpen }">
             <wen-algolia-checkbox
               attribute="category"
@@ -102,7 +102,7 @@
             >
             </wen-algolia-checkbox>
         </wen-collapse>
-        <wen-collapse class="transition-all mb-2" i18n-title title="Price range" [isCollapsed]="true"
+        <wen-collapse class="mb-2 transition-all" i18n-title title="Price range" [isCollapsed]="true"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="priceFilterOpen = !$event" [ngClass]="{ 'mb-10': priceFilterOpen || (deviceService.isMobile$ | async) }">
             <wen-algolia-range
               class="w-11/12 mx-auto"

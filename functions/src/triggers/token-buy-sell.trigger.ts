@@ -6,6 +6,7 @@ import { Member, Space, Transaction, TransactionType } from '../../interfaces/mo
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
+import { important } from '../scale.settings';
 import { guardedRerun } from '../utils/common.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../utils/config.utils';
 import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
@@ -14,7 +15,7 @@ import { getRandomEthAddress } from '../utils/wallet.utils';
 
 export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
 
-export const onTokenBuySellCreated = functions.runWith({ timeoutSeconds: 540, memory: "512MB" })
+export const onTokenBuySellCreated = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: important })
   .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onCreate(async (snap) => {
     const data = <TokenBuySellOrder>snap.data()
     await guardedRerun(async () => !(await fulfillSales(data.uid)))
