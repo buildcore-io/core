@@ -125,7 +125,8 @@
     </div>
 
     <div class="flex flex-col w-full mt-10 lg:flex-row lg:space-x-10">
-        <nz-card [nzTitle]="getBidsTitle((listenAvgBuy$ | async) || undefined)" class="flex-1 w-full mt-6 h-max lg:mt-0">
+        <nz-card [nzTitle]="getBidsTitle((listenAvgBuy$ | async) || undefined)"
+          class="flex-1 w-full mt-6 h-max lg:mt-0" [nzBodyStyle]="{ 'padding-left': '0px', 'padding-right': '0px' }">
             <div class="flex items-center px-6 mb-4">
                 <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentBidsListing === bidListingTypes.OPEN"
                     (nzCheckedChange)="currentBidsListing = bidListingTypes.OPEN">
@@ -138,8 +139,8 @@
             </div>
 
             <nz-table *ngIf="currentBidsListing === bidListingTypes.OPEN"
-                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                [nzData]="(bids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenBids">
+                class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="(sortedBids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenBids" [nzPageSize]="15">
                 <thead>
                     <tr>
                         <th i18n>Price</th>
@@ -152,10 +153,18 @@
                         [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #openBidsBlock>
-                        <tr *ngFor="let item of (bids$ | async)">
-                            <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                            <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                            <td class="right">{{ formatBest(item.price * item.count) }}</td>
+                        <tr *ngFor="let item of (sortedBids$ | async)" class="relative">
+                            <td class="z-10 border-0 flex items-center">
+                              <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
+                                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
+                                class="mr-2"></nz-avatar>
+                                <div>{{ formatBest(item.price * 1000 * 1000) }}</div>
+                            </td>
+                            <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                            <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+
+                            <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
+                              [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                         </tr>
                     </ng-template>
                 </tbody>
@@ -166,8 +175,8 @@
             </ng-template>
 
             <nz-table *ngIf="currentBidsListing === bidListingTypes.MY"
-                class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-                [nzData]="(myBids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyRequests" [nzPageSize]="10">
+                class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
+                [nzData]="(sortedMyBids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyRequests" [nzPageSize]="15">
                 <thead>
                     <tr>
                         <th i18n>Price</th>
@@ -182,11 +191,11 @@
                         [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #myRequestsBlock>
-                      <tr *ngFor="let item of (myBids$ | async)">
+                      <tr *ngFor="let item of (sortedMyBids$ | async)" class="relative">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                        <td class="right">{{ formatBest(item.price * item.count) }}</td>
-                        <td class="right">
+                        <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+                        <td class="z-10 border-0 right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
                             {{ (item.fulfilled / item.count) | percent }}
                           </ng-container>
@@ -197,10 +206,12 @@
                             Expired
                           </ng-container>
                         </td>
-                        <td class="right">
+                        <td class="z-10 border-0 right">
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
-                        </tr>
+                        <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
+                          [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                      </tr>
                     </ng-template>
                 </tbody>
             </nz-table>
@@ -210,7 +221,8 @@
             </ng-template>
         </nz-card>
 
-        <nz-card [nzTitle]="getAsksTitle((listenAvgSell$ | async) || undefined)" class="flex-1 w-full h-max">
+        <nz-card [nzTitle]="getAsksTitle((listenAvgSell$ | async) || undefined)"
+          class="flex-1 w-full h-max" [nzBodyStyle]="{ 'padding-left': '0px', 'padding-right': '0px' }">
           <div class="flex items-center px-6 mb-4">
               <nz-tag nzMode="checkable" class="mt-2 w-max" [nzChecked]="currentAskListing === askListingTypes.OPEN"
                   (nzCheckedChange)="currentAskListing = askListingTypes.OPEN">
@@ -223,8 +235,8 @@
           </div>
 
           <nz-table *ngIf="currentAskListing === askListingTypes.OPEN"
-              class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-              [nzData]="(asks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenAsks">
+              class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
+              [nzData]="(sortedAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenAsks" [nzPageSize]="15">
               <thead>
                   <tr>
                       <th i18n>Price</th>
@@ -237,10 +249,17 @@
                       [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #openAsksBlock>
-                      <tr *ngFor="let item of (asks$ | async)">
-                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                        <td class="right">{{ formatBest(item.price * item.count) }}</td>
+                      <tr *ngFor="let item of (sortedAsks$ | async)" class="relative">
+                        <td class="z-10 border-0 flex items-center">
+                          <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
+                            [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
+                            class="mr-2"></nz-avatar>
+                            <div>{{ formatBest(item.price * 1000 * 1000) }}</div>
+                        </td>
+                        <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+                        <div class="absolute right-0 top-0 h-full bg-[#FBE4DA]"
+                          [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
               </tbody>
@@ -251,8 +270,8 @@
           </ng-template>
 
           <nz-table *ngIf="currentAskListing === askListingTypes.MY"
-              class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0"
-              [nzData]="(myAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyAsks">
+              class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
+              [nzData]="(sortedMyAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyAsks" [nzPageSize]="15">
               <thead>
                   <tr>
                       <th i18n>Price</th>
@@ -267,11 +286,11 @@
                       [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #myAsksBlock>
-                      <tr *ngFor="let item of (myAsks$ | async)">
-                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
-                        <td class="right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                        <td class="right">{{ formatBest(item.price * item.count) }}</td>
-                        <td class="right">
+                      <tr *ngFor="let item of (sortedMyAsks$ | async)" class="relative">
+                        <td class="z-10 border-0">{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+                        <td class="z-10 border-0 right">
                           <ng-container *ngIf="item.status === bidAskStatuses.ACTIVE || item.status === bidAskStatuses.SETTLED">
                             {{ (item.fulfilled / item.count) | percent }}
                           </ng-container>
@@ -282,9 +301,11 @@
                             Expired
                           </ng-container>
                         </td>
-                        <td class="right">
+                        <td class="z-10 border-0 right">
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
+                        <div class="absolute right-0 top-0 h-full bg-[#FBE4DA]"
+                          [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
               </tbody>
