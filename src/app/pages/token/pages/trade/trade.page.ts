@@ -15,12 +15,13 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenDistribution, TokenPurchase, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, map, Observable, skip, Subscription } from 'rxjs';
 
 export enum ChartLengthType {
   DAY = '24h',
@@ -53,6 +54,12 @@ export class TradePage implements OnInit, OnDestroy {
   public myBids$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public asks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
+  public sortedBids$: Observable<TokenBuySellOrder[]>;
+  public sortedMyBids$: Observable<TokenBuySellOrder[]>;
+  public sortedAsks$: Observable<TokenBuySellOrder[]>;
+  public sortedMyAsks$: Observable<TokenBuySellOrder[]>;
+  public bidsAmountSum$: Observable<number>;
+  public asksAmountSum$: Observable<number>;
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public listenAvgSell$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
   public listenAvgBuy$: BehaviorSubject<number | undefined> = new BehaviorSubject<number | undefined>(undefined);
@@ -146,7 +153,7 @@ export class TradePage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public data: DataService,
-    private auth: AuthService,
+    public auth: AuthService,
     private titleService: Title,
     private tokenApi: TokenApi,
     private cd: ChangeDetectorRef,
@@ -155,7 +162,14 @@ export class TradePage implements OnInit, OnDestroy {
     private tokenMarketApi: TokenMarketApi,
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    this.sortedBids$ = this.bids$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
+    this.sortedMyBids$ = this.myBids$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
+    this.sortedAsks$ = this.asks$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
+    this.sortedMyAsks$ = this.myAsks$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
+    this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(b => b.reduce((acc, e) => acc + e.count, 0)));
+    this.asksAmountSum$ = this.asks$.asObservable().pipe(map(b => b.reduce((acc, e) => acc + e.count, 0)));
+  }
 
   public ngOnInit(): void {
     this.titleService.setTitle(WEN_NAME + ' - ' + $localize`Token Trading`);
@@ -339,6 +353,10 @@ export class TradePage implements OnInit, OnDestroy {
 
   public getAsksTitle(_avg?: number): string {
     return $localize`Asks`; // + ' ' + ((avg && avg > 0) ? '(' + $localize`avg price ` + this.formatBest(avg * 1000 * 1000) + ')' : '');
+  }
+  
+  public get filesizes(): typeof FILE_SIZES {
+    return FILE_SIZES;
   }
 
   private cancelSubscriptions(): void {
