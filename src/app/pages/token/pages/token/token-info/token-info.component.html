@@ -14,26 +14,7 @@
 
 
     <nz-card i18n-nzTitle nzTitle="Token Info">
-        <wen-description [items]="[
-            { title: tokenInfoLabels[0], valueTemplate: tokenAvatar },
-            { title: tokenInfoLabels[1], value: (data.token$ | async)?.name },
-            { title: tokenInfoLabels[2], value: (data.token$ | async)?.symbol },
-            { title: tokenInfoLabels[3], value: '1 ' + (data.token$ | async)?.symbol + ' = ' + (data.token$ | async)?.pricePerToken + ' Mi' },
-            { title: tokenInfoLabels[4], value: 'Shimmer coming', titleTemplate: networkTooltipIcon },
-            { title: tokenInfoLabels[5], value:  (data.formatTokenBest((data.token$ | async)?.totalSupply) | number : '1.0-2') + ' ' + (data.token$ | async)?.symbol },
-            { title: tokenInfoLabels[6], value: 'Fixed' }
-        ]"></wen-description>
-        <ng-template #tokenAvatar>
-            <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
-                class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                nzShape="circle"
-                [nzSize]="32">
-            </nz-avatar>
-        </ng-template>
-        <ng-template #networkTooltipIcon>
-            <wen-icon-question-circle class="cursor-help" [size]="20"
-                nz-tooltip i18n-nzTooltipTitle nzTooltipTitle="Guardian's of the space will be able to decide where this token will be minted."></wen-icon-question-circle>
-        </ng-template>
+        <wen-token-info-description [token]="(data.token$ | async) || undefined"></wen-token-info-description>
     </nz-card>
     <nz-card i18n-nzTitle nzTitle="Related Links">
       <div *ngFor="let l of (data.token$ | async)?.links" class="truncate">

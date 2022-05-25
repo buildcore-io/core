@@ -24,9 +24,20 @@
                     'w-1/2 justify-end': (deviceService.isDesktop$ | async) || !item.link,
                     'w-full justify-between mt-3 justify-between': (deviceService.isMobile$ | async) && item.link
                 }">
-                <div class="break-words line-clamp-2 max-w-[80%]" [ngClass]="{'mr-1': item.extraValue, 'text-right': (deviceService.isDesktop$ | async) || !item.link}" *ngIf="item.value">{{ item.value }}</div>
+                <ng-container *ngIf="item.value">
+                    <div *ngIf="!item.type || item.type === descriptionItemTypes.DEFAULT" class="break-words line-clamp-2 max-w-[80%]"
+                        [ngClass]="{'mr-1': item.extraValue, 'text-right': (deviceService.isDesktop$ | async) || !item.link}">{{ item.value }}</div>
+
+                    <a class="ml-1.5 text-textlink-enabled dark:text-textlink-enabled-dark"
+                        *ngIf="item.type === descriptionItemTypes.LINK" (click)="item.action ? item.action() : null">
+                            {{ item.value }}</a>
+
+                    <button *ngIf="item.type === descriptionItemTypes.BUTTON" nz-button nzType="primary" nzSize="small" (click)="item?.action()"></button>
+                </ng-container>
+
                 <a class="ml-1.5 underline text-textlink-enabled dark:text-textlink-enabled-dark"
                     *ngIf="item.link && (deviceService.isDesktop$ | async)" [href]="item.link.href" target="_blank">{{ item.link.label }}</a>
+                
                 <span *ngIf="item.extraValue" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"> {{ item.extraValue }}</span>
                 <div *ngIf="item.valueTemplate" class="ml-1.5 flex items-center justify-center">
                     <ng-container *ngTemplateOutlet="item.valueTemplate"></ng-container>
