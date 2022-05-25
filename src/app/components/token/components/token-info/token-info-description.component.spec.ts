@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TokenApi } from '@api/token.api';
+import { MockProvider } from 'ng-mocks';
 import { TokenInfoDescriptionComponent } from './token-info-description.component';
 
 
@@ -8,7 +10,10 @@ describe('TokenInfoDescriptionComponent', () => {
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ TokenInfoDescriptionComponent ]
+      declarations: [ TokenInfoDescriptionComponent ],
+      providers: [
+        MockProvider(TokenApi)
+      ]
     })
       .compileComponents();
   });
