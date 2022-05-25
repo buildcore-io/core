@@ -10,6 +10,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from "@components/tabs/tabs.module";
+import { OnVisibleModule } from '@core/directives/on-visible/on-visible.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -54,6 +55,7 @@ import { FilterService } from './services/filter.service';
     FormsModule,
     ReactiveFormsModule,
     TabsModule,
+    OnVisibleModule,
     RouterModule,
     NzTypographyModule,
     DiscoverRoutingModule,

@@ -2,11 +2,12 @@ import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
+import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
-import { medium } from '../scale.settings';
+import { scale } from '../scale.settings';
 import { serverTime } from '../utils/dateTime.utils';
 import { allPaymentsQuery, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -125,7 +126,7 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
   const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
 
   const orderDoc = await orderDocRef(distribution.uid!, token).get()
-  const orderTargetAddress = orderDoc.data()?.payload?.targetAddress
+  const orderTargetAddress = orderDoc.data()?.payload?.targetAddress || ''
   const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
   const billPaymentId = createBillPayment(token, getFlooredDistribution(distribution), payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
@@ -163,7 +164,7 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
 
 }
 
-export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB", minInstances: medium })
+export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB", minInstances: scale(WEN_FUNC.onTokenStatusUpdate) })
   .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
     const tokenId = context.params.tokenId
     const prev = change.before.data();
@@ -191,9 +192,9 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     const results = await Promise.allSettled(promises);
     const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
     const status = isEmpty(errors) ? TokenStatus.PRE_MINTED : TokenStatus.ERROR
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status, errors })
+    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).update({ status })
 
     if (status === TokenStatus.ERROR) {
-      functions.logger.error('Token processing error', token.uid)
+      functions.logger.error('Token processing error', token.uid, errors)
     }
   })
