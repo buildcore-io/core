@@ -27,27 +27,37 @@
                   <td class="right"></td>
               </tr>
 
-              <tr *ngIf="t.distribution.tokenDrops?.length">
-                <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
-                  <div class="flex items-center">
-                      <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
-                        class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
-                        nzShape="circle"
-                        [nzSize]="32">
-                      </nz-avatar>
-                      <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
-                  </div>
-                </td>
-                <td class="font-medium" i18n>Airdropped</td>
-                <td class="font-medium">{{ ((formatTokenBest(sum(t.distribution.tokenDrops!)) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
-                <td class="right">
-                    <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
-                        class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                        (click)="openTokenClaim = t">
-                            {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
-                    </button>
-                </td>
-              </tr>
+              <ng-container *ngIf="t.distribution.tokenDrops?.length">
+                  <tr *ngFor="let drop of t.distribution.tokenDrops">
+                    <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+                      <div class="flex items-center">
+                          <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
+                            class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
+                            nzShape="circle"
+                            [nzSize]="32">
+                          </nz-avatar>
+                          <div class="ml-3 text-lg font-bold text-foregrounds-primary dark:text-foregrounds-primary-dark">{{ t.name }}</div>
+                      </div>
+                    </td>
+                    <td class="font-medium">
+                        <div class="flex items-center">
+                            <ng-container i18n>Airdropped</ng-container>
+                            <ng-container *ngIf="vestingInFuture(drop)">
+                                (<ng-container i18n>from</ng-container> {{ drop.vestingAt.toDate() | date: 'shortDate' }})
+                            </ng-container>
+                        </div>
+                    </td>
+                    <td class="font-medium">{{ ((formatTokenBest(drop.count) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
+                    <td class="right">
+                        <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
+                            class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
+                            (click)="claim(t, drop)">
+                                {{ tokenActionTypeLabels[tokenItemTypes.CLAIM] }}
+                        </button>
+                    </td>
+                  </tr>
+              </ng-container>
+              
 
               <tr *ngIf="salesInProgressOrUpcoming(t) && t.distribution.totalDeposit">
                 <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
@@ -101,4 +111,4 @@
 </div>
 
 <wen-token-refund *ngIf="!!openTokenRefund" [isOpen]="!!openTokenRefund" [token]="openTokenRefund" [memberDistribution]="openTokenRefund.distribution" (wenOnClose)="openTokenRefund = null"></wen-token-refund>
-<wen-token-claim *ngIf="!!openTokenClaim" [isOpen]="!!openTokenClaim" [token]="openTokenClaim" [memberDistribution]="openTokenClaim.distribution" (wenOnClose)="openTokenClaim = null"></wen-token-claim>
+<wen-token-claim *ngIf="!!openTokenClaim" [isOpen]="!!openTokenClaim" [token]="openTokenClaim" [drop]="tokenDrop" [memberDistribution]="openTokenClaim.distribution" (wenOnClose)="openTokenClaim = null"></wen-token-claim>
