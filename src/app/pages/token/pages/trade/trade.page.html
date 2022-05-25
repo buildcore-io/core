@@ -28,7 +28,14 @@
           </nz-tag>
         </div>
 
-        <h1 class="mt-2">{{ (data.token$ | async)?.name }}</h1>
+        <div class="flex items-center">
+          <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
+            class="border-2 border-tags-border dark:border-tags-border-dark min-w-12 mr-4"
+            nzShape="circle"
+            [nzSize]="48">
+          </nz-avatar>
+          <div class="font-bold text-4xl">{{ (data.token$ | async)?.name }}</div>
+        </div>
 
         <div class="flex items-center justify-between mt-8 space-x-3">
             <div class="flex-1 px-4 py-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl">
