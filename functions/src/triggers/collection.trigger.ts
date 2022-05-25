@@ -9,10 +9,10 @@ import { scale } from '../scale.settings';
 export const collectionWrite = functions.runWith({
   timeoutSeconds: 300,
   minInstances: scale(WEN_FUNC.collectionWrite)
-}).firestore.document(COL.COLLECTION + '/{collectionId}').onUpdate(async (change) => {
-  const newValue = <Collection>change.after.data();
-  const previousValue = <Collection>change.before.data();
-  if ((newValue.approved !== previousValue.approved) || (newValue.rejected !== previousValue.rejected)) {
+}).firestore.document(COL.COLLECTION + '/{collectionId}').onWrite(async (change) => {
+  const newValue = <Collection | undefined>change.after.data();
+  const previousValue = <Collection | undefined>change.before.data();
+  if (newValue && ((newValue.approved !== previousValue?.approved) || (newValue.rejected !== previousValue?.rejected))) {
     const data = await admin.firestore().collection(COL.NFT).where('collection', '==', newValue.uid).get();
     for (const nft of data.docs) {
       // Run update.
