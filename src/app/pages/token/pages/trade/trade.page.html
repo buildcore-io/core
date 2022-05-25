@@ -145,9 +145,9 @@
                 </nz-tag>
             </div>
 
-            <nz-table *ngIf="currentBidsListing === bidListingTypes.OPEN"
+            <nz-table *ngIf="currentBidsListing === bidListingTypes.OPEN" #openBidsTable
                 class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
-                [nzData]="(sortedBids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenBids" [nzPageSize]="15">
+                [nzData]="(sortedBids$ | async) || []" [nzNoResult]="noOpenBids" [nzPageSize]="15">
                 <thead>
                     <tr>
                         <th i18n>Price</th>
@@ -160,7 +160,7 @@
                         [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #openBidsBlock>
-                        <tr *ngFor="let item of (sortedBids$ | async)" class="relative">
+                        <tr *ngFor="let item of openBidsTable.data" class="relative">
                             <td class="z-10 border-0 flex items-center">
                               <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
                                 [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
@@ -181,9 +181,9 @@
                 <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no open requests</div>
             </ng-template>
 
-            <nz-table *ngIf="currentBidsListing === bidListingTypes.MY"
+            <nz-table *ngIf="currentBidsListing === bidListingTypes.MY" #myBidsTable
                 class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
-                [nzData]="(sortedMyBids$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyRequests" [nzPageSize]="15">
+                [nzData]="(sortedMyBids$ | async) || []" [nzNoResult]="noMyRequests" [nzPageSize]="15">
                 <thead>
                     <tr>
                         <th i18n>Price</th>
@@ -198,7 +198,7 @@
                         [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #myRequestsBlock>
-                      <tr *ngFor="let item of (sortedMyBids$ | async)" class="relative">
+                      <tr *ngFor="let item of myBidsTable.data" class="relative">
                         <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
                         <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
@@ -241,7 +241,7 @@
               </nz-tag>
           </div>
 
-          <nz-table *ngIf="currentAskListing === askListingTypes.OPEN"
+          <nz-table *ngIf="currentAskListing === askListingTypes.OPEN" #openAsksTable
               class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
               [nzData]="(sortedAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noOpenAsks" [nzPageSize]="15">
               <thead>
@@ -256,7 +256,7 @@
                       [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #openAsksBlock>
-                      <tr *ngFor="let item of (sortedAsks$ | async)" class="relative">
+                      <tr *ngFor="let item of openAsksTable.data" class="relative">
                         <td class="z-10 border-0 flex items-center">
                           <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
                             [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
@@ -276,7 +276,7 @@
               <div class="text-sm font-medium text-foregrounds-tertiary" i18n>There are no open asks</div>
           </ng-template>
 
-          <nz-table *ngIf="currentAskListing === askListingTypes.MY"
+          <nz-table *ngIf="currentAskListing === askListingTypes.MY" #myAsksTable
               class="block h-full px-0 mt-5 overflow-y-auto lg:min-h-0"
               [nzData]="(sortedMyAsks$ | async) || []" [nzShowPagination]="true" [nzNoResult]="noMyAsks" [nzPageSize]="15">
               <thead>
@@ -293,7 +293,7 @@
                       [nzActive]="true" [nzAvatar]="{ size: 'default' }"
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #myAsksBlock>
-                      <tr *ngFor="let item of (sortedMyAsks$ | async)" class="relative">
+                      <tr *ngFor="let item of myAsksTable.data" class="relative">
                         <td class="z-10 border-0">{{ formatBest(item.price * 1000 * 1000) }}</td>
                         <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>

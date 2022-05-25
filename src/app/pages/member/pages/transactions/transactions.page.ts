@@ -42,7 +42,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
     })
   }
 
-  private listen(search?: string): void {
+  private listen(): void {
     this.cancelSubscriptions();
     this.transactions$.next(undefined);
     this.subscriptions$.push(this.getHandler(undefined).subscribe(this.store.bind(this, 0)));
