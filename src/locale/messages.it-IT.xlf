@@ -3251,7 +3251,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Your balance</target>
+        <target state="translated">Saldo</target>
       </trans-unit>
       <trans-unit id="1417450416023766429" datatype="html">
         <source> Confirm and create an offer </source>
@@ -3327,7 +3327,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">71,72</context>
         </context-group>
-        <target state="needs-translation"> Token allocation info </target>
+        <target state="translated"> Informazioni Collocamento Token </target>
       </trans-unit>
       <trans-unit id="8653361774164602125" datatype="html">
         <source> Confirm and schedule sale </source>
@@ -3335,7 +3335,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">82</context>
         </context-group>
-        <target state="needs-translation"> Confirm and schedule sale </target>
+        <target state="translated"> Confermare e pianificare la vendita </target>
       </trans-unit>
       <trans-unit id="1621231827165024894" datatype="html">
         <source>Price per token</source>
@@ -3347,7 +3347,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
-        <target state="needs-translation">Price per token</target>
+        <target state="translated">Valore di un token</target>
       </trans-unit>
       <trans-unit id="8605831971249305978" datatype="html">
         <source>Public sale</source>
@@ -3359,7 +3359,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">173,174</context>
         </context-group>
-        <target state="needs-translation">Public sale</target>
+        <target state="translated">Vendita pubblica</target>
       </trans-unit>
       <trans-unit id="872724366522126097" datatype="html">
         <source>Purchase token</source>
@@ -3367,7 +3367,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Purchase token</target>
+        <target state="translated">Acquisto token</target>
       </trans-unit>
       <trans-unit id="6168433549313046164" datatype="html">
         <source>Enter amount of tokens you want to buy. Price in IOTA will be calculated.</source>
