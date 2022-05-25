@@ -1,4 +1,4 @@
-<nz-table class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0 lg:max-h-56" [ngClass]="tableClasses"
+<nz-table #alliancesTable class="block h-full px-5 mt-5 overflow-y-auto lg:min-h-0 lg:max-h-56" [ngClass]="tableClasses"
     [nzData]="getAlliances()" [nzShowPagination]="false">
     <thead>
         <tr>
@@ -8,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let item of getAlliances(); trackBy: trackByUid" class="wrapper-row">
+        <tr *ngFor="let item of alliancesTable.data; trackBy: trackByUid" class="wrapper-row">
             <td class="alliance-data flex items-center" [class.font-bold]="memberWithinSpace[item.uid]">
                 <nz-avatar
                     [nzSrc]="previewImageService.getAvatarSize(item.avatar)"
