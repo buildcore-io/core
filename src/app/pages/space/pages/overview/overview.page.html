@@ -1,5 +1,5 @@
 <div class="space-y-12">
-  <div class="space-y-4" *ngIf="available(filteredToken || undefined)">
+  <div class="space-y-4" *ngIf="filteredToken">
     <h3 *ngIf="isBeforeSale(filteredToken || undefined); else liveSaleTitle" i18n>Upcoming Sale</h3>
     <ng-template #liveSaleTitle>
       <h3 i18n>Live Token Sale</h3>
