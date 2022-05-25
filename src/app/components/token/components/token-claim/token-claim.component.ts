@@ -43,13 +43,14 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     return this._isOpen;
   }
   @Input() token?: Token;
+  @Input() drop?: TokenDrop;
   @Input() memberDistribution?: TokenDistribution | null;
   @Input() space?: Space;
   @Output() wenOnClose = new EventEmitter<void>();
 
   public agreeTermsConditions = false;
   public agreeTokenTermsConditions = false;
-  public targetAddress?: string = 'dummy_address';
+  public targetAddress?: string = '';
   public invalidPayment = false;
   public targetAmount?: number;
   public receivedTransactions = false;
@@ -182,6 +183,13 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     }
 
     return (amount / 1000 / 1000).toFixed(2).toString();
+  }
+
+  public vestingInFuture(drop?: TokenDrop): boolean {
+    if (!drop) {
+      return false;
+    }
+    return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
   }
 
   public getExplorerLink(link: string): string {
