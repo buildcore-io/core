@@ -2335,7 +2335,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-preview/nft-preview.component.html</context>
           <context context-type="linenumber">98</context>
         </context-group>
-        <target state="needs-translation">System info</target>
+        <target state="translated">Informazioni di sistema</target>
       </trans-unit>
       <trans-unit id="809642350371086523" datatype="html">
         <source>The current address is not connected to a live mainnet. As soon as the functionality is supported on IOTA/Shimmer, you will have to ability to one-click migrate this NFT to your network of choice.</source>
@@ -2531,7 +2531,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">159,161</context>
         </context-group>
-        <target state="needs-translation"> Auction can't be canceled after start date </target>
+        <target state="translated"> Impossibile annullare l'asta dopo la data di apertura </target>
       </trans-unit>
       <trans-unit id="6344130224790671592" datatype="html">
         <source>Once your listing is complete, you will get a confirmation message.</source>
@@ -2991,7 +2991,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Open Token Bid</target>
+        <target state="translated">Initial Coin offering</target>
       </trans-unit>
       <trans-unit id="3012034856888770273" datatype="html">
         <source>Offered rate (Mi)</source>
@@ -3007,7 +3007,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="needs-translation">Offered rate (Mi)</target>
+        <target state="translated">Tasso offerto (Mi)</target>
       </trans-unit>
       <trans-unit id="6639690694487749831" datatype="html">
         <source>I agree with</source>
@@ -3031,7 +3031,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">60,61</context>
         </context-group>
-        <target state="needs-translation">I agree with</target>
+        <target state="translated">Acconsento con</target>
       </trans-unit>
       <trans-unit id="2251435114845825196" datatype="html">
         <source>Token terms and Conditions</source>
@@ -3055,7 +3055,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">62,63</context>
         </context-group>
-        <target state="needs-translation">Token terms and Conditions</target>
+        <target state="translated">Token: termini e condizioni</target>
       </trans-unit>
       <trans-unit id="8562795996489852351" datatype="html">
         <source> Confirm and generate address </source>
@@ -3071,7 +3071,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">73</context>
         </context-group>
-        <target state="needs-translation"> Confirm and generate address </target>
+        <target state="translated"> Confermare e creare un account </target>
       </trans-unit>
       <trans-unit id="6559976317018164845" datatype="html">
         <source> to following address:</source>
@@ -3091,7 +3091,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">171,172</context>
         </context-group>
-        <target state="needs-translation"> to following address:</target>
+        <target state="translated"> al seguente indirizzo:</target>
       </trans-unit>
       <trans-unit id="8281145888073153213" datatype="html">
         <source>Bid complete. Congratulations.</source>
@@ -3099,7 +3099,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">226,227</context>
         </context-group>
-        <target state="needs-translation">Bid complete. Congratulations.</target>
+        <target state="translated">Congratulazioni. Offerta completata.</target>
       </trans-unit>
       <trans-unit id="5485612093173773174" datatype="html">
         <source>Bid created.</source>
@@ -3107,7 +3107,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.ts</context>
           <context context-type="linenumber">198</context>
         </context-group>
-        <target state="needs-translation">Bid created.</target>
+        <target state="translated">Offerta creata.</target>
       </trans-unit>
       <trans-unit id="7524111316829061741" datatype="html">
         <source>Ongoing sale</source>
@@ -3123,7 +3123,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <target state="needs-translation">Sale ends soon</target>
+        <target state="translated">Termine Asta di chiusura</target>
       </trans-unit>
       <trans-unit id="1582716834798031329" datatype="html">
         <source>Sale ended</source>
@@ -3187,7 +3187,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">134</context>
         </context-group>
-        <target state="needs-translation">Cooldown ends</target>
+        <target state="translated">Termine raffreddamento</target>
       </trans-unit>
       <trans-unit id="1881053505332654488" datatype="html">
         <source>Token Claim</source>
@@ -3195,7 +3195,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Token Claim</target>
+        <target state="translated">Richiesta token</target>
       </trans-unit>
       <trans-unit id="7970375349244346571" datatype="html">
         <source>Expired.</source>
@@ -3215,7 +3215,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">154,155</context>
         </context-group>
-        <target state="needs-translation">Claim complete. Congratulations.</target>
+        <target state="translated">Congratulazioni. Richiesta completata.</target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
@@ -3235,7 +3235,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
           <context context-type="linenumber">223</context>
         </context-group>
-        <target state="needs-translation">Token claim submitted.</target>
+        <target state="translated">Richiesta token inoltrata.</target>
       </trans-unit>
       <trans-unit id="4764766359564138858" datatype="html">
         <source>Open Token Offer</source>
@@ -3243,7 +3243,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Open Token Offer</target>
+        <target state="translated">Initial Coin offering</target>
       </trans-unit>
       <trans-unit id="1772467272261533431" datatype="html">
         <source>Your balance</source>
@@ -3259,7 +3259,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation"> Confirm and create an offer </target>
+        <target state="translated"> Confermare e creare un'offerta </target>
       </trans-unit>
       <trans-unit id="2203283304139785893" datatype="html">
         <source> Once you agree with the terms, the generated address will remain active during the whole sale. </source>
@@ -3271,7 +3271,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="needs-translation"> Once you agree with the terms, the generated address will remain active during the whole sale. </target>
+        <target state="translated"> Con l'accettazione delle condizioni l'indirizzo generato rimarrà attivo per tutta la durata dell'asta. </target>
       </trans-unit>
       <trans-unit id="2020988057661569091" datatype="html">
         <source>Offer created.</source>
@@ -3279,7 +3279,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.ts</context>
           <context context-type="linenumber">110</context>
         </context-group>
-        <target state="needs-translation">Offer created.</target>
+        <target state="translated">Offerta creata.</target>
       </trans-unit>
       <trans-unit id="1796418903142252184" datatype="html">
         <source> Public sale info </source>
@@ -3287,7 +3287,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation"> Public sale info </target>
+        <target state="translated"> Informazioni Vendite Pubbliche </target>
       </trans-unit>
       <trans-unit id="2247424863242829913" datatype="html">
         <source>Start date is required.</source>
@@ -3295,7 +3295,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">15,16</context>
         </context-group>
-        <target state="needs-translation">Start date is required.</target>
+        <target state="translated">È richiesta la data di apertura.</target>
       </trans-unit>
       <trans-unit id="5648702952235120214" datatype="html">
         <source>Start date for the token offering</source>
@@ -3303,7 +3303,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="needs-translation">Start date for the token offering</target>
+        <target state="translated">Data di apertura dell'offerta (ICO)</target>
       </trans-unit>
       <trans-unit id="6064692598923026619" datatype="html">
         <source>Offering length is required.</source>
@@ -3311,7 +3311,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">Offering length is required.</target>
+        <target state="translated">È richiesta la durata dell'offerta.</target>
       </trans-unit>
       <trans-unit id="5066202217652800772" datatype="html">
         <source>Select token offering length (Default 2 days)</source>
@@ -3319,7 +3319,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">58,59</context>
         </context-group>
-        <target state="needs-translation">Select token offering length (Default 2 days)</target>
+        <target state="translated">Selezionare la durata dell'offerta (ICO predefinita: 2 giorni).</target>
       </trans-unit>
       <trans-unit id="4458368036022259369" datatype="html">
         <source> Token allocation info </source>
