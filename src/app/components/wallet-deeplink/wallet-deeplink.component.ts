@@ -44,8 +44,9 @@ export class WalletDeeplinkComponent {
       return '';
     }
 
+    // We want to round to maximum 6 digits.
     return this.sanitizer.bypassSecurityTrustUrl('iota://wallet/send/' + this.targetAddress +
-      '?amount=' + this.targetAmount + '&unit=Mi');
+      '?amount=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi');
   }
 
   private getTanglePayDeepLink(): SafeUrl {
@@ -54,6 +55,6 @@ export class WalletDeeplinkComponent {
     }
 
     return this.sanitizer.bypassSecurityTrustUrl('tanglepay://send/' + this.targetAddress +
-      '?value=' + this.targetAmount + '&unit=Mi' + '&merchant=Soonaverse');
+      '?value=' + +Number(this.targetAmount).toFixed(6) + '&unit=Mi' + '&merchant=Soonaverse');
   }
 }

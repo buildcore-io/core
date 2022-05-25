@@ -1,17 +1,17 @@
 <article class="relative p-4 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-2xl wen-card" [ngClass]="{
         'upcoming-wrapper': cardType === tokenCardTypes.UPCOMING,
         'ongoing-wrapper': cardType === tokenCardTypes.ONGOING,
-        'ending-wrapper': cardType === tokenCardTypes.ENDING
+        'ending-wrapper': cardType === tokenCardTypes.ENDING || cardType === tokenCardTypes.COOLDOWN
     }">
-    <div *ngIf="cardType === tokenCardTypes.ONGOING || cardType === tokenCardTypes.ENDING"
+    <div *ngIf="cardType === tokenCardTypes.ONGOING || cardType === tokenCardTypes.ENDING || tokenCardTypes.COOLDOWN"
         class="absolute top-0 left-6 -translate-y-1/2 flex items-center justify-between py-0.5 px-2 text-xs font-medium rounded-md"
         [ngClass]="{
             'bg-tags-available dark:bg-tags-available-dark': cardType === tokenCardTypes.ONGOING,
-            'bg-tags-closed dark:bg-tags-closed-dark': cardType === tokenCardTypes.ENDING
+            'bg-tags-closed dark:bg-tags-closed-dark': (cardType === tokenCardTypes.ENDING || cardType === tokenCardTypes.COOLDOWN)
         }">
             <ng-container *ngIf="cardType === tokenCardTypes.ONGOING" i18n>Ongoing sale</ng-container>
             <ng-container *ngIf="cardType === tokenCardTypes.ENDING" i18n>Sale ends soon</ng-container>
-            <ng-container *ngIf="cardType === tokenCardTypes.COOLDOWN" i18n>Sale ended</ng-container>
+            <ng-container *ngIf="cardType === tokenCardTypes.COOLDOWN" i18n>Cooldown ends</ng-container>
     </div>
     <a class="relative block w-full h-full p-2 pb-4" [routerLink]="['/', this.path, token?.uid]">
         <div class="relative flex items-center justify-between w-full">
@@ -49,13 +49,13 @@
         <ng-container *ngIf="cardType === tokenCardTypes.ONGOING" >
             <div class="w-full mt-6">
                 <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
-                    [nzPercent]="((token?.totalDeposit || 0) / (token?.totalSupply || 0)) | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
+                    [nzPercent]="getPrc() | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
                 <div class="flex justify-between space-x-10 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                     <div class="w-1/3 text-left break-words line-clamp-2 grow">
                       {{getPrc() | number : '1.2-2'}}% </div>
                     <div class="w-2/3 text-right break-words line-clamp-2 grow">
                         <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ formatTokenBest(token?.totalDeposit || 0) | number : '1.0-2' }}</span>
-                        <span> / {{ formatTokenBest(token?.totalSupply) | number : '1.0-2' }} </span>
+                        <span> / {{ formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }} </span>
                         <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ token?.symbol }}</span>
                     </div>
                 </div>
@@ -83,13 +83,13 @@
         <ng-container *ngIf="cardType === tokenCardTypes.ENDING" >
             <div class="w-full mt-6">
                 <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
-                    [nzPercent]="((token?.totalDeposit || 0) / (token?.totalSupply || 0)) | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
+                    [nzPercent]="getPrc() | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
                 <div class="flex justify-between space-x-10 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                     <div class="w-1/3 text-left break-words line-clamp-2 grow">
                       {{getPrc() | number : '1.2-2'}}% </div>
                     <div class="w-2/3 text-right break-words line-clamp-2 grow">
                         <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{  formatTokenBest(token?.totalDeposit) | number : '1.0-2' }}</span>
-                        <span> / {{ formatTokenBest(token?.totalSupply) | number : '1.0-2' }} </span>
+                        <span> / {{ formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }} </span>
                         <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ token?.symbol }}</span>
                     </div>
                 </div>
@@ -117,13 +117,13 @@
         <ng-container *ngIf="cardType === tokenCardTypes.COOLDOWN" >
           <div class="w-full mt-6">
               <nz-progress nz-tooltip [nzShowInfo]="false" nzStatus="active"
-                  [nzPercent]="((token?.totalDeposit || 0) / (token?.totalSupply || 0)) | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
+                  [nzPercent]="getPrc() | number : '1.2-2'" nzStrokeLinecap="square"></nz-progress>
               <div class="flex justify-between space-x-10 text-sm font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                   <div class="w-1/3 text-left break-words line-clamp-2 grow">
                     {{getPrc() | number : '1.2-2'}}% </div>
                   <div class="w-2/3 text-right break-words line-clamp-2 grow">
                       <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{  formatTokenBest(token?.totalDeposit) | number : '1.0-2' }}</span>
-                      <span> / {{ formatTokenBest(token?.totalSupply) | number : '1.0-2' }} </span>
+                      <span> / {{ formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }} </span>
                       <span class="text-foregrounds-primary dark:text-foregroundss-primary-dark">{{ token?.symbol }}</span>
                   </div>
               </div>

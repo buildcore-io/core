@@ -44,7 +44,7 @@ export class OverviewPage implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe((token: Token | undefined) => {
-        this.filteredToken = (token?.saleStartDate && this.available(token)) ? token : token;
+        this.filteredToken = (token?.saleStartDate && token?.status === TokenStatus.AVAILABLE) ? token : null;
         this.cd.markForCheck();
       });
   }

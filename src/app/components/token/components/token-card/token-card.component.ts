@@ -10,7 +10,7 @@ export enum TokenCardType {
   UPCOMING = 0,
   ONGOING = 1,
   ENDING = 2,
-  COOLDOWN = 2
+  COOLDOWN = 3
 }
 
 @Component({
@@ -83,11 +83,11 @@ export class TokenCardComponent {
   private setCardType(): void {
     const endDate = this.getEndDate();
     // 1 / 5 is close to ending.
-    if (endDate.clone().subtract((this.token?.saleLength || 0) / 5).isBefore(dayjs())) {
+    if (dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs()) && endDate.clone().subtract((this.token?.saleLength || 0) / 5).isBefore(dayjs()) && endDate.isAfter(dayjs())) {
       this.cardType = TokenCardType.ENDING;
     } else if (dayjs(this.token?.saleStartDate?.toDate()).isBefore(dayjs()) && endDate.isAfter(dayjs())) {
       this.cardType = TokenCardType.ONGOING;
-    } else if (endDate.isBefore(dayjs()) && dayjs(this.token?.coolDownEnd?.toDate()).isBefore(dayjs())) {
+    } else if (endDate.isBefore(dayjs()) && dayjs(this.token?.coolDownEnd?.toDate()).isAfter(dayjs())) {
       this.cardType = TokenCardType.COOLDOWN;
     } else {
       this.cardType = TokenCardType.UPCOMING;
