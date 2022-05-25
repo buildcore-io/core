@@ -244,5 +244,33 @@ describe('Token trigger test', () => {
       }
     }
   })
-})
 
+  it('Should refund everyone if public sale is set to zero', async () => {
+    token = dummyToken(100, space, MIN_IOTA_AMOUNT, 10, guardian)
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
+
+    const totalDeposits = [2,3]
+
+    const orderPromises = totalDeposits.map(async (totalDeposit, i) => {
+      const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
+      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, Number(bigDecimal.multiply(totalDeposit, MIN_IOTA_AMOUNT)));
+      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+      return <Transaction>order
+    })
+
+    await Promise.all(orderPromises)
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
+      status: TokenStatus.PROCESSING, allocations: [{ title: 'Public sale', isPublicSale: true, percentage: 0 }]
+    });
+    await tokenProcessed(token.uid, totalDeposits.length, true)
+
+    for (let i = 0; i < totalDeposits.length; ++i) {
+      const member = members[i]
+      const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${member}`).get()).data()
+      const refundedAmount = Number(bigDecimal.multiply(totalDeposits[i], MIN_IOTA_AMOUNT))
+      expect(distribution.totalDeposit).toBe(Number(bigDecimal.multiply(totalDeposits[i], MIN_IOTA_AMOUNT)))
+      expect(distribution.totalPaid).toBe(0)
+      expect(distribution.refundedAmount).toBe(refundedAmount)
+    }
+  })
+})
