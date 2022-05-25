@@ -7,6 +7,7 @@ import { IconModule } from '@components/icon/icon.module';
 import { ShareModule } from '@components/share/share.module';
 import { SpaceAlliancesTableModule } from '@components/space/components/space-alliances-table/space-alliances-table.module';
 import { SpaceNewAllianceModule } from '@components/space/components/space-new-alliance/space-new-alliance.module';
+import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { WalletAddressModule } from '@components/wallet-address/wallet-address.module';
 import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
@@ -53,7 +54,8 @@ import { SpaceAboutComponent } from './space-about.component';
     SpaceNewAllianceModule,
     WalletAddressModule,
     ShareModule,
-    DescriptionModule
+    DescriptionModule,
+    TokenInfoDescriptionModule
   ],
   exports: [
     SpaceAboutComponent

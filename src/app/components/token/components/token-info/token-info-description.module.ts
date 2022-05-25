@@ -1,0 +1,21 @@
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { DescriptionModule } from '@components/description/description.module';
+import { IconModule } from '@components/icon/icon.module';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { TokenInfoDescriptionComponent } from './token-info-description.component';
+
+
+@NgModule({
+  declarations: [TokenInfoDescriptionComponent],
+  imports: [
+    CommonModule,
+    DescriptionModule,
+    NzAvatarModule,
+    IconModule
+  ],
+  exports: [
+    TokenInfoDescriptionComponent
+  ]
+})
+export class TokenInfoDescriptionModule { }
