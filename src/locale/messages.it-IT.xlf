@@ -3375,7 +3375,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">85</context>
         </context-group>
-        <target state="needs-translation">Enter amount of tokens you want to buy. Price in IOTA will be calculated.</target>
+        <target state="translated">Digitare il numero di token prescelti per l'acquisto. La quotazione avviene in IOTA.</target>
       </trans-unit>
       <trans-unit id="1647367556246573738" datatype="html">
         <source>Enter how much you want to spend. Amount of tokens will be calculated.</source>
@@ -3383,7 +3383,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation">Enter how much you want to spend. Amount of tokens will be calculated.</target>
+        <target state="translated">Digitare l'importo desiderato proporzionale al numero di token da determinare.</target>
       </trans-unit>
       <trans-unit id="2994218325284892953" datatype="html">
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{token?.symbol}}"/>)</source>
@@ -3391,7 +3391,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">159,160</context>
         </context-group>
-        <target state="needs-translation">Amount (<x id="INTERPOLATION" equiv-text="{{token?.symbol}}"/>)</target>
+        <target state="translated">Importo (<x id="INTERPOLATION" equiv-text="{{token?.symbol}}"/>)</target>
       </trans-unit>
       <trans-unit id="3900090381315845146" datatype="html">
         <source>Purchased tokens</source>
@@ -3399,7 +3399,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">224,225</context>
         </context-group>
-        <target state="needs-translation">Purchased tokens</target>
+        <target state="translated">Token acquistati</target>
       </trans-unit>
       <trans-unit id="7708270344948043036" datatype="html">
         <source>
@@ -3409,7 +3409,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">226,227</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-2') + ' ' + token?.symbol}}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-2') + ' ' + token?.symbol}}"/> </target>
       </trans-unit>
       <trans-unit id="8723042657452219176" datatype="html">
         <source>Cooldown period ends</source>
@@ -3417,7 +3417,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Cooldown period ends</target>
+        <target state="translated">Termine Periodo di raffreddamento</target>
       </trans-unit>
       <trans-unit id="1960516795442717035" datatype="html">
         <source> Confirm and refund </source>
@@ -3425,7 +3425,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">70</context>
         </context-group>
-        <target state="needs-translation"> Confirm and refund </target>
+        <target state="translated"> Confermare e rimborsare </target>
       </trans-unit>
       <trans-unit id="2816366509744534533" datatype="html">
         <source>Refund token</source>
@@ -3433,7 +3433,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.ts</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation">Refund token</target>
+        <target state="translated">Rimborso token</target>
       </trans-unit>
       <trans-unit id="5648528580145103706" datatype="html">
         <source> Initial Price </source>
@@ -3441,7 +3441,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation"> Initial Price </target>
+        <target state="translated"> Valore iniziale </target>
       </trans-unit>
       <trans-unit id="5532913277851047575" datatype="html">
         <source> Avg. Price </source>
@@ -3449,7 +3449,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation"> Avg. Price </target>
+        <target state="translated"> Valore medio </target>
       </trans-unit>
       <trans-unit id="6058152370661898093" datatype="html">
         <source> Cooldown period ends </source>
@@ -3465,7 +3465,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation"> Market Cap </target>
+        <target state="translated"> Capitalizzazione di mercato </target>
       </trans-unit>
       <trans-unit id="3503964146335618044" datatype="html">
         <source> Volume (24h) </source>
@@ -3473,7 +3473,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">90</context>
         </context-group>
-        <target state="needs-translation"> Volume (24h) </target>
+        <target state="translated"> Volume (24 ore) </target>
       </trans-unit>
       <trans-unit id="5488786408353450137" datatype="html">
         <source> Change (24h) </source>
@@ -3481,7 +3481,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">101</context>
         </context-group>
-        <target state="needs-translation"> Change (24h) </target>
+        <target state="translated"> Variazione (24 ore) </target>
       </trans-unit>
       <trans-unit id="7242328171913152773" datatype="html">
         <source> Launching soon </source>
@@ -3497,7 +3497,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">125</context>
         </context-group>
-        <target state="needs-translation"> In Cooldown </target>
+        <target state="translated"> Raffreddamento </target>
       </trans-unit>
       <trans-unit id="1790234586531719509" datatype="html">
         <source> Buy </source>
@@ -3505,7 +3505,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="needs-translation"> Buy </target>
+        <target state="translated"> Acquisto </target>
       </trans-unit>
       <trans-unit id="1688484720339103989" datatype="html">
         <source> Buy / Sell </source>
