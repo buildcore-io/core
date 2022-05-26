@@ -57,6 +57,7 @@ export class TokenPage implements OnInit, OnDestroy {
     this.data.token$.pipe(skip(1), first()).subscribe((t) => {
       if (t) {
         this.subscriptions$.push(this.spaceApi.listen(t.space).pipe(untilDestroyed(this)).subscribe(this.data.space$));
+        this.subscriptions$.push(this.tokenApi.getDistributions(t.uid).pipe(untilDestroyed(this)).subscribe(this.data.distributions$));
         this.listenToMemberSubs(this.auth.member$.value);
       }
     });
