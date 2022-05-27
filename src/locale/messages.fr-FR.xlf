@@ -8,7 +8,7 @@
           <context context-type="sourcefile">src/app/@core/services/navigation/navigation.service.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
-        <target state="needs-translation">Back</target>
+        <target state="translated">Précédent</target>
       </trans-unit>
       <trans-unit id="1069794443757311020" datatype="html">
         <source>Bill (owner)</source>
@@ -236,7 +236,7 @@
           <context context-type="sourcefile">src/app/@shell/ui/header/header.component.ts</context>
           <context context-type="linenumber">269</context>
         </context-group>
-        <target state="needs-translation">You are a proud owner of a new NFT. Congratulations!</target>
+        <target state="translated">Vous êtes le fier propriétaire d'un nouveau NFT. Félicitations !</target>
       </trans-unit>
       <trans-unit id="6237623083700365974" datatype="html">
         <source>You lost your bid!</source>
@@ -432,7 +432,7 @@
           <context context-type="sourcefile">src/app/components/algolia/services/algolia.service.ts</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">Open</target>
+        <target state="translated">Ouvert</target>
       </trans-unit>
       <trans-unit id="4604389504185553211" datatype="html">
         <source>Guardians of Space Only</source>
@@ -862,7 +862,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-card/nft-card.component.html</context>
           <context context-type="linenumber">50,51</context>
         </context-group>
-        <target state="needs-translation">Starts today</target>
+        <target state="translated">Débute aujourd'hui</target>
       </trans-unit>
       <trans-unit id="5046636043205843413" datatype="html">
         <source>Limited Edition</source>
@@ -870,7 +870,7 @@
           <context context-type="sourcefile">src/app/components/collection/components/collection-card/collection-card.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
-        <target state="needs-translation">Limited Edition</target>
+        <target state="translated">Édition Limitée</target>
       </trans-unit>
       <trans-unit id="2656123100839645861" datatype="html">
         <source>Pending approval</source>
@@ -1544,7 +1544,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">166,167</context>
         </context-group>
-        <target state="needs-translation">Send IOTA to following address (please restake after!):</target>
+        <target state="translated">Envoyer IOTA à l'adresse suivante (veuillez restaker après !) :</target>
       </trans-unit>
       <trans-unit id="2115592966120408375" datatype="html">
         <source>Copied</source>
@@ -1696,7 +1696,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">202,203</context>
         </context-group>
-        <target state="needs-translation"> IOTA to following address (please restake after!):</target>
+        <target state="translated"> IOTA à l'adresse suivante (veuillez restaker après !) :</target>
       </trans-unit>
       <trans-unit id="621968232322439820" datatype="html">
         <source> Your transactions </source>
@@ -1704,7 +1704,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">218</context>
         </context-group>
-        <target state="needs-translation"> Your transactions </target>
+        <target state="translated"> Vos transactions </target>
       </trans-unit>
       <trans-unit id="8481211261929080451" datatype="html">
         <source>Sent Date</source>
@@ -1712,7 +1712,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">224,225</context>
         </context-group>
-        <target state="needs-translation">Sent Date</target>
+        <target state="translated">Date d'envoi</target>
       </trans-unit>
       <trans-unit id="8497528947328199741" datatype="html">
         <source>Time</source>
@@ -1720,7 +1720,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">225,226</context>
         </context-group>
-        <target state="needs-translation">Time</target>
+        <target state="translated">Temps</target>
       </trans-unit>
       <trans-unit id="9216117865911519658" datatype="html">
         <source>Action</source>
@@ -1776,7 +1776,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">259,260</context>
         </context-group>
-        <target state="needs-translation">Amount</target>
+        <target state="translated">Montant</target>
       </trans-unit>
       <trans-unit id="5612709566632732179" datatype="html">
         <source>Detail</source>
@@ -1888,7 +1888,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-checkout/nft-checkout.component.ts</context>
           <context context-type="linenumber">363</context>
         </context-group>
-        <target state="needs-translation">Generated NFT</target>
+        <target state="translated">NFT générés</target>
       </trans-unit>
       <trans-unit id="7535874439763400390" datatype="html">
         <source>SFT</source>
@@ -2207,7 +2207,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">116</context>
         </context-group>
-        <target state="needs-translation">Transaction confirmed.</target>
+        <target state="translated">Transaction confirmée.</target>
       </trans-unit>
       <trans-unit id="774650643056330030" datatype="html">
         <source>Invalid amount received. Refunding transaction...</source>
@@ -2227,7 +2227,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="needs-translation">Invalid amount received. Refunding transaction...</target>
+        <target state="translated">Montant reçu non valide. Remboursement de la transaction...</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
@@ -2259,7 +2259,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">242</context>
         </context-group>
-        <target state="needs-translation">Order created.</target>
+        <target state="translated">Ordre créé.</target>
       </trans-unit>
       <trans-unit id="3978157429994044725" datatype="html">
         <source>Waiting for transaction...</source>
@@ -2279,7 +2279,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">245</context>
         </context-group>
-        <target state="needs-translation">Waiting for transaction...</target>
+        <target state="translated">En attente de transaction...</target>
       </trans-unit>
       <trans-unit id="1295614462098694869" datatype="html">
         <source>Preview</source>
@@ -2467,7 +2467,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Floor price</target>
+        <target state="translated">Prix plancher</target>
       </trans-unit>
       <trans-unit id="3751374312807441308" datatype="html">
         <source>Available On is required.</source>
@@ -2523,7 +2523,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-auction/nft-sale-auction.component.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation">Duration of auction is 3 days</target>
+        <target state="translated">La durée des enchères est de 3 jours</target>
       </trans-unit>
       <trans-unit id="6725228535052429894" datatype="html">
         <source> Auction can&apos;t be canceled after start date </source>
@@ -2575,7 +2575,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-fixed-price/nft-sale-fixed-price.component.html</context>
           <context context-type="linenumber">65,66</context>
         </context-group>
-        <target state="needs-translation">Specific member(s) only (Transfer)</target>
+        <target state="translated">Membre(s) spécifique(s) seulement (Transfert)</target>
       </trans-unit>
       <trans-unit id="967760480943683200" datatype="html">
         <source>Reserve for specific buyer</source>
@@ -2615,7 +2615,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-not-for-sale/nft-sale-not-for-sale.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Stop sale!</target>
+        <target state="translated">Arrêter la vente !</target>
       </trans-unit>
       <trans-unit id="6220492706081128873" datatype="html">
         <source>List Item for sale</source>
@@ -2943,7 +2943,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <target state="needs-translation">Listed by</target>
+        <target state="translated">Ajouté par</target>
       </trans-unit>
       <trans-unit id="2565998990420679638" datatype="html">
         <source>Made available for auction by</source>
@@ -3259,7 +3259,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="needs-translation"> Confirm and create an offer </target>
+        <target state="translated"> Confirmer et créer une offre </target>
       </trans-unit>
       <trans-unit id="2203283304139785893" datatype="html">
         <source> Once you agree with the terms, the generated address will remain active during the whole sale. </source>

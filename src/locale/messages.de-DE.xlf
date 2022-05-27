@@ -2879,7 +2879,7 @@
           <context context-type="sourcefile">src/app/components/terms-and-conditions/terms-and-conditions.component.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="translated">Durch Anklicken dieses Feldes, stimmst du zu</target>
+        <target state="translated">Ich stimme zu (durch anklicken)</target>
       </trans-unit>
       <trans-unit id="664573589261423471" datatype="html">
         <source>Terms and Conditions</source>
@@ -3271,7 +3271,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="translated"> Sobald Sie den Bedingungen zustimmen, bleibt die generierte Adresse während des gesamten Verkaufs aktiv. </target>
+        <target state="translated"> Sobald du den Bedingungen zustimmst, bleibt die generierte Adresse während des gesamten Verkaufs aktiv. </target>
       </trans-unit>
       <trans-unit id="2020988057661569091" datatype="html">
         <source>Offer created.</source>
@@ -3383,7 +3383,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">86</context>
         </context-group>
-        <target state="translated">Geben Sie ein, wieviel Sie ausgeben möchten. Die Anzahl der Token wird berechnet.</target>
+        <target state="translated">Gebe ein, wieviel du ausgeben möchtest. Die Anzahl der Token wird berechnet.</target>
       </trans-unit>
       <trans-unit id="2994218325284892953" datatype="html">
         <source>Amount (<x id="INTERPOLATION" equiv-text="{{token?.symbol}}"/>)</source>
@@ -3481,7 +3481,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">101</context>
         </context-group>
-        <target state="translated"> Änderung (24 h) </target>
+        <target state="translated"> Änderung (24h) </target>
       </trans-unit>
       <trans-unit id="7242328171913152773" datatype="html">
         <source> Launching soon </source>
@@ -9019,7 +9019,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">165,166</context>
         </context-group>
-        <target state="translated">Es gibt keine offenen Anfragen</target>
+        <target state="translated">Es gibt keine offenen Gebote (Bids)</target>
       </trans-unit>
       <trans-unit id="2325028062393506896" datatype="html">
         <source>Fulfilled</source>
