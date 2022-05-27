@@ -94,7 +94,7 @@
                 i18n-nzTitle
                 nzTitle="Overview graphics"
                 i18n-nzDescription
-                nzDescription="Token introductionary video / image"
+                nzDescription="Token introductory video / image"
             >
             </nz-card-meta>
 
@@ -126,7 +126,7 @@
 
         <nz-card i18n-nzTitle nzTitle="Links">
             <nz-form-item *ngFor="let link of newService.links?.controls; let i = index; let first = first; let last = last">
-                <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid URL.">
+                <nz-form-control i18n-nzErrorTip nzErrorTip="Invalid URL. (Start with http:// or https://)">
                     <nz-input-group nzSize="large" [nzPrefix]="prefixURL">
                         <input
                             type="text"

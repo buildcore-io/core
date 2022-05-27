@@ -32,15 +32,7 @@ export class SpaceAboutComponent implements OnDestroy {
   public exportingMembers = false;
   public spaceAllianceControl: FormControl = new FormControl('', Validators.required);
   public reputationWeightControl: FormControl = new FormControl(1, Validators.required);
-  public tokenInfoLabels: string[] = [
-    $localize`Icon`,
-    $localize`Name`,
-    $localize`Symbol`,
-    $localize`Price`,
-    $localize`Network`,
-    $localize`Total supply`,
-    $localize`Type`
-  ];
+  
   private spacesSubscription?: Subscription;
   constructor(
     public deviceService: DeviceService,
@@ -104,7 +96,7 @@ export class SpaceAboutComponent implements OnDestroy {
     }, (sc, finish) => {
       this.notification.processRequest(
         this.spaceApi.setAlliance(sc),
-        this.isNewAlliance ? 'Connection established' : 'Connection updated.',
+        this.isNewAlliance ? $localize`Connection established` : $localize`Connection updated.`,
         finish
       ).subscribe(() => {
         this.closeNewAlliance();

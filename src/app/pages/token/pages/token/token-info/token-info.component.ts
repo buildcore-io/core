@@ -27,6 +27,7 @@ export class TokenInfoComponent {
     $localize`Initial Price`,
     $localize`Network`,
     $localize`Total supply`,
+    $localize`Current distribution`,
     $localize`Type`
   ];
 

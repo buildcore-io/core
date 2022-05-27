@@ -11,10 +11,12 @@ import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenBidModule } from '@components/token/components/token-bid/token-bid.module';
+import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { TokenOfferPreMintModule } from '@components/token/components/token-offer-pre-mint/token-offer-pre-mint.module';
 import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
 import { TokenPurchaseModule } from '@components/token/components/token-purchase/token-purchase.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
+import { IpfsAvatarModule } from '@core/pipes/ipfs-avatar/ipfs-avatar.module';
 import { MarkDownModule } from '@core/pipes/markdown/markdown.module';
 import { TruncateModule } from '@core/pipes/truncate/truncate.module';
 import { LayoutModule } from '@shell/ui/layout/layout.module';
@@ -117,7 +119,9 @@ import { TokenRoutingModule } from './token-routing.module';
     TokenRefundModule,
     TokenOfferPreMintModule,
     ModalDrawerModule,
-    NgChartsModule
+    NgChartsModule,
+    IpfsAvatarModule,
+    TokenInfoDescriptionModule
   ]
 })
 export class TokenModule { }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { MemberApi, TokenWithMemberDistribution } from '@api/member.api';
 import { AuthService } from '@components/auth/services/auth.service';
@@ -28,6 +28,7 @@ export class TokensPage implements OnInit, OnDestroy {
   public tokens$: BehaviorSubject<TokenWithMemberDistribution[] | undefined> = new BehaviorSubject<TokenWithMemberDistribution[] | undefined>(undefined);
   public openTokenRefund?: TokenWithMemberDistribution | null;
   public openTokenClaim?: TokenWithMemberDistribution | null;
+  public tokenDrop?: TokenDrop;
   public tokenActionTypeLabels = {
     [TokenItemType.CLAIM]: $localize`Claim`,
     [TokenItemType.REFUND]: $localize`Refund`
@@ -40,7 +41,8 @@ export class TokensPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public data: DataService,
     private auth: AuthService,
-    private memberApi: MemberApi
+    private memberApi: MemberApi,
+    private cd: ChangeDetectorRef
   ) { }
 
   public ngOnInit(): void {
@@ -80,8 +82,10 @@ export class TokensPage implements OnInit, OnDestroy {
     return (amount / 1000 / 1000).toFixed(6);
   }
 
-  public sum(arr: TokenDrop[]): number {
-    return arr.reduce((pv, cv) => pv + cv.count, 0);
+  public claim(token: TokenWithMemberDistribution, drop: TokenDrop): void {
+    this.openTokenClaim = token;
+    this.tokenDrop = drop;
+    this.cd.markForCheck();
   }
 
   private listen(search?: string): void {
@@ -122,6 +126,10 @@ export class TokensPage implements OnInit, OnDestroy {
       token?.status !== TokenStatus.PRE_MINTED &&
       token?.approved
     );
+  }
+
+  public vestingInFuture(drop: TokenDrop): boolean {
+    return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
   }
 
   public onScroll(): void {

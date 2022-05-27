@@ -63,8 +63,8 @@ export class NewMetricsComponent implements OnInit {
 
   public getAllocationDescription(index: number): string {
     return index === 1 ?
-      $localize`Please make sure that there is only one allocation marked for Public Sale as this could be later sold on Soonaverse.
-        You can initiate Public sale once the token is created and approved.` : '';
+      $localize`Please make sure that there is only one allocation marked for public sale as this could be later sold on Soonaverse.
+        You can initiate a public sale once the token is created and approved.` : '';
   }
 
   private setBreakdownData(): void {

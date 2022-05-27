@@ -49,6 +49,14 @@ export class TokenApi extends BaseApi<Token> {
     return this.afs.collection(this.collection).doc(tokenId.toLowerCase()).collection(SUB_COL.DISTRIBUTION).doc<TokenDistribution>(memberId.toLowerCase()).valueChanges();
   }
 
+  public getDistributions(tokenId?: string): Observable<TokenDistribution[] | undefined> {
+    if (!tokenId) {
+      return of(undefined);
+    }
+
+    return this.afs.collection(this.collection).doc(tokenId.toLowerCase()).collection(SUB_COL.DISTRIBUTION).valueChanges() as Observable<TokenDistribution[]>;
+  }
+
   public lowToHigh(lastValue?: number, search?: string, def = DEFAULT_LIST_SIZE): Observable<Token[]> {
     return this._query({
       collection: this.collection,

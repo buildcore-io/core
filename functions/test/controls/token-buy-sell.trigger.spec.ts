@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
+import bigDecimal from 'js-big-decimal';
 import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
 import { Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
@@ -18,7 +19,7 @@ let walletSpy: any;
 const buyTokenFunc = async (memberAddress: string, request: any) => {
   mockWalletReturnValue(walletSpy, memberAddress, request);
   const order = await testEnv.wrap(buyToken)({});
-  const milestone = await submitMilestoneFunc(order.payload.targetAddress, request.price * request.count);
+  const milestone = await submitMilestoneFunc(order.payload.targetAddress, Number(bigDecimal.floor(bigDecimal.multiply(request.price, request.count))));
   await milestoneProcessed(milestone.milestone, milestone.tranId);
   return order
 }
@@ -310,6 +311,37 @@ describe('Buy sell trigger', () => {
     expect(creditSnap.docs[0].data()?.payload?.amount).toBe(tokenCount * MIN_IOTA_AMOUNT)
 
     await assertVolumeTotal(token.uid, tokenCount)
+  })
+
+  it('Should cancel buy after half fulfilled, decimal values', async () => {
+    const tokenCount = 7
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT + 0.1, count: tokenCount });
+    await testEnv.wrap(sellToken)({});
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT + 0.1, count: 2 * tokenCount })
+
+    await wait(async () => {
+      return (await admin.firestore()
+        .collection(COL.TOKEN_MARKET)
+        .where('owner', '==', buyer)
+        .get()
+      ).docs[0]?.data()?.fulfilled === tokenCount
+    })
+
+    const buySnap = await admin.firestore().collection(COL.TOKEN_MARKET)
+      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()
+    expect(buySnap.docs.length).toBe(1)
+    const buy = <TokenBuySellOrder>buySnap.docs[0].data()
+    const cancelRequest = { uid: buy.uid }
+    mockWalletReturnValue(walletSpy, buyer, cancelRequest);
+    const cancelled = await testEnv.wrap(cancelBuyOrSell)({});
+    expect(cancelled.status).toBe(TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
+    const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', buyer)
+      .where('payload.type', '==', TransactionCreditType.TOKEN_BUY)
+      .get()
+    expect(creditSnap.docs.length).toBe(1)
+    expect(creditSnap.docs[0].data()?.payload?.amount).toBe(tokenCount * MIN_IOTA_AMOUNT + 1)
   })
 
   it('Should settle after second run on more than batch limit', async () => {

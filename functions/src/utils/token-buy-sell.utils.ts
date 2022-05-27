@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
@@ -9,11 +10,10 @@ import { memberDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 import { guardedRerun } from './common.utils';
 
-
 export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
   const oldPurchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs.map(d => <TokenPurchase>d.data())
-  const totalPaid = [...oldPurchases, ...newPurchase].reduce((sum, act) => sum + (act.price * act.count), 0);
-  const refundAmount = buy.price * buy.count - totalPaid
+  const totalPaid = [...oldPurchases, ...newPurchase].reduce((sum, act) => sum + Number(bigDecimal.floor(bigDecimal.multiply(act.price, act.count))), 0);
+  const refundAmount = buy.totalDeposit - totalPaid
   if (!refundAmount) {
     return;
   }

@@ -1,8 +1,15 @@
 import { ChangeDetectionStrategy, Component, Input, TemplateRef } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 
+export enum DescriptionItemType {
+  DEFAULT = 'Default',
+  BUTTON = 'Button',
+  LINK = 'Link'
+}
+
 export interface DescriptionItem {
   title: string | number;
+  type?: DescriptionItemType;
   value?: string | number| null;
   extraValue?: string | number | null;
   link?: {
@@ -13,6 +20,7 @@ export interface DescriptionItem {
   titleTemplate?: TemplateRef<unknown>;
   valueTemplate?: TemplateRef<unknown>;
   backgroundClass?: string;
+  action?: () => void;
 }
 
 @Component({
@@ -36,4 +44,8 @@ export class DescriptionComponent {
   constructor(
     public deviceService: DeviceService
   ) {}
+
+  public get descriptionItemTypes(): typeof DescriptionItemType {
+    return DescriptionItemType;
+  }
 }

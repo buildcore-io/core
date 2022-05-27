@@ -1496,7 +1496,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">64</context>
         </context-group>
-        <target state="translated">Jouw bod is de hoogste</target>
+        <target state="translated">Jouw bod is het hoogst</target>
       </trans-unit>
       <trans-unit id="2897616024485017156" datatype="html">
         <source> Current price is refreshing in real time</source>
@@ -6429,7 +6429,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">153,154</context>
         </context-group>
-        <target state="translated">Huidige biedingen</target>
+        <target state="translated">Huidige bied orders</target>
       </trans-unit>
       <trans-unit id="6096531945877739545" datatype="html">
         <source>Past bids</source>
@@ -6437,7 +6437,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">157,158</context>
         </context-group>
-        <target state="translated">Vorige biedingen</target>
+        <target state="translated">Vorige bied orders</target>
       </trans-unit>
       <trans-unit id="811028762347119091" datatype="html">
         <source>My biddings</source>
@@ -6469,7 +6469,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">200,201</context>
         </context-group>
-        <target state="translated">Er zijn geen huidige biedingen</target>
+        <target state="translated">Er zijn geen huidige bied orders</target>
       </trans-unit>
       <trans-unit id="5158484756742862142" datatype="html">
         <source>There are no past bids</source>
@@ -6477,7 +6477,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">233,234</context>
         </context-group>
-        <target state="translated">Er zijn geen eerdere biedingen</target>
+        <target state="translated">Er zijn geen eerdere bied orders</target>
       </trans-unit>
       <trans-unit id="8215542824063649001" datatype="html">
         <source>There are no records.</source>
@@ -8996,7 +8996,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">128</context>
         </context-group>
-        <target state="translated">Biedingen</target>
+        <target state="translated">Bied orders</target>
       </trans-unit>
       <trans-unit id="2992248806056932158" datatype="html">
         <source>Open bids</source>
@@ -9004,7 +9004,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">132,133</context>
         </context-group>
-        <target state="translated">Open biedingen</target>
+        <target state="translated">Open bied orders</target>
       </trans-unit>
       <trans-unit id="1229819676531242859" datatype="html">
         <source>My bids</source>
@@ -9012,7 +9012,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">136,137</context>
         </context-group>
-        <target state="translated">Mijn biedingen</target>
+        <target state="translated">Mijn bied orders</target>
       </trans-unit>
       <trans-unit id="2669161424614781464" datatype="html">
         <source>There are no open requests</source>
@@ -9076,7 +9076,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">209,210</context>
         </context-group>
-        <target state="translated">Er zijn geen biedingen</target>
+        <target state="translated">Er zijn geen bied orders</target>
       </trans-unit>
       <trans-unit id="6969832945219386006" datatype="html">
         <source>Asks</source>
@@ -9084,7 +9084,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">213</context>
         </context-group>
-        <target state="translated">Vraagt</target>
+        <target state="translated">Laat orders</target>
       </trans-unit>
       <trans-unit id="8283827065248903185" datatype="html">
         <source>Open asks</source>
@@ -9092,7 +9092,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">217,218</context>
         </context-group>
-        <target state="translated">Open vragen</target>
+        <target state="translated">Open laat orders</target>
       </trans-unit>
       <trans-unit id="8746717709772526594" datatype="html">
         <source>My asks</source>
@@ -9100,7 +9100,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">221,222</context>
         </context-group>
-        <target state="translated">Mijn vragen</target>
+        <target state="translated">Mijn laat orders</target>
       </trans-unit>
       <trans-unit id="7906186667594368676" datatype="html">
         <source>There are no open asks</source>
@@ -9108,7 +9108,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">250,251</context>
         </context-group>
-        <target state="translated">Er zijn geen openstaande vragen</target>
+        <target state="translated">Er zijn geen openstaande laat orders</target>
       </trans-unit>
       <trans-unit id="6089444736846193603" datatype="html">
         <source>There are no asks</source>
@@ -9116,7 +9116,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">294,295</context>
         </context-group>
-        <target state="translated">Er zijn geen vragen</target>
+        <target state="translated">Er zijn geen laat orders</target>
       </trans-unit>
       <trans-unit id="4647420985559149133" datatype="html">
         <source>24h</source>

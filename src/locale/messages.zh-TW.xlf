@@ -3310,7 +3310,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">Offering length is required.</target>
+        <target state="translated">需要提供長度</target>
       </trans-unit>
       <trans-unit id="5066202217652800772" datatype="html">
         <source>Select token offering length (Default 2 days)</source>
@@ -5844,7 +5844,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">260,261</context>
         </context-group>
-        <target state="needs-translation">Total</target>
+        <target state="translated">總共</target>
       </trans-unit>
       <trans-unit id="6985267139889676910" datatype="html">
         <source>Owned</source>
@@ -5952,7 +5952,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">48,49</context>
         </context-group>
-        <target state="needs-translation">Tangle</target>
+        <target state="translated">糾纏</target>
       </trans-unit>
       <trans-unit id="6619859584197994264" datatype="html">
         <source> No transactions </source>
@@ -7180,7 +7180,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation">Milestone</target>
+        <target state="translated">里程碑</target>
       </trans-unit>
       <trans-unit id="9141417193072213151" datatype="html">
         <source>Cast your vote</source>
