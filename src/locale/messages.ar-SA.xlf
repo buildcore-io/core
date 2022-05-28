@@ -2252,7 +2252,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.ts</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="needs-translation">Invalid amount received. Refunding transaction...</target>
+        <target state="translated">تم استلام مبلغ غير صالح. استرداد المعاملة...</target>
       </trans-unit>
       <trans-unit id="4898776714513646492" datatype="html">
         <source>Invalid payment refunded.</source>
