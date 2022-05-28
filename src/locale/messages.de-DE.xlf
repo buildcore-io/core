@@ -3015,7 +3015,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="translated">24 Stunden VWAP</target>
+        <target state="translated">24h VWAP</target>
       </trans-unit>
       <trans-unit id="1647367556246573738" datatype="html">
         <source>Enter how much you want to spend. Amount of tokens will be calculated.</source>
@@ -3043,7 +3043,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="translated">Geben Sie die Anzahl der Tokens ein, die Sie kaufen möchten. Der Preis wird berechnet.</target>
+        <target state="translated">Gebe die Anzahl der Tokens ein, die du kaufen möchtest. Der Preis wird berechnet.</target>
       </trans-unit>
       <trans-unit id="3335511369170111370" datatype="html">
         <source>Your ballance</source>
@@ -3829,7 +3829,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">208,209</context>
         </context-group>
-        <target state="translated">Jetzt können Sie mit NFTs handeln und am Tokenhandel teilnehmen.</target>
+        <target state="translated">Jetzt kannst du am NFT- und Tokenhandel teilnehmen.</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -5417,7 +5417,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="translated">Filter&amp;sortieren</target>
+        <target state="translated">Filters&amp;Sort</target>
       </trans-unit>
       <trans-unit id="7387129629487497351" datatype="html">
         <source>Filters&amp;sort</source>
@@ -5449,7 +5449,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="translated">Filter&amp;sortieren</target>
+        <target state="translated">Filters&amp;sort</target>
       </trans-unit>
       <trans-unit id="660809762116764762" datatype="html">
         <source>Spaces</source>
@@ -8170,7 +8170,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="translated"> Sie können ein Governance-Token Airdrop für Ihre Mitglieder erstellen. Laden Sie dazu eine .csv-Datei mit Benutzeradressen und Zuweisungsdetails hoch. </target>
+        <target state="translated"> Du kannst ein Governance-Token Airdrop für deine Mitglieder erstellen. Laden dazu eine .csv-Datei mit Benutzeradressen und Zuweisungsdetails hoch. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -8288,7 +8288,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="translated">Um teilzunehmen, füllen Sie bitte das nachstehende Formular aus.</target>
+        <target state="translated">Um teilzunehmen, fülle bitte das nachstehende Formular aus.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -8950,7 +8950,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="translated">Mit Token handeln</target>
+        <target state="translated"> Token handeln </target>
       </trans-unit>
       <trans-unit id="3243884959168883887" datatype="html">
         <source> Buy Tokens </source>
