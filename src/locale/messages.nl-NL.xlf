@@ -408,7 +408,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-clear/algolia-clear.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Reset</target>
+        <target state="translated">Reset</target>
       </trans-unit>
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
@@ -448,7 +448,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-radio/algolia-radio.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Search here...</target>
+        <target state="translated">Zoek hier...</target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
         <source>Search</source>
@@ -3003,7 +3003,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">33,34</context>
         </context-group>
-        <target state="needs-translation">Your offered rate</target>
+        <target state="translated">Jouw aangeboden tarief</target>
       </trans-unit>
       <trans-unit id="290427846554496866" datatype="html">
         <source>24h VWAP</source>
@@ -3015,7 +3015,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation">24h VWAP</target>
+        <target state="translated">24u VWAP</target>
       </trans-unit>
       <trans-unit id="1647367556246573738" datatype="html">
         <source>Enter how much you want to spend. Amount of tokens will be calculated.</source>
@@ -3043,7 +3043,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="needs-translation">Enter amount of tokens you want to buy. Price will be calculated.</target>
+        <target state="translated">Voer het aantal tokens in dat je wilt kopen. Prijs in Iota wordt berekend.</target>
       </trans-unit>
       <trans-unit id="3335511369170111370" datatype="html">
         <source>Your ballance</source>
@@ -3063,7 +3063,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">71,72</context>
         </context-group>
-        <target state="needs-translation">Your ballance</target>
+        <target state="translated">Jouw saldo</target>
       </trans-unit>
       <trans-unit id="6639690694487749831" datatype="html">
         <source>I agree with</source>
@@ -3267,7 +3267,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Tokens available from</target>
+        <target state="translated">Tokens beschikbaar van</target>
       </trans-unit>
       <trans-unit id="7970375349244346571" datatype="html">
         <source>Expired.</source>
@@ -3411,7 +3411,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">30,23</context>
         </context-group>
-        <target state="needs-translation">Current distribution</target>
+        <target state="translated">Huidige distributie</target>
       </trans-unit>
       <trans-unit id="8650499415827640724" datatype="html">
         <source>Type</source>
@@ -3829,7 +3829,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">208,209</context>
         </context-group>
-        <target state="needs-translation">Now you can deal with NFTs and participate in token trading.</target>
+        <target state="translated">Je kunt nu handelen met NFT's en deelnemen aan token handelen.</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -5385,7 +5385,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">records</target>
+        <target state="translated">records</target>
       </trans-unit>
       <trans-unit id="6162664542990278933" datatype="html">
         <source>Filters&amp;Sort</source>
@@ -5417,7 +5417,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">Filters&amp;Sort</target>
+        <target state="translated">Filters&amp;Sorteren</target>
       </trans-unit>
       <trans-unit id="7387129629487497351" datatype="html">
         <source>Filters&amp;sort</source>
@@ -5449,7 +5449,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Filters&amp;sort</target>
+        <target state="translated">Filters&amp;sorteren</target>
       </trans-unit>
       <trans-unit id="660809762116764762" datatype="html">
         <source>Spaces</source>
@@ -5785,7 +5785,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation">Saletype</target>
+        <target state="translated">Soort</target>
       </trans-unit>
       <trans-unit id="2028563318899266275" datatype="html">
         <source>Price range</source>
@@ -5793,7 +5793,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">Price range</target>
+        <target state="translated">Prijs range</target>
       </trans-unit>
       <trans-unit id="7623649064629539622" datatype="html">
         <source>Marketplace</source>
@@ -6121,7 +6121,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">from</target>
+        <target state="translated">van</target>
       </trans-unit>
       <trans-unit id="3422683202099217996" datatype="html">
         <source>Deposit for purchase</source>
@@ -7931,7 +7931,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
           <context context-type="linenumber">99</context>
         </context-group>
-        <target state="needs-translation">Connection established</target>
+        <target state="translated">Verbinding gemaakt</target>
       </trans-unit>
       <trans-unit id="3611250830215528248" datatype="html">
         <source>Connection updated.</source>
@@ -7939,7 +7939,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
           <context context-type="linenumber">99,97</context>
         </context-group>
-        <target state="needs-translation">Connection updated.</target>
+        <target state="translated">Verbinding bijgewerkt.</target>
       </trans-unit>
       <trans-unit id="6173924296768725625" datatype="html">
         <source>About space</source>
@@ -8171,7 +8171,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation"> You can create a governance token airdrop for your members. To do this, upload a .csv file containing user addresses and allocation details. </target>
+        <target state="translated"> Je kunt een governance token airdrop maken voor je leden. Om dit te doen, upload een .csv bestand met gebruikersadressen en toewijzingsgegevens. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -8257,7 +8257,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">18,20</context>
         </context-group>
-        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </target>
+        <target state="translated"> Belangrijke informatie voor het maken van een token op Soonaverse: lees aub de instructies en vul een formulier, beschikbaar op dit scherm, in, omdat we je token aanvraag eerst handmatig moeten goedkeuren voor de goedkeuring. Je kunt dit formulier op elk gewenst moment (voor of na) dat je je token opzet, indienen op Soonaverse. </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -8289,7 +8289,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">To apply you need to fill out the form below.</target>
+        <target state="translated">Om deel te nemen dien je het onderstaande formulier in te vullen.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -8351,7 +8351,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation">Symbol is invalid (Length must be 3 - 5 and letters must be A-Z).</target>
+        <target state="translated">Symbool is ongeldig (lengte moet 3 tot 5 zijn en alleen hoofdletters).</target>
       </trans-unit>
       <trans-unit id="3844483589622032125" datatype="html">
         <source>Token supply</source>
@@ -8555,7 +8555,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">263,264</context>
         </context-group>
-        <target state="needs-translation">Terms and Conditions link is invalid. (Start with http:// or https://)</target>
+        <target state="translated">Algemene voorwaarden link is ongeldig. (Start met http:// of https://)</target>
       </trans-unit>
       <trans-unit id="731928120017865074" datatype="html">
         <source>Token allocation</source>
@@ -8588,8 +8588,8 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">66,65</context>
         </context-group>
-        <target state="needs-translation">Please make sure that there is only one allocation marked for public sale as this could be later sold on Soonaverse.
-        You can initiate a public sale once the token is created and approved.</target>
+        <target state="translated">Zorg ervoor dat er enkel één toewijzing als Openbare Verkoop is aangemerkt omdat dit later verkocht kan worden op Soonaverse. 
+        Je kunt de Openbare Verkoop starten zodra de token is aangemaakt en goedgekeurd.</target>
       </trans-unit>
       <trans-unit id="1123975208117330700" datatype="html">
         <source>Total token supply</source>
@@ -8665,7 +8665,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">14,15</context>
         </context-group>
-        <target state="needs-translation">This text will be displayed on the main token page.</target>
+        <target state="translated">Het veld wordt getoond op de hoofdpagina van de token.</target>
       </trans-unit>
       <trans-unit id="7933726557573889994" datatype="html">
         <source>Title is invalid.</source>
@@ -8717,7 +8717,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Short description of the token which will be displayed on the token trading page.</target>
+        <target state="translated">Korte beschrijving van de token die wordt weergegeven op de token handelspagina.</target>
       </trans-unit>
       <trans-unit id="4703172347259778984" datatype="html">
         <source>Short title is invalid.</source>
@@ -8773,7 +8773,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation">Token introductory video / image</target>
+        <target state="translated">Token introductie video / afbeelding</target>
       </trans-unit>
       <trans-unit id="419869678531568855" datatype="html">
         <source>Introductionary media is invalid.</source>
@@ -8789,7 +8789,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="needs-translation">Invalid URL. (Start with http:// or https://)</target>
+        <target state="translated">Ongeldige URL (moet beginnen met 'http://' of 'https://')</target>
       </trans-unit>
       <trans-unit id="7518346502693747462" datatype="html">
         <source>Add link</source>
@@ -8951,7 +8951,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation"> Trade token </target>
+        <target state="translated"> Handel in tokens </target>
       </trans-unit>
       <trans-unit id="3243884959168883887" datatype="html">
         <source> Buy Tokens </source>
@@ -9074,7 +9074,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation"> Token sale goal reached! Token distribution will be fairly calculated and overages will be refunded. </target>
+        <target state="translated"> Token verkoopdoel bereikt! Token distributie zal eerlijk worden berekend en overschrijdingen worden terugbetaald. </target>
       </trans-unit>
       <trans-unit id="5881772063157736339" datatype="html">
         <source>Sale ends in</source>
