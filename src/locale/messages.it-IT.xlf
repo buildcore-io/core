@@ -408,7 +408,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-clear/algolia-clear.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Reset</target>
+        <target state="translated">Reset</target>
       </trans-unit>
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
@@ -448,7 +448,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-radio/algolia-radio.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Search here...</target>
+        <target state="translated">Ricerca in...</target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
         <source>Search</source>
@@ -5754,7 +5754,7 @@
           <context context-type="sourcefile">src/app/pages/home/home.page.ts</context>
           <context context-type="linenumber">41,38</context>
         </context-group>
-        <target state="translated">Aumentare fama e compensi</target>
+        <target state="translated">Aumentare fama e ricompense</target>
       </trans-unit>
       <trans-unit id="5040826443870911881" datatype="html">
         <source>Create incentives and build reputation, trust and community engagement.</source>
@@ -5882,7 +5882,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/tokens/tokens.page.ts</context>
           <context context-type="linenumber">58</context>
         </context-group>
-        <target state="needs-translation">Pre-Minted</target>
+        <target state="translated">Pre-Coniato</target>
       </trans-unit>
       <trans-unit id="5348371102621154630" datatype="html">
         <source>View space</source>
@@ -6010,7 +6010,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation">My profile</target>
+        <target state="translated">Profilo</target>
       </trans-unit>
       <trans-unit id="4915431133669985304" datatype="html">
         <source>Profile</source>
@@ -6026,7 +6026,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">15,16</context>
         </context-group>
-        <target state="needs-translation">Profile info</target>
+        <target state="translated">Info Profilo</target>
       </trans-unit>
       <trans-unit id="5306473977542913614" datatype="html">
         <source>Activity</source>
@@ -6050,7 +6050,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <target state="needs-translation">Transactions</target>
+        <target state="translated">Transazioni</target>
       </trans-unit>
       <trans-unit id="1985906514874027071" datatype="html">
         <source>(Join space with alliance)</source>
@@ -6070,7 +6070,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="needs-translation">Item</target>
+        <target state="translated">Elemento</target>
       </trans-unit>
       <trans-unit id="3448462145758383019" datatype="html">
         <source>Total</source>
