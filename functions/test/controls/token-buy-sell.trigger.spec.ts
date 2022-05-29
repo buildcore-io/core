@@ -63,7 +63,6 @@ const getRoyaltyDistribution = (amount: number) => {
   return [spaceOne, spaceTwo, amount - (spaceOne >= MIN_IOTA_AMOUNT ? spaceOne : 0) - (spaceTwo >= MIN_IOTA_AMOUNT ? spaceTwo : 0)]
 }
 
-
 describe('Buy sell trigger', () => {
   let seller: string;
   let buyer: string;
@@ -445,6 +444,29 @@ describe('Buy sell trigger', () => {
     expect(sellDistribution.lockedForSale).toBe(0)
     expect(sellDistribution.sold).toBe(tokenCount - 1)
     expect(sellDistribution.tokenOwned).toBe(2 * tokenCount + 1)
+  })
+
+  it('Should cancel sell after half fulfilled', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 });
+    const sell = await testEnv.wrap(sellToken)({});
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 })
+
+    await wait(async () => {
+      return (await admin.firestore()
+        .collection(COL.TOKEN_MARKET)
+        .where('owner', '==', buyer)
+        .get()
+      ).docs[0]?.data()?.fulfilled === 5
+    })
+
+    const cancelRequest = { uid: sell.uid }
+    mockWalletReturnValue(walletSpy, seller, cancelRequest);
+    await testEnv.wrap(cancelBuyOrSell)({});
+
+    const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
+    expect(sellDistribution.lockedForSale).toBe(0)
+    expect(sellDistribution.sold).toBe(5)
+    expect(sellDistribution.tokenOwned).toBe(tokenCount * 3 - 5)
   })
 })
 
