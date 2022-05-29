@@ -51,7 +51,7 @@ const createSchema = () => ({
   // Only on prod we enforce 7 days.
   saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
-  coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
+  coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
@@ -159,7 +159,7 @@ const setAvailableForSaleSchema = {
   token: Joi.string().required(),
   saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
-  coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+  coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).required(),
 }
 
 export const setTokenAvailableForSale = functions.runWith({

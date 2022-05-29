@@ -77,6 +77,20 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(saleStartDate).add(token.saleLength + token.coolDownLength, 'ms'), true).toDate())
   })
 
+  it('Should create, one public sale, no cooldown period', async () => {
+    token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
+    const saleStartDate = dayjs().add(8, 'day')
+    token.saleStartDate = saleStartDate.toDate()
+    token.saleLength = 86400000
+    token.coolDownLength = 0
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(saleStartDate, true).toDate())
+    expect(result?.saleLength).toBe(86400000)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(saleStartDate).add(token.saleLength, 'ms'), true).toDate())
+  })
+
   it('Should not allow two tokens', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await testEnv.wrap(createToken)({});
@@ -353,6 +367,17 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
 
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.public_sale_already_set.key);
+  })
+
+  it('Should set no cool down length', async () => {
+    const docRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+    await docRef.update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const publicTime = { saleStartDate: dayjs().toDate(), saleLength: 86400000 * 2, coolDownLength: 0 }
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
+    expect(result?.saleLength).toBe(publicTime.saleLength)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(publicTime.saleLength, 'ms'), true).toDate())
   })
 
 })
