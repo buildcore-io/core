@@ -169,14 +169,49 @@ const distributeLeftoverTokens = (distributions: TokenDistribution[], totalPubli
 
 }
 
+const cancelPublicSale = async (token: Token) => {
+  const distributionDocs = (await admin.firestore().collection(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}`)
+    .where('totalDeposit', '>', 0)
+    .get()).docs
+
+  const promises = distributionDocs.map(async (doc) => {
+    const distribution = <TokenDistribution>doc.data()
+    const batch = admin.firestore().batch()
+
+    const orderDoc = await orderDocRef(distribution.uid!, token).get()
+    const orderTargetAddress = orderDoc.data()?.payload?.targetAddress || ''
+    const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
+    const creditPaymentId = await createCredit(token, { ...distribution, refundedAmount: distribution?.totalDeposit }, payments, orderTargetAddress, batch)
+
+    batch.update(doc.ref, { creditPaymentId, totalDeposit: 0 })
+
+    await batch.commit()
+  })
+
+  const results = await Promise.allSettled(promises);
+  const errors = results.filter(r => r.status === 'rejected').map(r => String((<PromiseRejectedResult>r).reason))
+  const status = isEmpty(errors) ? TokenStatus.AVAILABLE : TokenStatus.ERROR
+  await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ status })
+
+  if (status === TokenStatus.ERROR) {
+    functions.logger.error('Token processing error', token.uid, errors)
+  }
+}
+
 export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memory: "4GB", minInstances: scale(WEN_FUNC.onTokenStatusUpdate) })
   .firestore.document(COL.TOKEN + '/{tokenId}').onUpdate(async (change, context) => {
     const tokenId = context.params.tokenId
-    const prev = change.before.data();
+    const prev = <Token | undefined>change.before.data();
     const token = <Token | undefined>change.after.data();
 
-    if (!token || token.status !== TokenStatus.PROCESSING || prev.status !== TokenStatus.AVAILABLE) {
-      return;
+    const statuses = [TokenStatus.PROCESSING, TokenStatus.CANCEL_SALE]
+
+    if (!token?.status || !prev?.status || !statuses.includes(token.status) || prev.status !== TokenStatus.AVAILABLE) {
+      return
+    }
+
+    if (token.status === TokenStatus.CANCEL_SALE) {
+      return await cancelPublicSale(token)
     }
 
     const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).where('totalDeposit', '>', 0).get()

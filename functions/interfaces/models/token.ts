@@ -10,6 +10,7 @@ export interface TokenAllocation {
 
 export enum TokenStatus {
   AVAILABLE = 'available',
+  CANCEL_SALE = 'cancel_sale',
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
   ERROR = 'error'

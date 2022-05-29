@@ -196,7 +196,55 @@ export const setTokenAvailableForSale = functions.runWith({
   return <Token>(await tokenDocRef.get()).data();
 })
 
-const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+const assertTokenIsInPublicSaleOrCoolDownPeriod = (token: Token) => {
+  const isPublicSale = tokenIsInPublicSalePeriod(token)
+  const isCoolDownPeriod = tokenIsInCoolDownPeriod(token)
+  if (isPublicSale || isCoolDownPeriod) {
+    return
+  }
+  if (!isPublicSale) {
+    throw throwInvalidArgument(WenError.no_token_public_sale)
+  }
+  if (!isCoolDownPeriod) {
+    throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
+  }
+}
+
+export const cancelPublicSale = functions.runWith({
+  minInstances: scale(WEN_FUNC.cancelPublicSale),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.cSpace, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+
+  const schema = Joi.object({ token: Joi.string().required() });
+  assertValidation(schema.validate(params.body));
+
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
+
+  await admin.firestore().runTransaction(async (transaction) => {
+    const token = <Token | undefined>(await transaction.get(tokenDocRef)).data()
+
+    if (!token) {
+      throw throwInvalidArgument(WenError.invalid_params)
+    }
+    assertTokenIsInPublicSaleOrCoolDownPeriod(token)
+    await assertIsGuardian(token.space, owner)
+
+    transaction.update(tokenDocRef, uOn({
+      saleStartDate: admin.firestore.FieldValue.delete(),
+      saleLength: admin.firestore.FieldValue.delete(),
+      coolDownEnd: admin.firestore.FieldValue.delete(),
+      status: TokenStatus.CANCEL_SALE,
+      totalDeposit: 0
+    }))
+  })
+
+  return <Token>(await tokenDocRef.get()).data();
+
+})
+
+const tokenIsInPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
   dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
 
 const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength && token.coolDownEnd &&
@@ -223,7 +271,7 @@ export const orderToken = functions.runWith({
   }
 
   const token = <Token>tokenDoc.data()
-  if (!tokenOrderIsWithinPublicSalePeriod(token)) {
+  if (!tokenIsInPublicSalePeriod(token)) {
     throw throwInvalidArgument(WenError.no_token_public_sale)
   }
 

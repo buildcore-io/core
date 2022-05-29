@@ -51,6 +51,7 @@ export const enum WEN_FUNC {
   cToken = 'cToken',
   uToken = 'uToken',
   setTokenAvailableForSale = 'setTokenAvailableForSale',
+  cancelPublicSale = 'cancelPublicSale',
   orderToken = 'orderToken',
   creditToken = 'creditToken',
   airdropToken = 'airdropToken',
