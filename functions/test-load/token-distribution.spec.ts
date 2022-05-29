@@ -6,7 +6,7 @@ import { TokenStatus } from "../interfaces/models/token";
 import admin from '../src/admin.config';
 import { cOn, dateToTimestamp, serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
-import { createMember, createSpace, wait } from "./common";
+import { createMember, createSpace, wait } from "../test/controls/common";
 
 let walletSpy: any;
 
