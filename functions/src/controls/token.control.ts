@@ -199,9 +199,9 @@ export const setTokenAvailableForSale = functions.runWith({
 const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
   dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
 
-const tokenCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength && token.coolDownEnd &&
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
-  dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms').add(2, 'd'))
+  dayjs().isBefore(dayjs(token.coolDownEnd.toDate()))
 
 export const orderToken = functions.runWith({
   minInstances: scale(WEN_FUNC.orderToken),
@@ -293,7 +293,7 @@ export const creditToken = functions.runWith({
     }
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
     const token = <Token | undefined>(await tokenDocRef.get()).data()
-    if (!token || !tokenCoolDownPeriod(token)) {
+    if (!token || !tokenIsInCoolDownPeriod(token)) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
     const member = <Member>(await memberDocRef(owner).get()).data()
