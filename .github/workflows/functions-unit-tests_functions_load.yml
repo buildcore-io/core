@@ -1,4 +1,4 @@
-name: Functions Online Unit Tests
+name: Functions Load Online Unit Tests
 
 on: workflow_dispatch
 
