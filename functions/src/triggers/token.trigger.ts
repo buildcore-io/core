@@ -23,10 +23,15 @@ const getBoughtByMember = (token: Token, totalDeposit: number, totalSupply: numb
   return Number(total)
 }
 
+const getTotalPaid = (pricePerToken: number, boughtByMember: number) => {
+  const totalPaid = Number(bigDecimal.multiply(pricePerToken, boughtByMember))
+  return totalPaid < MIN_IOTA_AMOUNT ? 0 : totalPaid
+}
+
 const getMemberDistribution = (distribution: TokenDistribution, token: Token, totalSupply: number, totalBought: number): TokenDistribution => {
   const totalDeposit = distribution.totalDeposit || 0;
   const boughtByMember = getBoughtByMember(token, totalDeposit, totalSupply, totalBought)
-  const totalPaid = Number(bigDecimal.multiply(token.pricePerToken, boughtByMember))
+  const totalPaid = getTotalPaid(token.pricePerToken, boughtByMember)
   const refundedAmount = Number(bigDecimal.subtract(totalDeposit, totalPaid))
   return <TokenDistribution>{
     uid: distribution.uid,
