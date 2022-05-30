@@ -69,12 +69,14 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     token.saleStartDate = saleStartDate.toDate()
     token.saleLength = 86400000
     token.coolDownLength = 86400000
+    token.autoProcessAt100Percent = true
     mockWalletReturnValue(walletSpy, memberAddress, token)
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
     expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(saleStartDate, true).toDate())
     expect(result?.saleLength).toBe(86400000)
     expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(saleStartDate).add(token.saleLength + token.coolDownLength, 'ms'), true).toDate())
+    expect(result?.autoProcessAt100Percent).toBe(true)
   })
 
   it('Should create, one public sale, no cooldown period', async () => {
@@ -358,6 +360,19 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
     expect(result?.saleLength).toBe(2 * 86400000)
     expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'), true).toDate())
+    expect(result?.autoProcessAt100Percent).toBe(false)
+  })
+
+  it('Should set public availability', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime, autoProcessAt100Percent: true }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result?.uid).toBeDefined();
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
+    expect(result?.saleLength).toBe(2 * 86400000)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'), true).toDate())
+    expect(result?.autoProcessAt100Percent).toBe(true)
   })
 
   it('Should throw, can not set public availability twice', async () => {
@@ -491,6 +506,11 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
 
 })
 
+const assertOrderedTokensCount = async (tokenId: string, expected: number) => {
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get()).data()
+  expect(token.tokensOrdered).toBe(expected)
+}
+
 describe("Token controller: " + WEN_FUNC.orderToken, () => {
   let memberAddress: string;
   let space: Space;
@@ -540,6 +560,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+    await assertOrderedTokensCount(token.uid, 1)
   })
 
   it('Should order more token', async () => {
@@ -553,6 +574,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
+    await assertOrderedTokensCount(token.uid, 2)
   })
 
   it('Should create token order and should credit some amount', async () => {
@@ -577,6 +599,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const updatedToken = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(updatedToken?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+
+    await assertOrderedTokensCount(token.uid, 1)
   })
 
   it('Should create token order and should credit all amount', async () => {
@@ -599,6 +623,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const updatedToken = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(updatedToken?.totalDeposit).toBe(0)
+    await assertOrderedTokensCount(token.uid, 0)
   })
 
   it('Should create token order and should fail credit, not in cool down period', async () => {
@@ -715,6 +740,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     await Promise.all(promises)
     const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution.totalDeposit).toBe(total)
+    await assertOrderedTokensCount(token.uid, total / MIN_IOTA_AMOUNT)
   })
 
 })

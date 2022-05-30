@@ -19,7 +19,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
@@ -52,6 +52,7 @@ const createSchema = () => ({
   saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
+  autoProcessAt100Percent: Joi.boolean().optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
@@ -160,6 +161,7 @@ const setAvailableForSaleSchema = {
   saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+  autoProcessAt100Percent: Joi.boolean().optional()
 }
 
 export const setTokenAvailableForSale = functions.runWith({
@@ -190,7 +192,7 @@ export const setTokenAvailableForSale = functions.runWith({
 
     shouldSetPublicSaleTimeFrames(params.body, token.allocations);
     const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength);
-    transaction.update(tokenDocRef, timeFrames);
+    transaction.update(tokenDocRef, { ...timeFrames, autoProcessAt100Percent: params.body.autoProcessAt100Percent || false });
   })
 
   return <Token>(await tokenDocRef.get()).data();
@@ -271,7 +273,7 @@ export const orderToken = functions.runWith({
   }
 
   const token = <Token>tokenDoc.data()
-  if (!tokenIsInPublicSalePeriod(token)) {
+  if (!tokenIsInPublicSalePeriod(token) || token.status !== TokenStatus.AVAILABLE) {
     throw throwInvalidArgument(WenError.no_token_public_sale)
   }
 
@@ -341,7 +343,7 @@ export const creditToken = functions.runWith({
     }
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
     const token = <Token | undefined>(await tokenDocRef.get()).data()
-    if (!token || !tokenIsInCoolDownPeriod(token)) {
+    if (!token || !tokenIsInCoolDownPeriod(token) || token.status !== TokenStatus.AVAILABLE) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
     const member = <Member>(await memberDocRef(owner).get()).data()
@@ -351,8 +353,12 @@ export const creditToken = functions.runWith({
     const totalDepositLeft = (distribution.totalDeposit || 0) - params.body.amount
     const refundAmount = params.body.amount + (totalDepositLeft < MIN_IOTA_AMOUNT ? totalDepositLeft : 0)
 
+    const boughtByMemberDiff = getBoughtByMemberDiff(distribution.totalDeposit || 0, totalDepositLeft || 0, token.pricePerToken)
     transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-refundAmount) })
-    transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-refundAmount) })
+    transaction.update(tokenDocRef, {
+      totalDeposit: admin.firestore.FieldValue.increment(-refundAmount),
+      tokensOrdered: admin.firestore.FieldValue.increment(boughtByMemberDiff)
+    })
 
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,

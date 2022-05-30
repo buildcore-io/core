@@ -9,10 +9,8 @@ import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/t
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { serverTime } from '../utils/dateTime.utils';
-import { allPaymentsQuery, memberDocRef, orderDocRef } from '../utils/token.utils';
+import { allPaymentsQuery, BIG_DECIMAL_PRECISION, getTotalPublicSupply, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-
-const BIG_DECIMAL_PRECISION = 1000
 
 const getTokenCount = (token: Token, amount: number) => Math.floor(amount / token.pricePerToken)
 
@@ -217,12 +215,11 @@ export const onTokenStatusUpdate = functions.runWith({ timeoutSeconds: 540, memo
     const distributionsSnap = await admin.firestore().collection(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}`).where('totalDeposit', '>', 0).get()
     const totalBought = distributionsSnap.docs.reduce((sum, doc) => sum + getTokenCount(token, doc.data().totalDeposit), 0)
 
-    const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
-    const totalPublicSupply = Math.floor(token.totalSupply * (publicPercentage / 100))
+    const totalPublicSupply = getTotalPublicSupply(token)
 
     const distributions = distributionsSnap.docs
       .sort((a, b) => b.data().totalDeposit - a.data().totalDeposit)
-      .map(doc => getMemberDistribution(<TokenDistribution>doc.data(), token, totalPublicSupply, totalBought))
+      .map(d => getMemberDistribution(<TokenDistribution>d.data(), token, totalPublicSupply, totalBought))
 
     if (totalBought > totalPublicSupply) {
       distributeLeftoverTokens(distributions, totalPublicSupply, token);
