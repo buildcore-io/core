@@ -27,30 +27,30 @@
                     class="block mt-5 mb-8"
                     i18n-shareText
                     shareText="Check out nft"
-                    [shareUrl]="getShareUrl(data.nft$ | async)">
+                    [shareUrl]="helper.getShareUrl(data.nft$ | async)">
                 </wen-share>
             </ng-container>
 
             <wen-countdown
-                *ngIf="data.getCountdownDate(data.nft$ | async)"
+                *ngIf="helper.getCountdownDate(data.nft$ | async)"
                 class="my-5"
                 wrapperClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
                 tabClassName="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
-                [title]="data.getCountdownTitle(data.nft$ | async)"
-                [finalDate]="data.getCountdownDate(data.nft$ | async)?.toDate()"
+                [title]="helper.getCountdownTitle(data.nft$ | async)"
+                [finalDate]="helper.getCountdownDate(data.nft$ | async)?.toDate()"
                 size="large">
             </wen-countdown>
 
             <div class="flex flex-wrap items-center mt-5">
-                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="!isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
+                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="!helper.isAvailableForAuction(data.nft$ | async, data.collection$ | async)">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Current price</div>
                     <div class="flex items-center mt-2">
-                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{data.formatBest(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
-                        <div class="text-lg font-bold truncate">{{data.formatBest(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)))}}</div>
+                        <div class="mr-2 text-xs font-medium line-through truncate text-foregrounds-secondary" *ngIf="discount(data.collection$ | async, data.nft$ | async) < 1">{{helper.formatBest(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price))}}</div>
+                        <div class="text-lg font-bold truncate">{{helper.formatBest(calc(((data.nft$ | async)?.availablePrice || (data.nft$ | async)?.price), discount(data.collection$ | async, data.nft$ | async)))}}</div>
                     </div>
                 </div>
 
-                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)"
+                <div class="flex-1 h-20 px-4 py-3 mr-3 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl" *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async)"
                     [ngClass]="{
                       'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (data.myBidTransactions$ | async)?.length,
                       'bg-tags-available dark:bg-tags-available-dark': ((auth.member$ | async)?.uid && (data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)
@@ -64,7 +64,7 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && ((data.nft$ | async)?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ data.formatBest((data.nft$ | async)?.auctionHighestBid || 0) || data.formatBest((data.nft$ | async)?.auctionFloorPrice)}}</div>
+                      <div class="mr-2 font-bold truncate">{{ helper.formatBest((data.nft$ | async)?.auctionHighestBid || 0) || helper.formatBest((data.nft$ | async)?.auctionFloorPrice)}}</div>
                   </div>
                 </div>
 
@@ -82,7 +82,7 @@
             </div>
 
 
-            <div class="flex items-center p-5 mt-6 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary dark:text-foregrounds-primary" *ngIf="(data.nft$ | async)?.placeholderNft && isAvailableForSale(data.nft$ | async, data.collection$ | async)">
+            <div class="flex items-center p-5 mt-6 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary dark:text-foregrounds-primary" *ngIf="(data.nft$ | async)?.placeholderNft && helper.isAvailableForSale(data.nft$ | async, data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-base font-bold">
                     <span>{{((data.collection$ | async)?.total || 0) - ((data.collection$ | async)?.sold || 0)}} </span>
@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !saleNotStartedYet(data.nft$ | async)"
+            <div *ngIf="(data.nft$ | async)?.placeholderNft && (data.collection$ | async)?.approved === true && !helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && !helper.saleNotStartedYet(data.nft$ | async)"
                 class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            <div *ngIf="(data.collection$ | async)?.approved === true && !isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner && saleNotStartedYet(data.nft$ | async)"
+            <div *ngIf="(data.collection$ | async)?.approved === true && !helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && !(data.nft$ | async)?.owner && helper.saleNotStartedYet(data.nft$ | async)"
                 class="flex items-center w-full px-5 py-4 mt-12 bg-icons-secondary dark:bg-icons-secondary-dark rounded-xl text-foregrounds-primary dark:text-foregrounds-primary-dark">
                 <wen-icon-sad></wen-icon-sad>
                 <div class="font-medium ml-3.5" i18n>
@@ -123,21 +123,21 @@
             </div>
 
             <button class="mt-10" nz-button nzType="default" (click)="sell($event)" *ngIf="(data.nft$ | async)?.owner && (data.nft$ | async)?.owner === (auth.member$ | async)?.uid" nzBlock nzSize="large">
-                <span *ngIf="canBeSetForSale(data.nft$ | async) && (data.nft$ | async)?.owner && (data.nft$ | async)?.owner === (auth.member$ | async)?.uid" i18n>Sell NFT</span>
-                <span *ngIf="!canBeSetForSale(data.nft$ | async) && !willBeAvailableForAuction(data.nft$ | async, data.collection$ | async) && !isAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Fixed Price</span>
-                <span *ngIf="!canBeSetForSale(data.nft$ | async) && willBeAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
+                <span *ngIf="helper.canBeSetForSale(data.nft$ | async) && (data.nft$ | async)?.owner && (data.nft$ | async)?.owner === (auth.member$ | async)?.uid" i18n>Sell NFT</span>
+                <span *ngIf="!helper.canBeSetForSale(data.nft$ | async) && !helper.willBeAvailableForAuction(data.nft$ | async, data.collection$ | async) && !helper.isAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Fixed Price</span>
+                <span *ngIf="!helper.canBeSetForSale(data.nft$ | async) && helper.willBeAvailableForAuction(data.nft$ | async, data.collection$ | async)" i18n>Change Auction</span>
             </button>
 
             <span class="block mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
               <button nz-button nzType="primary" (click)="bid($event)" [disabled]="!(auth.member$ | async)?.uid"
-                      *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async) && (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
+                      *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async) && (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid" nzBlock nzSize="large" i18n>
                   Place bid
               </button>
             </span>
 
             <span class="block mt-10" nz-tooltip i18n-nzTooltipTitle [nzTooltipTitle]="(!(auth.member$ | async)?.uid) ? 'You must connect your wallet first!' : undefined">
               <button nz-button nzType="primary" (click)="buy($event)" [disabled]="!(auth.member$ | async)?.uid"
-                      *ngIf="isAvailableForSale(data.nft$ | async, data.collection$ | async) && (!(data.nft$ | async)?.owner || (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid)" nzBlock nzSize="large" i18n>
+                      *ngIf="helper.isAvailableForSale(data.nft$ | async, data.collection$ | async) && (!(data.nft$ | async)?.owner || (data.nft$ | async)?.owner !== (auth.member$ | async)?.uid)" nzBlock nzSize="large" i18n>
                   Buy now
               </button>
             </span>
@@ -148,7 +148,7 @@
             <wen-timeline-nft class="block mt-12" [nft]="(data.nft$ | async)" [listedBy]="(data.space$ | async)" [orders]="(data.orders$ | async)"></wen-timeline-nft>
             <wen-collapse i18n-title title="Bidding" class="mt-4" [isCollapsed]="true">
                 <div class="flex flex-col px-6 mt-6 mb-4 lg:flex-row lg:items-center">
-                    <nz-tag nzMode="checkable" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
+                    <nz-tag nzMode="checkable" *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.CURRENT_BIDS"
                         (nzCheckedChange)="currentListingType = listingTypes.CURRENT_BIDS">
                             <span i18n>Current Bids</span>
                     </nz-tag>
@@ -156,7 +156,7 @@
                         (nzCheckedChange)="currentListingType = listingTypes.PAST_BIDS">
                             <span i18n>Past bids</span>
                     </nz-tag>
-                    <nz-tag nzMode="checkable" *ngIf="data.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_BIDS"
+                    <nz-tag nzMode="checkable" *ngIf="helper.auctionInProgress(data.nft$ | async, data.collection$ | async)" class="mt-2 w-max" [nzChecked]="currentListingType === listingTypes.MY_BIDS"
                         (nzCheckedChange)="currentListingType = listingTypes.MY_BIDS">
                             <span i18n>My biddings</span>
                     </nz-tag>
@@ -186,10 +186,10 @@
                                     <span>@ {{ (item.member.name || item.member.uid) | truncate:[16]}}</span>
                                 </td>
                                 <td>{{ item.transaction.createdOn?.toDate() | date:'short' }}</td>
-                                <td>{{ data.formatBest(item.transaction.payload.amount) }}</td>
+                                <td>{{ helper.formatBest(item.transaction.payload.amount) }}</td>
                                 <td class="text-right">
                                   <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                                      target="_blank" *ngIf="item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference" [href]="getExplorerLink(item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference)" i18n>Link</a>
+                                      target="_blank" *ngIf="item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.transaction.payload.chainReference || item.transaction.payload?.walletReference?.chainReference)" i18n>Link</a>
                               </td>
                             </tr>
                         </ng-template>
@@ -219,10 +219,10 @@
                         <tr *ngFor="let item of data.pastBidTransactions$ | async">
                             <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                             <td>{{ item.type }}</td>
-                            <td>{{ data.formatBest(item.payload.amount) }}</td>
+                            <td>{{ helper.formatBest(item.payload.amount) }}</td>
                             <td class="text-right">
                                 <a class="text-sm font-medium underline text-blue-light1"
-                                    target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
+                                    target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
                             </td>
                         </tr>
                     </ng-template>
@@ -252,10 +252,10 @@
                         <tr *ngFor="let item of data.myBidTransactions$ | async">
                             <td>{{ item.createdOn?.toDate() | date:'short' }}</td>
                             <td>{{ item.type }}</td>
-                            <td>{{ data.formatBest(item.payload.amount) }}</td>
+                            <td>{{ helper.formatBest(item.payload.amount) }}</td>
                             <td class="text-right">
                                 <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                                    target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
+                                    target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
                             </td>
                         </tr>
                     </ng-template>
@@ -289,7 +289,7 @@
                     class="block mt-8"
                     i18n-shareText
                     shareText="Check out nft"
-                    [shareUrl]="getShareUrl(data.nft$ | async)">
+                    [shareUrl]="helper.getShareUrl(data.nft$ | async)">
                 </wen-share>
             </ng-container>
 
@@ -317,8 +317,8 @@
             <wen-collapse [ngClass]="(data.owner$ | async) ? 'mt-4' : 'mt-8'" title="System info" *ngIf="!generatedNft(data.nft$ | async)">
 
                 <wen-description [items]="[
-                    getOnChainInfo(data.orders$ | async) ?
-                        { title: systemInfoLabels[0], value: getOnChainInfo(data.orders$ | async), link: { label: systemInfoValues.view, href: getExplorerLink(getOnChainInfo(data.orders$ | async)!) }, valueTemplate: onChaingRecordTooltipIcon } :
+                    helper.getOnChainInfo(data.orders$ | async) ?
+                        { title: systemInfoLabels[0], value: helper.getOnChainInfo(data.orders$ | async), link: { label: systemInfoValues.view, href: helper.getExplorerLink(helper.getOnChainInfo(data.orders$ | async)!) }, valueTemplate: onChaingRecordTooltipIcon } :
                         { title: systemInfoLabels[0], value: systemInfoValues.preparing },
                     { title: systemInfoLabels[1], value: systemInfoValues.tokenization, valueTemplate: migrateTooltipIcon },
                     { title: systemInfoLabels[2], value: (data.nft$ | async)?.ipfsMetadata ? (data.nft$ | async)?.ipfsMetadata : systemInfoValues.preparing, link: (data.nft$ | async)?.ipfsMetadata ? { label: systemInfoValues.view, href: 'https://ipfs.soonaverse.com/ipfs/' + (data.nft$ | async)?.ipfsMetadata } : undefined },
@@ -340,12 +340,12 @@
                 </ng-template>
             </wen-collapse>
 
-            <wen-collapse class="mt-4" title="Properties" *ngIf="data.getPropStats((data.nft$ | async)?.properties).length">
-                <wen-description [items]="data.getPropStats((data.nft$ | async)?.properties)"></wen-description>
+            <wen-collapse class="mt-4" title="Properties" *ngIf="helper.getPropStats((data.nft$ | async)?.properties).length">
+                <wen-description [items]="helper.getPropStats((data.nft$ | async)?.properties)"></wen-description>
             </wen-collapse>
 
-            <wen-collapse class="mt-4" title="Stats" *ngIf="data.getPropStats((data.nft$ | async)?.stats).length">
-                <wen-description [items]="data.getPropStats((data.nft$ | async)?.stats)"></wen-description>
+            <wen-collapse class="mt-4" title="Stats" *ngIf="helper.getPropStats((data.nft$ | async)?.stats).length">
+                <wen-description [items]="helper.getPropStats((data.nft$ | async)?.stats)"></wen-description>
             </wen-collapse>
         </div>
     </div>

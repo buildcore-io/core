@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { ShareComponentSize } from '@components/share/share.component';
-import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
 
 @UntilDestroy()
@@ -22,6 +22,7 @@ export class TokenBuyComponent implements OnInit {
 
   constructor(
     public data: DataService,
+    public helper: HelperService,
     private spaceApi: SpaceApi,
     private auth: AuthService
   ) {}
@@ -42,14 +43,6 @@ export class TokenBuyComponent implements OnInit {
           this.isGuardianWithinSpace$.next(isGuardianWithinSpace);
         }
       });
-  }
-
-  public hasPublicSale(token?: Token): boolean {
-    return !!(token?.allocations && token.allocations.filter(a => a.isPublicSale).length > 0);
-  }
-
-  public getShareUrl(token?: Token | null): string {
-    return token?.wenUrlShort || token?.wenUrl || window.location.href;
   }
 
   public get shareSizes(): typeof ShareComponentSize {

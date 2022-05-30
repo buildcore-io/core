@@ -1,0 +1,132 @@
+import { Injectable } from '@angular/core';
+import { UnitsHelper } from '@core/utils/units-helper';
+import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
+import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
+import dayjs from 'dayjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class HelperService {
+
+  public formatBest(amount: number | undefined | null): string {
+    if (!amount) {
+      return '0 Mi';
+    }
+
+    return UnitsHelper.formatBest(Math.floor(Number(amount)), 2);
+  }
+
+  public percentageMarketCap(percentage: number, token?: Token): string {
+    if (!token) {
+      return '';
+    }
+    return this.formatBest(Math.floor(token?.pricePerToken * (token?.totalSupply * percentage / 100)));
+  }
+
+  public formatTokenBest(amount?: number|null): string {
+    if (!amount) {
+      return '0';
+    }
+
+    return (amount / 1000 / 1000).toFixed(6);
+  }
+
+  public saleEndDate(token?: Token): dayjs.Dayjs {
+    return dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms');
+  }
+
+  public isInProcessing(token?: Token): boolean {
+    return token?.status === TokenStatus.PROCESSING;
+  }
+
+  public isScheduledForSale(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      (token?.status === TokenStatus.AVAILABLE || token?.status === TokenStatus.PROCESSING) &&
+      !!token?.saleStartDate
+    );
+  }
+
+  public isAfterSaleStarted(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      dayjs(token?.saleStartDate?.toDate()).isBefore(dayjs())
+    );
+  }
+
+  public isProcessing(token?: Token): boolean {
+    return token?.status === TokenStatus.PROCESSING;
+  }
+
+  public isInCooldown(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      (token?.status === TokenStatus.AVAILABLE || token?.status === TokenStatus.PROCESSING) &&
+      dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs()) &&
+      dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms').isBefore(dayjs())
+    );
+  }
+
+  public isAvailableForSale(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      token?.status === TokenStatus.AVAILABLE &&
+      dayjs(token?.saleStartDate?.toDate()).isBefore(dayjs()) &&
+      dayjs(token?.saleStartDate?.toDate()).add(token?.saleLength || 0, 'ms').isAfter(dayjs())
+    );
+  }
+
+  public isSalesInProgress(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      token?.status === TokenStatus.AVAILABLE &&
+      dayjs(token?.saleStartDate?.toDate()).isBefore(dayjs()) &&
+      dayjs(token?.coolDownEnd?.toDate()).isAfter(dayjs())
+    );
+  }
+
+  public isAfterCooldown(token?: Token): boolean {
+    return (
+      !!token?.approved &&
+      dayjs(token?.coolDownEnd?.toDate()).isBefore(dayjs())
+    );
+  }
+
+  public getCooldownDuration(token?: Token): string {
+    if (!token || !token.coolDownEnd || !token.saleStartDate) {
+      return '-';
+    }
+
+    const v: number = dayjs(token.coolDownEnd.toDate()).diff(dayjs(token.saleStartDate.toDate()).add(token.saleLength || 0, 'ms'), 'ms');
+    return dayjs.duration({ milliseconds: v }).humanize();
+  }
+
+  public hasPublicSale(token?: Token): boolean {
+    return !!(token?.allocations && token.allocations.filter(a => a.isPublicSale).length > 0);
+  }
+
+  public getShareUrl(token?: Token | null): string {
+    return token?.wenUrlShort || token?.wenUrl || window.location.href;
+  }
+
+  public isExpired(val?: Transaction | null): boolean {
+    if (!val?.createdOn) {
+      return false;
+    }
+
+    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
+    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
+  }
+
+  public getExplorerLink(link: string): string {
+    return 'https://thetangle.org/search/' + link;
+  }
+  
+  public vestingInFuture(drop?: TokenDrop): boolean {
+    if (!drop) {
+      return false;
+    }
+    return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
+  }
+}

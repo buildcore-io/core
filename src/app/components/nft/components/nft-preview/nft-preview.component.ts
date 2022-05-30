@@ -9,6 +9,7 @@ import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
+import { HelperService } from '@pages/nft/services/helper.service';
 import { take } from 'rxjs';
 
 @UntilDestroy()
@@ -59,6 +60,7 @@ export class NftPreviewComponent {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
     public data: DataService,
     public auth: AuthService,
     public cache: CacheService,

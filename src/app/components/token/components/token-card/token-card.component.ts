@@ -4,6 +4,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Token } from '@functions/interfaces/models/token';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import dayjs from 'dayjs';
 
 export enum TokenCardType {
@@ -37,6 +38,7 @@ export class TokenCardComponent {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public data: DataService,
+    public helper: HelperService,
     private cd: ChangeDetectorRef
   ) { }
 

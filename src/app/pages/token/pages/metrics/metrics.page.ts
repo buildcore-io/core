@@ -5,6 +5,7 @@ import { getRandomColor, INITIAL_COLORS } from '@core/utils/colors.utils';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 
 
@@ -39,6 +40,7 @@ export class MetricsPage implements OnInit {
 
   constructor(
     public data: DataService,
+    public helper: HelperService,
     private decimalPipe: DecimalPipe,
     private cd: ChangeDetectorRef
   ) {}
@@ -48,9 +50,9 @@ export class MetricsPage implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(token => {
         this.breakdownData = [
-          { title: $localize`Total token supply (Initial market cap)`, value: this.decimalPipe.transform(this.data.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol, extraValue: `(${this.data.percentageMarketCap(100, token)})` },
+          { title: $localize`Total token supply (Initial market cap)`, value: this.decimalPipe.transform(this.helper.formatTokenBest(token?.totalSupply), '1.0-2') + ' ' + token?.symbol, extraValue: `(${this.helper.percentageMarketCap(100, token)})` },
           { title: $localize`Initial price per token`, value: (token?.pricePerToken || 0) + ' Mi'},
-          ...(token?.allocations || []).map(a => ({ title: a.title + ' (Initial Cap)', value: a.percentage + '%', extraValue: `(${this.data.percentageMarketCap(a.percentage, token)})` }))
+          ...(token?.allocations || []).map(a => ({ title: a.title + ' (Initial Cap)', value: a.percentage + '%', extraValue: `(${this.helper.percentageMarketCap(a.percentage, token)})` }))
         ];
         this.setLineChartData(token);
         this.cd.markForCheck();

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Token, TokenDistribution, TokenStatus } from '@functions/interfaces/models/token';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import dayjs from 'dayjs';
 
 @Component({
@@ -15,7 +16,8 @@ export class TokenProgressComponent {
   public openTokenRefund?: TokenDistribution | null;
   public tokenActionTypeLabel = $localize`Refund`;
   constructor(
-    public data: DataService
+    public data: DataService,
+    public helper: HelperService
   ) {}
 
   public getCountdownDate(): Date {
@@ -39,7 +41,7 @@ export class TokenProgressComponent {
   }
 
   public getInProgressTitle(): string {
-    if (this.data.isInCooldown(this.token)) {
+    if (this.helper.isInCooldown(this.token)) {
       return $localize`Cooldown in progress`;
     } else {
       return $localize`Sale in progress`;

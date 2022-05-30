@@ -11,6 +11,7 @@ import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution, TokenDrop } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
@@ -65,6 +66,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
     private auth: AuthService,
     private notification: NotificationService,
     private orderApi: OrderApi,
@@ -168,32 +170,12 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
     return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
   }
 
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
   public formatTokenBest(amount?: number|null): string {
     if (!amount) {
       return '0';
     }
 
     return (amount / 1000 / 1000).toFixed(2).toString();
-  }
-
-  public vestingInFuture(drop?: TokenDrop): boolean {
-    if (!drop) {
-      return false;
-    }
-    return dayjs(drop.vestingAt.toDate()).isAfter(dayjs());
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
 
   public pushToHistory(uniqueId: string, date?: dayjs.Dayjs|Timestamp|null, text?: string, link?: string): void {

@@ -6,17 +6,17 @@
                 [src]="(fullWidth ? collection?.bannerUrl : previewImageService.getCollectionSize(collection?.bannerUrl)) || '/assets/mocks/no_banner.jpg'"
                 class="object-cover w-full h-full"
                 [ngClass]="{
-                    'card-smaller-height': !fullWidth && isDateInFuture(collection?.availableFrom)
+                    'card-smaller-height': !fullWidth && helper.isDateInFuture(collection?.availableFrom)
                 }"
             />
 
             <div class="absolute z-10 flex items-center justify-center px-2 py-1 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-lg top-4 left-4"
-                *ngIf="isDateInFuture(collection?.availableFrom)">
+                *ngIf="helper.isDateInFuture(collection?.availableFrom)">
                 <wen-icon-time class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-time>
                 <div class="ml-2.5 text-xs">
-                    <ng-container *ngIf="getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
+                    <ng-container *ngIf="helper.getDaysLeft(collection?.availableFrom) > 0; else todayBlock">
                         <span class="font-bold" i18n>Starts in</span>
-                        <span class="font-medium"> {{ getDaysLeft(collection?.availableFrom) }} </span>
+                        <span class="font-medium"> {{ helper.getDaysLeft(collection?.availableFrom) }} </span>
                         <span class="font-medium" i18n>days</span>
                     </ng-container>
                     <ng-template #todayBlock>

@@ -5,10 +5,10 @@ import { MemberApi } from '@api/member.api';
 import { DeviceService } from '@core/services/device';
 import { TransactionService } from '@core/services/transaction';
 import { download } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
+import { HelperService } from '@pages/member/services/helper.service';
 import Papa from 'papaparse';
 import { BehaviorSubject, first, map, Observable, of, skip, Subscription } from 'rxjs';
 
@@ -29,6 +29,7 @@ export class TransactionsPage implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public transactionService: TransactionService,
+    public helper: HelperService,
     private data: DataService,
     private memberApi: MemberApi,
     private cd: ChangeDetectorRef
@@ -125,14 +126,6 @@ export class TransactionsPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public formatBest(amount: number | undefined | null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   private cancelSubscriptions(): void {

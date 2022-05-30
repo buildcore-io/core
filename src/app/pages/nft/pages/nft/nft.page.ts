@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi, OffersHistory, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
+import { NftApi, OffersHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { CacheService } from '@core/services/cache/cache.service';
@@ -15,18 +15,17 @@ import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from '@functions/interfaces/config';
-import { Collection, CollectionType, Transaction, TransactionBillPayment, TransactionType } from '@functions/interfaces/models';
+import { Collection, CollectionType, Transaction } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/nft/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import * as dayjs from 'dayjs';
-import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { BehaviorSubject, combineLatest, interval, map, skip, Subscription, take } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
-dayjs.extend(isSameOrBefore);
 
 export enum ListingType {
   CURRENT_BIDS = 0,
@@ -72,6 +71,7 @@ export class NFTPage implements OnInit, OnDestroy {
 
   constructor(
     public data: DataService,
+    public helper: HelperService,
     public previewImageService: PreviewImageService,
     public deviceService: DeviceService,
     public auth: AuthService,
@@ -107,10 +107,10 @@ export class NFTPage implements OnInit, OnDestroy {
               return;
             }
 
-            if (this.isAvailableForAuction(this.data.nft$.value, this.data.collection$.value)) {
+            if (this.helper.isAvailableForAuction(this.data.nft$.value, this.data.collection$.value)) {
               this.bid();
               this.cd.markForCheck();
-            } else if (this.isAvailableForSale(this.data.nft$.value, this.data.collection$.value)) {
+            } else if (this.helper.isAvailableForSale(this.data.nft$.value, this.data.collection$.value)) {
               this.buy();
               this.cd.markForCheck();
             }
@@ -256,7 +256,7 @@ export class NFTPage implements OnInit, OnDestroy {
   }
 
   private refreshBids(): void {
-    if (this.data.auctionInProgress(this.data.nft$.value, this.data.collection$.value)) {
+    if (this.helper.auctionInProgress(this.data.nft$.value, this.data.collection$.value)) {
       this.currentListingType = ListingType.CURRENT_BIDS;
       this.cd.markForCheck();
 
@@ -288,99 +288,14 @@ export class NFTPage implements OnInit, OnDestroy {
     }
   }
 
-  public getExplorerLink(link?: string | null): string {
-    return 'https://thetangle.org/search/' + link;
-  }
-
-  public getOnChainInfo(orders?: SuccesfullOrdersWithFullHistory[] | null): string | undefined {
-    if (!orders) {
-      return undefined;
-    }
-
-    const lastestBill: TransactionBillPayment | undefined = this.getLatestBill(orders);
-    return lastestBill?.payload?.chainReference || lastestBill?.payload?.walletReference?.chainReference || undefined;
-  }
-
-  public getLatestBill(orders?: SuccesfullOrdersWithFullHistory[] | null): TransactionBillPayment | undefined {
-    if (!orders) {
-      return undefined;
-    }
-
-    // Get all non royalty bills.
-    let lastestBill: TransactionBillPayment | undefined = undefined;
-    for (const h of orders) {
-      for (const l of (h.transactions || [])) {
-        if (
-          l.type === TransactionType.BILL_PAYMENT &&
-          l.payload.royalty === false &&
-          l.payload.reconciled === true &&
-          (!lastestBill || dayjs(lastestBill.createdOn?.toDate()).isBefore(l.createdOn?.toDate()))
-        ) {
-          lastestBill = l;
-        }
-      }
-    }
-
-    return lastestBill;
-  }
-
   private listenToNft(id: string): void {
     this.cancelSubscriptions();
     this.data.nftId = id;
     this.subscriptions$.push(this.nftApi.listen(id).pipe(untilDestroyed(this)).subscribe(this.data.nft$));
   }
 
-  public isAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return (col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isSameOrBefore(dayjs(), 's'));
-  }
-
-  public willBeAvailableForSale(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return col.approved === true && !!nft?.availableFrom && dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's');
-  }
-
-
   public canSetItForSale(nft?: Nft | null): boolean {
     return !!nft?.owner && nft?.owner === this.auth.member$.value?.uid;
-  }
-
-  public canBeSetForSale(nft?: Nft | null): boolean {
-    if (nft?.auctionFrom || nft?.availableFrom) {
-      return false;
-    }
-
-    return !!nft?.owner;
-  }
-
-  public isAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isSameOrBefore(dayjs(), 's');
-  }
-
-  public willBeAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return col.approved === true && !!nft?.auctionFrom && dayjs(nft.auctionFrom.toDate()).isAfter(dayjs(), 's');
-  }
-
-  public saleNotStartedYet(nft?: Nft | null): boolean {
-    if (!nft || !nft.availableFrom) {
-      return false;
-    }
-
-    return dayjs(nft.availableFrom.toDate()).isAfter(dayjs(), 's')
   }
 
   public discount(collection?: Collection|null, nft?: Nft|null): number {
@@ -458,10 +373,6 @@ export class NFTPage implements OnInit, OnDestroy {
 
   public isEmpty(arr: Nft[] | null | undefined): boolean {
     return (Array.isArray(arr) && arr.length === 0);
-  }
-
-  public getShareUrl(nft?: Nft | null): string {
-    return nft?.wenUrlShort || nft?.wenUrl || window.location.href;
   }
 
   private notFound(): void {
