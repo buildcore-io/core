@@ -408,7 +408,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-clear/algolia-clear.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Reset</target>
+        <target state="translated">Réinitialiser</target>
       </trans-unit>
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
@@ -3003,7 +3003,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">33,34</context>
         </context-group>
-        <target state="needs-translation">Your offered rate</target>
+        <target state="translated">Votre taux proposé</target>
       </trans-unit>
       <trans-unit id="290427846554496866" datatype="html">
         <source>24h VWAP</source>
@@ -3015,7 +3015,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation">24h VWAP</target>
+        <target state="translated">VWAP 24h/24</target>
       </trans-unit>
       <trans-unit id="1647367556246573738" datatype="html">
         <source>Enter how much you want to spend. Amount of tokens will be calculated.</source>
@@ -3043,7 +3043,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">48</context>
         </context-group>
-        <target state="needs-translation">Enter amount of tokens you want to buy. Price will be calculated.</target>
+        <target state="translated">Entrez le nombre de tokens choisis pour l'achat. Une cotation aura lieu.</target>
       </trans-unit>
       <trans-unit id="3335511369170111370" datatype="html">
         <source>Your ballance</source>
@@ -3267,7 +3267,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Tokens available from</target>
+        <target state="translated">Tokens disponibles à partir de</target>
       </trans-unit>
       <trans-unit id="7970375349244346571" datatype="html">
         <source>Expired.</source>
@@ -3411,7 +3411,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">30,23</context>
         </context-group>
-        <target state="needs-translation">Current distribution</target>
+        <target state="translated">Répartition actuelle</target>
       </trans-unit>
       <trans-unit id="8650499415827640724" datatype="html">
         <source>Type</source>
@@ -3829,7 +3829,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">208,209</context>
         </context-group>
-        <target state="needs-translation">Now you can deal with NFTs and participate in token trading.</target>
+        <target state="translated">Vous pouvez désormais traiter les NFT et participer au trading de cryptomonnaie.</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -5417,7 +5417,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">Filters&amp;Sort</target>
+        <target state="translated">Filtres&amp;Tri</target>
       </trans-unit>
       <trans-unit id="7387129629487497351" datatype="html">
         <source>Filters&amp;sort</source>
@@ -5449,7 +5449,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Filters&amp;sort</target>
+        <target state="translated">Filtres&amp;tri</target>
       </trans-unit>
       <trans-unit id="660809762116764762" datatype="html">
         <source>Spaces</source>
@@ -5785,7 +5785,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation">Saletype</target>
+        <target state="translated">Type de vente</target>
       </trans-unit>
       <trans-unit id="2028563318899266275" datatype="html">
         <source>Price range</source>
@@ -5793,7 +5793,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">Price range</target>
+        <target state="translated">Fourchette de prix</target>
       </trans-unit>
       <trans-unit id="7623649064629539622" datatype="html">
         <source>Marketplace</source>
