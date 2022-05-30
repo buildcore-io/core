@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
-import dayjs from 'dayjs';
-
+import * as dayjs from 'dayjs';
+import * as duration from 'dayjs/plugin/duration';
+dayjs.extend(duration)
 @Injectable({
   providedIn: 'root'
 })
