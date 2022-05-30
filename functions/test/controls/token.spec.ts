@@ -548,6 +548,27 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     expect(credit.payload.amount).toBe(1.5 * MIN_IOTA_AMOUNT)
   })
 
+  it('Should create order in parallel', async () => {
+    const promises = [submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid }), submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid })]
+    const orders = await Promise.all(promises)
+    expect(orders[0]).toEqual(orders[1])
+  })
+
+  it('Should create order and deposit in parallel', async () => {
+    const array = Array.from(Array(1000))
+    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    const amounts = array.map((_, index) => index * MIN_IOTA_AMOUNT)
+    const total = array.reduce((sum, _, index) => sum + (index * MIN_IOTA_AMOUNT), 0)
+    const deposit = async (amount: number) => {
+      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, amount);
+      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    }
+    const promises = amounts.map(deposit)
+    await Promise.all(promises)
+    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution.totalDeposit).toBe(total)
+  })
+
 })
 
 describe('Token airdrop test', () => {

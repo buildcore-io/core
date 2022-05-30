@@ -53,6 +53,8 @@ export function scale(func: WEN_FUNC): number {
 
   scaleSettings[WEN_FUNC.cToken] = low
   scaleSettings[WEN_FUNC.onTokenStatusUpdate] = medium
+  scaleSettings[WEN_FUNC.onTokenBuySellCreated] = important
+  scaleSettings[WEN_FUNC.onTokenPurchaseCreated] = important
 
   scaleSettings[WEN_FUNC.milestoneTransactionWrite] = superPump
   scaleSettings[WEN_FUNC.nftWrite] = medium
