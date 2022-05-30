@@ -467,6 +467,20 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     expect(updatedToken?.totalDeposit).toBe(0)
   })
 
+  it('Should create token order and should fail credit, not in cool down period', async () => {
+    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
+      saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
+      coolDownEnd: dateToTimestamp(dayjs().subtract(1, 'm').toDate())
+    });
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
+    await expectThrow(testEnv.wrap(creditToken)({}), WenError.token_not_in_cool_down_period.key)
+  })
+
   it('Should throw, amount too much to refund', async () => {
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
     const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
