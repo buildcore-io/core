@@ -11,10 +11,7 @@ import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, cred
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed, wait } from "./common";
-
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
-const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
+import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed, wait } from "./common";
 
 let walletSpy: any;
 
@@ -834,8 +831,8 @@ describe('Token airdrop test', () => {
       token: token.uid, drops: [{ count: 400, recipient: guardianAddress, vestingAt }, { count: 50, recipient: memberAddress, vestingAt }]
     }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
-    await testEnv.wrap(airdropToken)({});
-    await testEnv.wrap(airdropToken)({});
+    const promises = [testEnv.wrap(airdropToken)({}), testEnv.wrap(airdropToken)({})]
+    await Promise.all(promises)
 
     const guardDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
     expect(guardDistribution.tokenDrops?.length).toBe(2)

@@ -1,12 +1,13 @@
 import dayjs from "dayjs";
-import { MIN_IOTA_AMOUNT, URL_PATHS } from "../interfaces/config";
-import { Space } from "../interfaces/models";
+import { MIN_IOTA_AMOUNT } from "../interfaces/config";
+import { Member, Space } from "../interfaces/models";
 import { COL, SUB_COL } from "../interfaces/models/base";
 import { TokenStatus } from "../interfaces/models/token";
 import admin from '../src/admin.config';
-import { cOn, dateToTimestamp, serverTime } from "../src/utils/dateTime.utils";
+import { dateToTimestamp, serverTime } from "../src/utils/dateTime.utils";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, createSpace, wait } from "../test/controls/common";
+import { createMemberCopies } from "./common";
 
 let walletSpy: any;
 
@@ -42,21 +43,8 @@ describe('Token trigger stress test', () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardian = await createMember(walletSpy, true)
     space = await createSpace(walletSpy, guardian, true)
-    const guardianDoc = (await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data()
-
-    const createMemberCopy = async () => {
-      let uid = admin.firestore().collection(COL.MEMBER).doc().id;
-      const generatedNonce = Math.floor(Math.random() * 1000000).toString();
-      await admin.firestore().collection(COL.MEMBER).doc(uid).set(cOn({
-        uid,
-        nonce: generatedNonce,
-        validatedAddress: guardianDoc?.validatedAddress
-      }, URL_PATHS.MEMBER));
-      return uid
-    }
-
-    const promises = Array.from(Array(membersCount)).map(() => createMemberCopy())
-    members = await Promise.all(promises)
+    const guardianDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data()
+    members = await createMemberCopies(guardianDoc, membersCount)
   })
 
   it('Should buy a lot of tokens', async () => {
