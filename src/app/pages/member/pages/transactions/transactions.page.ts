@@ -10,7 +10,7 @@ import { Transaction } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/member/services/data.service';
 import Papa from 'papaparse';
-import { BehaviorSubject, first, map, Observable, of, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, first, map, Observable, of, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -106,8 +106,8 @@ export class TransactionsPage implements OnInit, OnDestroy {
     this.exportingTransactions = true;
     this.memberApi.topTransactions(this.data.member$.value?.uid, undefined, undefined, FULL_LIST)
       .pipe(
-        skip(1),
-        first()
+        first(),
+        untilDestroyed(this)
       )
       .subscribe((transactions: Transaction[]) => {
         this.exportingTransactions = false;
