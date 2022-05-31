@@ -112,3 +112,6 @@ export const wait = async (func: () => Promise<boolean>, maxAttempt = 60) => {
   }
   throw new Error("Timeout");
 }
+
+const alphabet = "abcdefghijklmnopqrstuvwxyz"
+export const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()

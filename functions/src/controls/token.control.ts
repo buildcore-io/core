@@ -389,7 +389,7 @@ const airdropTokenSchema = ({
     vestingAt: Joi.date().required(),
     count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
     recipient: Joi.string().required()
-  })).min(1)
+  })).min(1).max(499)
 })
 
 const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
@@ -412,11 +412,6 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       );
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const distributionDocs = []
-      for (const docRef of distributionDocRefs) {
-        distributionDocs.push(await transaction.get(docRef))
-      }
-
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
       const token = <Token | undefined>(await transaction.get(tokenDocRef)).data();
 
