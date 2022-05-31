@@ -187,6 +187,21 @@ describe('Buy sell trigger', () => {
     await assertVolumeTotal(token.uid, 2 * tokenCount)
   })
 
+  it('Should sell tokens in two transactions', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 2 * tokenCount });
+    await testEnv.wrap(sellToken)({});
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 2 * tokenCount });
+
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: tokenCount });
+    await testEnv.wrap(sellToken)({});
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: tokenCount });
+
+    await wait(async () => {
+      const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data();
+      return distribution.tokenOwned === 0 && distribution.sold === 3 * tokenCount
+    })
+  })
+
   it('Should buy in parallel', async () => {
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 2 * tokenCount });
     await testEnv.wrap(sellToken)({});
