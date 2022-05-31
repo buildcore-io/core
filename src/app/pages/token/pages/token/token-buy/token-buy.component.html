@@ -4,7 +4,7 @@
         nzType="primary"
         nzBlock
         nzSize="large"
-        *ngIf="data.isAfterCooldown((data.token$ | async) || undefined)"
+        *ngIf="helper.isAfterCooldown((data.token$ | async) || undefined)"
         [routerLink]="['trade']"
         i18n
     >
@@ -16,7 +16,7 @@
         nzType="primary"
         nzBlock
         nzSize="large"
-        *ngIf="data.isAvailableForSale((data.token$ | async) || undefined)"
+        *ngIf="helper.isAvailableForSale((data.token$ | async) || undefined)"
         (click)="isBuyTokensVisible = true"
         [disabled]="false"
         i18n
@@ -25,7 +25,7 @@
     </button>
 
     <button
-        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved && (isGuardianWithinSpace$ | async) && hasPublicSale((data.token$ | async) || undefined)"
+        *ngIf="!(data.token$ | async)?.saleStartDate && (data.token$ | async)?.approved && (isGuardianWithinSpace$ | async) && helper.hasPublicSale((data.token$ | async) || undefined)"
         nz-button
         nzSize="large"
         class="w-full wen-secondary"
@@ -42,14 +42,14 @@
             <div class="ml-2.5 text-sm font-medium" i18n>Edit token info</div>
     </button>
 
-    <div *ngIf="data.isAvailableForSale((data.token$ | async) || undefined) || (isGuardianWithinSpace$ | async)"
+    <div *ngIf="helper.isAvailableForSale((data.token$ | async) || undefined) || (isGuardianWithinSpace$ | async)"
         class="w-1/5 h-px mx-auto bg-foregrounds-tertiary dark:bg-backgrounds-tertiary-dark"></div>
 
     <wen-share
         class="block mb-4"
         i18n-shareText
         shareText="Check out token"
-        [shareUrl]="getShareUrl(data.token$ | async)"
+        [shareUrl]="helper.getShareUrl(data.token$ | async)"
         [size]="shareSizes.LARGE">
     </wen-share>
 </div>

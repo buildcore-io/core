@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl } from '@angular/forms';
 import { DEFAULT_LIST_SIZE } from '@api/base.api';
 import { NftApi } from '@api/nft.api';
-import { DEFAULT_COLLECTION, SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
+import { DEFAULT_COLLECTION } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { Collection } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/member/services/helper.service';
 import { ParticipantsPage } from '@pages/proposal/pages/participants/participants.page';
 import { BehaviorSubject, debounceTime, map, Observable, of, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
@@ -29,6 +30,7 @@ export class NFTsPage implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public cache: CacheService,
+    public helper: HelperService,
     private data: DataService,
     private nftApi: NftApi,
     private cacheService: CacheService
@@ -130,16 +132,6 @@ export class NFTsPage implements OnInit, OnDestroy {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
-  }
-
-  public getCollectionListOptions(list?: Collection[] | null): SelectCollectionOption[] {
-    return (list || [])
-      .filter((o) => o.rejected !== true)
-      .map((o) => ({
-        label: o.name || o.uid,
-        value: o.uid,
-        img: o.bannerUrl
-      }));
   }
 
   private cancelSubscriptions(): void {

@@ -2,7 +2,7 @@
     <wen-select-collection
         class="block w-full lg:w-52"
         [formControl]="collectionControl"
-        [collections]="getCollectionListOptions(cache.allCollections$ | async)"
+        [collections]="helper.getCollectionListOptions(cache.allCollections$ | async)"
         [size]="(deviceService.isDesktop$ | async) ? 'small' : 'large'">
     </wen-select-collection>
 

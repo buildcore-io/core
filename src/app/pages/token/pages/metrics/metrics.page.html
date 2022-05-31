@@ -12,7 +12,7 @@
 
             <div class="absolute z-10 text-center -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 text-2xl"
                 *ngIf="(data.token$ | async)?.totalSupply">
-                <span class="font-bold">{{ data.formatTokenBest((data.token$ | async)?.totalSupply) | number : '1.0-2' }}</span> 
+                <span class="font-bold">{{ helper.formatTokenBest((data.token$ | async)?.totalSupply) | number : '1.0-2' }}</span> 
                 <span>{{ ' ' + (data.token$ | async)?.symbol }}</span>
             </div>
         </div>

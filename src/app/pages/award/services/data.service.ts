@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AwardParticipantWithMember } from '@api/award.api';
 import { Award, Space } from '@functions/interfaces/models';
-import * as dayjs from 'dayjs';
 import { BehaviorSubject } from 'rxjs';
 import { Member } from './../../../../../functions/interfaces/models/member';
 
@@ -15,17 +14,6 @@ export class DataService {
   public isLoggedInMemberWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isParticipantWithinAward$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-  public isCompleted(award: Award | undefined | null): boolean {
-    if (!award) {
-      return false;
-    }
-
-    return (
-      (award.issued >= award.badge.count) || dayjs(award?.endDate.toDate()).isBefore(dayjs()) &&
-      award.approved
-    )
-  }
 
   public isLoading(arr: AwardParticipantWithMember[] | null | undefined): boolean {
     return arr === undefined;
@@ -42,13 +30,5 @@ export class DataService {
     this.owners$.next(undefined);
     this.isGuardianWithinSpace$.next(false);
     this.isParticipantWithinAward$.next(false);
-  }
-
-  public getExperiencePointsPerBadge(award: Award | undefined | null): number {
-    if (award?.badge?.xp && award.badge.xp > 0 && award?.badge?.count > 1) {
-      return (award.badge.xp || 0) / (award.badge.count || 0);
-    } else {
-      return award?.badge?.xp || 0;
-    }
   }
 }

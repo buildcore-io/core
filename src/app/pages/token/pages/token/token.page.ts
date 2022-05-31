@@ -12,6 +12,7 @@ import { Member } from '@functions/interfaces/models';
 import { Token, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
+import { HelperService } from '@pages/token/services/helper.service';
 import { BehaviorSubject, first, interval, skip, Subscription } from 'rxjs';
 
 @UntilDestroy()
@@ -37,6 +38,7 @@ export class TokenPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
     public data: DataService,
+    public helper: HelperService,
     private auth: AuthService,
     private cd: ChangeDetectorRef,
     private titleService: Title,
@@ -80,7 +82,7 @@ export class TokenPage implements OnInit, OnDestroy {
     // Ticket to refresh view after sale starts.
     let activated = false;
     const intervalSubs = interval(1000).pipe(untilDestroyed(this)).subscribe(() => {
-      if (!activated && this.data.isAfterSaleStarted()) {
+      if (!activated && this.helper.isAfterSaleStarted()) {
         this.data.token$.next(this.data.token$.value);
         activated = true;
         intervalSubs.unsubscribe();
@@ -113,11 +115,11 @@ export class TokenPage implements OnInit, OnDestroy {
   }
 
   public getLatestStatus(token?: Token): string {
-    if (this.data.isSalesInProgress(token) && !this.data.isInCooldown(token)) {
+    if (this.helper.isSalesInProgress(token) && !this.helper.isInCooldown(token)) {
       return $localize`Ongoing Sale`;
-    } else if (this.data.isScheduledForSale(token) && !this.data.isInCooldown(token)) {
+    } else if (this.helper.isScheduledForSale(token) && !this.helper.isInCooldown(token)) {
       return $localize`Scheduled`;
-    } else if (this.data.isInCooldown(token)) {
+    } else if (this.helper.isInCooldown(token)) {
       return $localize`Cooldown`;
     } else if (token?.status === TokenStatus.PROCESSING) {
       return $localize`Processing`;

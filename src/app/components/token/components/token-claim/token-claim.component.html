@@ -34,7 +34,7 @@
 
 <ng-template #confirmTemplate>
 
-    <div class="flex items-center mt-5" *ngIf="token?.coolDownEnd && vestingInFuture(drop)">
+    <div class="flex items-center mt-5" *ngIf="token?.coolDownEnd && helper.vestingInFuture(drop)">
         <wen-icon-time class="text-icons-secondary dark:text-icons-secondary-dark" [size]="20"></wen-icon-time>
         <div class="font-medium ml-2.5 flex items-center">
             <div class="mr-1" i18n>Cooldown period ends</div>
@@ -42,7 +42,7 @@
         </div>
     </div>
 
-    <div class="relative flex flex-col mt-6 font-medium lg:mt-6" *ngIf="vestingInFuture(drop)">
+    <div class="relative flex flex-col mt-6 font-medium lg:mt-6" *ngIf="helper.vestingInFuture(drop)">
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
           <div class="mt-1">{{formatTokenBest(drop?.count) | number: '1.0-2'}} {{token?.symbol}}</div>
             <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark flex items-center">
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    <div class="relative flex flex-col mt-6 font-medium lg:mt-6" *ngIf="!vestingInFuture(drop)">
+    <div class="relative flex flex-col mt-6 font-medium lg:mt-6" *ngIf="!helper.vestingInFuture(drop)">
         <div class="flex flex-row-reverse items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
           <div class="mt-1">{{formatTokenBest(sum(memberDistribution?.tokenDrops || [])) | number: '1.0-2'}} {{token?.symbol}}</div>
           <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
@@ -65,7 +65,7 @@
         class="mt-10"
         [isChecked]="agreeTermsConditions"
         documentLink="https://docs.google.com/document/d/1oOFhZIip2XTEGVYhtr_3eUeSG6fbLDILFJGBvmtlFgc"
-        [disabled]="vestingInFuture(drop)"
+        [disabled]="helper.vestingInFuture(drop)"
         (wenOnCheckChange)="agreeTermsConditions = $event">
     </wen-terms-and-conditions>
 
@@ -77,17 +77,17 @@
         i18n-linkLabel
         linkLabel="Token terms and Conditions"
         [documentLink]="token?.termsAndConditions || ''"
-        [disabled]="vestingInFuture(drop)"
+        [disabled]="helper.vestingInFuture(drop)"
         (wenOnCheckChange)="agreeTokenTermsConditions = $event">
     </wen-terms-and-conditions>
 
     <div class="flex flex-col items-center w-full">
         <button nz-button nzType="primary" nzSize="large" class="w-full mt-10 lg:w-auto"
-            [disabled]="!agreeTermsConditions || !agreeTokenTermsConditions || vestingInFuture(drop)" i18n (click)="claimToken()">
+            [disabled]="!agreeTermsConditions || !agreeTokenTermsConditions || helper.vestingInFuture(drop)" i18n (click)="claimToken()">
                 Confirm and generate address
         </button>
 
-        <div *ngIf="!vestingInFuture(drop)" class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+        <div *ngIf="!helper.vestingInFuture(drop)" class="w-3/5 mt-6 text-sm font-medium text-center text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
             Once you agree with the terms, the  generated address will remain active during the whole sale.
         </div>
     </div>
@@ -106,20 +106,20 @@
     <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center w-max mx-auto mt-6">
         <wen-icon-stopwatch class="mr-2 lg:mr-3 text-alerts-error"></wen-icon-stopwatch>
         <div class="text-base font-medium">
-            <span *ngIf="!isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
-            <span class="text-alerts-error" *ngIf="!isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
-            <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))" i18n>Expired</span>
+            <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
+            <span class="text-alerts-error" *ngIf="!helper.isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
+            <span class="text-alerts-error" *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired</span>
         </div>
     </div>
 
-    <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
+    <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!helper.isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
 
     <div class="w-full px-4 py-3 mt-6 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl" *ngIf="true">
         <div class="text-xs font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
-          <span *ngIf="!isExpired((transaction$ | async))">
+          <span *ngIf="!helper.isExpired((transaction$ | async))">
             <span i18n>Send</span> {{formatBest(targetAmount)}} <span i18n> to following address:</span>
           </span>
-          <span *ngIf="isExpired((transaction$ | async))" i18n>Expired.</span>
+          <span *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired.</span>
         </div>
 
         <div class="flex flex-wrap items-center justify-between mt-2 break-all">
@@ -153,7 +153,7 @@
             <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="helper.getExplorerLink(t.link)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
             </div>
@@ -171,7 +171,7 @@
             <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="helper.getExplorerLink(t.link)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
             </div>
