@@ -831,8 +831,8 @@ describe('Token airdrop test', () => {
       token: token.uid, drops: [{ count: 400, recipient: guardianAddress, vestingAt }, { count: 50, recipient: memberAddress, vestingAt }]
     }
     mockWalletReturnValue(walletSpy, guardianAddress, airdropRequest)
-    const promises = [testEnv.wrap(airdropToken)({}), testEnv.wrap(airdropToken)({})]
-    await Promise.all(promises)
+    await testEnv.wrap(airdropToken)({});
+    await testEnv.wrap(airdropToken)({});
 
     const guardDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardianAddress}`).get()).data()
     expect(guardDistribution.tokenDrops?.length).toBe(2)
