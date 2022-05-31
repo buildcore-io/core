@@ -51,6 +51,7 @@ export const enum WEN_FUNC {
   cToken = 'cToken',
   uToken = 'uToken',
   setTokenAvailableForSale = 'setTokenAvailableForSale',
+  cancelPublicSale = 'cancelPublicSale',
   orderToken = 'orderToken',
   creditToken = 'creditToken',
   airdropToken = 'airdropToken',
@@ -59,6 +60,8 @@ export const enum WEN_FUNC {
   buyToken = 'buyToken',
   cancelBuyOrSell = 'cancelBuyOrSell',
   onTokenStatusUpdate = 'onTokenStatusUpdate',
+  onTokenBuySellCreated = 'onTokenBuySellCreated',
+  onTokenPurchaseCreated = 'onTokenPurchaseCreated',
 
   milestoneTransactionWrite = 'milestoneTransactionWrite',
   nftWrite = 'nftWrite',

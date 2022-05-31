@@ -141,6 +141,18 @@ const scenario8 = ({
   publicPercentage: 100
 })
 
+// Total paid is less then MIN_IOTA_AMOUNT
+const scenario9 = ({
+  totalDeposit: [20, 1],
+  totalPaid: [10, 0],
+  refundedAmount: [10, 1],
+  tokenOwned: [10, 0],
+
+  totalSupply: 10,
+  pricePerToken: 1 * MIN_IOTA_AMOUNT,
+  publicPercentage: 100
+})
+
 const custom = ({
   totalDeposit: [4, 8, 2],
   totalPaid: [3, 6, 1],
@@ -152,7 +164,7 @@ const custom = ({
   publicPercentage: 100
 })
 
-const scenarios = [mainPage, scenario1, scenario2, scenario3, scenario4, scenario5, scenario6, scenario7, scenario8, custom]
+const scenarios = [mainPage, scenario1, scenario2, scenario3, scenario4, scenario5, scenario6, scenario7, scenario8, scenario9, custom]
 
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
   mockWalletReturnValue(spy, address, params);
@@ -249,7 +261,7 @@ describe('Token trigger test', () => {
     token = dummyToken(100, space, MIN_IOTA_AMOUNT, 10, guardian)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
 
-    const totalDeposits = [2,3]
+    const totalDeposits = [2, 3]
 
     const orderPromises = totalDeposits.map(async (totalDeposit, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });

@@ -7,9 +7,9 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
+import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.trigger";
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
-import { cancelExpiredSale } from '../../src/utils/token-buy-sell.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { projectId, testEnv } from '../set-up';
 import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
@@ -62,7 +62,6 @@ const getRoyaltyDistribution = (amount: number) => {
   const spaceTwo = amount * (percentage / 100) * (1 - (spaceonepercentage / 100))
   return [spaceOne, spaceTwo, amount - (spaceOne >= MIN_IOTA_AMOUNT ? spaceOne : 0) - (spaceTwo >= MIN_IOTA_AMOUNT ? spaceTwo : 0)]
 }
-
 
 describe('Buy sell trigger', () => {
   let seller: string;
@@ -445,6 +444,29 @@ describe('Buy sell trigger', () => {
     expect(sellDistribution.lockedForSale).toBe(0)
     expect(sellDistribution.sold).toBe(tokenCount - 1)
     expect(sellDistribution.tokenOwned).toBe(2 * tokenCount + 1)
+  })
+
+  it('Should cancel sell after half fulfilled', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 });
+    const sell = await testEnv.wrap(sellToken)({});
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 })
+
+    await wait(async () => {
+      return (await admin.firestore()
+        .collection(COL.TOKEN_MARKET)
+        .where('owner', '==', buyer)
+        .get()
+      ).docs[0]?.data()?.fulfilled === 5
+    })
+
+    const cancelRequest = { uid: sell.uid }
+    mockWalletReturnValue(walletSpy, seller, cancelRequest);
+    await testEnv.wrap(cancelBuyOrSell)({});
+
+    const sellDistribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).get()).data()
+    expect(sellDistribution.lockedForSale).toBe(0)
+    expect(sellDistribution.sold).toBe(5)
+    expect(sellDistribution.tokenOwned).toBe(tokenCount * 3 - 5)
   })
 })
 

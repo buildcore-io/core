@@ -2,16 +2,16 @@ import dayjs from "dayjs";
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
 import { WenError } from "../../interfaces/errors";
 import { WEN_FUNC } from "../../interfaces/functions";
-import { Space, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
+import { Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType } from "../../interfaces/models";
 import { Access, COL, SUB_COL } from "../../interfaces/models/base";
 import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { joinSpace } from "../../src/controls/space.control";
-import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
+import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed } from "./common";
+import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed, wait } from "./common";
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
@@ -22,7 +22,7 @@ const dummyToken = (space: string) => ({
   name: 'MyToken',
   symbol: getRandomSymbol(),
   space,
-  pricePerToken: 1 * 1000 * 1000,
+  pricePerToken: MIN_IOTA_AMOUNT,
   totalSupply: 1000,
   allocations: <TokenAllocation[]>[{ title: 'Allocation1', percentage: 100 }],
   icon: 'icon',
@@ -69,12 +69,28 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
     token.saleStartDate = saleStartDate.toDate()
     token.saleLength = 86400000
     token.coolDownLength = 86400000
+    token.autoProcessAt100Percent = true
     mockWalletReturnValue(walletSpy, memberAddress, token)
     const result = await testEnv.wrap(createToken)({});
     expect(result?.uid).toBeDefined();
     expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(saleStartDate, true).toDate())
     expect(result?.saleLength).toBe(86400000)
     expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(saleStartDate).add(token.saleLength + token.coolDownLength, 'ms'), true).toDate())
+    expect(result?.autoProcessAt100Percent).toBe(true)
+  })
+
+  it('Should create, one public sale, no cooldown period', async () => {
+    token.allocations = [{ title: 'asd', percentage: 100, isPublicSale: true }]
+    const saleStartDate = dayjs().add(8, 'day')
+    token.saleStartDate = saleStartDate.toDate()
+    token.saleLength = 86400000
+    token.coolDownLength = 0
+    mockWalletReturnValue(walletSpy, memberAddress, token)
+    const result = await testEnv.wrap(createToken)({});
+    expect(result?.uid).toBeDefined();
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(saleStartDate, true).toDate())
+    expect(result?.saleLength).toBe(86400000)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(saleStartDate).add(token.saleLength, 'ms'), true).toDate())
   })
 
   it('Should not allow two tokens', async () => {
@@ -344,6 +360,19 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
     expect(result?.saleLength).toBe(2 * 86400000)
     expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'), true).toDate())
+    expect(result?.autoProcessAt100Percent).toBe(false)
+  })
+
+  it('Should set public availability', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const updateData = { token: token.uid, ...publicTime, autoProcessAt100Percent: true }
+    mockWalletReturnValue(walletSpy, memberAddress, updateData)
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result?.uid).toBeDefined();
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
+    expect(result?.saleLength).toBe(2 * 86400000)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(86400000 * 2 + 86400000, 'ms'), true).toDate())
+    expect(result?.autoProcessAt100Percent).toBe(true)
   })
 
   it('Should throw, can not set public availability twice', async () => {
@@ -355,7 +384,132 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
     await expectThrow(testEnv.wrap(setTokenAvailableForSale)({}), WenError.public_sale_already_set.key);
   })
 
+  it('Should set no cool down length', async () => {
+    const docRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+    await docRef.update({ allocations: [{ title: 'public', percentage: 100, isPublicSale: true }] })
+    const publicTime = { saleStartDate: dayjs().toDate(), saleLength: 86400000 * 2, coolDownLength: 0 }
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, ...publicTime })
+    const result = await testEnv.wrap(setTokenAvailableForSale)({});
+    expect(result?.saleStartDate.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate), true).toDate())
+    expect(result?.saleLength).toBe(publicTime.saleLength)
+    expect(result?.coolDownEnd.toDate()).toEqual(dateToTimestamp(dayjs(publicTime.saleStartDate).add(publicTime.saleLength, 'ms'), true).toDate())
+  })
+
 })
+
+const setAvailableOrderAndCancelSale = async (token: Token, memberAddress: string, miotas: number) => {
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+  const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
+  await tokenDocRef.update({
+    saleLength: 86400000 * 2,
+    saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
+    coolDownEnd: dateToTimestamp(dayjs().subtract(1, 'd').add(86400000 * 2, 'ms').toDate()),
+  });
+  const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+  const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, miotas * MIN_IOTA_AMOUNT);
+  await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+  const distribution = <TokenDistribution>(await distributionDocRef.get()).data()
+  expect(distribution.totalDeposit).toBe(miotas * MIN_IOTA_AMOUNT)
+
+  mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
+  await testEnv.wrap(cancelPublicSale)({});
+  await wait(async () => (await tokenDocRef.get()).data()?.status === TokenStatus.AVAILABLE)
+  const tokenData = <Token>(await tokenDocRef.get()).data()
+  expect(tokenData.saleStartDate).toBeUndefined()
+}
+
+describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
+  let memberAddress: string;
+  let space: Space;
+  let token: any
+
+  beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    memberAddress = await createMember(walletSpy, true)
+    space = await createSpace(walletSpy, memberAddress, true)
+    const tokenId = wallet.getRandomEthAddress()
+    token = ({
+      symbol: 'MYWO',
+      totalSupply: 10,
+      approved: true,
+      rejected: false,
+      icon: 'icon',
+      overviewGraphics: 'overviewGraphics',
+      updatedOn: serverTime(),
+      createdOn: serverTime(),
+      space: space.uid,
+      uid: tokenId,
+      pricePerToken: MIN_IOTA_AMOUNT,
+      allocations: [
+        { title: 'Public sale', isPublicSale: true, percentage: 50 },
+        { title: 'Private', percentage: 50 }
+      ],
+      createdBy: memberAddress,
+      name: 'MyToken',
+      wenUrl: 'https://wen.soonaverse.com/token/' + tokenId,
+      links: [],
+      status: TokenStatus.AVAILABLE,
+      totalDeposit: 0,
+      totalAirdropped: 0,
+      termsAndConditions: 'https://wen.soonaverse.com/token/terms-and-conditions',
+      access: 0
+    })
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).set(token);
+  });
+
+  it('Should cancel public sale and refund buyers twice', async () => {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
+    await setAvailableOrderAndCancelSale(token, memberAddress, 5);
+    await setAvailableOrderAndCancelSale(token, memberAddress, 6);
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data()
+    expect(distribution.totalDeposit).toBe(0)
+    const creditDocs = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
+      .where('member', '==', memberAddress)
+      .get()).docs
+    expect(creditDocs.map(d => d.data()?.payload?.amount).sort((a, b) => a - b)).toEqual([5 * MIN_IOTA_AMOUNT, 6 * MIN_IOTA_AMOUNT])
+  })
+
+  it('Should cancel public sale and refund buyers twice, then finish sale', async () => {
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
+    await setAvailableOrderAndCancelSale(token, memberAddress, 5);
+    await setAvailableOrderAndCancelSale(token, memberAddress, 6);
+    let distribution = <TokenDistribution>(await distributionDocRef.get()).data()
+    expect(distribution.totalDeposit).toBe(0)
+    const creditDocs = (await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('payload.type', '==', TransactionCreditType.TOKEN_PURCHASE)
+      .where('member', '==', memberAddress)
+      .get()).docs
+    expect(creditDocs.map(d => d.data()?.payload?.amount).sort((a, b) => a - b)).toEqual([5 * MIN_IOTA_AMOUNT, 6 * MIN_IOTA_AMOUNT])
+
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+    await tokenDocRef.update({
+      saleLength: 86400000 * 2,
+      saleStartDate: dateToTimestamp(dayjs().subtract(1, 'd').toDate()),
+      coolDownEnd: dateToTimestamp(dayjs().subtract(1, 'd').add(86400000 * 2, 'ms').toDate()),
+    });
+    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, 7 * MIN_IOTA_AMOUNT);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    await tokenDocRef.update({ status: TokenStatus.PROCESSING })
+    await wait(async () => (await tokenDocRef.get()).data()?.status === TokenStatus.PRE_MINTED)
+
+    distribution = <TokenDistribution>(await distributionDocRef.get()).data()
+    expect(distribution.totalPaid).toBe(5 * MIN_IOTA_AMOUNT)
+    expect(distribution.refundedAmount).toBe(2 * MIN_IOTA_AMOUNT)
+    expect(distribution.tokenOwned).toBe(5)
+  })
+
+})
+
+const assertOrderedTokensCount = async (tokenId: string, expected: number) => {
+  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).get()).data()
+  expect(token.tokensOrdered).toBe(expected)
+}
 
 describe("Token controller: " + WEN_FUNC.orderToken, () => {
   let memberAddress: string;
@@ -406,6 +560,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+    await assertOrderedTokensCount(token.uid, 1)
   })
 
   it('Should order more token', async () => {
@@ -419,6 +574,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const distribution = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
     expect(distribution?.totalDeposit).toBe(MIN_IOTA_AMOUNT * 2)
+    await assertOrderedTokensCount(token.uid, 2)
   })
 
   it('Should create token order and should credit some amount', async () => {
@@ -443,6 +599,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const updatedToken = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(updatedToken?.totalDeposit).toBe(MIN_IOTA_AMOUNT)
+
+    await assertOrderedTokensCount(token.uid, 1)
   })
 
   it('Should create token order and should credit all amount', async () => {
@@ -465,6 +623,21 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const updatedToken = (await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(updatedToken?.totalDeposit).toBe(0)
+    await assertOrderedTokensCount(token.uid, 0)
+  })
+
+  it('Should create token order and should fail credit, not in cool down period', async () => {
+    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({
+      saleStartDate: dateToTimestamp(dayjs().subtract(3, 'd').toDate()),
+      coolDownEnd: dateToTimestamp(dayjs().subtract(1, 'm').toDate())
+    });
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
+    await expectThrow(testEnv.wrap(creditToken)({}), WenError.token_not_in_cool_down_period.key)
   })
 
   it('Should throw, amount too much to refund', async () => {
@@ -546,6 +719,28 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
     const credit = await submitCreditTokenFunc(walletSpy, memberAddress, { token: token.uid, amount: MIN_IOTA_AMOUNT });
     expect(credit.payload.amount).toBe(1.5 * MIN_IOTA_AMOUNT)
+  })
+
+  it('Should create order in parallel', async () => {
+    const promises = [submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid }), submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid })]
+    const orders = await Promise.all(promises)
+    expect(orders[0]).toEqual(orders[1])
+  })
+
+  it('Should create order and deposit in parallel', async () => {
+    const array = Array.from(Array(1000))
+    const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
+    const amounts = array.map((_, index) => index * MIN_IOTA_AMOUNT)
+    const total = array.reduce((sum, _, index) => sum + (index * MIN_IOTA_AMOUNT), 0)
+    const deposit = async (amount: number) => {
+      const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, amount);
+      await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
+    }
+    const promises = amounts.map(deposit)
+    await Promise.all(promises)
+    const distribution = <TokenDistribution>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()).data()
+    expect(distribution.totalDeposit).toBe(total)
+    await assertOrderedTokensCount(token.uid, total / MIN_IOTA_AMOUNT)
   })
 
 })

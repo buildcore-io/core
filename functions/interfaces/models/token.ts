@@ -10,6 +10,7 @@ export interface TokenAllocation {
 
 export enum TokenStatus {
   AVAILABLE = 'available',
+  CANCEL_SALE = 'cancel_sale',
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
   ERROR = 'error'
@@ -33,6 +34,7 @@ export interface Token extends BaseRecord {
   readonly saleStartDate?: Timestamp;
   readonly saleLength?: number;
   readonly coolDownEnd?: Timestamp;
+  readonly autoProcessAt100Percent?: boolean;
   readonly approved: boolean;
   readonly rejected: boolean;
   readonly links: Url[];
@@ -40,6 +42,7 @@ export interface Token extends BaseRecord {
   readonly overviewGraphics?: string;
   readonly status: TokenStatus;
   readonly totalDeposit: number;
+  readonly tokensOrdered?: number;
   readonly totalAirdropped: number;
   readonly termsAndConditions: string;
   readonly access: Access;

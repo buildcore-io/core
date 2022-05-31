@@ -19,7 +19,7 @@ import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
@@ -51,7 +51,8 @@ const createSchema = () => ({
   // Only on prod we enforce 7 days.
   saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
-  coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
+  coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
+  autoProcessAt100Percent: Joi.boolean().optional(),
   links: Joi.array().min(0).items(Joi.string().uri()),
   icon: Joi.string().required(),
   overviewGraphics: Joi.string().required(),
@@ -159,7 +160,8 @@ const setAvailableForSaleSchema = {
   token: Joi.string().required(),
   saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
-  coolDownLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+  coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).required(),
+  autoProcessAt100Percent: Joi.boolean().optional()
 }
 
 export const setTokenAvailableForSale = functions.runWith({
@@ -190,18 +192,66 @@ export const setTokenAvailableForSale = functions.runWith({
 
     shouldSetPublicSaleTimeFrames(params.body, token.allocations);
     const timeFrames = getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength);
-    transaction.update(tokenDocRef, timeFrames);
+    transaction.update(tokenDocRef, { ...timeFrames, autoProcessAt100Percent: params.body.autoProcessAt100Percent || false });
   })
 
   return <Token>(await tokenDocRef.get()).data();
 })
 
-const tokenOrderIsWithinPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+const assertTokenIsInPublicSaleOrCoolDownPeriod = (token: Token) => {
+  const isPublicSale = tokenIsInPublicSalePeriod(token)
+  const isCoolDownPeriod = tokenIsInCoolDownPeriod(token)
+  if (isPublicSale || isCoolDownPeriod) {
+    return
+  }
+  if (!isPublicSale) {
+    throw throwInvalidArgument(WenError.no_token_public_sale)
+  }
+  if (!isCoolDownPeriod) {
+    throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
+  }
+}
+
+export const cancelPublicSale = functions.runWith({
+  minInstances: scale(WEN_FUNC.cancelPublicSale),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.cSpace, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+
+  const schema = Joi.object({ token: Joi.string().required() });
+  assertValidation(schema.validate(params.body));
+
+  const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
+
+  await admin.firestore().runTransaction(async (transaction) => {
+    const token = <Token | undefined>(await transaction.get(tokenDocRef)).data()
+
+    if (!token) {
+      throw throwInvalidArgument(WenError.invalid_params)
+    }
+    assertTokenIsInPublicSaleOrCoolDownPeriod(token)
+    await assertIsGuardian(token.space, owner)
+
+    transaction.update(tokenDocRef, uOn({
+      saleStartDate: admin.firestore.FieldValue.delete(),
+      saleLength: admin.firestore.FieldValue.delete(),
+      coolDownEnd: admin.firestore.FieldValue.delete(),
+      status: TokenStatus.CANCEL_SALE,
+      totalDeposit: 0
+    }))
+  })
+
+  return <Token>(await tokenDocRef.get()).data();
+
+})
+
+const tokenIsInPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
   dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
 
-const tokenCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength && token.coolDownEnd &&
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
-  dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms').add(2, 'd'))
+  dayjs().isBefore(dayjs(token.coolDownEnd.toDate()))
 
 export const orderToken = functions.runWith({
   minInstances: scale(WEN_FUNC.orderToken),
@@ -223,7 +273,7 @@ export const orderToken = functions.runWith({
   }
 
   const token = <Token>tokenDoc.data()
-  if (!tokenOrderIsWithinPublicSalePeriod(token)) {
+  if (!tokenIsInPublicSalePeriod(token) || token.status !== TokenStatus.AVAILABLE) {
     throw throwInvalidArgument(WenError.no_token_public_sale)
   }
 
@@ -293,7 +343,7 @@ export const creditToken = functions.runWith({
     }
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
     const token = <Token | undefined>(await tokenDocRef.get()).data()
-    if (!token || !tokenCoolDownPeriod(token)) {
+    if (!token || !tokenIsInCoolDownPeriod(token) || token.status !== TokenStatus.AVAILABLE) {
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
     const member = <Member>(await memberDocRef(owner).get()).data()
@@ -303,8 +353,12 @@ export const creditToken = functions.runWith({
     const totalDepositLeft = (distribution.totalDeposit || 0) - params.body.amount
     const refundAmount = params.body.amount + (totalDepositLeft < MIN_IOTA_AMOUNT ? totalDepositLeft : 0)
 
+    const boughtByMemberDiff = getBoughtByMemberDiff(distribution.totalDeposit || 0, totalDepositLeft || 0, token.pricePerToken)
     transaction.update(distributionDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-refundAmount) })
-    transaction.update(tokenDocRef, { totalDeposit: admin.firestore.FieldValue.increment(-refundAmount) })
+    transaction.update(tokenDocRef, {
+      totalDeposit: admin.firestore.FieldValue.increment(-refundAmount),
+      tokensOrdered: admin.firestore.FieldValue.increment(boughtByMemberDiff)
+    })
 
     const creditTransaction = <Transaction>{
       type: TransactionType.CREDIT,

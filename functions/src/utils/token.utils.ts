@@ -1,9 +1,12 @@
 
+import bigDecimal from 'js-big-decimal';
 import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token } from "../../interfaces/models/token";
 import admin from '../admin.config';
 import { throwInvalidArgument } from './error.utils';
+
+export const BIG_DECIMAL_PRECISION = 1000
 
 export const tokenOrderTransactionDocId = (member: string, token: Token) => member + '_' + token.uid
 
@@ -30,3 +33,13 @@ export const assertTokenApproved = (token: Token) => {
   }
 }
 
+export const getBoughtByMemberDiff = (prevTotalDeposit: number, currTotalDeposit: number, pricePerToken: number) => {
+  const prevOrderCount = bigDecimal.floor(bigDecimal.divide(prevTotalDeposit, pricePerToken, BIG_DECIMAL_PRECISION))
+  const currentOrderCount = bigDecimal.floor(bigDecimal.divide(currTotalDeposit, pricePerToken, BIG_DECIMAL_PRECISION))
+  return Number(bigDecimal.subtract(currentOrderCount, prevOrderCount))
+}
+
+export const getTotalPublicSupply = (token: Token) => {
+  const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
+  return Number(bigDecimal.floor(bigDecimal.multiply(token.totalSupply, publicPercentage / 100)))
+}

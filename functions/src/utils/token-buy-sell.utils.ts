@@ -1,14 +1,11 @@
-import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { isEmpty } from 'lodash';
 import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
-import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
+import { serverTime, uOn } from '../utils/dateTime.utils';
 import { memberDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
-import { guardedRerun } from './common.utils';
 
 export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
   const oldPurchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs.map(d => <TokenPurchase>d.data())
@@ -61,23 +58,4 @@ export const cancelSale = async (transaction: admin.firestore.Transaction, sale:
   }
 
   return <TokenBuySellOrder>{ ...sale, status }
-}
-
-export const cancelExpiredSale = async () => {
-  const runTransaction = () => admin.firestore().runTransaction(async (transaction) => {
-    const query = admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
-      .where('expiresAt', '<=', dateToTimestamp(dayjs()))
-      .orderBy('expiresAt')
-      .limit(150)
-    const docRefs = (await query.get()).docs.map(d => d.ref)
-    const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
-      .map(d => <TokenBuySellOrder>d.data())
-      .filter(d => d.status === TokenBuySellOrderStatus.ACTIVE)
-      .map(d => cancelSale(transaction, d, TokenBuySellOrderStatus.EXPIRED))
-
-    return (await Promise.all(promises)).length
-  })
-
-  await guardedRerun(async () => await runTransaction() !== 0)
 }
