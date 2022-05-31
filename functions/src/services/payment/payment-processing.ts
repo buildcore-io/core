@@ -7,11 +7,12 @@ import { COL, IotaAddress, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Nft, NftAccess } from '../../../interfaces/models/nft';
 import { Notification } from "../../../interfaces/models/notification";
-import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../../interfaces/models/token';
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from '../../../interfaces/models/token';
 import { BillPaymentTransaction, CreditPaymentTransaction, OrderTransaction, PaymentTransaction, TransactionOrderType, TransactionPayment, TransactionType, TransactionValidationType, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { OrderPayBillCreditTransaction } from '../../utils/common.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../utils/token.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { NotificationService } from '../notification/notification';
 
@@ -646,27 +647,47 @@ export class ProcessingService {
     }
   }
 
-  private async updateTokenDistribution(order: Transaction, tran: TransactionMatch) {
+  private async updateTokenDistribution(order: Transaction, tran: TransactionMatch, payment: Transaction) {
+    const tokenRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
     const distributionRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}/${SUB_COL.DISTRIBUTION}/${order.member}`)
-    const distribution = {
-      uid: order.member,
-      totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
-      parentId: order.payload.token,
-      parentCol: COL.TOKEN,
-      createdOn: serverTime()
+
+    const token = <Token>(await this.transaction.get(tokenRef)).data()
+    if (token.status !== TokenStatus.AVAILABLE) {
+      this.createCredit(payment, tran)
+      return
     }
+
+    const distribution = <TokenDistribution | undefined>(await this.transaction.get(distributionRef)).data()
+    const currentTotalDeposit = Number(bigDecimal.add(distribution?.totalDeposit || 0, tran.to.amount))
+    const boughtByMemberDiff = getBoughtByMemberDiff(distribution?.totalDeposit || 0, currentTotalDeposit, token.pricePerToken)
+
+    const tokenUpdateData = {
+      totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
+      tokensOrdered: admin.firestore.FieldValue.increment(boughtByMemberDiff)
+    }
+    const tokensOrdered = Number(bigDecimal.add(token.tokensOrdered, boughtByMemberDiff))
+    const totalPublicSupply = getTotalPublicSupply(token)
+
+    this.updates.push({
+      ref: tokenRef,
+      data: tokensOrdered >= totalPublicSupply && token.autoProcessAt100Percent ? { ...tokenUpdateData, status: TokenStatus.PROCESSING } : tokenUpdateData,
+      action: 'update'
+    });
+
     this.updates.push({
       ref: distributionRef,
-      data: distribution,
+      data: {
+        uid: order.member,
+        totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount),
+        parentId: order.payload.token,
+        parentCol: COL.TOKEN,
+        createdOn: serverTime()
+      },
       action: 'set',
       merge: true
     });
-    const tokenRef = admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`)
-    this.updates.push({
-      ref: tokenRef,
-      data: { totalDeposit: admin.firestore.FieldValue.increment(tran.to.amount) },
-      action: 'update'
-    });
+
+
   }
 
   private async claimAirdroppedTokens(order: Transaction, payment: Transaction, match: TransactionMatch) {
@@ -801,8 +822,8 @@ export class ProcessingService {
 
                   await this.markAsReconciled(orderData, match.msgId);
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_PURCHASE) {
-                  await this.createPayment(orderData, match);
-                  await this.updateTokenDistribution(orderData, match)
+                  const payment = await this.createPayment(orderData, match);
+                  await this.updateTokenDistribution(orderData, match, payment)
                 } else if (orderData.payload.type === TransactionOrderType.TOKEN_AIRDROP) {
                   const payment = await this.createPayment(orderData, match);
                   await this.markAsReconciled(orderData, match.msgId);
