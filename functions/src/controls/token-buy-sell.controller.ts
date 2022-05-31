@@ -56,8 +56,7 @@ export const sellToken = functions.runWith({
       throw throwInvalidArgument(WenError.invalid_params)
     }
     const distribution = <TokenDistribution>distributionDoc.data();
-    const tokensSold = (distribution.sold || 0) + (distribution.lockedForSale || 0);
-    const tokensLeftForSale = distribution.tokenOwned! - tokensSold;
+    const tokensLeftForSale = (distribution.tokenOwned || 0) - (distribution.lockedForSale || 0);
     if (params.body.count > tokensLeftForSale) {
       throw throwInvalidArgument(WenError.no_available_tokens_for_sale)
     }
@@ -105,7 +104,7 @@ export const buyToken = functions.runWith({
   const owner = params.address.toLowerCase();
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
-  
+
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
   if (!member?.validatedAddress) {
     throw throwInvalidArgument(WenError.member_must_have_validated_address)
