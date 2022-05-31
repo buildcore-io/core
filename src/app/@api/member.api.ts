@@ -4,7 +4,7 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Award } from '@functions/interfaces/models';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import * as dayjs from 'dayjs';
-import { forkJoin, map, Observable, switchMap } from "rxjs";
+import { combineLatest, filter, map, Observable, switchMap } from "rxjs";
 import { WEN_FUNC } from '../../../functions/interfaces/functions/index';
 import { COL, EthAddress, SUB_COL, WenRequest } from '../../../functions/interfaces/models/base';
 import { Member } from './../../../functions/interfaces/models/member';
@@ -180,26 +180,8 @@ export class MemberApi extends BaseApi<Member> {
   }
 
   public topTransactions(memberId: string, orderBy: string | string[] = 'createdOn', lastValue?: number, def = DEFAULT_LIST_SIZE): Observable<Transaction[]> {
-    return forkJoin({
-      currentMember: this.afs.collection<Transaction>(
-        COL.TRANSACTION,
-        (ref) => {
-          const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
-          let query: any = ref.where('type', 'in', [TransactionType.PAYMENT, TransactionType.BILL_PAYMENT, TransactionType.CREDIT]).where('member', '==', memberId);
-          order.forEach((o) => {
-            query = query.orderBy(o, 'desc');
-          });
-
-          if (lastValue) {
-            query = query.startAfter(lastValue).limit(def);
-          } else {
-            query = query.limit(def);
-          }
-
-          return query;
-        }
-      ).valueChanges(),
-      previousMember: this.afs.collection<Transaction>(
+    return combineLatest([
+      this.afs.collection<Transaction>(
         COL.TRANSACTION,
         (ref) => {
           const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
@@ -207,21 +189,40 @@ export class MemberApi extends BaseApi<Member> {
           order.forEach((o) => {
             query = query.orderBy(o, 'desc');
           });
-
+  
           if (lastValue) {
             query = query.startAfter(lastValue).limit(def);
           } else {
             query = query.limit(def);
           }
-
+  
+          return query;
+        }
+      ).valueChanges(),
+      this.afs.collection<Transaction>(
+        COL.TRANSACTION,
+        (ref) => {
+          const order: string[] = Array.isArray(orderBy) ? orderBy : [orderBy];
+          let query: any = ref.where('type', 'in', [TransactionType.PAYMENT, TransactionType.BILL_PAYMENT, TransactionType.CREDIT]).where('member', '==', memberId);
+          order.forEach((o) => {
+            query = query.orderBy(o, 'desc');
+          });
+  
+          if (lastValue) {
+            query = query.startAfter(lastValue).limit(def);
+          } else {
+            query = query.limit(def);
+          }
+  
           return query;
         }
       ).valueChanges()
-    }).pipe(
-      map(({ currentMember, previousMember }) =>
-        [...previousMember, ...currentMember]
+    ]).pipe(
+      filter(([previous, current]) => !!previous && !!current),
+      map(([previous, current]) => 
+        [...previous, ...current]
           .sort((a, b) => -(a.createdOn?.toDate().getTime() || 0) + (b.createdOn?.toDate().getTime() || 0)))
-    ) as Observable<Transaction[]>;
+    );
   }
 
   public allSpacesAsMember(memberId: EthAddress): Observable<Space[]> {
