@@ -4,9 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CollectionApi } from '@api/collection.api';
 import { FileApi } from '@api/file.api';
 import { MemberApi } from '@api/member.api';
-import { NftApi, OffersHistory } from '@api/nft.api';
+import { NftApi, OffersHistory, SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { SpaceApi } from '@api/space.api';
 import { AuthService } from '@components/auth/services/auth.service';
+import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -15,7 +16,7 @@ import { getItem, StorageItem } from '@core/utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { MIN_AMOUNT_TO_TRANSFER, WEN_NAME } from '@functions/interfaces/config';
-import { Collection, CollectionType, Transaction } from '@functions/interfaces/models';
+import { Collection, CollectionType, Space, Transaction } from '@functions/interfaces/models';
 import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -510,6 +511,46 @@ export class NFTPage implements OnInit, OnDestroy {
       labels: dataToShow.labels
     };
     this.cd.markForCheck();
+  }
+
+  public getTimelineItems(nft?: Nft | null, space?: Space | null, orders?: SuccesfullOrdersWithFullHistory[] | null): TimelineItem[] {
+    const res: TimelineItem[] =
+      orders
+        ?.map(order => ({
+          type: TimelineItemType.ORDER,
+          payload: {
+            image: order.newMember.currentProfileImage,
+            date: order.order.createdOn?.toDate(),
+            name: order.newMember.name || order.newMember.uid,
+            amount: order.order.payload.amount,
+            transactions: order.transactions
+          }
+        })) || [];
+
+    if (nft?.owner && (nft?.availableFrom || nft?.auctionFrom)) {
+      res.unshift({
+        type: TimelineItemType.LISTED_BY_MEMBER,
+        payload: {
+          image: this.data.owner$.value?.currentProfileImage,
+          date: (nft?.availableFrom || nft?.auctionFrom)?.toDate(),
+          isAuction: !!(!nft?.availableFrom && nft?.auctionFrom),
+          name: this.data.owner$.value?.name || this.data.owner$.value?.uid || ''
+        }
+      });
+    }
+
+    if (space) {
+      res.push({
+        type: TimelineItemType.LISTED_BY_SPACE,
+        payload: {
+          image: space.avatarUrl,
+          date: nft?.createdOn?.toDate(),
+          name: space.name || space.uid || ''
+        }
+      });
+    }
+
+    return res || [];
   }
 
   private cancelSubscriptions(): void {

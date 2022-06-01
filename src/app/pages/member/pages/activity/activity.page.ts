@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
+import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { ThemeList, ThemeService } from '@core/services/theme';
@@ -248,5 +249,16 @@ export class ActivityPage implements OnInit {
 
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public getTimelineItems(badges?: Transaction[] | null): TimelineItem[] {
+    return badges?.map(b => ({
+      type: TimelineItemType.BADGE,
+      payload: {
+        image: b.payload.image,
+        date: b.createdOn?.toDate(),
+        name: b.payload.name
+      }
+    })) || [];
   }
 }
