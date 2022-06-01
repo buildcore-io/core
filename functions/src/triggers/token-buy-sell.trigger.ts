@@ -96,7 +96,6 @@ const createBillPayments = async (
   transaction: admin.firestore.Transaction
 ) => {
   const seller = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sell.owner}`).get()).data()
-  const buyer = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${buy.owner}`).get()).data()
   const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${buy.orderTransactionId}`).get()).data()
   const { amount, royalties } = getRoyalties(count, price)
 
@@ -104,14 +103,14 @@ const createBillPayments = async (
     type: TransactionType.BILL_PAYMENT,
     uid: getRandomEthAddress(),
     space: token.space,
-    member: sell.owner,
+    member: buy.owner,
     createdOn: serverTime(),
     payload: {
       amount,
       sourceAddress: order.payload.targetAddress,
       targetAddress: seller.validatedAddress,
       previousOwnerEntity: 'member',
-      previousOwner: buyer.uid,
+      previousOwner: sell.owner,
       sourceTransaction: [buy.paymentTransactionId],
       royalty: false,
       void: false,
@@ -127,18 +126,17 @@ const createBillPayments = async (
       type: TransactionType.BILL_PAYMENT,
       uid: getRandomEthAddress(),
       space: token.space,
-      member: sell.owner,
+      member: buy.owner,
       createdOn: serverTime(),
       payload: {
         amount: royalties[index],
         sourceAddress: order.payload.targetAddress,
         targetAddress: spaceData.validatedAddress,
         previousOwnerEntity: 'member',
-        previousOwner: buyer.uid,
+        previousOwner: sell.owner,
         sourceTransaction: [buy.paymentTransactionId],
         royalty: true,
         void: false,
-        // We delay royalty.
         delay: SECONDARY_TRANSACTION_DELAY * (index + 1),
         token: token.uid,
         quantity: count
