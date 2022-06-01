@@ -115,17 +115,23 @@ describe('Buy sell trigger', () => {
     expect(purchase[0].data().price).toBe(MIN_IOTA_AMOUNT)
     expect(purchase[0].data().count).toBe(tokenCount)
 
+    const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
     const billPayment = await admin.firestore().doc(`${COL.TRANSACTION}/${purchase[0].data().billPaymentId}`).get()
     expect(billPayment.exists).toBe(true)
-    expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress)
-    const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
-    expect(billPayment.data()?.payload?.targetAddress).toBe(sellerAddress)
+    const payload = billPayment.data()?.payload
+    expect(payload?.sourceAddress).toBe(order.payload.targetAddress)
+    expect(payload?.targetAddress).toBe(sellerAddress)
 
-    const paymentSnap = await getBillPayments(seller)
+    const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(3)
     const payments = paymentSnap.docs.sort((a, b) => a.data().payload.amount - b.data().payload.amount)
     expect(payments.map(d => d.data().payload.amount)).toEqual(getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount))
     expect(payments.map(d => d.data().ignoreWallet)).toEqual([false, false, undefined])
+
+    payments.forEach(p => {
+      expect(p.data()?.payload?.previousOwner).toBe(seller)
+      expect(p.data()?.member).toBe(buyer)
+    })
 
     await assertVolumeTotal(token.uid, tokenCount)
   })
