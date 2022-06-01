@@ -162,7 +162,7 @@ describe('Buy sell trigger', () => {
     const buyerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()?.validatedAddress
     expect(credit?.payload?.targetAddress).toBe(buyerAddress)
 
-    const paymentSnap = await getBillPayments(seller)
+    const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(6)
     const amounts = paymentSnap.docs.map(d => d.data().payload.amount).sort((a, b) => a - b)
     expect(amounts).toEqual([...getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount), ...getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount)].sort((a, b) => a - b))
@@ -299,7 +299,7 @@ describe('Buy sell trigger', () => {
     expect(buyDistribution.totalPurchased).toBe(3 * tokenCount)
     expect(buyDistribution.tokenOwned).toBe(3 * tokenCount)
 
-    const paymentSnap = await getBillPayments(seller)
+    const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(9)
     const amounts = paymentSnap.docs.map(d => d.data().payload.amount).sort((a, b) => a - b)
     const sortedAmount = getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount)
@@ -436,7 +436,7 @@ describe('Buy sell trigger', () => {
         .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get())
         .docs[0].data().status === TokenBuySellOrderStatus.SETTLED
     })
-    const paymentSnap = await getBillPayments(seller)
+    const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(3)
     const sortedPayments = paymentSnap.docs.sort((a, b) => a.data().payload.amount - b.data().payload.amount)
     expect(sortedPayments.map(d => d.data().payload.amount)).toEqual(getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount))
