@@ -12,7 +12,7 @@
         <tbody>
             <ng-container *ngFor="let t of tokens$ | async">
               <tr *ngIf="t.distribution.tokenOwned">
-                  <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+                  <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                       <div class="flex items-center">
                           <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
                             class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
@@ -23,13 +23,13 @@
                       </div>
                   </td>
                   <td class="font-medium" i18n>Owned</td>
-                  <td class="font-medium">{{ (formatTokenBest(t.distribution.tokenOwned) | number: '1.0-6') + ' ' + t.symbol  }}</td>
+                  <td class="font-medium">{{ (helper.formatTokenBest(t.distribution.tokenOwned) | number: '1.0-6') + ' ' + t.symbol  }}</td>
                   <td class="right"></td>
               </tr>
 
               <ng-container *ngIf="t.distribution.tokenDrops?.length">
                   <tr *ngFor="let drop of t.distribution.tokenDrops">
-                    <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+                    <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                       <div class="flex items-center">
                           <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
                             class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
@@ -42,12 +42,12 @@
                     <td class="font-medium">
                         <div class="flex items-center">
                             <ng-container i18n>Airdropped</ng-container>
-                            <ng-container *ngIf="vestingInFuture(drop)">
+                            <ng-container *ngIf="helper.vestingInFuture(drop)">
                                 (<ng-container i18n>from</ng-container> {{ drop.vestingAt.toDate() | date: 'shortDate' }})
                             </ng-container>
                         </div>
                     </td>
-                    <td class="font-medium">{{ ((formatTokenBest(drop.count) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
+                    <td class="font-medium">{{ ((helper.formatTokenBest(drop.count) | number: '1.0-6') + ' ' + t.symbol)  }}</td>
                     <td class="right">
                         <button *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid)"
                             class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
@@ -59,8 +59,8 @@
               </ng-container>
               
 
-              <tr *ngIf="salesInProgressOrUpcoming(t) && t.distribution.totalDeposit">
-                <td [routerLink]="preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
+              <tr *ngIf="helper.salesInProgressOrUpcoming(t) && t.distribution.totalDeposit">
+                <td [routerLink]="helper.preMinted(t) ? ['/token', t.uid, 'trade'] : ['/token', t.uid]" class="cursor-pointer">
                   <div class="flex items-center">
                       <nz-avatar [nzSrc]="previewImageService.getAvatarSize(t.icon)"
                         class="border-2 border-tags-border dark:border-tags-border-dark min-w-8"
@@ -71,9 +71,9 @@
                   </div>
                 </td>
                 <td class="font-medium" i18n>Deposit for purchase</td>
-                <td class="font-medium">{{ formatBest(t.distribution.totalDeposit) }}</td>
+                <td class="font-medium">{{ helper.formatBest(t.distribution.totalDeposit) }}</td>
                 <td class="right">
-                    <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && isInCooldown(t)"
+                    <button  *ngIf="((data.member$ | async)?.uid === (loggedInMember$ | async)?.uid) && helper.isInCooldown(t)"
                         class="font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
                         (click)="openTokenRefund = t">
                             {{ tokenActionTypeLabels[tokenItemTypes.REFUND] }}

@@ -8,6 +8,7 @@ import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Proposal } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/proposal/services/helper.service';
 import { BehaviorSubject, first, firstValueFrom, map, skip, Subscription } from 'rxjs';
 import { WEN_NAME } from './../../../../../../functions/interfaces/config';
 import { Award } from './../../../../../../functions/interfaces/models/award';
@@ -20,7 +21,6 @@ import { ProposalApi } from './../../../../@api/proposal.api';
 import { SpaceApi } from './../../../../@api/space.api';
 import { NavigationService } from './../../../../@core/services/navigation/navigation.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
-import { UnitsHelper } from './../../../../@core/utils/units-helper';
 import { DataService as ProposalDataService } from './../../services/data.service';
 
 @UntilDestroy()
@@ -55,6 +55,7 @@ export class ProposalPage implements OnInit, OnDestroy {
     private milestoneApi: MilestoneApi,
     private cd: ChangeDetectorRef,
     public data: ProposalDataService,
+    public helper: HelperService,
     public previewImageService: PreviewImageService,
     public nav: NavigationService,
     public deviceService: DeviceService
@@ -173,21 +174,6 @@ export class ProposalPage implements OnInit, OnDestroy {
     return item.uid;
   }
 
-  public formatBest(proposal: Proposal | null | undefined, value: number): string {
-    if (!proposal) {
-      return '';
-    }
-
-    // ?.results?.questions?.[0].answers[a.value]?.accumulated || 0
-    const ans: any = (<Proposal>proposal?.results)?.questions?.[0].answers.find((suba: any) => {
-      return suba.value === value;
-    });
-    if (!ans) {
-      return '';
-    }
-    return UnitsHelper.formatBest(ans.accumulated);
-  }
-
   public async approve(): Promise<void> {
     if (!this.data.proposal$.value?.uid) {
       return;
@@ -239,10 +225,6 @@ export class ProposalPage implements OnInit, OnDestroy {
     const data: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
     link.href = "data:" + data;
     link.click();
-  }
-
-  public getShareUrl(proposal?: Proposal | null): string {
-    return proposal?.wenUrlShort || proposal?.wenUrl || window.location.href;
   }
 
   private cancelSubscriptions(): void {

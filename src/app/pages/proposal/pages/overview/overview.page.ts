@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/proposal/services/helper.service';
 import * as dayjs from 'dayjs';
 import { Timestamp } from "functions/interfaces/models/base";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -28,6 +29,7 @@ export class OverviewPage implements OnInit {
     private nzNotification: NzNotificationService,
     private proposalApi: ProposalApi,
     public data: DataService,
+    public helper: HelperService,
     public deviceService: DeviceService
   ) {
     // Init start date.

@@ -31,7 +31,7 @@
                 </button>
 
                 <button nz-button nzDanger nzType="primary" (click)="reject()"
-                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+                    *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                     nzBlock nzSize="large" i18n>
                     Cancel Collection
                 </button>
@@ -73,7 +73,7 @@
             </div>
 
             <div class="flex items-center justify-center w-full py-3 mt-6 lg:mt-3 bg-tags-commencing dark:bg-tags-commencing-dark rounded-2xl"
-                *ngIf="isDateInFuture((data.collection$ | async)?.availableFrom)">
+                *ngIf="helper.isDateInFuture((data.collection$ | async)?.availableFrom)">
                 <wen-icon-time class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-time>
                 <div class="ml-2.5">
                     <span class="font-bold" i18n>Starts at</span>
@@ -94,11 +94,11 @@
 
                 <div class="w-full h-16 px-4 py-3 mt-5 bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark lg:grow lg:w-32 rounded-xl lg:mt-2" *ngIf="data.cheapestNft$ | async">
                     <div class="text-xs font-medium text-foregrounds-secondary" i18n>Price starts at</div>
-                    <div class="text-lg font-bold truncate">{{formatBest((data.cheapestNft$ | async)?.price)}}</div>
+                    <div class="text-lg font-bold truncate">{{helper.formatBest((data.cheapestNft$ | async)?.price)}}</div>
                 </div>
             </div>
 
-            <div class="flex items-center p-5 mt-8 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary" *ngIf="isAvailableForSale(data.collection$ | async)">
+            <div class="flex items-center p-5 mt-8 rounded-xl bg-alerts-warning dark:bg-alerts-warning-dark text-foregrounds-primary" *ngIf="helper.isAvailableForSale(data.collection$ | async)">
                 <wen-icon-alert-octagon class="mr-2.5 lg:mr-3.5"></wen-icon-alert-octagon>
                 <div class="text-lg font-bold">
                     <span i18n>Sale in progress</span>
@@ -123,7 +123,7 @@
             </button>
 
             <button nz-button nzDanger nzType="primary" (click)="reject()"
-                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
+                *ngIf="!data.isPending(data.collection$ | async) && (data.isGuardianWithinSpace$ | async) && !helper.isAvailable(data.collection$ | async) && !(data.collection$ | async)?.rejected"
                 nzBlock nzSize="large" i18n>
                 Cancel Collection
             </button>
@@ -160,7 +160,7 @@
         </ng-template>
 
         <button nz-button nzType="primary" nzSize="default"
-            *ngIf="!isLocked(data.collection$ | async) && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
+            *ngIf="!helper.isLocked(data.collection$ | async) && (data.creator$ | async)?.uid === (auth.member$ | async)?.uid"
             class="flex items-center justify-center w-10 ml-8 rounded-full lg:justify-start lg:w-auto" (click)="createNft()">
             <wen-icon-plus class="lg:mr-2"></wen-icon-plus>
             <div *ngIf="(deviceService.isDesktop$ | async)" i18n>Create NFT</div>

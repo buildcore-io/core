@@ -1,4 +1,4 @@
-<nz-card class="mb-4" *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async)"
+<nz-card class="mb-4" *ngIf="!(data.proposal$ | async)?.rejected && helper.isComplete(data.proposal$ | async)"
   i18n-nzTitle nzTitle="Final Results">
   <div class="-mt-3" *ngFor="let q of (data.proposal$ | async)?.questions">
     <p class="text-lg">{{q.text}}</p>
@@ -11,12 +11,12 @@
   </div>
 </nz-card>
 
-<ng-container *ngIf="!(data.proposal$ | async)?.rejected && data.isComplete(data.proposal$ | async) === false && data.isMemberVote((data.proposal$ | async)?.type)">
+<ng-container *ngIf="!(data.proposal$ | async)?.rejected && helper.isComplete(data.proposal$ | async) === false && helper.isMemberVote((data.proposal$ | async)?.type)">
   <ng-container *ngFor="let q of (data.proposal$ | async)?.questions">
     <nz-card [nzTitle]="q.text">
       <span [innerHtml]="q.additionalInfo | markdown"></span>
       <nz-radio-group class="w-full mb-4 mt-9" *ngIf="deviceService.isDesktop$ | async"
-        [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
+        [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && helper.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
         [formControl]="voteControl">
         <div *ngFor="let a of q.answers">
           <wen-proposal-answer 
@@ -33,7 +33,7 @@
     </nz-card>
 
     <nz-radio-group class="w-full" *ngIf="deviceService.isMobile$ | async"
-      [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && data.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
+      [nzDisabled]="!((data.proposal$ | async)?.approved && (data.canVote$ | async) && helper.isInProgress(data.proposal$ | async)) || !!(data.currentMembersVotes$ | async)?.length"
       [formControl]="voteControl">
       <nz-card *ngFor="let a of q.answers" class="block mt-4"
         [ngClass]="{

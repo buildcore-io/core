@@ -13,6 +13,7 @@ import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject, filter, interval, Subscription } from 'rxjs';
 
@@ -71,6 +72,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
     private auth: AuthService,
     private notification: NotificationService,
     private tokenPurchaseApi: TokenPurchaseApi,
@@ -199,15 +201,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       });
   }
 
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
-  }
-
   public close(): void {
     this.reset();
     this.wenOnClose.next();
@@ -227,10 +220,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     }
 
     return (amount / 1000 / 1000).toFixed(2).toString();
-  }
-
-  public getExplorerLink(link: string): string {
-    return 'https://thetangle.org/search/' + link;
   }
   
   public extractAmount(formattedText: string): string {

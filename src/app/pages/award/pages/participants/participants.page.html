@@ -66,7 +66,7 @@
       *ngFor="let member of (getList() | async); trackBy: trackByUid" [selectedSpace]="(data.space$ | async)?.uid" [includeAlliances]="true"
       [about]="member.comment || ''" [member]="member">
       <ng-container
-        *ngIf="(data.isGuardianWithinSpace$ | async) && !data.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">
+        *ngIf="(data.isGuardianWithinSpace$ | async) && !helper.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">
         <button nz-button [nzSize]="(deviceService.isDesktop$ | async) ? 'default' : 'small'" nzType="primary" type="button" (click)="approve(member.uid)" *ngIf="!member.completed" i18n>
           Reward
         </button>

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { AuthService } from '@components/auth/services/auth.service';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { DataService } from '@pages/proposal/services/data.service';
+import { HelperService } from '@pages/proposal/services/helper.service';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -16,6 +17,7 @@ export class ProposalVoteActionComponent {
 
   constructor(
     public auth: AuthService,
-    public data: DataService
+    public data: DataService,
+    public helper: HelperService
   ) { }
 }
