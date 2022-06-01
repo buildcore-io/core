@@ -17,10 +17,16 @@ export const Languages: LanguagesType = {
     title: 'EN',
     firebase: 'en'
   },
-  ar: {
+  ar_eg: {
     ngZorro: ar_EG,
-    title: 'AR',
-    firebase: 'ar'
+    title: 'AR-EG',
+    firebase: 'eg'
+  },
+  ar_sa: {
+    // There is no ar_SA in ng-zorro-antd
+    ngZorro: ar_EG,
+    title: 'AR-SA',
+    firebase: 'sa'
   },
   cs: {
     ngZorro: cs_CZ,
@@ -107,7 +113,7 @@ export const Languages: LanguagesType = {
   },
   zh_tw: {
     ngZorro: zh_TW,
-    title: 'ZH_TW',
+    title: 'ZH-TW',
     // TODO we need to select right country
     firebase: 'tw'
   },
