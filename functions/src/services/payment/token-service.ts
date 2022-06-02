@@ -53,13 +53,13 @@ export class TokenService {
     const tokensOrdered = Number(bigDecimal.add(token.tokensOrdered, boughtByMemberDiff))
     const totalPublicSupply = getTotalPublicSupply(token)
 
-    this.transactionService.pushUpdate({
+    this.transactionService.updates.push({
       ref: tokenRef,
       data: tokensOrdered >= totalPublicSupply && token.autoProcessAt100Percent ? { ...tokenUpdateData, status: TokenStatus.PROCESSING } : tokenUpdateData,
       action: 'update'
     });
 
-    this.transactionService.pushUpdate({
+    this.transactionService.updates.push({
       ref: distributionRef,
       data: {
         uid: order.member,
@@ -90,7 +90,7 @@ export class TokenService {
       tokenClaimed: admin.firestore.FieldValue.increment(dropCount),
       tokenOwned: admin.firestore.FieldValue.increment(dropCount)
     }
-    this.transactionService.pushUpdate({
+    this.transactionService.updates.push({
       ref: distributionDocRef,
       data: data,
       action: 'update'
@@ -106,7 +106,7 @@ export class TokenService {
         parentId: order.payload.token,
         parentCol: COL.TOKEN,
       }
-      this.transactionService.pushUpdate({ ref: distributionDocRef, data, action: 'set', merge: true });
+      this.transactionService.updates.push({ ref: distributionDocRef, data, action: 'set', merge: true });
     }
     const buyDocId = getRandomEthAddress()
     const data = cOn(<TokenBuySellOrder>{
@@ -125,7 +125,7 @@ export class TokenService {
       expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
     }, URL_PATHS.TOKEN_MARKET)
     const buyDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${buyDocId}`);
-    this.transactionService.pushUpdate({ ref: buyDocRef, data, action: 'set' });
+    this.transactionService.updates.push({ ref: buyDocRef, data, action: 'set' });
   }
 
 }

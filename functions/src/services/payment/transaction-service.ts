@@ -23,7 +23,7 @@ interface TransactionUpdates {
 
 export class TransactionService {
   public readonly linkedTransactions: string[] = [];
-  private readonly updates: TransactionUpdates[] = [];
+  public readonly updates: TransactionUpdates[] = [];
 
   constructor(public readonly transaction: FirebaseFirestore.Transaction) { }
 
@@ -36,8 +36,6 @@ export class TransactionService {
       }
     });
   }
-
-  public pushUpdate = (update: TransactionUpdates) => this.updates.push(update)
 
   public createPayment(order: Transaction, tran: TransactionMatch, invalidPayment = false): Transaction {
     if (order.type !== TransactionType.ORDER) {

@@ -73,13 +73,13 @@ export class NftService {
       const sfDocMember = await this.transactionService.transaction.get(refMember);
       const bidNotification = NotificationService.prepareWinBid(<Member>sfDocMember.data(), nft, pay);
       const refNotification = admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
-      this.transactionService.pushUpdate({ ref: refNotification, data: bidNotification, action: 'set' });
+      this.transactionService.updates.push({ ref: refNotification, data: bidNotification, action: 'set' });
 
       // Update links
       const refOrderDoc = await this.transactionService.transaction.get(refOrder);
       const refOrderDocData = refOrderDoc.data()
       if (refOrderDocData) {
-        this.transactionService.pushUpdate({
+        this.transactionService.updates.push({
           ref: refOrder,
           data: {
             linkedTransactions: [...(refOrderDocData.linkedTransactions || []), ...this.transactionService.linkedTransactions]
@@ -89,7 +89,7 @@ export class NftService {
       }
     } else {
       // Remove auction from THE NFT!
-      this.transactionService.pushUpdate({
+      this.transactionService.updates.push({
         ref: refSource,
         data: {
           auctionFrom: null,
@@ -114,11 +114,11 @@ export class NftService {
         const data = <Transaction>sfDoc.data();
         const payload = <OrderPayBillCreditTransaction>data.payload
         payload.void = true;
-        this.transactionService.pushUpdate({ ref: refSource, data: data, action: 'update' });
+        this.transactionService.updates.push({ ref: refSource, data: data, action: 'update' });
 
         // Unlock NFT.
         const refNft = admin.firestore().collection(COL.NFT).doc(transaction.payload.nft);
-        this.transactionService.pushUpdate({ ref: refNft, data: { locked: false, lockedBy: null }, action: 'update' });
+        this.transactionService.updates.push({ ref: refNft, data: { locked: false, lockedBy: null }, action: 'update' });
       } else if (transaction.payload.type === TransactionOrderType.NFT_BID) {
         const payments = await admin.firestore().collection(COL.TRANSACTION)
           .where('payload.invalidPayment', '==', false)
@@ -130,14 +130,14 @@ export class NftService {
           const data = <Transaction>sfDoc.data();
           const payload = <OrderPayBillCreditTransaction>data.payload
           payload.void = true;
-          this.transactionService.pushUpdate({ ref: refSource, data: data, action: 'update' });
+          this.transactionService.updates.push({ ref: refSource, data: data, action: 'update' });
         }
       }
     } else {
       const data = <Transaction>sfDoc.data();
       const payload = <OrderPayBillCreditTransaction>data.payload
       payload.void = true;
-      this.transactionService.pushUpdate({ ref: refSource, data, action: 'update' });
+      this.transactionService.updates.push({ ref: refSource, data, action: 'update' });
     }
   }
 
@@ -170,7 +170,7 @@ export class NftService {
     if (newValidPayment && previousHighestPay) {
       const refPrevPayment = admin.firestore().collection(COL.TRANSACTION).doc(previousHighestPay.uid);
       previousHighestPay.payload.invalidPayment = true;
-      this.transactionService.pushUpdate({ ref: refPrevPayment, data: previousHighestPay, action: 'update' });
+      this.transactionService.updates.push({ ref: refPrevPayment, data: previousHighestPay, action: 'update' });
 
       // Mark as invalid and create credit.
       const sameOwner = previousHighestPay.member === transaction.member;
@@ -192,7 +192,7 @@ export class NftService {
         const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(sourcTran);
         const refHighTranOrderDoc = await this.transactionService.transaction.get(refHighTranOrder);
         if (refHighTranOrderDoc.data()) {
-          this.transactionService.pushUpdate({
+          this.transactionService.updates.push({
             ref: refHighTranOrder,
             data: {
               linkedTransactions: [...(refHighTranOrderDoc.data()?.linkedTransactions || []), ...[credit?.uid]]
@@ -205,14 +205,14 @@ export class NftService {
           const sfDocMember = await this.transactionService.transaction.get(refMember);
           const bidNotification: Notification = NotificationService.prepareLostBid(<Member>sfDocMember.data(), <Nft>sfDocNft.data(), previousHighestPay);
           const refNotification = admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
-          this.transactionService.pushUpdate({ ref: refNotification, data: bidNotification, action: 'set' });
+          this.transactionService.updates.push({ ref: refNotification, data: bidNotification, action: 'set' });
         }
       }
     }
 
     // Update NFT with highest bid.
     if (newValidPayment) {
-      this.transactionService.pushUpdate({
+      this.transactionService.updates.push({
         ref: refNft,
         data: {
           auctionHighestBid: (<OrderPayBillCreditTransaction>payment.payload).amount,
@@ -226,11 +226,11 @@ export class NftService {
       const sfDocMember = await this.transactionService.transaction.get(refMember);
       const bidNotification = NotificationService.prepareBid(<Member>sfDocMember.data(), <Nft>sfDocNft.data(), payment);
       const refNotification = admin.firestore().collection(COL.NOTIFICATION).doc(bidNotification.uid);
-      this.transactionService.pushUpdate({ ref: refNotification, data: bidNotification, action: 'set' });
+      this.transactionService.updates.push({ ref: refNotification, data: bidNotification, action: 'set' });
     } else {
       // Invalidate payment.
       paymentPayload.invalidPayment = true;
-      this.transactionService.pushUpdate({ ref: refPayment, data: payment, action: 'update' });
+      this.transactionService.updates.push({ ref: refPayment, data: payment, action: 'update' });
 
       // No valid payment so we credit anyways.
       this.transactionService.createCredit(payment, {
@@ -253,7 +253,7 @@ export class NftService {
       const refSource = admin.firestore().collection(COL.NFT).doc(paymentPayload.nft!);
       const sfDoc = await this.transactionService.transaction.get(refSource);
       if (sfDoc.data()) {
-        this.transactionService.pushUpdate({
+        this.transactionService.updates.push({
           ref: refSource,
           data: {
             owner: payment.member,
@@ -285,7 +285,7 @@ export class NftService {
           if (refHighTranDoc.data()) {
             const highestPay: TransactionPayment = <TransactionPayment>refHighTranDoc.data();
             highestPay.payload.invalidPayment = true;
-            this.transactionService.pushUpdate({ ref: refHighTran, data: highestPay, action: 'update' });
+            this.transactionService.updates.push({ ref: refHighTran, data: highestPay, action: 'update' });
 
             // Mark as invalid and create credit.
             const sameOwner = highestPay.member === transaction.member;
@@ -306,7 +306,7 @@ export class NftService {
               const refHighTranOrder = admin.firestore().collection(COL.TRANSACTION).doc(sourcTran);
               const refHighTranOrderDoc = await this.transactionService.transaction.get(refHighTranOrder);
               if (refHighTranOrderDoc.data()) {
-                this.transactionService.pushUpdate({
+                this.transactionService.updates.push({
                   ref: refHighTranOrder,
                   data: {
                     linkedTransactions: [...(refHighTranOrderDoc.data()?.linkedTransactions || []), ...[credit?.uid]]
@@ -323,14 +323,14 @@ export class NftService {
       if ((<OrderTransaction>transaction.payload).beneficiary === 'space') {
         const refCol = admin.firestore().collection(COL.COLLECTION).doc(paymentPayload.collection!);
         const col = await this.transactionService.transaction.get(refCol);
-        this.transactionService.pushUpdate({ ref: refCol, data: { sold: admin.firestore.FieldValue.increment(1) }, action: 'update' });
+        this.transactionService.updates.push({ ref: refCol, data: { sold: admin.firestore.FieldValue.increment(1) }, action: 'update' });
 
         // Let's validate if collection has pending item to sell.
         if (col.data()?.placeholderNft && col.data()?.total === (col.data()?.sold + 1)) {
           const refSource = admin.firestore().collection(COL.NFT).doc(col.data()?.placeholderNft);
           const sfDoc = await this.transactionService.transaction.get(refSource);
           if (sfDoc.data()) {
-            this.transactionService.pushUpdate({
+            this.transactionService.updates.push({
               ref: refSource,
               data: {
                 sold: true,

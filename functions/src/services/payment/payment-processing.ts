@@ -97,7 +97,7 @@ export class ProcessingService {
     }
 
     // Add linked transaction.
-    this.transactionService.pushUpdate({
+    this.transactionService.updates.push({
       ref: orderRef,
       data: { linkedTransactions: [...(order.linkedTransactions || []), ...this.transactionService.linkedTransactions] },
       action: 'update'

@@ -23,7 +23,7 @@ export class AddressService {
       const refSource = admin.firestore().collection(COL.MEMBER).doc(credit.member);
       const sfDoc = await this.transactionService.transaction.get(refSource);
       if (sfDoc.data()) {
-        this.transactionService.pushUpdate({
+        this.transactionService.updates.push({
           ref: refSource,
           data: {
             validatedAddress: (<CreditPaymentTransaction>credit.payload).targetAddress
@@ -35,7 +35,7 @@ export class AddressService {
       const refSource = admin.firestore().collection(COL.SPACE).doc(credit.space);
       const sfDoc = await this.transactionService.transaction.get(refSource);
       if (sfDoc.data()) {
-        this.transactionService.pushUpdate({
+        this.transactionService.updates.push({
           ref: refSource,
           data: {
             validatedAddress: (<CreditPaymentTransaction>credit.payload).targetAddress
