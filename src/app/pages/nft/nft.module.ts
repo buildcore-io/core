@@ -6,6 +6,7 @@ import { CollectionStatusModule } from '@components/collection/components/collec
 import { CountdownModule } from '@components/countdown/countdown.module';
 import { DescriptionModule } from '@components/description/description.module';
 import { IconModule } from '@components/icon/icon.module';
+import { IotaInputModule } from '@components/iota-input/iota-input.module';
 import { NftBidModule } from '@components/nft/components/nft-bid/nft-bid.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { NftCheckoutModule } from '@components/nft/components/nft-checkout/nft-checkout.module';
@@ -94,7 +95,8 @@ import { DataService } from './services/data.service';
     NgChartsModule,
     DescriptionModule,
     CountdownModule,
-    TimelineModule
+    TimelineModule,
+    IotaInputModule
   ],
   providers: [
     DataService
