@@ -20,12 +20,9 @@ import { NavigationService } from '@core/services/navigation/navigation.service'
 import { NotificationService } from '@core/services/notification';
 import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { Units } from '@core/utils/units-helper';
 import { environment } from '@env/environment';
 import {
-  DISCORD_REGEXP,
-  MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT,
-  NftAvailableFromDateMin,
+  DISCORD_REGEXP, NftAvailableFromDateMin,
   TWITTER_REGEXP,
   URL_REGEXP
 } from '@functions/interfaces/config';
@@ -36,7 +33,6 @@ import {
   Space
 } from '@functions/interfaces/models';
 import { Access } from '@functions/interfaces/models/base';
-import { PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
@@ -46,7 +42,7 @@ import {
   NzUploadFile,
   NzUploadXHRArgs
 } from 'ng-zorro-antd/upload';
-import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SelectSpaceOption } from '../../../../components/space/components/select-space/select-space.component';
 import { Collection, DiscountLine } from './../../../../../../functions/interfaces/models/collection';
@@ -107,13 +103,7 @@ export class UpsertPage implements OnInit, OnDestroy {
     CollectionType.CLASSIC,
     Validators.required,
   );
-  public priceControl: FormControl = new FormControl('', [
-    Validators.required
-  ]);;
-  public unitControl: FormControl = new FormControl(
-    <Units>'Mi',
-    Validators.required,
-  );
+  public priceControl: FormControl = new FormControl(null, Validators.required);
   public availableFromControl: FormControl = new FormControl(
     '',
     Validators.required,
@@ -132,8 +122,6 @@ export class UpsertPage implements OnInit, OnDestroy {
     Award[] | undefined
   >(undefined);
   public spaces$: BehaviorSubject<Space[]> = new BehaviorSubject<Space[]>([]);
-  public minimumPrice = MIN_IOTA_AMOUNT;
-  public maximumPrice = MAX_IOTA_AMOUNT;
   private awardSub?: Subscription;
 
   constructor(
@@ -161,7 +149,6 @@ export class UpsertPage implements OnInit, OnDestroy {
       accessAwards: this.accessAwardsControl,
       accessCollections: this.accessCollectionsControl,
       price: this.priceControl,
-      unit: this.unitControl,
       availableFrom: this.availableFromControl,
       royaltiesFee: this.royaltiesFeeControl,
       royaltiesSpace: this.royaltiesSpaceControl,
@@ -202,13 +189,7 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.spaceControl.setValue(o.space);
               this.descriptionControl.setValue(o.description);
               this.typeControl.setValue(o.type);
-              if (o.price >= 1000 * 1000 * 1000) {
-                this.priceControl.setValue(o.price / 1000 / 1000 / 1000);
-                this.unitControl.setValue(<Units>'Gi');
-              } else {
-                this.priceControl.setValue(o.price / 1000 / 1000);
-                this.unitControl.setValue(<Units>'Mi');
-              }
+              this.priceControl.setValue(o.price);
               this.availableFromControl.setValue(o.availableFrom.toDate());
               this.royaltiesFeeControl.setValue(o.royaltiesFee * 100);
               this.royaltiesSpaceControl.setValue(o.royaltiesSpace);
@@ -242,7 +223,6 @@ export class UpsertPage implements OnInit, OnDestroy {
               this.accessAwardsControl.disable();
               this.accessCollectionsControl.disable();
               this.priceControl.disable();
-              this.unitControl.disable();
               this.availableFromControl.disable();
               this.typeControl.disable();
               this.categoryControl.disable();
@@ -287,14 +267,6 @@ export class UpsertPage implements OnInit, OnDestroy {
           this.placeholderUrlControl.addValidators(Validators.required);
         }
         this.placeholderUrlControl.updateValueAndValidity();
-      });
-
-    merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        const value = this.getRawPrice(Number(this.priceControl.value), <Units> this.unitControl.value);
-        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
-        this.priceControl.setErrors(errors);
       });
 
     this.royaltiesSpaceDifferentControl.valueChanges
@@ -429,10 +401,6 @@ export class UpsertPage implements OnInit, OnDestroy {
     return tooltip;
   }
 
-  public get priceUnits(): Units[] {
-    return PRICE_UNITS;
-  }
-
   public disabledStartDate(startValue: Date): boolean {
     // Disable past dates & today + 1day startValue
     if (startValue.getTime() < dayjs().add(environment.production ? NftAvailableFromDateMin.value : 0, 'ms').toDate().getTime()) {
@@ -468,9 +436,6 @@ export class UpsertPage implements OnInit, OnDestroy {
   };
 
   public formatSubmitData(data: any, mode: 'create' | 'edit' = 'create'): any {
-    if (data.price) {
-      data.price = this.getRawPrice(data.price, data.unit);
-    }
     const discounts: DiscountLine[] = [];
     data.discounts.forEach((v: DiscountLine) => {
       if (v.amount > 0) {
@@ -580,9 +545,5 @@ export class UpsertPage implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.awardSub?.unsubscribe();
-  }
-
-  private getRawPrice(price: number, unit: Units): number {
-    return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
   }
 }
