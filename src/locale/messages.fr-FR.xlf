@@ -710,7 +710,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">189</context>
         </context-group>
-        <target state="needs-translation">Please make sure you select address in MetaMask!</target>
+        <target state="translated">Veillez à bien sélectionner une adresse dans MetaMask !</target>
       </trans-unit>
       <trans-unit id="4963418461748546700" datatype="html">
         <source>Unable to get nonce to authenticate!</source>
@@ -718,7 +718,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">196</context>
         </context-group>
-        <target state="needs-translation">Unable to get nonce to authenticate!</target>
+        <target state="translated">Impossible d'obtenir le code de vérification pour s'authentifier !</target>
       </trans-unit>
       <trans-unit id="2286941765985804347" datatype="html">
         <source>You have to open Soonaverse in MetaMask app.</source>
@@ -726,7 +726,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">239</context>
         </context-group>
-        <target state="needs-translation">You have to open Soonaverse in MetaMask app.</target>
+        <target state="translated">Accédez à l'application du MetaMask et ouvrez Soonaverse.</target>
       </trans-unit>
       <trans-unit id="9186218670020875251" datatype="html">
         <source>Failed to initialize MetaMask, try to reload page.</source>
@@ -734,7 +734,7 @@
           <context context-type="sourcefile">src/app/components/auth/services/auth.service.ts</context>
           <context context-type="linenumber">241</context>
         </context-group>
-        <target state="needs-translation">Failed to initialize MetaMask, try to reload page.</target>
+        <target state="translated">L'initialisation du MetaMask a échoué, essayez de recharger la page.</target>
       </trans-unit>
       <trans-unit id="9217311297628108490" datatype="html">
         <source>Pending
@@ -1002,7 +1002,7 @@
           <context context-type="sourcefile">src/app/components/countdown/countdown.component.html</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">min</target>
+        <target state="translated">min</target>
       </trans-unit>
       <trans-unit id="2155832126259145609" datatype="html">
         <source>s</source>
@@ -1362,7 +1362,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Make a bid</target>
+        <target state="translated">Ouvrir une position</target>
       </trans-unit>
       <trans-unit id="4855584904719347847" datatype="html">
         <source>NFT image</source>
@@ -1390,7 +1390,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">Ends </target>
+        <target state="translated">Fermé </target>
       </trans-unit>
       <trans-unit id="1138828998549529161" datatype="html">
         <source>Royalties</source>
@@ -1442,7 +1442,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection.page.html</context>
           <context context-type="linenumber">69,70</context>
         </context-group>
-        <target state="needs-translation">Royalties goes to</target>
+        <target state="translated">Versement de redevances</target>
       </trans-unit>
       <trans-unit id="187187500641108332" datatype="html">
         <source>
@@ -1476,7 +1476,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation"><x id="INTERPOLATION" equiv-text="ace?.name | truncate:[20] }}"/></target>
+        <target state="translated"><x id="INTERPOLATION" equiv-text="ace?.name | truncate:[20] }}"/></target>
       </trans-unit>
       <trans-unit id="6300210647237660616" datatype="html">
         <source>Current highest bid</source>
