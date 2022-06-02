@@ -19,7 +19,7 @@ export const milestoneTransactionWrite = functions.runWith({
     const data = <MilestoneTransaction>(await transaction.get(change.after.ref)).data()
     if (data.processed !== true) {
       const service = new ProcessingService(transaction);
-      await service.processMilestoneTransaction(data);
+      await service.processMilestoneTransactions(data);
       service.submit();
       return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() })
     } else {

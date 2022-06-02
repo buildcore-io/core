@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { DEF_WALLET_PAY_IN_PROGRESS, MAX_WALLET_RETRY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { BillPaymentTransaction, CreditPaymentTransaction, IOTATangleTransaction, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
+import { BillPaymentTransaction, CreditPaymentTransaction, Entity, IOTATangleTransaction, PaymentTransaction, Transaction, TransactionType, WalletResult } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Nft } from '../../interfaces/models/nft';
 import admin from '../admin.config';
@@ -110,7 +110,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
       details.previousOwner = payload.previousOwner;
       details.previousOwnerEntity = payload.previousOwnerEntity;
       details.owner = tranData.member;
-      details.ownerEntity = 'member';
+      details.ownerEntity = Entity.MEMBER;
     }
     if (payload.royalty) {
       details.royalty = payload.royalty;
