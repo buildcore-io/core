@@ -37,7 +37,7 @@ export class TransactionService {
     });
   }
 
-  public pushUpdate = this.updates.push
+  public pushUpdate = (update: TransactionUpdates) => this.updates.push(update)
 
   public createPayment(order: Transaction, tran: TransactionMatch, invalidPayment = false): Transaction {
     if (order.type !== TransactionType.ORDER) {
