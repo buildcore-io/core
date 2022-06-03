@@ -1488,7 +1488,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">82</context>
         </context-group>
-        <target state="needs-translation">Current highest bid</target>
+        <target state="translated">Offre maximale en circulation</target>
       </trans-unit>
       <trans-unit id="8180434088303661671" datatype="html">
         <source>Min bid</source>
@@ -1500,7 +1500,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">62</context>
         </context-group>
-        <target state="needs-translation">Min bid</target>
+        <target state="translated">Offre min</target>
       </trans-unit>
       <trans-unit id="523519638239091406" datatype="html">
         <source>Your bid is the highest</source>
@@ -1512,7 +1512,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">64</context>
         </context-group>
-        <target state="needs-translation">Your bid is the highest</target>
+        <target state="translated">Votre offre est la plus haute</target>
       </trans-unit>
       <trans-unit id="2897616024485017156" datatype="html">
         <source> Current price is refreshing in real time</source>
@@ -1520,7 +1520,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="needs-translation"> Current price is refreshing in real time</target>
+        <target state="translated"> Le prix actuel est rafraîchi en temps réel</target>
       </trans-unit>
       <trans-unit id="727772125693257505" datatype="html">
         <source>Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</source>
@@ -1528,7 +1528,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Adress of your desired NTF will be locked for you for the whole auction. After payment your bid will be locked, if there is a higher bid, you will be refunded immediately.</target>
+        <target state="translated">L'adresse des NTFs que vous souhaitez sera verrouillée pour vous pendant toute la durée de la vente aux enchères. Après paiement, votre offre sera verrouillée. La meilleure offre sera retenue et vous serez remboursé immédiatement.</target>
       </trans-unit>
       <trans-unit id="3086800896118622351" datatype="html">
         <source> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </source>
@@ -1544,7 +1544,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">248,249</context>
         </context-group>
-        <target state="needs-translation"> If there is a higher bid, you will be refunded immediately. If you want to make another bid, send higher amount directly to the same address. </target>
+        <target state="translated"> La meilleure offre sera retenue et vous serez remboursé immédiatement. Si vous voulez soumettre une nouvelle offre, envoyez le montant supérieur directement à la même adresse. </target>
       </trans-unit>
       <trans-unit id="3201433032746097286" datatype="html">
         <source> Make a bid </source>
@@ -1552,7 +1552,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">157</context>
         </context-group>
-        <target state="needs-translation"> Make a bid </target>
+        <target state="translated"> Vous investissez </target>
       </trans-unit>
       <trans-unit id="1318981813671388482" datatype="html">
         <source>Send IOTA to following address (please restake after!):</source>
@@ -1672,7 +1672,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">186,187</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, always use wallets you fully control. </target>
+        <target state="translated"> Le transfert de fonds ne doit pas être réalisé par l'intermédiaire d'une plateforme d'Échanges , utilisez toujours des portefeuilles que vous contrôlez entièrement. </target>
       </trans-unit>
       <trans-unit id="6490688569532630280" datatype="html">
         <source>Send</source>
@@ -1752,7 +1752,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">288,289</context>
         </context-group>
-        <target state="needs-translation">Action</target>
+        <target state="translated">Trade</target>
       </trans-unit>
       <trans-unit id="6533918067030990396" datatype="html">
         <source>Amount</source>
@@ -1804,7 +1804,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">36,37</context>
         </context-group>
-        <target state="needs-translation">Detail</target>
+        <target state="translated">Particularité</target>
       </trans-unit>
       <trans-unit id="2981219928115418649" datatype="html">
         <source>Link</source>
@@ -1836,7 +1836,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">259</context>
         </context-group>
-        <target state="needs-translation">Link</target>
+        <target state="translated">Lien</target>
       </trans-unit>
       <trans-unit id="7318790902000735587" datatype="html">
         <source> Do not send funds from an exchange, use only a Firefly or TanglePay wallet. </source>
@@ -1844,7 +1844,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">253</context>
         </context-group>
-        <target state="needs-translation"> Do not send funds from an exchange, use only a Firefly or TanglePay wallet. </target>
+        <target state="translated"> Le transfert de fonds ne doit pas être réalisé par l'intermédiaire d'une plateforme d'Échanges, utilisez uniquement les portefeuilles tels que Firefly ou TanglePay. </target>
       </trans-unit>
       <trans-unit id="7539361169976574107" datatype="html">
         <source>Congratulations you won the NFT.</source>
@@ -1852,7 +1852,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-bid/nft-bid.component.html</context>
           <context context-type="linenumber">270,271</context>
         </context-group>
-        <target state="needs-translation">Congratulations you won the NFT.</target>
+        <target state="translated">Félicitations, vous avez gagné le NFT.</target>
       </trans-unit>
       <trans-unit id="8528366073079211415" datatype="html">
         <source> Close checkout </source>
