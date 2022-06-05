@@ -251,7 +251,7 @@ export class TradePage implements OnInit, OnDestroy {
           dataToShow.data.push(this.listenAvgPrice7d$.value || 0);
         } else {
           const purchases: TokenPurchase[] = sortedData.filter((b) => {
-            return (dayjs(b.createdOn?.toDate()).hour() > Number(prev) && dayjs(b.createdOn?.toDate()).hour() < Number(v));
+            return (dayjs(b.createdOn?.toDate()).day() >= Number(index - 1) && dayjs(b.createdOn?.toDate()).day() < Number(index));
           });
 
           dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
@@ -354,7 +354,7 @@ export class TradePage implements OnInit, OnDestroy {
   public getAsksTitle(_avg?: number): string {
     return $localize`Asks`; // + ' ' + ((avg && avg > 0) ? '(' + $localize`avg price ` + this.formatBest(avg * 1000 * 1000) + ')' : '');
   }
-  
+
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
   }
