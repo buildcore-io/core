@@ -1,4 +1,4 @@
-import { MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY } from '../../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER, SECONDARY_TRANSACTION_DELAY } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
 import { MilestoneTransaction, MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
@@ -47,6 +47,8 @@ export class TransactionService {
       member: order.member,
       space: order.space,
       createdOn: serverTime(),
+      sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+      targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
       payload: {
         // This must be the amount they send. As we're handing both correct amount from order or invalid one.
         amount: tran.to.amount,
@@ -87,6 +89,8 @@ export class TransactionService {
         space: order.payload.beneficiary !== 'member' ? order.space : null,
         member: order.member,
         createdOn: serverTime(),
+        sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+        targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
         payload: {
           amount: finalAmt,
           sourceAddress: order.payload.targetAddress,
@@ -115,6 +119,8 @@ export class TransactionService {
         member: order.member,
         space: order.payload.royaltiesSpace,
         createdOn: serverTime(),
+        sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+        targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
         payload: {
           amount: royaltyAmt,
           sourceAddress: order.payload.targetAddress,
@@ -151,6 +157,8 @@ export class TransactionService {
         space: payment.space,
         member: payment.member,
         createdOn,
+        sourceNetwork: payment.sourceNetwork || DEFAULT_NETWORK,
+        targetNetwork: payment.targetNetwork || DEFAULT_NETWORK,
         payload: {
           amount: payment.payload.amount,
           sourceAddress: tran.to.address,

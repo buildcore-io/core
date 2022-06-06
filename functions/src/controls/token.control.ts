@@ -12,6 +12,7 @@ import { scale } from "../scale.settings";
 import { assertHasAccess } from '../services/validators/access';
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
+import { assertMemberHasValidAddress, assertSpaceHasValidAddress, getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
@@ -110,9 +111,7 @@ export const createToken = functions.runWith({
   await assertIsGuardian(params.body.space, owner)
 
   const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${params.body.space}`).get()).data()
-  if (!space?.validatedAddress) {
-    throw throwInvalidArgument(WenError.space_must_have_validated_address)
-  }
+  assertSpaceHasValidAddress(space?.validatedAddress)
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
     getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
@@ -253,19 +252,19 @@ const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.s
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
   dayjs().isBefore(dayjs(token.coolDownEnd.toDate()))
 
+
+const orderTokenSchema = Joi.object({ token: Joi.string().required() });
+
 export const orderToken = functions.runWith({
   minInstances: scale(WEN_FUNC.orderToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.orderToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object({ token: Joi.string().required() });
-  assertValidation(schema.validate(params.body));
+  assertValidation(orderTokenSchema.validate(params.body));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  if (!member?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address)
-  }
+  assertMemberHasValidAddress(member?.validatedAddress)
 
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
@@ -301,7 +300,7 @@ export const orderToken = functions.runWith({
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: space.validatedAddress,
+          beneficiaryAddress: getAddress(space.validatedAddress),
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -347,7 +346,7 @@ export const creditToken = functions.runWith({
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
     const member = <Member>(await memberDocRef(owner).get()).data()
-    const order = await transaction.get(orderDocRef(owner, token))
+    const order = <Transaction>(await transaction.get(orderDocRef(owner, token))).data()
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
     const totalDepositLeft = (distribution.totalDeposit || 0) - params.body.amount
@@ -369,8 +368,8 @@ export const creditToken = functions.runWith({
       payload: {
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
-        sourceAddress: order.data()?.payload.targetAddress,
-        targetAddress: member.validatedAddress,
+        sourceAddress: order.payload.targetAddress,
+        targetAddress: getAddress(member.validatedAddress),
         sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
@@ -456,8 +455,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     appCheck(WEN_FUNC.claimAirdroppedToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object({ token: Joi.string().required() });
-    assertValidation(schema.validate(params.body));
+    assertValidation(orderTokenSchema.validate(params.body));
 
     const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get();
     if (!tokenDoc.exists) {
@@ -500,7 +498,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: tokenDoc.data()?.space,
-          beneficiaryAddress: spaceDoc.data()?.validatedAddress,
+          beneficiaryAddress: getAddress(spaceDoc.data()?.validatedAddress),
           expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
           validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,

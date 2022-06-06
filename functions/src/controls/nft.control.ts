@@ -11,6 +11,7 @@ import { Nft, NftAccess } from '../../interfaces/models/nft';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
+import { assertMemberHasValidAddress } from '../utils/address.utils';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
@@ -206,9 +207,7 @@ export const setForSaleNft = functions.runWith({
     throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
   }
 
-  if (!docMember.data()?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address);
-  }
+  assertMemberHasValidAddress(docMember.data()?.validatedAddress)
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);

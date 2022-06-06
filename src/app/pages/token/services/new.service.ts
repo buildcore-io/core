@@ -7,6 +7,7 @@ import { getUrlValidator } from '@core/utils/form-validation.utils';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
 import { TokenAllocation, TokenDistributionType } from '@functions/interfaces/models/token';
+import { getAddress } from '@functions/src/utils/address.utils';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
@@ -130,7 +131,7 @@ export class NewService {
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || [])
       .filter((o) => {
-        return !!o.validatedAddress;
+        return !!getAddress(o.validatedAddress);
       })
       .map((o) => ({
         label: o.name || o.uid,

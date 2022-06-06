@@ -1,6 +1,7 @@
 import { SUB_COL } from "../../../interfaces/models/base";
-import { throwInvalidArgument } from "../../utils/error.utils";
 import admin from '../../admin.config';
+import { assertSpaceHasValidAddress } from "../../utils/address.utils";
+import { throwInvalidArgument } from "../../utils/error.utils";
 import { WenError } from './../../../interfaces/errors';
 
 type DocRefType = admin.firestore.DocumentReference<admin.firestore.DocumentData>
@@ -20,8 +21,6 @@ export class SpaceValidator {
 
   public static async hasValidAddress(refSpace: DocRefType): Promise<void> {
     const docSpace = await refSpace.get();
-    if (!(await refSpace.get()).exists || !docSpace.data()?.validatedAddress) {
-      throw throwInvalidArgument(WenError.space_must_have_validated_address);
-    }
+    assertSpaceHasValidAddress(docSpace.data()?.validatedAddress)
   }
 }

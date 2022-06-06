@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@a
 import { DeviceService } from '@core/services/device';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { Member } from '@functions/interfaces/models';
+import { getAddress } from '@functions/src/utils/address.utils';
 import { Space } from './../../../../functions/interfaces/models/space';
 
 export enum AddressType {
@@ -35,7 +36,7 @@ export class WalletAddressComponent {
   ) {}
 
   public get address(): string|undefined {
-    return this.entity?.validatedAddress;
+    return getAddress(this.entity?.validatedAddress);
   }
 
   public copyAddress() {

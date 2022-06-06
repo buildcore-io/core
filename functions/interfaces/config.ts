@@ -1,3 +1,5 @@
+import { Network } from "./models";
+
 export class RelatedRecordsResponse {
   public static status = false;
 }
@@ -51,9 +53,9 @@ export const MIN_IOTA_AMOUNT = MIN_AMOUNT_TO_TRANSFER;
 export const MAX_IOTA_AMOUNT = 1000 * 1000 * 1000 * 1000;
 export const IPFS_GATEWAY = 'https://ipfs.soonaverse.com/ipfs/';
 export const BADGE_TO_CREATE_COLLECTION: string[] = [
-  '0x6baa35ee540ce700978226aaab2b1d97d8fb54ba', 
+  '0x6baa35ee540ce700978226aaab2b1d97d8fb54ba',
   '0x3ccb9fe9d6f429981522fb1927a2259149a4a192',
-  '0x2e6c7d3efee5d931b05a7908295c10732417ed89', 
+  '0x2e6c7d3efee5d931b05a7908295c10732417ed89',
   '0x8e3e0e81249a450181a7226d85fadc8102fd4ac2',
   '0x4d90ade7678da9b1f1496668a05bb736022e2f98'
 ];
@@ -72,3 +74,4 @@ export const RPC_CHAIN = {
 export const MIN_TOTAL_TOKEN_SUPPLY = 100;
 export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000;
 export const MIN_TOKEN_START_DATE_DAY = 7
+export const DEFAULT_NETWORK = Network.IOTA

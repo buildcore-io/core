@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import { WEN_FUNC } from '../../interfaces/functions';
+import { Network } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { MilestoneTransaction } from '../../interfaces/models/milestone';
 import admin from '../admin.config';
@@ -7,11 +8,7 @@ import { scale } from '../scale.settings';
 import { ProcessingService } from '../services/payment/payment-processing';
 import { serverTime } from '../utils/dateTime.utils';
 
-// Listen for changes in all documents in the 'users' collection
-export const milestoneTransactionWrite = functions.runWith({
-  timeoutSeconds: 300,
-  minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
-}).firestore.document(COL.MILESTONE + '/{milestoneId}/' + SUB_COL.TRANSACTIONS + '/{tranId}').onWrite((change) => {
+const handleMilestoneTransactionWrite = async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
   if (!change.after.data()) {
     return
   }
@@ -27,5 +24,16 @@ export const milestoneTransactionWrite = functions.runWith({
       return;
     }
   })
-});
+}
 
+export const iotaMilestoneTransactionWrite = functions.runWith({
+  timeoutSeconds: 300,
+  minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
+}).firestore.document(`${COL.MILESTONE}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+  .onWrite(handleMilestoneTransactionWrite);
+
+export const shimmerMilestoneTransactionWrite = functions.runWith({
+  timeoutSeconds: 300,
+  minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
+}).firestore.document(`${COL.MILESTONE}_${Network.SHIMMER}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+  .onWrite(handleMilestoneTransactionWrite);

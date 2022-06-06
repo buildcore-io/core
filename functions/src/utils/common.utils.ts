@@ -21,3 +21,6 @@ export const generateRandomAmount = () => {
   const min = MIN_AMOUNT_TO_TRANSFER / 1000 / 10;
   return Math.floor(Math.random() * ((min * 1.5) - min + 1) + min) * 1000 * 10;
 }
+
+
+export const getRandomElement = <T>(array: T[]) => array[Math.floor(Math.random() * array.length)]

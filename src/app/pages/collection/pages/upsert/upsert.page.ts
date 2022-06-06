@@ -33,6 +33,7 @@ import {
   Space
 } from '@functions/interfaces/models';
 import { Access } from '@functions/interfaces/models/base';
+import { getAddress } from '@functions/src/utils/address.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
@@ -359,7 +360,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || [])
       .filter((o) => {
-        return !!o.validatedAddress;
+        return !!getAddress(o.validatedAddress);
       })
       .map((o) => ({
         label: o.name || o.uid,

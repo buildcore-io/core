@@ -149,7 +149,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   // Submit payment.
   const walletReference: WalletResult = <WalletResult>{};
   try {
-    const walletService: WalletService = new WalletService();
+    const walletService = new WalletService(newValue.targetNetwork);
     walletReference.chainReference = await walletService.sendFromGenesis(
       await walletService.getIotaAddressDetails(await MnemonicService.get(payload.sourceAddress)),
       payload.targetAddress,

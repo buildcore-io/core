@@ -1,13 +1,14 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
-import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Space, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { getAddress } from '../utils/address.utils';
 import { guardedRerun } from '../utils/common.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../utils/config.utils';
 import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
@@ -106,10 +107,12 @@ const createBillPayments = async (
     space: token.space,
     member: sell.owner,
     createdOn: serverTime(),
+    sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+    targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
     payload: {
       amount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: seller.validatedAddress,
+      targetAddress: getAddress(seller.validatedAddress),
       previousOwnerEntity: 'member',
       previousOwner: buyer.uid,
       sourceTransaction: [buy.paymentTransactionId],
@@ -129,10 +132,12 @@ const createBillPayments = async (
       space: token.space,
       member: sell.owner,
       createdOn: serverTime(),
+      sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+      targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
       payload: {
         amount: royalties[index],
         sourceAddress: order.payload.targetAddress,
-        targetAddress: spaceData.validatedAddress,
+        targetAddress: getAddress(spaceData.validatedAddress),
         previousOwnerEntity: 'member',
         previousOwner: buyer.uid,
         sourceTransaction: [buy.paymentTransactionId],

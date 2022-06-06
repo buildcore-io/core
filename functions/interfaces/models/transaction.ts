@@ -36,6 +36,11 @@ export enum Entity {
   MEMBER = 'member'
 }
 
+export enum Network {
+  IOTA = 'iota',
+  SHIMMER = 'smr'
+}
+
 export interface VoteTransaction {
   proposalId: string;
   votes: string[];
@@ -149,6 +154,8 @@ export interface IOTATangleTransaction {
 export type TransactionPayload = VoteTransaction | BadgeTransaction | OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction | IOTATangleTransaction;
 
 export interface Transaction extends BaseRecord {
+  sourceNetwork?: Network;
+  targetNetwork?: Network;
   type: TransactionType;
   member?: EthAddress;
   space?: EthAddress;

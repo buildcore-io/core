@@ -12,6 +12,7 @@ import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
+import { assertMemberHasValidAddress } from '../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -36,9 +37,7 @@ export const sellToken = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  if (!member?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address)
-  }
+  assertMemberHasValidAddress(member?.validatedAddress)
 
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
   if (!token) {
@@ -105,11 +104,9 @@ export const buyToken = functions.runWith({
   const owner = params.address.toLowerCase();
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
-  
+
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  if (!member?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address)
-  }
+  assertMemberHasValidAddress(member?.validatedAddress)
 
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data();
   if (!token) {
