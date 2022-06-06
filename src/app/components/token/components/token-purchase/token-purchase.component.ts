@@ -262,6 +262,10 @@ export class TokenPurchaseComponent implements OnInit, OnDestroy {
   public getTargetAmount(): string {
     return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amountControl.value * 1000 * 1000), Number(this.token?.pricePerToken || 0))), 1, 6);
   }
+  
+  public getResultAmount(): string {
+    return this.isAmountInput ? this.extractAmount(this.formatBest(this.amountControl.value * 1000 * 1000 * (this.token?.pricePerToken || 0))) : this.formatTokenBest(this.amountControl.value * 1000 * 1000);
+  }
 
   public ngOnDestroy(): void {
     this.transSubscription?.unsubscribe();

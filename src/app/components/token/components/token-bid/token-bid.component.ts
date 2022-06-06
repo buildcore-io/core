@@ -288,6 +288,10 @@ export class TokenBidComponent implements OnInit, OnDestroy {
     return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amountControl.value * 1000 * 1000), Number(this.offeredRateControl.value))), 1000 * 1000, 6);
   }
 
+  public getResultAmount(): string {
+    return this.isAmountInput ? this.extractAmount(this.formatBest(this.amountControl.value * 1000 * 1000 * (this.offeredRateControl?.value || 0))) : this.formatTokenBest(this.amountControl.value * 1000 * 1000);
+  }
+
   public ngOnDestroy(): void {
     this.transSubscription?.unsubscribe();
   }
