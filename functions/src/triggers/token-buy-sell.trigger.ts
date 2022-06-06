@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionType } from '../../interfaces/models';
+import { Member, Network, Space, Transaction, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
@@ -112,7 +112,7 @@ const createBillPayments = async (
     payload: {
       amount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(seller.validatedAddress),
+      targetAddress: getAddress(seller.validatedAddress, Network.IOTA),
       previousOwnerEntity: 'member',
       previousOwner: buyer.uid,
       sourceTransaction: [buy.paymentTransactionId],
@@ -137,7 +137,7 @@ const createBillPayments = async (
       payload: {
         amount: royalties[index],
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(spaceData.validatedAddress),
+        targetAddress: getAddress(spaceData.validatedAddress, Network.IOTA),
         previousOwnerEntity: 'member',
         previousOwner: buyer.uid,
         sourceTransaction: [buy.paymentTransactionId],

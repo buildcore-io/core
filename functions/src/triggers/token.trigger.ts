@@ -3,7 +3,7 @@ import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Member, Network, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
@@ -72,7 +72,7 @@ const createBillPayment =
       payload: {
         amount: distribution.totalPaid + (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0),
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(space.validatedAddress),
+        targetAddress: getAddress(space.validatedAddress, Network.IOTA),
         previousOwnerEntity: 'space',
         previousOwner: space.uid,
         sourceTransaction: payments.map(d => d.uid),
@@ -114,7 +114,7 @@ const createCredit = async (
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member.validatedAddress),
+      targetAddress: getAddress(member.validatedAddress, Network.IOTA),
       sourceTransaction: payments.map(d => d.uid),
       token: token.uid,
       reconciled: true,

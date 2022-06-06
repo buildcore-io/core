@@ -5,7 +5,7 @@ import { isEmpty, merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Network, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
@@ -111,7 +111,7 @@ export const createToken = functions.runWith({
   await assertIsGuardian(params.body.space, owner)
 
   const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${params.body.space}`).get()).data()
-  assertSpaceHasValidAddress(space?.validatedAddress)
+  assertSpaceHasValidAddress(space?.validatedAddress, Network.IOTA)
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
     getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
@@ -264,7 +264,7 @@ export const orderToken = functions.runWith({
   assertValidation(orderTokenSchema.validate(params.body));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member?.validatedAddress)
+  assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)
 
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
@@ -300,7 +300,7 @@ export const orderToken = functions.runWith({
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: getAddress(space.validatedAddress),
+          beneficiaryAddress: getAddress(space.validatedAddress, Network.IOTA),
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -369,7 +369,7 @@ export const creditToken = functions.runWith({
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
         sourceAddress: order.payload.targetAddress,
-        targetAddress: getAddress(member.validatedAddress),
+        targetAddress: getAddress(member.validatedAddress, Network.IOTA),
         sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
@@ -498,7 +498,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: tokenDoc.data()?.space,
-          beneficiaryAddress: getAddress(spaceDoc.data()?.validatedAddress),
+          beneficiaryAddress: getAddress(spaceDoc.data()?.validatedAddress, Network.IOTA),
           expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
           validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,

@@ -1,6 +1,6 @@
 import bigDecimal from 'js-big-decimal';
 import { DEFAULT_NETWORK } from '../../interfaces/config';
-import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Member, Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
@@ -34,7 +34,7 @@ export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurc
       type: TransactionCreditType.TOKEN_BUY,
       amount: refundAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: getAddress(member.validatedAddress),
+      targetAddress: getAddress(member.validatedAddress, Network.IOTA),
       sourceTransaction: [buy.paymentTransactionId],
       token: token.uid,
       reconciled: true,

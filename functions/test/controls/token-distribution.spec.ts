@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from "lodash";
 import { MIN_IOTA_AMOUNT } from "../../interfaces/config";
-import { Space, Transaction } from "../../interfaces/models";
+import { Network, Space, Transaction } from "../../interfaces/models";
 import { COL, SUB_COL } from "../../interfaces/models/base";
 import { TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
@@ -244,7 +244,7 @@ describe('Token trigger test', () => {
         const paidAmount = isEmpty(input.paymentAmount) ? input.totalPaid[i] : input.paymentAmount![i];
         expect(paymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(paidAmount, MIN_IOTA_AMOUNT)))
         expect(paymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
-        expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space.validatedAddress))
+        expect(paymentDoc.data()?.payload?.targetAddress).toBe(getAddress(space.validatedAddress, Network.IOTA))
       }
       if (distribution.creditPaymentId) {
         const creditPaymentDoc = await admin.firestore().doc(`${COL.TRANSACTION}/${distribution.creditPaymentId}`).get()
@@ -253,7 +253,7 @@ describe('Token trigger test', () => {
         expect(creditPaymentDoc.data()?.payload?.amount).toBe(Number(bigDecimal.multiply(creditAmount, MIN_IOTA_AMOUNT)))
         const memberAddress = (await admin.firestore().doc(`${COL.MEMBER}/${member}`).get()).data()?.validatedAddress
         expect(creditPaymentDoc.data()?.payload?.sourceAddress).toBe(orders[i].payload?.targetAddress)
-        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(getAddress(memberAddress))
+        expect(creditPaymentDoc.data()?.payload?.targetAddress).toBe(getAddress(memberAddress, Network.IOTA))
       }
     }
   })

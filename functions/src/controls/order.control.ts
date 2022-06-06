@@ -149,10 +149,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   if (docNft.data().owner) { // &&
     const refPrevOwner: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(docNft.data().owner);
     const docPrevOwner: DocumentSnapshotType = await refPrevOwner.get();
-    assertMemberHasValidAddress(docPrevOwner.data()?.validatedAddress)
+    assertMemberHasValidAddress(docPrevOwner.data()?.validatedAddress, Network.IOTA)
     prevOwnerAddress = docPrevOwner.data()?.validatedAddress;
   } else {
-    assertSpaceHasValidAddress(docSpace.data()?.validatedAddress)
+    assertSpaceHasValidAddress(docSpace.data()?.validatedAddress, Network.IOTA)
   }
 
   if (docNft.data().owner === owner) {
@@ -229,10 +229,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       targetAddress: targetAddress.bech32,
       beneficiary: docNft.data().owner ? 'member' : 'space',
       beneficiaryUid: docNft.data().owner || docCollectionData.space,
-      beneficiaryAddress: getAddress(docNft.data().owner ? prevOwnerAddress : docSpace.data()?.validatedAddress),
+      beneficiaryAddress: getAddress(docNft.data().owner ? prevOwnerAddress : docSpace.data()?.validatedAddress, Network.IOTA),
       royaltiesFee: docCollectionData.royaltiesFee,
       royaltiesSpace: docCollectionData.royaltiesSpace,
-      royaltiesSpaceAddress: getAddress(docRoyaltySpace.data()?.validatedAddress),
+      royaltiesSpaceAddress: getAddress(docRoyaltySpace.data()?.validatedAddress, Network.IOTA),
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
@@ -364,7 +364,7 @@ export const openBid = functions.runWith({
   }
 
   const prevOwnerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()?.validatedAddress
-  assertMemberHasValidAddress(prevOwnerAddress)
+  assertMemberHasValidAddress(prevOwnerAddress, Network.IOTA)
 
   const newWallet = new WalletService();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
@@ -389,10 +389,10 @@ export const openBid = functions.runWith({
       targetAddress: targetAddress.bech32,
       beneficiary: nft.owner ? 'member' : 'space',
       beneficiaryUid: nft.owner || collection.space,
-      beneficiaryAddress: getAddress(nft.owner ? prevOwnerAddress : space.validatedAddress),
+      beneficiaryAddress: getAddress(nft.owner ? prevOwnerAddress : space.validatedAddress, Network.IOTA),
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
-      royaltiesSpaceAddress: getAddress(docRoyaltySpace.data()?.validatedAddress),
+      royaltiesSpaceAddress: getAddress(docRoyaltySpace.data()?.validatedAddress, Network.IOTA),
       expiresOn: nft.auctionTo,
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,

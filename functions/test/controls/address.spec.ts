@@ -1,8 +1,9 @@
+import { WenError } from "../../interfaces/errors";
 import { Member, Network, Space } from "../../interfaces/models";
 import { COL } from "../../interfaces/models/base";
 import admin from "../../src/admin.config";
 import * as wallet from '../../src/utils/wallet.utils';
-import { createMember, createSpace, milestoneProcessed, submitMilestoneFunc, validateMemberAddressFunc, validateSpaceAddressFunc } from "./common";
+import { createMember, createSpace, expectThrow, milestoneProcessed, submitMilestoneFunc, validateMemberAddressFunc, validateSpaceAddressFunc } from "./common";
 
 let walletSpy: any;
 
@@ -59,6 +60,12 @@ describe('Address validation', () => {
     const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data()
     expect(spaceData.validatedAddress?.iota).toBeDefined()
     expect(spaceData.validatedAddress?.smr).toBeDefined()
+  })
+
+  it('Should throw, can not validate twice', async () => {
+    const memberAddress = await createMember(walletSpy, true)
+    const space = await createSpace(walletSpy, memberAddress, true)
+    await expectThrow(validateSpaceAddressFunc(walletSpy, memberAddress, space.uid, Network.IOTA), WenError.space_already_have_validated_address.key);
   })
 
 })
