@@ -4,10 +4,9 @@ import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
-import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
+import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
 import { TokenAllocation, TokenDistributionType } from '@functions/interfaces/models/token';
-import { getAddress } from '@functions/src/utils/address.utils';
 import dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
@@ -24,7 +23,7 @@ export class NewService {
   public distributionOptions = [
     { label: $localize`Fixed price`, value: TokenDistributionType.FIXED }
   ];
-  public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
+  public offeringLengthOptions = Array.from({ length: 10 }, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
   public maxDescriptionsCount = MAX_DESCRIPTIONS_COUNT;
   public maxLinksCount = MAX_LINKS_COUNT;
@@ -131,7 +130,7 @@ export class NewService {
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || [])
       .filter((o) => {
-        return !!getAddress(o.validatedAddress);
+        return !!(o.validatedAddress || {})[DEFAULT_NETWORK];
       })
       .map((o) => ({
         label: o.name || o.uid,
