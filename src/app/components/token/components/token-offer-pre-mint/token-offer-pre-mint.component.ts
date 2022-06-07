@@ -151,4 +151,8 @@ export class TokenOfferPreMintComponent implements OnInit {
       });
     });
   }
+  
+  public getResultAmount(): string {
+    return this.isAmountInput ? this.extractAmount(this.formatBest(this.amountControl.value * 1000 * 1000 * (this.offeredRateControl?.value || 0))) : this.formatTokenBest(this.amountControl.value * 1000 * 1000);
+  }
 }
