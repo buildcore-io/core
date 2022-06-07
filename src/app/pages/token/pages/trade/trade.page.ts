@@ -163,8 +163,8 @@ export class TradePage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
   ) {
-    this.sortedBids$ = this.bids$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
-    this.sortedMyBids$ = this.myBids$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
+    this.sortedBids$ = this.bids$.asObservable().pipe(map(b => b.sort((a, b) => b.price - a.price)));
+    this.sortedMyBids$ = this.myBids$.asObservable().pipe(map(b => b.sort((a, b) => b.price - a.price)));
     this.sortedAsks$ = this.asks$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
     this.sortedMyAsks$ = this.myAsks$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
     this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(b => b.reduce((acc, e) => acc + e.count, 0)));
