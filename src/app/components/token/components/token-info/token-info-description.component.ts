@@ -7,6 +7,7 @@ import { Token } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
 import Papa from 'papaparse';
+import { first } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -50,7 +51,10 @@ export class TokenInfoDescriptionComponent {
 
   public downloadCurrentDistribution(): void {
     this.tokenApi.getDistributions(this.token?.uid)
-      .pipe(untilDestroyed(this))
+      .pipe(
+        first(),
+        untilDestroyed(this)
+      )
       .subscribe(distributions => {
         const fields =
           ['', 'EthAddress', 'TokenOwned'];
