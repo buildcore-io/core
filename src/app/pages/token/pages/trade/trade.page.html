@@ -162,16 +162,16 @@
                     <ng-template #openBidsBlock>
                         <tr *ngFor="let item of openBidsTable.data" class="relative">
                             <td class="z-10 border-0 flex items-center">
-                              <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
-                                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
+                              <nz-avatar *ngIf="item.avatar" nzIcon="user"
+                                [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                                 class="mr-2"></nz-avatar>
                                 <div>{{ formatBest(item.price * 1000 * 1000) }}</div>
                             </td>
-                            <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                            <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+                            <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                            <td class="z-10 border-0 right">{{ formatBest(item.price * item.total) }}</td>
 
                             <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
-                              [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                              [ngStyle]="{ width: item.total / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                         </tr>
                     </ng-template>
                 </tbody>
@@ -217,7 +217,7 @@
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
                         <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
-                          [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                          [ngStyle]="{ width: (item.count - item.fulfilled) / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                     </ng-template>
                 </tbody>
@@ -258,15 +258,15 @@
                   <ng-template #openAsksBlock>
                       <tr *ngFor="let item of openAsksTable.data" class="relative">
                         <td class="z-10 border-0 flex items-center">
-                          <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
-                            [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
+                          <nz-avatar *ngIf="item.avatar" nzIcon="user"
+                            [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                             class="mr-2"></nz-avatar>
                             <div>{{ formatBest(item.price * 1000 * 1000) }}</div>
                         </td>
-                        <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+                        <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.total) }}</td>
                         <div class="absolute right-0 top-0 h-full bg-[#FBE4DA]"
-                          [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                          [ngStyle]="{ width: item.total / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
               </tbody>
@@ -312,7 +312,7 @@
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
                         <div class="absolute right-0 top-0 h-full bg-[#FBE4DA]"
-                          [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                          [ngStyle]="{ width: (item.count - item.fulfilled) / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
               </tbody>
