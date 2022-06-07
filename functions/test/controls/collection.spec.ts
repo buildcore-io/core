@@ -1,11 +1,8 @@
-import chance from 'chance';
 import dayjs from "dayjs";
-import admin from '../../src/admin.config';
 import { WEN_FUNC } from "../../interfaces/functions";
 import { Member, Transaction, TransactionOrderType, TransactionType } from "../../interfaces/models";
-import { Access, COL, SUB_COL } from "../../interfaces/models/base";
+import { Access } from "../../interfaces/models/base";
 import { Categories, CollectionType } from "../../interfaces/models/collection";
-import { serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { WenError } from './../../interfaces/errors';
@@ -13,24 +10,9 @@ import { approveCollection, createCollection, rejectCollection, updateCollection
 import { createMember } from './../../src/controls/member.control';
 import { validateAddress } from './../../src/controls/order.control';
 import { createSpace } from './../../src/controls/space.control';
-import { expectThrow, milestoneProcessed, mockWalletReturnValue } from './common';
+import { expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc } from './common';
 
 let walletSpy: any;
-
-const createMilestone = async (order: Transaction) => {
-  const allMil = await admin.firestore().collection(COL.MILESTONE).get();
-  const nextMilestone = (allMil.size + 1).toString();
-  const defTranId = chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-  const iotaAddress = 'iota' + chance().string({ pool: 'abcdefghijklmnopqrstuvwxyz', casing: 'lower', length: 40 });
-  const transaction = {
-    createdOn: serverTime(),
-    messageId: 'mes-' + defTranId,
-    inputs: [{ address: iotaAddress, amount: 123 }],
-    outputs: [{ address: order.payload.targetAddress, amount: order.payload.amount }]
-  }
-  await admin.firestore().doc(`${COL.MILESTONE}/${nextMilestone}/${SUB_COL.TRANSACTIONS}/${defTranId}`).set(transaction);
-  await milestoneProcessed(nextMilestone, defTranId);
-}
 
 const dummyCollection: any = (spaceId: string, royaltiesFee: number) => ({
   name: 'Collection A',
@@ -67,7 +49,8 @@ describe('CollectionController: ' + WEN_FUNC.cCollection, () => {
     expect(order?.type).toBe(TransactionType.ORDER);
     expect(order?.payload.type).toBe(TransactionOrderType.SPACE_ADDRESS_VALIDATION);
 
-    await createMilestone(order)
+    const milestone = await submitMilestoneFunc(order.payload.targetAddress, order.payload.amount);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
   });
 
   it('successfully create collection', async () => {

@@ -1,11 +1,13 @@
 import bigDecimal from 'js-big-decimal';
-import { Member, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { DEFAULT_NETWORK } from '../../interfaces/config';
+import { Member, Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { serverTime, uOn } from '../utils/dateTime.utils';
 import { memberDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
+import { getAddress } from './address.utils';
 
 export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurchase[], transaction: admin.firestore.Transaction) => {
   const oldPurchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buy.uid).get()).docs.map(d => <TokenPurchase>d.data())
@@ -26,11 +28,13 @@ export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurc
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
+    sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+    targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_BUY,
       amount: refundAmount,
       sourceAddress: order.payload.targetAddress,
-      targetAddress: member.validatedAddress,
+      targetAddress: getAddress(member.validatedAddress, Network.IOTA),
       sourceTransaction: [buy.paymentTransactionId],
       token: token.uid,
       reconciled: true,

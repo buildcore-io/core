@@ -1,14 +1,15 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
-import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
-import { Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
+import { Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
 import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.trigger";
+import { getAddress } from '../../src/utils/address.utils';
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { projectId, testEnv } from '../set-up';
@@ -119,7 +120,7 @@ describe('Buy sell trigger', () => {
     expect(billPayment.exists).toBe(true)
     expect(billPayment.data()?.payload?.sourceAddress).toBe(order.payload.targetAddress)
     const sellerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${seller}`).get()).data()?.validatedAddress
-    expect(billPayment.data()?.payload?.targetAddress).toBe(sellerAddress)
+    expect(billPayment.data()?.payload?.targetAddress).toBe(getAddress(sellerAddress, Network.IOTA))
 
     const paymentSnap = await getBillPayments(seller)
     expect(paymentSnap.docs.length).toBe(3)
@@ -154,12 +155,14 @@ describe('Buy sell trigger', () => {
     expect(credit.payload.sourceTransaction).toContain(buySnap.docs[0].data().paymentTransactionId)
     expect(credit?.payload?.sourceAddress).toBe(order.payload.targetAddress)
     const buyerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${buyer}`).get()).data()?.validatedAddress
-    expect(credit?.payload?.targetAddress).toBe(buyerAddress)
+    expect(credit?.payload?.targetAddress).toBe(getAddress(buyerAddress, Network.IOTA))
+    expect(credit.targetNetwork).toBe(DEFAULT_NETWORK)
 
     const paymentSnap = await getBillPayments(seller)
     expect(paymentSnap.docs.length).toBe(6)
     const amounts = paymentSnap.docs.map(d => d.data().payload.amount).sort((a, b) => a - b)
     expect(amounts).toEqual([...getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount), ...getRoyaltyDistribution(MIN_IOTA_AMOUNT * tokenCount)].sort((a, b) => a - b))
+    paymentSnap.docs.forEach(doc => expect(doc.data()?.targetNetwork).toBe(DEFAULT_NETWORK))
 
     await assertVolumeTotal(token.uid, 2 * tokenCount)
   })

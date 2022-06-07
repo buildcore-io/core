@@ -1,6 +1,7 @@
+import { DEFAULT_NETWORK } from '../../../interfaces/config';
 import { Transaction } from '../../../interfaces/models';
 import { COL } from '../../../interfaces/models/base';
-import { CreditPaymentTransaction, Entity, TransactionOrder } from '../../../interfaces/models/transaction';
+import { Entity, TransactionOrder } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -25,9 +26,7 @@ export class AddressService {
       if (sfDoc.data()) {
         this.transactionService.updates.push({
           ref: refSource,
-          data: {
-            validatedAddress: (<CreditPaymentTransaction>credit.payload).targetAddress
-          },
+          data: { [`validatedAddress.${credit.targetNetwork || DEFAULT_NETWORK}`]: credit.payload.targetAddress },
           action: 'update'
         });
       }
@@ -37,9 +36,7 @@ export class AddressService {
       if (sfDoc.data()) {
         this.transactionService.updates.push({
           ref: refSource,
-          data: {
-            validatedAddress: (<CreditPaymentTransaction>credit.payload).targetAddress
-          },
+          data: { [`validatedAddress.${credit.targetNetwork || DEFAULT_NETWORK}`]: credit.payload.targetAddress },
           action: 'update'
         });
       }

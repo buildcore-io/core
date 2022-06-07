@@ -22,6 +22,7 @@ import { enumToArray } from '@core/utils/manipulations.utils';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { environment } from '@env/environment';
 import {
+  DEFAULT_NETWORK,
   DISCORD_REGEXP, NftAvailableFromDateMin,
   TWITTER_REGEXP,
   URL_REGEXP
@@ -359,7 +360,7 @@ export class UpsertPage implements OnInit, OnDestroy {
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || [])
       .filter((o) => {
-        return !!o.validatedAddress;
+        return !!(o.validatedAddress || {})[DEFAULT_NETWORK];
       })
       .map((o) => ({
         label: o.name || o.uid,

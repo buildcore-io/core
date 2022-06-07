@@ -16,9 +16,9 @@
                 </ng-template>
               </div>
 
-              <span nz-tooltip [nzTooltipTitle]="!(data.space$ | async)?.validatedAddress ? 'You must set IOTA Address on the space.' : undefined" *ngIf="data.isAllowCollectionCreation$ | async">
+              <span nz-tooltip [nzTooltipTitle]="!(data.space$ | async)?.validatedAddress?.iota ? 'You must set IOTA Address on the space.' : undefined" *ngIf="data.isAllowCollectionCreation$ | async">
                   <button nz-button class="bg-buttons-primary-enabled dark:bg-buttons-primary-enabled-dark border-buttons-primary-enabled dark:border-buttons-primary-enabled-dark hover:bg-buttons-primary-on-hover dark:bg-buttons-primary-on-hover-dark hover:border-buttons-primary-on-hover dark:border-buttons-primary-on-hover-dark"
-                      [disabled]="!(data.space$ | async)?.validatedAddress"
+                      [disabled]="!(data.space$ | async)?.validatedAddress?.iota"
                       nzType="primary" nzSize="default" type="button" (click)="create()" *ngIf="data.isMemberWithinSpace$ | async">
                       <i nz-icon nzType="plus" nzTheme="outline"></i>
                         <span>

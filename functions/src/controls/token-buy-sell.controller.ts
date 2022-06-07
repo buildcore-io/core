@@ -5,13 +5,14 @@ import bigDecimal from 'js-big-decimal';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, SUB_COL, WenRequest } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
+import { assertMemberHasValidAddress } from '../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
@@ -36,9 +37,7 @@ export const sellToken = functions.runWith({
   assertValidation(schema.validate(params.body));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  if (!member?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address)
-  }
+  assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)
 
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
   if (!token) {
@@ -105,11 +104,9 @@ export const buyToken = functions.runWith({
   const owner = params.address.toLowerCase();
   const schema = Joi.object(buySellTokenSchema);
   assertValidation(schema.validate(params.body));
-  
+
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  if (!member?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address)
-  }
+  assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)
 
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data();
   if (!token) {
