@@ -170,7 +170,7 @@
                             <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                             <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
 
-                            <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
+                            <div class="absolute right-0 top-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
                               [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                         </tr>
                     </ng-template>
@@ -216,7 +216,7 @@
                         <td class="z-10 border-0 right">
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
-                        <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
+                        <div class="absolute right-0 top-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
                           [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                     </ng-template>
@@ -265,7 +265,7 @@
                         </td>
                         <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
-                        <div class="absolute right-0 top-0 h-full bg-[#FBE4DA]"
+                        <div class="absolute right-0 top-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
                           [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
@@ -311,7 +311,7 @@
                         <td class="z-10 border-0 right">
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
-                        <div class="absolute right-0 top-0 h-full bg-[#FBE4DA]"
+                        <div class="absolute right-0 top-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
                           [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
