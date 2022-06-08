@@ -2623,7 +2623,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-not-for-sale/nft-sale-not-for-sale.component.html</context>
           <context context-type="linenumber">6,8</context>
         </context-group>
-        <target state="needs-translation"> Item is yours and yours only </target>
+        <target state="translated"> Cet élément est le vôtre, et seulement le vôtre </target>
       </trans-unit>
       <trans-unit id="6144026783390173087" datatype="html">
         <source>This will make your item unavailable for sale.</source>
@@ -2631,7 +2631,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale-not-for-sale/nft-sale-not-for-sale.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">This will make your item unavailable for sale.</target>
+        <target state="translated">Cette appli rendra votre élément non disponible à la vente.</target>
       </trans-unit>
       <trans-unit id="6072453612343506743" datatype="html">
         <source>Stop sale!</source>
@@ -2647,7 +2647,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">List Item for sale</target>
+        <target state="translated">Liste des éléments à vendre</target>
       </trans-unit>
       <trans-unit id="6564930054206844076" datatype="html">
         <source>Not for sale</source>
@@ -2655,7 +2655,7 @@
           <context context-type="sourcefile">src/app/components/nft/components/nft-sale/nft-sale.component.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Not for sale</target>
+        <target state="translated">Non destiné à la vente</target>
       </trans-unit>
       <trans-unit id="4668399393309435986" datatype="html">
         <source>Fixed price</source>
@@ -2667,7 +2667,7 @@
           <context context-type="sourcefile">src/app/pages/token/services/new.service.ts</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <target state="needs-translation">Fixed price</target>
+        <target state="translated">Prix fixe</target>
       </trans-unit>
       <trans-unit id="1809847784604950003" datatype="html">
         <source>Donut graph coming SOON.</source>
@@ -2839,7 +2839,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
-        <target state="needs-translation">Joined</target>
+        <target state="translated">Il a rejoint</target>
       </trans-unit>
       <trans-unit id="5190509713271209562" datatype="html">
         <source>members</source>
@@ -2935,7 +2935,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Timeline</target>
+        <target state="translated">Chronologie</target>
       </trans-unit>
       <trans-unit id="3954692067786091142" datatype="html">
         <source>Listed by</source>
@@ -2951,7 +2951,7 @@
           <context context-type="sourcefile">src/app/components/timeline-nft/timeline-nft.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation">Made available for auction by</target>
+        <target state="translated">Mis aux enchères par</target>
       </trans-unit>
       <trans-unit id="9074325042294858925" datatype="html">
         <source>Purchased by</source>
@@ -2991,7 +2991,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Open Token Bid</target>
+        <target state="translated">Exposition</target>
       </trans-unit>
       <trans-unit id="2849326518054957373" datatype="html">
         <source>Your offered rate</source>
@@ -3031,7 +3031,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">85</context>
         </context-group>
-        <target state="needs-translation">Enter how much you want to spend. Amount of tokens will be calculated.</target>
+        <target state="translated">Entrez le montant que vous souhaitez investir. Le volume de token sera facturé.</target>
       </trans-unit>
       <trans-unit id="5144733037282090180" datatype="html">
         <source>Enter amount of tokens you want to buy. Price will be calculated.</source>
@@ -3087,7 +3087,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">60,61</context>
         </context-group>
-        <target state="needs-translation">I agree with</target>
+        <target state="translated">J'accepte</target>
       </trans-unit>
       <trans-unit id="2251435114845825196" datatype="html">
         <source>Token terms and Conditions</source>
@@ -3111,7 +3111,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">62,63</context>
         </context-group>
-        <target state="needs-translation">Token terms and Conditions</target>
+        <target state="translated">Les conditions générales et les directives sur les Tokens</target>
       </trans-unit>
       <trans-unit id="8562795996489852351" datatype="html">
         <source> Confirm and generate address </source>
@@ -3127,7 +3127,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">73</context>
         </context-group>
-        <target state="needs-translation"> Confirm and generate address </target>
+        <target state="translated"> Confirmez et générez une adresse </target>
       </trans-unit>
       <trans-unit id="6559976317018164845" datatype="html">
         <source> to following address:</source>
@@ -3147,7 +3147,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">170,171</context>
         </context-group>
-        <target state="needs-translation"> to following address:</target>
+        <target state="translated"> à l'adresse suivante :</target>
       </trans-unit>
       <trans-unit id="8281145888073153213" datatype="html">
         <source>Bid complete. Congratulations.</source>
