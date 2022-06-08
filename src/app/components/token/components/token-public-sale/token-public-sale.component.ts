@@ -4,7 +4,6 @@ import { TokenApi } from '@api/token.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { NotificationService } from '@core/services/notification';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { environment } from '@env/environment';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
 
@@ -26,8 +25,12 @@ export class TokenPublicSaleComponent {
 
   public startDateControl: FormControl = new FormControl('', Validators.required);
   public offerLengthControl: FormControl = new FormControl(2, [Validators.required, Validators.min(1)]);
+  public cooldownLengthControl: FormControl = new FormControl(2, [Validators.required]);
+  public enableCooldownControl: FormControl = new FormControl(true);
+  public autoProcessAt100PercentControl: FormControl = new FormControl(true);
   public scheduleSaleForm: FormGroup;
   public offeringLengthOptions = Array.from({length: 3}, (_, i) => i + 1)
+  public cooldownLengthOptions = Array.from({length: 3}, (_, i) => i + 1)
   public allocationInfoLabels: string[] = [$localize`Price per token`, $localize`Public sale`];
   private _isOpen = false;
 
@@ -39,7 +42,10 @@ export class TokenPublicSaleComponent {
   ) {
     this.scheduleSaleForm = new FormGroup({
       startDate: this.startDateControl,
-      offerLength: this.offerLengthControl
+      offerLength: this.offerLengthControl,
+      cooldownLength: this.cooldownLengthControl,
+      enableCooldown: this.enableCooldownControl,
+      autoProcessAt100Percent: this.autoProcessAt100PercentControl
     });
   }
 
@@ -101,14 +107,19 @@ export class TokenPublicSaleComponent {
     res.token = this.token?.uid;
     res.saleStartDate = data.startDate;
 
+    res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
+    res.coolDownLength = data.enableCooldown ? data.cooldownLength * 24 * 60 * 60 * 1000 : 0;
+    res.autoProcessAt100Percent = data.autoProcessAt100Percent;
+
+    // Will be removed in the future. Might use this to set the public sale dates
     // For testing purposes.
-    if (!environment.production) {
-      res.saleLength = 10 * 60 * 1000;
-      res.coolDownLength = 5 * 60 * 1000;
-    } else {
-      res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
-      res.coolDownLength = 24 * 60 * 60 * 1000;
-    }
+    // if (!environment.production) {
+    //   res.saleLength = 10 * 60 * 1000;
+    //   res.coolDownLength = 5 * 60 * 1000;
+    // } else {
+    //   res.saleLength = data.offerLength * 24 * 60 * 60 * 1000;
+    //   res.coolDownLength = 24 * 60 * 60 * 1000;
+    // }
 
     return res;
   }
@@ -117,6 +128,7 @@ export class TokenPublicSaleComponent {
     if (!this.validateForm()) {
       return;
     }
+    console.log(this.formatSubmitData(this.scheduleSaleForm.value));
     await this.auth.sign(
       this.formatSubmitData(this.scheduleSaleForm.value),
       (sc, finish) => {

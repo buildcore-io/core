@@ -16,9 +16,7 @@ export class TokenInfoComponent {
 
   public tokenScheduleLabels: string[] = [
     $localize`Sale starts`,
-    $localize`Sale ends`,
-    $localize`Cooldown Period Length`,
-    $localize`Cooldown Period Ends`
+    $localize`Sale ends`
   ];
   public tokenInfoLabels: string[] = [
     $localize`Icon`,
