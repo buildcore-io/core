@@ -16,6 +16,8 @@ export class ModalDrawerComponent {
   public get isOpen(): boolean {
     return this._isOpen;
   }
+  @Input() modalWidth = 760;
+  @Input() showHeader = true;
   @Output() wenOnClose = new EventEmitter<void>();
   
   private _isOpen = false;
