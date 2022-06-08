@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DescriptionItem } from '@components/description/description.component';
-import { getRandomColor, INITIAL_COLORS } from '@core/utils/colors.utils';
+import { getRandomColor, TOKEN_METRICS_INITIAL_COLORS } from '@core/utils/colors.utils';
 import { Token, TokenAllocation } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
@@ -18,11 +18,11 @@ import { ChartConfiguration, ChartType } from 'chart.js';
 })
 export class MetricsPage implements OnInit {
   public colors: string[] = [];
-  public lineChartType: ChartType = 'doughnut';
-  public lineChartData?: ChartConfiguration['data'] = {
+  public doughnutChartType: ChartType = 'doughnut';
+  public doughnutChartData?: ChartConfiguration['data'] = {
     datasets: []
   };
-  public lineChartOptions?: any = {
+  public doughnutChartOptions?: any = {
     events: [],
     plugins: {
       legend: {
@@ -62,10 +62,10 @@ export class MetricsPage implements OnInit {
   public setLineChartData(token?: Token): void {
     if (!token) return;
     this.colors = [
-      ...INITIAL_COLORS.slice(0, token.allocations.length),
-      ...(new Array(Math.max(token.allocations.length - INITIAL_COLORS.length, 0)).fill(null).map(() => getRandomColor()))
+      ...TOKEN_METRICS_INITIAL_COLORS.slice(0, token.allocations.length),
+      ...(new Array(Math.max(token.allocations.length - TOKEN_METRICS_INITIAL_COLORS.length, 0)).fill(null).map(() => getRandomColor()))
     ];
-    this.lineChartData = {
+    this.doughnutChartData = {
       labels: token.allocations.map(a => a.title),
       datasets: [
         {
