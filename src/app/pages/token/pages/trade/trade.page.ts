@@ -15,7 +15,7 @@ import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UnitsHelper } from '@core/utils/units-helper';
 import { WEN_NAME } from '@functions/interfaces/config';
 import { Member, Space } from '@functions/interfaces/models';
-import { FILE_SIZES } from '@functions/interfaces/models/base';
+import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenDistribution, TokenPurchase, TokenStatus } from "@functions/interfaces/models/token";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/token/services/data.service';
@@ -38,6 +38,13 @@ export enum BidListingType {
   MY = 'MY'
 }
 
+export interface TransformedBidAskItem {
+  price: number;
+  amount: number;
+  total: number;
+  avatar: FileMetedata | null;
+}
+
 @UntilDestroy()
 @Component({
   selector: 'wen-trade',
@@ -54,9 +61,9 @@ export class TradePage implements OnInit, OnDestroy {
   public myBids$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public asks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
   public myAsks$: BehaviorSubject<TokenBuySellOrder[]> = new BehaviorSubject<TokenBuySellOrder[]>([]);
-  public sortedBids$: Observable<TokenBuySellOrder[]>;
+  public sortedBids$: Observable<TransformedBidAskItem[]>;
   public sortedMyBids$: Observable<TokenBuySellOrder[]>;
-  public sortedAsks$: Observable<TokenBuySellOrder[]>;
+  public sortedAsks$: Observable<TransformedBidAskItem[]>;
   public sortedMyAsks$: Observable<TokenBuySellOrder[]>;
   public bidsAmountSum$: Observable<number>;
   public asksAmountSum$: Observable<number>;
@@ -163,12 +170,20 @@ export class TradePage implements OnInit, OnDestroy {
     private spaceApi: SpaceApi,
     private route: ActivatedRoute
   ) {
-    this.sortedBids$ = this.bids$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
-    this.sortedMyBids$ = this.myBids$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
-    this.sortedAsks$ = this.asks$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
-    this.sortedMyAsks$ = this.myAsks$.asObservable().pipe(map(b => b.sort((a, b) => a.price - b.price)));
-    this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(b => b.reduce((acc, e) => acc + e.count, 0)));
-    this.asksAmountSum$ = this.asks$.asObservable().pipe(map(b => b.reduce((acc, e) => acc + e.count, 0)));
+    this.sortedBids$ = this.bids$.asObservable()
+      .pipe(
+        map(r => this.groupOrders.call(this, r)),
+        map(r => r.sort((a, b) => b.price - a.price)
+        ));
+    this.sortedMyBids$ = this.myBids$.asObservable().pipe(map(r => r.sort((a, b) => b.price - a.price)));
+    this.sortedAsks$ = this.asks$.asObservable()
+      .pipe(
+        map(r => this.groupOrders.call(this, r)),
+        map(r => r.sort((a, b) => a.price - b.price)
+        ));
+    this.sortedMyAsks$ = this.myAsks$.asObservable().pipe(map(r => r.sort((a, b) => a.price - b.price)));
+    this.bidsAmountSum$ = this.bids$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
+    this.asksAmountSum$ = this.asks$.asObservable().pipe(map(r => r.reduce((acc, e) => acc + e.count - e.fulfilled, 0)));
   }
 
   public ngOnInit(): void {
@@ -212,14 +227,14 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private refreshDataSets(): void {
-    const range24h: string[] = [];
+    const range24h: dayjs.Dayjs[] = [];
     for (let i=0; i <= 7 ; i++) {
-      range24h.unshift((dayjs().subtract(4 * i, 'h')).format('HH'));
+      range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
     }
 
-    const range7d: string[] = [];
+    const range7d: dayjs.Dayjs[] = [];
     for (let i=0; i <= 7 ; i++) {
-      range7d.unshift((dayjs().subtract(i, 'd')).format('dd'));
+      range7d.unshift(dayjs().subtract(i, 'd').clone());
     }
 
     const dataToShow: { data: number[]; labels: string[]} = {
@@ -229,33 +244,27 @@ export class TradePage implements OnInit, OnDestroy {
 
     if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
       const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
-      dataToShow.labels = range24h;
+      dataToShow.labels = range24h.map((v) => {
+        return v.format('HH');
+      });
       range24h.forEach((v, index) => {
-        const prev = range24h[index - 1];
-        if (!prev) {
-          dataToShow.data.push(this.listenAvgPrice24h$.value || 0);
-        } else {
-          const purchases: TokenPurchase[] = sortedData.filter((b) => {
-            return (dayjs(b.createdOn?.toDate()).hour() > Number(prev) && dayjs(b.createdOn?.toDate()).hour() < Number(v));
-          });
+        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range24h[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range24h[index + 1])));
+        });
 
-          dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice24h$.value || 0));
-        }
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice24h$.value || 0));
       });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
       const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
-      dataToShow.labels = range7d;
+      dataToShow.labels = range7d.map((v) => {
+        return v.format('dd');
+      });
       range7d.forEach((v, index) => {
-        const prev = range7d[index - 1];
-        if (!prev) {
-          dataToShow.data.push(this.listenAvgPrice7d$.value || 0);
-        } else {
-          const purchases: TokenPurchase[] = sortedData.filter((b) => {
-            return (dayjs(b.createdOn?.toDate()).day() >= Number(index - 1) && dayjs(b.createdOn?.toDate()).day() < Number(index));
-          });
+        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range7d[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range7d[index + 1])));
+        });
 
-          dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
-        }
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
       });
     }
 
@@ -313,7 +322,7 @@ export class TradePage implements OnInit, OnDestroy {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
+    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
   }
 
   public formatTokenBest(amount?: number | null): string {
@@ -388,5 +397,21 @@ export class TradePage implements OnInit, OnDestroy {
 
   public get bidListingTypes(): typeof BidListingType {
     return BidListingType;
+  }
+
+  private groupOrders(r: TokenBuySellOrder[]): TransformedBidAskItem[] {
+    return Object.values(r.reduce((acc, e) => {
+      const key = e.owner === this.auth.member$.value?.uid ? `${e.price}_${this.auth.member$.value?.uid || ''}` : e.price;
+      return {
+        ...acc,
+        [key]: [...(acc[key] || []), e]
+      };
+    }, {} as { [key: number | string]: TokenBuySellOrder[] }))
+      .map(e => e.reduce((acc, el) => ({
+        price: el.price,
+        amount: acc.amount + el.count,
+        total: acc.total + el.count - el.fulfilled,
+        avatar: el.owner === this.auth.member$.value?.uid ? (this.auth.member$.value?.currentProfileImage || null) : null
+      }), { price: 0, amount: 0, total: 0, avatar: null } as TransformedBidAskItem));
   }
 }
