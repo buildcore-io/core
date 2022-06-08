@@ -227,14 +227,14 @@ export class TradePage implements OnInit, OnDestroy {
   }
 
   private refreshDataSets(): void {
-    const range24h: string[] = [];
+    const range24h: dayjs.Dayjs[] = [];
     for (let i=0; i <= 7 ; i++) {
-      range24h.unshift((dayjs().subtract(4 * i, 'h')).format('HH'));
+      range24h.unshift(dayjs().subtract(4 * i, 'h').clone());
     }
 
-    const range7d: string[] = [];
+    const range7d: dayjs.Dayjs[] = [];
     for (let i=0; i <= 7 ; i++) {
-      range7d.unshift((dayjs().subtract(i, 'd')).format('dd'));
+      range7d.unshift(dayjs().subtract(i, 'd').clone());
     }
 
     const dataToShow: { data: number[]; labels: string[]} = {
@@ -244,33 +244,27 @@ export class TradePage implements OnInit, OnDestroy {
 
     if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.DAY) {
       const sortedData = this.listenToPurchases24h$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
-      dataToShow.labels = range24h;
+      dataToShow.labels = range24h.map((v) => {
+        return v.format('HH');
+      });
       range24h.forEach((v, index) => {
-        const prev = range24h[index - 1];
-        if (!prev) {
-          dataToShow.data.push(this.listenAvgPrice24h$.value || 0);
-        } else {
-          const purchases: TokenPurchase[] = sortedData.filter((b) => {
-            return (dayjs(b.createdOn?.toDate()).hour() > Number(prev) && dayjs(b.createdOn?.toDate()).hour() < Number(v));
-          });
+        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range24h[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range24h[index + 1])));
+        });
 
-          dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice24h$.value || 0));
-        }
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice24h$.value || 0));
       });
     } else if (this.lineChartData && this.chartLengthControl.value === ChartLengthType.WEEK) {
       const sortedData = this.listenToPurchases7d$.value.sort((a, b) => a.createdOn!.seconds - b.createdOn!.seconds); // v.createdOn?.toDate()
-      dataToShow.labels = range7d;
+      dataToShow.labels = range7d.map((v) => {
+        return v.format('dd');
+      });
       range7d.forEach((v, index) => {
-        const prev = range7d[index - 1];
-        if (!prev) {
-          dataToShow.data.push(this.listenAvgPrice7d$.value || 0);
-        } else {
-          const purchases: TokenPurchase[] = sortedData.filter((b) => {
-            return (dayjs(b.createdOn?.toDate()).day() >= Number(index - 1) && dayjs(b.createdOn?.toDate()).day() < Number(index));
-          });
+        const purchases: TokenPurchase[] = sortedData.filter((b) => {
+          return (dayjs(b.createdOn?.toDate()).isAfter(v) && (!range7d[index + 1] || dayjs(b.createdOn?.toDate()).isBefore(range7d[index + 1])));
+        });
 
-          dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
-        }
+        dataToShow.data.push(purchases.length ? this.tokenPurchaseApi.calcVWAP(purchases) : (this.listenAvgPrice7d$.value || 0));
       });
     }
 
@@ -328,7 +322,7 @@ export class TradePage implements OnInit, OnDestroy {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
+    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
   }
 
   public formatTokenBest(amount?: number | null): string {

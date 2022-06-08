@@ -1,16 +1,17 @@
 export const environment = {
-  production: false,
+  production: true,
   captcha: '6LfYqHQdAAAAAI91N8xl6pc0LIUj4s9ksqj02CWm',
   fbConfig: {
-    apiKey: "AIzaSyDZhaoZ2Kr4GW-f1vKIlm3cwp77Q3YyzNM",
-    authDomain: "soonaverse-test.firebaseapp.com",
-    projectId: "soonaverse-test",
-    storageBucket: "soonaverse-test.appspot.com",
-    messagingSenderId: "206252445538",
-    appId: "1:206252445538:web:3cfb62b01468748631663b"
+    apiKey: "AIzaSyB4fcG8rtNWAiAtSmxmK3q3JLfMvtNCGP4",
+    authDomain: "soonaverse.firebaseapp.com",
+    projectId: "soonaverse",
+    storageBucket: "soonaverse.appspot.com",
+    messagingSenderId: "502842886229",
+    appId: "1:502842886229:web:fcb7da4040fd19ba742cdc",
+    measurementId: "G-CCX9NVPPCR"
   },
   algolia: {
-    appId: '6MPUETJRDB',
-    key: '5c053a0370395f0fe8cf7ce9e5a21a72'
+    appId: '2WGM1RPQKZ',
+    key: 'ed51a01fc204688339e89ac8e9d53028'
   }
 };

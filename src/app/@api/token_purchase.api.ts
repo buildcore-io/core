@@ -21,11 +21,21 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
     .where('createdOn', '>=', dayjs().subtract(days, 'd').toDate())
 
   private calcChangePrice24h = (purchases: TokenPurchase[]) => {
-    if (purchases.length < 2) {
-      return 0
+    const split = dayjs().subtract(24, 'hours');
+    const prevPurch: TokenPurchase[] = purchases.filter((b) => {
+      return (dayjs(b.createdOn?.toDate()).isBefore(split));
+    });
+
+    const afterPurch: TokenPurchase[] = purchases.filter((b) => {
+      return (dayjs(b.createdOn?.toDate()).isAfter(split));
+    });
+
+    if ((prevPurch.length + afterPurch.length) < 2) {
+      return 0;
     }
-    const start = purchases[purchases.length - 1].price
-    const close = purchases[0].price
+
+    const start = this.calcVWAP(prevPurch);
+    const close = this.calcVWAP(afterPurch);
     return (close - start) / start;
   }
 
@@ -55,7 +65,7 @@ export class TokenPurchaseApi extends BaseApi<TokenPurchase> {
   public listenChangePrice24h = (tokenId: string): Observable<number | undefined> => this._query({
     collection: this.collection,
     def: FULL_LIST,
-    refCust: this.getPurchases(tokenId, 1)
+    refCust: this.getPurchases(tokenId, 2)
   }).pipe(map(this.calcChangePrice24h));
 
   public listenToPurchases24h = (tokenId: string): Observable<TokenPurchase[]> => this._query({
