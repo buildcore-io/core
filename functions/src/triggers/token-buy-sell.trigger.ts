@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
+import { last } from 'lodash';
 import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Space, Transaction, TransactionType } from '../../interfaces/models';
@@ -14,12 +15,18 @@ import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { creditBuyer } from '../utils/token-buy-sell.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
+type StartAfter = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>
+
 export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
 
 export const onTokenBuySellCreated = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
   .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onCreate(async (snap) => {
     const data = <TokenBuySellOrder>snap.data()
-    await guardedRerun(async () => !(await fulfillSales(data.uid)))
+    let startAfter: StartAfter | undefined = undefined
+    await guardedRerun(async () => {
+      startAfter = await fulfillSales(data.uid, startAfter)
+      return startAfter !== undefined
+    }, 10000000)
   })
 
 const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => {
@@ -171,16 +178,16 @@ const updateBuy = (prev: TokenBuySellOrder, buy: TokenBuySellOrder, transaction:
   transaction.set(docRef, data, { merge: true })
 }
 
-const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (transaction) => {
+const fulfillSales = (docId: string, startAfter: StartAfter | undefined) => admin.firestore().runTransaction(async (transaction) => {
   const docRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${docId}`)
   const doc = <TokenBuySellOrder>(await transaction.get(docRef)).data()
-  const refs = (await getSaleQuery(doc).get()).docs.filter(d => d.data().owner !== doc.owner).map(d => d.ref)
-  const docs = refs.length ? (await transaction.getAll(...refs)).map(d => <TokenBuySellOrder>d.data()) : []
+  const docs = (await getSaleQuery(doc, startAfter).get()).docs.filter(d => d.data().owner !== doc.owner)
+  const sales = docs.length ? (await transaction.getAll(...docs.map(d => d.ref))).map(d => <TokenBuySellOrder>d.data()) : []
   const purchases = [] as TokenPurchase[]
   const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${doc.token}`).get()).data()
 
   let update = doc
-  for (const b of docs) {
+  for (const b of sales) {
     const isSell = doc.type === TokenBuySellOrderType.SELL
     const prevBuy = isSell ? b : update
     const prevSell = isSell ? update : b
@@ -208,12 +215,11 @@ const fulfillSales = (docId: string) => admin.firestore().runTransaction(async (
     await creditBuyer(update, purchases, transaction)
   }
 
-  return update.status === TokenBuySellOrderStatus.SETTLED || update.fulfilled === doc.fulfilled
+  return update.status === TokenBuySellOrderStatus.SETTLED ? undefined : last(docs)
 })
 
-
-const getSaleQuery = (sale: TokenBuySellOrder) =>
-  admin.firestore().collection(COL.TOKEN_MARKET)
+const getSaleQuery = (sale: TokenBuySellOrder, startAfter: StartAfter | undefined) => {
+  let query = admin.firestore().collection(COL.TOKEN_MARKET)
     .where('type', '==', sale.type === TokenBuySellOrderType.BUY ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY)
     .where('token', '==', sale.token)
     .where('price', sale.type === TokenBuySellOrderType.BUY ? '<=' : '>=', sale.price)
@@ -221,3 +227,8 @@ const getSaleQuery = (sale: TokenBuySellOrder) =>
     .orderBy('price')
     .orderBy('createdOn')
     .limit(TOKEN_SALE_ORDER_FETCH_LIMIT)
+  if (startAfter) {
+    query = query.startAfter(startAfter)
+  }
+  return query
+}

@@ -70,6 +70,23 @@ describe('Buy sell trigger', () => {
   let token: Token
   const tokenCount = 400
 
+  const saveSellToDb = async (count: number, price: number) => {
+    const data = cOn(<TokenBuySellOrder>{
+      uid: wallet.getRandomEthAddress(),
+      owner: seller,
+      token: token.uid,
+      type: TokenBuySellOrderType.SELL,
+      count: count,
+      price: price,
+      totalDeposit: count * price,
+      balance: 0,
+      expiresAt: dateToTimestamp(dayjs()),
+      fulfilled: 0,
+      status: TokenBuySellOrderStatus.ACTIVE
+    }, URL_PATHS.TOKEN_MARKET)
+    await admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`).create(data)
+  }
+
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     seller = await createMember(walletSpy, true)
@@ -367,24 +384,8 @@ describe('Buy sell trigger', () => {
   it('Should settle after second run on more than batch limit', async () => {
     const distribution = <TokenDistribution>{ tokenOwned: 70 * tokenCount }
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
-    const sellTokenFunc = async (count: number, price: number) => {
-      const sellDocId = wallet.getRandomEthAddress();
-      const data = cOn(<TokenBuySellOrder>{
-        uid: sellDocId,
-        owner: seller,
-        token: token.uid,
-        type: TokenBuySellOrderType.SELL,
-        count: count,
-        price: price,
-        totalDeposit: count * price,
-        balance: 0,
-        expiresAt: dateToTimestamp(dayjs()),
-        fulfilled: 0,
-        status: TokenBuySellOrderStatus.ACTIVE
-      }, URL_PATHS.TOKEN_MARKET)
-      await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sellDocId}`).create(data)
-    }
-    const promises = Array.from(Array(TOKEN_SALE_ORDER_FETCH_LIMIT + 50)).map(() => sellTokenFunc(1, MIN_IOTA_AMOUNT))
+
+    const promises = Array.from(Array(TOKEN_SALE_ORDER_FETCH_LIMIT + 50)).map(() => saveSellToDb(1, MIN_IOTA_AMOUNT))
     await Promise.all(promises)
 
     const count = TOKEN_SALE_ORDER_FETCH_LIMIT + 20
@@ -405,6 +406,29 @@ describe('Buy sell trigger', () => {
 
     const purchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buyDocs[0].data()?.uid).get()).docs
     expect(purchases.length).toBe(count)
+  })
+
+  it('Should settle after multiple runs, all too small, last one is ok', async () => {
+    const promises = Array.from(Array(100)).map(() => saveSellToDb(1, 1))
+    await Promise.all(promises)
+    await saveSellToDb(1, MIN_IOTA_AMOUNT)
+
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 1 }
+    await buyTokenFunc(buyer, request)
+
+    await wait(async () => {
+      return (await admin.firestore().collection(COL.TOKEN_MARKET)
+        .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get())
+        .docs[0].data().status === TokenBuySellOrderStatus.SETTLED
+    })
+    const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
+      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
+    expect(buyDocs.length).toBe(1)
+    expect(buyDocs[0].data()?.fulfilled).toBe(1)
+    expect(buyDocs[0].data()?.status).toBe(TokenBuySellOrderStatus.SETTLED)
+
+    const purchases = (await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buyDocs[0].data()?.uid).get()).docs
+    expect(purchases.length).toBe(1)
   })
 
   it('Should not fill buy, balance would be less then MIN_IOTA_AMOUNT', async () => {
@@ -514,7 +538,6 @@ describe('Buy sell trigger', () => {
   })
 
   it('Should fulfill sell with the lowest buy', async () => {
-
     await buyTokenFunc(buyer, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 10 })
     await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 })
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 });
