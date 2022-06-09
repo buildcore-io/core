@@ -2991,7 +2991,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="translated">Exposition</target>
+        <target state="translated">Ouvrir une position</target>
       </trans-unit>
       <trans-unit id="2849326518054957373" datatype="html">
         <source>Your offered rate</source>
@@ -3155,7 +3155,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">221,222</context>
         </context-group>
-        <target state="needs-translation">Bid complete. Congratulations.</target>
+        <target state="translated">Félicitations, la négociation est terminée.</target>
       </trans-unit>
       <trans-unit id="5485612093173773174" datatype="html">
         <source>Bid created.</source>
@@ -3163,7 +3163,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.ts</context>
           <context context-type="linenumber">274</context>
         </context-group>
-        <target state="needs-translation">Bid created.</target>
+        <target state="translated">L'offre a été créée.</target>
       </trans-unit>
       <trans-unit id="7524111316829061741" datatype="html">
         <source>Ongoing sale</source>
@@ -3171,7 +3171,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
-        <target state="needs-translation">Ongoing sale</target>
+        <target state="translated">Vente en cours</target>
       </trans-unit>
       <trans-unit id="132403742184112772" datatype="html">
         <source>Sale ends soon</source>
@@ -3179,7 +3179,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <target state="needs-translation">Sale ends soon</target>
+        <target state="translated">Marchés bientôt fermés</target>
       </trans-unit>
       <trans-unit id="8278687690560202576" datatype="html">
         <source>Cooldown ends</source>
@@ -3191,7 +3191,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-card/token-card.component.html</context>
           <context context-type="linenumber">134</context>
         </context-group>
-        <target state="needs-translation">Cooldown ends</target>
+        <target state="translated">Fin du refroidissement</target>
       </trans-unit>
       <trans-unit id="1294883338221399095" datatype="html">
         <source>Sale starts</source>
@@ -3247,7 +3247,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Token Claim</target>
+        <target state="translated">Demande de Tokens</target>
       </trans-unit>
       <trans-unit id="8723042657452219176" datatype="html">
         <source>Cooldown period ends</source>
@@ -3259,7 +3259,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation">Cooldown period ends</target>
+        <target state="translated">Fin du cycle de refroidissement</target>
       </trans-unit>
       <trans-unit id="8840634792565917676" datatype="html">
         <source>Tokens available from</source>
@@ -3287,7 +3287,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">185,186</context>
         </context-group>
-        <target state="needs-translation">Claim complete. Congratulations.</target>
+        <target state="translated">Félicitations, votre demande est complète.</target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
@@ -3307,7 +3307,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.ts</context>
           <context context-type="linenumber">231</context>
         </context-group>
-        <target state="needs-translation">Token claim submitted.</target>
+        <target state="translated">La demande de Tokens a été soumise.</target>
       </trans-unit>
       <trans-unit id="6621039751810529116" datatype="html">
         <source>Guardian&apos;s of the space will be able to decide where this token will be minted.</source>
@@ -3315,7 +3315,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-info/token-info-description.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <target state="needs-translation">Guardian's of the space will be able to decide where this token will be minted.</target>
+        <target state="translated">Les gardiens de l'espace auront la faculté de décider où l'échange du Token aura lieu.</target>
       </trans-unit>
       <trans-unit id="3074987902485823708" datatype="html">
         <source>Icon</source>
@@ -3387,7 +3387,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">28,23</context>
         </context-group>
-        <target state="needs-translation">Network</target>
+        <target state="translated">Réseau</target>
       </trans-unit>
       <trans-unit id="536249122203570081" datatype="html">
         <source>Total supply</source>
@@ -3399,7 +3399,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">29,23</context>
         </context-group>
-        <target state="needs-translation">Total supply</target>
+        <target state="translated">Offre totale</target>
       </trans-unit>
       <trans-unit id="4663052908009509312" datatype="html">
         <source>Current distribution</source>
@@ -3439,7 +3439,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">31,23</context>
         </context-group>
-        <target state="needs-translation">Type</target>
+        <target state="translated">Type</target>
       </trans-unit>
       <trans-unit id="4764766359564138858" datatype="html">
         <source>Open Token Offer</source>
