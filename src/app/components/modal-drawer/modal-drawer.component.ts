@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { MODAL_WIDTH } from '@core/utils/modal.util';
 
 @Component({
   selector: 'wen-modal-drawer',
@@ -16,7 +17,7 @@ export class ModalDrawerComponent {
   public get isOpen(): boolean {
     return this._isOpen;
   }
-  @Input() modalWidth = 760;
+  @Input() modalWidth = MODAL_WIDTH;
   @Input() showHeader = true;
   @Output() wenOnClose = new EventEmitter<void>();
   
