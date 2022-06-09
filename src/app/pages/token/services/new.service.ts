@@ -4,7 +4,7 @@ import { FileApi } from '@api/file.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
 import { getUrlValidator } from '@core/utils/form-validation.utils';
-import { DEFAULT_NETWORK, MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
+import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_TOTAL_TOKEN_SUPPLY } from '@functions/interfaces/config';
 import { Space } from '@functions/interfaces/models';
 import { TokenAllocation, TokenDistributionType } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
@@ -130,7 +130,9 @@ export class NewService {
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || [])
       .filter((o) => {
-        return !!(o.validatedAddress || {})[DEFAULT_NETWORK];
+        // Commented because it broke select-space
+        // return !!(o.validatedAddress || {})[DEFAULT_NETWORK];
+        return !!(o.validatedAddress || {});
       })
       .map((o) => ({
         label: o.name || o.uid,

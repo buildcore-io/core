@@ -11,6 +11,7 @@ import { ShareModule } from '@components/share/share.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
 import { TabsModule } from '@components/tabs/tabs.module';
 import { TokenBidModule } from '@components/token/components/token-bid/token-bid.module';
+import { TokenCancelSaleModule } from '@components/token/components/token-cancel-sale/token-cancel-sale.module';
 import { TokenInfoDescriptionModule } from '@components/token/components/token-info/token-info-description.module';
 import { TokenOfferPreMintModule } from '@components/token/components/token-offer-pre-mint/token-offer-pre-mint.module';
 import { TokenPublicSaleModule } from '@components/token/components/token-public-sale/token-public-sale.module';
@@ -121,7 +122,8 @@ import { TokenRoutingModule } from './token-routing.module';
     ModalDrawerModule,
     NgChartsModule,
     IpfsAvatarModule,
-    TokenInfoDescriptionModule
+    TokenInfoDescriptionModule,
+    TokenCancelSaleModule
   ]
 })
 export class TokenModule { }

@@ -17,6 +17,7 @@ import { BehaviorSubject, combineLatest, of, switchMap } from 'rxjs';
 export class TokenBuyComponent implements OnInit {
   public isBuyTokensVisible = false;
   public isScheduleSaleVisible = false;
+  public isCancelSaleVisible = false;
   public isEditTokenVisible = false;
   public isGuardianWithinSpace$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
