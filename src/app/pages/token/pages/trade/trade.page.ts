@@ -41,7 +41,6 @@ export enum BidListingType {
 export interface TransformedBidAskItem {
   price: number;
   amount: number;
-  total: number;
   avatar: FileMetedata | null;
 }
 
@@ -409,8 +408,7 @@ export class TradePage implements OnInit, OnDestroy {
     }, {} as { [key: number | string]: TokenBuySellOrder[] }))
       .map(e => e.reduce((acc, el) => ({
         price: el.price,
-        amount: acc.amount + el.count,
-        total: acc.total + el.count - el.fulfilled,
+        amount: acc.amount + el.count - el.fulfilled,
         avatar: el.owner === this.auth.member$.value?.uid ? (this.auth.member$.value?.currentProfileImage || null) : null
       }), { price: 0, amount: 0, total: 0, avatar: null } as TransformedBidAskItem));
   }

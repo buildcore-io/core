@@ -168,10 +168,10 @@
                                 <div>{{ formatBest(item.price, true) }}</div>
                             </td>
                             <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                            <td class="z-10 border-0 right">{{ formatBest(item.price * item.total) }}</td>
+                            <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
 
                             <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
-                              [ngStyle]="{ width: item.total / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                              [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                         </tr>
                     </ng-template>
                 </tbody>
@@ -264,9 +264,9 @@
                             <div>{{ formatBest(item.price, true) }}</div>
                         </td>
                         <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.total) }}</td>
+                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
                         <div class="absolute right-0 top-0 h-full bg-[#FBE4DA]"
-                          [ngStyle]="{ width: item.total / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                          [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
               </tbody>
