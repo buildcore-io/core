@@ -14,7 +14,7 @@ import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, filter, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, interval, skip, Subscription, take } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -164,7 +164,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       }
     });
 
-    
+
     this.amountControl.valueChanges
       .pipe(
         filter(() => this.isAmountInput),
@@ -174,7 +174,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         this.iotaControl.setValue((Number(val) * Number(this.offeredRateControl?.value || 0)).toFixed(2));
         this.cd.markForCheck();
       });
-      
+
     this.iotaControl.valueChanges
       .pipe(
         filter(() => !this.isAmountInput),
@@ -197,6 +197,18 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }
         this.cd.markForCheck();
       });
+
+    this.listenAvgPrice24h$.pipe(
+      skip(1),
+      take(1),
+      untilDestroyed(this)
+    )
+      .subscribe((v) => {
+        if (!this.offeredRateControl.value && v) {
+          v = Math.floor(v * (1000 * 1000)) / 1000 / 1000;
+          this.offeredRateControl.setValue(v.toFixed(6));
+        }
+      });
   }
 
   public isExpired(val?: Transaction | null): boolean {
@@ -218,7 +230,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       return '-';
     }
 
-    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
+    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
   }
 
   public formatTokenBest(amount?: number|null): string {
@@ -232,7 +244,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   public getExplorerLink(link: string): string {
     return 'https://thetangle.org/search/' + link;
   }
-  
+
   public extractAmount(formattedText: string): string {
     return formattedText.substring(0, formattedText.length - 3);
   }

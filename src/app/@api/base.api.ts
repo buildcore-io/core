@@ -62,6 +62,13 @@ export class BaseApi<T> {
     if (!purchases.length) {
       return 0
     }
+
+    // Ignore purchase with flag ignoreVWAP = true (this was due historal bug)
+    // TODO Remove this in the future.
+    purchases = purchases.filter((v) => {
+      return v.ignoreVWAP !== true;
+    });
+
     const high = purchases.reduce((max, act) => Math.max(max, act.price), Number.MIN_SAFE_INTEGER)
     const low = purchases.reduce((min, act) => Math.min(min, act.price), Number.MAX_SAFE_INTEGER)
     const close = purchases[0].price || 0
