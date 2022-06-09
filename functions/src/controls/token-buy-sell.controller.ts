@@ -37,7 +37,7 @@ export const sellToken = functions.runWith({
   appCheck(WEN_FUNC.cSpace, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  assertValidation(buySellTokenSchema.validate(params.body));
+  assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
   if (!member?.validatedAddress) {
@@ -106,7 +106,7 @@ export const buyToken = functions.runWith({
 }).https.onCall(async (req: WenRequest) => {
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  assertValidation(buySellTokenSchema.validate(params.body));
+  assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
   if (!member?.validatedAddress) {

@@ -4,7 +4,7 @@ import bigDecimal from 'js-big-decimal';
 import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
 import { Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenPurchase, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
 import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
 import { cancelExpiredSale } from '../../src/cron/token.cron';
@@ -488,6 +488,48 @@ describe('Buy sell trigger', () => {
     expect(sellDistribution.lockedForSale).toBe(0)
     expect(sellDistribution.sold).toBe(5)
     expect(sellDistribution.tokenOwned).toBe(tokenCount * 3 - 5)
+  })
+
+  it('Should fulfill buy with lowest sell', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 10 });
+    await testEnv.wrap(sellToken)({});
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 });
+    await testEnv.wrap(sellToken)({});
+    await buyTokenFunc(buyer, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 10 })
+
+    await wait(async () => {
+      return (await admin.firestore()
+        .collection(COL.TOKEN_MARKET)
+        .where('owner', '==', buyer)
+        .get()
+      ).docs[0]?.data()?.fulfilled === 10
+    })
+
+    const buys = (await admin.firestore()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', buyer)
+      .get()).docs.map(d => d.data())
+    const purchase = <TokenPurchase>(await admin.firestore().collection(COL.TOKEN_PURCHASE).where('buy', '==', buys[0].uid).get()).docs[0].data()
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
+  })
+
+  it('Should fulfill sell with the lowest buy', async () => {
+
+    await buyTokenFunc(buyer, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: 10 })
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 })
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 10 });
+    const sell = <TokenBuySellOrder>await testEnv.wrap(sellToken)({});
+
+    await wait(async () => {
+      return (await admin.firestore()
+        .collection(COL.TOKEN_MARKET)
+        .where('owner', '==', seller)
+        .get()
+      ).docs[0]?.data()?.fulfilled === 10
+    })
+
+    const purchase = <TokenPurchase>(await admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).get()).docs[0].data()
+    expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
   })
 })
 
