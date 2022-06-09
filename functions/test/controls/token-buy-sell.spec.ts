@@ -73,6 +73,17 @@ describe('Buy sell controller, sell token', () => {
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
     await expectThrow(testEnv.wrap(sellToken)({}), WenError.token_not_approved.key);
   })
+
+  it('Should throw, precision too much', async () => {
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.123, count: 5 }
+    mockWalletReturnValue(walletSpy, memberAddress, request);
+    const sell = <TokenBuySellOrder>(await testEnv.wrap(sellToken)({}));
+    expect(sell.count).toBe(5)
+
+    const request2 = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.1234, count: 5 }
+    mockWalletReturnValue(walletSpy, memberAddress, request2);
+    expectThrow(testEnv.wrap(sellToken)({}), WenError.invalid_params.key);
+  })
 })
 
 describe('Buy sell controller, buy token', () => {
