@@ -128,7 +128,6 @@ export class TokenPublicSaleComponent {
     if (!this.validateForm()) {
       return;
     }
-    console.log(this.formatSubmitData(this.scheduleSaleForm.value));
     await this.auth.sign(
       this.formatSubmitData(this.scheduleSaleForm.value),
       (sc, finish) => {
