@@ -267,17 +267,17 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
   })
 
   it('Should fail, country blocked by default', async () => {
-    mockIpCheck(true, { default: ['HU'] }, { countryCode: 'HU' })
+    mockIpCheck(true, { common: ['HU'] }, { countryCode: 'HU' })
     await expectThrow(submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid }), WenError.blocked_country.key)
   })
 
   it('Should fail, country blocked for entity', async () => {
-    mockIpCheck(true, { default: ['USA'], [token.uid]: ['USA', 'HU'] }, { countryCode: 'HU' })
+    mockIpCheck(true, { common: ['USA'], [token.uid]: ['USA', 'HU'] }, { countryCode: 'HU' })
     await expectThrow(submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid }), WenError.blocked_country.key)
   })
 
   it('Should fail, country blocked for token', async () => {
-    mockIpCheck(true, { default: ['USA'], token: ['HU'] }, { countryCode: 'HU' })
+    mockIpCheck(true, { common: ['USA'], token: ['HU'] }, { countryCode: 'HU' })
     await expectThrow(submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid }), WenError.blocked_country.key)
   })
 

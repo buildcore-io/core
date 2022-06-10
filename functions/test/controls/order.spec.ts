@@ -287,7 +287,7 @@ describe('Ordering flows', () => {
     const price = 100;
     const collection = await createCollectionFunc(member, dummyCollection(space, CollectionType.CLASSIC, 0.5, price));
     const nft = await createNftFunc(member, dummyNft(collection, price));
-    mockIpCheck(true, { default: ['HU'] }, { countryCode: 'HU' })
+    mockIpCheck(true, { common: ['HU'] }, { countryCode: 'HU' })
     await expectThrow(submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }), WenError.blocked_country.key)
   })
 
@@ -295,7 +295,7 @@ describe('Ordering flows', () => {
     const price = 100;
     const collection = await createCollectionFunc(member, dummyCollection(space, CollectionType.CLASSIC, 0.5, price));
     const nft = await createNftFunc(member, dummyNft(collection, price));
-    mockIpCheck(true, { default: ['USA'], [nft.uid]: ['USA', 'HU'] }, { countryCode: 'HU' })
+    mockIpCheck(true, { common: ['USA'], [nft.uid]: ['USA', 'HU'] }, { countryCode: 'HU' })
     await expectThrow(submitOrderFunc(member, { collection: collection.uid, nft: nft.uid }), WenError.blocked_country.key)
   })
 

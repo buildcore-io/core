@@ -85,17 +85,17 @@ describe('Buy sell controller, sell token', () => {
   })
 
   it('Should fail, country blocked by default', async () => {
-    mockIpCheck(true, { default: ['HU'] }, { countryCode: 'HU' })
+    mockIpCheck(true, { common: ['HU'] }, { countryCode: 'HU' })
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
     await expectThrow(testEnv.wrap(sellToken)({}), WenError.blocked_country.key)
   })
 
   it('Should fail, country blocked for token', async () => {
-    mockIpCheck(true, { default: ['USA'], [token.uid]: ['USA', 'HU'] }, { countryCode: 'HU' })
+    mockIpCheck(true, { common: ['USA'], [token.uid]: ['USA', 'HU'] }, { countryCode: 'HU' })
     const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
     mockWalletReturnValue(walletSpy, memberAddress, request);
     await expectThrow(testEnv.wrap(sellToken)({}), WenError.blocked_country.key)
   })
-  
+
 })
