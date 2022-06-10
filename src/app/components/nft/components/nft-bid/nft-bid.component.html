@@ -68,7 +68,7 @@
                     size="default">
                 </wen-countdown>
 
-                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
+                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-full"
                     [ngClass]="{
                         'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
                         'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length,
@@ -89,7 +89,7 @@
                             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
                             [nzSize]="32">
                         </nz-avatar>
-                        <div class="ml-3 text-base font-medium truncate max-w-20">
+                        <div class="ml-6 lg:ml-3 text-base font-medium truncate lg:max-w-20">
                           @{{ ((auth.member$ | async)?.name || (auth.member$ | async)?.uid) }}
                         </div>
                       </a>
@@ -188,7 +188,7 @@
         </div>
 
         <wen-wallet-deeplink
-            class="mt-6"
+            class="mt-6 w-full lg:w-auto"
             [targetAddress]="targetAddress"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
         </wen-wallet-deeplink>
@@ -254,7 +254,7 @@
         </div>
 
         <wen-wallet-deeplink
-            class="mt-6"
+            class="mt-6 w-full lg:w-auto"
             [targetAddress]="targetAddress"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
         </wen-wallet-deeplink>

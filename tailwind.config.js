@@ -35,6 +35,7 @@ module.exports = {
         ...normalizeNames(darkTheme)
       },
       screens: {
+        'xs': '314px',
         '3xl': '1600px',
         '4xl': '1920px'
       },

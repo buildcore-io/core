@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
+import { MODAL_WIDTH } from '@core/utils/modal.util';
 import { copyToClipboard } from '@core/utils/tools.utils';
 import { DEFAULT_NETWORK } from '@functions/interfaces/config';
 import { Member } from '@functions/interfaces/models';
@@ -58,9 +59,9 @@ export class WalletAddressComponent {
   public getModalWidth(): string {
     switch (this.type) {
     case AddressType.IOTA:
-      return '760px';
+      return `${MODAL_WIDTH}px`;
     default:
-      return '760px';
+      return `${MODAL_WIDTH}px`;
     }
   }
 }
