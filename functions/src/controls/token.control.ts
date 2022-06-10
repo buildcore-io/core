@@ -17,6 +17,7 @@ import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
+import { assertIpNotBlocked } from '../utils/ip.uitls';
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
@@ -270,6 +271,10 @@ export const orderToken = functions.runWith({
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
     throw throwInvalidArgument(WenError.invalid_params)
+  }
+
+  if (isProdEnv) {
+    await assertIpNotBlocked(context.rawRequest?.ip || '', tokenDoc.id)
   }
 
   const token = <Token>tokenDoc.data()

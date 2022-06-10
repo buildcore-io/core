@@ -13,9 +13,11 @@ import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { assertHasAccess } from '../services/validators/access';
 import { generateRandomAmount } from '../utils/common.utils';
+import { isProdEnv } from '../utils/config.utils';
 import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
+import { assertIpNotBlocked } from '../utils/ip.uitls';
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionType } from './../../interfaces/models/collection';
@@ -37,7 +39,6 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     nft: Joi.string().length(ethAddressLength).lowercase().optional()
   }));
   assertValidation(schema.validate(params.body));
-
   const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
@@ -105,6 +106,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
   // Set data object.
   const docNftData: Nft = docNft.data();
+
+  if (isProdEnv) {
+    await assertIpNotBlocked(context.rawRequest?.ip || '', docNft.id)
+  }
 
   if (!docNftData.owner) {
     await assertHasAccess(docSpace.id, owner, docCollectionData.access, docCollectionData.accessAwards || [], docCollectionData.accessCollections || []);
@@ -335,6 +340,10 @@ export const openBid = functions.runWith({
   const nft = <Nft | undefined>(await refNft.get()).data();
   if (!nft) {
     throw throwInvalidArgument(WenError.nft_does_not_exists);
+  }
+
+  if (isProdEnv) {
+    await assertIpNotBlocked(context.rawRequest?.ip || '', refNft.id)
   }
 
   const refCollection = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);
