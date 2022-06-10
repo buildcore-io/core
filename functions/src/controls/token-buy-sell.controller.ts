@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import bigDecimal from 'js-big-decimal';
-import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
+import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
@@ -21,11 +21,16 @@ import { cancelSale } from '../utils/token-buy-sell.utils';
 import { assertTokenApproved } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
-const buySellTokenSchema = {
+const buySellTokenSchema = Joi.object({
   token: Joi.string().required(),
   count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
   price: Joi.number().min(0.001).max(MAX_IOTA_AMOUNT).precision(3).required()
-}
+}).custom((obj, helper) => {
+  if (Number(bigDecimal.multiply(obj.price, obj.count)) < MIN_IOTA_AMOUNT) {
+    return helper.error('Order total min value is: ' + MIN_IOTA_AMOUNT);
+  }
+  return obj
+});
 
 export const sellToken = functions.runWith({
   minInstances: scale(WEN_FUNC.sellToken),
@@ -33,8 +38,7 @@ export const sellToken = functions.runWith({
   appCheck(WEN_FUNC.cSpace, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object(buySellTokenSchema);
-  assertValidation(schema.validate(params.body));
+  assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
   assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)
@@ -55,8 +59,7 @@ export const sellToken = functions.runWith({
       throw throwInvalidArgument(WenError.invalid_params)
     }
     const distribution = <TokenDistribution>distributionDoc.data();
-    const tokensSold = (distribution.sold || 0) + (distribution.lockedForSale || 0);
-    const tokensLeftForSale = distribution.tokenOwned! - tokensSold;
+    const tokensLeftForSale = (distribution.tokenOwned || 0) - (distribution.lockedForSale || 0);
     if (params.body.count > tokensLeftForSale) {
       throw throwInvalidArgument(WenError.no_available_tokens_for_sale)
     }
@@ -102,8 +105,7 @@ export const buyToken = functions.runWith({
 }).https.onCall(async (req: WenRequest) => {
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object(buySellTokenSchema);
-  assertValidation(schema.validate(params.body));
+  assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
   assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)

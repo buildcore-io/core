@@ -44,7 +44,7 @@
                 [nzBorderless]="true">
             <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>24h VWAP</div>
-                <div class="text-sm">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
+                <div class="text-xs">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
             </div>
             <div class="absolute top-1/2 -translate-y-1/2 right-36 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 Mi
@@ -61,7 +61,7 @@
                     nz-input
                     nzSize="small"
                     [nzBorderless]="true">
-            
+
             <div *ngIf="isAmountInput" class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your ballance</div>
                 <div class="text-sm">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
