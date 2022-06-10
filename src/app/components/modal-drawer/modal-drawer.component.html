@@ -25,6 +25,7 @@
         [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
         [nzWidth]="'100vw'" #drawer
         [nzClosable]="false"
+        [nzWrapClassName]="primaryColor ? '' : 'secondary'"
         [nzVisible]="isOpen">
         <div *nzDrawerContent class="relative min-h-full h-max">
             <ng-container *ngIf="showHeader">
