@@ -12,7 +12,7 @@ export const uOn = <T>(o: T): T => merge(o, {
 })
 
 export const cOn = <T extends { uid: string }>(o: T, path: URL_PATHS): T => {
-  const url: string = isProdEnv ? WEN_PROD_ADDRESS : WEN_TEST_ADDRESS;
+  const url: string = isProdEnv() ? WEN_PROD_ADDRESS : WEN_TEST_ADDRESS;
   return uOn(merge(o, {
     wenUrl: url + path + '/' + o.uid,
     createdOn: serverTime(),

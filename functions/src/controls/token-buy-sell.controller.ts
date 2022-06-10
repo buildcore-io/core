@@ -12,9 +12,11 @@ import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
+import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
+import { assertIpNotBlocked } from '../utils/ip.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cancelSale } from '../utils/token-buy-sell.utils';
 import { assertTokenApproved } from '../utils/token.utils';
@@ -34,7 +36,7 @@ const buySellTokenSchema = Joi.object({
 export const sellToken = functions.runWith({
   minInstances: scale(WEN_FUNC.sellToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.sellToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
@@ -48,6 +50,11 @@ export const sellToken = functions.runWith({
   if (!token) {
     throw throwInvalidArgument(WenError.invalid_params);
   }
+
+  if (isProdEnv()) {
+    await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
+  }
+
   assertTokenApproved(token);
 
   const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
@@ -86,7 +93,8 @@ export const sellToken = functions.runWith({
 
 export const cancelBuyOrSell = functions.runWith({
   minInstances: scale(WEN_FUNC.cancelBuyOrSell),
-}).https.onCall(async (req: WenRequest) => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.cancelBuyOrSell, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema = Joi.object({ uid: Joi.string().required() });
@@ -103,7 +111,8 @@ export const cancelBuyOrSell = functions.runWith({
 
 export const buyToken = functions.runWith({
   minInstances: scale(WEN_FUNC.buyToken),
-}).https.onCall(async (req: WenRequest) => {
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.buyToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
@@ -117,6 +126,11 @@ export const buyToken = functions.runWith({
   if (!token) {
     throw throwInvalidArgument(WenError.invalid_params)
   }
+
+  if (isProdEnv()) {
+    await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
+  }
+
   assertTokenApproved(token);
 
   const tranId = getRandomEthAddress();

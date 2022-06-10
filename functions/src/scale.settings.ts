@@ -2,10 +2,10 @@ import { WEN_FUNC } from '../interfaces/functions';
 import { isEmulatorEnv, isProdEnv } from './utils/config.utils';
 
 export const low = 1;
-export const medium = isProdEnv ? 3 : 2;
-export const important = isProdEnv ? 6 : 2;
-export const pump = isProdEnv ? 9 : 2;
-export const superPump = isProdEnv ? 40 : 2;
+export const medium = isProdEnv() ? 3 : 2;
+export const important = isProdEnv() ? 6 : 2;
+export const pump = isProdEnv() ? 9 : 2;
+export const superPump = isProdEnv() ? 40 : 2;
 
 export function scale(func: WEN_FUNC): number {
   const scaleSettings = {} as { [key: string]: number };
