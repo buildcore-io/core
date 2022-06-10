@@ -2,16 +2,17 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from "joi";
 import { merge } from 'lodash';
-import { MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_AMOUNT_TO_TRANSFER } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { DecodedToken, WEN_FUNC } from '../../interfaces/functions/index';
 import { Member, Space, Transaction } from '../../interfaces/models';
-import { COL, WenRequest } from '../../interfaces/models/base';
+import { COL, ValidatedAddress, WenRequest } from '../../interfaces/models/base';
 import { DocumentSnapshotType } from '../../interfaces/models/firebase';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { assertHasAccess } from '../services/validators/access';
+import { assertMemberHasValidAddress, assertSpaceHasValidAddress, getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
 import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
@@ -20,34 +21,35 @@ import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionType } from './../../interfaces/models/collection';
 import { Nft, NftAccess } from './../../interfaces/models/nft';
-import { TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
+import { Network, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
 import { MnemonicService } from './../services/wallet/mnemonic';
-import { AddressDetails, WalletService } from './../services/wallet/wallet';
+import { WalletService } from './../services/wallet/wallet';
+
+const orderNftSchema = Joi.object(merge(getDefaultParams(), {
+  collection: CommonJoi.uidCheck(),
+  nft: Joi.string().length(ethAddressLength).lowercase().optional()
+}));
 
 export const orderNft: functions.CloudFunction<Transaction> = functions.runWith({
   minInstances: scale(WEN_FUNC.orderNft),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext): Promise<Transaction> => {
   appCheck(WEN_FUNC.orderNft, context);
   // Validate auth details before we continue
-  const params: DecodedToken = await decodeAuth(req);
+  const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object(merge(getDefaultParams(), {
-    collection: CommonJoi.uidCheck(),
-    nft: Joi.string().length(ethAddressLength).lowercase().optional()
-  }));
-  assertValidation(schema.validate(params.body));
+  assertValidation(orderNftSchema.validate(params.body));
 
   const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
 
-  const refCollection: admin.firestore.DocumentReference = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
-  const docCollection: DocumentSnapshotType = await refCollection.get();
-  const docCollectionData: Collection = docCollection.data();
-  const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
-  const docSpace: DocumentSnapshotType = await refSpace.get();
+  const refCollection = admin.firestore().collection(COL.COLLECTION).doc(params.body.collection);
+  const docCollection = await refCollection.get();
+  const docCollectionData = <Collection>docCollection.data();
+  const refSpace = admin.firestore().collection(COL.SPACE).doc(docCollectionData.space);
+  const docSpace = await refSpace.get();
 
   // Collection must be approved.
   if (!docCollectionData.approved) {
@@ -143,17 +145,14 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Extra check to make sure owner address is defined.
-  let prevOwnerAddress: string | undefined = undefined;
+  let prevOwnerAddress: ValidatedAddress | undefined = undefined;
   if (docNft.data().owner) { // &&
     const refPrevOwner: admin.firestore.DocumentReference = admin.firestore().collection(COL.MEMBER).doc(docNft.data().owner);
     const docPrevOwner: DocumentSnapshotType = await refPrevOwner.get();
-    if (!docPrevOwner.data()?.validatedAddress) {
-      throw throwInvalidArgument(WenError.member_must_have_validated_address);
-    } else {
-      prevOwnerAddress = docPrevOwner.data()?.validatedAddress;
-    }
-  } else if (!docSpace.data().validatedAddress) {
-    throw throwInvalidArgument(WenError.space_must_have_validated_address);
+    assertMemberHasValidAddress(docPrevOwner.data()?.validatedAddress, Network.IOTA)
+    prevOwnerAddress = docPrevOwner.data()?.validatedAddress;
+  } else {
+    assertSpaceHasValidAddress(docSpace.data()?.validatedAddress, Network.IOTA)
   }
 
   if (docNft.data().owner === owner) {
@@ -170,10 +169,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Get new target address.
-  const newWallet: WalletService = new WalletService();
-  const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
-  const refRoyaltySpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
-  const docRoyaltySpace: DocumentSnapshotType = await refRoyaltySpace.get();
+  const newWallet = new WalletService();
+  const targetAddress = await newWallet.getNewIotaAddressDetails();
+  const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
+  const docRoyaltySpace = await refRoyaltySpace.get();
 
   // Document does not exists.
   const tranId: string = getRandomEthAddress();
@@ -230,10 +229,10 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
       targetAddress: targetAddress.bech32,
       beneficiary: docNft.data().owner ? 'member' : 'space',
       beneficiaryUid: docNft.data().owner || docCollectionData.space,
-      beneficiaryAddress: docNft.data().owner ? prevOwnerAddress : docSpace.data().validatedAddress,
+      beneficiaryAddress: getAddress(docNft.data().owner ? prevOwnerAddress : docSpace.data()?.validatedAddress, Network.IOTA),
       royaltiesFee: docCollectionData.royaltiesFee,
       royaltiesSpace: docCollectionData.royaltiesSpace,
-      royaltiesSpaceAddress: docRoyaltySpace.data().validatedAddress,
+      royaltiesSpaceAddress: getAddress(docRoyaltySpace.data()?.validatedAddress, Network.IOTA),
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
       reconciled: false,
@@ -260,11 +259,12 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const params: DecodedToken = await decodeAuth(req);
   const owner = params.address.toLowerCase();
   const schema = Joi.object(merge(getDefaultParams(), {
-    space: Joi.string().length(ethAddressLength).lowercase().optional()
+    space: Joi.string().length(ethAddressLength).lowercase().optional(),
+    targetNetwork: Joi.string().equal(...Object.values(Network)).optional()
   }));
   assertValidation(schema.validate(params.body));
 
-  const docMember: DocumentSnapshotType = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
+  const docMember = await admin.firestore().collection(COL.MEMBER).doc(owner).get();
   if (!docMember.exists) {
     throw throwInvalidArgument(WenError.member_does_not_exists);
   }
@@ -272,30 +272,32 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   const isSpaceValidation = !!params.body.space;
   let docSpace!: DocumentSnapshotType;
   if (isSpaceValidation) {
-    const refSpace: admin.firestore.DocumentReference = admin.firestore().collection(COL.SPACE).doc(params.body.space);
+    const refSpace = admin.firestore().collection(COL.SPACE).doc(params.body.space);
     await SpaceValidator.spaceExists(refSpace);
     docSpace = await refSpace.get();
   }
 
-  if (isSpaceValidation && docSpace.data().validatedAddress) {
+  if (isSpaceValidation && getAddress(docSpace.data().validatedAddress, params.body.targetNetwork)) {
     throw throwInvalidArgument(WenError.space_already_have_validated_address);
-  } else if (!isSpaceValidation && docMember.data().validatedAddress) {
+  } else if (!isSpaceValidation && getAddress(docMember.data()?.validatedAddress, params.body.targetNetwork)) {
     throw throwInvalidArgument(WenError.member_already_have_validated_address);
   }
 
   // Get new target address.
-  const newWallet: WalletService = new WalletService();
-  const targetAddress: AddressDetails = await newWallet.getNewIotaAddressDetails();
+  const newWallet = new WalletService(params.body.targetNetwork);
+  const targetAddress = await newWallet.getNewIotaAddressDetails();
   // Document does not exists.
-  const tranId: string = getRandomEthAddress();
-  const refTran: admin.firestore.DocumentReference = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
-  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+  const tranId = getRandomEthAddress();
+  const refTran = admin.firestore().collection(COL.TRANSACTION).doc(tranId);
+  await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic, params.body.targetNetwork);
   await refTran.set(<Transaction>{
     type: TransactionType.ORDER,
     uid: tranId,
     member: owner,
     space: isSpaceValidation ? params.body.space : null,
     createdOn: serverTime(),
+    sourceNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
+    targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: isSpaceValidation ? TransactionOrderType.SPACE_ADDRESS_VALIDATION : TransactionOrderType.MEMBER_ADDRESS_VALIDATION,
       amount: generateRandomAmount(),
@@ -362,9 +364,7 @@ export const openBid = functions.runWith({
   }
 
   const prevOwnerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()?.validatedAddress
-  if (!prevOwnerAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address);
-  }
+  assertMemberHasValidAddress(prevOwnerAddress, Network.IOTA)
 
   const newWallet = new WalletService();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
@@ -389,10 +389,10 @@ export const openBid = functions.runWith({
       targetAddress: targetAddress.bech32,
       beneficiary: nft.owner ? 'member' : 'space',
       beneficiaryUid: nft.owner || collection.space,
-      beneficiaryAddress: nft.owner ? prevOwnerAddress : space.validatedAddress,
+      beneficiaryAddress: getAddress(nft.owner ? prevOwnerAddress : space.validatedAddress, Network.IOTA),
       royaltiesFee: collection.royaltiesFee,
       royaltiesSpace: collection.royaltiesSpace,
-      royaltiesSpaceAddress: docRoyaltySpace.data()?.validatedAddress,
+      royaltiesSpaceAddress: getAddress(docRoyaltySpace.data()?.validatedAddress, Network.IOTA),
       expiresOn: nft.auctionTo,
       reconciled: false,
       validationType: TransactionValidationType.ADDRESS,

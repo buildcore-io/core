@@ -6,6 +6,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/award/services/helper.service';
 import { BehaviorSubject, first, skip, Subscription } from 'rxjs';
 import { Award } from '../../../../../../functions/interfaces/models';
 import { FILE_SIZES } from "../../../../../../functions/interfaces/models/base";
@@ -44,6 +45,7 @@ export class AwardPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private awardApi: AwardApi,
     public data: DataService,
+    public helper: HelperService,
     public previewImageService: PreviewImageService,
     public nav: NavigationService,
     public deviceService: DeviceService
@@ -169,10 +171,6 @@ export class AwardPage implements OnInit, OnDestroy {
         this.commentControl.setValue('');
       });
     });
-  }
-
-  public getShareUrl(award?: Award | null): string {
-    return award?.wenUrlShort || award?.wenUrl || window.location.href;
   }
 
   public ngOnDestroy(): void {

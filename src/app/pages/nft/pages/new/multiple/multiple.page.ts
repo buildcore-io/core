@@ -15,6 +15,7 @@ import { FILENAME_REGEXP, MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDate
 import { Collection, CollectionType } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
+import { HelperService } from '@pages/nft/services/helper.service';
 import * as dayjs from 'dayjs';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
@@ -133,6 +134,7 @@ export class MultiplePage implements OnInit {
     public deviceService: DeviceService,
     public cache: CacheService,
     public data: DataService,
+    public helper: HelperService,
     private nzNotification: NzNotificationService,
     private notification: NotificationService,
     private auth: AuthService,

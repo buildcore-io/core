@@ -4,11 +4,12 @@ import { NftApi } from '@api/nft.api';
 import { AuthService } from '@components/auth/services/auth.service';
 import { DeviceService } from '@core/services/device';
 import { NotificationService } from '@core/services/notification';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
+import { Units } from '@core/utils/units-helper';
 import { Collection } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/nft/services/helper.service';
 import dayjs from 'dayjs';
 import { take } from 'rxjs';
 
@@ -77,6 +78,7 @@ export class NftSaleComponent {
 
   constructor(
     public deviceService: DeviceService,
+    public helper: HelperService,
     private notification: NotificationService,
     private nftApi: NftApi,
     private cd: ChangeDetectorRef,
@@ -92,14 +94,6 @@ export class NftSaleComponent {
   public reset(): void {
     this.isOpen = false;
     this.cd.markForCheck();
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public get priceUnits(): Units[] {

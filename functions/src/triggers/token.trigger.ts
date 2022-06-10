@@ -1,13 +1,14 @@
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
-import { MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
+import { Member, Network, Space, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
+import { getAddress } from '../utils/address.utils';
 import { serverTime } from '../utils/dateTime.utils';
 import { allPaymentsQuery, BIG_DECIMAL_PRECISION, getTotalPublicSupply, memberDocRef, orderDocRef } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
@@ -51,7 +52,7 @@ const createBillPayment =
   (token: Token,
     distribution: TokenDistribution,
     payments: Transaction[],
-    orderTargetAddress: string,
+    order: Transaction,
     space: Space,
     batch: admin.firestore.WriteBatch
   ) => {
@@ -66,10 +67,12 @@ const createBillPayment =
       space: token.space,
       member: distribution.uid,
       createdOn: serverTime(),
+      sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+      targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
       payload: {
         amount: distribution.totalPaid + (distribution.refundedAmount! < MIN_IOTA_AMOUNT ? distribution.refundedAmount! : 0),
-        sourceAddress: orderTargetAddress,
-        targetAddress: space.validatedAddress,
+        sourceAddress: order.payload.targetAddress,
+        targetAddress: getAddress(space.validatedAddress, Network.IOTA),
         previousOwnerEntity: 'space',
         previousOwner: space.uid,
         sourceTransaction: payments.map(d => d.uid),
@@ -90,7 +93,7 @@ const createCredit = async (
   token: Token,
   distribution: TokenDistribution,
   payments: Transaction[],
-  orderTargetAddress: string,
+  order: Transaction,
   batch: admin.firestore.WriteBatch
 ) => {
   if (!distribution.refundedAmount) {
@@ -105,11 +108,13 @@ const createCredit = async (
     space: token.space,
     member: member.uid,
     createdOn: serverTime(),
+    sourceNetwork: order.sourceNetwork || DEFAULT_NETWORK,
+    targetNetwork: order.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionCreditType.TOKEN_PURCHASE,
       amount: distribution.refundedAmount,
-      sourceAddress: orderTargetAddress,
-      targetAddress: member.validatedAddress,
+      sourceAddress: order.payload.targetAddress,
+      targetAddress: getAddress(member.validatedAddress, Network.IOTA),
       sourceTransaction: payments.map(d => d.uid),
       token: token.uid,
       reconciled: true,
@@ -126,14 +131,13 @@ const reconcileBuyer = (token: Token) => async (distribution: TokenDistribution)
   const batch = admin.firestore().batch();
   const distributionDoc = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${distribution.uid}`)
 
-  const spaceDoc = await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()
+  const space = <Space>(await admin.firestore().doc(`${COL.SPACE}/${token.space}`).get()).data()
 
-  const orderDoc = await orderDocRef(distribution.uid!, token).get()
-  const orderTargetAddress = orderDoc.data()?.payload?.targetAddress || ''
+  const order = <Transaction>(await orderDocRef(distribution.uid!, token).get()).data()
   const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
 
-  const billPaymentId = createBillPayment(token, getFlooredDistribution(distribution), payments, orderTargetAddress, <Space>spaceDoc.data(), batch)
-  const creditPaymentId = await createCredit(token, getFlooredDistribution(distribution), payments, orderTargetAddress, batch)
+  const billPaymentId = createBillPayment(token, getFlooredDistribution(distribution), payments, order, space, batch)
+  const creditPaymentId = await createCredit(token, getFlooredDistribution(distribution), payments, order, batch)
 
   batch.update(distributionDoc, {
     ...distribution,
@@ -176,10 +180,9 @@ const cancelPublicSale = async (token: Token) => {
     const distribution = <TokenDistribution>doc.data()
     const batch = admin.firestore().batch()
 
-    const orderDoc = await orderDocRef(distribution.uid!, token).get()
-    const orderTargetAddress = orderDoc.data()?.payload?.targetAddress || ''
+    const order = <Transaction>(await orderDocRef(distribution.uid!, token).get()).data()
     const payments = (await allPaymentsQuery(distribution.uid!, token.uid).get()).docs.map(d => <Transaction>d.data())
-    const creditPaymentId = await createCredit(token, { ...distribution, refundedAmount: distribution?.totalDeposit }, payments, orderTargetAddress, batch)
+    const creditPaymentId = await createCredit(token, { ...distribution, refundedAmount: distribution?.totalDeposit }, payments, order, batch)
 
     batch.update(doc.ref, { creditPaymentId, totalDeposit: 0 })
 

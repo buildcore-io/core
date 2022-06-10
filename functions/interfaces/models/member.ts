@@ -1,4 +1,5 @@
-import { BaseRecord, EthAddress, FileMetedata } from './base';
+import { BaseRecord, EthAddress, FileMetedata, ValidatedAddress } from './base';
+
 export interface Member extends BaseRecord {
   uid: EthAddress;
   nonce?: string;
@@ -19,5 +20,5 @@ export interface Member extends BaseRecord {
   alliances?: string[];
   awardsCompleted?: number;
   totalReputation?: number;
-  validatedAddress?: string;
+  validatedAddress?: ValidatedAddress;
 }

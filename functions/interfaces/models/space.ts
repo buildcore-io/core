@@ -1,4 +1,4 @@
-import { BaseRecord, BaseSubCollection, Timestamp } from './base';
+import { BaseRecord, BaseSubCollection, Timestamp, ValidatedAddress } from './base';
 export interface SpaceGuardian extends BaseSubCollection {
   uid: string;
   createdOn: Timestamp;
@@ -28,7 +28,7 @@ export interface Space extends BaseRecord {
   totalGuardians: number;
   totalMembers: number;
   totalPendingMembers: number;
-  validatedAddress?: string;
+  validatedAddress?: ValidatedAddress;
   alliances: {
     [propName: string]: Alliance;
   }

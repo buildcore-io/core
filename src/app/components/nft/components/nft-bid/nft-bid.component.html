@@ -63,12 +63,12 @@
                     class="my-5"
                     wrapperClassName="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark"
                     tabClassName="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark"
-                    [title]="data.getCountdownTitle(data.nft$ | async)"
-                    [finalDate]="data.getCountdownDate(data.nft$ | async)?.toDate()"
+                    [title]="helper.getCountdownTitle(data.nft$ | async)"
+                    [finalDate]="helper.getCountdownDate(data.nft$ | async)?.toDate()"
                     size="default">
                 </wen-countdown>
 
-                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-max lg:w-full"
+                <div class="px-5 py-3 mt-8 lg:mt-auto rounded-2xl w-full"
                     [ngClass]="{
                         'bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark': (!getRecord()?.auctionHighestBidder || !(auth.member$ | async)?.uid || ((getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length === 0)),
                         'bg-tags-closed dark:bg-tags-closed-dark': ((auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder !== (auth.member$ | async)?.uid) && (linkedTransactions$ | async)?.length,
@@ -83,13 +83,13 @@
                         <ng-container *ngIf="(auth.member$ | async)?.uid && (getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid)" i18n>Your bid is the highest</ng-container>
                     </div>
                     <div class="flex items-center mt-2 text-lg">
-                      <div class="mr-2 font-bold truncate">{{ formatBest(getRecord()?.auctionHighestBid || 0) || formatBest(getRecord()?.auctionFloorPrice)}}</div>
+                      <div class="mr-2 font-bold truncate">{{ helper.formatBest(getRecord()?.auctionHighestBid || 0) || helper.formatBest(getRecord()?.auctionFloorPrice)}}</div>
                       <a *ngIf="(auth.member$ | async)?.uid && getRecord()?.auctionHighestBidder === (auth.member$ | async)?.uid" [routerLink]="['/member', (auth.member$ | async)?.uid]" class="flex items-center">
                         <nz-avatar [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small"
                             class="border-2 border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-w-8"
                             [nzSize]="32">
                         </nz-avatar>
-                        <div class="ml-3 text-base font-medium truncate max-w-20">
+                        <div class="ml-6 lg:ml-3 text-base font-medium truncate lg:max-w-20">
                           @{{ ((auth.member$ | async)?.name || (auth.member$ | async)?.uid) }}
                         </div>
                       </a>
@@ -188,7 +188,7 @@
         </div>
 
         <wen-wallet-deeplink
-            class="mt-6"
+            class="mt-6 w-full lg:w-auto"
             [targetAddress]="targetAddress"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
         </wen-wallet-deeplink>
@@ -235,10 +235,10 @@
                     <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'shortDate' }}</td>
                     <td class="text-sm font-medium">{{ item.createdOn?.toDate() | date:'h:mm:ss' }}</td>
                     <td class="text-sm font-medium">{{ item.type }}</td>
-                    <td class="text-sm font-medium">{{ formatBest(item.payload.amount) }}</td>
+                    <td class="text-sm font-medium">{{ helper.formatBest(item.payload.amount) }}</td>
                     <td class="text-right">
                         <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark"
-                            target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
+                            target="_blank" *ngIf="item.payload.chainReference || item.payload?.walletReference?.chainReference" [href]="helper.getExplorerLink(item.payload.chainReference || item.payload?.walletReference?.chainReference)" i18n>Link</a>
                     </td>
                 </tr>
             </tbody>
@@ -254,7 +254,7 @@
         </div>
 
         <wen-wallet-deeplink
-            class="mt-6"
+            class="mt-6 w-full lg:w-auto"
             [targetAddress]="targetAddress"
             [targetAmount]="((targetAmount || 0) / 1000 / 1000)?.toString()">
         </wen-wallet-deeplink>

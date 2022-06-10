@@ -29,6 +29,10 @@ export class TokenApi extends BaseApi<Token> {
     return this.request(WEN_FUNC.setTokenAvailableForSale, req);
   }
 
+  public cancelPublicSale(req: WenRequest): Observable<Token | undefined> {
+    return this.request(WEN_FUNC.cancelPublicSale, req);
+  }
+
   public airdropToken(req: WenRequest): Observable<TokenDistribution[] | undefined> {
     return this.request(WEN_FUNC.airdropToken, req);
   }

@@ -7,6 +7,8 @@ import {
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
+import { Network } from "../../../interfaces/models";
+import { getRandomElement } from "../../utils/common.utils";
 
 export interface AddressDetails {
   bech32: string;
@@ -26,21 +28,32 @@ interface Output {
   amount: number;
 }
 
+const IOTA_API_ENDPOINTS = [
+  'https://us3.svrs.io/',
+  'https://us4.svrs.io/',
+  'https://hs5.svrs.io/',
+  'https://hs6.svrs.io/',
+  'https://chrysalis-nodes.iota.org'
+];
+
+// Using IOTA api endpoints until shimmer is live
+const SHIMMER_API_ENDPOINTS = IOTA_API_ENDPOINTS
+
+const getApiEndpoint = (network?: Network) => {
+  switch (network) {
+    case Network.SHIMMER:
+      return getRandomElement(SHIMMER_API_ENDPOINTS)
+    default:
+      return getRandomElement(IOTA_API_ENDPOINTS)
+  }
+}
+
 export class WalletService {
-  private API_ENDPOINT = [
-    'https://us3.svrs.io/',
-    'https://us4.svrs.io/',
-    'https://hs5.svrs.io/',
-    'https://hs6.svrs.io/',
-    'https://chrysalis-nodes.iota.org'
-  ]; // Mainnet
-  // private API_ENDPOINT = ['https://api.lb-0.h.chrysalis-devnet.iota.cafe'];   // DEV NET
   private client: SingleNodeClient;
   private nodeInfo?: INodeInfo;
 
-  constructor() {
-    const random = Math.floor(Math.random() * this.API_ENDPOINT.length);
-    this.client = new SingleNodeClient(this.API_ENDPOINT[random]);
+  constructor(readonly network?: Network) {
+    this.client = new SingleNodeClient(getApiEndpoint(network));
   }
 
   public async init(): Promise<void> {
@@ -63,8 +76,7 @@ export class WalletService {
   }
 
   public setSlaveEndPoint(): void {
-    const random = Math.floor(Math.random() * this.API_ENDPOINT.length);
-    this.client = new SingleNodeClient(this.API_ENDPOINT[random]);
+    this.client = new SingleNodeClient(getApiEndpoint(this.network));
   }
 
   public async getNodeInfo(): Promise<INodeInfo> {

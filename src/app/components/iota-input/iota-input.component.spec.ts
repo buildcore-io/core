@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TimelineBadgesComponent } from './timeline-badges.component';
+import { IotaInputComponent } from './iota-input.component';
 
 
-describe('TimelineComponent', () => {
-  let component: TimelineBadgesComponent;
-  let fixture: ComponentFixture<TimelineBadgesComponent>;
+describe('IotaInputComponent', () => {
+  let component: IotaInputComponent;
+  let fixture: ComponentFixture<IotaInputComponent>;
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ TimelineBadgesComponent ]
+      declarations: [ IotaInputComponent ]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TimelineBadgesComponent);
+    fixture = TestBed.createComponent(IotaInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DataService } from '@pages/award/services/data.service';
+import { HelperService } from '@pages/award/services/helper.service';
 import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base';
 
 @Component({
@@ -10,7 +11,8 @@ import { FILE_SIZES } from './../../../../../../functions/interfaces/models/base
 })
 export class AwardAwardsComponent {
   constructor(
-    public data: DataService
+    public data: DataService,
+    public helper: HelperService
   ) {}
 
   public get filesizes(): typeof FILE_SIZES {

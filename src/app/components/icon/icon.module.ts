@@ -34,6 +34,7 @@ import { GlobeIconComponent } from './globe/globe.component';
 import { GuardiansOnlyIconComponent } from './guardians-only/guardians-only.component';
 import { InfoCircleIconComponent } from './info-circle/info-circle.component';
 import { InfoIconComponent } from './info/info.component';
+import { IotaIconComponent } from './iota/iota.component';
 import { LinkIconComponent } from './link/link.component';
 import { LinkedinIconComponent } from './linkedin/linkedin.component';
 import { LogOutIconComponent } from './log-out/log-out.component';
@@ -146,7 +147,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FileExportIconComponent,
     TokenIconComponent,
     EditUnderlineIconComponent,
-    CollapseArrowIconComponent
+    CollapseArrowIconComponent,
+    IotaIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -220,7 +222,8 @@ import { WalletIconComponent } from './wallet/wallet.component';
     FileExportIconComponent,
     TokenIconComponent,
     EditUnderlineIconComponent,
-    CollapseArrowIconComponent
+    CollapseArrowIconComponent,
+    IotaIconComponent
   ],
   imports: [
     CommonModule

@@ -1,12 +1,20 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
+import { getProposalDoughnutColors } from '@core/utils/colors.utils';
 import { Space } from '@functions/interfaces/models';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ChartConfiguration, ChartType } from 'chart.js';
+import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Proposal, ProposalAnswer, ProposalType } from '../../../../../../functions/interfaces/models/proposal';
 import { SpaceApi } from './../../../../@api/space.api';
 import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
+
+export interface ProposalAnswerResultItem {
+  answer: ProposalAnswer;
+  result: number;
+}
 
 @UntilDestroy()
 @Component({
@@ -16,10 +24,58 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProposalCardComponent implements OnChanges, OnDestroy {
-  @Input() proposal?: Proposal;
+  @Input() 
+  set proposal(value: Proposal | undefined) {
+    this._proposal = value;
+    if (this.proposal?.questions[0].answers && this.proposal?.questions[0].answers.length > 2) {
+      this.sortedAnswerResults =
+        this.proposal?.questions[0].answers
+          .map(a => ({ answer: a, result: this.proposal?.results?.answers[a.value] || 0 }))
+          .sort((a, b) => b.result - a.result);
+      if (this.sortedAnswerResults[0].result === 0) {
+        this.sortedAnswerResults = this.sortedAnswerResults.map(r => ({ ...r, result: 1 }));
+      }
+      this.answersSum = this.sortedAnswerResults.reduce((a, b) => a + b.result, 0);
+      this.doughnutChartData = {
+        datasets: [
+          {
+            label: 'Dataset 1',
+            data: this.sortedAnswerResults.map(a => a.result),
+            backgroundColor: getProposalDoughnutColors(this.sortedAnswerResults.length)
+          }
+        ]
+      };
+    }
+  }
+  get proposal(): Proposal | undefined {
+    return this._proposal;
+  }
   @Input() fullWidth?: boolean;
+
   public space$: BehaviorSubject<Space | undefined> = new BehaviorSubject<Space | undefined>(undefined);
   public path = ROUTER_UTILS.config.proposal.root;
+  public sortedAnswerResults: ProposalAnswerResultItem[] = [];
+  public answersSum = 0;
+  public doughnutChartType: ChartType = 'doughnut';
+  public doughnutChartData?: ChartConfiguration['data'] = {
+    datasets: []
+  };
+  public doughnutChartOptions?: any = {
+    events: [],
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+    elements: {
+      arc: {
+        borderWidth: 0
+      }
+    },
+    cutout: '75%'
+  };
+
+  private _proposal?: Proposal; 
   private subscriptions$: Subscription[] = [];
 
   constructor(
@@ -60,6 +116,14 @@ export class ProposalCardComponent implements OnChanges, OnDestroy {
         answerTwo
       ];
     }
+  }
+
+  public castAsStringArray(item: unknown): string[] {
+    return item as string[];
+  }
+
+  public getPercentage(result: number): string {
+    return bigDecimal.divide(bigDecimal.multiply(result, 100), this.answersSum || 1, 0).toString();
   }
 
   public ngOnChanges(): void {

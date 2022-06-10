@@ -23,7 +23,7 @@ export class NewService {
   public distributionOptions = [
     { label: $localize`Fixed price`, value: TokenDistributionType.FIXED }
   ];
-  public offeringLengthOptions = Array.from({length: 10}, (_, i) => i + 1)
+  public offeringLengthOptions = Array.from({ length: 10 }, (_, i) => i + 1)
   public maxAllocationsCount = MAX_ALLOCATIONS_COUNT;
   public maxDescriptionsCount = MAX_DESCRIPTIONS_COUNT;
   public maxLinksCount = MAX_LINKS_COUNT;
@@ -130,7 +130,9 @@ export class NewService {
   public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
     return (list || [])
       .filter((o) => {
-        return !!o.validatedAddress;
+        // Commented because it broke select-space
+        // return !!(o.validatedAddress || {})[DEFAULT_NETWORK];
+        return !!(o.validatedAddress || {});
       })
       .map((o) => ({
         label: o.name || o.uid,
