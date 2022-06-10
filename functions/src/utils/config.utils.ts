@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { isEmpty } from 'lodash';
 
-export const isProdEnv = functions.config()?.environment?.type === 'prod'
+export const isProdEnv = () => functions.config()?.environment?.type === 'prod'
 
 export const isEmulatorEnv = functions.config()?.environment?.type === 'emulator'
 

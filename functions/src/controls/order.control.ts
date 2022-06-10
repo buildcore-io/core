@@ -17,7 +17,7 @@ import { isProdEnv } from '../utils/config.utils';
 import { dateToTimestamp, serverTime } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
 import { appCheck } from "../utils/google.utils";
-import { assertIpNotBlocked } from '../utils/ip.uitls';
+import { assertIpNotBlocked } from '../utils/ip.utils';
 import { assertValidation, getDefaultParams } from "../utils/schema.utils";
 import { decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Collection, CollectionType } from './../../interfaces/models/collection';
@@ -107,7 +107,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   // Set data object.
   const docNftData: Nft = docNft.data();
 
-  if (isProdEnv) {
+  if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', docNft.id)
   }
 
@@ -342,7 +342,7 @@ export const openBid = functions.runWith({
     throw throwInvalidArgument(WenError.nft_does_not_exists);
   }
 
-  if (isProdEnv) {
+  if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', refNft.id)
   }
 

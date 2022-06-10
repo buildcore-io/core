@@ -16,7 +16,7 @@ import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from '../utils/google.utils';
-import { assertIpNotBlocked } from '../utils/ip.uitls';
+import { assertIpNotBlocked } from '../utils/ip.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cancelSale } from '../utils/token-buy-sell.utils';
 import { assertTokenApproved } from '../utils/token.utils';
@@ -51,7 +51,7 @@ export const sellToken = functions.runWith({
     throw throwInvalidArgument(WenError.invalid_params);
   }
 
-  if (isProdEnv) {
+  if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid)
   }
 
@@ -127,7 +127,7 @@ export const buyToken = functions.runWith({
     throw throwInvalidArgument(WenError.invalid_params)
   }
 
-  if (isProdEnv) {
+  if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid)
   }
 

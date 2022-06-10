@@ -101,7 +101,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   // Prepare NFT details.
   const details = <IOTATangleTransaction>{};
   details.tranId = tranData.uid;
-  details.network = isProdEnv ? 'soon' : 'wen';
+  details.network = isProdEnv() ? 'soon' : 'wen';
   if (tranData.type === TransactionType.BILL_PAYMENT) {
     details.payment = true;
 

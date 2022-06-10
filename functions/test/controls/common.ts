@@ -9,6 +9,8 @@ import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
+import * as ipUtils from '../../src/utils/ip.utils';
+import * as config from '../../src/utils/config.utils';
 
 export const mockWalletReturnValue = <T,>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));
@@ -111,4 +113,14 @@ export const wait = async (func: () => Promise<boolean>, maxAttempt = 60) => {
     await new Promise((r) => setTimeout(r, 1000));
   }
   throw new Error("Timeout");
+}
+
+const isProdSpy = jest.spyOn(config, 'isProdEnv')
+const blockedCountriesSpy = jest.spyOn(ipUtils, 'getBlockedCountries')
+const ipInfoMock = jest.spyOn(ipUtils, 'getIpInfo')
+
+export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string]: string[] }, ipInfo: any) => {
+  isProdSpy.mockReturnValueOnce(isProdEnv)
+  blockedCountriesSpy.mockReturnValueOnce(blockedCountries)
+  ipInfoMock.mockReturnValueOnce(ipInfo)
 }

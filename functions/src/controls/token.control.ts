@@ -17,7 +17,7 @@ import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
 import { appCheck } from "../utils/google.utils";
-import { assertIpNotBlocked } from '../utils/ip.uitls';
+import { assertIpNotBlocked } from '../utils/ip.utils';
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
@@ -50,7 +50,7 @@ const createSchema = () => ({
     return allocations;
   }),
   // Only on prod we enforce 7 days.
-  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).optional(),
+  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv() ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).optional(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).optional(),
   autoProcessAt100Percent: Joi.boolean().optional(),
@@ -159,7 +159,7 @@ export const updateToken = functions.runWith({
 
 const setAvailableForSaleSchema = {
   token: Joi.string().required(),
-  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
+  saleStartDate: Joi.date().greater(dayjs().add(isProdEnv() ? MIN_TOKEN_START_DATE_DAY : 0, 'd').toDate()).required(),
   saleLength: Joi.number().min(TRANSACTION_AUTO_EXPIRY_MS).max(TRANSACTION_MAX_EXPIRY_MS).required(),
   coolDownLength: Joi.number().min(0).max(TRANSACTION_MAX_EXPIRY_MS).required(),
   autoProcessAt100Percent: Joi.boolean().optional()
@@ -273,7 +273,7 @@ export const orderToken = functions.runWith({
     throw throwInvalidArgument(WenError.invalid_params)
   }
 
-  if (isProdEnv) {
+  if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', tokenDoc.id)
   }
 
