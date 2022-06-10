@@ -6,8 +6,7 @@ import { Space, Transaction, TransactionCreditType, TransactionOrderType, Transa
 import { Access, COL, SUB_COL } from "../../interfaces/models/base";
 import { Token, TokenAllocation, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { joinSpace } from "../../src/controls/space.control";
-import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
+import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, orderToken, setTokenAvailableForSale, updateToken } from "../../src/controls/token.control";
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
@@ -34,13 +33,6 @@ const dummyToken = (space: string) => ({
 const submitTokenOrderFunc = async <T>(spy: string, address: string, params: T) => {
   mockWalletReturnValue(spy, address, params);
   const order = await testEnv.wrap(orderToken)({});
-  expect(order?.createdOn).toBeDefined();
-  return order;
-}
-
-const submitCreditTokenFunc = async <T>(spy: string, address: string, params: T) => {
-  mockWalletReturnValue(spy, address, params);
-  const order = await testEnv.wrap(creditToken)({});
   expect(order?.createdOn).toBeDefined();
   return order;
 }
