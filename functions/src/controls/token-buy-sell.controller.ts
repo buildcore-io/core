@@ -52,7 +52,7 @@ export const sellToken = functions.runWith({
   }
 
   if (isProdEnv()) {
-    await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid)
+    await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
   }
 
   assertTokenApproved(token);
@@ -128,7 +128,7 @@ export const buyToken = functions.runWith({
   }
 
   if (isProdEnv()) {
-    await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid)
+    await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
   }
 
   assertTokenApproved(token);

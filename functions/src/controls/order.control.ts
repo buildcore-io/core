@@ -108,7 +108,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   const docNftData: Nft = docNft.data();
 
   if (isProdEnv()) {
-    await assertIpNotBlocked(context.rawRequest?.ip || '', docNft.id)
+    await assertIpNotBlocked(context.rawRequest?.ip || '', docNft.id, 'nft')
   }
 
   if (!docNftData.owner) {
@@ -343,7 +343,7 @@ export const openBid = functions.runWith({
   }
 
   if (isProdEnv()) {
-    await assertIpNotBlocked(context.rawRequest?.ip || '', refNft.id)
+    await assertIpNotBlocked(context.rawRequest?.ip || '', refNft.id, 'nft')
   }
 
   const refCollection = admin.firestore().doc(`${COL.COLLECTION}/${nft.collection}`);

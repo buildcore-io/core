@@ -274,7 +274,7 @@ export const orderToken = functions.runWith({
   }
 
   if (isProdEnv()) {
-    await assertIpNotBlocked(context.rawRequest?.ip || '', tokenDoc.id)
+    await assertIpNotBlocked(context.rawRequest?.ip || '', tokenDoc.id, 'token')
   }
 
   const token = <Token>tokenDoc.data()
