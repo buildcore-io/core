@@ -16,7 +16,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { BehaviorSubject, filter, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, interval, skip, Subscription, take } from 'rxjs';
 
 export enum StepType {
   CONFIRM = 'Confirm',
@@ -167,7 +167,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       }
     });
 
-    
+
     this.amountControl.valueChanges
       .pipe(
         filter(() => this.isAmountInput),
@@ -177,7 +177,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         this.iotaControl.setValue(Number(bigDecimal.multiply(Number(val), Number(this.offeredRateControl?.value || 0))).toFixed(6));
         this.cd.markForCheck();
       });
-      
+
     this.iotaControl.valueChanges
       .pipe(
         filter(() => !this.isAmountInput),
@@ -200,6 +200,18 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         }
         this.cd.markForCheck();
       });
+
+    this.listenAvgPrice24h$.pipe(
+      skip(1),
+      take(1),
+      untilDestroyed(this)
+    )
+      .subscribe((v) => {
+        if (!this.offeredRateControl.value && v) {
+          v = Math.floor(v * (1000 * 1000)) / 1000 / 1000;
+          this.offeredRateControl.setValue(v.toFixed(6));
+        }
+      });
   }
 
   public close(): void {
@@ -212,7 +224,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       return '-';
     }
 
-    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 6);
+    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi', 6);
   }
 
   public formatTokenBest(amount?: number|null): string {
@@ -222,7 +234,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
 
     return (amount / 1000 / 1000).toFixed(6).toString();
   }
-  
+
   public extractAmount(formattedText: string): string {
     return formattedText.substring(0, formattedText.length - 3);
   }

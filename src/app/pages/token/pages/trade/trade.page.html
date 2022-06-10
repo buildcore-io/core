@@ -30,11 +30,11 @@
 
         <div class="flex items-center">
           <nz-avatar [nzSrc]="previewImageService.getAvatarSize((data.token$ | async)?.icon)"
-            class="border-2 border-tags-border dark:border-tags-border-dark min-w-12 mr-4"
+            class="mr-4 border-2 border-tags-border dark:border-tags-border-dark min-w-12"
             nzShape="circle"
             [nzSize]="48">
           </nz-avatar>
-          <div class="font-bold text-4xl">{{ (data.token$ | async)?.name }}</div>
+          <div class="text-4xl font-bold">{{ (data.token$ | async)?.name }}</div>
         </div>
 
         <div class="flex items-center justify-between mt-8 space-x-3">
@@ -131,7 +131,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col w-full mt-10 lg:flex-row lg:space-x-10 mb-10">
+    <div class="flex flex-col w-full mt-10 mb-10 lg:flex-row lg:space-x-10">
         <nz-card [nzTitle]="getBidsTitle((listenAvgBuy$ | async) || undefined)"
           class="flex-1 w-full mt-6 h-max lg:mt-0" [nzBodyStyle]="{ 'padding-left': '0px', 'padding-right': '0px' }">
             <div class="flex items-center px-6 mb-4">
@@ -161,17 +161,17 @@
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #openBidsBlock>
                         <tr *ngFor="let item of openBidsTable.data" class="relative">
-                            <td class="z-10 border-0 flex items-center">
-                              <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
-                                [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
+                            <td class="z-10 flex items-center border-0">
+                              <nz-avatar *ngIf="item.avatar" nzIcon="user"
+                                [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                                 class="mr-2"></nz-avatar>
-                                <div>{{ formatBest(item.price * 1000 * 1000) }}</div>
+                                <div>{{ formatBest(item.price, true) }}</div>
                             </td>
-                            <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                            <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
+                            <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                            <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
 
-                            <div class="absolute right-0 top-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
-                              [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                            <div class="absolute right-0 top-0 h-full bg-[#E6F9EB]"
+                              [ngStyle]="{ width: item.amount / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                         </tr>
                     </ng-template>
                 </tbody>
@@ -199,7 +199,7 @@
                         [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                     <ng-template #myRequestsBlock>
                       <tr *ngFor="let item of myBidsTable.data" class="relative">
-                        <td>{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td>{{ formatBest(item.price, true) }}</td>
                         <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="z-10 border-0 right">
@@ -216,8 +216,8 @@
                         <td class="z-10 border-0 right">
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
-                        <div class="absolute right-0 top-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
-                          [ngStyle]="{ width: item.count / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                        <div class="absolute top-0 right-0 h-full bg-graph-offers dark:bg-graph-offers-dark"
+                          [ngStyle]="{ width: (item.count - item.fulfilled) / ((bidsAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                     </ng-template>
                 </tbody>
@@ -257,16 +257,16 @@
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #openAsksBlock>
                       <tr *ngFor="let item of openAsksTable.data" class="relative">
-                        <td class="z-10 border-0 flex items-center">
-                          <nz-avatar *ngIf="(auth.member$ | async)?.uid === item.owner" nzIcon="user"
-                            [nzSrc]="(auth.member$ | async)?.currentProfileImage | ipfsAvatar:filesizes.small" [nzSize]="32"
+                        <td class="z-10 flex items-center border-0">
+                          <nz-avatar *ngIf="item.avatar" nzIcon="user"
+                            [nzSrc]="item.avatar | ipfsAvatar:filesizes.small" [nzSize]="32"
                             class="mr-2"></nz-avatar>
-                            <div>{{ formatBest(item.price * 1000 * 1000) }}</div>
+                            <div>{{ formatBest(item.price, true) }}</div>
                         </td>
-                        <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
-                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
-                        <div class="absolute right-0 top-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
-                          [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                        <td class="z-10 border-0 right">{{ (formatTokenBest(item.amount) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
+                        <td class="z-10 border-0 right">{{ formatBest(item.price * item.amount) }}</td>
+                        <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
+                          [ngStyle]="{ width: item.amount / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
               </tbody>
@@ -294,7 +294,7 @@
                       [nzParagraph]="{ rows: 1, width: 100 }"></nz-skeleton>
                   <ng-template #myAsksBlock>
                       <tr *ngFor="let item of myAsksTable.data" class="relative">
-                        <td class="z-10 border-0">{{ formatBest(item.price * 1000 * 1000) }}</td>
+                        <td class="z-10 border-0">{{ formatBest(item.price, true) }}</td>
                         <td class="z-10 border-0 right">{{ (formatTokenBest(item.count) | number : '1.0-6') + ' ' + (data.token$ | async)?.symbol}}</td>
                         <td class="z-10 border-0 right">{{ formatBest(item.price * item.count) }}</td>
                         <td class="z-10 border-0 right">
@@ -311,8 +311,8 @@
                         <td class="z-10 border-0 right">
                           <a class="text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n *ngIf="item.status === bidAskStatuses.ACTIVE" (click)="cancelOrder(item.uid)">Cancel</a>
                         </td>
-                        <div class="absolute right-0 top-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
-                          [ngStyle]="{ width: item.count / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
+                        <div class="absolute top-0 right-0 h-full bg-graph-requests dark:bg-graph-requests-dark"
+                          [ngStyle]="{ width: (item.count - item.fulfilled) / ((asksAmountSum$ | async) || 100) * 100 + '%' }"></div>
                       </tr>
                   </ng-template>
               </tbody>

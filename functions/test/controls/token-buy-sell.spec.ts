@@ -55,6 +55,12 @@ describe('Buy sell controller, sell token', () => {
     expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
   })
 
+  it('Should throw, total price too low', async () => {
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 1 }
+    mockWalletReturnValue(walletSpy, memberAddress, request);
+    expectThrow(testEnv.wrap(sellToken)({}), WenError.invalid_params.key);
+  })
+
   it('Should throw on one, not enough tokens', async () => {
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
     await testEnv.wrap(sellToken)({});
@@ -66,6 +72,17 @@ describe('Buy sell controller, sell token', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
     await expectThrow(testEnv.wrap(sellToken)({}), WenError.token_not_approved.key);
+  })
+
+  it('Should throw, precision too much', async () => {
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.123, count: 5 }
+    mockWalletReturnValue(walletSpy, memberAddress, request);
+    const sell = <TokenBuySellOrder>(await testEnv.wrap(sellToken)({}));
+    expect(sell.count).toBe(5)
+
+    const request2 = { token: token.uid, price: MIN_IOTA_AMOUNT + 0.1234, count: 5 }
+    mockWalletReturnValue(walletSpy, memberAddress, request2);
+    expectThrow(testEnv.wrap(sellToken)({}), WenError.invalid_params.key);
   })
 })
 
