@@ -15,15 +15,21 @@ const APP_ROUTES: Routes = [
       (await import('@components/auth/auth.module')).AuthModule,
     canLoad: [],
   },
-  {
-    path: ROUTER_UTILS.config.base.home,
-    loadChildren: async() =>
-      (await import('@pages/home/home.module')).HomeModule,
-  },
+  // {
+  //   path: ROUTER_UTILS.config.base.home,
+  //   loadChildren: async() =>
+  //     (await import('@pages/home/home.module')).HomeModule,
+  // },
   {
     path: ROUTER_UTILS.config.base.dashboard,
     loadChildren: async() =>
       (await import('@pages/dashboard/dashboard.module')).DashboardModule,
+    canLoad: [],
+  },
+  {
+    path: ROUTER_UTILS.config.base.home,
+    loadChildren: async() =>
+      (await import('@pages/market/market.module')).MarketModule,
     canLoad: [],
   },
   {

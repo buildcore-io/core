@@ -9,7 +9,7 @@ import { TokensPage } from './pages/tokens/tokens.page';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: ROUTER_UTILS.config.market.collections,
+    redirectTo: ROUTER_UTILS.config.market.tokens,
     pathMatch: 'full',
   },
   {

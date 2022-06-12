@@ -8,10 +8,9 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 import { FilterService } from '../../services/filter.service';
 
 export const marketSections = [
-  { route: `../${ROUTER_UTILS.config.market.collections}`, label: $localize`Collections` },
+  { route: `../${ROUTER_UTILS.config.market.tokens}`, label: $localize`Tokens` },
   { route: `../${ROUTER_UTILS.config.market.nfts}`, label: $localize`NFTs` },
-  { route: `../${ROUTER_UTILS.config.market.tokens}`, label: $localize`Tokens` }
-
+  { route: `../${ROUTER_UTILS.config.market.collections}`, label: $localize`Collections` },
 ];
 @UntilDestroy()
 @Component({

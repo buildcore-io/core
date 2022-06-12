@@ -119,6 +119,11 @@
               "src/assets",
               {
                 "glob":"**/*",
+                "input":"src/assets/static-home",
+                "output":"/home"
+              },
+              {
+                "glob":"**/*",
                 "input":"./node_modules/@ant-design/icons-angular/src/inline-svg/",
                 "output":"/assets/"
               }

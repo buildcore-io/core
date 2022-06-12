@@ -197,7 +197,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public get urlToDiscover(): string {
-    return '/' + ROUTER_UTILS.config.discover.root;
+    return '/' + ROUTER_UTILS.config.market.root;
   }
 
   public closeCheckout(): void {
