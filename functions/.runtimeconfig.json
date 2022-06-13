@@ -11,5 +11,8 @@
   },
   "environment": {
     "type": "emulator"
+  },
+  "ip_info": {
+    "token": ""
   }
 }
