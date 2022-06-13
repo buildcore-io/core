@@ -2659,7 +2659,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-card/proposal-card.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation"> More </target>
+        <target state="translated"> Autres fiches </target>
       </trans-unit>
       <trans-unit id="160701937417956396" datatype="html">
         <source>Commencing
@@ -2955,7 +2955,7 @@
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="needs-translation">See</target>
+        <target state="translated">Visualiser</target>
       </trans-unit>
       <trans-unit id="5674790342225467123" datatype="html">
         <source>Listed by space</source>
@@ -3143,7 +3143,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">13,15</context>
         </context-group>
-        <target state="needs-translation">Are you sure you want to cancel the sale?</target>
+        <target state="translated">Voulez-vous vraiment annuler la vente ?</target>
       </trans-unit>
       <trans-unit id="185671227521588375" datatype="html">
         <source> Once the sale is cancelled process will trigger automatically and all investors will be refunded immediately. </source>
@@ -3151,7 +3151,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="needs-translation"> Once the sale is cancelled process will trigger automatically and all investors will be refunded immediately. </target>
+        <target state="translated"> Un processus de demande automatique, permettant aux investisseurs d'être remboursés immédiatement, se déclenchera lorsque la vente sera annulée. </target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
@@ -3179,7 +3179,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation"> Cancel sale </target>
+        <target state="translated"> Annulation des achats </target>
       </trans-unit>
       <trans-unit id="7763424556364538672" datatype="html">
         <source>Canceled public sale.</source>
@@ -3187,7 +3187,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.ts</context>
           <context context-type="linenumber">47,46</context>
         </context-group>
-        <target state="needs-translation">Canceled public sale.</target>
+        <target state="translated">Les ventes publiques ont été annulées.</target>
       </trans-unit>
       <trans-unit id="7524111316829061741" datatype="html">
         <source>Ongoing sale</source>
@@ -3467,7 +3467,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">Enter how much you want to potentially earn. Amount of tokens will be calculated.</target>
+        <target state="translated">Entrez le montant potentiel que vous voulez capitaliser. Le volume de Tokens sera facturé.</target>
       </trans-unit>
       <trans-unit id="119493668999587082" datatype="html">
         <source>Enter amount of tokens you want to sell. Price will be calculated.</source>
@@ -3475,7 +3475,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="needs-translation">Enter amount of tokens you want to sell. Price will be calculated.</target>
+        <target state="translated">Entrez le nombre de Tokens que vous souhaitez vendre. Une cotation aura lieu.</target>
       </trans-unit>
       <trans-unit id="1417450416023766429" datatype="html">
         <source> Confirm and create an offer </source>
@@ -3559,7 +3559,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation"> Sale Setup </target>
+        <target state="translated"> Configurer la vente </target>
       </trans-unit>
       <trans-unit id="3083614823337592834" datatype="html">
         <source>Enable Cooldown period</source>
@@ -3567,7 +3567,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="needs-translation">Enable Cooldown period</target>
+        <target state="translated">Activer le cycle de refroidissement</target>
       </trans-unit>
       <trans-unit id="8275129112146674245" datatype="html">
         <source>Enable Cooldown with refund option.</source>
@@ -3583,7 +3583,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation">Cooldown period length is required.</target>
+        <target state="translated">La durée du cycle de refroidissement est exigée.</target>
       </trans-unit>
       <trans-unit id="3573267097114383856" datatype="html">
         <source>Select token cooldown length (Default 2 days)</source>
@@ -3591,7 +3591,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="needs-translation">Select token cooldown length (Default 2 days)</target>
+        <target state="translated">Sélectionnez la durée de refroidissement des Tokens (2 jours par défaut)</target>
       </trans-unit>
       <trans-unit id="3526969181819237951" datatype="html">
         <source>No Cooldown. Participants can’t refund.</source>
@@ -3599,7 +3599,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">134,135</context>
         </context-group>
-        <target state="needs-translation">No Cooldown. Participants can’t refund.</target>
+        <target state="translated">Pas de refroidissement. Les participants ne peuvent pas rembourser.</target>
       </trans-unit>
       <trans-unit id="3403382521233505883" datatype="html">
         <source>Enable Oversale</source>
