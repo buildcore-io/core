@@ -106,7 +106,7 @@ export class TokenOfferPreMintComponent implements OnInit {
       .subscribe((v) => {
         if (!this.offeredRateControl.value && v) {
           v = Math.floor(v * (1000 * 1000)) / 1000 / 1000;
-          this.offeredRateControl.setValue(v.toFixed(6));
+          this.offeredRateControl.setValue(v.toFixed(3));
         }
       });
   }
