@@ -14,31 +14,45 @@
         }
       ]
     },
-     {
-       "collectionGroup": "token_market",
-       "queryScope": "COLLECTION",
-       "fields": [
-         {
-           "fieldPath": "status",
-           "order": "ASCENDING"
-         },
-         {
-           "fieldPath": "token",
-           "order": "ASCENDING"
-         },
-         {
-           "fieldPath": "type",
-           "order": "ASCENDING"
-         },
-         {
-           "fieldPath": "price",
-           "order": "ASCENDING"
-         },
-         {
-           "fieldPath": "createdOn",
-           "order": "ASCENDING"
-         }
-       ]
-     }
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "token",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "price",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "token_market",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdOn",
+          "order": "ASCENDING"
+        }
+      ]
+    }
   ]
 }

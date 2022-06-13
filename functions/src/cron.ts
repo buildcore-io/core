@@ -7,6 +7,7 @@ import { Nft } from '../interfaces/models/nft';
 import admin from './admin.config';
 import { finalizeAllNftAuctions } from './cron/nft.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
+import { retryOpenBuySellOrders } from './cron/token.sale.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
 import { isEmulatorEnv } from './utils/config.utils';
@@ -157,6 +158,8 @@ const tokenCoolDownOverCron = functions.pubsub.schedule('every 1 minutes').onRun
 
 const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun(cancelExpiredSale)
 
+const tokenBuySellOrderRetryCron = functions.pubsub.schedule('every 1 hours').onRun(retryOpenBuySellOrders)
+
 export const cron = isEmulatorEnv
   ? {} : {
     reTryWallet,
@@ -167,5 +170,6 @@ export const cron = isEmulatorEnv
     hidePlaceholderAfterSoldOut,
     tokenCoolDownOverCron,
     cancelExpiredSaleCron,
+    tokenBuySellOrderRetryCron
   }
 

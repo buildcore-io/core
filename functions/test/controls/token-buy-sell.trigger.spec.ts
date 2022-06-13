@@ -7,6 +7,7 @@ import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderTyp
 import admin from '../../src/admin.config';
 import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
 import { cancelExpiredSale } from '../../src/cron/token.cron';
+import { retryOpenBuySellOrders } from '../../src/cron/token.sale.cron';
 import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.trigger";
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -552,6 +553,27 @@ describe('Buy sell trigger', () => {
 
     const purchase = <TokenPurchase>(await admin.firestore().collection(COL.TOKEN_PURCHASE).where('sell', '==', sell.uid).get()).docs[0].data()
     expect(purchase.price).toBe(MIN_IOTA_AMOUNT)
+  })
+
+  it('Should fulfill only on retry', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: 2 * MIN_IOTA_AMOUNT, count: tokenCount });
+    const sell: TokenBuySellOrder = await testEnv.wrap(sellToken)({});
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: tokenCount }
+    await buyTokenFunc(buyer, request)
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    expect(sell.fulfilled).toBe(0)
+
+    const sellDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`)
+    await sellDocRef.update({ price: MIN_IOTA_AMOUNT, createdOn: dateToTimestamp(dayjs().subtract(2, 'h')) })
+
+    await retryOpenBuySellOrders()
+
+    await wait(async () => {
+      return (await sellDocRef.get()).data()?.fulfilled === tokenCount
+    })
+
+    expect((await sellDocRef.get()).data()?.shouldRetry).toBe(false)
   })
 })
 
