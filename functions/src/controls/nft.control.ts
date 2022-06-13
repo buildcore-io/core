@@ -5,12 +5,13 @@ import { merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT, NftAvailableFromDateMin, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions/index';
-import { TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Network, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { COL, WenRequest } from '../../interfaces/models/base';
 import { Nft, NftAccess } from '../../interfaces/models/nft';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
+import { assertMemberHasValidAddress } from '../utils/address.utils';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp } from "../utils/dateTime.utils";
 import { throwInvalidArgument } from "../utils/error.utils";
@@ -206,9 +207,7 @@ export const setForSaleNft = functions.runWith({
     throw throwInvalidArgument(WenError.you_must_be_the_owner_of_nft);
   }
 
-  if (!docMember.data()?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address);
-  }
+  assertMemberHasValidAddress(docMember.data()?.validatedAddress, Network.IOTA)
 
   if (params.body.availableFrom) {
     params.body.availableFrom = dateToTimestamp(params.body.availableFrom, true);

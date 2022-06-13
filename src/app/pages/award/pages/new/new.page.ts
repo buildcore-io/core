@@ -99,11 +99,15 @@ export class NewPage implements OnInit, OnDestroy {
     return item.uid;
   }
 
+  public getTotalXp(): number {
+    return Number(this.badgeCountControl.value) * Number(this.badgeXpControl.value);
+  }
+
   private formatSubmitObj(obj: any): any {
     obj.badge = {
       description: obj.badgeDescription,
       name: obj.badgeName,
-      xp: obj.badgeXp,
+      xp: this.getTotalXp(),
       count: obj.badgeCount,
       image: obj.image
     };

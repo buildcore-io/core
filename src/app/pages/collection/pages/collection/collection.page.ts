@@ -13,12 +13,12 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
 import { GLOBAL_DEBOUNCE_TIME, WEN_NAME } from '@functions/interfaces/config';
 import { Award, Collection, CollectionType } from '@functions/interfaces/models';
-import { FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { FILE_SIZES } from '@functions/interfaces/models/base';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/collection/services/helper.service';
 import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
@@ -47,6 +47,7 @@ export class CollectionPage implements OnInit, OnDestroy {
     public filter: FilterService,
     public deviceService: DeviceService,
     public data: DataService,
+    public helper: HelperService,
     public previewImageService: PreviewImageService,
     public auth: AuthService,
     private notification: NotificationService,
@@ -196,14 +197,6 @@ export class CollectionPage implements OnInit, OnDestroy {
     );
   }
 
-  public formatBest(amount?: number|null): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
-  }
-
   public handleChange(tag: string): void {
     this.selectedTags$.next([tag]);
   }
@@ -228,14 +221,6 @@ export class CollectionPage implements OnInit, OnDestroy {
         // none.
       });
     });
-  }
-
-  public isDateInFuture(date?: Timestamp|null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs());
   }
 
   public async reject(): Promise<void> {
@@ -313,30 +298,6 @@ export class CollectionPage implements OnInit, OnDestroy {
     this.data.nft$.next(Array.prototype.concat.apply([], this.data.dataStore));
   }
 
-  public isAvailableForSale(col?: Collection|null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return ((col.total - col.sold) > 0) && this.isAvailable(col);
-  }
-
-  public isAvailable(col?: Collection|null): boolean {
-    if (!col) {
-      return false;
-    }
-
-    return col.approved === true && dayjs(col.availableFrom.toDate()).isBefore(dayjs());
-  }
-
-  public isLocked(col?: Collection|null): boolean {
-    if (!col) {
-      return true;
-    }
-
-    return ((col.approved == true && col.limitedEdition) || col.rejected == true);
-  }
-
   public isAvailableTab(): boolean {
     return this.selectedTags$.value.indexOf(HOT_TAGS.AVAILABLE) > -1;
   }
@@ -385,11 +346,6 @@ export class CollectionPage implements OnInit, OnDestroy {
 
       return total;
     }
-  }
-
-  public getDaysLeft(availableFrom?: Timestamp): number {
-    if (!availableFrom) return 0;
-    return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }
 
   public isLoading(arr: any): boolean {

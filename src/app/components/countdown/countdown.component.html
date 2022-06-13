@@ -10,9 +10,9 @@
                 'flex items-center': size === 'large',
                 'text-xs text-foregrounds-secondary dark:text-foregrounds-secondary-dark': size === 'small'
             }">
-            <div class="font-medium" [ngClass]="{ 'font-bold': size !== 'small' }">{{ title }}</div>
+            <div [ngClass]="size === 'small' ? 'font-medium' : 'font-bold'">{{ title }}</div>
             <div class="font-medium" *ngIf="showDate" [ngClass]="{
-                    'ml-auto': size === 'large'
+                    'ml-2 xs:ml-auto': size === 'large'
                 }">
                     {{ finalDate | date:'long' }}
             </div>

@@ -13,7 +13,9 @@ import { Space, Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from 
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Token, TokenDistribution } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/token/services/helper.service';
 import * as dayjs from 'dayjs';
+import bigDecimal from 'js-big-decimal';
 import { BehaviorSubject, filter, interval, skip, Subscription, take } from 'rxjs';
 
 export enum StepType {
@@ -71,6 +73,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
   constructor(
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
+    public helper: HelperService,
     private auth: AuthService,
     private notification: NotificationService,
     private tokenPurchaseApi: TokenPurchaseApi,
@@ -171,7 +174,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe((val: string) => {
-        this.iotaControl.setValue((Number(val) * Number(this.offeredRateControl?.value || 0)).toFixed(2));
+        this.iotaControl.setValue(Number(bigDecimal.multiply(Number(val), Number(this.offeredRateControl?.value || 0))).toFixed(6));
         this.cd.markForCheck();
       });
 
@@ -181,7 +184,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe((val: string) => {
-        this.amountControl.setValue((Number(val) / Number(this.offeredRateControl?.value || 0)).toFixed(2));
+        this.amountControl.setValue(Number(bigDecimal.divide(Number(val), Number(this.offeredRateControl?.value || 0), 6)).toFixed(6));
         this.cd.markForCheck();
       });
 
@@ -191,9 +194,9 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       )
       .subscribe((val: string) => {
         if (this.isAmountInput) {
-          this.iotaControl.setValue((Number(this.amountControl.value) * Number(val)).toFixed(2));
+          this.iotaControl.setValue(Number(bigDecimal.multiply(Number(this.amountControl.value), Number(val))).toFixed(6));
         } else {
-          this.amountControl.setValue((Number(this.iotaControl.value) / Number(val)).toFixed(2));
+          this.amountControl.setValue(Number(bigDecimal.divide(Number(this.iotaControl.value), Number(val), 6)).toFixed(6));
         }
         this.cd.markForCheck();
       });
@@ -209,15 +212,6 @@ export class TokenBidComponent implements OnInit, OnDestroy {
           this.offeredRateControl.setValue(v.toFixed(6));
         }
       });
-  }
-
-  public isExpired(val?: Transaction | null): boolean {
-    if (!val?.createdOn) {
-      return false;
-    }
-
-    const expiresOn: dayjs.Dayjs = dayjs(val.createdOn.toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms');
-    return expiresOn.isBefore(dayjs()) && val.type === TransactionType.ORDER;
   }
 
   public close(): void {
@@ -238,7 +232,7 @@ export class TokenBidComponent implements OnInit, OnDestroy {
       return '0';
     }
 
-    return (amount / 1000 / 1000).toFixed(2).toString();
+    return (amount / 1000 / 1000).toFixed(6).toString();
   }
 
   public getExplorerLink(link: string): string {
@@ -304,6 +298,14 @@ export class TokenBidComponent implements OnInit, OnDestroy {
         this.cd.markForCheck();
       }, 3000);
     }
+  }
+
+  public getTargetAmount(): string {
+    return bigDecimal.divide(bigDecimal.floor(bigDecimal.multiply(Number(this.amountControl.value * 1000 * 1000), Number(this.offeredRateControl.value))), 1000 * 1000, 6);
+  }
+
+  public getResultAmount(): string {
+    return this.isAmountInput ? this.extractAmount(this.formatBest(this.amountControl.value * 1000 * 1000 * (this.offeredRateControl?.value || 0))) : this.formatTokenBest(this.amountControl.value * 1000 * 1000);
   }
 
   public ngOnDestroy(): void {

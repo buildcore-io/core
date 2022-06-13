@@ -64,7 +64,7 @@
 
         <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
             <div class="mt-1">
-                {{ isAmountInput ? extractAmount(formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl?.value || 0))) : formatTokenBest(amountControl.value * 1000 * 1000)  }}
+                {{ getResultAmount() | number : '1.0-6'  }}
             </div>
             <div *ngIf="!isAmountInput" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your ballance</div>

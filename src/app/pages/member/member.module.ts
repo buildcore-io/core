@@ -10,7 +10,7 @@ import { MemberTileModule } from '@components/member/components/tile/member-tile
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
 import { NftCardModule } from '@components/nft/components/nft-card/nft-card.module';
 import { SelectSpaceModule } from '@components/space/components/select-space/select-space.module';
-import { TimelineBadgesModule } from '@components/timeline-badges/timeline-badges.module';
+import { TimelineModule } from '@components/timeline/timeline.module';
 import { TokenClaimModule } from '@components/token/components/token-claim/token-claim.module';
 import { TokenRefundModule } from '@components/token/components/token-refund/token-refund.module';
 import { TokenRowModule } from '@components/token/components/token-row/token-row.module';
@@ -86,7 +86,6 @@ import { DataService } from './services/data.service';
     MobileSearchModule,
     IpfsBadgeModule,
     SelectSpaceModule,
-    TimelineBadgesModule,
     NftCardModule,
     NzSkeletonModule,
     InfiniteScrollModule,
@@ -97,7 +96,8 @@ import { DataService } from './services/data.service';
     TokenClaimModule,
     TokenRefundModule,
     TransactionCardModule,
-    TokenRowModule
+    TokenRowModule,
+    TimelineModule
   ],
 })
 export class MemberModule {

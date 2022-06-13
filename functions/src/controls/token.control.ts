@@ -5,13 +5,14 @@ import { isEmpty, merge } from 'lodash';
 import { MAX_IOTA_AMOUNT, MAX_TOTAL_TOKEN_SUPPLY, MIN_IOTA_AMOUNT, MIN_TOKEN_START_DATE_DAY, MIN_TOTAL_TOKEN_SUPPLY, URL_PATHS } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
+import { Member, Network, Space, Transaction, TransactionCreditType, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS, TRANSACTION_MAX_EXPIRY_MS } from '../../interfaces/models';
 import { Access, COL, SUB_COL, Timestamp, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { assertHasAccess } from '../services/validators/access';
 import { MnemonicService } from '../services/wallet/mnemonic';
 import { WalletService } from '../services/wallet/wallet';
+import { assertMemberHasValidAddress, assertSpaceHasValidAddress, getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
@@ -111,9 +112,7 @@ export const createToken = functions.runWith({
   await assertIsGuardian(params.body.space, owner)
 
   const space = <Space | undefined>(await admin.firestore().doc(`${COL.SPACE}/${params.body.space}`).get()).data()
-  if (!space?.validatedAddress) {
-    throw throwInvalidArgument(WenError.space_must_have_validated_address)
-  }
+  assertSpaceHasValidAddress(space?.validatedAddress, Network.IOTA)
 
   const publicSaleTimeFrames = shouldSetPublicSaleTimeFrames(params.body, params.body.allocations) ?
     getPublicSaleTimeFrames(dateToTimestamp(params.body.saleStartDate, true), params.body.saleLength, params.body.coolDownLength) : {}
@@ -254,19 +253,19 @@ const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.s
   dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
   dayjs().isBefore(dayjs(token.coolDownEnd.toDate()))
 
+
+const orderTokenSchema = Joi.object({ token: Joi.string().required() });
+
 export const orderToken = functions.runWith({
   minInstances: scale(WEN_FUNC.orderToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
   appCheck(WEN_FUNC.orderToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
-  const schema = Joi.object({ token: Joi.string().required() });
-  assertValidation(schema.validate(params.body));
+  assertValidation(orderTokenSchema.validate(params.body));
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  if (!member?.validatedAddress) {
-    throw throwInvalidArgument(WenError.member_must_have_validated_address)
-  }
+  assertMemberHasValidAddress(member?.validatedAddress, Network.IOTA)
 
   const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()
   if (!tokenDoc.exists) {
@@ -306,7 +305,7 @@ export const orderToken = functions.runWith({
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: token.space,
-          beneficiaryAddress: space.validatedAddress,
+          beneficiaryAddress: getAddress(space.validatedAddress, Network.IOTA),
           expiresOn: dateToTimestamp(dayjs(token.saleStartDate?.toDate()).add(token.saleLength || 0, 'ms')),
           validationType: TransactionValidationType.ADDRESS,
           reconciled: false,
@@ -352,7 +351,7 @@ export const creditToken = functions.runWith({
       throw throwInvalidArgument(WenError.token_not_in_cool_down_period)
     }
     const member = <Member>(await memberDocRef(owner).get()).data()
-    const order = await transaction.get(orderDocRef(owner, token))
+    const order = <Transaction>(await transaction.get(orderDocRef(owner, token))).data()
     const payments = (await transaction.get(allPaymentsQuery(owner, token.uid))).docs.map(d => <Transaction>d.data())
 
     const totalDepositLeft = (distribution.totalDeposit || 0) - params.body.amount
@@ -374,8 +373,8 @@ export const creditToken = functions.runWith({
       payload: {
         type: TransactionCreditType.TOKEN_PURCHASE,
         amount: refundAmount,
-        sourceAddress: order.data()?.payload.targetAddress,
-        targetAddress: member.validatedAddress,
+        sourceAddress: order.payload.targetAddress,
+        targetAddress: getAddress(member.validatedAddress, Network.IOTA),
         sourceTransaction: payments.map(d => d.uid),
         token: token.uid,
         reconciled: true,
@@ -394,7 +393,7 @@ const airdropTokenSchema = ({
     vestingAt: Joi.date().required(),
     count: Joi.number().min(1).max(MAX_TOTAL_TOKEN_SUPPLY).integer().required(),
     recipient: Joi.string().required()
-  })).min(1)
+  })).min(1).max(499)
 })
 
 const hasAvailableTokenToAirdrop = (token: Token, count: number) => {
@@ -417,11 +416,6 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       );
 
     await admin.firestore().runTransaction(async (transaction) => {
-      const distributionDocs = []
-      for (const docRef of distributionDocRefs) {
-        distributionDocs.push(await transaction.get(docRef))
-      }
-
       const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`);
       const token = <Token | undefined>(await transaction.get(tokenDocRef)).data();
 
@@ -466,8 +460,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     appCheck(WEN_FUNC.claimAirdroppedToken, context);
     const params = await decodeAuth(req);
     const owner = params.address.toLowerCase();
-    const schema = Joi.object({ token: Joi.string().required() });
-    assertValidation(schema.validate(params.body));
+    assertValidation(orderTokenSchema.validate(params.body));
 
     const tokenDoc = await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get();
     if (!tokenDoc.exists) {
@@ -510,7 +503,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
           targetAddress: targetAddress.bech32,
           beneficiary: 'space',
           beneficiaryUid: tokenDoc.data()?.space,
-          beneficiaryAddress: spaceDoc.data()?.validatedAddress,
+          beneficiaryAddress: getAddress(spaceDoc.data()?.validatedAddress, Network.IOTA),
           expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
           validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
           reconciled: false,

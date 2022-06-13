@@ -1,6 +1,6 @@
 <div class="space-y-4 lg:space-y-6">
-    <nz-card i18n-nzTitle nzTitle="Schedule" *ngIf="data.isScheduledForSale((data.token$ | async) || undefined)">
-        <wen-description type="card" i18n-title title="Schedule" [items]="[
+    <nz-card i18n-nzTitle nzTitle="Schedule" *ngIf="helper.isScheduledForSale((data.token$ | async) || undefined)">
+        <wen-description type="card" i18n-title title="Sale schedule" [items]="[
             { title: tokenScheduleLabels[0], value: (data.token$ | async)?.saleStartDate?.toDate() | date: 'medium' },
             { title: tokenScheduleLabels[1], value: data.saleEndDate((data.token$ | async) || undefined).toDate() | date: 'medium' },
             { title: tokenScheduleLabels[3], value: (data.token$ | async)?.coolDownEnd?.toDate() | date: 'medium' }

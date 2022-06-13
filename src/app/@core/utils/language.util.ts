@@ -17,10 +17,16 @@ export const Languages: LanguagesType = {
     title: 'EN',
     firebase: 'en'
   },
-  ar: {
+  ar_eg: {
     ngZorro: ar_EG,
-    title: 'AR',
-    firebase: 'ar'
+    title: 'AR-EG',
+    firebase: 'eg'
+  },
+  ar_sa: {
+    // There is no ar_SA in ng-zorro-antd
+    ngZorro: ar_EG,
+    title: 'AR-SA',
+    firebase: 'sa'
   },
   cs: {
     ngZorro: cs_CZ,
@@ -75,13 +81,11 @@ export const Languages: LanguagesType = {
   pt_br: {
     ngZorro: pt_BR,
     title: 'PT-BR',
-    // TODO we need to select right country
     firebase: 'br'
   },
   pt_pt: {
     ngZorro: pt_PT,
     title: 'PT-PT',
-    // TODO we need to select right country
     firebase: 'pt'
   },
   ru: {
@@ -101,14 +105,12 @@ export const Languages: LanguagesType = {
   },
   zh_cn: {
     ngZorro: zh_CN,
-    title: 'ZH-CN',
-    // TODO we need to select right country
+    title: '简中',
     firebase: 'cn'
   },
   zh_tw: {
     ngZorro: zh_TW,
-    title: 'ZH_TW',
-    // TODO we need to select right country
+    title: '繁中',
     firebase: 'tw'
   },
 };

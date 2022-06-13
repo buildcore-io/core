@@ -9,7 +9,7 @@
                 'calc(100% - 150px)' : '100%'
             }"
             formControlName="space"
-            [spaces]="getSpaceListOptions(cache.allSpaces$ | async)"
+            [spaces]="helper.getSpaceListOptions(cache.allSpaces$ | async)"
             size="large">
           </wen-select-space>
 
@@ -77,7 +77,7 @@
                     [type]="lineChartType"></canvas>
       </div>
     </nz-card>
-
-    <wen-timeline-badges class="block" [badges]="data.badges$ | async"></wen-timeline-badges>
+    
+    <wen-timeline [items]="getTimelineItems(data.badges$ | async)" [isCollapsable]="false"></wen-timeline>
   </div>
 </div>

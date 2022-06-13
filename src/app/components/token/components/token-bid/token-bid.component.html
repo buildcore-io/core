@@ -73,7 +73,7 @@
 
         <div class="relative flex items-center justify-between flex-1 w-full px-6 py-2 mt-2 rounded-3xl bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark min-h-14">
             <div class="mt-1">
-                {{ isAmountInput ? extractAmount(formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl?.value || 0))) : formatTokenBest(amountControl.value * 1000 * 1000)  }}
+                {{ getResultAmount() | number : '1.0-6'  }}
             </div>
             <div *ngIf="!isAmountInput" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your ballance</div>
@@ -128,13 +128,13 @@
         <div class="px-4 py-2.5 rounded-2xl border border-alerts-error flex items-center w-max mx-auto mt-6">
             <wen-icon-stopwatch class="mr-2 lg:mr-3 text-alerts-error"></wen-icon-stopwatch>
             <div class="text-base font-medium">
-                <span *ngIf="!isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
-                <span class="text-alerts-error" *ngIf="!isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
-                <span class="text-alerts-error" *ngIf="isExpired((transaction$ | async))" i18n>Expired</span>
+                <span *ngIf="!helper.isExpired((transaction$ | async))">{{(expiryTicker$ | async) | countdownTime}}</span>
+                <span class="text-alerts-error" *ngIf="!helper.isExpired((transaction$ | async))" i18n> remaining to make the transfer.</span>
+                <span class="text-alerts-error" *ngIf="helper.isExpired((transaction$ | async))" i18n>Expired</span>
             </div>
         </div>
 
-      <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
+      <nz-alert class="mt-2" nzType="warning" nzShowIcon *ngIf="!helper.isExpired((transaction$ | async)) && invalidPayment" nzMessage="We received invalid amount. Try again."></nz-alert>
     </div>
 
     <div class="w-full px-4 py-3 mt-10 bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-2xl">
@@ -162,7 +162,7 @@
         *ngIf="true"
         class="mt-6"
         [targetAddress]="targetAddress"
-        [targetAmount]="(amountControl.value * offeredRateControl.value)?.toString()">
+        [targetAmount]="getTargetAmount()">
     </wen-wallet-deeplink>
 
     <div class="w-full my-8 mt-12 border border-inputs-border dark:border-inputs-border-dark rounded-2xl">
@@ -174,7 +174,7 @@
             <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="helper.getExplorerLink(t.link)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
             </div>
@@ -207,7 +207,7 @@
             <div *ngFor="let t of history; let first=first"
                 class="relative flex items-center my-1">
                     <div class="mr-2 text-sm font-medium text-foregrounds-secondary">{{t.date | Time}}</div>
-                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="getExplorerLink(t.link)"
+                    <a class="absolute text-sm font-medium underline left-16 text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank" *ngIf="t.link" [href]="helper.getExplorerLink(t.link)"
                     >{{ t.label }}</a>
                     <div class="absolute text-sm font-medium left-16" *ngIf="!t.link">{{ t.label }}</div>
             </div>

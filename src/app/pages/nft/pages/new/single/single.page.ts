@@ -20,7 +20,7 @@ import * as dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
-import { merge, Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -32,8 +32,7 @@ import { merge, Observable, of, Subscription } from 'rxjs';
 export class SinglePage implements OnInit {
   public nameControl: FormControl = new FormControl('', Validators.required);
   public descriptionControl: FormControl = new FormControl('', Validators.required);
-  public priceControl: FormControl = new FormControl('', [Validators.required, Validators.min(0), Validators.max(1000)]);
-  public unitControl: FormControl = new FormControl(PRICE_UNITS[0], Validators.required);
+  public priceControl: FormControl = new FormControl(null, Validators.required);
   public availableFromControl: FormControl = new FormControl('', Validators.required);
   public mediaControl: FormControl = new FormControl('', Validators.required);
   public collectionControl: FormControl = new FormControl('');
@@ -68,7 +67,6 @@ export class SinglePage implements OnInit {
       name: this.nameControl,
       description: this.descriptionControl,
       price: this.priceControl,
-      unit: this.unitControl,
       availableFrom: this.availableFromControl,
       media: this.mediaControl,
       collection: this.collectionControl,
@@ -96,17 +94,15 @@ export class SinglePage implements OnInit {
       });
 
       if (finObj) {
-        this.priceControl.setValue((finObj.price || 0) / 1000 / 1000);
+        this.priceControl.setValue((finObj.price || 0));
         this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
       }
 
       if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
         this.priceControl.disable();
-        this.unitControl.disable();
         this.availableFromControl.disable();
       } else {
         this.priceControl.enable();
-        this.unitControl.enable();
         this.availableFromControl.enable();
       }
     });
@@ -120,14 +116,6 @@ export class SinglePage implements OnInit {
     this.auth.member$?.pipe(untilDestroyed(this)).subscribe(() => {
       this.cd.markForCheck();
     });
-
-    merge(this.unitControl.valueChanges, this.priceControl.valueChanges)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        const value = Number(this.priceControl.value) * (<Units> this.unitControl.value === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
-        const errors = value >= MIN_IOTA_AMOUNT && value <= MAX_IOTA_AMOUNT ? null : { price: { valid: false } };
-        this.priceControl.setErrors(errors);
-      });
 
     this.uploadFilter = [
       {
@@ -261,12 +249,6 @@ export class SinglePage implements OnInit {
   }
 
   public formatSubmitData(data: any): any {
-    if (<Units>data.unit === 'Gi') {
-      data.price = this.priceControl.value * 1000 * 1000 * 1000;
-    } else {
-      data.price = this.priceControl.value * 1000 * 1000;
-    }
-
     const stats: any = {};
     data.stats.forEach((v: any) => {
       if (v.name) {

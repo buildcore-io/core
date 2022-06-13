@@ -27,8 +27,18 @@ export enum TransactionCreditType {
 }
 
 export enum TransactionValidationType {
-  ADDRESS_AND_AMOUNT,
-  ADDRESS
+  ADDRESS_AND_AMOUNT = 0,
+  ADDRESS = 1
+}
+
+export enum Entity {
+  SPACE = 'space',
+  MEMBER = 'member'
+}
+
+export enum Network {
+  IOTA = 'iota',
+  SHIMMER = 'smr'
 }
 
 export interface VoteTransaction {
@@ -49,7 +59,7 @@ export interface WalletResult {
 export interface BadgeTransaction {
   award: string;
   name: string;
-  image: FileMetedata,
+  image: FileMetedata;
   description: string;
   xp: number;
 }
@@ -61,9 +71,9 @@ export interface OrderTransaction {
   reconciled: boolean;
   void: boolean;
   nft?: EthAddress;
-  beneficiary?: 'space' | 'member',
-  beneficiaryUid?: EthAddress,
-  beneficiaryAddress?: IotaAddress,
+  beneficiary?: Entity;
+  beneficiaryUid?: EthAddress;
+  beneficiaryAddress?: IotaAddress;
   royaltiesFee?: number;
   royaltiesSpace?: EthAddress;
   royaltiesSpaceAddress?: IotaAddress;
@@ -94,15 +104,15 @@ export interface BillPaymentTransaction {
   targetAddress: IotaAddress;
   reconciled: boolean;
   void: boolean;
-  previousOwnerEntity?: 'space' | 'member',
-  previousOwner?: EthAddress,
-  ownerEntity?: 'space' | 'member',
-  owner?: EthAddress,
+  previousOwnerEntity?: Entity;
+  previousOwner?: EthAddress;
+  ownerEntity?: Entity;
+  owner?: EthAddress;
   chainReference: string;
   walletReference: WalletResult;
   sourceTransaction: string[];
   nft?: EthAddress;
-  royalty: boolean,
+  royalty: boolean;
   collection?: EthAddress;
   delay: number;
 }
@@ -130,9 +140,9 @@ export interface IOTATangleTransaction {
   refund: boolean;
   member?: EthAddress;
   space?: EthAddress;
-  previousOwnerEntity?: 'space' | 'member';
+  previousOwnerEntity?: Entity;
   previousOwner?: EthAddress;
-  ownerEntity?: 'space' | 'member';
+  ownerEntity?: Entity;
   owner?: EthAddress;
   nft?: EthAddress;
   token?: EthAddress;
@@ -144,6 +154,8 @@ export interface IOTATangleTransaction {
 export type TransactionPayload = VoteTransaction | BadgeTransaction | OrderTransaction | PaymentTransaction | BillPaymentTransaction | CreditPaymentTransaction | IOTATangleTransaction;
 
 export interface Transaction extends BaseRecord {
+  sourceNetwork?: Network;
+  targetNetwork?: Network;
   type: TransactionType;
   member?: EthAddress;
   space?: EthAddress;

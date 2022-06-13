@@ -10,10 +10,7 @@ import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, orde
 import { dateToTimestamp, serverTime } from "../../src/utils/dateTime.utils";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from "../set-up";
-import { createMember, createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed, wait } from "./common";
-
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
-const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
+import { createMember, createSpace, expectThrow, getRandomSymbol, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, tokenProcessed, wait } from "./common";
 
 let walletSpy: any;
 

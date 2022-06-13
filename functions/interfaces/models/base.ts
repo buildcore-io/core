@@ -1,3 +1,4 @@
+import { Network } from "./transaction";
 
 export interface Timestamp {
   now(): Timestamp;
@@ -98,4 +99,9 @@ export enum Access {
   GUARDIANS_ONLY = 2,
   MEMBERS_WITH_BADGE = 3,
   MEMBERS_WITH_NFT_FROM_COLLECTION = 4
+}
+
+export interface ValidatedAddress {
+  [Network.IOTA]: string;
+  [Network.SHIMMER]: string;
 }

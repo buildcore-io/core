@@ -56,44 +56,7 @@
           >
           </nz-card-meta>
           <div class="mt-4 space-y-4">
-            <nz-form-item>
-              <nz-form-control>
-                <nz-input-group nzSize="large" class="relative">
-                  <nz-input-number
-                    i18n-nzPlaceHolder
-                    nzPlaceHolder="Price"
-                    nzSize="large"
-                    class="w-full"
-                    [nzMin]="0"
-                    [formControl]="priceControl"
-                  ></nz-input-number>
-                  <i
-                    nz-icon
-                    nzType="info-circle"
-                    class="absolute -translate-y-1/2 cursor-pointer right-6 top-1/2 text-foregrounds-secondary dark:text-foregrounds-secondary-dark"
-                    nz-tooltip
-                    i18n-nzTooltipTitle
-                    [nzTooltipTitle]="'Minimum price is ' + (minimumPrice / 1000 / 1000) + ' Mi and Maximum price is ' + (maximumPrice / 1000 / 1000 / 1000) + ' Gi'"
-                  ></i>
-                  <div
-                    class="absolute -translate-y-1/2 right-10 top-1/2"
-                  >
-                    <button
-                      *ngFor="let unit of priceUnits"
-                      nz-button
-                      nzShape="circle"
-                      nzSize="small"
-                      class="mr-1 wen-secondary"
-                      [ngClass]="{ 'selected': unit === unitControl.value }"
-                      [disabled]="unitControl.disabled"
-                      (click)="unitControl.setValue(unit)"
-                    >
-                      {{ unit }}
-                    </button>
-                  </div>
-                </nz-input-group>
-              </nz-form-control>
-            </nz-form-item>
+            <wen-iota-input class="pb-2" [formControl]="priceControl"></wen-iota-input>
 
             <nz-form-item>
               <nz-form-control

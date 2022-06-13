@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { DEFAULT_SPACE, SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
+import { DEFAULT_SPACE } from '@components/space/components/select-space/select-space.component';
+import { TimelineItem, TimelineItemType } from '@components/timeline/timeline.component';
 import { DeviceService } from '@core/services/device';
 import { StorageService } from '@core/services/storage';
 import { ThemeList, ThemeService } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/member/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
@@ -33,6 +35,7 @@ export class ActivityPage implements OnInit {
     private storageService: StorageService,
     private themeService: ThemeService,
     public data: DataService,
+    public helper: HelperService,
     public cache: CacheService,
     public deviceService: DeviceService
   ) {
@@ -216,15 +219,15 @@ export class ActivityPage implements OnInit {
       const sortedData = data.sort((a, b) => a[0] - b[0]);
       const dataMap = data.reduce((acc, cur) => {
         const key = dayjs(cur[0]).format('DD_MM_YYYY');
-        return { ...acc, [key]: cur };
+        return { ...acc, [key]: [...(acc[key] || []), cur] };
       }, {} as any)
-      const dataSize = Math.ceil(dayjs(sortedData[sortedData.length - 1][0]).diff(dayjs(sortedData[0][0]), 'day', true));
+      const dataSize = Math.floor(dayjs(sortedData[sortedData.length - 1][0]).diff(dayjs(sortedData[0][0]), 'day', true)) + 1;
       let sumValue = 0;
       for (let i=0; i<dataSize; i++) {
         const date = dayjs(sortedData[0][0]).add(i, 'day').toDate();
         const key = dayjs(date).format('DD_MM_YYYY');
         if (dataMap[key]) {
-          sumValue += dataMap[key][1];
+          sumValue += dataMap[key].reduce((acc: number, cur: any[]) => acc + (cur[1] as number), 0);
         }
         dataToShow.data.push(sumValue);
         dataToShow.labels.push(dayjs(date).format('MMM D'));
@@ -244,15 +247,18 @@ export class ActivityPage implements OnInit {
     this.cd.markForCheck();
   }
 
-  public getSpaceListOptions(list?: Space[] | null): SelectSpaceOption[] {
-    return (list || []).map((o) => ({
-      label: o.name || o.uid,
-      value: o.uid,
-      img: o.avatarUrl
-    }));
-  }
-
   public trackByUid(index: number, item: any): number {
     return item.uid;
+  }
+
+  public getTimelineItems(badges?: Transaction[] | null): TimelineItem[] {
+    return badges?.map(b => ({
+      type: TimelineItemType.BADGE,
+      payload: {
+        image: b.payload.image,
+        date: b.createdOn?.toDate(),
+        name: b.payload.name
+      }
+    })) || [];
   }
 }

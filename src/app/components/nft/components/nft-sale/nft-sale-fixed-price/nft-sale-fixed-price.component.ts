@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MemberApi } from '@api/member.api';
-import { Units, UnitsHelper } from '@core/utils/units-helper';
+import { Units } from '@core/utils/units-helper';
 import { MAX_IOTA_AMOUNT, MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { Member } from '@functions/interfaces/models';
 import { Nft, NftAccess, PRICE_UNITS } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HelperService } from '@pages/nft/services/helper.service';
 import dayjs from 'dayjs';
 import { NzSelectOptionInterface } from 'ng-zorro-antd/select';
 import { BehaviorSubject, map, merge, Subscription } from 'rxjs';
@@ -54,6 +55,7 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
   private memberSubscription?: Subscription;
 
   constructor(
+    public helper: HelperService,
     private memberApi: MemberApi
   ) {
     this.form = new FormGroup({
@@ -105,14 +107,6 @@ export class NftSaleFixedPriceComponent implements OnInit, OnDestroy {
 
   private getRawPrice(price: number, unit: Units): number {
     return price * (unit === 'Gi' ? 1000 * 1000 * 1000 : 1000 * 1000);
-  }
-
-  public formatBest(amount: number|undefined): string {
-    if (!amount) {
-      return '';
-    }
-
-    return UnitsHelper.formatBest(Number(amount), 2);
   }
 
   public get priceUnits(): Units[] {

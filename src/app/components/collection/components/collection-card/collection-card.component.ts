@@ -5,9 +5,9 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
 import { Space } from '@functions/interfaces/models';
-import { Access, FILE_SIZES, Timestamp } from '@functions/interfaces/models/base';
+import { Access, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Collection } from '@functions/interfaces/models/collection';
-import dayjs from 'dayjs';
+import { HelperService } from '@pages/collection/services/helper.service';
 
 @Component({
   selector: 'wen-collection-card',
@@ -23,7 +23,8 @@ export class CollectionCardComponent {
   constructor(
     private cache: CacheService,
     public deviceService: DeviceService,
-    public previewImageService: PreviewImageService
+    public previewImageService: PreviewImageService,
+    public helper: HelperService
   ) {
     // none.
   }
@@ -68,18 +69,5 @@ export class CollectionCardComponent {
         className: 'bg-tags-closed dark:bg-tags-closed-dark'
       };
     }
-  }
-
-  public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
-      return false;
-    }
-
-    return dayjs(date.toDate()).isAfter(dayjs());
-  }
-
-  public getDaysLeft(availableFrom?: Timestamp): number {
-    if (!availableFrom) return 0;
-    return dayjs(availableFrom.toDate()).diff(dayjs(new Date()), 'day');
   }
 }

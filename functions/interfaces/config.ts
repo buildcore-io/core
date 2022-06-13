@@ -1,3 +1,5 @@
+import { Network } from "./models";
+
 export class RelatedRecordsResponse {
   public static status = false;
 }
@@ -123,3 +125,4 @@ export const RPC_CHAIN = {
 export const MIN_TOTAL_TOKEN_SUPPLY = 100;
 export const MAX_TOTAL_TOKEN_SUPPLY = 100000000000000000;
 export const MIN_TOKEN_START_DATE_DAY = 7
+export const DEFAULT_NETWORK = Network.IOTA
