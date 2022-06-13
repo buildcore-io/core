@@ -68,7 +68,7 @@ export const sellToken = functions.runWith({
     }
     const distribution = <TokenDistribution>distributionDoc.data();
     const tokensLeftForSale = (distribution.tokenOwned || 0) - (distribution.lockedForSale || 0);
-    if (params.body.count > tokensLeftForSale) {
+    if (Number(params.body.count) > tokensLeftForSale) {
       throw throwInvalidArgument(WenError.no_available_tokens_for_sale)
     }
     const data = cOn(<TokenBuySellOrder>{
