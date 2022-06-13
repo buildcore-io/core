@@ -12,6 +12,9 @@ import { DataService } from '../../../services/data.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionAboutComponent {
+
+  public isMintOnNetorkVisible = false;
+
   constructor(
     public data: DataService,
     public helper: HelperService,

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BadgeModule } from '@components/badge/badge.module';
+import { CollectionMintNetworkModule } from '@components/collection/components/collection-mint-network/collection-mint-network.module';
 import { CollectionStatusModule } from '@components/collection/components/collection-status/collection-status.module';
 import { DrawerToggleModule } from '@components/drawer-toggle/drawer-toggle.module';
 import { IconModule } from '@components/icon/icon.module';
@@ -82,7 +83,8 @@ import { DataService } from './services/data.service';
     NzToolTipModule,
     NzCheckboxModule,
     IpfsBadgeModule,
-    IotaInputModule
+    IotaInputModule,
+    CollectionMintNetworkModule
   ],
   providers: [
     DataService,
