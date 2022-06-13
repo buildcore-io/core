@@ -70,61 +70,43 @@ export const TOKEN_SALE = {
   "spaceone": "0x8689034481721d519b1d6924a19d271164678584",
   "spacetwo": "0xdbdaf4078dd9db71f6bba3ba0ea812ce9d78e8ce"
 };
+// https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information
+export const DEFAULT_US_BLOCKED_COUNTRIES = [
+  "AF",
+  "BY",
+  "MM",
+  "CF",
+  "CU",
+  "CD",
+  "ET",
+  "HK",
+  "ET",
+  "IR",
+  "IQ",
+  "LB",
+  "LY",
+  "KP",
+  "RU",
+  "SO",
+  "SD",
+  "SS",
+  "SY",
+  "VE",
+  "ZW",
+  "YE"
+];
 export const BLOCKED_COUNTRIES = {
-  "common": [
-    "AF",
-    "BY",
-    "MM",
-    "CF",
-    "CU",
-    "CD",
-    "ET",
-    "HK",
-    "ET",
-    "IR",
-    "IQ",
-    "LB",
-    "LY",
-    "KP",
-    "RU",
-    "SO",
-    "SD",
-    "SS",
-    "SY",
-    "VE",
-    "ZW",
-    "YE"
-  ],
+  "common": DEFAULT_US_BLOCKED_COUNTRIES,
   // All tokens are blocked in US/CA
   "token": [
     "US",
     "CA"
   ],
-  // SOON Token has special rules.
-  "0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e": [
-    "AF",
-    "BY",
-    "MM",
-    "CF",
-    "CU",
-    "CD",
-    "ET",
-    "HK",
-    "ET",
-    "IR",
-    "IQ",
-    "LB",
-    "LY",
-    "KP",
-    "RU",
-    "SO",
-    "SD",
-    "SS",
-    "SY",
-    "VE",
-    "ZW",
-    "YE"
-  ]
+  // Exceptions.
+  // SOON Token has legal advice.
+  "0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e": DEFAULT_US_BLOCKED_COUNTRIES,
+  // FEE token has no utility.
+  "0x55cbe228505461bf3307a4f1ed951d0a059dd6d0": DEFAULT_US_BLOCKED_COUNTRIES
 };
 export const RPC_CHAIN = {
   chainId: METAMASK_CHAIN_ID,
