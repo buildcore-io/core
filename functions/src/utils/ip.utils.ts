@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import IPinfoWrapper from "node-ipinfo";
+import { BLOCKED_COUNTRIES } from '../../interfaces/config';
 import { WenError } from "../../interfaces/errors";
 import { throwInvalidArgument } from "./error.utils";
 
@@ -8,7 +9,7 @@ import { throwInvalidArgument } from "./error.utils";
  * key - any entity id (nft id, token id, etc). Default key is 'default'.
  * value - country codes
  */
-export const getBlockedCountries = () => (functions.config()?.blocked_countries || {}) as { [key: string]: string[] }
+export const getBlockedCountries = () => (BLOCKED_COUNTRIES || {}) as { [key: string]: string[] }
 
 export const getIpInfoToken = () => functions.config()?.ip_info?.token || ''
 

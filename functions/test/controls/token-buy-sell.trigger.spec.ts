@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
-import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
-import { MIN_IOTA_AMOUNT, URL_PATHS } from '../../interfaces/config';
+import { MIN_IOTA_AMOUNT, TOKEN_SALE, URL_PATHS } from '../../interfaces/config';
 import { Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenPurchase, TokenStatus } from "../../interfaces/models/token";
@@ -30,8 +29,8 @@ const assertVolumeTotal = async (tokenId: string, volumeTotal: number) => {
 }
 
 const createRoyaltySpaces = async () => {
-  const spaceOneId = functions.config().tokensale.spaceone
-  const spaceTwoId = functions.config().tokensale.spacetwo
+  const spaceOneId = TOKEN_SALE.spaceone
+  const spaceTwoId = TOKEN_SALE.spacetwo
   const guardian = await createMember(walletSpy, true);
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
 
@@ -55,7 +54,7 @@ const getBillPayments = (seller: string) => admin.firestore().collection(COL.TRA
   .where('member', '==', seller)
   .get()
 
-const { percentage, spaceonepercentage } = functions.config().tokensale
+const { percentage, spaceonepercentage } = TOKEN_SALE
 
 const getRoyaltyDistribution = (amount: number) => {
   const spaceOne = amount * (percentage / 100) * (spaceonepercentage / 100)

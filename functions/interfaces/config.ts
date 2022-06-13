@@ -58,6 +58,74 @@ export const BADGE_TO_CREATE_COLLECTION: string[] = [
   '0x4d90ade7678da9b1f1496668a05bb736022e2f98',
   '0x78e16b91cff436982d01a2adc36609a255befb01'
 ];
+// FEES.
+export const SOONAVERSE_FEE = 10;
+
+// Service modules
+export const SERVICE_MODULE_FEE_TOKEN_EXCHANGE = 2.5;
+
+export const TOKEN_SALE = {
+  "percentage": SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
+  "spaceonepercentage": SOONAVERSE_FEE,
+  "spaceone": "0x8689034481721d519b1d6924a19d271164678584",
+  "spacetwo": "0xdbdaf4078dd9db71f6bba3ba0ea812ce9d78e8ce"
+};
+export const BLOCKED_COUNTRIES = {
+  "common": [
+    "AF",
+    "BY",
+    "MM",
+    "CF",
+    "CU",
+    "CD",
+    "ET",
+    "HK",
+    "ET",
+    "IR",
+    "IQ",
+    "LB",
+    "LY",
+    "KP",
+    "RU",
+    "SO",
+    "SD",
+    "SS",
+    "SY",
+    "VE",
+    "ZW",
+    "YE"
+  ],
+  // All tokens are blocked in US/CA
+  "token": [
+    "US",
+    "CA"
+  ],
+  // SOON Token has special rules.
+  "0x9600b5afbb84f15e0d4c0f90ea60b2b8d7bd0f1e": [
+    "AF",
+    "BY",
+    "MM",
+    "CF",
+    "CU",
+    "CD",
+    "ET",
+    "HK",
+    "ET",
+    "IR",
+    "IQ",
+    "LB",
+    "LY",
+    "KP",
+    "RU",
+    "SO",
+    "SD",
+    "SS",
+    "SY",
+    "VE",
+    "ZW",
+    "YE"
+  ]
+};
 export const RPC_CHAIN = {
   chainId: METAMASK_CHAIN_ID,
   chainName: 'IOTA EVM',
