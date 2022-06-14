@@ -115,6 +115,7 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly paymentTransactionId?: string;
   readonly creditTransactionId?: string;
   readonly expiresAt: Timestamp;
+  readonly shouldRetry?: boolean;
 }
 
 export interface TokenStats extends BaseSubCollection {

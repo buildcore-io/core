@@ -67,6 +67,47 @@ describe('Buy sell controller, sell token', () => {
     await expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
   })
 
+  it('Should throw, not enough tokens even after cancels', async () => {
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 });
+    const sell = await testEnv.wrap(sellToken)({});
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT as any, count: 5 });
+    await testEnv.wrap(sellToken)({})
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
+    await expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
+
+    const cancelRequest = { uid: sell.uid }
+    mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
+    await testEnv.wrap(cancelBuyOrSell)({});
+    const distribution = await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).get()
+    expect(distribution.data()?.lockedForSale).toBe(5)
+
+    mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
+    await expectThrow(testEnv.wrap(sellToken)({}), WenError.no_available_tokens_for_sale.key);
+  })
+
+  it('Should update sale lock properly', async () => {
+    const distDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${memberAddress}`)
+    const count = 3
+    const sells = [] as any[]
+    for (let i = 0; i < count; ++i) {
+      mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 1 });
+      sells.push(await testEnv.wrap(sellToken)({}))
+    }
+    await wait(async () => {
+      const distribution = await distDocRef.get()
+      return distribution.data()?.lockedForSale === count
+    })
+
+    for (let i = 0; i < count; ++i) {
+      const cancelRequest = { uid: sells[i].uid }
+      mockWalletReturnValue(walletSpy, memberAddress, cancelRequest);
+      await testEnv.wrap(cancelBuyOrSell)({});
+      const distribution = await distDocRef.get()
+      expect(distribution.data()?.lockedForSale).toBe(count - i - 1)
+    }
+  })
+
   it('Should throw, token not approved', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: false });
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid, price: MIN_IOTA_AMOUNT, count: 8 });
