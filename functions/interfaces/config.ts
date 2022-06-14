@@ -67,9 +67,17 @@ export const SERVICE_MODULE_FEE_TOKEN_EXCHANGE = 2.5;
 export const TOKEN_SALE = {
   "percentage": SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
   "spaceonepercentage": SOONAVERSE_FEE,
+  "spaceone": "0xeeb14e6bc79c33f5077fe5c8ba4db60d1da91af6",
+  "spacetwo": "0x5051c939c5ef8a4f4e4cd3caf73f6c34579e125c"
+};
+
+export const TOKEN_SALE_TEST = {
+  "percentage": SERVICE_MODULE_FEE_TOKEN_EXCHANGE,
+  "spaceonepercentage": SOONAVERSE_FEE,
   "spaceone": "0x8689034481721d519b1d6924a19d271164678584",
   "spacetwo": "0xdbdaf4078dd9db71f6bba3ba0ea812ce9d78e8ce"
 };
+
 // https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information
 export const DEFAULT_US_BLOCKED_COUNTRIES = [
   "AF",
