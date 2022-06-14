@@ -52,7 +52,8 @@ export const cancelSale = async (transaction: admin.firestore.Transaction, sale:
 
   if (sale.type === TokenBuySellOrderType.SELL) {
     const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${sale.token}/${SUB_COL.DISTRIBUTION}/${sale.owner}`)
-    transaction.update(distributionDocRef, uOn({ lockedForSale: admin.firestore.FieldValue.increment(-sale.count) }))
+    const leftForSale = bigDecimal.subtract(sale.count, sale.fulfilled)
+    transaction.update(distributionDocRef, uOn({ lockedForSale: admin.firestore.FieldValue.increment(-Number(leftForSale)) }))
   } else {
     await creditBuyer(sale, [], transaction)
   }
