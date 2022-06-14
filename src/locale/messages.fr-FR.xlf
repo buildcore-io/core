@@ -3575,7 +3575,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="needs-translation">Enable Cooldown with refund option.</target>
+        <target state="translated">Activer l'option de refroidissement avec remboursement.</target>
       </trans-unit>
       <trans-unit id="5047067481558570452" datatype="html">
         <source>Cooldown period length is required.</source>
@@ -3607,7 +3607,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">140,142</context>
         </context-group>
-        <target state="needs-translation">Enable Oversale</target>
+        <target state="translated">Activer la survente</target>
       </trans-unit>
       <trans-unit id="7737061015852263367" datatype="html">
         <source>Sale continues after 100% reached</source>
@@ -3615,7 +3615,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">149,150</context>
         </context-group>
-        <target state="needs-translation">Sale continues after 100% reached</target>
+        <target state="translated">L'enchère se poursuivra après avoir atteint 100% de la vente</target>
       </trans-unit>
       <trans-unit id="2265039628900420616" datatype="html">
         <source>No Oversale. Sale ends with 100% reached.</source>
@@ -3623,7 +3623,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">No Oversale. Sale ends with 100% reached.</target>
+        <target state="translated">Pas de survente. L'enchère s'est terminée, atteignant 100% de la vente.</target>
       </trans-unit>
       <trans-unit id="8653361774164602125" datatype="html">
         <source> Confirm and schedule sale </source>
@@ -3689,7 +3689,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">225,226</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-6') + ' ' + token?.symbol}}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-6') + ' ' + token?.symbol}}"/> </target>
       </trans-unit>
       <trans-unit id="1960516795442717035" datatype="html">
         <source> Confirm and refund </source>
@@ -3697,7 +3697,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.html</context>
           <context context-type="linenumber">70</context>
         </context-group>
-        <target state="needs-translation"> Confirm and refund </target>
+        <target state="translated"> Validation et remboursement </target>
       </trans-unit>
       <trans-unit id="2816366509744534533" datatype="html">
         <source>Refund token</source>
@@ -3705,7 +3705,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-refund/token-refund.component.ts</context>
           <context context-type="linenumber">52</context>
         </context-group>
-        <target state="needs-translation">Refund token</target>
+        <target state="translated">Remboursement Tokens</target>
       </trans-unit>
       <trans-unit id="5648528580145103706" datatype="html">
         <source> Initial Price </source>
@@ -3713,7 +3713,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">23</context>
         </context-group>
-        <target state="needs-translation"> Initial Price </target>
+        <target state="translated"> Levée de fonds </target>
       </trans-unit>
       <trans-unit id="5532913277851047575" datatype="html">
         <source> Avg. Price </source>
@@ -3721,7 +3721,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
-        <target state="needs-translation"> Avg. Price </target>
+        <target state="translated"> Dernier prix </target>
       </trans-unit>
       <trans-unit id="6058152370661898093" datatype="html">
         <source> Cooldown period ends </source>
@@ -3729,7 +3729,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">68</context>
         </context-group>
-        <target state="needs-translation"> Cooldown period ends </target>
+        <target state="translated"> Arrêt du cycle de refroidissement </target>
       </trans-unit>
       <trans-unit id="1405939368950398920" datatype="html">
         <source> Market Cap </source>
@@ -3737,7 +3737,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">80</context>
         </context-group>
-        <target state="needs-translation"> Market Cap </target>
+        <target state="translated"> Capitalisation de marché </target>
       </trans-unit>
       <trans-unit id="3503964146335618044" datatype="html">
         <source> Volume (24h) </source>
@@ -3761,7 +3761,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">122</context>
         </context-group>
-        <target state="needs-translation"> Launching soon </target>
+        <target state="translated"> Lancement sous peu </target>
       </trans-unit>
       <trans-unit id="3165050256850882495" datatype="html">
         <source> In Cooldown </source>
@@ -3769,7 +3769,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">125</context>
         </context-group>
-        <target state="needs-translation"> In Cooldown </target>
+        <target state="translated"> En refroidissement </target>
       </trans-unit>
       <trans-unit id="1790234586531719509" datatype="html">
         <source> Buy </source>
@@ -3785,7 +3785,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-row/token-row.component.html</context>
           <context context-type="linenumber">131</context>
         </context-group>
-        <target state="needs-translation"> Buy / Sell </target>
+        <target state="translated"> Acheter / Vendre </target>
       </trans-unit>
       <trans-unit id="7840301863034787689" datatype="html">
         <source> Type </source>
