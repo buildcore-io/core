@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
-import { COL, SUB_COL } from '../../functions/interfaces/models/base';
-import { DEFAULT_TRANSACTION_RETRY, DEF_WALLET_PAY_IN_PROGRESS, EXTENDED_TRANSACTION_RETRY, MAX_WALLET_RETRY } from '../interfaces/config';
-import { Collection, PaymentTransaction, Transaction, TransactionOrder, TransactionType } from '../interfaces/models';
+import { COL } from '../../functions/interfaces/models/base';
+import { Collection, TransactionOrder, TransactionType } from '../interfaces/models';
 import { Nft } from '../interfaces/models/nft';
 import admin from './admin.config';
 import { finalizeAllNftAuctions } from './cron/nft.cron';
 import { cancelExpiredSale, tokenCoolDownOver } from './cron/token.cron';
+import { retryWallet } from './cron/wallet.cron';
 import { IpfsService, IpfsSuccessResult } from './services/ipfs/ipfs.service';
 import { ProcessingService } from './services/payment/payment-processing';
 import { isEmulatorEnv } from './utils/config.utils';
@@ -32,49 +32,7 @@ const markAwardsAsComplete = functions.pubsub.schedule('every 1 minutes').onRun(
   return null;
 });
 
-const reTryWallet = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
-  const qry = await admin.firestore().collection(COL.TRANSACTION)
-    .where('payload.walletReference.confirmed', '==', false)
-    .where('payload.walletReference.count', '<', MAX_WALLET_RETRY)
-    .get();
-  for (const t of qry.docs) {
-    const walletReference = t.data().payload.walletReference
-    // We ignore while there are errors.
-    if (walletReference.chainReference) {
-      // If processed on does not exists something went wrong and try again.
-      const readyToRun = walletReference.processedOn ? dayjs(walletReference.processedOn.toDate()).add(DEFAULT_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
-      const readyToReprocessedWallet = walletReference.processedOn ? dayjs(walletReference.processedOn.toDate()).add(EXTENDED_TRANSACTION_RETRY, 'ms') : dayjs().subtract(1, 's');
-      // This is one is not ready yet.
-      if (
-        readyToRun.isAfter(dayjs()) ||
-        // It can take up to 10 minutes when servers are overloaded.
-        (readyToReprocessedWallet.isAfter(dayjs()) && walletReference?.chainReference.startsWith(DEF_WALLET_PAY_IN_PROGRESS))
-      ) {
-        continue;
-      }
-
-      // Does it exists in sub-collection?
-      const ref = await admin.firestore().collectionGroup(SUB_COL.TRANSACTIONS).where('messageId', '==', walletReference.chainReference).get();
-      await admin.firestore().runTransaction(async (transaction) => {
-        const sfDoc = await transaction.get(t.ref);
-        if (sfDoc.data()) {
-          const data = <Transaction>sfDoc.data();
-          const payload = <PaymentTransaction>data.payload
-          if (ref.size > 0) {
-            payload.walletReference.confirmed = true;
-          } else {
-            if (data.payload.walletReference) {
-              data.payload.walletReference.error = 'Unable to find on chain. Retry.';
-            }
-            data.shouldRetry = true
-          }
-          transaction.update(t.ref, data);
-        }
-      });
-    }
-  }
-
-});
+const retryWalletCron = functions.pubsub.schedule('every 1 minutes').onRun(retryWallet);
 
 const voidExpiredOrders = functions.pubsub.schedule('every 1 minutes').onRun(async () => {
   const qry = await admin.firestore().collection(COL.TRANSACTION)
@@ -159,7 +117,7 @@ const cancelExpiredSaleCron = functions.pubsub.schedule('every 1 minutes').onRun
 
 export const cron = isEmulatorEnv
   ? {} : {
-    reTryWallet,
+    retryWalletCron,
     markAwardsAsComplete,
     voidExpiredOrders,
     finalizeAuctionNft,
