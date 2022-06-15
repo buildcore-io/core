@@ -6,6 +6,7 @@ import { MilestoneTransaction } from '../../interfaces/models/milestone';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { ProcessingService } from '../services/payment/payment-processing';
+import { isProdEnv } from '../utils/config.utils';
 import { serverTime } from '../utils/dateTime.utils';
 
 const handleMilestoneTransactionWrite = async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
@@ -26,14 +27,35 @@ const handleMilestoneTransactionWrite = async (change: functions.Change<function
   })
 }
 
-export const iotaMilestoneTransactionWrite = functions.runWith({
+const functionConfig = {
   timeoutSeconds: 300,
   minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
-}).firestore.document(`${COL.MILESTONE}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+}
+
+const iotaMilestoneTransactionWrite = functions.runWith(functionConfig)
+  .firestore.document(`${COL.MILESTONE}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
   .onWrite(handleMilestoneTransactionWrite);
 
-export const shimmerMilestoneTransactionWrite = functions.runWith({
-  timeoutSeconds: 300,
-  minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
-}).firestore.document(`${COL.MILESTONE}_${Network.SHIMMER}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+const iotaTestMilestoneTransactionWrite = functions.runWith(functionConfig)
+  .firestore.document(`${COL.MILESTONE}_${Network.IOTA_TEST}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
   .onWrite(handleMilestoneTransactionWrite);
+
+const shimmerMilestoneTransactionWrite = functions.runWith(functionConfig)
+  .firestore.document(`${COL.MILESTONE}_${Network.SHIMMER}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+  .onWrite(handleMilestoneTransactionWrite);
+
+const shimmerTestMilestoneTransactionWrite = functions.runWith(functionConfig)
+  .firestore.document(`${COL.MILESTONE}_${Network.SHIMMER_TEST}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+  .onWrite(handleMilestoneTransactionWrite);
+
+const prodMilestoneTriggers = {
+  iotaMilestoneTransactionWrite,
+  shimmerMilestoneTransactionWrite
+}
+
+const testMilestoneTriggers = {
+  iotaTestMilestoneTransactionWrite,
+  shimmerTestMilestoneTransactionWrite
+}
+
+export const milestoneTriggers = isProdEnv() ? prodMilestoneTriggers : { ...prodMilestoneTriggers, ...testMilestoneTriggers }
