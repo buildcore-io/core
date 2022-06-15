@@ -73,7 +73,7 @@
       </button>
 
       <nz-dropdown-menu #menu="nzDropdownMenu">
-        <ul nz-menu>
+        <ul nz-menu class="additional-btn-list">
           <ng-container *ngIf="memberIsGuardian(member.uid) && isActiveList()">
             <li nz-menu-item (click)="removeGuardian(member.uid)" i18n>Remove Guardian</li>
           </ng-container>
@@ -89,7 +89,6 @@
           <li nz-menu-item nzDanger (click)="blockMember(member.uid)" *ngIf="(isActiveList() || isPendingList())" i18n>Block Member</li>
 
           <li nz-menu-item (click)="unblockMember(member.uid)" *ngIf="isBlockedList()" i18n>Unblock Member</li>
-
         </ul>
       </nz-dropdown-menu>
     </wen-member-card>
