@@ -87,7 +87,6 @@ export const DEFAULT_US_BLOCKED_COUNTRIES = [
   "CU",
   "CD",
   "ET",
-  "HK",
   "ET",
   "IR",
   "IQ",
