@@ -10,7 +10,7 @@ import { buyToken, cancelBuyOrSell, sellToken } from './controls/token-buy-sell.
 import { airdropToken, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
-import { iotaMilestoneTransactionWrite, shimmerMilestoneTransactionWrite } from './triggers/milestone-transaction.trigger';
+import { milestoneTriggers } from './triggers/milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onTokenBuySellWrite } from './triggers/token-buy-sell.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-purchase.trigger';
@@ -66,10 +66,9 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
 export { cron };
-
 // TRIGGER Tasks
-exports['trigger_iotaMilestoneTransactionWrite'] = iotaMilestoneTransactionWrite;
-exports['trigger_shimmerMilestoneTransactionWrite'] = shimmerMilestoneTransactionWrite;
+export { milestoneTriggers as trigger };
+
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;
 exports['trigger_nftWrite'] = nftWrite;
