@@ -3793,7 +3793,7 @@
           <context context-type="sourcefile">src/app/components/transaction/components/transaction-card/transaction-card.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation"> Type </target>
+        <target state="translated"> Niveau </target>
       </trans-unit>
       <trans-unit id="1216445956577529579" datatype="html">
         <source> Date </source>
@@ -3809,7 +3809,7 @@
           <context context-type="sourcefile">src/app/components/transaction/components/transaction-card/transaction-card.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation"> Amount </target>
+        <target state="translated"> Actif de paiement principal </target>
       </trans-unit>
       <trans-unit id="313854265968026491" datatype="html">
         <source>Transaction</source>
@@ -3817,7 +3817,7 @@
           <context context-type="sourcefile">src/app/components/transaction/components/transaction-card/transaction-card.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">Transaction</target>
+        <target state="translated">Opération de paiement</target>
       </trans-unit>
       <trans-unit id="8192132051305791752" datatype="html">
         <source>Generate address</source>
@@ -4065,7 +4065,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/award/award.page.html</context>
           <context context-type="linenumber">176,177</context>
         </context-group>
-        <target state="needs-translation">Check out award</target>
+        <target state="translated">Vérifiez votre récompense</target>
       </trans-unit>
       <trans-unit id="7377060302632014530" datatype="html">
         <source>Approve Award</source>
@@ -4317,7 +4317,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">155,156</context>
         </context-group>
-        <target state="needs-translation">Reward info</target>
+        <target state="translated">Guide des récompenses</target>
       </trans-unit>
       <trans-unit id="5894489517457680270" datatype="html">
         <source>Defines the amount of XP for each badge and the number of badges available.</source>
@@ -4333,7 +4333,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">163,164</context>
         </context-group>
-        <target state="needs-translation">Invalid xp per badge</target>
+        <target state="translated">Récompense en XP par badge non autorisée</target>
       </trans-unit>
       <trans-unit id="585196769714888995" datatype="html">
         <source>iXP per badge</source>
@@ -4341,7 +4341,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">172,173</context>
         </context-group>
-        <target state="needs-translation">iXP per badge</target>
+        <target state="translated">Points d'iXP par badge</target>
       </trans-unit>
       <trans-unit id="4572983792571705542" datatype="html">
         <source>Minimum 1 and maximum 10000.</source>
@@ -4373,7 +4373,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">210,211</context>
         </context-group>
-        <target state="needs-translation">Total iXP</target>
+        <target state="translated">Somme totale d'iXP</target>
       </trans-unit>
       <trans-unit id="8093646814201446191" datatype="html">
         <source>Badge</source>
@@ -4605,7 +4605,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <target state="needs-translation">applied on</target>
+        <target state="translated">Soumission déposée sur</target>
       </trans-unit>
       <trans-unit id="3293163145640341979" datatype="html">
         <source>Visit website</source>
@@ -4629,7 +4629,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
-        <target state="needs-translation"> Open sale </target>
+        <target state="translated"> Marchés ouverts </target>
       </trans-unit>
       <trans-unit id="7892451944202995046" datatype="html">
         <source> Space Members Only </source>
@@ -4637,7 +4637,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation"> Space Members Only </target>
+        <target state="translated"> Membres de l'Espace Uniquement </target>
       </trans-unit>
       <trans-unit id="2601510202253646556" datatype="html">
         <source> Space Guardians Only </source>
@@ -4645,7 +4645,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation"> Space Guardians Only </target>
+        <target state="translated"> Gardiens de l'Espace Uniquement </target>
       </trans-unit>
       <trans-unit id="7245342326288833398" datatype="html">
         <source> Space Members with Badge Only </source>
@@ -4653,7 +4653,7 @@
           <context context-type="sourcefile">src/app/pages/collection/pages/collection/collection-about/collection-about.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation"> Space Members with Badge Only </target>
+        <target state="translated"> Membres de l'Espace détenant un Badge Uniquement </target>
       </trans-unit>
       <trans-unit id="4041633029622034196" datatype="html">
         <source> Must hold at least one NFT from each selected Collections </source>
