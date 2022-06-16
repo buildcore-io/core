@@ -186,7 +186,7 @@ describe('Buy sell trigger', () => {
     expect(billPayment.exists).toBe(true)
     const payload = billPayment.data()?.payload
     expect(payload?.sourceAddress).toBe(order.payload.targetAddress)
-    expect(payload?.targetAddress).toBe(sellerAddress)
+    expect(payload?.targetAddress).toBe(getAddress(sellerAddress, Network.IOTA))
 
     const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(3)
