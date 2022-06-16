@@ -1,10 +1,10 @@
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
-import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import { COL } from '../../interfaces/models/base';
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
+import { buyToken, cancelBuyOrSell } from "../../src/controls/token-buy-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
@@ -22,12 +22,6 @@ describe('Buy sell controller, buy token', () => {
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.AVAILABLE, approved: true }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
-    const distribution = <TokenDistribution>{ tokenOwned: 10 }
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
-
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
-    mockWalletReturnValue(walletSpy, memberAddress, request);
-    await testEnv.wrap(sellToken)({});
   });
 
   it('Should create buy order and cancel it', async () => {
@@ -56,6 +50,28 @@ describe('Buy sell controller, buy token', () => {
       .get()
     expect(creditSnap.docs.length).toBe(1)
     expect(creditSnap.docs[0].data()?.payload?.amount).toBe(5 * MIN_IOTA_AMOUNT)
+  })
+
+  it('Should not be able to pay buy order twice', async () => {
+    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
+    mockWalletReturnValue(walletSpy, memberAddress, request);
+    const order = await testEnv.wrap(buyToken)({});
+
+    const milestone = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
+    await milestoneProcessed(milestone.milestone, milestone.tranId);
+
+    const milestone2 = await submitMilestoneFunc(order.payload.targetAddress, MIN_IOTA_AMOUNT * 5);
+    await milestoneProcessed(milestone2.milestone, milestone2.tranId);
+
+    const buysSnap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', memberAddress).get()
+    expect(buysSnap.size).toBe(1)
+
+    const creditSnap = await admin.firestore().collection(COL.TRANSACTION)
+      .where('type', '==', TransactionType.CREDIT)
+      .where('member', '==', memberAddress)
+      .where('payload.amount', '==', 5 * MIN_IOTA_AMOUNT)
+      .get()
+    expect(creditSnap.size).toBe(1)
   })
 
   it('Should throw, token not approved', async () => {

@@ -673,7 +673,7 @@ describe('Expired sales cron', () => {
     await wait(async () => {
       const snap = await admin.firestore().collection(COL.TOKEN_MARKET)
         .where('owner', '==', seller)
-        .where('type', '==', TokenBuySellOrderStatus.ACTIVE)
+        .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
         .get()
       const processed = snap.docs.reduce((sum, act) => sum && (<TokenBuySellOrder>act.data()).updatedOn !== undefined, true)
       return processed
