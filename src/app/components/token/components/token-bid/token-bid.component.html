@@ -46,12 +46,11 @@
                 <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>24h VWAP</div>
                 <div class="text-xs">{{ formatBest((listenAvgPrice24h$ | async), true) }}</div>
             </div>
-            <div class="absolute top-1/2 -translate-y-1/2 right-36 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <div class="absolute font-medium -translate-y-1/2 top-1/2 right-36 text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 Mi
             </div>
         </div>
-        <div class="font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark
-            bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-6 py-2 mt-3">
+        <div class="px-6 py-2 mt-3 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl">
                 <ng-container *ngIf="!isAmountInput" i18n>Enter how much you want to spend. Amount of tokens will be calculated.</ng-container>
                 <ng-container *ngIf="isAmountInput" i18n>Enter amount of tokens you want to buy. Price will be calculated.</ng-container>
         </div>
@@ -63,10 +62,10 @@
                     [nzBorderless]="true">
 
             <div *ngIf="isAmountInput" class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
-                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your ballance</div>
+                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your balance</div>
                 <div class="text-sm">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
             </div>
-            <div class="absolute top-1/2 -translate-y-1/2 right-36 font-medium text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
+            <div class="absolute font-medium -translate-y-1/2 top-1/2 right-36 text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                 {{ isAmountInput ? token?.symbol : 'Mi' }}
             </div>
         </div>
@@ -76,10 +75,10 @@
                 {{ getResultAmount() | number : '1.0-6'  }}
             </div>
             <div *ngIf="!isAmountInput" class="bg-backgrounds-tertiary dark:bg-backgrounds-tertiary-dark rounded-xl px-2.5 py-1 font-medium min-w-24">
-                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your ballance</div>
+                <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark whitespace-nowrap text-xxs" i18n>Your balance</div>
                 <div class="text-sm">{{ formatTokenBest(memberDistribution?.tokenOwned) | number : '1.0-6' }}</div>
             </div>
-            <div class="absolute top-1/2 -translate-y-1/2 right-36 font-medium ">
+            <div class="absolute font-medium -translate-y-1/2 top-1/2 right-36 ">
                 {{ isAmountInput ? formatBest(amountControl.value * 1000 * 1000 * (offeredRateControl?.value || 0)).substr(-2) : token?.symbol }}
             </div>
         </div>
