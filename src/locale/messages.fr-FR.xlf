@@ -5493,7 +5493,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">records</target>
+        <target state="translated">enregistrements</target>
       </trans-unit>
       <trans-unit id="6162664542990278933" datatype="html">
         <source>Filters&amp;Sort</source>
@@ -5673,7 +5673,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">56</context>
         </context-group>
-        <target state="needs-translation">Tokens</target>
+        <target state="translated">Tokens</target>
       </trans-unit>
       <trans-unit id="8182249022345822733" datatype="html">
         <source>NFTs</source>
@@ -5697,7 +5697,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
-        <target state="needs-translation">Tokens...</target>
+        <target state="translated">Tokens...</target>
       </trans-unit>
       <trans-unit id="8821114980467455667" datatype="html">
         <source>tokens</source>
@@ -5705,7 +5705,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">75,76</context>
         </context-group>
-        <target state="needs-translation">tokens</target>
+        <target state="translated">Tokens</target>
       </trans-unit>
       <trans-unit id="4557379955412166321" datatype="html">
         <source> No tokens </source>
@@ -5717,7 +5717,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">103</context>
         </context-group>
-        <target state="needs-translation"> No tokens </target>
+        <target state="translated"> Pas de Tokens </target>
       </trans-unit>
       <trans-unit id="9155387182259025015" datatype="html">
         <source>Processing</source>
@@ -5729,7 +5729,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">125</context>
         </context-group>
-        <target state="needs-translation">Processing</target>
+        <target state="translated">Traitement d'images</target>
       </trans-unit>
       <trans-unit id="2799509188423847362" datatype="html">
         <source>Pre-Minted</source>
@@ -5737,7 +5737,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/tokens/tokens.page.ts</context>
           <context context-type="linenumber">58</context>
         </context-group>
-        <target state="needs-translation">Pre-Minted</target>
+        <target state="translated">Pré-Minés</target>
       </trans-unit>
       <trans-unit id="5348371102621154630" datatype="html">
         <source>View space</source>
@@ -5865,7 +5865,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
-        <target state="needs-translation">My profile</target>
+        <target state="translated">Mon profil</target>
       </trans-unit>
       <trans-unit id="4915431133669985304" datatype="html">
         <source>Profile</source>
@@ -5881,7 +5881,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.html</context>
           <context context-type="linenumber">15,16</context>
         </context-group>
-        <target state="needs-translation">Profile info</target>
+        <target state="translated">Mes informations</target>
       </trans-unit>
       <trans-unit id="5306473977542913614" datatype="html">
         <source>Activity</source>
@@ -5905,7 +5905,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/member/member.page.ts</context>
           <context context-type="linenumber">112</context>
         </context-group>
-        <target state="needs-translation">Transactions</target>
+        <target state="translated">Opérations de paiement</target>
       </trans-unit>
       <trans-unit id="1985906514874027071" datatype="html">
         <source>(Join space with alliance)</source>
@@ -5925,7 +5925,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
-        <target state="needs-translation">Item</target>
+        <target state="translated">Élément</target>
       </trans-unit>
       <trans-unit id="3448462145758383019" datatype="html">
         <source>Total</source>
@@ -5969,7 +5969,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation">Airdropped</target>
+        <target state="translated">Airdroppés</target>
       </trans-unit>
       <trans-unit id="23518581647153834" datatype="html">
         <source>from</source>
