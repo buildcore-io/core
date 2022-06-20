@@ -6,11 +6,12 @@ import { AlgoliaService } from "@components/algolia/services/algolia.service";
 import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
-import { StorageService } from '@core/services/storage';
+import { FilterStorageService } from '@core/services/filter-storage';
 import { Collection } from '@functions/interfaces/models';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
+import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from "firebase/firestore";
 import { map, Observable, Subject } from 'rxjs';
 
@@ -35,18 +36,9 @@ export enum HOT_TAGS {
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class NFTsPage {
-  config = {
-    indexName: 'nft',
-    searchClient: this.algoliaService.searchClient,
-  };
+  config: InstantSearchConfig;
   sections = marketSections;
-  sortItems = [
-    { value: 'nft', label: 'Recent' },
-    { value: 'nft_price_asc', label: 'Low to High' },
-    { value: 'nft_price_desc', label: 'High to Low' },
-  ];
   paginationItems = defaultPaginationItems;
-  openFilters = false;
   reset$ = new Subject<void>();
   spacesLoaded$?: Observable<boolean>;
   sortOpen = true;
@@ -59,11 +51,18 @@ export class NFTsPage {
     public deviceService: DeviceService,
     public cache: CacheService,
     public nftApi: NftApi,
-    private storageService: StorageService,
+    public filterStorageService: FilterStorageService,
     private cacheService: CacheService,
     public readonly algoliaService: AlgoliaService
   ) {
     this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
+    this.config = {
+      indexName: 'nft',
+      searchClient: this.algoliaService.searchClient,
+      initialUiState: {
+        nft: this.filterStorageService.marketNftsFilters$.value
+      }
+    };
   }
 
   public trackByUid(_index: number, item: any): number {
