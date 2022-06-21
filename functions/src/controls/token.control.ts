@@ -11,7 +11,7 @@ import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { assertHasAccess } from '../services/validators/access';
 import { MnemonicService } from '../services/wallet/mnemonic';
-import { WalletService } from '../services/wallet/wallet';
+import { getWallet } from '../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress, getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
 import { isProdEnv } from '../utils/config.utils';
@@ -287,7 +287,7 @@ export const orderToken = functions.runWith({
 
   await assertHasAccess(space.uid, owner, token.access, token.accessAwards || [], token.accessCollections || [])
 
-  const newWallet = new WalletService();
+  const newWallet = getWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
   await admin.firestore().runTransaction(async (transaction) => {
@@ -472,7 +472,7 @@ export const claimAirdroppedToken = functions.runWith({ minInstances: scale(WEN_
     const tranId = getRandomEthAddress()
     const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 
-    const newWallet = new WalletService();
+    const newWallet = getWallet();
     const targetAddress = await newWallet.getNewIotaAddressDetails();
     await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
 

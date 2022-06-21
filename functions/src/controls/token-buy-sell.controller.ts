@@ -11,7 +11,7 @@ import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderTyp
 import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { MnemonicService } from '../services/wallet/mnemonic';
-import { WalletService } from '../services/wallet/wallet';
+import { getWallet } from '../services/wallet/wallet';
 import { assertMemberHasValidAddress } from '../utils/address.utils';
 import { isProdEnv } from '../utils/config.utils';
 import { cOn, dateToTimestamp, serverTime } from '../utils/dateTime.utils';
@@ -131,7 +131,7 @@ export const buyToken = functions.runWith({
   assertTokenApproved(token);
 
   const tranId = getRandomEthAddress();
-  const newWallet = new WalletService();
+  const newWallet = getWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 
