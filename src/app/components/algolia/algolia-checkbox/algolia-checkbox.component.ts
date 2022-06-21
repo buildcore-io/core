@@ -124,6 +124,7 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
           this.initialItemsList = this.state.items;
         }
         this.initialItemsList.forEach(item => item.isRefined = false);
+        this.wenChange.emit([]);
         this.cd.markForCheck();
       });
   }
@@ -157,5 +158,9 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
 
   public itemToAny(item: any): any {
     return item as unknown as any;
+  }
+
+  public getCount(item: RefinementListItem): number {
+    return this.state.items.find(r => r.value === item.value)?.count || 0;
   }
 }

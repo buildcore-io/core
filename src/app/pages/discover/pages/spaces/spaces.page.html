@@ -43,7 +43,9 @@
       *ngIf="deviceService.isDesktop$ | async"
       [ngClass]="(filterStorageService.discoverSpacesFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
 
-      <wen-algolia-clear (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <wen-algolia-clear *ngIf="filterStorageService.discoverSpacesResetVisible$ | async" (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <!-- This div is for filters positioning -->
+      <div class="mb-12" *ngIf="(filterStorageService.discoverSpacesResetVisible$ | async) === false"></div>
 
       <ng-container *ngTemplateOutlet="filters"></ng-container>
     </div>

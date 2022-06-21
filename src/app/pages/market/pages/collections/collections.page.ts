@@ -53,10 +53,6 @@ export class CollectionsPage {
       searchClient: this.algoliaService.searchClient,
       initialUiState: {
         collection: this.filterStorageService.marketCollectionsFilters$.value
-      },
-      onStateChange(state) {
-        console.log(state.uiState);
-        state.setUiState(state.uiState)
       }
     };
   }

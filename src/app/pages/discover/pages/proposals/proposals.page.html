@@ -43,7 +43,9 @@
       *ngIf="(deviceService.isMobile$ | async) !== true"
       [ngClass]="(filterStorageService.discoverProposalsFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
 
-      <wen-algolia-clear (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <wen-algolia-clear *ngIf="filterStorageService.discoverProposalsResetVisible$ | async" (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <!-- This div is for filters positioning -->
+      <div class="mb-12" *ngIf="(filterStorageService.discoverProposalsResetVisible$ | async) === false"></div>
 
       <ng-container *ngTemplateOutlet="filters"></ng-container>
     </div>
