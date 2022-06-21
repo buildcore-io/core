@@ -5977,7 +5977,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">from</target>
+        <target state="translated">depuis</target>
       </trans-unit>
       <trans-unit id="3422683202099217996" datatype="html">
         <source>Deposit for purchase</source>
@@ -5985,7 +5985,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">73,74</context>
         </context-group>
-        <target state="needs-translation">Deposit for purchase</target>
+        <target state="translated">Ajout de fonds</target>
       </trans-unit>
       <trans-unit id="465183468069102061" datatype="html">
         <source>Claim</source>
@@ -5993,7 +5993,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.ts</context>
           <context context-type="linenumber">32,31</context>
         </context-group>
-        <target state="needs-translation">Claim</target>
+        <target state="translated">Réclamer</target>
       </trans-unit>
       <trans-unit id="6173625528214823462" datatype="html">
         <source>Refund</source>
@@ -6005,7 +6005,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.ts</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">Refund</target>
+        <target state="translated">Remboursement</target>
       </trans-unit>
       <trans-unit id="1551609430803034735" datatype="html">
         <source>Include bids </source>
@@ -6013,7 +6013,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">4,5</context>
         </context-group>
-        <target state="needs-translation">Include bids </target>
+        <target state="translated">Ajouter transactions </target>
       </trans-unit>
       <trans-unit id="5158177792461436439" datatype="html">
         <source>Export CSV</source>
@@ -6021,7 +6021,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">10,11</context>
         </context-group>
-        <target state="needs-translation">Export CSV</target>
+        <target state="translated">Exportation CSV</target>
       </trans-unit>
       <trans-unit id="5023950261839848565" datatype="html">
         <source>Exporting CSV</source>
@@ -6029,7 +6029,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">14,15</context>
         </context-group>
-        <target state="needs-translation">Exporting CSV</target>
+        <target state="translated">Chargement du modèle</target>
       </trans-unit>
       <trans-unit id="597278544324772434" datatype="html">
         <source>TranId</source>
@@ -6073,7 +6073,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/transactions/transactions.page.html</context>
           <context context-type="linenumber">67</context>
         </context-group>
-        <target state="needs-translation"> No transactions </target>
+        <target state="translated"> Il n'existe pas de transactions </target>
       </trans-unit>
       <trans-unit id="6849706234547031644" datatype="html">
         <source>Some files have not been uploaded</source>
@@ -6149,7 +6149,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Upload back once you generate below</target>
+        <target state="translated">Après avoir créé votre NFT ci-dessous, chargez-le à nouveau</target>
       </trans-unit>
       <trans-unit id="3695639300288062501" datatype="html">
         <source> You have to upload images first. </source>
@@ -6173,7 +6173,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/multiple/multiple.page.html</context>
           <context context-type="linenumber">184</context>
         </context-group>
-        <target state="needs-translation">Publish NFTs</target>
+        <target state="translated">Exposition NFT</target>
       </trans-unit>
       <trans-unit id="1638075922526073680" datatype="html">
         <source>To create multiple classic NFTs, you have to use the web version of Soonaverse.</source>
@@ -6393,7 +6393,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.html</context>
           <context context-type="linenumber">293</context>
         </context-group>
-        <target state="needs-translation">Media is required</target>
+        <target state="translated">Support requis</target>
       </trans-unit>
       <trans-unit id="9199594040130693701" datatype="html">
         <source>Select one of your collections to display this NFT.</source>
@@ -6425,7 +6425,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/new/single/single.page.ts</context>
           <context context-type="linenumber">130</context>
         </context-group>
-        <target state="needs-translation">File name <x id="PH" equiv-text="file.name"/> is not valid</target>
+        <target state="translated">Les caractères suivants <x id="PH" equiv-text="file.name"/> ne sont pas autorisés dans le nom du fichier</target>
       </trans-unit>
       <trans-unit id="6728111234977276519" datatype="html">
         <source>NFT</source>
@@ -6453,7 +6453,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">61</context>
         </context-group>
-        <target state="needs-translation"> Current highest bid</target>
+        <target state="translated"> Offre actuelle la plus élevée</target>
       </trans-unit>
       <trans-unit id="4746722232761824042" datatype="html">
         <source> Sale ended </source>
@@ -6493,7 +6493,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">126,127</context>
         </context-group>
-        <target state="needs-translation">Sell NFT</target>
+        <target state="translated">Vente de NFT</target>
       </trans-unit>
       <trans-unit id="7416446479633738086" datatype="html">
         <source>Change Fixed Price</source>
@@ -6501,7 +6501,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">127,128</context>
         </context-group>
-        <target state="needs-translation">Change Fixed Price</target>
+        <target state="translated">Modification du prix fixe</target>
       </trans-unit>
       <trans-unit id="574947301215800501" datatype="html">
         <source>Change Auction</source>
