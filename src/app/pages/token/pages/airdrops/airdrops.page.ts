@@ -98,7 +98,7 @@ export class AirdropsPage {
       token: this.data.token$.value?.uid,
       drops: this.airdropData.map((r) => ({
         recipient: r.address,
-        count: (Number(r.amount) * 1000 * 1000),
+        count: Math.floor(Number(r.amount) * 1000 * 1000),
         vestingAt: dayjs(r.vestingAt).toISOString()
       }))
     };

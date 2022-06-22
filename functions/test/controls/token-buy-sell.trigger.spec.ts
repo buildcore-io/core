@@ -55,7 +55,7 @@ const getBillPayments = (seller: string) => admin.firestore().collection(COL.TRA
   .where('member', '==', seller)
   .get()
 
-const { percentage, spaceonepercentage } = TOKEN_SALE
+const { percentage, spaceonepercentage } = TOKEN_SALE_TEST
 
 const getRoyaltyDistribution = (amount: number) => {
   const spaceOne = amount * (percentage / 100) * (spaceonepercentage / 100)
@@ -186,7 +186,7 @@ describe('Buy sell trigger', () => {
     expect(billPayment.exists).toBe(true)
     const payload = billPayment.data()?.payload
     expect(payload?.sourceAddress).toBe(order.payload.targetAddress)
-    expect(payload?.targetAddress).toBe(sellerAddress[DEFAULT_NETWORK])
+    expect(payload?.targetAddress).toBe(getAddress(sellerAddress, Network.IOTA))
 
     const paymentSnap = await getBillPayments(buyer)
     expect(paymentSnap.docs.length).toBe(3)
@@ -485,8 +485,25 @@ describe('Buy sell trigger', () => {
   it('Should not fill buy, balance would be less then MIN_IOTA_AMOUNT', async () => {
     mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT, count: tokenCount });
     await testEnv.wrap(sellToken)({});
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT + 1000, count: tokenCount }
-    await buyTokenFunc(buyer, request)
+
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT + 1000, count: tokenCount })
+
+    await wait(async () => {
+      const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).get()
+      return snap.docs.length === 1 && snap.docs[0].data().updatedOn !== undefined
+    })
+
+    const buyDocs = (await admin.firestore().collection(COL.TOKEN_MARKET)
+      .where('type', '==', TokenBuySellOrderType.BUY).where('owner', '==', buyer).get()).docs
+    expect(buyDocs.length).toBe(1)
+    expect(buyDocs[0].data()?.fulfilled).toBe(0)
+  })
+
+  it('Should not fill buy, max buy balance would be less then MIN_IOTA_AMOUNT', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: MIN_IOTA_AMOUNT / 4, count: 4 });
+    await testEnv.wrap(sellToken)({});
+
+    await buyTokenFunc(buyer, { token: token.uid, price: MIN_IOTA_AMOUNT / 2, count: 5 })
 
     await wait(async () => {
       const snap = await admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', buyer).get()
@@ -673,7 +690,7 @@ describe('Expired sales cron', () => {
     await wait(async () => {
       const snap = await admin.firestore().collection(COL.TOKEN_MARKET)
         .where('owner', '==', seller)
-        .where('type', '==', TokenBuySellOrderStatus.ACTIVE)
+        .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
         .get()
       const processed = snap.docs.reduce((sum, act) => sum && (<TokenBuySellOrder>act.data()).updatedOn !== undefined, true)
       return processed
