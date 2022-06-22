@@ -29,6 +29,7 @@ export class TokenService {
 
   public async handleTokenBuyRequest(orderData: TransactionOrder, match: TransactionMatch) {
     const payment = this.transactionService.createPayment(orderData, match);
+    await this.transactionService.markAsReconciled(orderData, match.msgId)
     await this.createTokenBuyRequest(orderData, payment)
   }
 

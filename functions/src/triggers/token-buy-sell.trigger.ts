@@ -61,35 +61,27 @@ const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => {
 const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder, logger: Logger) => {
   logger.add(`Trying to match buy ${buy.uid} with sell ${sell.uid}`)
 
-  if (buy.status === TokenBuySellOrderStatus.SETTLED) {
-    logger.add('Buy already settled', buy.uid)
+  const tokens = Math.min(sell.count - sell.fulfilled, buy.count - buy.fulfilled);
+
+  const sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(tokens, sell.price)))
+  if (sellPrice < MIN_IOTA_AMOUNT) {
+    logger.add('Amount to small to transfer', sellPrice)
     return
   }
 
-  if (sell.status === TokenBuySellOrderStatus.SETTLED) {
-    logger.add('Sell already settled', sell.uid)
-    return undefined;
-  }
-
-  const tokensLeft = sell.count - sell.fulfilled
-  if (tokensLeft === 0) {
-    logger.add('No tokens left to sell', sell.uid)
-    return undefined
-  }
-
-  const tokens = Math.min(tokensLeft, buy.count - buy.fulfilled);
-  const tokensPrice = Number(bigDecimal.floor(bigDecimal.multiply(tokens, sell.price)))
-  const buyBalanceLeft = Number(bigDecimal.subtract(buy.balance, tokensPrice))
-  if (tokensPrice < MIN_IOTA_AMOUNT) {
-    logger.add('Amount to small to transfer', tokensPrice)
-    return
-  }
+  const buyBalanceLeft = Number(bigDecimal.subtract(buy.balance, sellPrice))
   if (buyBalanceLeft > 0 && buyBalanceLeft < MIN_IOTA_AMOUNT) {
     logger.add('Buy amount left too small to transfer', buyBalanceLeft)
-    return undefined;
+    return;
   }
 
-  return ({
+  const buyPriceLeft = Number(bigDecimal.multiply(buy.count - buy.fulfilled - tokens, buy.price))
+  if (buyPriceLeft > 0 && buyPriceLeft < MIN_IOTA_AMOUNT) {
+    logger.add('Max buy price left too small to transfer', buyPriceLeft)
+    return;
+  }
+
+  return <TokenPurchase>({
     uid: getRandomEthAddress(),
     token: buy.token,
     sell: sell.uid,
@@ -228,6 +220,9 @@ const fulfillSales = (docId: string, startAfter: StartAfter | undefined, logger:
     const isSell = doc.type === TokenBuySellOrderType.SELL
     const prevBuy = isSell ? b : update
     const prevSell = isSell ? update : b
+    if ([prevBuy.status, prevSell.status].includes(TokenBuySellOrderStatus.SETTLED)) {
+      continue
+    }
     const purchase = createPurchase(prevBuy, prevSell, logger)
     if (!purchase) {
       continue
