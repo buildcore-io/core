@@ -19,17 +19,22 @@ export interface Wallet {
   getNewIotaAddressDetails: () => Promise<AddressDetails>;
   getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   sendFromGenesis: (fromAddress: AddressDetails, toAddress: string, amount: number, data: string) => Promise<string>;
+
 }
 
-export const getWallet = (network = Network.IOTA): Wallet => {
-  switch (network) {
-    case Network.IOTA:
-      return new IotaWallet(false)
-    case Network.ATOI:
-      return new IotaWallet(true)
-    case Network.SMR:
-      return new SmrWallet(false)
-    case Network.RMS:
-      return new SmrWallet(true)
+export class WalletService {
+
+  public static newWallet = (network = Network.IOTA): Wallet => {
+    switch (network) {
+      case Network.IOTA:
+        return new IotaWallet(false)
+      case Network.ATOI:
+        return new IotaWallet(true)
+      case Network.SMR:
+        return new SmrWallet(false)
+      case Network.RMS:
+        return new SmrWallet(true)
+    }
   }
+
 }

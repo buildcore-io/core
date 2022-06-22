@@ -12,6 +12,7 @@ import admin from '../admin.config';
 import { scale } from "../scale.settings";
 import { CommonJoi } from '../services/joi/common';
 import { assertHasAccess } from '../services/validators/access';
+import { WalletService } from '../services/wallet/wallet';
 import { assertMemberHasValidAddress, assertSpaceHasValidAddress, getAddress } from '../utils/address.utils';
 import { generateRandomAmount } from '../utils/common.utils';
 import { isProdEnv } from '../utils/config.utils';
@@ -26,7 +27,6 @@ import { Nft, NftAccess } from './../../interfaces/models/nft';
 import { Network, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from './../../interfaces/models/transaction';
 import { SpaceValidator } from './../services/validators/space';
 import { MnemonicService } from './../services/wallet/mnemonic';
-import { getWallet } from './../services/wallet/wallet';
 
 const orderNftSchema = Joi.object(merge(getDefaultParams(), {
   collection: CommonJoi.uidCheck(),
@@ -175,7 +175,7 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
   }
 
   // Get new target address.
-  const newWallet = getWallet();
+  const newWallet = WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(docCollectionData.royaltiesSpace);
   const docRoyaltySpace = await refRoyaltySpace.get();
@@ -290,7 +290,7 @@ export const validateAddress: functions.CloudFunction<Transaction> = functions.r
   }
 
   // Get new target address.
-  const newWallet = getWallet(params.body.targetNetwork);
+  const newWallet = WalletService.newWallet(params.body.targetNetwork);
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   // Document does not exists.
   const tranId = getRandomEthAddress();
@@ -376,7 +376,7 @@ export const openBid = functions.runWith({
   const prevOwnerAddress = (await admin.firestore().doc(`${COL.MEMBER}/${nft.owner}`).get()).data()?.validatedAddress
   assertMemberHasValidAddress(prevOwnerAddress, Network.IOTA)
 
-  const newWallet = getWallet();
+  const newWallet = WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const refRoyaltySpace = admin.firestore().collection(COL.SPACE).doc(collection.royaltiesSpace);
   const docRoyaltySpace = await refRoyaltySpace.get();

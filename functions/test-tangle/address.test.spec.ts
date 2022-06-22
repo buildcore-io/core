@@ -4,7 +4,7 @@ import { Member, Network, Space } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
-import { AddressDetails, getWallet } from '../src/services/wallet/wallet';
+import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import * as wallet from '../src/utils/wallet.utils';
 import { createSpace, mockWalletReturnValue, validateMemberAddressFunc, validateSpaceAddressFunc, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
@@ -13,7 +13,7 @@ import { getSenderAddress } from './faucet';
 let walletSpy: any;
 
 const sendFromGenesis = async (from: AddressDetails, to: string, amount: number, network: Network) => {
-  const wallet = getWallet(network)
+  const wallet = WalletService.newWallet(network)
   await wallet.sendFromGenesis(from, to, amount, JSON.stringify({ network: 'wen' }))
 }
 const awaitMemberAddressValidation = async (memberId: string, network: Network) => {
@@ -50,7 +50,6 @@ describe('Address validation', () => {
   const validateMemberAddress = async (network: Network) => {
     const order = await validateMemberAddressFunc(walletSpy, memberAddress, network);
     const senderAddress = await getSenderAddress(network, order.payload.amount)
-    console.log('senderAddress', senderAddress.bech32)
     await sendFromGenesis(senderAddress, order.payload.targetAddress, order.payload.amount, network);
 
     await awaitMemberAddressValidation(memberAddress, network)

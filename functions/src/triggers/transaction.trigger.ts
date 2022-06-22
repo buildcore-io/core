@@ -7,7 +7,7 @@ import { Nft } from '../../interfaces/models/nft';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { MnemonicService } from "../services/wallet/mnemonic";
-import { getWallet } from "../services/wallet/wallet";
+import { WalletService } from "../services/wallet/wallet";
 import { isEmulatorEnv, isProdEnv } from '../utils/config.utils';
 import { serverTime } from "../utils/dateTime.utils";
 
@@ -149,7 +149,7 @@ const execute = async (newValue: Transaction, WALLET_PAY_IN_PROGRESS: string) =>
   // Submit payment.
   const walletReference: WalletResult = <WalletResult>{};
   try {
-    const walletService = getWallet(newValue.targetNetwork);
+    const walletService = WalletService.newWallet(newValue.targetNetwork);
     walletReference.chainReference = await walletService.sendFromGenesis(
       await walletService.getIotaAddressDetails(await MnemonicService.get(payload.sourceAddress)),
       payload.targetAddress,
