@@ -89,11 +89,11 @@ export class HelperService {
   }
 
   public isDateInFuture(date?: Timestamp | null): boolean {
-    if (!date) {
+    if (!date || !date.toDate) {
       return false;
     }
 
-    return dayjs(date.toDate()).isAfter(dayjs(), 's');
+    return dayjs(date?.toDate()).isAfter(dayjs(), 's');
   }
 
   public getDaysLeft(availableFrom?: Timestamp | null): number {
@@ -151,7 +151,7 @@ export class HelperService {
   }
 
   public isAvailableForAuction(nft?: Nft | null, col?: Collection | null): boolean {
-    if (!col) {
+    if (!col || !nft?.auctionFrom) {
       return false;
     }
 

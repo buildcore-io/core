@@ -12,14 +12,17 @@
         </span>
       </ng-template>
     </ais-stats>
-    <button class="absolute top-0 right-0 z-10 wen-secondary" nz-button nzSize="small" (click)="openFilters = !openFilters">
+    <button class="absolute top-0 right-0 z-10 wen-secondary" nz-button nzSize="small"
+      (click)="filterStorageService.marketNftsFiltersVisible$.next(!filterStorageService.marketNftsFiltersVisible$.value)">
       <wen-icon-collapse-arrow *ngIf="deviceService.isDesktop$ | async" [size]="16"
-        class="mr-1 transition-all" [ngClass]="{ 'rotate-180': !openFilters}"></wen-icon-collapse-arrow>
+        class="mr-1 transition-all" 
+        [ngClass]="{ 'rotate-180': (filterStorageService.marketNftsFiltersVisible$ | async) === false}">
+      </wen-icon-collapse-arrow>
       <div i18n>Filters&Sort</div>
     </button>
   </div>
   <main class="flex justify-between mx-auto">
-    <section class="container-results" [ngClass]="{ 'mr-5' : openFilters }">
+    <section class="container-results" [ngClass]="{ 'mr-5': filterStorageService.marketNftsFiltersVisible$ | async }">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-results="results" let-refine="showMore">
           <div class="mt-6 xl:grid place-items-start">
@@ -39,34 +42,35 @@
 
     <div class="overflow-hidden transition-all -translate-y-5 container-filters"
       *ngIf="(deviceService.isMobile$ | async) !== true"
-      [ngClass]="openFilters ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
+      [ngClass]="(filterStorageService.marketNftsFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
 
-      <wen-algolia-clear (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <wen-algolia-clear *ngIf="filterStorageService.marketNftsResetVisible$ | async" (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <!-- This div is for filters positioning -->
+      <div class="mb-12" *ngIf="(filterStorageService.marketNftsResetVisible$ | async) === false"></div>
 
       <ng-container *ngTemplateOutlet="filters"></ng-container>
     </div>
 
-    <nz-drawer *ngIf="deviceService.isMobile$ | async"
-        [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-        [nzWidth]="'100vw'" #drawer
-        [nzClosable]="false"
-        [nzVisible]="openFilters">
-        <div *nzDrawerContent class="relative min-h-full h-max">
-            <div class="pb-4 text-3xl font-bold" i18n>Filters&sort</div>
-            <button class="absolute right-0 z-10 top-1" (click)="openFilters = false">
-                <wen-icon-close></wen-icon-close>
-            </button>
+    <wen-drawer *ngIf="deviceService.isMobile$ | async"
+      [isVisible]="filterStorageService.marketNftsFiltersVisible$ | async" bodyClasses="overflow-auto p-5">
+      <div class="pb-4 text-3xl font-bold" i18n>Filters&sort</div>
+      <button class="absolute right-4 z-10 top-4" (click)="filterStorageService.marketNftsFiltersVisible$.next(false)">
+          <wen-icon-close></wen-icon-close>
+      </button>
 
-            <ng-container *ngTemplateOutlet="filters"></ng-container>
-        </div>
-    </nz-drawer>
+      <ng-container *ngTemplateOutlet="filters"></ng-container>
+    </wen-drawer>
 
     <ng-template #filters>
       <div class="mt-8 container-body lg:mt-6">
         <wen-collapse i18n-title title="Sort by" class="mb-2 transition-all" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="sortOpen = !$event" [ngClass]="{ 'mb-10': sortOpen }">
             <wen-sort-by
-              [items]="sortItems"
+              [items]="filterStorageService.marketNftsFiltersOptions.sortItems"
+              [value]="(filterStorageService.marketNftsFilters$ | async)?.sortBy"
+              (wenChange)="filterStorageService.marketNftsFilters$.next(
+                { sortBy: $event, refinementList: filterStorageService.marketNftsFilters$.value.refinementList }
+              )"
             ></wen-sort-by>
         </wen-collapse>
         <wen-collapse i18n-title title="Status" class="mb-2 transition-all" [isCollapsed]="false"
@@ -75,6 +79,11 @@
               attribute="available"
               [transformItems]="algoliaService.convertNftAvailable"
               [reset$]="reset$"
+              [value]="(filterStorageService.marketNftsFilters$ | async)?.refinementList?.available"
+              (wenChange)="filterStorageService.marketNftsFilters$.next(
+                { sortBy: filterStorageService.marketNftsFilters$.value.sortBy,
+                  refinementList: { space: filterStorageService.marketNftsFilters$.value.refinementList?.space, available: $event } }
+              )"
             >
             </wen-algolia-checkbox>
         </wen-collapse>
@@ -100,6 +109,11 @@
               showLessLabel="See less"
               [filterType]="algoliaCheckboxFilterTypes.SPACE"
               [reset$]="reset$"
+              [value]="(filterStorageService.marketNftsFilters$ | async)?.refinementList?.space"
+              (wenChange)="filterStorageService.marketNftsFilters$.next(
+                { sortBy: filterStorageService.marketNftsFilters$.value.sortBy,
+                  refinementList: { available: filterStorageService.marketNftsFilters$.value.refinementList?.available, space: $event } }
+              )"
             >
             </wen-algolia-checkbox>
         </wen-collapse>
