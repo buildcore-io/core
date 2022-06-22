@@ -122,7 +122,8 @@ export const orderNft: functions.CloudFunction<Transaction> = functions.runWith(
     const qry: admin.firestore.QuerySnapshot = await admin.firestore().collection(COL.TRANSACTION)
       .where('member', '==', owner)
       .where('type', '==', TransactionType.BILL_PAYMENT)
-      .where('payload.royalty', '==', false)
+      // Even if it's 100% royalty we don't ignore
+      // .where('payload.royalty', '==', false)
       .where('payload.collection', '==', docCollectionData.uid)
       .where('payload.previousOwnerEntity', '==', 'space').get();
     if (qry.size >= 1) {
