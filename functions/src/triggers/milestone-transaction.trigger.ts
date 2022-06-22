@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as functions from 'firebase-functions';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Network } from '../../interfaces/models';
@@ -6,16 +7,17 @@ import { MilestoneTransaction } from '../../interfaces/models/milestone';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { ProcessingService } from '../services/payment/payment-processing';
+import { SmrWallet } from '../services/wallet/SmrWalletService';
 import { isProdEnv } from '../utils/config.utils';
 import { serverTime } from '../utils/dateTime.utils';
 
-const handleMilestoneTransactionWrite = async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
+const handleMilestoneTransactionWrite = (network: Network) => async (change: functions.Change<functions.firestore.DocumentSnapshot>) => {
   if (!change.after.data()) {
     return
   }
   return admin.firestore().runTransaction(async (transaction) => {
-    const data = <MilestoneTransaction>(await transaction.get(change.after.ref)).data()
-    if (data.processed !== true) {
+    const data = await getMilestoneTransactionData(transaction, network, change)
+    if (!data.processed) {
       const service = new ProcessingService(transaction);
       await service.processMilestoneTransactions(data);
       service.submit();
@@ -27,6 +29,38 @@ const handleMilestoneTransactionWrite = async (change: functions.Change<function
   })
 }
 
+const getMilestoneTransactionData = async (
+  transaction: admin.firestore.Transaction,
+  network: Network,
+  change: functions.Change<functions.firestore.DocumentSnapshot>
+) => {
+  const data = (await transaction.get(change.after.ref)).data() as any
+
+  if (network === Network.IOTA || network === Network.ATOI) {
+    return <MilestoneTransaction>data
+  }
+
+  const smrWallet = new SmrWallet(network === Network.RMS)
+  const outputs = []
+  for (const output of data.payload.essence.outputs) {
+    const address = await smrWallet.pubKeyHashToBech(getPubHashKey(output))
+    outputs.push({ amount: Number(output.amount), address })
+  }
+  const input = await smrWallet.output(data.payload.essence.inputs[0].transactionId)
+  const fromAddress = await smrWallet.pubKeyHashToBech(getPubHashKey(input.output))
+
+  return {
+    createdOn: data.createdOn,
+    messageId: data.blockId,
+    milestone: data.milestone,
+    inputs: outputs.filter(o => o.address === fromAddress),
+    outputs,
+    processed: data.processed
+  }
+}
+
+const getPubHashKey = (output: any) => output.unlockConditions[0].address.pubKeyHash
+
 const functionConfig = {
   timeoutSeconds: 300,
   minInstances: scale(WEN_FUNC.milestoneTransactionWrite),
@@ -34,28 +68,28 @@ const functionConfig = {
 
 const iotaMilestoneTransactionWrite = functions.runWith(functionConfig)
   .firestore.document(`${COL.MILESTONE}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
-  .onWrite(handleMilestoneTransactionWrite);
+  .onWrite(handleMilestoneTransactionWrite(Network.IOTA));
 
-const iotaTestMilestoneTransactionWrite = functions.runWith(functionConfig)
-  .firestore.document(`${COL.MILESTONE}_${Network.IOTA_TEST}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
-  .onWrite(handleMilestoneTransactionWrite);
+const atoiMilestoneTransactionWrite = functions.runWith(functionConfig)
+  .firestore.document(`${COL.MILESTONE}_${Network.ATOI}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+  .onWrite(handleMilestoneTransactionWrite(Network.ATOI));
 
-const shimmerMilestoneTransactionWrite = functions.runWith(functionConfig)
-  .firestore.document(`${COL.MILESTONE}_${Network.SHIMMER}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
-  .onWrite(handleMilestoneTransactionWrite);
+const smrMilestoneTransactionWrite = functions.runWith(functionConfig)
+  .firestore.document(`${COL.MILESTONE}_${Network.SMR}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+  .onWrite(handleMilestoneTransactionWrite(Network.SMR));
 
-const shimmerTestMilestoneTransactionWrite = functions.runWith(functionConfig)
-  .firestore.document(`${COL.MILESTONE}_${Network.SHIMMER_TEST}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
-  .onWrite(handleMilestoneTransactionWrite);
+const rmsMilestoneTransactionWrite = functions.runWith(functionConfig)
+  .firestore.document(`${COL.MILESTONE}_${Network.RMS}/{milestoneId}/${SUB_COL.TRANSACTIONS}/{tranId}`)
+  .onWrite(handleMilestoneTransactionWrite(Network.RMS));
 
 const prodMilestoneTriggers = {
   iotaMilestoneTransactionWrite,
-  shimmerMilestoneTransactionWrite
+  smrMilestoneTransactionWrite
 }
 
 const testMilestoneTriggers = {
-  iotaTestMilestoneTransactionWrite,
-  shimmerTestMilestoneTransactionWrite
+  atoiMilestoneTransactionWrite,
+  rmsMilestoneTransactionWrite
 }
 
 export const milestoneTriggers = isProdEnv() ? prodMilestoneTriggers : { ...prodMilestoneTriggers, ...testMilestoneTriggers }
