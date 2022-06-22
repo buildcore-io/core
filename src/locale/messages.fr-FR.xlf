@@ -6509,7 +6509,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">128,129</context>
         </context-group>
-        <target state="needs-translation">Change Auction</target>
+        <target state="translated">Changer la mise aux enchères</target>
       </trans-unit>
       <trans-unit id="1928756771076509334" datatype="html">
         <source> Place bid </source>
@@ -6517,7 +6517,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">134</context>
         </context-group>
-        <target state="needs-translation"> Place bid </target>
+        <target state="translated"> Placez un ordre d’achat limite </target>
       </trans-unit>
       <trans-unit id="4415762310823398581" datatype="html">
         <source> Buy now </source>
@@ -6533,7 +6533,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">150</context>
         </context-group>
-        <target state="needs-translation">Bidding</target>
+        <target state="translated">Investir</target>
       </trans-unit>
       <trans-unit id="6222168693935264809" datatype="html">
         <source>Current Bids</source>
@@ -6541,7 +6541,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">154,155</context>
         </context-group>
-        <target state="needs-translation">Current Bids</target>
+        <target state="translated">Offres actuelles</target>
       </trans-unit>
       <trans-unit id="6096531945877739545" datatype="html">
         <source>Past bids</source>
@@ -6549,7 +6549,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">158,159</context>
         </context-group>
-        <target state="needs-translation">Past bids</target>
+        <target state="translated">Offres précédentes</target>
       </trans-unit>
       <trans-unit id="811028762347119091" datatype="html">
         <source>My biddings</source>
@@ -6557,7 +6557,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">162,163</context>
         </context-group>
-        <target state="needs-translation">My biddings</target>
+        <target state="translated">Mes offres</target>
       </trans-unit>
       <trans-unit id="6297950127540572260" datatype="html">
         <source>Member</source>
@@ -6565,7 +6565,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">171,172</context>
         </context-group>
-        <target state="needs-translation">Member</target>
+        <target state="translated">Membre</target>
       </trans-unit>
       <trans-unit id="7593509350113215240" datatype="html">
         <source>Bidded on</source>
@@ -6573,7 +6573,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">172,173</context>
         </context-group>
-        <target state="needs-translation">Bidded on</target>
+        <target state="translated">Placé sur</target>
       </trans-unit>
       <trans-unit id="3724221137885778753" datatype="html">
         <source>There are no current bids</source>
@@ -6581,7 +6581,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">201,202</context>
         </context-group>
-        <target state="needs-translation">There are no current bids</target>
+        <target state="translated">Il n'existe pas d'offres actuelles</target>
       </trans-unit>
       <trans-unit id="5158484756742862142" datatype="html">
         <source>There are no past bids</source>
@@ -6589,7 +6589,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">234,235</context>
         </context-group>
-        <target state="needs-translation">There are no past bids</target>
+        <target state="translated">Il n'existe pas d'offres précédentes</target>
       </trans-unit>
       <trans-unit id="8215542824063649001" datatype="html">
         <source>There are no records.</source>
@@ -6597,7 +6597,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">267,268</context>
         </context-group>
-        <target state="needs-translation">There are no records.</target>
+        <target state="translated">Il n'existe pas d'enregistrements.</target>
       </trans-unit>
       <trans-unit id="186236568870281953" datatype="html">
         <source>History</source>
@@ -6605,7 +6605,7 @@
           <context context-type="sourcefile">src/app/pages/nft/pages/nft/nft.page.html</context>
           <context context-type="linenumber">297</context>
         </context-group>
-        <target state="needs-translation">History</target>
+        <target state="translated">Historique</target>
       </trans-unit>
       <trans-unit id="1071605462084734786" datatype="html">
         <source>View all of the transaction details of this NFT on the Tangle</source>
@@ -6669,7 +6669,7 @@
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
           <context context-type="linenumber">117</context>
         </context-group>
-        <target state="needs-translation">Auction Starts</target>
+        <target state="translated">Ouverture des ventes aux enchères</target>
       </trans-unit>
       <trans-unit id="4747545493491400295" datatype="html">
         <source>Auction Ends</source>
@@ -6677,7 +6677,7 @@
           <context context-type="sourcefile">src/app/pages/nft/services/helper.service.ts</context>
           <context context-type="linenumber">120</context>
         </context-group>
-        <target state="needs-translation">Auction Ends</target>
+        <target state="translated">Clôture des ventes aux enchères</target>
       </trans-unit>
       <trans-unit id="7725404141462651854" datatype="html">
         <source>New Proposal</source>
@@ -6685,7 +6685,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="needs-translation">New Proposal</target>
+        <target state="translated">Nouvelle Offre</target>
       </trans-unit>
       <trans-unit id="7803836174893864003" datatype="html">
         <source>Proposal info</source>
@@ -6705,7 +6705,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
-        <target state="needs-translation">Title and description will be included on the Proposal. Start and end dates determine the duration of the Proposal.</target>
+        <target state="translated">Des spécifications techniques seront incluses dans le dossier d'appel d'offres. La date limite de réponse à l'appel d'offre se répercutera sur la durée de l'offre.</target>
       </trans-unit>
       <trans-unit id="7258226626453998656" datatype="html">
         <source>Start Date is required.</source>
