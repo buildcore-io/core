@@ -6721,7 +6721,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">45</context>
         </context-group>
-        <target state="needs-translation">Start</target>
+        <target state="translated">Lancement</target>
       </trans-unit>
       <trans-unit id="2551196215874055869" datatype="html">
         <source>Commencing milestone.</source>
@@ -6737,7 +6737,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">76,77</context>
         </context-group>
-        <target state="needs-translation">Commencing milestone</target>
+        <target state="translated">Stade de mise en œuvre</target>
       </trans-unit>
       <trans-unit id="2793713233329713998" datatype="html">
         <source>Start milestone.</source>
@@ -6753,7 +6753,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Start milestone</target>
+        <target state="translated">Stade de l'offre initiale</target>
       </trans-unit>
       <trans-unit id="8083446854633867417" datatype="html">
         <source>End milestone.</source>
@@ -6769,7 +6769,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">End milestone</target>
+        <target state="translated">Stade de l'offre finale</target>
       </trans-unit>
       <trans-unit id="351136863252723542" datatype="html">
         <source>Proposal description is required.</source>
@@ -6785,7 +6785,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">117,118</context>
         </context-group>
-        <target state="needs-translation">Proposal description</target>
+        <target state="translated">Spécifications de l'offre</target>
       </trans-unit>
       <trans-unit id="5374034773931099277" datatype="html">
         <source>Question Info</source>
@@ -6793,7 +6793,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">127,128</context>
         </context-group>
-        <target state="needs-translation">Question Info</target>
+        <target state="translated">Mon guide de réponses</target>
       </trans-unit>
       <trans-unit id="8442760427417850891" datatype="html">
         <source>Title and description will only be displayed for this question.</source>
@@ -6801,7 +6801,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="needs-translation">Title and description will only be displayed for this question.</target>
+        <target state="translated">Des spécifications techniques ne seront affichées que pour cette question.</target>
       </trans-unit>
       <trans-unit id="8987139299655955589" datatype="html">
         <source>Question Title is required.</source>
@@ -6817,7 +6817,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="needs-translation">Question Title</target>
+        <target state="translated">Dénomination en objet</target>
       </trans-unit>
       <trans-unit id="1295423322835568747" datatype="html">
         <source>Question description</source>
@@ -6825,7 +6825,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">Question description</target>
+        <target state="translated">Spécifications de l'objet en question</target>
       </trans-unit>
       <trans-unit id="6213924357616789681" datatype="html">
         <source>Text and description for each individual answer.</source>
