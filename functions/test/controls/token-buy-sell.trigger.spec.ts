@@ -10,7 +10,7 @@ import { cancelExpiredSale } from '../../src/cron/token.cron';
 import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.trigger";
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { projectId, testEnv } from '../set-up';
+import { testEnv } from '../set-up';
 import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
 
 let walletSpy: any;
@@ -639,66 +639,20 @@ describe('Buy sell trigger', () => {
 
     expect((await sellDocRef.get()).data()?.shouldRetry).toBe(false)
   })
-})
 
-describe('Expired sales cron', () => {
-  let seller: string;
+  it('Should cancel after it needs higher fulfillment price', async () => {
+    mockWalletReturnValue(walletSpy, seller, { token: token.uid, price: 0.8 * MIN_IOTA_AMOUNT, count: 8 });
+    await testEnv.wrap(sellToken)({});
 
-  let token: Token
-
-  beforeEach(async () => {
-    if (process.env.LOCAL_TEST) {
-      await testEnv.firestore.clearFirestoreData({ projectId })
-    }
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    seller = await createMember(walletSpy, true)
-
-    const tokenId = wallet.getRandomEthAddress()
-    token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED, approved: true }
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
-    const distribution = <TokenDistribution>{ tokenOwned: 1000 }
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
-  });
-
-  it('Should cancel all expired sales', async () => {
-    const salesCount = 160
-    const getDummySell = (status: TokenBuySellOrderStatus, type: TokenBuySellOrderType): TokenBuySellOrder => ({
-      uid: wallet.getRandomEthAddress(),
-      owner: seller,
-      token: token.uid,
-      type,
-      count: 1,
-      price: MIN_IOTA_AMOUNT,
-      totalDeposit: MIN_IOTA_AMOUNT,
-      balance: 0,
-      fulfilled: 0,
-      status,
-      expiresAt: dateToTimestamp(dayjs().subtract(1, 'minute')),
-    })
-    const createSales = (status: TokenBuySellOrderStatus, type: TokenBuySellOrderType, count: number) =>
-      Array.from(Array(count)).map(async () => {
-        const sell = getDummySell(status, type);
-        await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).create(sell)
-        return sell;
-      })
-
-    await Promise.all(createSales(TokenBuySellOrderStatus.ACTIVE, TokenBuySellOrderType.SELL, salesCount))
-    await Promise.all(createSales(TokenBuySellOrderStatus.SETTLED, TokenBuySellOrderType.SELL, 3))
+    const request = { token: token.uid, price: 0.82 * MIN_IOTA_AMOUNT, count: 10 }
+    await buyTokenFunc(buyer, request)
 
     await wait(async () => {
-      const snap = await admin.firestore().collection(COL.TOKEN_MARKET)
-        .where('owner', '==', seller)
-        .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
+      return (await admin.firestore()
+        .collection(COL.TOKEN_MARKET)
+        .where('owner', '==', buyer)
         .get()
-      const processed = snap.docs.reduce((sum, act) => sum && (<TokenBuySellOrder>act.data()).updatedOn !== undefined, true)
-      return processed
+      ).docs[0]?.data()?.status === TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE
     })
-
-    await cancelExpiredSale()
-
-    const snap = await admin.firestore().collection(COL.TOKEN_MARKET)
-      .where('owner', '==', seller)
-      .where('status', '==', TokenBuySellOrderStatus.EXPIRED).get()
-    expect(snap.docs.length).toBe(salesCount)
   })
 })

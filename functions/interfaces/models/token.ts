@@ -98,7 +98,8 @@ export enum TokenBuySellOrderStatus {
   SETTLED = 'settled',
   CANCELLED = 'cancelled',
   PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled',
-  EXPIRED = 'expired'
+  EXPIRED = 'expired',
+  CANCELLED_UNFULFILLABLE = 'cancelled_unfulfillable'
 }
 
 export interface TokenBuySellOrder extends BaseRecord {
