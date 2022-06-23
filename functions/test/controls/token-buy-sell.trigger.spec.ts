@@ -647,12 +647,14 @@ describe('Buy sell trigger', () => {
     const request = { token: token.uid, price: 0.82 * MIN_IOTA_AMOUNT, count: 10 }
     await buyTokenFunc(buyer, request)
 
+    const buyQuery = admin.firestore()
+      .collection(COL.TOKEN_MARKET)
+      .where('owner', '==', buyer)
+
     await wait(async () => {
-      return (await admin.firestore()
-        .collection(COL.TOKEN_MARKET)
-        .where('owner', '==', buyer)
-        .get()
-      ).docs[0]?.data()?.status === TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE
+      return (await buyQuery.get()).docs[0]?.data()?.status === TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE
     })
+
+    expect((await buyQuery.get()).docs[0]?.data()?.status).toBe(TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
   })
 })
