@@ -244,12 +244,6 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     expect(credit.payload.amount).toBe(1.5 * MIN_IOTA_AMOUNT)
   })
 
-  it('Should create order in parallel', async () => {
-    const promises = [submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid }), submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid })]
-    const orders = await Promise.all(promises)
-    expect(orders[0]).toEqual(orders[1])
-  })
-
   it('Should create order and deposit in parallel', async () => {
     const array = Array.from(Array(1000))
     const order = await submitTokenOrderFunc(walletSpy, memberAddress, { token: token.uid });
