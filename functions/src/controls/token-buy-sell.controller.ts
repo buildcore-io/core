@@ -103,6 +103,7 @@ export const cancelBuyOrSell = functions.runWith({
     const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${params.body.uid}`)
     const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
     if (!sale || sale.owner !== owner || sale.status !== TokenBuySellOrderStatus.ACTIVE) {
+      functions.logger.error(sale)
       throw throwInvalidArgument(WenError.invalid_params)
     }
     return await cancelSale(transaction, sale)
