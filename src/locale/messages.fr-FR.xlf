@@ -6801,7 +6801,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="translated">Des spécifications techniques ne seront affichées que pour cette question.</target>
+        <target state="translated">Des spécifications techniques ne seront affichées que pour l'objet en question.</target>
       </trans-unit>
       <trans-unit id="8987139299655955589" datatype="html">
         <source>Question Title is required.</source>
@@ -6817,7 +6817,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">140,141</context>
         </context-group>
-        <target state="translated">Dénomination en objet</target>
+        <target state="translated">Dénomination de l'objet en question</target>
       </trans-unit>
       <trans-unit id="1295423322835568747" datatype="html">
         <source>Question description</source>
@@ -6833,7 +6833,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">176,177</context>
         </context-group>
-        <target state="needs-translation">Text and description for each individual answer.</target>
+        <target state="translated">Des spécifications techniques individuelles en réponse à vos questions.</target>
       </trans-unit>
       <trans-unit id="8908935743208562892" datatype="html">
         <source>Answer Text is required.</source>
@@ -6849,7 +6849,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">190,191</context>
         </context-group>
-        <target state="needs-translation">Answer Text</target>
+        <target state="translated">Contenu de la réponse</target>
       </trans-unit>
       <trans-unit id="7684925695381964056" datatype="html">
         <source>Answer description</source>
@@ -6857,7 +6857,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">201,202</context>
         </context-group>
-        <target state="needs-translation">Answer description</target>
+        <target state="translated">Réponse adaptée aux spécifications</target>
       </trans-unit>
       <trans-unit id="8639613122350951248" datatype="html">
         <source>Add Choice</source>
@@ -6873,7 +6873,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">228,229</context>
         </context-group>
-        <target state="needs-translation">This is the space that will list the proposal.</target>
+        <target state="translated">Dans cet espace, vous trouverez le dossier d'appel d'offres.</target>
       </trans-unit>
       <trans-unit id="6241175755376438916" datatype="html">
         <source>Proposal Setup</source>
@@ -6881,7 +6881,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">276,277</context>
         </context-group>
-        <target state="needs-translation">Proposal Setup</target>
+        <target state="translated">Configuration de l'offre</target>
       </trans-unit>
       <trans-unit id="3068808787718249318" datatype="html">
         <source>Defines who has access to the proposal and what is the voting method.</source>
@@ -6889,7 +6889,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">278,279</context>
         </context-group>
-        <target state="needs-translation">Defines who has access to the proposal and what is the voting method.</target>
+        <target state="translated">Cet outil fournit des éclaircissements sur la méthode de vote à mettre en place et le droit d'accès au dossier d'appel d'offres.</target>
       </trans-unit>
       <trans-unit id="1956426485429089025" datatype="html">
         <source>Target Participants</source>
