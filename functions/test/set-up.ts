@@ -18,3 +18,5 @@ const getConfig = () => {
 }
 
 export const testEnv = process.env.LOCAL_TEST ? test(getConfig()) : test(getConfig(), './test-service-account-key.json')
+
+// Random test change
