@@ -6897,7 +6897,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">283</context>
         </context-group>
-        <target state="needs-translation">Target Participants</target>
+        <target state="translated">Participants visés</target>
       </trans-unit>
       <trans-unit id="4014485883731431399" datatype="html">
         <source>All Guardians</source>
@@ -6913,7 +6913,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">296,297</context>
         </context-group>
-        <target state="needs-translation">Only guardians can vote on this proposal</target>
+        <target state="translated">Seuls les gardiens peuvent voter sur cette offre</target>
       </trans-unit>
       <trans-unit id="6783237823517394918" datatype="html">
         <source>All Members</source>
@@ -6929,7 +6929,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">306,307</context>
         </context-group>
-        <target state="needs-translation">All members can vote on this proposal</target>
+        <target state="translated">Tous les membres peuvent voter sur cette offre</target>
       </trans-unit>
       <trans-unit id="1673434496808626695" datatype="html">
         <source>IOTA Token Holders</source>
@@ -6945,7 +6945,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">317,318</context>
         </context-group>
-        <target state="needs-translation">All IOTA token holders can vote.</target>
+        <target state="translated">Tous les détenteurs de Tokens IOTA peuvent voter.</target>
       </trans-unit>
       <trans-unit id="2815746757024794057" datatype="html">
         <source>Voting Type</source>
@@ -6973,7 +6973,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">338,339</context>
         </context-group>
-        <target state="needs-translation">Each member of the space gets one vote</target>
+        <target state="translated">Chaque membre de l'espace aura l’opportunité de participer à un vote</target>
       </trans-unit>
       <trans-unit id="5703711514129531242" datatype="html">
         <source>XP Reputation - Space</source>
