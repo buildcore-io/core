@@ -8,7 +8,7 @@
     "start": "npm run shell",
     "export-online-test-credentials": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\"",
     "test": "export LOCAL_TEST=true && jest test/ --runInBand",
-    "test-online": "npm run export-online-test-credentials && jest test-online/ --runInBand",
+    "test-online": "npm run export-online-test-credentials && jest test-online/token.order.spec.ts --runInBand",
     "test-load": "npm run export-online-test-credentials && jest test-load/ --runInBand",
     "test-all-online": "npm run export-online-test-credentials && jest test/ test-online/ --runInBand",
     "test:watch": "jest test/ --watch-all --detect-open-handles",

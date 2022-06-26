@@ -133,7 +133,6 @@ export const createRoyaltySpaces = async () => {
   const guardian = await createMember(walletSpy, true);
 
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
-
   const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
   if (!spaceOneDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceOneId)
@@ -146,5 +145,6 @@ export const createRoyaltySpaces = async () => {
     await createSpace(walletSpy, guardian, true);
   }
 
-  spaceIdSpy.mockRestore()
+  spaceIdSpy.mockRestore();
+  walletSpy.mockRestore();
 }
