@@ -65,6 +65,10 @@ describe('Buy sell trigger', () => {
     await admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`).create(data)
   }
 
+  beforeAll(async () => {
+    await createRoyaltySpaces()
+  })
+
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     seller = await createMember(walletSpy, true)
@@ -75,8 +79,6 @@ describe('Buy sell trigger', () => {
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
     const distribution = <TokenDistribution>{ tokenOwned: tokenCount * 3 }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${seller}`).set(distribution);
-
-    await createRoyaltySpaces()
   });
 
   it('Should fulfill buy with one sell', async () => {

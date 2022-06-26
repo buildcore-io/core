@@ -129,7 +129,7 @@ export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string
 export const createRoyaltySpaces = async () => {
   const spaceOneId = TOKEN_SALE_TEST.spaceone
   const spaceTwoId = TOKEN_SALE_TEST.spacetwo
-  const walletSpy = jest.spyOn(wallet, 'getRandomEthAddress');
+  const walletSpy = jest.spyOn(wallet, 'decodeAuth');
   const guardian = await createMember(walletSpy, true);
 
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
