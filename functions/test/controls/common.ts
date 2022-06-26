@@ -11,6 +11,7 @@ import { testEnv } from '../set-up';
 import { validateAddress } from './../../src/controls/order.control';
 import * as ipUtils from '../../src/utils/ip.utils';
 import * as config from '../../src/utils/config.utils';
+import { TOKEN_SALE_TEST } from '../../interfaces/config';
 
 export const mockWalletReturnValue = <T,>(walletSpy: any, address: string, body: T) =>
   walletSpy.mockReturnValue(Promise.resolve({ address, body }));
@@ -123,4 +124,27 @@ export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string
   isProdSpy.mockReturnValueOnce(isProdEnv)
   blockedCountriesSpy.mockReturnValueOnce(blockedCountries)
   ipInfoMock.mockReturnValueOnce(ipInfo)
+}
+
+export const createRoyaltySpaces = async () => {
+  const spaceOneId = TOKEN_SALE_TEST.spaceone
+  const spaceTwoId = TOKEN_SALE_TEST.spacetwo
+  const walletSpy = jest.spyOn(wallet, 'decodeAuth');
+  const guardian = await createMember(walletSpy, true);
+
+  const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
+  const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
+  if (!spaceOneDoc.exists) {
+    spaceIdSpy.mockReturnValue(spaceOneId)
+    await createSpace(walletSpy, guardian, true);
+  }
+
+  const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get()
+  if (!spaceTwoDoc.exists) {
+    spaceIdSpy.mockReturnValue(spaceTwoId)
+    await createSpace(walletSpy, guardian, true);
+  }
+
+  spaceIdSpy.mockRestore();
+  walletSpy.mockRestore();
 }

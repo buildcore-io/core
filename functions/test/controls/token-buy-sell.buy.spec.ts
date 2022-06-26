@@ -1,10 +1,10 @@
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
-import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from "../../interfaces/models/token";
+import { COL } from '../../interfaces/models/base';
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
+import { buyToken, cancelBuyOrSell } from "../../src/controls/token-buy-sell.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
@@ -22,12 +22,6 @@ describe('Buy sell controller, buy token', () => {
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.AVAILABLE, approved: true }
     await admin.firestore().doc(`${COL.TOKEN}/${tokenId}`).set(token);
-    const distribution = <TokenDistribution>{ tokenOwned: 10 }
-    await admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.DISTRIBUTION}/${memberAddress}`).set(distribution);
-
-    const request = { token: token.uid, price: MIN_IOTA_AMOUNT, count: 5 }
-    mockWalletReturnValue(walletSpy, memberAddress, request);
-    await testEnv.wrap(sellToken)({});
   });
 
   it('Should create buy order and cancel it', async () => {

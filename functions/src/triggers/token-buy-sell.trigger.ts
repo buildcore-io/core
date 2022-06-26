@@ -280,6 +280,6 @@ const fulfillmentIncreased = (prev?: TokenBuySellOrder, next?: TokenBuySellOrder
 
 const needsHigherBuyAmount = (buy: TokenBuySellOrder) => {
   const tokensLeft = Number(bigDecimal.subtract(buy.count, buy.fulfilled))
-  const price = Number(bigDecimal.divide(buy.balance || 0, tokensLeft, BIG_DECIMAL_PRECISION))
+  const price = Number(bigDecimal.floor(bigDecimal.divide(buy.balance || 0, tokensLeft, BIG_DECIMAL_PRECISION)))
   return price > buy.price
 }
