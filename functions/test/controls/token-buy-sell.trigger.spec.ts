@@ -11,7 +11,7 @@ import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
-import { createMember, createSpace, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
+import { createMember, createRoyaltySpaces, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from "./common";
 
 let walletSpy: any;
 
@@ -26,27 +26,6 @@ const buyTokenFunc = async (memberAddress: string, request: any) => {
 const assertVolumeTotal = async (tokenId: string, volumeTotal: number) => {
   const statDoc = admin.firestore().doc(`${COL.TOKEN}/${tokenId}/${SUB_COL.STATS}/${tokenId}`)
   await wait(async () => (await statDoc.get()).data()?.volumeTotal === volumeTotal)
-}
-
-const createRoyaltySpaces = async () => {
-  const spaceOneId = TOKEN_SALE_TEST.spaceone
-  const spaceTwoId = TOKEN_SALE_TEST.spacetwo
-  const guardian = await createMember(walletSpy, true);
-  const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
-
-  const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
-  if (!spaceOneDoc.exists) {
-    spaceIdSpy.mockReturnValue(spaceOneId)
-    await createSpace(walletSpy, guardian, true);
-  }
-
-  const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get()
-  if (!spaceTwoDoc.exists) {
-    spaceIdSpy.mockReturnValue(spaceTwoId)
-    await createSpace(walletSpy, guardian, true);
-  }
-
-  spaceIdSpy.mockRestore()
 }
 
 const getBillPayments = (seller: string) => admin.firestore().collection(COL.TRANSACTION)
