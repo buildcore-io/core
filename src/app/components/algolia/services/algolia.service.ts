@@ -23,7 +23,8 @@ export class AlgoliaService {
     environment.algolia.key
   );
 
-  constructor(private readonly cacheService: CacheService,
+  constructor(
+    private readonly cacheService: CacheService,
   ) {
     this.cacheService.allSpaces$
       .pipe(untilDestroyed(this)).subscribe((spaces) => {
