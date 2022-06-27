@@ -45,6 +45,7 @@ export class ActivityPage implements OnInit {
       space: this.spaceControl,
       includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
+    this.cache.fetchAllSpaces();
   }
 
   public ngOnInit(): void {

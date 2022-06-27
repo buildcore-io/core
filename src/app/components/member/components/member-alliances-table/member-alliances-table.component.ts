@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { PreviewImageService } from '@core/services/preview-image';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import { Member, Space } from "functions/interfaces/models";
-import { first } from 'rxjs';
+import { first, forkJoin, map, Observable, of } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 
@@ -13,6 +14,7 @@ interface MemberAllianceItem {
   totalXp: number;
 }
 
+@UntilDestroy()
 @Component({
   selector: 'wen-member-alliances-table',
   templateUrl: './member-alliances-table.component.html',
@@ -37,20 +39,30 @@ export class MemberAlliancesTableComponent implements OnInit {
     this.checkIfMembersWithinSpace();
   }
 
-  public getTotal(what: 'awardsCompleted' | 'totalReputation'): number { // awardsCompleted
-    let total = 0;
-    total = this.member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0;
-    for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
-      const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
-        return s.uid === spaceId;
-      });
-      if (allianceSpace && values.enabled === true) {
-        const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
-        total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
-      }
+  public getTotal(what: 'awardsCompleted' | 'totalReputation'): Observable<number> { // awardsCompleted
+    if (Object.keys(this.selectedSpace?.alliances || {}).length === 0) {
+      return of(0);
     }
 
-    return Math.trunc(total);
+    const spaceObservables: Observable<Space | undefined>[] =
+      Object.entries(this.selectedSpace?.alliances || {}).map(([spaceId]) => this.cache.getSpace(spaceId));
+    spaceObservables.forEach(r => r.subscribe(a => console.log(a)))
+
+    return forkJoin(spaceObservables)
+      .pipe(
+        map(allianceSpaces => {
+          let total = this.member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0;
+          for (const allianceSpace of allianceSpaces) {
+            if (allianceSpace && this.selectedSpace?.alliances[allianceSpace.uid].enabled === true) {
+              const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
+              total += Math.trunc((what === 'totalReputation') ?
+                (value * this.selectedSpace?.alliances[allianceSpace.uid].weight) : value);
+            }
+          }
+          return Math.trunc(total);
+        })
+      );
+    
   }
 
   public checkIfMembersWithinSpace(): void {
@@ -65,43 +77,49 @@ export class MemberAlliancesTableComponent implements OnInit {
     }
   }
 
-  public getAlliances(): MemberAllianceItem[] {
-    if (!this.selectedSpace || !this.member) {
-      return [];
+  public getAlliances(): Observable<MemberAllianceItem[]> {
+    if (!this.selectedSpace || !this.member || Object.keys(this.selectedSpace?.alliances || {}).length === 0) {
+      return of(<MemberAllianceItem[]>[]);
     }
 
-    const out: MemberAllianceItem[] = [];
-    for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
-      const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
-        return s.uid === spaceId;
-      });
-      if (
-        allianceSpace &&
-        values.enabled === true
-      ) {
-        if (this.member) {
-          out.push({
-            uid: allianceSpace.uid,
-            avatar: allianceSpace.avatarUrl,
-            name: allianceSpace.name || allianceSpace.uid,
-            totalAwards: this.member.spaces?.[allianceSpace.uid]?.awardsCompleted || 0,
-            totalXp: Math.trunc(((this.member.spaces?.[allianceSpace.uid]?.totalReputation) || 0) * values.weight)
-          });
-        }
-      }
-    }
+    const spaceObservables: Observable<Space | undefined>[] =
+      Object.entries(this.selectedSpace?.alliances || {}).map(([spaceId]) => this.cache.getSpace(spaceId));
+    spaceObservables.forEach(r => r.subscribe(a => console.log(a)))
 
-    if (this.member && this.selectedSpace) {
-      out.push({
-        uid: this.selectedSpace.uid,
-        avatar: this.selectedSpace.avatarUrl,
-        name: this.selectedSpace.name || this.selectedSpace.uid,
-        totalAwards: this.member.spaces?.[this.selectedSpace.uid]?.awardsCompleted || 0,
-        totalXp: this.member.spaces?.[this.selectedSpace.uid]?.totalReputation || 0
-      });
-    }
+    return forkJoin(spaceObservables)
+      .pipe(
+        map(allianceSpaces => {
+          console.log(allianceSpaces);
+          const out: MemberAllianceItem[] = [];
+          for (const allianceSpace of allianceSpaces) {
+            if (
+              allianceSpace &&
+              this.selectedSpace?.alliances[allianceSpace.uid].enabled === true
+            ) {
+              if (this.member) {
+                out.push({
+                  uid: allianceSpace.uid,
+                  avatar: allianceSpace.avatarUrl,
+                  name: allianceSpace.name || allianceSpace.uid,
+                  totalAwards: this.member.spaces?.[allianceSpace.uid]?.awardsCompleted || 0,
+                  totalXp: Math.trunc(((this.member.spaces?.[allianceSpace.uid]?.totalReputation) || 0) * this.selectedSpace?.alliances[allianceSpace.uid].weight)
+                });
+              }
+            }
+          }
 
-    return out;
+          if (this.member && this.selectedSpace) {
+            out.push({
+              uid: this.selectedSpace.uid,
+              avatar: this.selectedSpace.avatarUrl,
+              name: this.selectedSpace.name || this.selectedSpace.uid,
+              totalAwards: this.member.spaces?.[this.selectedSpace.uid]?.awardsCompleted || 0,
+              totalXp: this.member.spaces?.[this.selectedSpace.uid]?.totalReputation || 0
+            });
+          }
+          return out;
+        })
+      );
   }
 
   public trackByUid(index: number, item: Member) {

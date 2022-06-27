@@ -43,7 +43,9 @@ export class SpaceAboutComponent implements OnDestroy {
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef
-  ) { }
+  ) {
+    this.cache.fetchAllSpaces();
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

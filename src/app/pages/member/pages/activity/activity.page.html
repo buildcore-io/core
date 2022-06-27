@@ -9,7 +9,7 @@
                 'calc(100% - 150px)' : '100%'
             }"
             formControlName="space"
-            [spaces]="helper.getSpaceListOptions(cache.allSpaces$ | async)"
+            [spaces]="helper.getSpaceListOptions(cache.cacheObjectToArray(cache.allSpacesLoaded$, cache.spaces) | async)"
             size="large">
           </wen-select-space>
 

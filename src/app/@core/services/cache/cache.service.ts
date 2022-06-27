@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { Collection, Space } from "functions/interfaces/models";
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, Subscription } from 'rxjs';
 import { FULL_LIST } from './../../../@api/base.api';
 import { SpaceApi } from './../../../@api/space.api';
 
@@ -39,25 +39,28 @@ export class CacheService implements OnDestroy {
     this.collectionSubscriptions$.push(this.collectionApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.allCollections$));
   }
 
-  // public fetchAllSpaces(): void {
-  //   this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(spaces => {
-  //     spaces.forEach(s => {
-  //       const subject = new BehaviorSubject<Space | undefined>(s);
-  //       this.spaces[s.uid]= {
-  //         fetchDate: new Date(),
-  //         value: subject
-  //       }
-  //     });
-  //     this.allSpacesLoaded$.next(true);
-  //   }));
-  // }
+  public fetchAllSpaces(): void {
+    if (this.allSpacesLoaded$.value) return;
+    
+    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(spaces => {
+      spaces.forEach(s => {
+        const subject = new BehaviorSubject<Space | undefined>(s);
+        this.spaces[s.uid]= {
+          fetchDate: new Date(),
+          value: subject
+        }
+      });
+      this.allSpacesLoaded$.next(true);
+    }));
+  }
 
   public getSpace(id: string): Observable<Space | undefined> {
     if (this.spaces[id]) {
       return this.spaces[id].value;
     } else {
       const subject = new BehaviorSubject<Space | undefined>(undefined);
-      this.spaceSubscriptions$.push(this.spaceApi.listen(id).subscribe(subject));
+      console.log('aaaa');
+      this.spaceSubscriptions$.push(this.spaceApi.listenMultiple([id]).subscribe(r => subject.next(r[0])));
       // this.spaceSubscriptions$.push(this.spaceApi.listenMultiple([id]).subscribe(s => subject.next(s[0])));
       this.spaces[id] = {
         fetchDate: new Date(),
@@ -83,6 +86,15 @@ export class CacheService implements OnDestroy {
       }
       return subject;
     }
+  }
+
+  public cacheObjectToArray<T>(loadSubject: BehaviorSubject<boolean>, obj: CacheObject<T>): Observable<T[]> {
+    return loadSubject.pipe(
+      filter(r => r),
+      map(() => {
+        return Object.values(obj).map(r => r.value.value as T);
+      })
+    );
   }
 
   public cancelSubscriptions(): void {
