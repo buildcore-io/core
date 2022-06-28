@@ -15,14 +15,13 @@ const getUrl = (network: Network) => {
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
   const walletService = WalletService.newWallet(network)
-  const bech = network === Network.RMS ? 'rms1qqmxy57tsj7860tsldd20d74w9gz6ktvlthxfrglzryxw8zhpxxtxypurz9' : 'atoi1qqgvwhmrkgxm5kl8wu7klgg2gvwvhnf77775jrvxxv7t3e4v393mu0qagyt'
-  const mnemonic = await MnemonicService.get(bech)
-  const address = await walletService.getIotaAddressDetails(mnemonic)
+  const address = await walletService.getNewIotaAddressDetails()
+  await MnemonicService.store(address.bech32, address.mnemonic, network)
   await requestFromFaucetIfNotEnough(network, address, amountNeeded)
   return address
 }
 
-const requestFromFaucetIfNotEnough = async (network: Network, address: AddressDetails, amount: number) => {
+export const requestFromFaucetIfNotEnough = async (network: Network, address: AddressDetails, amount: number) => {
   const wallet = WalletService.newWallet(network)
   const balance = await wallet.getBalance(address.bech32)
   if (balance - amount < MIN_IOTA_AMOUNT) {

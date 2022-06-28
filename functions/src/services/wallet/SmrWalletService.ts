@@ -1,4 +1,4 @@
-import { Bip32Path } from "@iota/crypto.js";
+import { Bip32Path } from "@iota/crypto.js-next";
 import {
   BASIC_OUTPUT_TYPE,
   Bech32Helper,
@@ -16,8 +16,10 @@ import { Converter } from '@iota/util.js-next';
 import bigInt, { BigInteger } from "big-integer";
 import { generateMnemonic } from 'bip39';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
+import { Token } from "../../../interfaces/models/token";
 import { getRandomElement } from "../../utils/common.utils";
 import { MnemonicService } from "./mnemonic";
+import { SmrTokenMinter } from "./SmrTokenMinter";
 import { AddressDetails, Wallet } from "./wallet";
 
 interface Input {
@@ -142,4 +144,24 @@ export class SmrWallet implements Wallet {
 
   public output = (outputId: string) => this.client.output(outputId)
 
+  public mintToken = async (sourceBech32: string, targetBech32: string, token: Token) => {
+    await this.init();
+    const minter = new SmrTokenMinter(this.client, this.nodeInfo!)
+    const sourceDetails = await this.getAddressDetails(sourceBech32)
+    const targetDetails = await this.getAddressDetails(targetBech32)
+    return await minter.mintToken(sourceDetails, targetDetails, token)
+  }
+
+  public getTokenMintTotalStorageDeposit = async (sourceBech32: string, targetBech32: string, token: Token) => {
+    await this.init();
+    const minter = new SmrTokenMinter(this.client, this.nodeInfo!)
+    const sourceDetails = await this.getAddressDetails(sourceBech32)
+    const targetDetails = await this.getAddressDetails(targetBech32)
+    return await minter.getTotalStorageDeposit(sourceDetails, targetDetails, token)
+  }
+
+  private getAddressDetails = async (bech32: string) => {
+    const mnemonic = await MnemonicService.get(bech32)
+    return this.getIotaAddressDetails(mnemonic)
+  }
 }

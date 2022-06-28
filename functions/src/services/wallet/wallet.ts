@@ -1,4 +1,5 @@
 import { Network } from "../../../interfaces/models";
+import { Token } from "../../../interfaces/models/token";
 import { IotaWallet } from "./IotaWalletService";
 import { SmrWallet } from "./SmrWalletService";
 
@@ -19,7 +20,8 @@ export interface Wallet {
   getNewIotaAddressDetails: () => Promise<AddressDetails>;
   getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   sendFromGenesis: (fromAddress: AddressDetails, toAddress: string, amount: number, data: string) => Promise<string>;
-
+  mintToken: (sourceAddressBech: string, targetAddressBech: string, token: Token) => Promise<string>;
+  getTokenMintTotalStorageDeposit: (sourceAddressBech: string, targetAddressBech: string, token: Token) => Promise<number>;
 }
 
 export class WalletService {

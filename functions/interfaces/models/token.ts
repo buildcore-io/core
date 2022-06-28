@@ -13,7 +13,8 @@ export enum TokenStatus {
   CANCEL_SALE = 'cancel_sale',
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
-  ERROR = 'error'
+  ERROR = 'error',
+  MINTED = 'minted'
 }
 
 export enum TokenDistributionType {
@@ -48,6 +49,9 @@ export interface Token extends BaseRecord {
   readonly access: Access;
   readonly accessAwards?: string[];
   readonly accessCollections?: string[];
+
+  readonly mintedTokenId?: string;
+  readonly mintedBy?: string;
 }
 
 export interface TokenDrop {

@@ -124,6 +124,14 @@ export class IotaWallet implements Wallet {
     return messageId;
   }
 
+  public mintToken = async () => {
+    throw new Error('Not implemented')
+  }
+
+  public getTokenMintTotalStorageDeposit = async () => {
+    throw new Error('Not implemented')
+  }
+
   private async convertAddressToHex(address: string): Promise<string> {
     await this.init();
     const decodeBench32Target = Bech32Helper.fromBech32(address, this.nodeInfo?.bech32HRP!);

@@ -91,7 +91,7 @@ const shouldSetPublicSaleTimeFrames = (body: any, allocations: TokenAllocation[]
 export const createToken = functions.runWith({
   minInstances: scale(WEN_FUNC.cToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.cToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -136,7 +136,7 @@ const updateSchema = {
 export const updateToken = functions.runWith({
   minInstances: scale(WEN_FUNC.uToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.uToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -167,7 +167,7 @@ const setAvailableForSaleSchema = {
 export const setTokenAvailableForSale = functions.runWith({
   minInstances: scale(WEN_FUNC.setTokenAvailableForSale),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.setTokenAvailableForSale, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -215,7 +215,7 @@ const assertTokenIsInPublicSaleOrCoolDownPeriod = (token: Token) => {
 export const cancelPublicSale = functions.runWith({
   minInstances: scale(WEN_FUNC.cancelPublicSale),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.cancelPublicSale, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
