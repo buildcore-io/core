@@ -30,7 +30,7 @@
               <wen-nft-card class="w-full h-full outline-none"
                             *ngFor="let hit of hits; trackBy: trackByUid"
                             [nft]="hit"
-                            [collection]="getCollection(hit.collection)"
+                            [collection]="cacheService.getCollection(hit.collection) | async"
               >
               </wen-nft-card>
               <div (wenVisible)="refine()"></div>
@@ -98,7 +98,7 @@
             >
             </wen-algolia-toggle>
         </wen-collapse> -->
-        <wen-collapse *ngIf="spacesLoaded$ | async" class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
+        <wen-collapse *ngIf="cache.allSpacesLoaded$ | async" class="mb-2 transition-all" i18n-title title="Spaces" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="spaceFilterOpen = !$event" [ngClass]="{ 'mb-10': spaceFilterOpen }">
             <wen-algolia-checkbox
               attribute="space"

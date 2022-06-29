@@ -65,7 +65,12 @@ export class NftBidComponent implements OnInit {
   set collection(value: Collection|null|undefined) {
     this._collection = value;
     if (this.collection) {
-      this.royaltySpace = this.cache.allSpaces$.getValue().find((s: Space) => this.collection?.royaltiesSpace === s.uid);
+      this.cache.getSpace(this.collection.royaltiesSpace)
+        .pipe(untilDestroyed(this))
+        .subscribe((space?: Space) => {
+          this.royaltySpace = space;
+          this.cd.markForCheck();
+        });
     }
   }
   get collection(): Collection|null|undefined {

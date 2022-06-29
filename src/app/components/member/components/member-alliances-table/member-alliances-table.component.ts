@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } 
 import { PreviewImageService } from '@core/services/preview-image';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { Member, Space } from "functions/interfaces/models";
-import { first, forkJoin, map, Observable, of } from 'rxjs';
+import { combineLatest, first, map, Observable, of } from 'rxjs';
 import { SpaceApi } from './../../../../@api/space.api';
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 
@@ -46,9 +46,8 @@ export class MemberAlliancesTableComponent implements OnInit {
 
     const spaceObservables: Observable<Space | undefined>[] =
       Object.entries(this.selectedSpace?.alliances || {}).map(([spaceId]) => this.cache.getSpace(spaceId));
-    spaceObservables.forEach(r => r.subscribe(a => console.log(a)))
 
-    return forkJoin(spaceObservables)
+    return combineLatest(spaceObservables)
       .pipe(
         map(allianceSpaces => {
           let total = this.member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0;
@@ -62,7 +61,6 @@ export class MemberAlliancesTableComponent implements OnInit {
           return Math.trunc(total);
         })
       );
-    
   }
 
   public checkIfMembersWithinSpace(): void {
@@ -84,12 +82,10 @@ export class MemberAlliancesTableComponent implements OnInit {
 
     const spaceObservables: Observable<Space | undefined>[] =
       Object.entries(this.selectedSpace?.alliances || {}).map(([spaceId]) => this.cache.getSpace(spaceId));
-    spaceObservables.forEach(r => r.subscribe(a => console.log(a)))
 
-    return forkJoin(spaceObservables)
+    return combineLatest(spaceObservables)
       .pipe(
         map(allianceSpaces => {
-          console.log(allianceSpaces);
           const out: MemberAllianceItem[] = [];
           for (const allianceSpace of allianceSpaces) {
             if (

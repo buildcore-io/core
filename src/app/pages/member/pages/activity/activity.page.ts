@@ -11,7 +11,7 @@ import { HelperService } from '@pages/member/services/helper.service';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import dayjs from 'dayjs';
 import { Member, Space, Transaction } from "functions/interfaces/models";
-import { combineLatest, filter, map } from "rxjs";
+import { combineLatest, filter, map, Observable, of, switchMap } from "rxjs";
 import { CacheService } from './../../../../@core/services/cache/cache.service';
 import { DataService } from "./../../services/data.service";
 @UntilDestroy()
@@ -29,6 +29,7 @@ export class ActivityPage implements OnInit {
   public lineChartType: ChartType = 'line';
   public lineChartData?: ChartConfiguration['data'];
   public lineChartOptions?: ChartConfiguration['options'] = {};
+  public selectedSpace?: Space;
   
   constructor(
     private cd: ChangeDetectorRef,
@@ -45,10 +46,10 @@ export class ActivityPage implements OnInit {
       space: this.spaceControl,
       includeAlliances: new FormControl(storageService.isIncludeAlliancesChecked.getValue())
     });
-    this.cache.fetchAllSpaces();
   }
 
   public ngOnInit(): void {
+    this.cache.fetchAllSpaces();
     combineLatest([this.data.badges$, this.themeService.theme$])
       .pipe(
         filter(([obj, theme]) => !!obj && !!theme),
@@ -83,8 +84,19 @@ export class ActivityPage implements OnInit {
         }
       });
 
+    this.spaceControl.valueChanges
+      .pipe(
+        switchMap(spaceId => this.cache.getSpace(spaceId)),
+        untilDestroyed(this)
+      )
+      .subscribe(space => {
+        this.selectedSpace = space;
+      });
+
     this.spaceForm.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this)
+      )
       .subscribe((o) => {
         if (o.space === this.defaultSpace.value && o.includeAlliances) {
           this.spaceForm.controls.includeAlliances.setValue(false);
@@ -92,48 +104,48 @@ export class ActivityPage implements OnInit {
         }
         this.storageService.selectedSpace.next(o.space);
         this.storageService.isIncludeAlliancesChecked.next(o.includeAlliances);
-        this.data.refreshBadges(this.getSelectedSpace(), this.spaceForm.value.includeAlliances);
+        this.data.refreshBadges(this.selectedSpace, this.spaceForm.value.includeAlliances);
       });
 
     let prev: string | undefined;
     this.data.member$?.pipe(untilDestroyed(this)).subscribe((obj) => {
       if (prev !== obj?.uid) {
-        this.data.refreshBadges(this.getSelectedSpace(), this.spaceForm.value.includeAlliances);
+        this.data.refreshBadges(this.selectedSpace, this.spaceForm.value.includeAlliances);
         prev = obj?.uid;
       }
     });
   }
 
-  public getSelectedSpace(): Space | undefined {
-    return this.cache.allSpaces$.value.find((s) => {
-      return s.uid === this.spaceForm.value.space;
-    });
-  }
-
-  public getTotal(member: Member | null | undefined, what: 'awardsCompleted'|'totalReputation'): number { // awardsCompleted
-    let total = 0;
-    const space: Space|undefined = this.cache.allSpaces$.value.find((s) => {
-      return s.uid === this.spaceForm.value.space;
-    });
-
-    if (this.spaceForm.value.space === this.defaultSpace.value) {
-      total = member?.[what] || 0;
-    } else {
-      total = member?.spaces?.[this.spaceForm.value.space]?.[what] || 0;
-      if (this.spaceForm.value.includeAlliances) {
-        for (const [spaceId, values] of Object.entries(space?.alliances || {})) {
-          const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
-            return s.uid === spaceId;
-          });
-          if (allianceSpace && values.enabled === true ) {
-            const value: number = member?.spaces?.[allianceSpace.uid]?.[what] || 0;
-            total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
-          }
-        }
-      }
+  public getTotal(member: Member | null | undefined, space: Space | null | undefined, what: 'awardsCompleted'|'totalReputation'): Observable<number> { // awardsCompleted
+    if (!space) {
+      return of(0);
     }
 
-    return Math.trunc(total);
+    if (this.spaceForm.value.space === this.defaultSpace.value) {
+      return of(Math.trunc(member?.[what] || 0));
+    }
+
+    if (!this.spaceForm.value.includeAlliances || Object.keys(space?.alliances || {}).length === 0) {
+      return of(Math.trunc(member?.spaces?.[this.spaceForm.value.space]?.[what] || 0));
+    }
+
+    const spaceObservables: Observable<Space | undefined>[] =
+      Object.entries(space?.alliances || {}).map(([spaceId]) => this.cache.getSpace(spaceId));
+
+    return combineLatest(spaceObservables)
+      .pipe(
+        map(allianceSpaces => {
+          let total = member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0;
+          for (const allianceSpace of allianceSpaces) {
+            if (allianceSpace && this.selectedSpace?.alliances[allianceSpace.uid].enabled === true) {
+              const value: number = member?.spaces?.[allianceSpace.uid]?.[what] || 0;
+              total += Math.trunc((what === 'totalReputation') ?
+                (value * this.selectedSpace?.alliances[allianceSpace.uid].weight) : value);
+            }
+          }
+          return Math.trunc(total);
+        })
+      );
   }
 
   public getBadgeRoute(): string[] {

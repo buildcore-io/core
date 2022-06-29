@@ -5,7 +5,6 @@ import { NftApi } from '@api/nft.api';
 import { DEFAULT_COLLECTION } from '@components/collection/components/select-collection/select-collection.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
-import { Collection } from '@functions/interfaces/models';
 import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { HelperService } from '@pages/member/services/helper.service';
@@ -31,15 +30,16 @@ export class NFTsPage implements OnInit, OnDestroy {
     public deviceService: DeviceService,
     public cache: CacheService,
     public helper: HelperService,
+    public cacheService: CacheService,
     private data: DataService,
-    private nftApi: NftApi,
-    private cacheService: CacheService
+    private nftApi: NftApi
   ) {
     this.collectionControl = new FormControl(DEFAULT_COLLECTION.value);
     this.filterControl = new FormControl('');
   }
 
   public ngOnInit(): void {
+    this.cache.fetchAllCollections();
     this.filterControl.valueChanges.pipe(untilDestroyed(this), debounceTime(ParticipantsPage.DEBOUNCE_TIME)).subscribe((val: any) => {
       if (val && val.length > 0) {
         this.listen(val);
@@ -108,16 +108,6 @@ export class NFTsPage implements OnInit, OnDestroy {
 
     // Merge arrays.
     this.nft$.next(Array.prototype.concat.apply([], this.dataStore));
-  }
-
-  public getCollection(col?: string | null): Collection | undefined {
-    if (!col) {
-      return undefined;
-    }
-
-    return this.cacheService.allCollections$.value.find((d) => {
-      return d.uid === col;
-    });
   }
 
   public get maxRecords$(): BehaviorSubject<boolean> {

@@ -3,7 +3,6 @@ import { AuthService } from '@components/auth/services/auth.service';
 import { SeoService } from '@core/services/seo';
 import { ThemeService } from '@core/services/theme';
 import { Observable } from 'rxjs';
-import { CacheService } from './@core/services/cache/cache.service';
 import { NavigationService } from './@core/services/navigation/navigation.service';
 
 @Component({
@@ -22,15 +21,13 @@ export class WenComponent implements OnInit {
     private seoService: SeoService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private navigation: NavigationService,
-    private cacheService: CacheService
+    private navigation: NavigationService
   ) {}
 
   public ngOnInit(): void {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.runGlobalServices();
     this.navigation.watchPathHistory();
-    this.cacheService.initCache();
   }
 
   private runGlobalServices(): void {

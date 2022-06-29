@@ -10,7 +10,7 @@ import { Nft } from '@functions/interfaces/models/nft';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DataService } from '@pages/nft/services/data.service';
 import { HelperService } from '@pages/nft/services/helper.service';
-import { take } from 'rxjs';
+import { switchMap, take } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -23,11 +23,17 @@ export class NftPreviewComponent {
   @Input()
   set nft(value: Nft | null) {
     this._nft = value;
-    const collection = this.cache.allCollections$.getValue().find((collection) => collection.uid === this.nft?.collection);
-    const space = this.cache.allSpaces$.getValue().find((space) => space.uid === collection?.space);
-    this.space = space;
-    if (this._nft) {
-      this.fileApi.getMetadata(this._nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
+    this.cache.getCollection(this.nft?.collection)
+      .pipe(
+        switchMap(collection => this.cache.getSpace(collection?.space)),
+        untilDestroyed(this)
+      )
+      .subscribe((space?: Space) => {
+        this.space = space;
+        this.cd.markForCheck();
+      });
+    if (this.nft) {
+      this.fileApi.getMetadata(this.nft.media).pipe(take(1), untilDestroyed(this)).subscribe((o) => {
         if (o.contentType.match('video/.*')) {
           this.mediaType = 'video';
         } else if (o.contentType.match('image/.*')) {

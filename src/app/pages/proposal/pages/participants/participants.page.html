@@ -48,7 +48,7 @@
     <wen-member-card class="block" [fullWidth]="true" *ngFor="let member of getList() | async; trackBy: trackByUid"
       [createdOnLabel]="getMemberCreatedOnLabel()" [fullWidth]="true"
       [includeAlliances]="true"
-      [member]="member" [selectedSpace]="(data.space$ | async)?.uid">
+      [member]="member" [selectedSpace]="(cache.getSpace((data.space$ | async)?.uid) | async) || undefined">
       <p class="font-bold"><span i18n>Weight</span>: {{member.weight}}</p>
     </wen-member-card>
   </div>

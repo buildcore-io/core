@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { Collection, Space } from "functions/interfaces/models";
-import { BehaviorSubject, filter, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, of, Subscription } from 'rxjs';
 import { FULL_LIST } from './../../../@api/base.api';
 import { SpaceApi } from './../../../@api/space.api';
 
@@ -16,12 +16,12 @@ export type CacheObject<T> = {
   providedIn: 'root'
 })
 export class CacheService implements OnDestroy {
-  public allSpaces$ = new BehaviorSubject<Space[]>([]);
   public spaces: CacheObject<Space> = {};
   public allSpacesLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  // TODO This should be ideally removed eventually.
-  public allCollections$ = new BehaviorSubject<Collection[]>([]);
+  public allSpacesLoading$ = new BehaviorSubject<boolean>(false);
   public collections: CacheObject<Collection> = {};
+  public allCollectionsLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public allCollectionsLoading$ = new BehaviorSubject<boolean>(false);
   // We use this instead of optional params to open check after clicking buy now in the NFT card.
   public openCheckout = false;
   private spaceSubscriptions$: Subscription[] = [];
@@ -34,14 +34,10 @@ export class CacheService implements OnDestroy {
     // none.
   }
 
-  public initCache(): void {
-    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.allSpaces$));
-    this.collectionSubscriptions$.push(this.collectionApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(this.allCollections$));
-  }
-
   public fetchAllSpaces(): void {
-    if (this.allSpacesLoaded$.value) return;
+    if (this.allSpacesLoaded$.value || this.allSpacesLoading$.value) return;
     
+    this.allSpacesLoading$.next(true);
     this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(spaces => {
       spaces.forEach(s => {
         const subject = new BehaviorSubject<Space | undefined>(s);
@@ -54,46 +50,59 @@ export class CacheService implements OnDestroy {
     }));
   }
 
-  public getSpace(id: string): Observable<Space | undefined> {
+  public getSpace(id?: string): Observable<Space | undefined> {
+    if (!id) {
+      return of();
+    }
     if (this.spaces[id]) {
       return this.spaces[id].value;
-    } else {
-      const subject = new BehaviorSubject<Space | undefined>(undefined);
-      console.log('aaaa');
-      this.spaceSubscriptions$.push(this.spaceApi.listenMultiple([id]).subscribe(r => subject.next(r[0])));
-      // this.spaceSubscriptions$.push(this.spaceApi.listenMultiple([id]).subscribe(s => subject.next(s[0])));
-      this.spaces[id] = {
-        fetchDate: new Date(),
-        value: subject
-      }
-      return subject;
     }
+    const subject = new BehaviorSubject<Space | undefined>(undefined);
+    this.spaceSubscriptions$.push(this.spaceApi.listen(id).subscribe(subject));
+    // this.spaceSubscriptions$.push(this.spaceApi.listenMultiple([id]).subscribe(s => subject.next(s[0])));
+    this.spaces[id] = {
+      fetchDate: new Date(),
+      value: subject
+    }
+    return subject;
   }
 
-  // public fetchAllCollections(): void {
-
-  // }
+  public fetchAllCollections(): void {
+    if (this.allCollectionsLoaded$.value || this.allCollectionsLoading$.value) return;
+    
+    this.allCollectionsLoading$.next(true);
+    this.collectionSubscriptions$.push(this.collectionApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(collections => {
+      collections.forEach(c => {
+        const subject = new BehaviorSubject<Collection | undefined>(c);
+        this.collections[c.uid]= {
+          fetchDate: new Date(),
+          value: subject
+        }
+      });
+      this.allCollectionsLoaded$.next(true);
+    }));
+  }
 
   public getCollection(id: string): Observable<Collection | undefined> {
+    if (!id) {
+      return of();
+    }
     if (this.collections[id]) {
       return this.collections[id].value;
-    } else {
-      const subject = new BehaviorSubject<Collection | undefined>(undefined);
-      this.collectionSubscriptions$.push(this.collectionApi.listen(id).subscribe(subject));
-      this.collections[id] = {
-        fetchDate: new Date(),
-        value: subject
-      }
-      return subject;
     }
+    const subject = new BehaviorSubject<Collection | undefined>(undefined);
+    this.collectionSubscriptions$.push(this.collectionApi.listen(id).subscribe(subject));
+    this.collections[id] = {
+      fetchDate: new Date(),
+      value: subject
+    }
+    return subject;
   }
 
   public cacheObjectToArray<T>(loadSubject: BehaviorSubject<boolean>, obj: CacheObject<T>): Observable<T[]> {
     return loadSubject.pipe(
       filter(r => r),
-      map(() => {
-        return Object.values(obj).map(r => r.value.value as T);
-      })
+      map(() => Object.values(obj).map(r => r.value?.value as T).filter(r => !!r))
     );
   }
 
