@@ -27,8 +27,6 @@ export class AlgoliaService {
   constructor(
     private readonly cacheService: CacheService,
   ) {
-    this.cacheService.fetchAllSpaces();
-
     this.cacheService.allSpacesLoaded$
       .pipe(filter(r => r), untilDestroyed(this)).subscribe(() => {
         Object.values(this.cacheService.spaces).forEach(obj => {

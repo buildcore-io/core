@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NftApi } from '@api/nft.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
@@ -34,7 +34,7 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class NFTsPage {
+export class NFTsPage implements OnInit {
   config: InstantSearchConfig;
   sections = marketSections;
   paginationItems = defaultPaginationItems;
@@ -60,6 +60,10 @@ export class NFTsPage {
         nft: this.filterStorageService.marketNftsFilters$.value
       }
     };
+  }
+
+  public ngOnInit(): void {
+    this.cacheService.fetchAllSpaces();
   }
 
   public trackByUid(_index: number, item: any): number {
