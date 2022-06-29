@@ -6993,7 +6993,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">352,353</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has in the space</target>
+        <target state="translated">Les votes seront compensés en fonction du nombre total de points d'XP cumulés par un membre dans les unités</target>
       </trans-unit>
       <trans-unit id="1171519555154717304" datatype="html">
         <source>XP Reputation - Space + Connection</source>
@@ -7013,7 +7013,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">368,369</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has in the space &amp; connections</target>
+        <target state="translated">Les votes seront compensés en fonction du nombre total de points d'XP cumulés par un membre dans les unités permettant des interactions telles que &amp;</target>
       </trans-unit>
       <trans-unit id="5394345820497679692" datatype="html">
         <source>XP Reputation - Selected Badges</source>
@@ -7033,7 +7033,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">384,385</context>
         </context-group>
-        <target state="needs-translation">Votes are weighted based on total amount of XP a member has for selected badges</target>
+        <target state="translated">Les votes seront compensés en fonction du nombre total de points d'XP cumulés par badge sélectionné par un membre</target>
       </trans-unit>
       <trans-unit id="8616735366662008176" datatype="html">
         <source>Reputation Options</source>
@@ -7049,7 +7049,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">407,408</context>
         </context-group>
-        <target state="needs-translation">Set Minimum Weight</target>
+        <target state="translated">Paramétrez un taux minimum</target>
       </trans-unit>
       <trans-unit id="4343784064275297555" datatype="html">
         <source>Select Badge</source>
@@ -7057,7 +7057,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.html</context>
           <context context-type="linenumber">422,423</context>
         </context-group>
-        <target state="needs-translation">Select Badge</target>
+        <target state="translated">Sélectionnez un badge</target>
       </trans-unit>
       <trans-unit id="7518498657175852149" datatype="html">
         <source> Create Proposal </source>
@@ -7073,7 +7073,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">322</context>
         </context-group>
-        <target state="needs-translation">Choice</target>
+        <target state="translated">Sélection</target>
       </trans-unit>
       <trans-unit id="6471529095373327893" datatype="html">
         <source>badge</source>
@@ -7081,7 +7081,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/new/new.page.ts</context>
           <context context-type="linenumber">326</context>
         </context-group>
-        <target state="needs-translation">badge</target>
+        <target state="translated">badge</target>
       </trans-unit>
       <trans-unit id="3625859417927520024" datatype="html">
         <source>id</source>
@@ -7209,7 +7209,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">124</context>
         </context-group>
-        <target state="needs-translation">joined soonaverse on</target>
+        <target state="translated">il a rejoint Soonaverse le</target>
       </trans-unit>
       <trans-unit id="835836004237796752" datatype="html">
         <source>Voter</source>
@@ -7305,7 +7305,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal-info/proposal-info.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Milestone</target>
+        <target state="translated">Stade</target>
       </trans-unit>
       <trans-unit id="9141417193072213151" datatype="html">
         <source>Cast your vote</source>
@@ -7349,7 +7349,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/pages/proposal/proposal.page.html</context>
           <context context-type="linenumber">117,118</context>
         </context-group>
-        <target state="needs-translation">Check out proposal</target>
+        <target state="translated">Vérifiez votre offre</target>
       </trans-unit>
       <trans-unit id="4969998148307889901" datatype="html">
         <source>Current Results</source>
@@ -7373,7 +7373,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/services/helper.service.ts</context>
           <context context-type="linenumber">15</context>
         </context-group>
-        <target state="needs-translation">IOTA Address Vote</target>
+        <target state="translated">IOTA (Vote Électronique)</target>
       </trans-unit>
       <trans-unit id="7111923952686668823" datatype="html">
         <source>One Member One Vote</source>
