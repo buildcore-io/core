@@ -92,6 +92,7 @@ export class CacheService implements OnDestroy {
     }
     const subject = new BehaviorSubject<Collection | undefined>(undefined);
     this.collectionSubscriptions$.push(this.collectionApi.listen(id).subscribe(subject));
+    // this.collectionSubscriptions$.push(this.collectionApi.listenMultiple([id]).subscribe(s => subject.next(s[0])));
     this.collections[id] = {
       fetchDate: new Date(),
       value: subject
