@@ -36,12 +36,16 @@ export class TokenService {
   }
 
   public handleTokenMintingRequest = async (orderData: TransactionOrder, match: TransactionMatch) => {
-    this.transactionService.createPayment(orderData, match);
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${orderData.payload.token}`)
+    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
+    const payment = this.transactionService.createPayment(orderData, match);
+    if (token.status !== TokenStatus.READY_TO_MINT) {
+      this.transactionService.createCredit(payment, match);
+      return;
+    }
     await this.transactionService.markAsReconciled(orderData, match.msgId)
 
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${orderData.member}`).get()).data()
-    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${orderData.payload.token}`)
-    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
     const wallet = WalletService.newWallet(orderData.targetNetwork)
     await wallet.mintToken(
       orderData.payload.targetAddress,
@@ -49,7 +53,7 @@ export class TokenService {
       token
     )
     const ref = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
-    const data = { status: TokenStatus.MINTING, mintedBy: orderData.member }
+    const data = { status: TokenStatus.MINTING, mintingData: { mintedBy: orderData.member } }
     this.transactionService.updates.push({ ref, data, action: 'update' });
   }
 

@@ -31,7 +31,7 @@ export const mintTokenOrder = functions.runWith({
 
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal(...Object.values(Network)).required()
+    targetNetwork: Joi.string().equal([Network.SMR, Network.RMS]).required()
   });
   assertValidation(schema.validate(params.body));
 
@@ -52,7 +52,7 @@ export const mintTokenOrder = functions.runWith({
       throw throwInvalidArgument(WenError.can_not_mint_in_pub_sale)
     }
 
-    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED])
+    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED, TokenStatus.READY_TO_MINT])
 
     transaction.update(tokenDocRef, { status: TokenStatus.READY_TO_MINT })
   })

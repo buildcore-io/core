@@ -30,7 +30,7 @@ const handleMilestoneTransactionWrite = (network: Network) => async (change: fun
 
     const newFoundryOutput = getNewFoundryOutput(data)
     if (newFoundryOutput) {
-      await updateMintedToken(transaction, newFoundryOutput, network)
+      await updateMintedToken(transaction, data, newFoundryOutput, network)
     }
 
     return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() })
@@ -43,16 +43,23 @@ const getNewFoundryOutput = (data: admin.firestore.DocumentData) => {
   return head(outputs as IFoundryOutput[])
 }
 
-const updateMintedToken = async (transaction: admin.firestore.Transaction, foundryOutput: IFoundryOutput, network: Network) => {
+const updateMintedToken = async (transaction: admin.firestore.Transaction, data: admin.firestore.DocumentData, foundryOutput: IFoundryOutput, network: Network) => {
   const aliasUnlock = <IImmutableAliasUnlockCondition>foundryOutput.unlockConditions.find(u => u.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE)
   const aliasId = (aliasUnlock.address as IAliasAddress).aliasId
-  const mintedTokenId = TransactionHelper.constructTokenId(aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
+  const tokenId = TransactionHelper.constructTokenId(aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
 
   const codedMetadata = (<IMetadataFeature>foundryOutput.immutableFeatures?.find(imf => imf.type === METADATA_FEATURE_TYPE)).data
   const metadata = JSON.parse(Converter.hexToUtf8(codedMetadata))
 
   const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${metadata.uid}`)
-  transaction.update(tokenDocRef, { status: TokenStatus.MINTED, mintedTokenId, mintedOn: serverTime(), aliasId })
+  const updateTokenData = {
+    status: TokenStatus.MINTED,
+    ['mintingData.tokenId']: tokenId,
+    ['mintingData.mintedOn']: serverTime(),
+    ['mintingData.aliasId']: aliasId,
+    ['mintingData.blockId']: data.blockId
+  }
+  transaction.update(tokenDocRef, updateTokenData)
 }
 
 

@@ -23,6 +23,14 @@ export enum TokenDistributionType {
   FIXED = 'fixed'
 }
 
+interface MintingData {
+  readonly tokenId?: string;
+  readonly mintedBy?: string;
+  readonly mintedOn?: Timestamp;
+  readonly aliasId?: string;
+  readonly blockId?: string;
+}
+
 export interface Token extends BaseRecord {
   readonly name: string;
   readonly symbol: string;
@@ -52,10 +60,7 @@ export interface Token extends BaseRecord {
   readonly accessAwards?: string[];
   readonly accessCollections?: string[];
 
-  readonly mintedTokenId?: string;
-  readonly mintedBy?: string;
-  readonly mintedOn?: Timestamp;
-  readonly aliasId?: string;
+  readonly mintingData?: MintingData;
 }
 
 export interface TokenDrop {
