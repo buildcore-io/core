@@ -9,19 +9,19 @@ export class SmrTokenMinter {
   constructor(private readonly client: lib.SingleNodeClient, private readonly info: lib.INodeInfo) { }
 
   public getTotalStorageDeposit = async (source: AddressDetails, target: AddressDetails, token: Token) => {
-    const { totalStorageDeposit } = await this.createPayloads(source, target, token)
+    const { totalStorageDeposit } = await this.createTokenMintPayloads(source, target, token)
     return totalStorageDeposit
   }
 
   public mintToken = async (source: AddressDetails, target: AddressDetails, token: Token): Promise<void> => {
-    const { payloads } = await this.createPayloads(source, target, token)
+    const { payloads } = await this.createTokenMintPayloads(source, target, token)
     const blocks = await chainTransactionsViaBlocks(this.client, payloads, this.info.protocol.minPoWScore);
     for (const block of blocks) {
       await this.client.blockSubmit(block)
     }
   }
 
-  private createPayloads = async (source: AddressDetails, target: AddressDetails, token: Token) => {
+  private createTokenMintPayloads = async (source: AddressDetails, target: AddressDetails, token: Token) => {
     const networkId = lib.TransactionHelper.networkIdFromNetworkName(this.info.protocol.networkName)
     const aliasOutput = await createAlias(this.client, networkId, source);
 

@@ -7,7 +7,6 @@ import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { TokenStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { ProcessingService } from '../../services/payment/payment-processing';
-import { SmrWallet } from '../../services/wallet/SmrWalletService';
 import { serverTime } from '../../utils/dateTime.utils';
 import { milestoneTriggerConfig } from './common';
 import { SmrMilestoneTransactionAdapter } from './SmrMilestoneTransactionAdapter';
@@ -49,14 +48,11 @@ const updateMintedToken = async (transaction: admin.firestore.Transaction, found
   const aliasId = (aliasUnlock.address as IAliasAddress).aliasId
   const mintedTokenId = TransactionHelper.constructTokenId(aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
 
-  const wallet = new SmrWallet(network === Network.RMS)
-  const aliasAddress = await wallet.addressFromAddressUnlockCondition(foundryOutput.unlockConditions, FOUNDRY_OUTPUT_TYPE)
-
   const codedMetadata = (<IMetadataFeature>foundryOutput.immutableFeatures?.find(imf => imf.type === METADATA_FEATURE_TYPE)).data
   const metadata = JSON.parse(Converter.hexToUtf8(codedMetadata))
 
   const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${metadata.uid}`)
-  transaction.update(tokenDocRef, { status: TokenStatus.MINTED, mintedTokenId, mintedOn: serverTime(), aliasAddress })
+  transaction.update(tokenDocRef, { status: TokenStatus.MINTED, mintedTokenId, mintedOn: serverTime(), aliasId })
 }
 
 

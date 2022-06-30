@@ -63,7 +63,7 @@ describe('Address validation', () => {
     const tokenData = <Token>(await tokenDocRef.get()).data()
     expect(tokenData.status).toBe(TokenStatus.MINTED)
     expect(tokenData.mintedTokenId).toBeDefined()
-    expect(tokenData.aliasAddress).toBeDefined()
+    expect(tokenData.aliasId).toBeDefined()
   })
 
   afterAll(() => {

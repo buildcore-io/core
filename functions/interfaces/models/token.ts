@@ -55,7 +55,7 @@ export interface Token extends BaseRecord {
   readonly mintedTokenId?: string;
   readonly mintedBy?: string;
   readonly mintedOn?: Timestamp;
-  readonly aliasAddress?: string;
+  readonly aliasId?: string;
 }
 
 export interface TokenDrop {
