@@ -24,31 +24,36 @@ export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
 
 export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
   .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onWrite(async (snap, context) => {
-    const id = context.params.buySellId
-    const prev = <TokenBuySellOrder | undefined>snap.before.data()
-    const next = <TokenBuySellOrder | undefined>snap.after.data()
+    try {
+      const id = context.params.buySellId
+      const prev = <TokenBuySellOrder | undefined>snap.before.data()
+      const next = <TokenBuySellOrder | undefined>snap.after.data()
 
-    if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
-      const logger = new Logger();
-      logger.add('onTokenBuySellCreated', id)
-      let startAfter: StartAfter | undefined = undefined
-      await guardedRerun(async () => {
-        startAfter = await fulfillSales(id, startAfter, logger)
-        return startAfter !== undefined
-      }, 10000000)
-      return;
-    }
+      if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
+        const logger = new Logger();
+        logger.add('onTokenBuySellCreated', id)
+        let startAfter: StartAfter | undefined = undefined
+        await guardedRerun(async () => {
+          startAfter = await fulfillSales(id, startAfter, logger)
+          return startAfter !== undefined
+        }, 10000000)
+        return;
+      }
 
-    if (isActiveBuy(next) && fulfillmentIncreased(prev, next) && needsHigherBuyAmount(next!)) {
-      await admin.firestore().runTransaction(async transaction => {
-        const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next!.uid}`)
-        const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
-        if (sale && isActiveBuy(sale) && needsHigherBuyAmount(sale)) {
-          await cancelSale(transaction, sale, TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
-        }
-      })
+      if (isActiveBuy(next) && fulfillmentIncreased(prev, next) && needsHigherBuyAmount(next!)) {
+        await admin.firestore().runTransaction(async transaction => {
+          const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next!.uid}`)
+          const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
+          if (sale && isActiveBuy(sale) && needsHigherBuyAmount(sale)) {
+            await cancelSale(transaction, sale, TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
+          }
+        })
+      }
+    } catch (error) {
+      functions.logger.error(error)
+      throw error
     }
-  })
+  });
 
 const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => {
   const fulfilled = sale.fulfilled + purchase.count

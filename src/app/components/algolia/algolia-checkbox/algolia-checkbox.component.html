@@ -28,7 +28,7 @@
         
         
         <span class="ml-2 text-xs inline-block truncate" [ngClass]="item.isRefined ? 'font-bold' : 'font-medium'">{{ item.label }}</span>
-        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xs font-medium mx-1">({{ item.count }})</div>
+        <div class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark text-xs font-medium mx-1">({{ getCount(item) }})</div>
         <wen-icon-check *ngIf="item.isRefined"
             class="ml-auto text-accent-primary dark:text-accent-primary-dark"></wen-icon-check>
     </div>

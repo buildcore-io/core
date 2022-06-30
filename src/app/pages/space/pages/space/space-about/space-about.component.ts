@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
@@ -22,7 +22,7 @@ import { EntityType } from './../../../../../components/wallet-address/wallet-ad
   styleUrls: ['./space-about.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SpaceAboutComponent implements OnDestroy {
+export class SpaceAboutComponent implements OnInit, OnDestroy {
   @Input() avatarUrl?: string;
   @Output() wenOnLeave = new EventEmitter<void>();
 
@@ -43,7 +43,12 @@ export class SpaceAboutComponent implements OnDestroy {
     private auth: AuthService,
     private spaceApi: SpaceApi,
     private cd: ChangeDetectorRef
-  ) { }
+  ) {
+  }
+
+  public ngOnInit(): void {
+    this.cache.fetchAllSpaces();
+  }
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;

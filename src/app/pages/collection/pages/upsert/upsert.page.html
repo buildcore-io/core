@@ -593,7 +593,7 @@
                 [formControl]="accessCollectionsControl"
               >
                 <nz-option
-                  *ngFor="let a of getCollectionListOptions(cache.allCollections$ | async); trackBy: trackByUid"
+                  *ngFor="let a of getCollectionListOptions(cache.cacheObjectToArray(cache.allCollectionsLoaded$, cache.collections) | async); trackBy: trackByUid"
                   [nzLabel]="a.label"
                   [nzValue]="a.value"
                 ></nz-option>

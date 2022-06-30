@@ -11,6 +11,7 @@
     "test-online": "npm run export-online-test-credentials && jest test-online/ --runInBand",
     "test-load": "npm run export-online-test-credentials && jest test-load/ --runInBand",
     "test-all-online": "npm run export-online-test-credentials && jest test/ test-online/ --runInBand",
+    "test-tangle": "npm run export-online-test-credentials && jest test-tangle/ --runInBand",
     "test:watch": "jest test/ --watch-all --detect-open-handles",
     "deploy": "firebase deploy --only functions -f",
     "logs": "firebase functions:log"
@@ -22,6 +23,8 @@
   "dependencies": {
     "@iota/crypto.js": "1.8.6",
     "@iota/iota.js": "1.8.6",
+    "@iota/iota.js-next": "npm:@iota/iota.js@next",
+    "@iota/util.js-next": "npm:@iota/util.js@next",
     "@iota/util.js": "1.8.6",
     "@metamask/eth-sig-util": "4.0.0",
     "axios": "0.26.1",

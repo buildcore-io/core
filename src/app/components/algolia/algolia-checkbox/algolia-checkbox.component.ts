@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, forwardRef, Inject, Input, OnInit, Optional, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, forwardRef, Inject, Input, OnInit, Optional, Output, TemplateRef } from '@angular/core';
 import { noop, parseNumberInput } from "@components/algolia/util";
 import { PreviewImageService } from '@core/services/preview-image';
 import { Access } from '@functions/interfaces/models/base';
@@ -35,10 +35,10 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
     RefinementListConnectorParams
   > implements OnInit {
   // rendering options
-  @Input() public showMoreLabel = 'Show more';
-  @Input() public showLessLabel = 'Show less';
+  @Input() public showMoreLabel = $localize`Show more`;
+  @Input() public showLessLabel = $localize`Show less`;
   @Input() public searchable?: boolean;
-  @Input() public searchPlaceholder = 'Search here...';
+  @Input() public searchPlaceholder = $localize`Search here...`;
   @Input() public showSearch = false;
   @Input() public reset$ = new Subject<void>();
 
@@ -53,8 +53,25 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
   public transformItems?: RefinementListConnectorParams['transformItems'];
   @Input() public showIcon = true;
   @Input() public filterType: AlgoliaCheckboxFilterType = AlgoliaCheckboxFilterType.DEFAULT;
+  @Input() 
+  set value(v: string[] | undefined) {
+    this._value = v;
+    this.value?.forEach(value => {
+      const item = this.initialItemsList.filter(item => !item.isRefined).find(item => item.value === value);
+      if (item) {
+        this.refine(undefined, item);
+      }
+      this.cd.markForCheck();
+    });
+  }
+  get value(): string[] | undefined {
+    return this._value;
+  }
+  @Output() wenChange = new EventEmitter<string[]>();
   public initialItemsList: RefinementListItem[] = [];
   public initialValue = '';
+  
+  private _value?: string[];
 
   public state: RefinementListRenderState = {
     canRefine: false,
@@ -107,6 +124,7 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
           this.initialItemsList = this.state.items;
         }
         this.initialItemsList.forEach(item => item.isRefined = false);
+        this.wenChange.emit([]);
         this.cd.markForCheck();
       });
   }
@@ -134,10 +152,15 @@ export class AlgoliaCheckboxComponent extends TypedBaseWidget<
 
       // refine through Algolia API
       this.state.refine(item.value);
+      this.wenChange.emit(this.initialItemsList.filter(item => item.isRefined).map(item => item.value));
     }
   }
 
   public itemToAny(item: any): any {
     return item as unknown as any;
+  }
+
+  public getCount(item: RefinementListItem): number {
+    return this.state.items.find(r => r.value === item.value)?.count || 0;
   }
 }

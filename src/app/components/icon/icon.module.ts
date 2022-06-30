@@ -8,6 +8,7 @@ import { AngleRightSmallIconComponent } from './angle-right-small/angle-right-sm
 import { AngleRightIconComponent } from './angle-right/angle-right.component';
 import { AngleUpIconComponent } from './angle-up/angle-up.component';
 import { ArrowRightIconComponent } from './arrow-right/arrow-right.component';
+import { AssemblyIconComponent } from './assembly/assembly.component';
 import { AwardIconComponent } from './award/award.component';
 import { BellIconComponent } from './bell/bell.component';
 import { CalendarIconComponent } from './calendar/calendar.component';
@@ -25,6 +26,7 @@ import { DollarIconComponent } from './dollar/dollar.component';
 import { EditUnderlineIconComponent } from './edit-underline/edit-underline.component';
 import { EditIconComponent } from './edit/edit.component';
 import { EraseIconComponent } from './erase/erase.component';
+import { EvmChainIconComponent } from './evm-chain/evm-chain.component';
 import { EyeIconComponent } from './eye/eye.component';
 import { FacebookIconComponent } from './facebook/facebook.component';
 import { FileCheckIconComponent } from './file-check/file-check.component';
@@ -58,6 +60,7 @@ import { RocketIconComponent } from './rocket/rocket.component';
 import { SadIconComponent } from './sad/sad.component';
 import { SearchIconComponent } from './search/search.component';
 import { ShareIconComponent } from './share/share.component';
+import { ShimmerIconComponent } from './shimmer/shimmer.component';
 import { SoonlabsIconComponent } from './soonlabs/soonlabs.component';
 import { SortIconComponent } from './sort/sort.component';
 import { SpaceIconComponent } from './space/space.component';
@@ -148,7 +151,10 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TokenIconComponent,
     EditUnderlineIconComponent,
     CollapseArrowIconComponent,
-    IotaIconComponent
+    IotaIconComponent,
+    ShimmerIconComponent,
+    AssemblyIconComponent,
+    EvmChainIconComponent
   ],
   exports: [
     GlobeIconComponent,
@@ -223,7 +229,10 @@ import { WalletIconComponent } from './wallet/wallet.component';
     TokenIconComponent,
     EditUnderlineIconComponent,
     CollapseArrowIconComponent,
-    IotaIconComponent
+    IotaIconComponent,
+    ShimmerIconComponent,
+    AssemblyIconComponent,
+    EvmChainIconComponent
   ],
   imports: [
     CommonModule

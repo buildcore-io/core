@@ -170,7 +170,7 @@
       </div>
 
       <div class="mt-7">
-        <wen-space-new-alliance [spaces]="(cache.allSpaces$ | async) || []"
+        <wen-space-new-alliance [spaces]="(cache.cacheObjectToArray(cache.allSpacesLoaded$, cache.spaces) | async) || []"
           [spaceAllianceControl]="spaceAllianceControl" [reputationWeightControl]="reputationWeightControl">
         </wen-space-new-alliance>
       </div>
@@ -204,7 +204,7 @@
         <span i18n> alliance</span>
       </div>
 
-      <wen-space-new-alliance [spaces]="(cache.allSpaces$ | async) || []" [spaceAllianceControl]="spaceAllianceControl"
+      <wen-space-new-alliance [spaces]="(cache.cacheObjectToArray(cache.allSpacesLoaded$, cache.spaces) | async) || []" [spaceAllianceControl]="spaceAllianceControl"
         [reputationWeightControl]="reputationWeightControl">
       </wen-space-new-alliance>
 

@@ -15,7 +15,32 @@
     </a>
 </div>
 
-<nz-card class="mt-8" i18n-nzTitle nzTitle="Who can buy?">
+<nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
+  <nz-card-meta
+    i18n-nzDescription
+    nzDescription="Make NFT’s from this collection available on decentralised network.">
+  </nz-card-meta>
+  <!-- <nz-card-meta
+    i18n-nzDescription
+    nzDescription="NFT’s from this collection are available on decentralised network.">
+  </nz-card-meta> -->
+
+  <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
+    i18n>Mint Collection</button>
+
+  <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-6
+    flex items-center justify-between rounded-2xl">
+      <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
+        Collection minted on</div>
+      
+      <div class="flex items-center">
+        <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+        <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
+      </div>
+  </div>
+</nz-card>
+
+<nz-card class="mt-4" i18n-nzTitle nzTitle="Who can buy?">
   <div class="flex" *ngIf="(data.collection$ | async)?.access === access.OPEN">
     <wen-icon-open-sale [size]="20" class="text-foregrounds-secondary dark:text-foregrounds-secondary-dark"></wen-icon-open-sale>
     <div class="ml-1.5 text-sm font-medium text-foregrounds-primary dark:text-foregrounds-primary-dark" i18n>
@@ -120,3 +145,5 @@
     </div>
   </div>
 </nz-card>
+
+<wen-collection-mint-network *ngIf="isMintOnNetorkVisible" [isOpen]="isMintOnNetorkVisible" [collection]="(data.collection$ | async) || undefined" (wenOnClose)="isMintOnNetorkVisible = false"></wen-collection-mint-network>

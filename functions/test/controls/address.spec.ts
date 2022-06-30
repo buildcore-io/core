@@ -20,7 +20,7 @@ describe('Address validation', () => {
   })
 
   it('Should validate member address with shimmer', async () => {
-    const memberAddress = await createMember(walletSpy, true, Network.SHIMMER)
+    const memberAddress = await createMember(walletSpy, true, Network.RMS)
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`).get()).data()
     expect(member.validatedAddress?.smr).toBeDefined()
   })
@@ -28,9 +28,9 @@ describe('Address validation', () => {
   it('Should validate member address with both', async () => {
     const memberAddress = await createMember(walletSpy, true)
 
-    const memberValidation = await validateMemberAddressFunc(walletSpy, memberAddress, Network.SHIMMER);
-    const milestone = await submitMilestoneFunc(memberValidation.payload.targetAddress, memberValidation.payload.amount, Network.SHIMMER);
-    await milestoneProcessed(milestone.milestone, milestone.tranId, Network.SHIMMER);
+    const memberValidation = await validateMemberAddressFunc(walletSpy, memberAddress, Network.RMS);
+    const milestone = await submitMilestoneFunc(memberValidation.payload.targetAddress, memberValidation.payload.amount, Network.RMS);
+    await milestoneProcessed(milestone.milestone, milestone.tranId, Network.RMS);
 
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`).get()).data()
     expect(member.validatedAddress?.iota).toBeDefined()
@@ -45,7 +45,7 @@ describe('Address validation', () => {
 
   it('Should validate space address with shimmer', async () => {
     const memberAddress = await createMember(walletSpy)
-    const space = await createSpace(walletSpy, memberAddress, true, Network.SHIMMER)
+    const space = await createSpace(walletSpy, memberAddress, true, Network.RMS)
     expect(space.validatedAddress?.smr).toBeDefined()
   })
 
@@ -53,9 +53,9 @@ describe('Address validation', () => {
     const memberAddress = await createMember(walletSpy, true)
     const space = await createSpace(walletSpy, memberAddress, true)
 
-    const spaceValidation = await validateSpaceAddressFunc(walletSpy, memberAddress, space.uid, Network.SHIMMER);
-    const nextMilestone = await submitMilestoneFunc(spaceValidation.payload.targetAddress, spaceValidation.payload.amount, Network.SHIMMER);
-    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId, Network.SHIMMER);
+    const spaceValidation = await validateSpaceAddressFunc(walletSpy, memberAddress, space.uid, Network.RMS);
+    const nextMilestone = await submitMilestoneFunc(spaceValidation.payload.targetAddress, spaceValidation.payload.amount, Network.RMS);
+    await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId, Network.RMS);
 
     const spaceData = <Space>(await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).get()).data()
     expect(spaceData.validatedAddress?.iota).toBeDefined()

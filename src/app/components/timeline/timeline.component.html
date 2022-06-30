@@ -126,7 +126,7 @@
                                                     <div class="font-bold text-sm text-foregrounds-primary dark:text-foregrounds-primary">{{ formatBest(tt.payload.amount) }}</div>
 
                                                     <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark ml-3" target="_blank"
-                                                        [routerLink]="['/space', tt.space]">{{ getSpace(tt.space)?.name }}</a>
+                                                        [routerLink]="['/space', tt.space]">{{ (cache.getSpace(tt.space) | async)?.name }}</a>
                                                 </ng-container>
                                             </div>
                                         </div>

@@ -150,9 +150,10 @@ export class MultiplePage implements OnInit {
   }
 
   public ngOnInit(): void {
-    merge(this.collectionControl.valueChanges, this.cache.allCollections$)
+    this.cache.fetchAllCollections();
+    merge(this.collectionControl.valueChanges, this.cache.allCollectionsLoaded$)
       .pipe(
-        map(() => this.cache.allCollections$.value.find((subO: any) => subO.uid === this.collectionControl.value)),
+        map(() => Object.entries(this.cache.collections || {}).find(([id]) => id === this.collectionControl.value)?.[1]?.value),
         filter((col: Collection | undefined) => !!col && (col !== this.collection)),
         untilDestroyed(this)
       )

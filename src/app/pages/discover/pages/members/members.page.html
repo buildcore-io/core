@@ -12,14 +12,17 @@
         </span>
       </ng-template>
     </ais-stats>
-    <button class="wen-secondary absolute top-0 right-0 z-10" nz-button nzSize="small" (click)="openFilters = !openFilters">
+    <button class="wen-secondary absolute top-0 right-0 z-10" nz-button nzSize="small"
+      (click)="filterStorageService.discoverMembersFiltersVisible$.next(!filterStorageService.discoverMembersFiltersVisible$.value)">
       <wen-icon-collapse-arrow *ngIf="deviceService.isDesktop$ | async" [size]="16"
-        class="transition-all mr-1" [ngClass]="{ 'rotate-180': !openFilters}"></wen-icon-collapse-arrow>
+        class="transition-all mr-1"
+        [ngClass]="{ 'rotate-180': (filterStorageService.discoverMembersFiltersVisible$ | async) === false}">
+      </wen-icon-collapse-arrow>
       <div i18n>Filters&Sort</div>
     </button>
   </div>
   <main class="flex mx-auto justify-between">
-    <section class="container-results" [ngClass]="{ 'mr-5' : openFilters }">
+    <section class="container-results" [ngClass]="{ 'mr-5': filterStorageService.discoverMembersFiltersVisible$ | async }">
       <ais-infinite-hits [transformItems]="convertAllToSoonaverseModel">
         <ng-template let-hits="hits" let-refine="showMore">
           <div class="mt-6 xl:grid place-items-start">
@@ -40,34 +43,33 @@
     </section>
     <div class="container-filters overflow-hidden -translate-y-5 transition-all"
       *ngIf="(deviceService.isMobile$ | async) !== true"
-      [ngClass]="openFilters ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
+      [ngClass]="(filterStorageService.discoverMembersFiltersVisible$ | async) ? 'max-w-screen-2xl ml-6' : 'max-w-0'">
 
-      <wen-algolia-clear (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <wen-algolia-clear *ngIf="filterStorageService.discoverMembersResetVisible$ | async" (wenOnClear)="reset$.next()"></wen-algolia-clear>
+      <!-- This div is for filters positioning -->
+      <div class="mb-12" *ngIf="(filterStorageService.discoverMembersResetVisible$ | async) === false"></div>
 
       <ng-container *ngTemplateOutlet="filters"></ng-container>
     </div>
 
-    <nz-drawer *ngIf="deviceService.isMobile$ | async"
-        [nzBodyStyle]="{ overflow: 'auto', padding: '20px' }"
-        [nzWidth]="'100vw'" #drawer
-        [nzClosable]="false"
-        [nzVisible]="openFilters">
-        <div *nzDrawerContent class="relative min-h-full h-max">
-            <div class="pb-4 text-3xl font-bold" i18n>Filters&sort</div>
-            <button class="absolute right-0 z-10 top-1" (click)="openFilters = false">
-                <wen-icon-close></wen-icon-close>
-            </button>
+    <wen-drawer *ngIf="deviceService.isMobile$ | async"
+      [isVisible]="filterStorageService.discoverMembersFiltersVisible$ | async" bodyClasses="overflow-auto p-5">
+      <div class="pb-4 text-3xl font-bold" i18n>Filters&sort</div>
+      <button class="absolute right-4 z-10 top-4" (click)="filterStorageService.discoverMembersFiltersVisible$.next(false)">
+          <wen-icon-close></wen-icon-close>
+      </button>
 
-            <ng-container *ngTemplateOutlet="filters"></ng-container>
-        </div>
-    </nz-drawer>
+      <ng-container *ngTemplateOutlet="filters"></ng-container>
+    </wen-drawer>
 
     <ng-template #filters>
       <div class="container-body mt-8 lg:mt-6">
         <wen-collapse i18n-title title="Sort by" class="transition-all mb-2" [isCollapsed]="false"
           [type]="collapseTypes.UNDERLINE" (wenOnCollapse)="sortOpen = !$event" [ngClass]="{ 'mb-10': sortOpen }">
             <wen-sort-by
-              [items]="sortItems"
+              [items]="filterStorageService.discoverMembersFiltersOptions.sortItems"
+              [value]="(filterStorageService.discoverMembersFilters$ | async)?.sortBy"
+              (wenChange)="filterStorageService.discoverMembersFilters$.next({ sortBy: $event })">
             ></wen-sort-by>
         </wen-collapse>
         <div>

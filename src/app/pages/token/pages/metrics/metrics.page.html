@@ -18,12 +18,12 @@
         </div>
 
 
-        <div class="flex flex-wrap items-start mt-8 xl:space-x-0 xl:space-y-3 xl:flex-col xl:mt-0 ml-10">
+        <div class="flex flex-wrap items-start mt-8 xl:space-x-0 xl:space-y-3 xl:flex-col xl:mt-0 ml-10 w-full xl:w-3/10">
             <div *ngFor="let a of (data.token$ | async)?.allocations; let i = index"
-                class="flex mt-4 mr-4 xl:mr-0 xl:mt-0">
+                class="flex mt-4 mr-4 xl:mr-0 xl:mt-0 w-full">
                 <div class="w-6 h-3 mr-2 rounded-md" [ngStyle]="{ 'background-color': colors[i] }"></div>
-                <div class="font-medium -mt-1.5">
-                    <div class="truncate">{{ a.title }}</div>
+                <div class="font-medium -mt-1.5 w-full">
+                    <div class="break-word w-full">{{ a.title }}</div>
                     <div class="mt-1 truncate text-foregrounds-secondary dark:text-foregrounds-secondary-dark">
                         {{ a.percentage }}% ({{ percentageTokenAmount(a, (data.token$ | async) || undefined) }})</div>
                 </div>

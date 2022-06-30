@@ -38,7 +38,9 @@ export enum Entity {
 
 export enum Network {
   IOTA = 'iota',
-  SHIMMER = 'smr'
+  ATOI = 'atoi',
+  SMR = 'smr',
+  RMS = 'rms'
 }
 
 export interface VoteTransaction {

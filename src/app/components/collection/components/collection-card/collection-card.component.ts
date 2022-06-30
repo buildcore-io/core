@@ -8,6 +8,7 @@ import { Space } from '@functions/interfaces/models';
 import { Access, FILE_SIZES } from '@functions/interfaces/models/base';
 import { Collection } from '@functions/interfaces/models/collection';
 import { HelperService } from '@pages/collection/services/helper.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'wen-collection-card',
@@ -29,20 +30,16 @@ export class CollectionCardComponent {
     // none.
   }
 
-  public get space(): Space | undefined {
+  public get space(): Observable<Space | undefined> {
     if (!this.collection?.space) {
-      return undefined;
+      return of(undefined);
     }
 
-    const space: Space | undefined = this.cache.allSpaces$.value.find((s) => {
-      return s.uid === this.collection!.space;
-    });
-
-    return space;
+    return this.cache.getSpace(this.collection!.space);
   }
-  public get spaceAvatarUrl(): string | undefined {
-    if (this.space) {
-      return this.space.avatarUrl ? FileApi.getUrl(this.space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
+  public spaceAvatarUrl(space?: Space): string | undefined {
+    if (space) {
+      return space.avatarUrl ? FileApi.getUrl(space.avatarUrl, 'space_avatar', FILE_SIZES.small) : undefined;
     }
 
     return undefined;

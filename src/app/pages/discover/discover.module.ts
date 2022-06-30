@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { AlgoliaModule } from "@components/algolia/algolia.module";
 import { CollapseModule } from '@components/collapse/collapse.module';
 import { CollectionCardModule } from '@components/collection/components/collection-card/collection-card.module';
+import { DrawerModule } from '@components/drawer/drawer.module';
 import { DropdownTabsModule } from '@components/dropdown-tabs/dropdown-tabs.module';
 import { IconModule } from '@components/icon/icon.module';
 import { MobileSearchModule } from '@components/mobile-search/mobile-search.module';
@@ -80,7 +81,8 @@ import { FilterService } from './services/filter.service';
     CollectionCardModule,
     AlgoliaModule,
     CollapseModule,
-    NzDrawerModule
+    NzDrawerModule,
+    DrawerModule
   ]
 })
 export class DiscoverModule { }

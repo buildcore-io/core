@@ -3,7 +3,6 @@ import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Space } from '@functions/interfaces/models';
 import { NewService } from '@pages/token/services/new.service';
 import { StepType } from '../new.page';
 
@@ -21,7 +20,7 @@ export class NewSummaryComponent {
     public newService: NewService,
     public deviceService: DeviceService,
     public previewImageService: PreviewImageService,
-    private cache: CacheService
+    public cache: CacheService
   ) {}
 
   public get stepTypes(): typeof StepType {
@@ -38,9 +37,5 @@ export class NewSummaryComponent {
     }
 
     return UnitsHelper.formatBest(Number(amount), 2);
-  }
-
-  public getSpace(spaceId: string): Space | undefined {
-    return this.cache.allSpaces$?.getValue().find(s => s.uid === spaceId);
   }
 }

@@ -63,7 +63,7 @@
 
     <wen-member-card class="block" [fullWidth]="true" [allowMobileContent]="true" i18n-createdOnLabel
       [createdOnLabel]="getMemberCreatedOnLabel()" [createdOn]="member?._subColObj?.createdOn"
-      *ngFor="let member of (getList() | async); trackBy: trackByUid" [selectedSpace]="(data.space$ | async)?.uid" [includeAlliances]="true"
+      *ngFor="let member of (getList() | async); trackBy: trackByUid" [selectedSpace]="(cache.getSpace((data.space$ | async)?.uid) | async) || undefined" [includeAlliances]="true"
       [about]="member.comment || ''" [member]="member">
       <ng-container
         *ngIf="(data.isGuardianWithinSpace$ | async) && !helper.isCompleted(data.award$ | async) && (data.award$ | async)?.approved">

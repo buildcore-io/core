@@ -1,7 +1,7 @@
 <div class="w-full pb-4 overflow-x-auto lg:pb-0">
     <div class="relative flex items-start justify-between mt-10 min-w-120">
         <div class="flex flex-col items-center ml-6">
-            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+            <div #generateCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
                 [ngClass]="{
                     'bg-accent-primary dark:bg-accent-primary-dark': currentStep === stepType.GENERATE,
                     'bg-accent-secondary dark:bg-accent-secondary-dark': currentStep === stepType.TRANSACTION ||
@@ -19,7 +19,7 @@
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE }"></div>
 
         <div class="flex flex-col items-center">
-            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+            <div #transactionCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
                 [ngClass]="{
                     'text-foregrounds-primary dark:text-foregrounds-primary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark': currentStep === stepType.GENERATE,
                     'bg-accent-primary dark:bg-accent-primary-dark': currentStep === stepType.TRANSACTION,
@@ -40,7 +40,7 @@
             }" [ngClass]="{ 'opacity-50': currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION }"></div>
 
         <div class="flex flex-col items-center">
-            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+            <div #waitCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
                 [ngClass]="{
                     'text-foregrounds-primary dark:text-foregrounds-primary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark':
                         currentStep === stepType.GENERATE || currentStep === stepType.TRANSACTION,
@@ -63,7 +63,7 @@
                 currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT}"></div>
 
         <div class="flex flex-col items-center mr-6">
-            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-white rounded-full"
+            <div #confirmedCheckbox class="flex items-center justify-center w-6 h-6 text-xs font-bold text-foregrounds-secondary dark:text-foregrounds-secondary-dark rounded-full"
                 [ngClass]="{
                     'text-foregrounds-primary dark:text-foregrounds-primary-dark opacity-50 border border-inputs-border dark:border-inputs-border-dark': currentStep === stepType.GENERATE ||
                         currentStep === stepType.TRANSACTION || currentStep === stepType.WAIT,

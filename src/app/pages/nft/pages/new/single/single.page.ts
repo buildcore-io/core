@@ -20,7 +20,7 @@ import * as dayjs from 'dayjs';
 import { DisabledTimeConfig } from 'ng-zorro-antd/date-picker';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzUploadChangeParam, NzUploadFile, NzUploadXHRArgs, UploadFilter } from 'ng-zorro-antd/upload';
-import { Observable, of, Subscription } from 'rxjs';
+import { filter, Observable, of, Subscription, switchMap } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -88,24 +88,28 @@ export class SinglePage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.collectionControl.valueChanges.pipe(untilDestroyed(this)).subscribe((o) => {
-      const finObj: Collection | undefined = this.cache.allCollections$.value.find((subO: any) => {
-        return subO.uid === o;
+    this.cache.fetchAllCollections();
+    this.cache.allCollectionsLoaded$
+      ?.pipe(
+        filter(r =>r),
+        switchMap(() => this.collectionControl.valueChanges),
+        untilDestroyed(this)
+      ).subscribe((o) => {
+        const finObj: Collection | undefined = Object.entries(this.cache.collections).find(([id]) => id === o)?.[1]?.value;
+
+        if (finObj) {
+          this.priceControl.setValue((finObj.price || 0));
+          this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
+        }
+
+        if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
+          this.priceControl.disable();
+          this.availableFromControl.disable();
+        } else {
+          this.priceControl.enable();
+          this.availableFromControl.enable();
+        }
       });
-
-      if (finObj) {
-        this.priceControl.setValue((finObj.price || 0));
-        this.availableFromControl.setValue((finObj.availableFrom || finObj.createdOn).toDate());
-      }
-
-      if (finObj && (finObj.type === CollectionType.GENERATED || finObj.type === CollectionType.SFT)) {
-        this.priceControl.disable();
-        this.availableFromControl.disable();
-      } else {
-        this.priceControl.enable();
-        this.availableFromControl.enable();
-      }
-    });
 
     this.route.parent?.params.pipe(untilDestroyed(this)).subscribe((p) => {
       if (p.collection) {

@@ -9,7 +9,7 @@
                 'calc(100% - 150px)' : '100%'
             }"
             formControlName="space"
-            [spaces]="helper.getSpaceListOptions(cache.allSpaces$ | async)"
+            [spaces]="helper.getSpaceListOptions(cache.cacheObjectToArray(cache.allSpacesLoaded$, cache.spaces) | async)"
             size="large">
           </wen-select-space>
 
@@ -34,9 +34,9 @@
 
       <div class="flex flex-col justify-between mt-6 lg:flex-row lg:items-center">
         <div class="flex items-center">
-          <wen-member-tile i18n-title title="Awards Completed" [value]="getTotal(data.member$ | async, 'awardsCompleted')">
+          <wen-member-tile i18n-title title="Awards Completed" [value]="(getTotal(data.member$ | async, cache.getSpace(spaceForm.value.space) | async, 'awardsCompleted') | async) || 0">
           </wen-member-tile>
-          <wen-member-tile class="ml-20" i18n-title title="Total Reputation" [value]="getTotal(data.member$ | async, 'totalReputation')">
+          <wen-member-tile class="ml-20" i18n-title title="Total Reputation" [value]="(getTotal(data.member$ | async, cache.getSpace(spaceForm.value.space) | async, 'totalReputation') | async) || 0">
           </wen-member-tile>
         </div>
 

@@ -103,5 +103,7 @@ export enum Access {
 
 export interface ValidatedAddress {
   [Network.IOTA]: string;
-  [Network.SHIMMER]: string;
+  [Network.ATOI]: string;
+  [Network.SMR]: string;
+  [Network.RMS]: string;
 }

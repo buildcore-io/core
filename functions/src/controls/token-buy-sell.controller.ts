@@ -131,7 +131,7 @@ export const buyToken = functions.runWith({
   assertTokenApproved(token);
 
   const tranId = getRandomEthAddress();
-  const newWallet = new WalletService();
+  const newWallet = WalletService.newWallet();
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   const orderDoc = admin.firestore().collection(COL.TRANSACTION).doc(tranId)
 

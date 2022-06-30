@@ -9,10 +9,11 @@ export interface MilestoneTransaction {
   createdOn: Timestamp;
   messageId: string;
   milestone: number;
-  inputs: MilestoneTransactionEntry[],
-  outputs: MilestoneTransactionEntry[],
+  inputs: MilestoneTransactionEntry[];
+  outputs: MilestoneTransactionEntry[];
   processed: boolean;
 }
+
 export interface Milestone {
   transactions: {
     [propName: string]: MilestoneTransaction;
