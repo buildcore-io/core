@@ -42,7 +42,7 @@ export class CacheService implements OnDestroy {
     if (this.allSpacesLoaded$.value || this.allSpacesLoading$.value) return;
     
     this.allSpacesLoading$.next(true);
-    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST).subscribe(spaces => {
+    this.spaceSubscriptions$.push(this.spaceApi.alphabetical(undefined, undefined, FULL_LIST)?.subscribe(spaces => {
       spaces.forEach(s => {
         const subject = new BehaviorSubject<Space | undefined>(s);
         this.spaces[s.uid] = subject;

@@ -90,7 +90,7 @@ export class SinglePage implements OnInit {
   public ngOnInit(): void {
     this.cache.fetchAllCollections();
     this.cache.allCollectionsLoaded$
-      .pipe(
+      ?.pipe(
         filter(r =>r),
         switchMap(() => this.collectionControl.valueChanges),
         untilDestroyed(this)
