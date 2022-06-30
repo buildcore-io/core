@@ -7381,7 +7381,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/services/helper.service.ts</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">One Member One Vote</target>
+        <target state="translated">Un Vote par Membre</target>
       </trans-unit>
       <trans-unit id="203392856469628664" datatype="html">
         <source>New </source>
@@ -7529,7 +7529,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
-        <target state="needs-translation">Upcoming Sale</target>
+        <target state="translated">Ventes Programmées</target>
       </trans-unit>
       <trans-unit id="7396867049276382883" datatype="html">
         <source>Live Token Sale</source>
@@ -7537,7 +7537,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/overview/overview.page.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="needs-translation">Live Token Sale</target>
+        <target state="translated">Token Vente en Ligne</target>
       </trans-unit>
       <trans-unit id="6731859764357922789" datatype="html">
         <source>Active Proposals</source>
@@ -7593,7 +7593,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">21,22</context>
         </context-group>
-        <target state="needs-translation">Check out space</target>
+        <target state="translated">Vérifiez l'Espace Composants</target>
       </trans-unit>
       <trans-unit id="342241515572625564" datatype="html">
         <source>Token Info</source>
@@ -7605,7 +7605,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">15,16</context>
         </context-group>
-        <target state="needs-translation">Token Info</target>
+        <target state="translated">Description du Token</target>
       </trans-unit>
       <trans-unit id="8986421314427632087" datatype="html">
         <source>pending</source>
@@ -7613,7 +7613,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">56,57</context>
         </context-group>
-        <target state="needs-translation">pending</target>
+        <target state="translated">en attente</target>
       </trans-unit>
       <trans-unit id="5164033935854403711" datatype="html">
         <source>Export members</source>
@@ -7621,7 +7621,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">64,65</context>
         </context-group>
-        <target state="needs-translation">Export members</target>
+        <target state="translated">Exportation de membres</target>
       </trans-unit>
       <trans-unit id="466218489903401473" datatype="html">
         <source>Exporting members</source>
@@ -7629,7 +7629,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">68,69</context>
         </context-group>
-        <target state="needs-translation">Exporting members</target>
+        <target state="translated">Membres exportateurs</target>
       </trans-unit>
       <trans-unit id="6477178662160424901" datatype="html">
         <source>Open to join instantly</source>
