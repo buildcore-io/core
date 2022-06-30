@@ -14,7 +14,8 @@ import { guardedRerun } from '../utils/common.utils';
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../utils/config.utils';
 import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
 import { Logger } from '../utils/logger.utils';
-import { creditBuyer } from '../utils/token-buy-sell.utils';
+import { cancelSale, creditBuyer } from '../utils/token-buy-sell.utils';
+import { BIG_DECIMAL_PRECISION } from '../utils/token.utils';
 import { getRandomEthAddress } from '../utils/wallet.utils';
 
 type StartAfter = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>
@@ -26,6 +27,7 @@ export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memo
     const id = context.params.buySellId
     const prev = <TokenBuySellOrder | undefined>snap.before.data()
     const next = <TokenBuySellOrder | undefined>snap.after.data()
+
     if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
       const logger = new Logger();
       logger.add('onTokenBuySellCreated', id)
@@ -34,6 +36,17 @@ export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memo
         startAfter = await fulfillSales(id, startAfter, logger)
         return startAfter !== undefined
       }, 10000000)
+      return;
+    }
+
+    if (isActiveBuy(next) && fulfillmentIncreased(prev, next) && needsHigherBuyAmount(next!)) {
+      await admin.firestore().runTransaction(async transaction => {
+        const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next!.uid}`)
+        const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
+        if (sale && isActiveBuy(sale) && needsHigherBuyAmount(sale)) {
+          await cancelSale(transaction, sale, TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
+        }
+      })
     }
   })
 
@@ -264,4 +277,14 @@ const getSaleQuery = (sale: TokenBuySellOrder, startAfter: StartAfter | undefine
     query = query.startAfter(startAfter)
   }
   return query
+}
+
+const isActiveBuy = (sale?: TokenBuySellOrder) => sale?.type === TokenBuySellOrderType.BUY && sale?.status === TokenBuySellOrderStatus.ACTIVE
+
+const fulfillmentIncreased = (prev?: TokenBuySellOrder, next?: TokenBuySellOrder) => (prev?.fulfilled || 0) < (next?.fulfilled || 0)
+
+const needsHigherBuyAmount = (buy: TokenBuySellOrder) => {
+  const tokensLeft = Number(bigDecimal.subtract(buy.count, buy.fulfilled))
+  const price = Number(bigDecimal.floor(bigDecimal.divide(buy.balance || 0, tokensLeft, BIG_DECIMAL_PRECISION)))
+  return price > buy.price
 }
