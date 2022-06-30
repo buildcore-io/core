@@ -2,7 +2,7 @@
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { Network, Space } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { TokenStatus } from '../../interfaces/models/token';
+import { Token, TokenStatus } from '../../interfaces/models/token';
 import admin from '../../src/admin.config';
 import { createMember } from '../../src/controls/member.control';
 import { mintTokenOrder } from '../../src/controls/token-mint.controller';
@@ -19,13 +19,11 @@ let walletSpy: any;
 const network = Network.RMS
 
 const sendFromGenesis = async (from: AddressDetails, to: string, amount: number) => {
-  console.log('sendFromGenesis')
   const wallet = WalletService.newWallet(network)
   await wallet.sendFromGenesis(from, to, amount, JSON.stringify({ network: 'wen' }))
 }
 
 const createAndValidateMember = async (member: string, requestTokens?: boolean) => {
-  console.log('createAndValidateMember', member)
   mockWalletReturnValue(walletSpy, member, {})
   await testEnv.wrap(createMember)(member);
   const wallet = WalletService.newWallet(network)
@@ -36,7 +34,7 @@ const createAndValidateMember = async (member: string, requestTokens?: boolean) 
   return address;
 }
 
-describe.skip('Address validation', () => {
+describe('Address validation', () => {
   let guardian: string
   let unsubscribe: any
   let space: Space;
@@ -46,16 +44,15 @@ describe.skip('Address validation', () => {
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     unsubscribe = copyMilestoneTransactionsFromDev(network)
+  })
+
+  it('Token mint test', async () => {
     guardian = wallet.getRandomEthAddress();
     address = await createAndValidateMember(guardian, true)
     space = await createSpace(walletSpy, guardian)
     token = await saveToken(space.uid, guardian)
-  })
-
-  it('Token mint test', async () => {
     mockWalletReturnValue(walletSpy, guardian, { token: token.uid, targetNetwork: network })
     const order = await testEnv.wrap(mintTokenOrder)({});
-    console.log(order)
     await sendFromGenesis(address, order.payload.targetAddress, order.payload.amount)
 
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
@@ -63,7 +60,10 @@ describe.skip('Address validation', () => {
       const snap = await tokenDocRef.get()
       return snap.data()?.status === TokenStatus.MINTED
     })
-    expect((await tokenDocRef.get()).data()?.status).toBe(TokenStatus.MINTED)
+    const tokenData = <Token>(await tokenDocRef.get()).data()
+    expect(tokenData.status).toBe(TokenStatus.MINTED)
+    expect(tokenData.mintedTokenId).toBeDefined()
+    expect(tokenData.aliasAddress).toBeDefined()
   })
 
   afterAll(() => {

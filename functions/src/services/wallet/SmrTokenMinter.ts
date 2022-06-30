@@ -1,7 +1,7 @@
 import * as lib from "@iota/iota.js-next";
 import { Token } from "../../../interfaces/models/token";
 import { createAlias, transferAlias } from "./token/alias.utils";
-import { chainTrasactionsViaBlocks, getTransactionPayloadHex } from "./token/common.utils";
+import { chainTransactionsViaBlocks, getTransactionPayloadHex } from "./token/common.utils";
 import { createFoundryMintToken } from "./token/foundry.utils";
 import { AddressDetails } from "./wallet";
 
@@ -13,13 +13,12 @@ export class SmrTokenMinter {
     return totalStorageDeposit
   }
 
-  public mintToken = async (source: AddressDetails, target: AddressDetails, token: Token) => {
-    const { payloads, tokenId } = await this.createPayloads(source, target, token)
-    const blocks = await chainTrasactionsViaBlocks(this.client, payloads, this.info.protocol.minPoWScore);
+  public mintToken = async (source: AddressDetails, target: AddressDetails, token: Token): Promise<void> => {
+    const { payloads } = await this.createPayloads(source, target, token)
+    const blocks = await chainTransactionsViaBlocks(this.client, payloads, this.info.protocol.minPoWScore);
     for (const block of blocks) {
-      await this.client.blockSubmit(block);
+      await this.client.blockSubmit(block)
     }
-    return tokenId
   }
 
   private createPayloads = async (source: AddressDetails, target: AddressDetails, token: Token) => {
@@ -27,7 +26,7 @@ export class SmrTokenMinter {
     const aliasOutput = await createAlias(this.client, networkId, source);
 
     const targetAddress = lib.Bech32Helper.addressFromBech32(target.bech32, this.info.protocol.bech32HRP)
-    const { totalStorageDeposit, payload: foundryOutput, tokenId } = await createFoundryMintToken(
+    const { totalStorageDeposit, payload: foundryOutput } = await createFoundryMintToken(
       aliasOutput.essence.outputs[0],
       getTransactionPayloadHex(aliasOutput),
       source.keyPair,
@@ -44,8 +43,9 @@ export class SmrTokenMinter {
       targetAddress,
       networkId
     );
+    const payloads = [aliasOutput, foundryOutput, transferAliasOutput]
 
-    return { payloads: [aliasOutput, foundryOutput, transferAliasOutput], totalStorageDeposit, tokenId }
+    return { payloads, totalStorageDeposit }
   }
 
 }

@@ -20,7 +20,7 @@ export interface Wallet {
   getNewIotaAddressDetails: () => Promise<AddressDetails>;
   getIotaAddressDetails: (mnemonic: string) => Promise<AddressDetails>;
   sendFromGenesis: (fromAddress: AddressDetails, toAddress: string, amount: number, data: string) => Promise<string>;
-  mintToken: (sourceAddressBech: string, targetAddressBech: string, token: Token) => Promise<string>;
+  mintToken: (sourceAddressBech: string, targetAddressBech: string, token: Token) => Promise<void>;
   getTokenMintTotalStorageDeposit: (sourceAddressBech: string, targetAddressBech: string, token: Token) => Promise<number>;
 }
 

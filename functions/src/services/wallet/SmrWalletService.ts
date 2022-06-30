@@ -6,10 +6,14 @@ import {
   Ed25519Seed,
   ED25519_ADDRESS_TYPE,
   getBalance,
-  IBasicOutput, IKeyPair,
+  IAliasOutput,
+  IBasicOutput, IFoundryOutput, IKeyPair,
   IndexerPluginClient,
+  INftOutput,
   INodeInfo, IUTXOInput,
   OutputTypes, sendAdvanced, SingleNodeClient,
+  TransactionHelper,
+  UnlockConditionTypes,
   UTXO_INPUT_TYPE
 } from "@iota/iota.js-next";
 import { Converter } from '@iota/util.js-next';
@@ -17,6 +21,7 @@ import bigInt, { BigInteger } from "big-integer";
 import { generateMnemonic } from 'bip39';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { Token } from "../../../interfaces/models/token";
+import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
 import { getRandomElement } from "../../utils/common.utils";
 import { MnemonicService } from "./mnemonic";
 import { SmrTokenMinter } from "./SmrTokenMinter";
@@ -136,13 +141,15 @@ export class SmrWallet implements Wallet {
     return Converter.bytesToHex(decodeBench32Target?.addressBytes!, true)
   }
 
-  public pubKeyHashToBech = async (publicKeyHash: string) => {
-    await this.init();
-    const publicKey = Converter.hexToBytes(publicKeyHash)
-    return Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, publicKey, this.nodeInfo!.protocol.bech32HRP)
+  public getTransactionOutput = async (transactionId: string, outputIndex: number) => {
+    const outputId = TransactionHelper.outputIdFromTransactionData(transactionId, outputIndex)
+    return await this.client.output(outputId)
   }
 
-  public output = (outputId: string) => this.client.output(outputId)
+  public bechAddressFromOutput = async (output: IBasicOutput | IAliasOutput | IFoundryOutput | INftOutput) => {
+    const hrp = (await this.client.protocolInfo()).bech32HRP
+    return Bech32AddressHelper.addressFromAddressUnlockCondition(output.unlockConditions, hrp, output.type);
+  }
 
   public mintToken = async (sourceBech32: string, targetBech32: string, token: Token) => {
     await this.init();
@@ -163,5 +170,10 @@ export class SmrWallet implements Wallet {
   private getAddressDetails = async (bech32: string) => {
     const mnemonic = await MnemonicService.get(bech32)
     return this.getIotaAddressDetails(mnemonic)
+  }
+
+  public addressFromAddressUnlockCondition = async (unlockConditions: UnlockConditionTypes[], outputType: number) => {
+    const hrp = (await this.client.protocolInfo()).bech32HRP
+    return Bech32AddressHelper.addressFromAddressUnlockCondition(unlockConditions, hrp, outputType)
   }
 }

@@ -1,8 +1,9 @@
 
+import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { WenError } from '../../interfaces/errors';
 import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token } from "../../interfaces/models/token";
+import { Token, TokenStatus } from "../../interfaces/models/token";
 import admin from '../admin.config';
 import { throwInvalidArgument } from './error.utils';
 
@@ -43,3 +44,18 @@ export const getTotalPublicSupply = (token: Token) => {
   const publicPercentage = token.allocations.find(a => a.isPublicSale)?.percentage || 0
   return Number(bigDecimal.floor(bigDecimal.multiply(token.totalSupply, publicPercentage / 100)))
 }
+
+
+const DEFAULT_VALID_STATUSES = [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED]
+export const assertTokenStatus = (token: Token, validStatuses = DEFAULT_VALID_STATUSES) => {
+  if (!validStatuses.includes(token.status)) {
+    throw throwInvalidArgument(WenError.token_in_invalid_status)
+  }
+}
+
+export const tokenIsInPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
+  dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
+
+export const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength && token.coolDownEnd &&
+  dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
+  dayjs().isBefore(dayjs(token.coolDownEnd.toDate()))

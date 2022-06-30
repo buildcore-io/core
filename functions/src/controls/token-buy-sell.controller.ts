@@ -20,7 +20,7 @@ import { appCheck } from '../utils/google.utils';
 import { assertIpNotBlocked } from '../utils/ip.utils';
 import { assertValidation } from '../utils/schema.utils';
 import { cancelSale } from '../utils/token-buy-sell.utils';
-import { assertTokenApproved } from '../utils/token.utils';
+import { assertTokenApproved, assertTokenStatus } from '../utils/token.utils';
 import { decodeAuth, getRandomEthAddress } from '../utils/wallet.utils';
 
 const buySellTokenSchema = Joi.object({
@@ -55,6 +55,7 @@ export const sellToken = functions.runWith({
   }
 
   assertTokenApproved(token);
+  assertTokenStatus(token);
 
   const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}/${SUB_COL.DISTRIBUTION}/${owner}`);
   const sellDocId = getRandomEthAddress();
@@ -129,6 +130,7 @@ export const buyToken = functions.runWith({
   }
 
   assertTokenApproved(token);
+  assertTokenStatus(token);
 
   const tranId = getRandomEthAddress();
   const newWallet = WalletService.newWallet();

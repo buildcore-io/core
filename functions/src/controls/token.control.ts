@@ -21,7 +21,7 @@ import { appCheck } from "../utils/google.utils";
 import { assertIpNotBlocked } from '../utils/ip.utils';
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, assertTokenStatus, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenIsInCoolDownPeriod, tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
@@ -188,6 +188,8 @@ export const setTokenAvailableForSale = functions.runWith({
       throw throwInvalidArgument(WenError.public_sale_already_set)
     }
 
+    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE])
+
     await assertIsGuardian(token.space, owner)
 
     shouldSetPublicSaleTimeFrames(params.body, token.allocations);
@@ -245,13 +247,6 @@ export const cancelPublicSale = functions.runWith({
   return <Token>(await tokenDocRef.get()).data();
 
 })
-
-const tokenIsInPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
-  dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
-
-const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength && token.coolDownEnd &&
-  dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
-  dayjs().isBefore(dayjs(token.coolDownEnd.toDate()))
 
 
 const orderTokenSchema = Joi.object({ token: Joi.string().required() });
@@ -424,6 +419,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       }
 
       assertTokenApproved(token)
+      assertTokenStatus(token)
 
       await assertIsGuardian(token.space, owner);
 

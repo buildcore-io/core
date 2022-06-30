@@ -43,10 +43,13 @@ export class TokenService {
     const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${orderData.payload.token}`)
     const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
     const wallet = WalletService.newWallet(orderData.targetNetwork)
-    const mintedTokenId = await wallet.mintToken(orderData.payload.targetAddress, getAddress(member.validatedAddress, orderData.targetNetwork!), token)
-
+    await wallet.mintToken(
+      orderData.payload.targetAddress,
+      getAddress(member.validatedAddress, orderData.targetNetwork!),
+      token
+    )
     const ref = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
-    const data = { status: TokenStatus.MINTED, mintedTokenId, mintedBy: orderData.member }
+    const data = { status: TokenStatus.MINTING, mintedBy: orderData.member }
     this.transactionService.updates.push({ ref, data, action: 'update' });
   }
 

@@ -11,12 +11,14 @@ import { mintTokenOrder } from './controls/token-mint.controller';
 import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
-import { milestoneTriggers } from './triggers/milestone-transaction.trigger';
+import { atoiMilestoneTransactionWrite, iotaMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/iota-milestone-transaction.trigger';
+import { rmsMilestoneTransactionWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
 import { onTokenBuySellWrite } from './triggers/token-buy-sell.trigger';
 import { onTokenPurchaseCreated } from './triggers/token-purchase.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
+import { isProdEnv } from './utils/config.utils';
 
 // Members functions.
 exports[WEN_FUNC.cMemberNotExists] = createMember;
@@ -67,8 +69,17 @@ exports[WEN_FUNC.validateAddress] = validateAddress;
 
 // CRON Tasks
 export { cron };
-// TRIGGER Tasks
 export { milestoneTriggers as trigger };
+// TRIGGER Tasks
+const prodMilestoneTriggers = {
+  iotaMilestoneTransactionWrite,
+  smrMilestoneTransactionWrite
+}
+const testMilestoneTriggers = {
+  atoiMilestoneTransactionWrite,
+  rmsMilestoneTransactionWrite
+}
+const milestoneTriggers = isProdEnv() ? prodMilestoneTriggers : { ...prodMilestoneTriggers, ...testMilestoneTriggers }
 
 exports['trigger_transactionWrite'] = transactionWrite;
 exports['trigger_collectionWrite'] = collectionWrite;

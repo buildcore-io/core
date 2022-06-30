@@ -1,9 +1,8 @@
 
 import { Ed25519 } from "@iota/crypto.js-next";
-import { AddressTypes, ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, DEFAULT_PROTOCOL_VERSION, ED25519_SIGNATURE_TYPE, IBasicOutput, IBlock, IKeyPair, ISignatureUnlock, ITransactionEssence, ITransactionPayload, IUTXOInput, MAX_BLOCK_LENGTH, OutputTypes, serializeBlock, SIGNATURE_UNLOCK_TYPE, SingleNodeClient, TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-next";
+import { DEFAULT_PROTOCOL_VERSION, ED25519_SIGNATURE_TYPE, IBlock, IKeyPair, ISignatureUnlock, ITransactionEssence, ITransactionPayload, IUTXOInput, MAX_BLOCK_LENGTH, OutputTypes, serializeBlock, SIGNATURE_UNLOCK_TYPE, SingleNodeClient, TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-next";
 import { NeonPowProvider } from "@iota/pow-neon.js";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-next";
-import bigInt from "big-integer";
+import { Converter, WriteStream } from "@iota/util.js-next";
 
 const createUnlock = (essence: ITransactionEssence, keyPair: IKeyPair): ISignatureUnlock => {
   const essenceHash = TransactionHelper.getTransactionEssenceHash(essence)
@@ -31,14 +30,7 @@ export const createPayload = (
 export const getTransactionPayloadHex = (payload: ITransactionPayload) =>
   Converter.bytesToHex(TransactionHelper.getTransactionPayloadHash(payload), true) + "0000";
 
-export const createBasicOutput = (amount: number, tokenId: string, targetAddress: AddressTypes): IBasicOutput => ({
-  type: BASIC_OUTPUT_TYPE,
-  amount: "0",
-  nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(amount)) }],
-  unlockConditions: [{ type: ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
-})
-
-export const chainTrasactionsViaBlocks = async (client: SingleNodeClient, txs: Array<ITransactionPayload>, minPoWScore: number): Promise<Array<IBlock>> => {
+export const chainTransactionsViaBlocks = async (client: SingleNodeClient, txs: Array<ITransactionPayload>, minPoWScore: number): Promise<Array<IBlock>> => {
   const blockIds: Array<string> = [];
   const blocks: Array<IBlock> = [];
 

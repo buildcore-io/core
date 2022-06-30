@@ -14,6 +14,8 @@ export enum TokenStatus {
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
   ERROR = 'error',
+  READY_TO_MINT = 'ready_to_mint',
+  MINTING = 'minting',
   MINTED = 'minted'
 }
 
@@ -52,6 +54,8 @@ export interface Token extends BaseRecord {
 
   readonly mintedTokenId?: string;
   readonly mintedBy?: string;
+  readonly mintedOn?: Timestamp;
+  readonly aliasAddress?: string;
 }
 
 export interface TokenDrop {
