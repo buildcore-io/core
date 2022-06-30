@@ -4,8 +4,8 @@ import { MemberApi } from "@api/member.api";
 import { TransactionApi } from "@api/transaction.api";
 import { DeviceService } from '@core/services/device';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, first, firstValueFrom } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, first, firstValueFrom, Observable, of } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { Space, Transaction } from "../../../../../../functions/interfaces/models";
 import { FILE_SIZES, Timestamp } from "../../../../../../functions/interfaces/models/base";
 import { Member } from '../../../../../../functions/interfaces/models/member';
@@ -21,9 +21,8 @@ import { ROUTER_UTILS } from './../../../../@core/utils/router.utils';
 })
 export class MemberCardComponent implements OnDestroy {
   @Input()
-  public set selectedSpace(value: Space | string | undefined) {
-    this._selectedSpace = typeof value === 'string' ?
-      this.cache.allSpaces$.getValue().find((s) => s.uid === value) : value;
+  public set selectedSpace(value: Space | undefined) {
+    this._selectedSpace = value;
     this.refreshBadges();
   }
 
@@ -100,28 +99,32 @@ export class MemberCardComponent implements OnDestroy {
     }
   }
 
-  public getTotal(what: 'awardsCompleted' | 'totalReputation'): number { // awardsCompleted
-    let total = 0;
+  public getTotal(what: 'awardsCompleted' | 'totalReputation'): Observable<number> { // awardsCompleted
     if (!this.selectedSpace) {
-      total = this.member?.[what] || 0;
-    } else {
-      if (this.selectedSpace) {
-        total = this.member?.spaces?.[this.selectedSpace.uid]?.[what] || 0;
-        if (this.includeAlliances) {
-          for (const [spaceId, values] of Object.entries(this.selectedSpace?.alliances || {})) {
-            const allianceSpace: Space | undefined = this.cache.allSpaces$.value.find((s) => {
-              return s.uid === spaceId;
-            });
-            if (allianceSpace && values.enabled === true) {
-              const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
-              total += Math.trunc((what === 'totalReputation') ? (value * values.weight) : value);
-            }
-          }
-        }
-      }
+      return of(Math.trunc(this.member?.[what] || 0));
+    } 
+
+    if (Object.keys(this.selectedSpace?.alliances || {}).length === 0) {
+      return of(0);
     }
 
-    return Math.trunc(total);
+    const spaceObservables: Observable<Space | undefined>[] =
+      Object.entries(this.selectedSpace?.alliances || {}).map(([spaceId]) => this.cache.getSpace(spaceId));
+
+    return combineLatest(spaceObservables)
+      .pipe(
+        map(allianceSpaces => {
+          let total = this.member?.spaces?.[this.selectedSpace?.uid || 0]?.[what] || 0;
+          for (const allianceSpace of allianceSpaces) {
+            if (allianceSpace && this.selectedSpace?.alliances[allianceSpace.uid].enabled === true) {
+              const value: number = this.member?.spaces?.[allianceSpace.uid]?.[what] || 0;
+              total += Math.trunc((what === 'totalReputation') ?
+                (value * this.selectedSpace?.alliances[allianceSpace.uid].weight) : value);
+            }
+          }
+          return Math.trunc(total);
+        })
+      );
   }
 
   public get filesizes(): typeof FILE_SIZES {

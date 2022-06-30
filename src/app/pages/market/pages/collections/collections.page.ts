@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CollectionApi } from '@api/collection.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
@@ -12,7 +12,7 @@ import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from "firebase/firestore";
-import { map, Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 
 @UntilDestroy()
@@ -26,12 +26,11 @@ import { map, Observable, Subject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.Default
 
 })
-export class CollectionsPage {
+export class CollectionsPage implements OnInit {
   config: InstantSearchConfig;
   sections = marketSections;
   paginationItems = defaultPaginationItems;
   reset$ = new Subject<void>();
-  spacesLoaded$?: Observable<boolean>;
   sortOpen = true;
   saleFilterOpen = true;
   spaceFilterOpen = true;
@@ -46,8 +45,6 @@ export class CollectionsPage {
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService
   ) {
-    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
-    console.log(this.filterStorageService.marketCollectionsFilters$.value);
     this.config = {
       indexName: 'collection',
       searchClient: this.algoliaService.searchClient,
@@ -55,6 +52,10 @@ export class CollectionsPage {
         collection: this.filterStorageService.marketCollectionsFilters$.value
       }
     };
+  }
+
+  public ngOnInit(): void {
+    this.cache.fetchAllSpaces();
   }
 
   public trackByUid(_index: number, item: any): number {

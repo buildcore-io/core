@@ -23,7 +23,7 @@ import { HOT_TAGS } from '@pages/market/pages/nfts/nfts.page';
 import { FilterService } from '@pages/market/services/filter.service';
 import { SortOptions } from '@pages/market/services/sort-options.interface';
 import * as dayjs from 'dayjs';
-import { BehaviorSubject, debounceTime, first, firstValueFrom, map, Observable, skip, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, first, firstValueFrom, map, Observable, skip, Subscription } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { NotificationService } from './../../../../@core/services/notification/notification.service';
 
@@ -66,6 +66,7 @@ export class CollectionPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.cache.fetchAllCollections();
     this.titleService.setTitle(WEN_NAME + ' - ' + 'Collection');
     this.route.params?.pipe(untilDestroyed(this)).subscribe((obj) => {
       const id: string|undefined = obj?.[ROUTER_UTILS.config.collection.collection.replace(':', '')];
@@ -106,18 +107,21 @@ export class CollectionPage implements OnInit, OnDestroy {
       this.data.accessBadges$.next(awards);
 
       // Get the access collections
-      const collections: Collection[] = [];
-      const allCollections = this.cache.allCollections$.getValue();
-      if (obj.accessCollections?.length) {
-        for (const c of obj.accessCollections) {
-          const collection: Collection|undefined = allCollections.find((col: Collection) => col.uid === c);
-          if (collection) {
-            collections.push(collection);
+      this.cache.allCollectionsLoaded$
+        .pipe(filter(r => r), untilDestroyed(this))
+        .subscribe(() => {
+          const collections: Collection[] = [];
+          if (obj.accessCollections?.length) {
+            for (const c of obj.accessCollections) {
+              const collection: Collection|undefined =
+                Object.entries(this.cache.collections).find(([id]) => id === c)?.[1].value.value;
+              if (collection) {
+                collections.push(collection);
+              }
+            }
           }
-        }
-      }
-
-      this.data.accessCollections$.next(collections);
+          this.data.accessCollections$.next(collections);
+        });
     });
 
     this.data.collection$.pipe(skip(1), first()).subscribe(async(p) => {

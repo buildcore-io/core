@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
 import { AlgoliaService } from "@components/algolia/services/algolia.service";
@@ -11,7 +11,7 @@ import { discoverSections } from "@pages/discover/pages/discover/discover.page";
 import { FilterService } from '@pages/discover/services/filter.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from "firebase/firestore";
-import { map, Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export enum HOT_TAGS {
   ALL = 'All',
@@ -29,12 +29,11 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class CollectionsPage {
+export class CollectionsPage implements OnInit {
   config: InstantSearchConfig;
   sections = discoverSections;
   paginationItems = defaultPaginationItems;
   reset$ = new Subject<void>();
-  spacesLoaded$?: Observable<boolean>;
   sortOpen = true;
   spaceFilterOpen = true;
 
@@ -44,8 +43,7 @@ export class CollectionsPage {
     public cache: CacheService,
     public filterStorageService: FilterStorageService,
     public readonly algoliaService: AlgoliaService,
-  ) { 
-    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
+  ) {
     this.config = {
       indexName: 'collection',
       searchClient: this.algoliaService.searchClient,
@@ -53,6 +51,10 @@ export class CollectionsPage {
         collection: this.filterStorageService.discoverCollectionsFilters$.value
       }
     };
+  }
+
+  public ngOnInit(): void {
+    this.cache.fetchAllSpaces();
   }
 
   public trackByUid(index: number, item: any): number {

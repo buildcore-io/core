@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MemberApi } from "@api/member.api";
+import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { ROUTER_UTILS } from "@core/utils/router.utils";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -54,7 +55,8 @@ export class ParticipantsPage implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     public data: DataService,
     public helper: HelperService,
-    public deviceService: DeviceService
+    public deviceService: DeviceService,
+    public cache: CacheService
   ) {
     // none.
   }

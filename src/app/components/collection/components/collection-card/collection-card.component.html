@@ -53,12 +53,12 @@
                 *ngIf="!fullWidth">
                 <nz-avatar
                     class="border-foregrounds-tertiary dark:border-foregrounds-tertiary-dark min-w-6 min-h-6"
-                    [nzSrc]="spaceAvatarUrl"
+                    [nzSrc]="spaceAvatarUrl((space | async)  || undefined)"
                     [nzSize]="24"
                     nzShape="circle"
                 ></nz-avatar>
                 <div class="text-sm font-medium ml-2.5 max-w-24 truncate">
-                    {{this.space?.name || this.space?.uid}}
+                    {{ (space | async)?.name || (space | async)?.uid }}
                 </div>
             </div>
         </div>

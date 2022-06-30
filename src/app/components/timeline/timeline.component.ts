@@ -4,7 +4,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Space, Transaction } from '@functions/interfaces/models';
+import { Transaction } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
 
 export enum TimelineItemType {
@@ -114,9 +114,5 @@ export class TimelineComponent {
 
   public castAsListedBySpacePayload(payload: TimelineItemPayload): ListedBySpaceTimelineItemPayload {
     return payload as ListedBySpaceTimelineItemPayload;
-  }
-
-  public getSpace(spaceId: string): Space | undefined {
-    return this.cache.allSpaces$.value.find(s => s.uid === spaceId);
   }
 }

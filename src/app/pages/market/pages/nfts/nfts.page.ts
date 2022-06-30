@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NftApi } from '@api/nft.api';
 import { AlgoliaCheckboxFilterType } from '@components/algolia/algolia-checkbox/algolia-checkbox.component';
 import { defaultPaginationItems } from "@components/algolia/algolia.options";
@@ -7,13 +7,12 @@ import { CollapseType } from '@components/collapse/collapse.component';
 import { CacheService } from '@core/services/cache/cache.service';
 import { DeviceService } from '@core/services/device';
 import { FilterStorageService } from '@core/services/filter-storage';
-import { Collection } from '@functions/interfaces/models';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { marketSections } from "@pages/market/pages/market/market.page";
 import { FilterService } from '@pages/market/services/filter.service';
 import { InstantSearchConfig } from 'angular-instantsearch/instantsearch/instantsearch';
 import { Timestamp } from "firebase/firestore";
-import { map, Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 // used in src/app/pages/collection/pages/collection/collection.page.ts
 export enum HOT_TAGS {
@@ -35,12 +34,11 @@ export enum HOT_TAGS {
   // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class NFTsPage {
+export class NFTsPage implements OnInit {
   config: InstantSearchConfig;
   sections = marketSections;
   paginationItems = defaultPaginationItems;
   reset$ = new Subject<void>();
-  spacesLoaded$?: Observable<boolean>;
   sortOpen = true;
   statusFilterOpen = true;
   isOwnedFilterOpen = true;
@@ -52,10 +50,9 @@ export class NFTsPage {
     public cache: CacheService,
     public nftApi: NftApi,
     public filterStorageService: FilterStorageService,
-    private cacheService: CacheService,
+    public cacheService: CacheService,
     public readonly algoliaService: AlgoliaService
   ) {
-    this.spacesLoaded$ = this.cache.allSpaces$.pipe(map(spaces => spaces.length > 0));
     this.config = {
       indexName: 'nft',
       searchClient: this.algoliaService.searchClient,
@@ -65,18 +62,12 @@ export class NFTsPage {
     };
   }
 
-  public trackByUid(_index: number, item: any): number {
-    return item.uid;
+  public ngOnInit(): void {
+    this.cacheService.fetchAllSpaces();
   }
 
-  public getCollection(col?: string|null): Collection|undefined {
-    if (!col) {
-      return undefined;
-    }
-
-    return this.cacheService.allCollections$.value.find((d: Collection) => {
-      return d.uid === col;
-    });
+  public trackByUid(_index: number, item: any): number {
+    return item.uid;
   }
 
   public convertAllToSoonaverseModel(algoliaItems: any[]) {
