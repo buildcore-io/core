@@ -95,7 +95,7 @@ export class SinglePage implements OnInit {
         switchMap(() => this.collectionControl.valueChanges),
         untilDestroyed(this)
       ).subscribe((o) => {
-        const finObj: Collection | undefined = Object.entries(this.cache.collections).find(([id]) => id === o)?.[1]?.value?.value;
+        const finObj: Collection | undefined = Object.entries(this.cache.collections).find(([id]) => id === o)?.[1]?.value;
 
         if (finObj) {
           this.priceControl.setValue((finObj.price || 0));
