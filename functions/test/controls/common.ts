@@ -1,4 +1,5 @@
 import chance from 'chance';
+import { TOKEN_SALE_TEST } from '../../interfaces/config';
 import { Network, Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { TokenStatus } from '../../interfaces/models/token';
@@ -125,5 +126,29 @@ export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string
   blockedCountriesSpy.mockReturnValueOnce(blockedCountries)
   ipInfoMock.mockReturnValueOnce(ipInfo)
 }
+
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 export const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
+
+export const createRoyaltySpaces = async () => {
+  const spaceOneId = TOKEN_SALE_TEST.spaceone
+  const spaceTwoId = TOKEN_SALE_TEST.spacetwo
+  const walletSpy = jest.spyOn(wallet, 'decodeAuth');
+  const guardian = await createMember(walletSpy, true);
+
+  const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
+  const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
+  if (!spaceOneDoc.exists) {
+    spaceIdSpy.mockReturnValue(spaceOneId)
+    await createSpace(walletSpy, guardian, true);
+  }
+
+  const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get()
+  if (!spaceTwoDoc.exists) {
+    spaceIdSpy.mockReturnValue(spaceTwoId)
+    await createSpace(walletSpy, guardian, true);
+  }
+
+  spaceIdSpy.mockRestore();
+  walletSpy.mockRestore();
+}
