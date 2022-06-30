@@ -114,7 +114,7 @@ export class CollectionPage implements OnInit, OnDestroy {
           if (obj.accessCollections?.length) {
             for (const c of obj.accessCollections) {
               const collection: Collection|undefined =
-                Object.entries(this.cache.collections).find(([id]) => id === c)?.[1].value.value;
+                Object.entries(this.cache.collections).find(([id]) => id === c)?.[1].value;
               if (collection) {
                 collections.push(collection);
               }

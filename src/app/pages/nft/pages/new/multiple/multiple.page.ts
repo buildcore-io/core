@@ -153,7 +153,7 @@ export class MultiplePage implements OnInit {
     this.cache.fetchAllCollections();
     merge(this.collectionControl.valueChanges, this.cache.allCollectionsLoaded$)
       .pipe(
-        map(() => Object.entries(this.cache.collections || {}).find(([id]) => id === this.collectionControl.value)?.[1]?.value.value),
+        map(() => Object.entries(this.cache.collections || {}).find(([id]) => id === this.collectionControl.value)?.[1]?.value),
         filter((col: Collection | undefined) => !!col && (col !== this.collection)),
         untilDestroyed(this)
       )

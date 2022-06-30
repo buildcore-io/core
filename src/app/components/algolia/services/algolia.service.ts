@@ -30,7 +30,7 @@ export class AlgoliaService {
     this.cacheService.allSpacesLoaded$
       .pipe(filter(r => r), untilDestroyed(this)).subscribe(() => {
         Object.values(this.cacheService.spaces).forEach(obj => {
-          const space = obj.value.getValue();
+          const space = obj.value;
           if (space?.name) {
             spaceMapping[space.uid] = space.name;
             spacesObj[space.uid] = space;

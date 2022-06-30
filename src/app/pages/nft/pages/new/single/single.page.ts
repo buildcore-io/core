@@ -90,12 +90,12 @@ export class SinglePage implements OnInit {
   public ngOnInit(): void {
     this.cache.fetchAllCollections();
     this.cache.allCollectionsLoaded$
-      .pipe(
+      ?.pipe(
         filter(r =>r),
         switchMap(() => this.collectionControl.valueChanges),
         untilDestroyed(this)
       ).subscribe((o) => {
-        const finObj: Collection | undefined = Object.entries(this.cache.collections).find(([id]) => id === o)?.[1]?.value?.value;
+        const finObj: Collection | undefined = Object.entries(this.cache.collections).find(([id]) => id === o)?.[1]?.value;
 
         if (finObj) {
           this.priceControl.setValue((finObj.price || 0));
