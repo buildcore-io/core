@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isEmpty } from 'lodash';
 import { Member, Network, Space } from '../interfaces/models';

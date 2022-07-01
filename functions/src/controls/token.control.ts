@@ -21,7 +21,7 @@ import { appCheck } from "../utils/google.utils";
 import { assertIpNotBlocked } from '../utils/ip.utils';
 import { keywords } from '../utils/keywords.utils';
 import { assertValidation } from '../utils/schema.utils';
-import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenOrderTransactionDocId } from '../utils/token.utils';
+import { allPaymentsQuery, assertIsGuardian, assertTokenApproved, assertTokenStatus, getBoughtByMemberDiff, memberDocRef, orderDocRef, tokenIsInCoolDownPeriod, tokenIsInPublicSalePeriod, tokenOrderTransactionDocId } from '../utils/token.utils';
 import { cleanParams, decodeAuth, ethAddressLength, getRandomEthAddress } from "../utils/wallet.utils";
 import { Token, TokenAllocation, TokenDistribution, TokenDrop, TokenStatus } from './../../interfaces/models/token';
 
@@ -91,7 +91,7 @@ const shouldSetPublicSaleTimeFrames = (body: any, allocations: TokenAllocation[]
 export const createToken = functions.runWith({
   minInstances: scale(WEN_FUNC.cToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.cToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -136,7 +136,7 @@ const updateSchema = {
 export const updateToken = functions.runWith({
   minInstances: scale(WEN_FUNC.uToken),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.uToken, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -167,7 +167,7 @@ const setAvailableForSaleSchema = {
 export const setTokenAvailableForSale = functions.runWith({
   minInstances: scale(WEN_FUNC.setTokenAvailableForSale),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.setTokenAvailableForSale, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -187,6 +187,8 @@ export const setTokenAvailableForSale = functions.runWith({
     if (token.saleStartDate) {
       throw throwInvalidArgument(WenError.public_sale_already_set)
     }
+
+    assertTokenStatus(token, [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE])
 
     await assertIsGuardian(token.space, owner)
 
@@ -215,7 +217,7 @@ const assertTokenIsInPublicSaleOrCoolDownPeriod = (token: Token) => {
 export const cancelPublicSale = functions.runWith({
   minInstances: scale(WEN_FUNC.cancelPublicSale),
 }).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
-  appCheck(WEN_FUNC.cSpace, context);
+  appCheck(WEN_FUNC.cancelPublicSale, context);
   const params = await decodeAuth(req);
   const owner = params.address.toLowerCase();
 
@@ -245,13 +247,6 @@ export const cancelPublicSale = functions.runWith({
   return <Token>(await tokenDocRef.get()).data();
 
 })
-
-const tokenIsInPublicSalePeriod = (token: Token) => token.saleStartDate && token.saleLength &&
-  dayjs().isAfter(dayjs(token.saleStartDate?.toDate())) && dayjs().isBefore(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms'))
-
-const tokenIsInCoolDownPeriod = (token: Token) => token.saleStartDate && token.saleLength && token.coolDownEnd &&
-  dayjs().isAfter(dayjs(token.saleStartDate.toDate()).add(token.saleLength, 'ms')) &&
-  dayjs().isBefore(dayjs(token.coolDownEnd.toDate()))
 
 
 const orderTokenSchema = Joi.object({ token: Joi.string().required() });
@@ -424,6 +419,7 @@ export const airdropToken = functions.runWith({ minInstances: scale(WEN_FUNC.air
       }
 
       assertTokenApproved(token)
+      assertTokenStatus(token)
 
       await assertIsGuardian(token.space, owner);
 

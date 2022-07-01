@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
-import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, TOKEN_SALE, TOKEN_SALE_TEST, URL_PATHS } from '../../interfaces/config';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, TOKEN_SALE_TEST, URL_PATHS } from '../../interfaces/config';
 import { Network, Transaction, TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenPurchase, TokenStatus } from "../../interfaces/models/token";

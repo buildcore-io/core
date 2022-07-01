@@ -2,14 +2,16 @@ import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { URL_PATHS } from '../../../interfaces/config';
-import { Transaction } from '../../../interfaces/models';
+import { Member } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from '../../../interfaces/models/token';
-import { TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
+import { Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
+import { getAddress } from '../../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../utils/token.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
+import { WalletService } from '../wallet/wallet';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
 export class TokenService {
@@ -31,6 +33,28 @@ export class TokenService {
     const payment = this.transactionService.createPayment(orderData, match);
     await this.transactionService.markAsReconciled(orderData, match.msgId)
     await this.createTokenBuyRequest(orderData, payment)
+  }
+
+  public handleTokenMintingRequest = async (orderData: TransactionOrder, match: TransactionMatch) => {
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${orderData.payload.token}`)
+    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
+    const payment = this.transactionService.createPayment(orderData, match);
+    if (token.status !== TokenStatus.READY_TO_MINT) {
+      this.transactionService.createCredit(payment, match);
+      return;
+    }
+    await this.transactionService.markAsReconciled(orderData, match.msgId)
+
+    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${orderData.member}`).get()).data()
+    const wallet = WalletService.newWallet(orderData.targetNetwork)
+    await wallet.mintToken(
+      orderData.payload.targetAddress,
+      getAddress(member.validatedAddress, orderData.targetNetwork!),
+      token
+    )
+    const ref = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
+    const data = { status: TokenStatus.MINTING, mintingData: { mintedBy: orderData.member } }
+    this.transactionService.updates.push({ ref, data, action: 'update' });
   }
 
   private async updateTokenDistribution(order: Transaction, tran: TransactionMatch, payment: Transaction) {

@@ -62,6 +62,7 @@ export const enum WEN_FUNC {
   onTokenStatusUpdate = 'onTokenStatusUpdate',
   onTokenBuySellCreated = 'onTokenBuySellCreated',
   onTokenPurchaseCreated = 'onTokenPurchaseCreated',
+  mintTokenOrder = 'mintTokenOrder',
 
   milestoneTransactionWrite = 'milestoneTransactionWrite',
   nftWrite = 'nftWrite',

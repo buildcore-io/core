@@ -90,6 +90,8 @@ export const WenError = {
   no_available_tokens_for_sale: { code: 2081, key: 'No available tokens for sale.' },
   token_not_pre_minted: { code: 2082, key: 'Token not pre-minted.' },
   token_not_approved: { code: 2083, key: 'Token not approved.' },
-  blocked_country: { code: 2084, key: 'You country is not supported for this transaction.' }
+  blocked_country: { code: 2084, key: 'You country is not supported for this transaction.' },
+  token_in_invalid_status: { code: 2085, key: 'Token in invalid status.' },
+  can_not_mint_in_pub_sale: { code: 2086, key: 'Token can not be minted in public sale.' }
 }
 

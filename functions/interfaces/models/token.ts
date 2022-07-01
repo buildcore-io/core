@@ -13,11 +13,22 @@ export enum TokenStatus {
   CANCEL_SALE = 'cancel_sale',
   PROCESSING = 'processing',
   PRE_MINTED = 'pre_minted',
-  ERROR = 'error'
+  ERROR = 'error',
+  READY_TO_MINT = 'ready_to_mint',
+  MINTING = 'minting',
+  MINTED = 'minted'
 }
 
 export enum TokenDistributionType {
   FIXED = 'fixed'
+}
+
+interface MintingData {
+  readonly tokenId?: string;
+  readonly mintedBy?: string;
+  readonly mintedOn?: Timestamp;
+  readonly aliasId?: string;
+  readonly blockId?: string;
 }
 
 export interface Token extends BaseRecord {
@@ -48,6 +59,8 @@ export interface Token extends BaseRecord {
   readonly access: Access;
   readonly accessAwards?: string[];
   readonly accessCollections?: string[];
+
+  readonly mintingData?: MintingData;
 }
 
 export interface TokenDrop {
