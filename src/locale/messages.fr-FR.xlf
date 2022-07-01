@@ -7637,7 +7637,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">74</context>
         </context-group>
-        <target state="needs-translation">Open to join instantly</target>
+        <target state="translated">Pour se joindre immédiatement, ouvrez...</target>
       </trans-unit>
       <trans-unit id="7808013422621011252" datatype="html">
         <source>Requires approval to join</source>
@@ -7645,7 +7645,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.html</context>
           <context context-type="linenumber">75</context>
         </context-group>
-        <target state="needs-translation">Requires approval to join</target>
+        <target state="translated">Approbation requise pour se joindre</target>
       </trans-unit>
       <trans-unit id="1238783153580747430" datatype="html">
         <source>Connections between spaces enables members of one space to recognize members of another space&apos;s experience
@@ -7798,7 +7798,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">Related Links</target>
+        <target state="translated">Liens Appropriés</target>
       </trans-unit>
       <trans-unit id="4712811063517949869" datatype="html">
         <source>Leave Space</source>
@@ -7814,7 +7814,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
           <context context-type="linenumber">99</context>
         </context-group>
-        <target state="needs-translation">Connection established</target>
+        <target state="translated">La connexion a été établie</target>
       </trans-unit>
       <trans-unit id="3611250830215528248" datatype="html">
         <source>Connection updated.</source>
@@ -7822,7 +7822,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
           <context context-type="linenumber">99,97</context>
         </context-group>
-        <target state="needs-translation">Connection updated.</target>
+        <target state="translated">La connexion a été mise à jour.</target>
       </trans-unit>
       <trans-unit id="6173924296768725625" datatype="html">
         <source>About space</source>
@@ -7854,7 +7854,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">126</context>
         </context-group>
-        <target state="needs-translation">Pending Request</target>
+        <target state="translated">Demande Pendante</target>
       </trans-unit>
       <trans-unit id="5097070616926790651" datatype="html">
         <source>Ask to join Space</source>
@@ -7866,7 +7866,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="needs-translation">Ask to join Space</target>
+        <target state="translated">Demander de se joindre à l'Espace</target>
       </trans-unit>
       <trans-unit id="1787285375520918182" datatype="html">
         <source> Edit Space </source>
@@ -7982,7 +7982,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.html</context>
           <context context-type="linenumber">163,164</context>
         </context-group>
-        <target state="needs-translation">Avatar is mandatory</target>
+        <target state="translated">La présence d'un Avatar est obligatoire</target>
       </trans-unit>
       <trans-unit id="6932048807565988787" datatype="html">
         <source> Create space </source>
@@ -8010,7 +8010,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="needs-translation">Upload new to replace existing.</target>
+        <target state="translated">Importer tous les codes du fichier d'import et mise à jour des codes existants.</target>
       </trans-unit>
       <trans-unit id="5504845184624630235" datatype="html">
         <source>Your brand is key.</source>
@@ -8018,7 +8018,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">168</context>
         </context-group>
-        <target state="needs-translation">Your brand is key.</target>
+        <target state="translated">Votre empreinte est la clef.</target>
       </trans-unit>
       <trans-unit id="7599513045034313396" datatype="html">
         <source>Make it personal.</source>
@@ -8026,7 +8026,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/upsert/upsert.page.ts</context>
           <context context-type="linenumber">172</context>
         </context-group>
-        <target state="needs-translation">Make it personal.</target>
+        <target state="translated">Donnez-lui votre touche personnelle.</target>
       </trans-unit>
       <trans-unit id="7738967440479328364" datatype="html">
         <source>Create airdrop</source>
@@ -8034,7 +8034,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">4,5</context>
         </context-group>
-        <target state="needs-translation">Create airdrop</target>
+        <target state="translated">Créer un AirDrop</target>
       </trans-unit>
       <trans-unit id="6815628326290497391" datatype="html">
         <source>Download CSV template</source>
@@ -8042,7 +8042,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="needs-translation">Download CSV template</target>
+        <target state="translated">Téléchargement Schéma de construction CSV</target>
       </trans-unit>
       <trans-unit id="5544242025590499348" datatype="html">
         <source> You can create a governance token airdrop for your members. To do this, upload a .csv file containing user addresses and allocation details. </source>
@@ -8058,7 +8058,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
-        <target state="needs-translation"> If you don’t know how to prepare CSV file, you can download our template made for you. </target>
+        <target state="translated"> Si vous envisagez de créer un fichier CSV, mais vous ne savez pas comment procéder, notre schéma de construction du fichier, conçu pour vous, est téléchargeable. </target>
       </trans-unit>
       <trans-unit id="1009318303091166329" datatype="html">
         <source>Some rows have been removed</source>
