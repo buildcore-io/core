@@ -8050,7 +8050,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation"> You can create a governance token airdrop for your members. To do this, upload a .csv file containing user addresses and allocation details. </target>
+        <target state="translated"> Vous pouvez instaurer un procédé de gouvernance, tout en créant un AirDrop de Tokens pour vos membres. Dans ce but, il paraît nécessaire de télécharger un fichier CSV comprenant des renseignements sur la distribution et les adresses des utilisateurs. </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -8066,7 +8066,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">67,68</context>
         </context-group>
-        <target state="needs-translation">Some rows have been removed</target>
+        <target state="translated">Certaines séries ont été supprimées</target>
       </trans-unit>
       <trans-unit id="4368071314162740384" datatype="html">
         <source> Submit airdrop
