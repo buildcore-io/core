@@ -8075,7 +8075,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation"> Submit airdrop
+        <target state="translated"> Activer AirDrop
 </target>
       </trans-unit>
       <trans-unit id="8797154131183772212" datatype="html">
@@ -8084,7 +8084,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.ts</context>
           <context context-type="linenumber">66</context>
         </context-group>
-        <target state="needs-translation"> row is not valid</target>
+        <target state="translated"> Série non autorisée</target>
       </trans-unit>
       <trans-unit id="3947826516520977901" datatype="html">
         <source>Breakdown</source>
@@ -8096,7 +8096,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">241,242</context>
         </context-group>
-        <target state="needs-translation">Breakdown</target>
+        <target state="translated">Répartition</target>
       </trans-unit>
       <trans-unit id="5599238743301549780" datatype="html">
         <source>Token distribution</source>
@@ -8104,7 +8104,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
-        <target state="needs-translation">Token distribution</target>
+        <target state="translated">Émission de Tokens</target>
       </trans-unit>
       <trans-unit id="4884924045885608563" datatype="html">
         <source>Total token supply (Initial market cap)</source>
