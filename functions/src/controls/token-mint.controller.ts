@@ -1,3 +1,4 @@
+import { SingleNodeClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
@@ -10,8 +11,8 @@ import { COL, WenRequest } from '../../interfaces/models/base';
 import admin from '../admin.config';
 import { scale } from '../scale.settings';
 import { MnemonicService } from '../services/wallet/mnemonic';
-import { WalletService } from '../services/wallet/wallet';
-import { getAddress } from '../utils/address.utils';
+import { SmrTokenMinter } from '../services/wallet/SmrTokenMinter';
+import { getNodeClient, WalletService } from '../services/wallet/wallet';
 import { guardedRerun } from '../utils/common.utils';
 import { dateToTimestamp, serverTime } from '../utils/dateTime.utils';
 import { throwInvalidArgument } from '../utils/error.utils';
@@ -31,7 +32,7 @@ export const mintTokenOrder = functions.runWith({
 
   const schema = Joi.object({
     token: Joi.string().required(),
-    targetNetwork: Joi.string().equal([Network.SMR, Network.RMS]).required()
+    targetNetwork: Joi.string().equal(Network.SMR, Network.RMS).required()
   });
   assertValidation(schema.validate(params.body));
 
@@ -63,14 +64,10 @@ export const mintTokenOrder = functions.runWith({
   const targetAddress = await newWallet.getNewIotaAddressDetails();
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
 
-  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-
+  const minter = new SmrTokenMinter(getNodeClient(params.body.targetNetwork) as SingleNodeClient)
   const wallet = WalletService.newWallet(params.body.targetNetwork)
-  const totalStorageDeposit = await wallet.getTokenMintTotalStorageDeposit(
-    getAddress(member.validatedAddress, params.body.targetNetwork),
-    targetAddress.bech32,
-    token!
-  )
+  const target = await wallet.getAddressDetails(targetAddress.bech32)
+  const totalStorageDeposit = await minter.getStorageDepositForMinting(target, token!)
 
   const data = <Transaction>{
     type: TransactionType.ORDER,
@@ -82,7 +79,7 @@ export const mintTokenOrder = functions.runWith({
     targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionOrderType.MINT_TOKEN,
-      amount: Math.max(MIN_IOTA_AMOUNT, totalStorageDeposit),
+      amount: MIN_IOTA_AMOUNT + totalStorageDeposit,
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
@@ -106,10 +103,69 @@ const cancelAllActiveSales = async (token: string) => {
       .limit(150)
     const docRefs = (await query.get()).docs.map(d => d.ref)
     const promises = (isEmpty(docRefs) ? [] : await transaction.getAll(...docRefs))
-      .map(doc => cancelSale(transaction, <TokenBuySellOrder>doc.data(), TokenBuySellOrderStatus.EXPIRED))
+      .map(doc => cancelSale(transaction, <TokenBuySellOrder>doc.data(), TokenBuySellOrderStatus.CANCELLED_MINTING_TOKEN))
 
     return (await Promise.all(promises)).length
   })
 
   await guardedRerun(async () => await runTransaction() !== 0)
 }
+
+export const claimMintedTokenOrder = functions.runWith({
+  minInstances: scale(WEN_FUNC.claimMintedTokenOrder),
+}).https.onCall(async (req: WenRequest, context: functions.https.CallableContext) => {
+  appCheck(WEN_FUNC.claimMintedTokenOrder, context);
+  const params = await decodeAuth(req);
+  const owner = params.address.toLowerCase();
+
+  const schema = Joi.object({ token: Joi.string().required() });
+  assertValidation(schema.validate(params.body));
+
+  return await admin.firestore().runTransaction(async (transaction) => {
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`)
+    const token = <Token | undefined>((await transaction.get(tokenDocRef))).data()
+    if (!token) {
+      throw throwInvalidArgument(WenError.invalid_params)
+    }
+
+    if (token.status !== TokenStatus.MINTED) {
+      throw throwInvalidArgument(WenError.token_not_minted)
+    }
+
+    const wallet = WalletService.newWallet(token.mintingData?.network!)
+
+    const targetAddress = await wallet.getNewIotaAddressDetails();
+    await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
+
+    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+    const minter = new SmrTokenMinter(getNodeClient(token.mintingData?.network!) as SingleNodeClient)
+
+    const storageDeposit = await minter.getStorageDepositForClaimingToken(transaction, member, token)
+
+    const tranId = getRandomEthAddress()
+    const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
+    const data = <Transaction>{
+      type: TransactionType.ORDER,
+      uid: tranId,
+      member: owner,
+      space: token!.space,
+      createdOn: serverTime(),
+      sourceNetwork: token.mintingData?.network!,
+      targetNetwork: token.mintingData?.network!,
+      payload: {
+        type: TransactionOrderType.CLAIM_MINTED_TOKEN,
+        amount: MIN_IOTA_AMOUNT + storageDeposit,
+        targetAddress: targetAddress.bech32,
+        expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
+        validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
+        reconciled: false,
+        void: false,
+        chainReference: null,
+        token: params.body.token
+      },
+      linkedTransactions: []
+    }
+    await tranDocRef.create(data)
+    return data
+  })
+})

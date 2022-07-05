@@ -15,7 +15,7 @@ import {
 import { Converter } from '@iota/util.js';
 import { generateMnemonic } from 'bip39';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
-import { getRandomElement } from "../../utils/common.utils";
+import { MnemonicService } from "./mnemonic";
 import { AddressDetails, Wallet } from "./wallet";
 
 interface Input {
@@ -29,25 +29,10 @@ interface Output {
   amount: number;
 }
 
-const IOTA_API_ENDPOINTS = [
-  'https://us3.svrs.io/',
-  'https://us4.svrs.io/',
-  'https://hs5.svrs.io/',
-  'https://hs6.svrs.io/',
-  'https://chrysalis-nodes.iota.org'
-];
-
-const ATOI_API_ENDPOINTS = ['https://devnet.svrs.io/']
-
-const getApiEndpoint = (testMode: boolean) => getRandomElement(testMode ? ATOI_API_ENDPOINTS : IOTA_API_ENDPOINTS)
-
 export class IotaWallet implements Wallet {
-  private client: SingleNodeClient;
   private nodeInfo?: INodeInfo;
 
-  constructor(readonly testMode: boolean) {
-    this.client = new SingleNodeClient(getApiEndpoint(testMode));
-  }
+  constructor(readonly client: SingleNodeClient) { }
 
   private init = async () => {
     if (!this.nodeInfo) {
@@ -73,6 +58,11 @@ export class IotaWallet implements Wallet {
     const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, genesisWalletAddress, this.nodeInfo?.bech32HRP!)
 
     return { mnemonic, bech32, keyPair, hex };
+  }
+
+  public getAddressDetails = async (bech32: string) => {
+    const mnemonic = await MnemonicService.get(bech32)
+    return this.getIotaAddressDetails(mnemonic)
   }
 
   public sendFromGenesis = async (fromAddress: AddressDetails, toAddress: string, amount: number, data: string) => {

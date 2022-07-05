@@ -1,8 +1,8 @@
-import { AddressTypes, ALIAS_OUTPUT_TYPE, ED25519_ADDRESS_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IAliasOutput, IKeyPair, IndexerPluginClient, ISSUER_FEATURE_TYPE, ITransactionPayload, METADATA_FEATURE_TYPE, OutputTypes, SingleNodeClient, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE, TransactionHelper } from "@iota/iota.js-next";
+import { AddressTypes, ALIAS_OUTPUT_TYPE, ED25519_ADDRESS_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IAliasOutput, IKeyPair, ISSUER_FEATURE_TYPE, ITransactionPayload, METADATA_FEATURE_TYPE, OutputTypes, SingleNodeClient, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE, TransactionHelper } from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import { cloneDeep } from "lodash";
 import { AddressDetails } from "../wallet";
-import { createPayload } from "./common.utils";
+import { createPayload, fetchAndWaitForBasicOutput } from "./common.utils";
 
 export const createAliasOutput = (amount: number, ownerAddressHex: string, metadata = 'no-metadata'): IAliasOutput => {
   const address: AddressTypes = { type: ED25519_ADDRESS_TYPE, pubKeyHash: ownerAddressHex }
@@ -33,24 +33,6 @@ export const createAlias = async (client: SingleNodeClient, networkId: string, a
 
   return createPayload(networkId, [input], [aliasOutput], inputsCommitment, address.keyPair)
 }
-
-const fetchAndWaitForBasicOutput = async (client: SingleNodeClient, addressBech32: string,): Promise<string> => {
-  const indexerPluginClient = new IndexerPluginClient(client!);
-  for (let i = 0; i < 10; ++i) {
-    const outputsResponse = await indexerPluginClient.outputs({
-      addressBech32,
-      hasStorageReturnCondition: false,
-      hasExpirationCondition: false,
-      hasTimelockCondition: false,
-      hasNativeTokens: false
-    });
-    if (outputsResponse.items.length) {
-      return outputsResponse.items[0]
-    }
-    await new Promise(f => setTimeout(f, 5000));
-  }
-  throw new Error("Didn't find any outputs for address: " + addressBech32);
-};
 
 export const transferAlias = (
   consumedOutput: OutputTypes,

@@ -17,7 +17,7 @@ const handleMilestoneTransactionWrite = (network: Network) => async (change: fun
   }
   return admin.firestore().runTransaction(async (transaction) => {
     const data = (await transaction.get(change.after.ref)).data()!
-    const adapter = new SmrMilestoneTransactionAdapter(network === Network.RMS)
+    const adapter = new SmrMilestoneTransactionAdapter(network)
     const milestoneTransaction = await adapter.toMilestoneTransaction(data)
     if (milestoneTransaction.processed) {
       functions.logger.info('Nothing to process.');

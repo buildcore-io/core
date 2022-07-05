@@ -1,5 +1,6 @@
 import { Url } from "url";
 import { Access, BaseRecord, BaseSubCollection, EthAddress, Timestamp } from "./base";
+import { Network } from "./transaction";
 
 
 export interface TokenAllocation {
@@ -29,6 +30,9 @@ interface MintingData {
   readonly mintedOn?: Timestamp;
   readonly aliasId?: string;
   readonly blockId?: string;
+  readonly claimedByGuardian?: string;
+  readonly network?: Network;
+  readonly mintedTokens?: number;
 }
 
 export interface Token extends BaseRecord {
@@ -90,6 +94,8 @@ export interface TokenDistribution extends BaseSubCollection {
 
   readonly tokenOwned?: number;
   readonly createdOn?: Timestamp;
+
+  readonly mintedClaimedOn?: Timestamp;
 }
 
 export interface TokenPurchase extends BaseRecord {
@@ -112,7 +118,8 @@ export enum TokenBuySellOrderStatus {
   CANCELLED = 'cancelled',
   PARTIALLY_SETTLED_AND_CANCELLED = 'partially_settled_and_cancelled',
   EXPIRED = 'expired',
-  CANCELLED_UNFULFILLABLE = 'cancelled_unfulfillable'
+  CANCELLED_UNFULFILLABLE = 'cancelled_unfulfillable',
+  CANCELLED_MINTING_TOKEN = 'cancelled_minting_token'
 }
 
 export interface TokenBuySellOrder extends BaseRecord {
