@@ -8112,7 +8112,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.ts</context>
           <context context-type="linenumber">53</context>
         </context-group>
-        <target state="needs-translation">Total token supply (Initial market cap)</target>
+        <target state="translated">Offre totale de Tokens (Cap. Marché - Première Levée de Fonds)</target>
       </trans-unit>
       <trans-unit id="4004898821557190487" datatype="html">
         <source>Initial price per token</source>
@@ -8120,7 +8120,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/metrics/metrics.page.ts</context>
           <context context-type="linenumber">54</context>
         </context-group>
-        <target state="needs-translation">Initial price per token</target>
+        <target state="translated">Prix initial par Token</target>
       </trans-unit>
       <trans-unit id="2055739061710960820" datatype="html">
         <source> You can create only ONE token per space and it can never be changed. </source>
@@ -8128,7 +8128,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation"> You can create only ONE token per space and it can never be changed. </target>
+        <target state="translated"> Vous ne pouvez créer qu'UN seul Token par Espace. Il ne sera dès lors plus possible d'effectuer des changements. </target>
       </trans-unit>
       <trans-unit id="3172090530719210350" datatype="html">
         <source> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </source>
@@ -8136,7 +8136,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">18,20</context>
         </context-group>
-        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </target>
+        <target state="translated"> Les informations qui suivent peuvent revêtir de l'importance pour la création d'un Token sur Soonaverse. Veuillez lire à propos de ce sujet les instructions et remplir le formulaire de demande disponibles sur cet écran, ce dernier étant soumis préalablement à une intervention manuelle (approbation) jusqu'à l'aboutissement de votre demande de Token. La période de soumission volontaire du formulaire ne sera confrontée à aucune contrainte et vous serez libre d'anticiper ou de retarder votre soumission en faveur d'un processus de configuration de votre Token, sur la plateforme de Soonaverse. </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -8160,7 +8160,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation">Application form</target>
+        <target state="translated">Formulaire de demande</target>
       </trans-unit>
       <trans-unit id="7913181913140171819" datatype="html">
         <source>To apply you need to fill out the form below.</source>
@@ -8168,7 +8168,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">To apply you need to fill out the form below.</target>
+        <target state="translated">Pour présenter une demande, vous devez remplir le formulaire ci-dessous.</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -8176,7 +8176,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation">Fill a form</target>
+        <target state="translated">Compléter un formulaire</target>
       </trans-unit>
       <trans-unit id="1168464211002211124" datatype="html">
         <source> Continue
@@ -8210,7 +8210,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
-        <target state="needs-translation">Token info</target>
+        <target state="translated">Résumé des attributs du Token</target>
       </trans-unit>
       <trans-unit id="8961246359213984704" datatype="html">
         <source>Name is invalid.</source>
@@ -8222,7 +8222,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">12,13</context>
         </context-group>
-        <target state="needs-translation">Name is invalid.</target>
+        <target state="translated">Le nom n'est pas autorisé.</target>
       </trans-unit>
       <trans-unit id="2734429577943224664" datatype="html">
         <source>Symbol is invalid (Length must be 3 - 5 and letters must be A-Z).</source>
