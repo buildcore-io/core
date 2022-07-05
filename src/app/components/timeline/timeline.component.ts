@@ -4,7 +4,7 @@ import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
 import { UnitsHelper } from '@core/utils/units-helper';
-import { Transaction } from '@functions/interfaces/models';
+import { Transaction, TransactionType } from '@functions/interfaces/models';
 import { FileMetedata, FILE_SIZES } from '@functions/interfaces/models/base';
 
 export enum TimelineItemType {
@@ -78,6 +78,10 @@ export class TimelineComponent {
 
   public get filesizes(): typeof FILE_SIZES {
     return FILE_SIZES;
+  }
+
+  public get transactionTypes(): typeof TransactionType {
+    return TransactionType;
   }
 
   public formatBest(amount?: number | null): string {
