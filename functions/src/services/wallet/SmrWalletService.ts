@@ -12,19 +12,14 @@ import {
   INftOutput,
   INodeInfo, IUTXOInput,
   OutputTypes, sendAdvanced, SingleNodeClient,
-  TransactionHelper,
-  UnlockConditionTypes,
-  UTXO_INPUT_TYPE
+  TransactionHelper, UTXO_INPUT_TYPE
 } from "@iota/iota.js-next";
 import { Converter } from '@iota/util.js-next';
 import bigInt, { BigInteger } from "big-integer";
 import { generateMnemonic } from 'bip39';
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
-import { Token } from "../../../interfaces/models/token";
 import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
-import { getRandomElement } from "../../utils/common.utils";
 import { MnemonicService } from "./mnemonic";
-import { SmrTokenMinter } from "./SmrTokenMinter";
 import { AddressDetails, Wallet } from "./wallet";
 
 interface Input {
@@ -39,18 +34,11 @@ interface Output {
   amount: BigInteger;
 }
 
-const RMS_API_ENDPOINTS = ['https://sd1.svrs.io/']
-const SMR_API_ENDPOINTS = RMS_API_ENDPOINTS
-
-const getApiEndpoint = (testMode: boolean) => getRandomElement(testMode ? RMS_API_ENDPOINTS : SMR_API_ENDPOINTS)
 
 export class SmrWallet implements Wallet {
-  private client: SingleNodeClient;
   private nodeInfo?: INodeInfo;
 
-  constructor(readonly testMode: boolean) {
-    this.client = new SingleNodeClient(getApiEndpoint(testMode));
-  }
+  constructor(readonly client: SingleNodeClient) { }
 
   private init = async () => {
     if (!this.nodeInfo) {
@@ -80,6 +68,11 @@ export class SmrWallet implements Wallet {
     const bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, walletAddress, this.nodeInfo!.protocol.bech32HRP)
 
     return { mnemonic, keyPair, hex, bech32 };
+  }
+
+  public getAddressDetails = async (bech32: string) => {
+    const mnemonic = await MnemonicService.get(bech32)
+    return this.getIotaAddressDetails(mnemonic)
   }
 
   public sendFromGenesis = async (fromAddress: AddressDetails, toAddress: string, amount: number, data: string) => {
@@ -151,29 +144,4 @@ export class SmrWallet implements Wallet {
     return Bech32AddressHelper.addressFromAddressUnlockCondition(output.unlockConditions, hrp, output.type);
   }
 
-  public mintToken = async (sourceBech32: string, targetBech32: string, token: Token) => {
-    await this.init();
-    const minter = new SmrTokenMinter(this.client, this.nodeInfo!)
-    const sourceDetails = await this.getAddressDetails(sourceBech32)
-    const targetDetails = await this.getAddressDetails(targetBech32)
-    return await minter.mintToken(sourceDetails, targetDetails, token)
-  }
-
-  public getTokenMintTotalStorageDeposit = async (sourceBech32: string, targetBech32: string, token: Token) => {
-    await this.init();
-    const minter = new SmrTokenMinter(this.client, this.nodeInfo!)
-    const sourceDetails = await this.getAddressDetails(sourceBech32)
-    const targetDetails = await this.getAddressDetails(targetBech32)
-    return await minter.getTotalStorageDeposit(sourceDetails, targetDetails, token)
-  }
-
-  private getAddressDetails = async (bech32: string) => {
-    const mnemonic = await MnemonicService.get(bech32)
-    return this.getIotaAddressDetails(mnemonic)
-  }
-
-  public addressFromAddressUnlockCondition = async (unlockConditions: UnlockConditionTypes[], outputType: number) => {
-    const hrp = (await this.client.protocolInfo()).bech32HRP
-    return Bech32AddressHelper.addressFromAddressUnlockCondition(unlockConditions, hrp, outputType)
-  }
 }

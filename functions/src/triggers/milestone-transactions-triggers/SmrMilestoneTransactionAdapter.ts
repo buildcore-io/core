@@ -1,14 +1,16 @@
 import { BASIC_OUTPUT_TYPE, IBasicOutput, IUTXOInput, OutputTypes } from "@iota/iota.js-next"
+import { Network } from "../../../interfaces/models"
 import { MilestoneTransaction } from "../../../interfaces/models/milestone"
 import admin from "../../admin.config"
 import { SmrWallet } from "../../services/wallet/SmrWalletService"
+import { WalletService } from "../../services/wallet/wallet"
 
 export class SmrMilestoneTransactionAdapter {
 
-  constructor(private readonly testMode: boolean) { }
+  constructor(private readonly network: Network) { }
 
   public toMilestoneTransaction = async (data: admin.firestore.DocumentData): Promise<MilestoneTransaction> => {
-    const smrWallet = new SmrWallet(this.testMode)
+    const smrWallet = WalletService.newWallet(this.network) as SmrWallet
     const smrOutputs = (data.payload.essence.outputs as OutputTypes[]).filter(o => o.type === BASIC_OUTPUT_TYPE).map(o => <IBasicOutput>o)
     const outputs = []
     for (const output of smrOutputs) {

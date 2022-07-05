@@ -1,10 +1,10 @@
 
 import { Ed25519 } from "@iota/crypto.js-next";
-import { DEFAULT_PROTOCOL_VERSION, ED25519_SIGNATURE_TYPE, IBlock, IKeyPair, ISignatureUnlock, ITransactionEssence, ITransactionPayload, IUTXOInput, MAX_BLOCK_LENGTH, OutputTypes, serializeBlock, SIGNATURE_UNLOCK_TYPE, SingleNodeClient, TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-next";
+import { DEFAULT_PROTOCOL_VERSION, ED25519_SIGNATURE_TYPE, IBlock, IKeyPair, IndexerPluginClient, ISignatureUnlock, ITransactionEssence, ITransactionPayload, IUTXOInput, MAX_BLOCK_LENGTH, OutputTypes, serializeBlock, SIGNATURE_UNLOCK_TYPE, SingleNodeClient, TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-next";
 import { NeonPowProvider } from "@iota/pow-neon.js";
 import { Converter, WriteStream } from "@iota/util.js-next";
 
-const createUnlock = (essence: ITransactionEssence, keyPair: IKeyPair): ISignatureUnlock => {
+export const createUnlock = (essence: ITransactionEssence, keyPair: IKeyPair): ISignatureUnlock => {
   const essenceHash = TransactionHelper.getTransactionEssenceHash(essence)
   return {
     type: SIGNATURE_UNLOCK_TYPE,
@@ -75,3 +75,22 @@ const caluclateNonce = async (block: IBlock, minPoWScore: number): Promise<strin
   const nonce = await powProvider.pow(blockBytes, minPoWScore);
   return nonce.toString();
 }
+
+
+export const fetchAndWaitForBasicOutput = async (client: SingleNodeClient, addressBech32: string,): Promise<string> => {
+  const indexerPluginClient = new IndexerPluginClient(client!);
+  for (let i = 0; i < 10; ++i) {
+    const outputsResponse = await indexerPluginClient.outputs({
+      addressBech32,
+      hasStorageReturnCondition: false,
+      hasExpirationCondition: false,
+      hasTimelockCondition: false,
+      hasNativeTokens: false
+    });
+    if (outputsResponse.items.length) {
+      return outputsResponse.items[0]
+    }
+    await new Promise(f => setTimeout(f, 5000));
+  }
+  throw new Error("Didn't find any outputs for address: " + addressBech32);
+};

@@ -5,14 +5,13 @@ export class Bech32AddressHelper {
 
   public static addressFromAddressUnlockCondition = (unlockConditions: UnlockConditionTypes[], hrp: string, outputType: number): string => {
     const unlockCondition = Bech32AddressHelper.getUnlockConditionForType(outputType, unlockConditions);
-    outputType === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE && console.log('ASDASDASDSA', unlockCondition)
     if (unlockCondition?.address) {
       return Bech32AddressHelper.buildAddress(hrp, unlockCondition?.address);
     }
     return ''
   }
 
-  private static buildAddress(hrp: string, address: string | AddressTypes, typeHint?: number): string {
+  public static buildAddress(hrp: string, address: string | AddressTypes, typeHint?: number): string {
     return typeof address === "string"
       ? this.buildAddressFromString(hrp, address, typeHint)
       : this.buildAddressFromTypes(hrp, address);

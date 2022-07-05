@@ -1,3 +1,4 @@
+import { SingleNodeClient } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
@@ -11,7 +12,9 @@ import { getAddress } from '../../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../utils/token.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
-import { WalletService } from '../wallet/wallet';
+import { SmrTokenMinter } from '../wallet/SmrTokenMinter';
+import { getClaimableTokenCount } from '../wallet/token/claim-minted.utils';
+import { getNodeClient, WalletService } from '../wallet/wallet';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
 export class TokenService {
@@ -46,15 +49,45 @@ export class TokenService {
     await this.transactionService.markAsReconciled(orderData, match.msgId)
 
     const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${orderData.member}`).get()).data()
+
+    const minter = new SmrTokenMinter(getNodeClient(orderData.targetNetwork!) as SingleNodeClient)
     const wallet = WalletService.newWallet(orderData.targetNetwork)
-    await wallet.mintToken(
-      orderData.payload.targetAddress,
-      getAddress(member.validatedAddress, orderData.targetNetwork!),
-      token
-    )
-    const ref = admin.firestore().doc(`${COL.TOKEN}/${token.uid}`)
-    const data = { status: TokenStatus.MINTING, mintingData: { mintedBy: orderData.member } }
-    this.transactionService.updates.push({ ref, data, action: 'update' });
+    const source = await wallet.getAddressDetails(orderData.payload.targetAddress)
+    const target = await wallet.getAddressDetails(getAddress(member.validatedAddress, orderData.targetNetwork!))
+    await minter.mintToken(source, target, token)
+
+    const data = { status: TokenStatus.MINTING, mintingData: { mintedBy: orderData.member, network: orderData.targetNetwork } }
+    this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'update' });
+  }
+
+  public handleClaimMintedTokenRequest = async (orderData: TransactionOrder, match: TransactionMatch) => {
+    const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${orderData.member}`).get()).data()
+    const tokenDocRef = admin.firestore().doc(`${COL.TOKEN}/${orderData.payload.token}`)
+    const token = <Token>(await this.transactionService.transaction.get(tokenDocRef)).data()
+
+    const payment = this.transactionService.createPayment(orderData, match);
+    try {
+      const minter = new SmrTokenMinter(getNodeClient(orderData.targetNetwork!) as SingleNodeClient)
+      const wallet = WalletService.newWallet(orderData.targetNetwork)
+      const source = await wallet.getAddressDetails(orderData.payload.targetAddress)
+
+      const claimableTokenCount = await getClaimableTokenCount(this.transactionService.transaction, member.uid, token)
+      await minter.claimMintedToken(this.transactionService.transaction, member, token, source, claimableTokenCount)
+      const data = { 'mintingData.mintedTokens': admin.firestore.FieldValue.increment(claimableTokenCount) }
+      this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'update' });
+    } catch {
+      this.transactionService.createCredit(payment, match);
+      return;
+    }
+    await this.transactionService.markAsReconciled(orderData, match.msgId)
+
+    const isGuardian = (await admin.firestore().doc(`${COL.SPACE}/${token.space}/${SUB_COL.GUARDIANS}/${orderData.member}`).get()).exists
+    if (isGuardian && !token.mintingData?.claimedByGuardian) {
+      this.transactionService.updates.push({ ref: tokenDocRef, data: { 'mintingData.claimedByGuardian': orderData.member }, action: 'update' });
+    }
+
+    const distDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${orderData.member}`)
+    this.transactionService.updates.push({ ref: distDocRef, data: { mintedClaimedOn: serverTime() }, action: 'set', merge: true })
   }
 
   private async updateTokenDistribution(order: Transaction, tran: TransactionMatch, payment: Transaction) {

@@ -19,7 +19,8 @@ export enum TransactionOrderType {
   TOKEN_PURCHASE = 'TOKEN_PURCHASE',
   TOKEN_AIRDROP = 'TOKEN_AIRDROP',
   TOKEN_BUY = 'TOKEN_BUY',
-  MINT_TOKEN = 'MINT_TOKEN'
+  MINT_TOKEN = 'MINT_TOKEN',
+  CLAIM_MINTED_TOKEN = 'CLAIM_MINTED_TOKEN'
 }
 
 export enum TransactionCreditType {
