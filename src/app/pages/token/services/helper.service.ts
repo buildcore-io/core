@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import * as dayjs from 'dayjs';
@@ -15,7 +15,7 @@ export class HelperService {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Math.floor(Number(amount)), 2);
+    return UnitsHelper.formatUnits(Math.floor(Number(amount)), <Units>'Mi');
   }
 
   public percentageMarketCap(percentage: number, token?: Token): string {

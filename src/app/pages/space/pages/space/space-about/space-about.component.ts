@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { download } from '@core/utils/tools.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Member, Space } from '@functions/interfaces/models';
 import { DataService } from '@pages/space/services/data.service';
 import Papa from 'papaparse';
@@ -152,7 +152,7 @@ export class SpaceAboutComponent implements OnInit, OnDestroy {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public ngOnDestroy(): void {

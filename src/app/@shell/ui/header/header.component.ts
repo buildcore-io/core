@@ -288,8 +288,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       const contentReceived = $localize`has received a new bid for`;
 
       return {
-        title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + UnitsHelper.formatBest(not.params.amount),
-        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + UnitsHelper.formatBest(not.params.amount)
+        title: '@' + not.params.member.name + ' ' + titleOffered + ' ' + titleFor + ' ' + UnitsHelper.formatUnits(not.params.amount, 'Mi'),
+        content: contentYour + ' ' + not.params.nft.name + ' ' + contentReceived + ' ' + UnitsHelper.formatUnits(not.params.amount, 'Mi')
       }
     } else {
       return {

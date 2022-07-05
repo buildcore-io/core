@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SuccesfullOrdersWithFullHistory } from '@api/nft.api';
 import { DescriptionItem } from '@components/description/description.component';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Collection, Transaction, TransactionBillPayment, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from '@functions/interfaces/models';
 import { Timestamp } from '@functions/interfaces/models/base';
 import { Nft, PropStats } from '@functions/interfaces/models/nft';
@@ -36,7 +36,7 @@ export class HelperService {
       return '';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public auctionInProgress(nft?: Nft | null, col?: Collection | null): boolean {

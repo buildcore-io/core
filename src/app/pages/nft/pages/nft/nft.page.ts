@@ -322,8 +322,7 @@ export class NFTPage implements OnInit, OnDestroy {
     if (finalPrice < MIN_AMOUNT_TO_TRANSFER) {
       finalPrice = MIN_AMOUNT_TO_TRANSFER;
     }
-
-    finalPrice = Math.floor((finalPrice / 1000 / 10)) * 1000 * 10; // Max two decimals on Mi.
+    
     return finalPrice;
   }
 

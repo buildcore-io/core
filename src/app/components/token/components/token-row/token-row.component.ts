@@ -3,7 +3,7 @@ import { TokenPurchaseApi } from '@api/token_purchase.api';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Token, TokenStatus } from '@functions/interfaces/models/token';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import dayjs from 'dayjs';
@@ -44,7 +44,7 @@ export class TokenRowComponent implements OnInit, OnDestroy {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
+    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), <Units>'Mi');
   }
 
   public formatTokenBest(amount?: number|null): string {

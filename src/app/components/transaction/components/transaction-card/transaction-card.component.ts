@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DeviceService } from '@core/services/device';
 import { PreviewImageService } from '@core/services/preview-image';
 import { TransactionService } from '@core/services/transaction';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Transaction } from '@functions/interfaces/models';
 
 @Component({
@@ -25,6 +25,6 @@ export class TransactionCardComponent {
       return '';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 }

@@ -167,7 +167,7 @@ export class TokenClaimComponent implements OnInit, OnDestroy {
       return '-';
     }
 
-    return UnitsHelper.formatBest(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 2);
+    return UnitsHelper.formatUnits(Math.floor(Number(amount) * (mega ? (1000 * 1000) : 1)), 'Mi');
   }
 
   public formatTokenBest(amount?: number|null): string {

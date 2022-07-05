@@ -38,7 +38,7 @@ export class UnitsHelper {
    * @param decimalPlaces The number of decimal places to display.
    * @returns The formated value.
    */
-  public static formatUnits(value: number, unit: Units, decimalPlaces = 2): string {
+  public static formatUnits(value: number, unit: Units, decimalPlaces?: number): string {
     if (!UnitsHelper.UNIT_MAP[unit]) {
       throw new Error(`Unrecognized unit ${unit}`);
     }
@@ -49,7 +49,7 @@ export class UnitsHelper {
 
     return unit === "i"
       ? `${value} i`
-      : `${UnitsHelper.convertUnits(value, "i", unit).toFixed(decimalPlaces)} ${unit}`;
+      : `${parseFloat(UnitsHelper.convertUnits(value, "i", unit).toFixed(decimalPlaces || 6))} ${unit}`;
   }
 
   /**

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SelectCollectionOption } from '@components/collection/components/select-collection/select-collection.component';
 import { SelectSpaceOption } from '@components/space/components/select-space/select-space.component';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Collection, Space } from '@functions/interfaces/models';
 import { Token, TokenDrop, TokenStatus } from '@functions/interfaces/models/token';
 import dayjs from 'dayjs';
@@ -41,7 +41,7 @@ export class HelperService {
       return '0 Mi';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public formatTokenBest(amount?: number|null): string {
