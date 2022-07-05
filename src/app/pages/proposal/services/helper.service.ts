@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { TIME_GAP_BETWEEN_MILESTONES } from '@functions/interfaces/config';
 import { Proposal, ProposalAnswer, ProposalQuestion, ProposalSubType, ProposalType } from '@functions/interfaces/models';
 import { Milestone } from '@functions/interfaces/models/milestone';
@@ -141,7 +141,8 @@ export class HelperService {
     if (!ans) {
       return '';
     }
-    return UnitsHelper.formatBest(ans.accumulated);
+    
+    return UnitsHelper.formatUnits(ans.accumulated, <Units>'Mi');
   }
 
   public getShareUrl(proposal?: Proposal | null): string {

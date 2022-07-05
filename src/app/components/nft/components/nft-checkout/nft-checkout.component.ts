@@ -314,7 +314,7 @@ export class NftCheckoutComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
 
   public getRecord(): Nft|null|undefined {

@@ -73,7 +73,7 @@ export class TokenPublicSaleComponent {
       return '';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
 
   public publicAllocation(allocations?: TokenAllocation[]): TokenAllocation| undefined {

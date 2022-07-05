@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { enumToArray } from '@core/utils/manipulations.utils';
-import { UnitsHelper } from '@core/utils/units-helper';
+import { Units, UnitsHelper } from '@core/utils/units-helper';
 import { Categories, Collection, DiscountLine } from '@functions/interfaces/models';
 import { Access, Timestamp } from '@functions/interfaces/models/base';
 import dayjs from 'dayjs';
@@ -52,7 +52,7 @@ export class HelperService {
       return '';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public sortedDiscounts(discounts?: DiscountLine[] | null): DiscountLine[] {

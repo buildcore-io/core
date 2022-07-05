@@ -85,7 +85,7 @@ export class TimelineComponent {
       return '';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), 'Mi');
   }
 
   public trackByUid(index: number, item: any) {

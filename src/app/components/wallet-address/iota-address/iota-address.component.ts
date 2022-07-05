@@ -11,7 +11,7 @@ import * as dayjs from 'dayjs';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { Member, Space } from '../../../../../functions/interfaces/models';
 import { Transaction, TransactionType, TRANSACTION_AUTO_EXPIRY_MS } from './../../../../../functions/interfaces/models/transaction';
-import { UnitsHelper } from './../../../@core/utils/units-helper';
+import { Units, UnitsHelper } from './../../../@core/utils/units-helper';
 import { EntityType } from './../wallet-address.component';
 
 export enum StepType {
@@ -196,7 +196,7 @@ export class IOTAAddressComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    return UnitsHelper.formatBest(Number(amount), 2);
+    return UnitsHelper.formatUnits(Number(amount), <Units>'Mi');
   }
 
   public isSpaceVerification(): boolean {
