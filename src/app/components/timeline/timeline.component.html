@@ -74,8 +74,6 @@
             <div *ngIf="i !== 0"
                 class="absolute w-0.5 h-full bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 -translate-y-1/2"></div>
 
-            <!-- <div class="absolute w-0.5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 translate-y-1/2"
-                [ngClass]="i === 0 ? (visibleIndex === i ? 'h-24' : 'h-36') : 'h-full'"></div> -->
             <div class="absolute w-0.5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 translate-y-1/2"
                 [ngClass]="i === 0 ? 'h-24' : 'h-full'"></div>
 
@@ -103,7 +101,6 @@
                                                 <span i18n>Purchased by</span> @{{ item.payload.name }}
                                                 <span i18n>for</span> {{ formatBest(castAsOrderPayload(item.payload).amount) }}
                                             </div>
-                                            <a class="inline text-sm text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" i18n>See</a>
                                         </div>
                                     </ng-template>
 
@@ -120,7 +117,7 @@
                                             <div class="flex items-center">
                                                 <a class="text-sm font-medium underline text-buttons-primary-enabled dark:text-buttons-primary-enabled-dark" target="_blank"
                                                     [href]="transactionService.getExplorerLink(tt)">{{ transactionService.getTitle(tt) }}</a>
-                                                <ng-container *ngIf="tt.payload.amount && tt.space">
+                                                <ng-container *ngIf="tt.payload.amount && tt.space && tt.type !== transactionTypes.PAYMENT">
                                                     <wen-icon-collapse-arrow class="text-icons-tertiary dark:text-icons-tertiary-dark mx-1"></wen-icon-collapse-arrow>
     
                                                     <div class="font-bold text-sm text-foregrounds-primary dark:text-foregrounds-primary">{{ formatBest(tt.payload.amount) }}</div>
@@ -141,7 +138,7 @@
 
         <div class="relative flex items-center mt-3" *ngIf="item.type === timelineItemTypes.LISTED_BY_SPACE && (showAll || (getOrdersLength() < collapsedItemsCount))">
             <div *ngIf="items.length > 0"
-                class="absolute w-0.5 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 translate-y-1/2"></div>
+                class="absolute w-0.5 h-24 bg-foregrounds-tertiary dark:bg-foregrounds-tertiary-dark left-3 -translate-x-1/2 -translate-y-1/2"></div>
 
             <div class="relative z-10 flex items-center justify-center mr-4 text-white rounded-full min-w-6 min-h-6 bg-accent-primary dark:bg-accent-primary-dark">
                 <wen-icon-check></wen-icon-check>
