@@ -1,4 +1,7 @@
 
+import { BASIC_OUTPUT_TYPE, IBasicOutput, ITimelockUnlockCondition, ITransactionPayload, SingleNodeClient, TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
+import dayjs from 'dayjs';
+import { isEmpty } from 'lodash';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { Network, Space, TransactionType } from '../../interfaces/models';
@@ -9,7 +12,7 @@ import { createMember } from '../../src/controls/member.control';
 import { claimMintedTokenOrder, mintTokenOrder } from '../../src/controls/token-mint.controller';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
-import { serverTime } from '../../src/utils/dateTime.utils';
+import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
 import { requestFromFaucetIfNotEnough } from '../../test-tangle/faucet';
 import { copyMilestoneTransactionsFromDev } from '../db-sync.utils';
@@ -125,6 +128,45 @@ describe('Token minting', () => {
     const data = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(data.mintingData?.mintedTokens).toBe(1000)
     expect(data.mintingData?.claimedByGuardian).toBe(guardian)
+  })
+
+  it('Claim owned, guardian owned, airdroped-vesting', async () => {
+    await admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`).set({
+      tokenOwned: 125, tokenDrops: [{
+        vestingAt: dateToTimestamp(dayjs().add(1, 'd').toDate()),
+        count: 125,
+        uid: wallet.getRandomEthAddress()
+      }]
+    })
+
+    mockWalletReturnValue(walletSpy, guardian, { token: token.uid })
+    const order = await testEnv.wrap(claimMintedTokenOrder)({})
+    await sendFromGenesis(address, order.payload.targetAddress, order.payload.amount)
+
+    const distributionDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${guardian}`)
+    await wait(async () => {
+      const data = <TokenDistribution>(await distributionDocRef.get()).data()
+      return data?.mintedClaimedOn !== undefined && data?.mintingBlockId !== undefined
+    })
+
+    const data = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
+    expect(data.mintingData?.mintedTokens).toBe(875)
+
+    const distribution = <TokenDistribution>(await distributionDocRef.get()).data()
+    const client = new SingleNodeClient('https://sd1.svrs.io/')
+    const block = await client.block(distribution.mintingBlockId!)
+    const payload = (block.payload as ITransactionPayload)
+    expect(payload.essence.outputs.length).toBe(6)
+    const basicOutputs = payload.essence.outputs.filter(o => o.type === BASIC_OUTPUT_TYPE)
+    expect(basicOutputs.length).toBe(4)
+
+    const outputsWithNativeTokens = basicOutputs.filter(o => !isEmpty((<IBasicOutput>o).nativeTokens))
+    const timeLocks = outputsWithNativeTokens.map(o => (o as IBasicOutput).unlockConditions.filter(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE)[0] as ITimelockUnlockCondition)
+
+    const unlocked = timeLocks.filter(t => dayjs().isAfter(dayjs.unix(t.unixTime))).length
+    expect(unlocked).toBe(2)
+    const vesting = timeLocks.filter(t => dayjs().isBefore(dayjs.unix(t.unixTime))).length
+    expect(vesting).toBe(1)
   })
 
   it('Should credit second claim', async () => {
