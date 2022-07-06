@@ -1,11 +1,11 @@
 import * as lib from "@iota/iota.js-next";
 import { IAliasOutput, IFoundryOutput, IndexerPluginClient, SingleNodeClient, TransactionHelper } from "@iota/iota.js-next";
 import { Member } from "../../../interfaces/models";
-import { Token } from "../../../interfaces/models/token";
+import { Token, TokenDrop } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
 import { getAddress } from "../../utils/address.utils";
 import { createAlias, createAliasOutput, transferAlias } from "./token/alias.utils";
-import { getStorageDepositForClaimingToken, mintMoreTokens } from "./token/claim-minted.utils";
+import { createTokenClaimOutputs, getClaimableTokens, mintMoreTokens } from "./token/claim-minted.utils";
 import { chainTransactionsViaBlocks, fetchAndWaitForBasicOutput, getTransactionPayloadHex } from "./token/common.utils";
 import { createFoundryMintToken, createFoundryOutput } from "./token/foundry.utils";
 import { AddressDetails, WalletService } from "./wallet";
@@ -55,7 +55,7 @@ export class SmrTokenMinter {
     return aliasStorageDep + foundryStorageDep
   }
 
-  public claimMintedToken = async (transaction: admin.firestore.Transaction, member: Member, token: Token, source: AddressDetails, toMint: number) => {
+  public claimMintedToken = async (member: Member, token: Token, source: AddressDetails, drops: TokenDrop[]) => {
     const consumedOutputId = await fetchAndWaitForBasicOutput(this.client, source.bech32);
     const consumedOutput = (await this.client.output(consumedOutputId)).output;
     const aliasOutputId = await this.getAliasOutputId(token.mintingData?.aliasId!)
@@ -73,19 +73,24 @@ export class SmrTokenMinter {
       aliasOutputId,
       foundryOutput,
       foundryOutputId,
-      toMint,
+      drops,
       source,
       getAddress(member.validatedAddress, token.mintingData?.network!)
     )
     const blocks = await chainTransactionsViaBlocks(this.client, [payload], info.protocol.minPoWScore);
-    for (const block of blocks) {
-      await this.client.blockSubmit(block)
-    }
-    return payload
+    return await this.client.blockSubmit(blocks[0])
   }
 
-  public getStorageDepositForClaimingToken = async (transaction: admin.firestore.Transaction, member: Member, token: Token) =>
-    getStorageDepositForClaimingToken(transaction, member, token, await this.client.info())
+  public getStorageDepositForClaimingToken = async (transaction: admin.firestore.Transaction, member: Member, token: Token) => {
+    const drops = await getClaimableTokens(transaction, member.uid, token)
+    const outputs = await createTokenClaimOutputs(
+      getAddress(member.validatedAddress, token.mintingData?.network!),
+      token.mintingData?.tokenId!,
+      await this.client.info(),
+      drops
+    )
+    return outputs.reduce((acc, act) => acc + Number(act.amount), 0)
+  }
 
   private getAliasOutputId = async (aliasId: string) => {
     const indexerPlugin = new IndexerPluginClient(this.client);

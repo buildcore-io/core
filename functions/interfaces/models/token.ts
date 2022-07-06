@@ -96,6 +96,7 @@ export interface TokenDistribution extends BaseSubCollection {
   readonly createdOn?: Timestamp;
 
   readonly mintedClaimedOn?: Timestamp;
+  readonly mintingBlockId?: string;
 }
 
 export interface TokenPurchase extends BaseRecord {

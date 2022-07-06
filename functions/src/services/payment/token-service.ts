@@ -13,7 +13,7 @@ import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../utils/token.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { SmrTokenMinter } from '../wallet/SmrTokenMinter';
-import { getClaimableTokenCount } from '../wallet/token/claim-minted.utils';
+import { getClaimableTokens, getDropsTotal } from '../wallet/token/claim-minted.utils';
 import { getNodeClient, WalletService } from '../wallet/wallet';
 import { TransactionMatch, TransactionService } from './transaction-service';
 
@@ -71,23 +71,25 @@ export class TokenService {
       const wallet = WalletService.newWallet(orderData.targetNetwork)
       const source = await wallet.getAddressDetails(orderData.payload.targetAddress)
 
-      const claimableTokenCount = await getClaimableTokenCount(this.transactionService.transaction, member.uid, token)
-      await minter.claimMintedToken(this.transactionService.transaction, member, token, source, claimableTokenCount)
-      const data = { 'mintingData.mintedTokens': admin.firestore.FieldValue.increment(claimableTokenCount) }
-      this.transactionService.updates.push({ ref: tokenDocRef, data, action: 'update' });
+      const drops = await getClaimableTokens(this.transactionService.transaction, member.uid, token)
+      const blockId = await minter.claimMintedToken(member, token, source, drops)
+
+      await this.transactionService.markAsReconciled(orderData, match.msgId)
+
+      const isGuardian = (await admin.firestore().doc(`${COL.SPACE}/${token.space}/${SUB_COL.GUARDIANS}/${orderData.member}`).get()).exists
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const tokenUpdateData: any = { 'mintingData.mintedTokens': admin.firestore.FieldValue.increment(getDropsTotal(drops)) }
+      if (isGuardian && !token.mintingData?.claimedByGuardian) {
+        tokenUpdateData['mintingData.claimedByGuardian'] = member.uid
+      }
+      this.transactionService.updates.push({ ref: tokenDocRef, data: tokenUpdateData, action: 'update' });
+
+      const distDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${orderData.member}`)
+      const distData = { mintedClaimedOn: serverTime(), mintingBlockId: blockId }
+      this.transactionService.updates.push({ ref: distDocRef, data: distData, action: 'set', merge: true })
     } catch {
       this.transactionService.createCredit(payment, match);
-      return;
     }
-    await this.transactionService.markAsReconciled(orderData, match.msgId)
-
-    const isGuardian = (await admin.firestore().doc(`${COL.SPACE}/${token.space}/${SUB_COL.GUARDIANS}/${orderData.member}`).get()).exists
-    if (isGuardian && !token.mintingData?.claimedByGuardian) {
-      this.transactionService.updates.push({ ref: tokenDocRef, data: { 'mintingData.claimedByGuardian': orderData.member }, action: 'update' });
-    }
-
-    const distDocRef = admin.firestore().doc(`${COL.TOKEN}/${token.uid}/${SUB_COL.DISTRIBUTION}/${orderData.member}`)
-    this.transactionService.updates.push({ ref: distDocRef, data: { mintedClaimedOn: serverTime() }, action: 'set', merge: true })
   }
 
   private async updateTokenDistribution(order: Transaction, tran: TransactionMatch, payment: Transaction) {
