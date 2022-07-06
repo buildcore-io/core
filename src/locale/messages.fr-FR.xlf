@@ -8230,7 +8230,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation">Symbol is invalid (Length must be 3 - 5 and letters must be A-Z).</target>
+        <target state="translated">Le symbole n'est pas autorisé (quantité de Tokens consentie allant de 3 à 10 ; lettres consenties allant de A à Z).</target>
       </trans-unit>
       <trans-unit id="3844483589622032125" datatype="html">
         <source>Token supply</source>
@@ -8242,7 +8242,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
-        <target state="needs-translation">Token supply</target>
+        <target state="translated">Supply Tokens</target>
       </trans-unit>
       <trans-unit id="2566153554655610416" datatype="html">
         <source>Price is invalid.</source>
@@ -8250,7 +8250,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">47,48</context>
         </context-group>
-        <target state="needs-translation">Price is invalid.</target>
+        <target state="translated">Le prix n'est pas autorisé.</target>
       </trans-unit>
       <trans-unit id="6094099410266172213" datatype="html">
         <source>Price per token (Mi)</source>
@@ -8258,7 +8258,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">52,53</context>
         </context-group>
-        <target state="needs-translation">Price per token (Mi)</target>
+        <target state="translated">Prix du Token (m)</target>
       </trans-unit>
       <trans-unit id="7627800558083286146" datatype="html">
         <source>Total supply is invalid.</source>
@@ -8270,7 +8270,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
-        <target state="needs-translation">Total supply is invalid.</target>
+        <target state="translated">La Total Supply n'est pas autorisée.</target>
       </trans-unit>
       <trans-unit id="6423344572227973503" datatype="html">
         <source>Total token supply (up to 6 decimals are supported)</source>
@@ -8278,7 +8278,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">66,67</context>
         </context-group>
-        <target state="needs-translation">Total token supply (up to 6 decimals are supported)</target>
+        <target state="translated">Total Supply (registre de valeur supporté, propulsé par Token divisible en 6 décimales)</target>
       </trans-unit>
       <trans-unit id="1971259695916929385" datatype="html">
         <source>Allocation title</source>
