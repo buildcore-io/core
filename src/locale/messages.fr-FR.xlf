@@ -8286,7 +8286,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">95,96</context>
         </context-group>
-        <target state="needs-translation">Allocation title</target>
+        <target state="translated">Désignation de la distribution</target>
       </trans-unit>
       <trans-unit id="5488507002405196153" datatype="html">
         <source>Percentage of tokens is invalid.</source>
@@ -8294,7 +8294,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">Percentage of tokens is invalid.</target>
+        <target state="translated">Le pourcentage de Tokens n'est pas autorisé.</target>
       </trans-unit>
       <trans-unit id="3671877264768385844" datatype="html">
         <source>% of tokens for sale (Default 100%)</source>
@@ -8302,7 +8302,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">109,110</context>
         </context-group>
-        <target state="needs-translation">% of tokens for sale (Default 100%)</target>
+        <target state="translated">% de Tokens destinés à la vente (montant par défaut de 100%)</target>
       </trans-unit>
       <trans-unit id="3775236366711745945" datatype="html">
         <source> Public sale </source>
@@ -8310,7 +8310,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">119</context>
         </context-group>
-        <target state="needs-translation"> Public sale </target>
+        <target state="translated"> Vente publique </target>
       </trans-unit>
       <trans-unit id="4930402885919487524" datatype="html">
         <source>Only 1 of the allocations can be public</source>
