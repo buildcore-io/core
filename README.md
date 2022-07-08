@@ -1,7 +1,5 @@
 [![SoonLabs](https://badgen.net/discord/members/UffhtduynB)](https://discord.gg/UffhtduynB)
 [![SoonLabs](https://badgen.net/twitter/follow/soon_labs)](https://twitter.com/soon_labs)
-[![SoonLabs](https://badgen.net/github/issues/soonaverse/soonaverse)](https://github.com/soonaverse/soonaverse/issues)
-[![SoonLabs](https://badgen.net/github/open-prs/soonaverse/soonaverse)](https://github.com/soonaverse/soonaverse/pulls)
 [![TypeScript](https://img.shields.io/badge/--3178C6?logo=typescript&logoColor=ffffff)](https://www.typescriptlang.org/)
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 [![Front End Unit Tests](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-unit-tests.yml/badge.svg)](https://github.com/soonaverse/soonaverse/actions/workflows/front-end-unit-tests.yml)
