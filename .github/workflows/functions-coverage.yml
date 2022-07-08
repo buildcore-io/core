@@ -1,9 +1,8 @@
-name: 'coverage'
+name: 'functions-coverage'
+
 on:
-    pull_request:
-        branches:
-            - master
-            - main
+  pull_request
+
 jobs:
     coverage:
         permissions:
