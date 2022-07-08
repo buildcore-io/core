@@ -8318,7 +8318,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">134,135</context>
         </context-group>
-        <target state="needs-translation">Only 1 of the allocations can be public</target>
+        <target state="translated">Seulement une part des Tokens distribués, sera destinée à la vente publique</target>
       </trans-unit>
       <trans-unit id="105296553967423458" datatype="html">
         <source>Sum of the percentages must be 100</source>
@@ -8330,7 +8330,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">139</context>
         </context-group>
-        <target state="needs-translation">Sum of the percentages must be 100</target>
+        <target state="translated">La somme des pourcentages doit être égale à 100</target>
       </trans-unit>
       <trans-unit id="4744066985158414992" datatype="html">
         <source>Invalid sum of percentages</source>
@@ -8338,7 +8338,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">138,139</context>
         </context-group>
-        <target state="needs-translation">Invalid sum of percentages</target>
+        <target state="translated">Quantités non autorisées (Somme des pourcentages)</target>
       </trans-unit>
       <trans-unit id="2268235238556813196" datatype="html">
         <source>Add allocation</source>
@@ -8346,7 +8346,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">150,151</context>
         </context-group>
-        <target state="needs-translation">Add allocation</target>
+        <target state="translated">Allouer des distributions</target>
       </trans-unit>
       <trans-unit id="2117005374983690607" datatype="html">
         <source>Token icon</source>
@@ -8358,7 +8358,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">204,205</context>
         </context-group>
-        <target state="needs-translation">Token icon</target>
+        <target state="translated">Symbole du Token</target>
       </trans-unit>
       <trans-unit id="1740926217217396461" datatype="html">
         <source>(Recomended size: 400 x 400px)</source>
@@ -8366,7 +8366,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">184,185</context>
         </context-group>
-        <target state="needs-translation">(Recomended size: 400 x 400px)</target>
+        <target state="translated">(Dimensions recommandées : 400 x 400 px)</target>
       </trans-unit>
       <trans-unit id="5657253969422419487" datatype="html">
         <source>Icon is mandatory</source>
@@ -8374,7 +8374,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">193,194</context>
         </context-group>
-        <target state="needs-translation">Icon is mandatory</target>
+        <target state="translated">La présence du symbole est obligatoire</target>
       </trans-unit>
       <trans-unit id="5378252758736211907" datatype="html">
         <source>Token price</source>
@@ -8386,7 +8386,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">220,221</context>
         </context-group>
-        <target state="needs-translation">Token price</target>
+        <target state="translated">Prix du Token</target>
       </trans-unit>
       <trans-unit id="7577050733269108804" datatype="html">
         <source>Distribution of the token happens after the token offering end date.</source>
@@ -8398,7 +8398,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">222,223</context>
         </context-group>
-        <target state="needs-translation">Distribution of the token happens after the token offering end date.</target>
+        <target state="translated">La livraison du Token n'aura lieu qu'après l'expiration du délai d'appel d'offres de Tokens.</target>
       </trans-unit>
       <trans-unit id="4545637469732220398" datatype="html">
         <source>Configure the token supply first to see breakdown.</source>
@@ -8406,7 +8406,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">245,246</context>
         </context-group>
-        <target state="needs-translation">Configure the token supply first to see breakdown.</target>
+        <target state="translated">Pour pouvoir visualiser la répartition, vous devez avant tout configurer la Supply.</target>
       </trans-unit>
       <trans-unit id="1752313125925892847" datatype="html">
         <source>Token terms and conditions</source>
@@ -8418,7 +8418,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">252,253</context>
         </context-group>
-        <target state="needs-translation">Token terms and conditions</target>
+        <target state="translated">Les modalités et les conditions sur les Tokens</target>
       </trans-unit>
       <trans-unit id="940422992605518398" datatype="html">
         <source>Provide link for Terms and Conditions</source>
