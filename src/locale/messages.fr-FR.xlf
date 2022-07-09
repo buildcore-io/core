@@ -8426,7 +8426,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">257,258</context>
         </context-group>
-        <target state="needs-translation">Provide link for Terms and Conditions</target>
+        <target state="translated">Insérer un lien vers la page des Modalités et Conditions</target>
       </trans-unit>
       <trans-unit id="322524188436077631" datatype="html">
         <source>Terms and Conditions link is invalid. (Start with http:// or https://)</source>
@@ -8434,7 +8434,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">263,264</context>
         </context-group>
-        <target state="needs-translation">Terms and Conditions link is invalid. (Start with http:// or https://)</target>
+        <target state="translated">Les caractères du lien menant vers la page des Modalités et Conditions ne sont pas autorisés.(Commencer la saisie des URL http://; https://)</target>
       </trans-unit>
       <trans-unit id="731928120017865074" datatype="html">
         <source>Token allocation</source>
@@ -8446,7 +8446,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">135,136</context>
         </context-group>
-        <target state="needs-translation">Token allocation</target>
+        <target state="translated">Distribution de Tokens</target>
       </trans-unit>
       <trans-unit id="8927080808898221200" datatype="html">
         <source>Allocation</source>
@@ -8458,7 +8458,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.ts</context>
           <context context-type="linenumber">32</context>
         </context-group>
-        <target state="needs-translation">Allocation</target>
+        <target state="translated">Distribution</target>
       </trans-unit>
       <trans-unit id="4165983762693361423" datatype="html">
         <source>Please make sure that there is only one allocation marked for public sale as this could be later sold on Soonaverse.
