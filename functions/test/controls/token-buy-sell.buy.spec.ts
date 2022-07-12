@@ -1,10 +1,10 @@
-import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell } from "../../src/controls/token-buy-sell.controller";
+import { buyToken, cancelBuyOrSell } from "../../src/controls//token-sale/token-buy.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";

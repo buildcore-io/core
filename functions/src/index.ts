@@ -1,3 +1,5 @@
+import { buyToken, cancelBuyOrSell } from "../src/controls/token-sale/token-buy.controller";
+import { sellToken } from "../src/controls/token-sale/token-sell.controller";
 import { WEN_FUNC } from './../interfaces/functions/index';
 import { addOwner, approveAward, approveParticipant, createAward, participate, rejectAward } from './controls/award.control';
 import { approveCollection, createCollection, rejectCollection, updateCollection } from './controls/collection.control';
@@ -6,16 +8,16 @@ import { createBatchNft, createNft, setForSaleNft } from './controls/nft.control
 import { openBid, orderNft, validateAddress } from './controls/order.control';
 import { approveProposal, createProposal, rejectProposal, voteOnProposal } from './controls/proposal.control';
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
-import { buyToken, cancelBuyOrSell, sellToken } from './controls/token-buy-sell.controller';
 import { claimMintedTokenOrder, mintTokenOrder } from './controls/token-mint.controller';
+import { sellMintedTokenOrder } from './controls/token-sale/minted-token-sell.controller';
 import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
 import { atoiMilestoneTransactionWrite, iotaMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/iota-milestone-transaction.trigger';
 import { rmsMilestoneTransactionWrite, smrMilestoneTransactionWrite } from './triggers/milestone-transactions-triggers/smr-milestone-transaction.trigger';
 import { nftWrite } from './triggers/nft.trigger';
-import { onTokenBuySellWrite } from './triggers/token-buy-sell.trigger';
-import { onTokenPurchaseCreated } from './triggers/token-purchase.trigger';
+import { onTokenBuySellWrite } from './triggers/token-buy-sell/token-buy-sell.trigger';
+import { onTokenPurchaseCreated } from './triggers/token-buy-sell/token-purchase.trigger';
 import { onTokenStatusUpdate } from './triggers/token.trigger';
 import { transactionWrite } from './triggers/transaction.trigger';
 import { isProdEnv } from './utils/config.utils';
@@ -102,3 +104,4 @@ exports[WEN_FUNC.buyToken] = buyToken;
 exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
 exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
 exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;
+exports[WEN_FUNC.sellMintedToken] = sellMintedTokenOrder

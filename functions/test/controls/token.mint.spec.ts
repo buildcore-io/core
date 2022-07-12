@@ -6,16 +6,16 @@ import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from '../../interfaces/models/token';
 import admin from '../../src/admin.config';
 import { createMember } from '../../src/controls/member.control';
-import { buyToken } from '../../src/controls/token-buy-sell.controller';
+import { buyToken } from '../../src/controls/token-sale/token-buy.controller';
 import { mintTokenOrder } from '../../src/controls/token-mint.controller';
 import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { requestFromFaucetIfNotEnough } from '../../test-tangle/faucet';
 import { copyMilestoneTransactionsFromDev } from '../db-sync.utils';
 import { testEnv } from '../set-up';
 import { createSpace, expectThrow, milestoneProcessed, mockWalletReturnValue, submitMilestoneFunc, wait } from './common';
+import { requestFundsFromFaucet } from '../../test-tangle/faucet';
 
 let walletSpy: any;
 const network = Network.RMS
@@ -36,7 +36,7 @@ const createAndValidateMember = async (member: string, requestTokens?: boolean) 
     [`validatedAddress.${network}`]: address.bech32,
     [`validatedAddress.${Network.IOTA}`]: await iotaWallet.getNewIotaAddressDetails()
   })
-  requestTokens && await requestFromFaucetIfNotEnough(network, address, 10 * MIN_IOTA_AMOUNT)
+  requestTokens && await requestFundsFromFaucet(network, address.bech32, 10 * MIN_IOTA_AMOUNT)
   return address;
 }
 

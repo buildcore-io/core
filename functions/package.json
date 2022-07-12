@@ -25,7 +25,7 @@
     "@iota/crypto.js-next": "npm:@iota/crypto.js@next",
     "@iota/iota.js": "1.8.6",
     "@iota/iota.js-next": "npm:@iota/iota.js@next",
-    "@iota/pow-wasm.js": "^1.8.6",
+    "@iota/pow-neon.js": "1.8.6",
     "@iota/util.js": "1.8.6",
     "@iota/util.js-next": "npm:@iota/util.js@next",
     "@metamask/eth-sig-util": "4.0.0",

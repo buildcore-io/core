@@ -1,6 +1,8 @@
 import test from 'firebase-functions-test';
 import { AppCheck } from './../interfaces/config';
 
+export const FAUCET_MNEMONIC ='leave bitter execute problem must spray various try direct inhale elite lens era treat admit note rhythm brand lyrics guide warfare beyond genuine trip'
+        
 AppCheck.enabled = false;
 export const projectId = 'soonaverse-dev'
 process.env.GCLOUD_PROJECT = projectId;

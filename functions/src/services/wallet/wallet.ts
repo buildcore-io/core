@@ -22,6 +22,15 @@ const ATOI_API_ENDPOINTS = ['https://devnet.svrs.io/']
 
 const getIOTAApiEndpoint = (testMode: boolean) => getRandomElement(testMode ? ATOI_API_ENDPOINTS : IOTA_API_ENDPOINTS)
 
+export const getNodeEnpoint = (network: Network) => {
+  switch(network) {
+    case Network.SMR: return getSmrApiEndpoint(false)
+    case Network.RMS: return getSmrApiEndpoint(true)
+    case Network.IOTA: return getIOTAApiEndpoint(false)
+    case Network.ATOI: return getIOTAApiEndpoint(true)
+  }
+}
+
 export interface IKeyPair {
   publicKey: Uint8Array;
   privateKey: Uint8Array;

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import Joi from 'joi';
 import { isEmpty } from 'lodash';
-import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT } from '../../interfaces/config';
+import { DEFAULT_NETWORK } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { WEN_FUNC } from '../../interfaces/functions';
 import { Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../interfaces/models';
@@ -79,7 +79,7 @@ export const mintTokenOrder = functions.runWith({
     targetNetwork: params.body.targetNetwork || DEFAULT_NETWORK,
     payload: {
       type: TransactionOrderType.MINT_TOKEN,
-      amount: MIN_IOTA_AMOUNT + totalStorageDeposit,
+      amount: totalStorageDeposit,
       targetAddress: targetAddress.bech32,
       expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
       validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,
@@ -154,7 +154,7 @@ export const claimMintedTokenOrder = functions.runWith({
       targetNetwork: token.mintingData?.network!,
       payload: {
         type: TransactionOrderType.CLAIM_MINTED_TOKEN,
-        amount: MIN_IOTA_AMOUNT + storageDeposit,
+        amount: storageDeposit,
         targetAddress: targetAddress.bech32,
         expiresOn: dateToTimestamp(dayjs(serverTime().toDate()).add(TRANSACTION_AUTO_EXPIRY_MS, 'ms')),
         validationType: TransactionValidationType.ADDRESS_AND_AMOUNT,

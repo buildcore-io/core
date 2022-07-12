@@ -1,8 +1,14 @@
 import { Timestamp } from './base';
 
+export interface NativeToken {
+  readonly id: string;
+  readonly amount: string;
+}
+
 export interface MilestoneTransactionEntry {
   address: string;
   amount: number;
+  nativeTokens?: NativeToken[]
 }
 
 export interface MilestoneTransaction {
