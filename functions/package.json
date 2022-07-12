@@ -7,7 +7,7 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "export-online-test-credentials": "export GOOGLE_APPLICATION_CREDENTIALS=\"./test-service-account-key.json\"",
-    "test": "export LOCAL_TEST=true && jest test/controls/token.spec.ts --runInBand --forceExit",
+    "test": "export LOCAL_TEST=true && jest test/ --runInBand --forceExit",
     "test-online": "npm run export-online-test-credentials && jest test-online/ --runInBand",
     "test-load": "npm run export-online-test-credentials && jest test-load/ --runInBand",
     "test-all-online": "npm run export-online-test-credentials && jest test/ test-online/ --runInBand",
