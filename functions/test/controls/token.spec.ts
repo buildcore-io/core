@@ -124,6 +124,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should throw, no valid space address', async () => {
     space = await createSpace(walletSpy, memberAddress)
+    await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} })
     token.space = space.uid
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.space_must_have_validated_address.key)

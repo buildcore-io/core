@@ -8,7 +8,7 @@ import admin from '../../src/admin.config';
 import { buyToken, cancelBuyOrSell } from "../../src/controls/token-sale/token-buy.controller";
 import { sellToken } from "../../src/controls/token-sale/token-sell.controller";
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.trigger";
+import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell/token-buy-sell.trigger";
 import { getAddress } from '../../src/utils/address.utils';
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
