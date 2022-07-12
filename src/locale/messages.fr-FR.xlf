@@ -8476,7 +8476,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">77</context>
         </context-group>
-        <target state="needs-translation">Total token supply</target>
+        <target state="translated">Total Supply Tokens</target>
       </trans-unit>
       <trans-unit id="5385408710926538560" datatype="html">
         <source>Create token</source>
@@ -8484,7 +8484,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.html</context>
           <context context-type="linenumber">2,4</context>
         </context-group>
-        <target state="needs-translation">Create token</target>
+        <target state="translated">Créez votre Token</target>
       </trans-unit>
       <trans-unit id="2171894153326157864" datatype="html">
         <source>Introduction</source>
@@ -8492,7 +8492,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
           <context context-type="linenumber">33</context>
         </context-group>
-        <target state="needs-translation">Introduction</target>
+        <target state="translated">Présentation</target>
       </trans-unit>
       <trans-unit id="4196232656388343089" datatype="html">
         <source>Metrics</source>
@@ -8504,7 +8504,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token.page.ts</context>
           <context context-type="linenumber">28</context>
         </context-group>
-        <target state="needs-translation">Metrics</target>
+        <target state="translated">Métriques</target>
       </trans-unit>
       <trans-unit id="4739818603756173797" datatype="html">
         <source>Summary</source>
@@ -8512,7 +8512,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/new.page.ts</context>
           <context context-type="linenumber">36</context>
         </context-group>
-        <target state="needs-translation">Summary</target>
+        <target state="translated">Récapitulatif</target>
       </trans-unit>
       <trans-unit id="8244604182545600544" datatype="html">
         <source>Token description</source>
@@ -8536,7 +8536,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">39,40</context>
         </context-group>
-        <target state="needs-translation">Token description</target>
+        <target state="translated">Résumé des attributs du Token</target>
       </trans-unit>
       <trans-unit id="3948744763020948909" datatype="html">
         <source>This text will be displayed on the main token page.</source>
@@ -8544,7 +8544,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">14,15</context>
         </context-group>
-        <target state="needs-translation">This text will be displayed on the main token page.</target>
+        <target state="translated">Cette justification textuelle s'affichera sur la page principale du Token.</target>
       </trans-unit>
       <trans-unit id="7933726557573889994" datatype="html">
         <source>Title is invalid.</source>
@@ -8556,7 +8556,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">23,24</context>
         </context-group>
-        <target state="needs-translation">Title is invalid.</target>
+        <target state="translated">Le numéro d'identification n'est pas autorisé.</target>
       </trans-unit>
       <trans-unit id="8804221464821000172" datatype="html">
         <source>Token description title</source>
@@ -8564,7 +8564,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
-        <target state="needs-translation">Token description title</target>
+        <target state="translated">Spécifications techniques du Token</target>
       </trans-unit>
       <trans-unit id="7608183300526499639" datatype="html">
         <source>Description is invalid.</source>
@@ -8576,7 +8576,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">34,35</context>
         </context-group>
-        <target state="needs-translation">Description is invalid.</target>
+        <target state="translated">Spécifications du Token non autorisé.</target>
       </trans-unit>
       <trans-unit id="2973928033612762715" datatype="html">
         <source>Short description</source>
@@ -8588,7 +8588,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">104,105</context>
         </context-group>
-        <target state="needs-translation">Short description</target>
+        <target state="translated">Description succincte</target>
       </trans-unit>
       <trans-unit id="1993506668412199712" datatype="html">
         <source>Short description of the token which will be displayed on the token trading page.</source>
