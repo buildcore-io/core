@@ -100,10 +100,11 @@ export class TokenService {
     await this.transactionService.markAsReconciled(order, match.msgId)
 
     const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
-    const { price } = order.payload as any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const price = (order.payload as any).price || 0
     const nativeTokens = Number(tran.nativeTokens?.find(n => n.id === token.mintingData?.tokenId)?.amount)
 
-    if (!nativeTokens) {
+    if (!nativeTokens || !price) {
       throw throwInvalidArgument(WenError.invalid_params)
     }
 
@@ -113,7 +114,7 @@ export class TokenService {
       token: order.payload.token,
       type: TokenBuySellOrderType.SELL,
       count: nativeTokens,
-      price: price,
+      price,
       totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(nativeTokens, price))),
       balance: 0,
       fulfilled: 0,
