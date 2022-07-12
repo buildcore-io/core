@@ -98,9 +98,9 @@ describe('Token trigger test', () => {
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardian = await createMember(walletSpy)
-    space = await createSpace(walletSpy, guardian, true)
+    space = await createSpace(walletSpy, guardian)
     const maxMembers = scenarios.reduce((max, scenario) => Math.max(max, scenario.totalDeposit.length), 0)
-    const memberPromises = Array.from(Array(maxMembers)).map(() => createMember(walletSpy, true))
+    const memberPromises = Array.from(Array(maxMembers)).map(() => createMember(walletSpy))
     members = await Promise.all(memberPromises)
   })
 
@@ -155,7 +155,7 @@ describe('Token trigger test', () => {
   })
 
   it('Should should create two and credit third', async () => {
-    members.push(await createMember(walletSpy, true))
+    members.push(await createMember(walletSpy))
     token = dummyToken(10, space, MIN_IOTA_AMOUNT, 100, guardian)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
 

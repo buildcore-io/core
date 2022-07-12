@@ -41,8 +41,8 @@ describe('Token trigger stress test', () => {
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    guardian = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, guardian, true)
+    guardian = await createMember(walletSpy)
+    space = await createSpace(walletSpy, guardian)
     const guardianDoc = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${guardian}`).get()).data()
     members = await createMemberCopies(guardianDoc, membersCount)
   })

@@ -1,5 +1,5 @@
 import chance from 'chance';
-import { TOKEN_SALE_TEST } from '../../interfaces/config';
+import { DEFAULT_NETWORK, TOKEN_SALE_TEST } from '../../interfaces/config';
 import { Network, Space, TransactionOrder, TransactionOrderType, TransactionType } from '../../interfaces/models';
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { TokenStatus } from '../../interfaces/models/token';
@@ -74,19 +74,18 @@ export const validateMemberAddressFunc = async (spy: any, adr: string, targetNet
 }
 
 
-export const createMember = async (spy: any, validate?: boolean, network?: Network): Promise<string> => {
+export const createMember = async (spy: any, network = DEFAULT_NETWORK): Promise<string> => {
   const memberAddress = wallet.getRandomEthAddress();
   mockWalletReturnValue(spy, memberAddress, {})
   await testEnv.wrap(createMemberFunc)(memberAddress);
-  if (validate) {
-    const memberValidation = await validateMemberAddressFunc(spy, memberAddress, network);
-    const milestone = await submitMilestoneFunc(memberValidation.payload.targetAddress, memberValidation.payload.amount, network);
-    await milestoneProcessed(milestone.milestone, milestone.tranId, network);
-  }
+  const walletService = WalletService.newWallet(network)
+  const address = await walletService.getNewIotaAddressDetails()
+  await MnemonicService.store(address.bech32, address.mnemonic, network)
+  await admin.firestore().doc(`${COL.MEMBER}/${memberAddress}`).update({ [`validatedAddress.${network}`]: address.bech32 })
   return memberAddress;
 }
 
-export const createSpace = async (spy: any, guardian: string, network?: Network): Promise<Space> => {
+export const createSpace = async (spy: any, guardian: string, network = DEFAULT_NETWORK): Promise<Space> => {
   mockWalletReturnValue(spy, guardian, { name: 'Space A' })
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`)
@@ -136,7 +135,7 @@ export const createRoyaltySpaces = async (network: Network) => {
   const spaceOneId = TOKEN_SALE_TEST.spaceone
   const spaceTwoId = TOKEN_SALE_TEST.spacetwo
   const walletSpy = jest.spyOn(wallet, 'decodeAuth');
-  const guardian = await createMember(walletSpy, true);
+  const guardian = await createMember(walletSpy);
 
   const spaceIdSpy = jest.spyOn(wallet, 'getRandomEthAddress');
   const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
