@@ -116,7 +116,7 @@ export const chainTransactionsViaBlocks = async (client: SingleNodeClient, txs: 
       block.parents = [blockIds[i - 1]];
     }
 
-    const blockNonce = await caluclateNonce(block, minPoWScore);
+    const blockNonce = await calculateNonce(block, minPoWScore);
     block.nonce = blockNonce;
     const blockId = TransactionHelper.calculateBlockId(block);
     blockIds.push(blockId);
@@ -127,7 +127,7 @@ export const chainTransactionsViaBlocks = async (client: SingleNodeClient, txs: 
 }
 
 
-const caluclateNonce = async (block: IBlock, minPoWScore: number): Promise<string> => {
+const calculateNonce = async (block: IBlock, minPoWScore: number): Promise<string> => {
   const writeStream = new WriteStream();
   serializeBlock(writeStream, block);
   const blockBytes = writeStream.finalBytes();

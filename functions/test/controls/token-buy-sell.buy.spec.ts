@@ -1,4 +1,4 @@
-import { MIN_IOTA_AMOUNT } from '@functions/interfaces/config';
+import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
 import { WenError } from '../../interfaces/errors';
 import { TransactionCreditType, TransactionType } from '../../interfaces/models';
 import { COL } from '../../interfaces/models/base';

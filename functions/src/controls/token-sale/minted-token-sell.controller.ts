@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import { WenError } from '../../../interfaces/errors';
 import { WEN_FUNC } from '../../../interfaces/functions';
-import { Member, Network, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
+import { Member, Transaction, TransactionOrderType, TransactionType, TransactionValidationType, TRANSACTION_AUTO_EXPIRY_MS } from '../../../interfaces/models';
 import { COL, WenRequest } from '../../../interfaces/models/base';
 import { Token, TokenStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
@@ -29,15 +29,13 @@ export const sellMintedTokenOrder = functions.runWith({
   const owner = params.address.toLowerCase();
   assertValidation(buySellTokenSchema.validate(params.body, { convert: false }));
 
-  const network = isProdEnv() ? Network.SMR : Network.RMS
-
-  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
-  assertMemberHasValidAddress(member?.validatedAddress, network)
-
   const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${params.body.token}`).get()).data()
   if (!token) {
     throw throwInvalidArgument(WenError.invalid_params);
   }
+
+  const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
+  assertMemberHasValidAddress(member?.validatedAddress, token.mintingData?.network!)
 
   if (isProdEnv()) {
     await assertIpNotBlocked(context.rawRequest?.ip || '', token.uid, 'token')
@@ -49,7 +47,7 @@ export const sellMintedTokenOrder = functions.runWith({
   const tranId = getRandomEthAddress()
   const tranDocRef = admin.firestore().doc(`${COL.TRANSACTION}/${tranId}`)
 
-  const wallet = WalletService.newWallet(network)
+  const wallet = WalletService.newWallet(token.mintingData?.network!)
   const targetAddress = await wallet.getNewIotaAddressDetails();
   await MnemonicService.store(targetAddress.bech32, targetAddress.mnemonic);
 
@@ -59,8 +57,8 @@ export const sellMintedTokenOrder = functions.runWith({
     member: owner,
     space: token!.space,
     createdOn: serverTime(),
-    sourceNetwork: network,
-    targetNetwork: network,
+    sourceNetwork: token.mintingData?.network!,
+    targetNetwork: token.mintingData?.network!,
     payload: {
       type: TransactionOrderType.SELL_MINTED_TOKEN,
       amount: generateRandomAmount(),

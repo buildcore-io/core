@@ -14,7 +14,7 @@ import { MnemonicService } from '../../src/services/wallet/mnemonic';
 import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
-import { requestFromFaucetIfNotEnough } from '../../test-tangle/faucet';
+import { requestFundsFromFaucet } from '../../test-tangle/faucet';
 import { copyMilestoneTransactionsFromDev } from '../db-sync.utils';
 import { testEnv } from '../set-up';
 import { createSpace, expectThrow, mockWalletReturnValue, wait } from './common';
@@ -34,7 +34,7 @@ const createAndValidateMember = async (member: string, requestTokens?: boolean) 
   const address = await wallet.getNewIotaAddressDetails()
   await MnemonicService.store(address.bech32, address.mnemonic, network)
   await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ [`validatedAddress.${network}`]: address.bech32 })
-  requestTokens && await requestFromFaucetIfNotEnough(network, address, 10 * MIN_IOTA_AMOUNT)
+  requestTokens && await requestFundsFromFaucet(network, address.bech32, 10 * MIN_IOTA_AMOUNT)
   return address;
 }
 
