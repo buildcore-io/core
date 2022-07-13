@@ -51,12 +51,12 @@ describe('Token minting', () => {
   let buyerAddress: AddressDetails
 
   beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     unsubscribe = copyMilestoneTransactionsFromDev(network)
     await createRoyaltySpaces(Network.RMS)
   })
 
   beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
     seller = wallet.getRandomEthAddress();
     sellerAddress = await createAndValidateMember(seller, 10)
     space = await createSpace(walletSpy, seller)

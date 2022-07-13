@@ -17,7 +17,10 @@ export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memo
       const id = context.params.buySellId
       const prev = <TokenBuySellOrder | undefined>snap.before.data()
       const next = <TokenBuySellOrder | undefined>snap.after.data()
-      const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${next?.token}`).get()).data()
+      const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${next?.token}`).get()).data()
+      if (!token) {
+        return;
+      }
       if (token.status === TokenStatus.MINTED) {
         await matchMintedToken(id, prev, next)
       } else {

@@ -1,5 +1,5 @@
 
-import { BASIC_OUTPUT_TYPE, IBasicOutput, ITimelockUnlockCondition, ITransactionPayload, SingleNodeClient, TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
+import { BASIC_OUTPUT_TYPE, IBasicOutput, ITransactionPayload, SingleNodeClient, TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
 import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
@@ -156,17 +156,17 @@ describe('Token minting', () => {
     const client = new SingleNodeClient('https://sd1.svrs.io/')
     const block = await client.block(distribution.mintingBlockId!)
     const payload = (block.payload as ITransactionPayload)
-    expect(payload.essence.outputs.length).toBe(6)
+    expect(payload.essence.outputs.length).toBe(5)
     const basicOutputs = payload.essence.outputs.filter(o => o.type === BASIC_OUTPUT_TYPE)
-    expect(basicOutputs.length).toBe(4)
+    expect(basicOutputs.length).toBe(3)
 
-    const outputsWithNativeTokens = basicOutputs.filter(o => !isEmpty((<IBasicOutput>o).nativeTokens))
-    const timeLocks = outputsWithNativeTokens.map(o => (o as IBasicOutput).unlockConditions.filter(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE)[0] as ITimelockUnlockCondition)
+    const outputsWithNativeTokens = basicOutputs.map(o => <IBasicOutput>o).filter(o => !isEmpty(o.nativeTokens))
 
-    const unlocked = timeLocks.filter(t => dayjs().isAfter(dayjs.unix(t.unixTime))).length
-    expect(unlocked).toBe(2)
-    const vesting = timeLocks.filter(t => dayjs().isBefore(dayjs.unix(t.unixTime))).length
-    expect(vesting).toBe(1)
+    const unlocked = outputsWithNativeTokens.filter(o => o.unlockConditions.find(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE))
+    expect(unlocked.length).toBe(1)
+
+    const vesting = outputsWithNativeTokens.filter(o => o.unlockConditions.find(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE && dayjs().isBefore(dayjs.unix(u.unixTime))))
+    expect(vesting.length).toBe(1)
   })
 
   it('Should credit second claim', async () => {
