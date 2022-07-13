@@ -1,7 +1,7 @@
 
 import { Ed25519 } from "@iota/crypto.js-next";
 import { DEFAULT_PROTOCOL_VERSION, ED25519_SIGNATURE_TYPE, IBlock, IKeyPair, IndexerPluginClient, ISignatureUnlock, ITransactionEssence, ITransactionPayload, IUTXOInput, MAX_BLOCK_LENGTH, OutputTypes, serializeBlock, SIGNATURE_UNLOCK_TYPE, SingleNodeClient, TransactionHelper, TRANSACTION_ESSENCE_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-next";
-import { NeonPowProvider } from "@iota/pow-neon.js";
+import { WasmPowProvider } from "@iota/pow-wasm.js";
 import { Converter, WriteStream } from "@iota/util.js-next";
 
 export const createUnlock = (essence: ITransactionEssence, keyPair: IKeyPair): ISignatureUnlock => {
@@ -71,7 +71,7 @@ const caluclateNonce = async (block: IBlock, minPoWScore: number): Promise<strin
     );
   }
 
-  const powProvider = new NeonPowProvider();
+  const powProvider = new WasmPowProvider();
   const nonce = await powProvider.pow(blockBytes, minPoWScore);
   return nonce.toString();
 }
