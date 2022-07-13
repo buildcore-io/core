@@ -8596,7 +8596,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Short description of the token which will be displayed on the token trading page.</target>
+        <target state="translated">Une description succincte du Token s'affichera sur la page dédiée au Trading de Tokens.</target>
       </trans-unit>
       <trans-unit id="4703172347259778984" datatype="html">
         <source>Short title is invalid.</source>
@@ -8604,7 +8604,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">54,55</context>
         </context-group>
-        <target state="needs-translation">Short title is invalid.</target>
+        <target state="translated">L'abréviation n'est pas autorisée.</target>
       </trans-unit>
       <trans-unit id="8028189988232054703" datatype="html">
         <source>Short description title</source>
@@ -8616,7 +8616,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
-        <target state="needs-translation">Short description title</target>
+        <target state="translated">Spécifications techniques succinctes</target>
       </trans-unit>
       <trans-unit id="4589670471608761987" datatype="html">
         <source>Short description is invalid.</source>
@@ -8628,7 +8628,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">57,58</context>
         </context-group>
-        <target state="needs-translation">Short description is invalid.</target>
+        <target state="translated">La description succincte n'est pas autorisée.</target>
       </trans-unit>
       <trans-unit id="6995936411627610524" datatype="html">
         <source>Token short description</source>
@@ -8636,7 +8636,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="needs-translation">Token short description</target>
+        <target state="translated">Description succincte du Token</target>
       </trans-unit>
       <trans-unit id="2762600949893496442" datatype="html">
         <source>Overview graphics</source>
@@ -8644,7 +8644,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">95,96</context>
         </context-group>
-        <target state="needs-translation">Overview graphics</target>
+        <target state="translated">Représentations graphiques: une vue d'ensemble</target>
       </trans-unit>
       <trans-unit id="2580094276369479565" datatype="html">
         <source>Token introductory video / image</source>
@@ -8652,7 +8652,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation">Token introductory video / image</target>
+        <target state="translated">Vidéo de présentation et de promotion d'image Token</target>
       </trans-unit>
       <trans-unit id="419869678531568855" datatype="html">
         <source>Introductionary media is invalid.</source>
@@ -8660,7 +8660,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">106,107</context>
         </context-group>
-        <target state="needs-translation">Introductionary media is invalid.</target>
+        <target state="translated">La mise en place du support n'est pas autorisée.</target>
       </trans-unit>
       <trans-unit id="5735212319490075695" datatype="html">
         <source>Invalid URL. (Start with http:// or https://)</source>
