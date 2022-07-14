@@ -1,23 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BASIC_OUTPUT_TYPE, IBasicOutput, ITimelockUnlockCondition, ITransactionPayload, SingleNodeClient, TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
+import { BASIC_OUTPUT_TYPE, IBasicOutput, ITransactionPayload, SingleNodeClient, TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
-import { WenError } from '../../interfaces/errors';
-import { Network, Space, TransactionType } from '../../interfaces/models';
-import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
-import admin from '../../src/admin.config';
-import { createMember } from '../../src/controls/member.control';
-import { claimMintedTokenOrder, mintTokenOrder } from '../../src/controls/token-mint.controller';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
-import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { requestFromFaucetIfNotEnough } from '../../test-tangle/faucet';
-import { copyMilestoneTransactionsFromDev } from '../db-sync.utils';
-import { testEnv } from '../set-up';
-import { createSpace, expectThrow, mockWalletReturnValue, wait } from './common';
+import { MIN_IOTA_AMOUNT } from '../interfaces/config';
+import { WenError } from '../interfaces/errors';
+import { Network, Space, TransactionType } from '../interfaces/models';
+import { COL, SUB_COL } from '../interfaces/models/base';
+import { Token, TokenDistribution, TokenStatus } from '../interfaces/models/token';
+import admin from '../src/admin.config';
+import { createMember } from '../src/controls/member.control';
+import { claimMintedTokenOrder, mintTokenOrder } from '../src/controls/token-mint.controller';
+import { MnemonicService } from '../src/services/wallet/mnemonic';
+import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
+import * as wallet from '../src/utils/wallet.utils';
+import { createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
+import { testEnv } from '../test/set-up';
+import { MilestoneListener } from './db-sync.utils';
+import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
 const network = Network.RMS
@@ -34,24 +35,22 @@ const createAndValidateMember = async (member: string, requestTokens?: boolean) 
   const address = await wallet.getNewIotaAddressDetails()
   await MnemonicService.store(address.bech32, address.mnemonic, network)
   await admin.firestore().doc(`${COL.MEMBER}/${member}`).update({ [`validatedAddress.${network}`]: address.bech32 })
-  requestTokens && await requestFromFaucetIfNotEnough(network, address, 10 * MIN_IOTA_AMOUNT)
+  requestTokens && await requestFundsFromFaucet(network, address.bech32, 10 * MIN_IOTA_AMOUNT)
   return address;
 }
 
 describe('Token minting', () => {
   let guardian: string
-  let unsubscribe: any
+  let listener: MilestoneListener
   let space: Space;
   let token: any
   let address: AddressDetails
   let member: string
 
-  beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    unsubscribe = copyMilestoneTransactionsFromDev(network)
-  })
-
   beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    listener = new MilestoneListener(network);
+
     member = wallet.getRandomEthAddress()
     guardian = wallet.getRandomEthAddress();
     address = await createAndValidateMember(guardian, true)
@@ -156,17 +155,17 @@ describe('Token minting', () => {
     const client = new SingleNodeClient('https://sd1.svrs.io/')
     const block = await client.block(distribution.mintingBlockId!)
     const payload = (block.payload as ITransactionPayload)
-    expect(payload.essence.outputs.length).toBe(6)
+    expect(payload.essence.outputs.length).toBe(5)
     const basicOutputs = payload.essence.outputs.filter(o => o.type === BASIC_OUTPUT_TYPE)
-    expect(basicOutputs.length).toBe(4)
+    expect(basicOutputs.length).toBe(3)
 
-    const outputsWithNativeTokens = basicOutputs.filter(o => !isEmpty((<IBasicOutput>o).nativeTokens))
-    const timeLocks = outputsWithNativeTokens.map(o => (o as IBasicOutput).unlockConditions.filter(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE)[0] as ITimelockUnlockCondition)
+    const outputsWithNativeTokens = basicOutputs.map(o => <IBasicOutput>o).filter(o => !isEmpty(o.nativeTokens))
 
-    const unlocked = timeLocks.filter(t => dayjs().isAfter(dayjs.unix(t.unixTime))).length
-    expect(unlocked).toBe(2)
-    const vesting = timeLocks.filter(t => dayjs().isBefore(dayjs.unix(t.unixTime))).length
-    expect(vesting).toBe(1)
+    const unlocked = outputsWithNativeTokens.filter(o => o.unlockConditions.find(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE))
+    expect(unlocked.length).toBe(1)
+
+    const vesting = outputsWithNativeTokens.filter(o => o.unlockConditions.find(u => u.type === TIMELOCK_UNLOCK_CONDITION_TYPE && dayjs().isBefore(dayjs.unix(u.unixTime))))
+    expect(vesting.length).toBe(1)
   })
 
   it('Should credit second claim', async () => {
@@ -199,8 +198,8 @@ describe('Token minting', () => {
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key)
   })
 
-  afterAll(() => {
-    unsubscribe()
+  afterEach(async () => {
+    await listener.cancel()
   })
 
 })

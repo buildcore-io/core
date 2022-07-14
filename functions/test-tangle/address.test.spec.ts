@@ -9,6 +9,7 @@ import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import * as wallet from '../src/utils/wallet.utils';
 import { createSpace, mockWalletReturnValue, validateMemberAddressFunc, validateSpaceAddressFunc, wait } from '../test/controls/common';
 import { testEnv } from '../test/set-up';
+import { MilestoneListener } from './db-sync.utils';
 import { getSenderAddress } from './faucet';
 
 let walletSpy: any;
@@ -36,14 +37,14 @@ const awaitSpaceAddressValidation = async (space: string, network: Network) => {
 describe('Address validation', () => {
   let memberAddress: string
   let space: string
-
-  beforeAll(() => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-  })
+  let listenerATOI: MilestoneListener
+  let listenerRMS: MilestoneListener
 
   beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    listenerATOI = new MilestoneListener(Network.ATOI)
+    listenerRMS = new MilestoneListener(Network.RMS)
     memberAddress = wallet.getRandomEthAddress();
-    console.log('Member', memberAddress)
     mockWalletReturnValue(walletSpy, memberAddress, {})
     await testEnv.wrap(createMember)(memberAddress);
   })
@@ -89,9 +90,13 @@ describe('Address validation', () => {
 
   it("Should validate space address with both network", async () => {
     space = (await createSpace(walletSpy, memberAddress)).uid
-    console.log('Space', space)
     await validateSpace(Network.ATOI)
     await validateSpace(Network.RMS)
+  })
+
+  afterEach(async () => {
+    await listenerATOI.cancel()
+    await listenerRMS.cancel()
   })
 
 })

@@ -27,8 +27,8 @@ describe('TOken order', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, memberAddress, true)
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
     const tokenId = wallet.getRandomEthAddress()
     token = ({
       symbol: 'MYWO',

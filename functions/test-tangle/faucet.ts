@@ -1,46 +1,24 @@
-import { MIN_IOTA_AMOUNT } from "../interfaces/config";
 import { Network } from "../interfaces/models";
 import { MnemonicService } from "../src/services/wallet/mnemonic";
-import { AddressDetails, WalletService } from "../src/services/wallet/wallet";
+import { WalletService } from "../src/services/wallet/wallet";
 import { wait } from "../test/controls/common";
-
-const getUrl = (network: Network) => {
-  switch (network) {
-    case Network.RMS:
-      return 'https://faucet.alphanet.iotaledger.net/api/enqueue'
-    default:
-      return 'https://faucet.chrysalis-devnet.iota.cafe/api/plugins/faucet/enqueue'
-  }
-}
 
 export const getSenderAddress = async (network: Network, amountNeeded: number) => {
   const walletService = WalletService.newWallet(network)
   const address = await walletService.getNewIotaAddressDetails()
   await MnemonicService.store(address.bech32, address.mnemonic, network)
-  await requestFromFaucetIfNotEnough(network, address, amountNeeded)
+  await requestFundsFromFaucet(network, address.bech32, amountNeeded)
   return address
 }
 
-export const requestFromFaucetIfNotEnough = async (network: Network, address: AddressDetails, amount: number) => {
-  const wallet = WalletService.newWallet(network)
-  const balance = await wallet.getBalance(address.bech32)
-  if (balance - amount < MIN_IOTA_AMOUNT) {
-    console.log('Requesting tokens from faucet')
-    await requestFundsFromFaucet(network, address)
-  }
-}
-
-const requestFundsFromFaucet = async (network: Network, address: AddressDetails) => {
+export const requestFundsFromFaucet = async (network: Network, targetAddress: string, amount: number) => {
   const walletService = WalletService.newWallet(network)
-  const data = { address: address.bech32 };
-  const customHeaders = {
-    "Content-Type": "application/json",
-  }
-  await fetch(getUrl(network), {
-    method: "POST",
-    headers: customHeaders,
-    body: JSON.stringify(data),
-  })
-
-  await wait(async () => (await walletService.getBalance(address.bech32)) !== 0)
+  const faucetAddress = await walletService.getIotaAddressDetails(getFaucetMnemonic(network))
+  await walletService.sendFromGenesis(faucetAddress, targetAddress, amount, '')
+  await wait(async () => (await walletService.getBalance(targetAddress)) !== 0)
 }
+
+const getFaucetMnemonic = (network: Network) => network === Network.ATOI ? ATOI_FAUCET_MNEMONIC : RMS_FAUCET_MNEMONIC
+
+const RMS_FAUCET_MNEMONIC = 'leave bitter execute problem must spray various try direct inhale elite lens era treat admit note rhythm brand lyrics guide warfare beyond genuine trip'
+const ATOI_FAUCET_MNEMONIC = 'evil palace excess utility wear asset bid math harsh kiwi sketch sport imitate athlete tent enable guard garden romance gentle vacuum mystery online display'

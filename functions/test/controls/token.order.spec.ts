@@ -41,8 +41,8 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, memberAddress, true)
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({
@@ -196,7 +196,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.MEMBERS_ONLY })
     mockWalletReturnValue(walletSpy, memberAddress, { token: token.uid });
     await testEnv.wrap(orderToken)({});
-    const newMember = await createMember(walletSpy, true)
+    const newMember = await createMember(walletSpy)
     mockWalletReturnValue(walletSpy, newMember, { token: token.uid });
     await expectThrow(testEnv.wrap(orderToken)({}), WenError.you_are_not_part_of_space.key);
   })
@@ -204,7 +204,7 @@ describe("Token controller: " + WEN_FUNC.orderToken, () => {
   it('Should allow only for guardians', async () => {
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ access: Access.GUARDIANS_ONLY })
 
-    const newMember = await createMember(walletSpy, true)
+    const newMember = await createMember(walletSpy)
     mockWalletReturnValue(walletSpy, newMember, { uid: space.uid })
     await testEnv.wrap(joinSpace)({});
 

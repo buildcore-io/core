@@ -1,10 +1,11 @@
 import * as lib from "@iota/iota.js-next";
 import { Converter } from "@iota/util.js-next";
 import { cloneDeep } from "lodash";
+import { fetchAndWaitForBasicOutput } from "../../../utils/basic-output.utils";
 import { Bech32AddressHelper } from "../../../utils/bech32-address.helper";
 import { MnemonicService } from "../mnemonic";
 import { AddressDetails, Wallet } from "../wallet";
-import { createPayload, fetchAndWaitForBasicOutput } from "./common.utils";
+import { createPayload } from "./common.utils";
 
 export const createAliasOutput = (amount: number, ownerAddressHex: string, metadata = 'no-metadata'): lib.IAliasOutput => {
   const address: lib.AddressTypes = { type: lib.ED25519_ADDRESS_TYPE, pubKeyHash: ownerAddressHex }

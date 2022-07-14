@@ -4,7 +4,7 @@ import { TransactionCreditType, TransactionType } from '../../interfaces/models'
 import { COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell } from "../../src/controls/token-buy-sell.controller";
+import { buyToken, cancelBuyOrSell } from "../../src/controls//token-sale/token-buy.controller";
 import * as wallet from '../../src/utils/wallet.utils';
 import { testEnv } from '../set-up';
 import { createMember, expectThrow, milestoneProcessed, mockIpCheck, mockWalletReturnValue, submitMilestoneFunc } from "./common";
@@ -17,7 +17,7 @@ describe('Buy sell controller, buy token', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
+    memberAddress = await createMember(walletSpy)
 
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.AVAILABLE, approved: true }

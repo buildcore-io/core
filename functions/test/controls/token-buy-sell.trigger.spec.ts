@@ -5,9 +5,10 @@ import { Network, Transaction, TransactionCreditType, TransactionType } from '..
 import { COL, SUB_COL } from '../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenPurchase, TokenStatus } from "../../interfaces/models/token";
 import admin from '../../src/admin.config';
-import { buyToken, cancelBuyOrSell, sellToken } from "../../src/controls/token-buy-sell.controller";
+import { buyToken, cancelBuyOrSell } from "../../src/controls/token-sale/token-buy.controller";
+import { sellToken } from "../../src/controls/token-sale/token-sell.controller";
 import { cancelExpiredSale } from '../../src/cron/token.cron';
-import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell.trigger";
+import { TOKEN_SALE_ORDER_FETCH_LIMIT } from "../../src/triggers/token-buy-sell/token-buy-sell.trigger";
 import { getAddress } from '../../src/utils/address.utils';
 import { cOn, dateToTimestamp } from '../../src/utils/dateTime.utils';
 import * as wallet from '../../src/utils/wallet.utils';
@@ -67,13 +68,13 @@ describe('Buy sell trigger', () => {
   }
 
   beforeAll(async () => {
-    await createRoyaltySpaces()
+    await createRoyaltySpaces(Network.IOTA)
   })
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    seller = await createMember(walletSpy, true)
-    buyer = await createMember(walletSpy, true)
+    seller = await createMember(walletSpy)
+    buyer = await createMember(walletSpy)
 
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED, approved: true }

@@ -1,10 +1,9 @@
 import * as lib from "@iota/iota.js-next";
-import { INodeInfo, OutputTypes } from "@iota/iota.js-next";
+import { INodeInfo, OutputTypes, UnlockConditionTypes } from "@iota/iota.js-next";
 import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
 import { cloneDeep, isEmpty } from "lodash";
-import { MIN_IOTA_AMOUNT } from "../../../../interfaces/config";
 import { WenError } from "../../../../interfaces/errors";
 import { COL, SUB_COL } from "../../../../interfaces/models/base";
 import { Token, TokenDistribution, TokenDrop } from "../../../../interfaces/models/token";
@@ -77,15 +76,14 @@ export const mintMoreTokens = async (
   const governorAddress = await getAliasGovernorAddress(wallet, controllingAliasOutput, info)
 
   const tokenId = lib.TransactionHelper.constructTokenId(controllingAliasOutput.aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);
-  const outputs = await createTokenClaimOutputs(targetBech, tokenId, info, drops)
-  const remainderOutput = getRemainderOutput(targetBech, info.protocol.bech32HRP)
+  const outputs = await createBasicOutputsWithNativeTokens(targetBech, tokenId, info, drops)
 
   const inputsCommitment = lib.TransactionHelper.getInputsCommitment([controllingAliasOutput, foundryOutput, consumedOutput]);
   const essence: lib.ITransactionEssence = {
     type: lib.TRANSACTION_ESSENCE_TYPE,
     networkId: lib.TransactionHelper.networkIdFromNetworkName(info.protocol.networkName),
     inputs: [aliasInput, foundryInput, input],
-    outputs: [nextAlias, nextFoundry, ...outputs, remainderOutput],
+    outputs: [nextAlias, nextFoundry, ...outputs],
     inputsCommitment
   };
 
@@ -97,17 +95,18 @@ export const mintMoreTokens = async (
   return { type: lib.TRANSACTION_PAYLOAD_TYPE, essence: essence, unlocks };
 }
 
-export const createTokenClaimOutputs = async (targetBech32: string, tokenId: string, info: INodeInfo, drops: TokenDrop[]) => {
+export const createBasicOutputsWithNativeTokens = async (targetBech32: string, tokenId: string, info: INodeInfo, drops: TokenDrop[]) => {
   const targetAddress = lib.Bech32Helper.addressFromBech32(targetBech32, info.protocol.bech32HRP)
   return drops.map(drop => {
+    const unlockConditions: UnlockConditionTypes[] = [{ type: lib.ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
+    if (dayjs(drop.vestingAt.toDate()).isAfter(dayjs())) {
+      unlockConditions.push({ type: lib.TIMELOCK_UNLOCK_CONDITION_TYPE, unixTime: drop.vestingAt.seconds })
+    }
     const output: lib.IBasicOutput = {
       type: lib.BASIC_OUTPUT_TYPE,
       amount: "0",
       nativeTokens: [{ id: tokenId, amount: HexHelper.fromBigInt256(bigInt(drop.count)) }],
-      unlockConditions: [
-        { type: lib.ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress },
-        { type: lib.TIMELOCK_UNLOCK_CONDITION_TYPE, unixTime: drop.vestingAt.seconds }
-      ]
+      unlockConditions
     }
     output.amount = lib.TransactionHelper.getStorageDeposit(output, info.protocol.rentStructure).toString();
     return output
@@ -115,12 +114,3 @@ export const createTokenClaimOutputs = async (targetBech32: string, tokenId: str
 }
 
 export const getDropsTotal = (drops: TokenDrop[]) => drops.reduce((acc, act) => acc + act.count, 0)
-
-const getRemainderOutput = (targetBech32: string, hrp: string): lib.IBasicOutput => {
-  const targetAddress = lib.Bech32Helper.addressFromBech32(targetBech32, hrp)
-  return {
-    type: lib.BASIC_OUTPUT_TYPE,
-    amount: MIN_IOTA_AMOUNT.toString(),
-    unlockConditions: [{ type: lib.ADDRESS_UNLOCK_CONDITION_TYPE, address: targetAddress }]
-  }
-}

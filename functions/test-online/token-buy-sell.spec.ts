@@ -2,7 +2,8 @@ import { MIN_IOTA_AMOUNT } from '../interfaces/config';
 import { COL, SUB_COL } from '../interfaces/models/base';
 import { Token, TokenDistribution, TokenStatus } from "../interfaces/models/token";
 import admin from '../src/admin.config';
-import { cancelBuyOrSell, sellToken } from "../src/controls/token-buy-sell.controller";
+import { cancelBuyOrSell } from "../src/controls/token-sale/token-buy.controller";
+import { sellToken } from "../src/controls/token-sale/token-sell.controller";
 import * as wallet from '../src/utils/wallet.utils';
 import { createMember, mockWalletReturnValue } from "../test/controls/common";
 import { testEnv } from '../test/set-up';
@@ -15,7 +16,7 @@ describe('Buy sell controller, sell token', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
+    memberAddress = await createMember(walletSpy)
 
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', status: TokenStatus.PRE_MINTED, approved: true }

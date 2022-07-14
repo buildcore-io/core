@@ -1,9 +1,9 @@
-name: Functions Emulated Unit Tests
+name: Functions Emulated Unit Tests - Tangle
 
 on: push
 
 jobs:
- functions_unit_tests_emulator:
+ functions_unit_tests_tangle_emulator:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -20,4 +20,4 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle --ci --forceExit" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test --ci --forceExit" --project dev

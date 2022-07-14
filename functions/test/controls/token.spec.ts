@@ -42,7 +42,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress, true)
+    space = await createSpace(walletSpy, memberAddress)
     token = dummyToken(space.uid)
   });
 
@@ -124,6 +124,7 @@ describe('Token controller: ' + WEN_FUNC.cToken, () => {
 
   it('Should throw, no valid space address', async () => {
     space = await createSpace(walletSpy, memberAddress)
+    await admin.firestore().doc(`${COL.SPACE}/${space.uid}`).update({ validatedAddress: {} })
     token.space = space.uid
     mockWalletReturnValue(walletSpy, memberAddress, token)
     await expectThrow(testEnv.wrap(createToken)({}), WenError.space_must_have_validated_address.key)
@@ -260,7 +261,7 @@ describe('Token controller: ' + WEN_FUNC.uToken, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress, true)
+    space = await createSpace(walletSpy, memberAddress)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
   });
@@ -308,7 +309,7 @@ describe('Token controller: ' + WEN_FUNC.setTokenAvailableForSale, () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     memberAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, memberAddress, true)
+    space = await createSpace(walletSpy, memberAddress)
     mockWalletReturnValue(walletSpy, memberAddress, dummyToken(space.uid))
     token = await testEnv.wrap(createToken)({});
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).update({ approved: true })
@@ -415,8 +416,8 @@ describe('Token controller: ' + WEN_FUNC.cancelPublicSale, () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, memberAddress, true)
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
     const tokenId = wallet.getRandomEthAddress()
     token = ({
       symbol: 'MYWO',
@@ -504,7 +505,7 @@ describe('Token airdrop test', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     guardianAddress = await createMember(walletSpy)
-    space = await createSpace(walletSpy, guardianAddress, true)
+    space = await createSpace(walletSpy, guardianAddress)
     const dummyTokenData = dummyToken(space.uid)
     dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
     dummyTokenData.saleLength = 86400000
@@ -599,8 +600,8 @@ describe('Claim airdropped token test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    guardianAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, guardianAddress, true)
+    guardianAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, guardianAddress)
     const dummyTokenData = dummyToken(space.uid)
     dummyTokenData.saleStartDate = dayjs().add(8, 'day').toDate()
     dummyTokenData.saleLength = 86400000
@@ -727,8 +728,8 @@ describe('Order and claim airdropped token test', () => {
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    memberAddress = await createMember(walletSpy, true)
-    space = await createSpace(walletSpy, memberAddress, true)
+    memberAddress = await createMember(walletSpy)
+    space = await createSpace(walletSpy, memberAddress)
 
     const tokenId = wallet.getRandomEthAddress()
     token = ({

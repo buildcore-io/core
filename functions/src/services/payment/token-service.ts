@@ -3,13 +3,16 @@ import dayjs from 'dayjs';
 import bigDecimal from 'js-big-decimal';
 import { isEmpty } from 'lodash';
 import { URL_PATHS } from '../../../interfaces/config';
+import { WenError } from '../../../interfaces/errors';
 import { Member } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
+import { MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from '../../../interfaces/models/token';
 import { Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
+import { throwInvalidArgument } from '../../utils/error.utils';
 import { getBoughtByMemberDiff, getTotalPublicSupply } from '../../utils/token.utils';
 import { getRandomEthAddress } from "../../utils/wallet.utils";
 import { SmrTokenMinter } from '../wallet/SmrTokenMinter';
@@ -90,6 +93,38 @@ export class TokenService {
     } catch {
       this.transactionService.createCredit(payment, match);
     }
+  }
+
+  public handleSellMintedToken = async (order: TransactionOrder, tran: MilestoneTransactionEntry, match: TransactionMatch) => {
+    const payment = this.transactionService.createPayment(order, match);
+    await this.transactionService.markAsReconciled(order, match.msgId)
+
+    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${order.payload.token}`).get()).data()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const price = (order.payload as any).price || 0
+    const nativeTokens = Number(tran.nativeTokens?.find(n => n.id === token.mintingData?.tokenId)?.amount)
+
+    if (!nativeTokens || !price) {
+      throw throwInvalidArgument(WenError.invalid_params)
+    }
+
+    const data = cOn(<TokenBuySellOrder>{
+      uid: getRandomEthAddress(),
+      owner: order.member,
+      token: order.payload.token,
+      type: TokenBuySellOrderType.SELL,
+      count: nativeTokens,
+      price,
+      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(nativeTokens, price))),
+      balance: 0,
+      fulfilled: 0,
+      status: TokenBuySellOrderStatus.ACTIVE,
+      orderTransactionId: order.uid,
+      paymentTransactionId: payment.uid,
+      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
+    }, URL_PATHS.TOKEN_MARKET)
+    const sellDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
+    this.transactionService.updates.push({ ref: sellDocRef, data, action: 'set' });
   }
 
   private async updateTokenDistribution(order: Transaction, tran: TransactionMatch, payment: Transaction) {

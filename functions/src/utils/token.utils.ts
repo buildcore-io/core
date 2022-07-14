@@ -46,7 +46,7 @@ export const getTotalPublicSupply = (token: Token) => {
 }
 
 
-const DEFAULT_VALID_STATUSES = [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED]
+export const DEFAULT_VALID_STATUSES = [TokenStatus.AVAILABLE, TokenStatus.CANCEL_SALE, TokenStatus.PRE_MINTED]
 export const assertTokenStatus = (token: Token, validStatuses = DEFAULT_VALID_STATUSES) => {
   if (!validStatuses.includes(token.status)) {
     throw throwInvalidArgument(WenError.token_in_invalid_status)

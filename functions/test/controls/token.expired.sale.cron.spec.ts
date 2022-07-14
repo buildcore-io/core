@@ -21,7 +21,7 @@ describe('Expired sales cron', () => {
       await testEnv.firestore.clearFirestoreData({ projectId })
     }
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    seller = await createMember(walletSpy, true)
+    seller = await createMember(walletSpy)
 
     const tokenId = wallet.getRandomEthAddress()
     token = <Token>{ uid: tokenId, symbol: 'MYWO', name: 'MyToken', space: 'myspace', status: TokenStatus.PRE_MINTED, approved: true }

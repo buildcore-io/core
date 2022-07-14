@@ -30,7 +30,7 @@ const handleMilestoneTransactionWrite = (network: Network) => async (change: fun
 
     const newFoundryOutput = getNewFoundryOutput(data)
     if (newFoundryOutput) {
-      await updateMintedToken(transaction, data, newFoundryOutput, network)
+      await updateMintedToken(transaction, data, newFoundryOutput)
     }
 
     return transaction.update(change.after.ref, { processed: true, processedOn: serverTime() })
@@ -43,7 +43,7 @@ const getNewFoundryOutput = (data: admin.firestore.DocumentData) => {
   return head(outputs as IFoundryOutput[])
 }
 
-const updateMintedToken = async (transaction: admin.firestore.Transaction, data: admin.firestore.DocumentData, foundryOutput: IFoundryOutput, network: Network) => {
+const updateMintedToken = async (transaction: admin.firestore.Transaction, data: admin.firestore.DocumentData, foundryOutput: IFoundryOutput) => {
   const aliasUnlock = <IImmutableAliasUnlockCondition>foundryOutput.unlockConditions.find(u => u.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE)
   const aliasId = (aliasUnlock.address as IAliasAddress).aliasId
   const tokenId = TransactionHelper.constructTokenId(aliasId, foundryOutput.serialNumber, foundryOutput.tokenScheme.type);

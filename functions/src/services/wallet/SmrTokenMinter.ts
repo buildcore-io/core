@@ -4,9 +4,11 @@ import { Member } from "../../../interfaces/models";
 import { Token, TokenDrop } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
 import { getAddress } from "../../utils/address.utils";
+import { fetchAndWaitForBasicOutput, submitBlocks } from "../../utils/basic-output.utils";
+import { waitForBlockToBecomeSolid } from "../../utils/block.utils";
 import { createAlias, createAliasOutput, transferAlias } from "./token/alias.utils";
-import { createTokenClaimOutputs, getClaimableTokens, mintMoreTokens } from "./token/claim-minted.utils";
-import { chainTransactionsViaBlocks, fetchAndWaitForBasicOutput, getTransactionPayloadHex } from "./token/common.utils";
+import { createBasicOutputsWithNativeTokens, getClaimableTokens, mintMoreTokens } from "./token/claim-minted.utils";
+import { getTransactionPayloadHex } from "./token/common.utils";
 import { createFoundryMintToken, createFoundryOutput } from "./token/foundry.utils";
 import { AddressDetails, WalletService } from "./wallet";
 
@@ -25,7 +27,6 @@ export class SmrTokenMinter {
       aliasOutput.essence.outputs[0],
       getTransactionPayloadHex(aliasOutput),
       source.keyPair,
-      targetAddress,
       info.protocol.rentStructure,
       networkId,
       token
@@ -40,10 +41,7 @@ export class SmrTokenMinter {
     );
 
     const payloads = [aliasOutput, foundryOutput, transferAliasOutput]
-    const blocks = await chainTransactionsViaBlocks(this.client, payloads, (await this.client.info()).protocol.minPoWScore);
-    for (const block of blocks) {
-      await this.client.blockSubmit(block)
-    }
+    await submitBlocks(this.client, payloads);
   }
 
   public getStorageDepositForMinting = async (target: AddressDetails, token: Token) => {
@@ -77,13 +75,14 @@ export class SmrTokenMinter {
       source,
       getAddress(member.validatedAddress, token.mintingData?.network!)
     )
-    const blocks = await chainTransactionsViaBlocks(this.client, [payload], info.protocol.minPoWScore);
-    return await this.client.blockSubmit(blocks[0])
+    const blockId = (await submitBlocks(this.client, [payload]))[0];
+    await waitForBlockToBecomeSolid(this.client, blockId)
+    return blockId
   }
 
   public getStorageDepositForClaimingToken = async (transaction: admin.firestore.Transaction, member: Member, token: Token) => {
     const drops = await getClaimableTokens(transaction, member.uid, token)
-    const outputs = await createTokenClaimOutputs(
+    const outputs = await createBasicOutputsWithNativeTokens(
       getAddress(member.validatedAddress, token.mintingData?.network!),
       token.mintingData?.tokenId!,
       await this.client.info(),

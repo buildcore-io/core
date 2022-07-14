@@ -72,7 +72,7 @@ describe('Ordering flows', () => {
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     member = await createMember(walletSpy)
-    space = await createSpace(walletSpy, member, true)
+    space = await createSpace(walletSpy, member)
   });
 
   it('One collection, one classic NFT, one purchase - not paid for', async () => {

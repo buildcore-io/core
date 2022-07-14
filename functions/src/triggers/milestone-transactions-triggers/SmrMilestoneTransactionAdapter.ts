@@ -1,6 +1,6 @@
 import { BASIC_OUTPUT_TYPE, IBasicOutput, IUTXOInput, OutputTypes } from "@iota/iota.js-next"
 import { Network } from "../../../interfaces/models"
-import { MilestoneTransaction } from "../../../interfaces/models/milestone"
+import { MilestoneTransaction, MilestoneTransactionEntry } from "../../../interfaces/models/milestone"
 import admin from "../../admin.config"
 import { SmrWallet } from "../../services/wallet/SmrWalletService"
 import { WalletService } from "../../services/wallet/wallet"
@@ -11,20 +11,28 @@ export class SmrMilestoneTransactionAdapter {
 
   public toMilestoneTransaction = async (data: admin.firestore.DocumentData): Promise<MilestoneTransaction> => {
     const smrWallet = WalletService.newWallet(this.network) as SmrWallet
-    const smrOutputs = (data.payload.essence.outputs as OutputTypes[]).filter(o => o.type === BASIC_OUTPUT_TYPE).map(o => <IBasicOutput>o)
-    const outputs = []
+    const smrOutputs = (data.payload.essence.outputs as OutputTypes[])
+      .filter(o => o.type === BASIC_OUTPUT_TYPE)
+      .map(o => <IBasicOutput>o)
+      .filter(o => o.unlockConditions.length === 1 && (o.nativeTokens?.length || 0) <= 1)
+    const outputs: MilestoneTransactionEntry[] = []
     for (const output of smrOutputs) {
       const address = await smrWallet.bechAddressFromOutput(output)
-      outputs.push({ amount: Number(output.amount), address })
+      outputs.push({ amount: Number(output.amount), address, nativeTokens: output.nativeTokens || [] })
     }
-    const input = <IUTXOInput>data.payload.essence.inputs[0]
-    const inputOutput = await smrWallet.getTransactionOutput(input.transactionId, input.transactionOutputIndex)
-    const fromAddress = await smrWallet.bechAddressFromOutput(inputOutput.output as IBasicOutput)
+    const inputs: MilestoneTransactionEntry[] = []
+    for (const input of (data.payload.essence.inputs as IUTXOInput[])) {
+      const output = (await smrWallet.getTransactionOutput(input.transactionId, input.transactionOutputIndex)).output
+      if (output.type === BASIC_OUTPUT_TYPE) {
+        inputs.push({ amount: Number(output.amount), address: await smrWallet.bechAddressFromOutput(output) })
+      }
+    }
+
     return {
       createdOn: data.createdOn,
       messageId: data.blockId,
       milestone: data.milestone,
-      inputs: outputs.filter(o => o.address === fromAddress),
+      inputs,
       outputs,
       processed: data.processed
     }

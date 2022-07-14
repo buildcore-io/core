@@ -2,58 +2,43 @@ import dayjs from 'dayjs';
 import * as functions from 'firebase-functions';
 import bigDecimal from 'js-big-decimal';
 import { last } from 'lodash';
-import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../interfaces/config';
-import { WEN_FUNC } from '../../interfaces/functions';
-import { Member, Network, Space, Transaction, TransactionType } from '../../interfaces/models';
-import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../interfaces/models/token';
-import admin from '../admin.config';
-import { scale } from '../scale.settings';
-import { getAddress } from '../utils/address.utils';
-import { guardedRerun } from '../utils/common.utils';
-import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../utils/config.utils';
-import { dateToTimestamp, serverTime, uOn } from '../utils/dateTime.utils';
-import { Logger } from '../utils/logger.utils';
-import { cancelSale, creditBuyer } from '../utils/token-buy-sell.utils';
-import { BIG_DECIMAL_PRECISION } from '../utils/token.utils';
-import { getRandomEthAddress } from '../utils/wallet.utils';
+import { DEFAULT_NETWORK, MIN_IOTA_AMOUNT, SECONDARY_TRANSACTION_DELAY } from '../../../interfaces/config';
+import { Member, Network, Space, Transaction, TransactionType } from '../../../interfaces/models';
+import { COL, SUB_COL } from '../../../interfaces/models/base';
+import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenPurchase } from '../../../interfaces/models/token';
+import admin from '../../admin.config';
+import { getAddress } from '../../utils/address.utils';
+import { guardedRerun } from '../../utils/common.utils';
+import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage } from '../../utils/config.utils';
+import { dateToTimestamp, serverTime, uOn } from '../../utils/dateTime.utils';
+import { Logger } from '../../utils/logger.utils';
+import { cancelSale, creditBuyer } from '../../utils/token-buy-sell.utils';
+import { BIG_DECIMAL_PRECISION } from '../../utils/token.utils';
+import { getRandomEthAddress } from '../../utils/wallet.utils';
+import { getSaleQuery, StartAfter } from './token-buy-sell.trigger';
 
-type StartAfter = admin.firestore.QueryDocumentSnapshot<admin.firestore.DocumentData>
+export const matchSimpleToken = async (id: string, prev: TokenBuySellOrder | undefined, next: TokenBuySellOrder | undefined) => {
+  if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
+    const logger = new Logger();
+    logger.add('onTokenBuySellCreated', id)
+    let startAfter: StartAfter | undefined = undefined
+    await guardedRerun(async () => {
+      startAfter = await fulfillSales(id, startAfter, logger)
+      return startAfter !== undefined
+    }, 10000000)
+    return;
+  }
 
-export const TOKEN_SALE_ORDER_FETCH_LIMIT = 50
-
-export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memory: "512MB", minInstances: scale(WEN_FUNC.onTokenBuySellCreated) })
-  .firestore.document(COL.TOKEN_MARKET + '/{buySellId}').onWrite(async (snap, context) => {
-    try {
-      const id = context.params.buySellId
-      const prev = <TokenBuySellOrder | undefined>snap.before.data()
-      const next = <TokenBuySellOrder | undefined>snap.after.data()
-
-      if (prev === undefined || (!prev.shouldRetry && next?.shouldRetry)) {
-        const logger = new Logger();
-        logger.add('onTokenBuySellCreated', id)
-        let startAfter: StartAfter | undefined = undefined
-        await guardedRerun(async () => {
-          startAfter = await fulfillSales(id, startAfter, logger)
-          return startAfter !== undefined
-        }, 10000000)
-        return;
+  if (isActiveBuy(next) && fulfillmentIncreased(prev, next) && needsHigherBuyAmount(next!)) {
+    await admin.firestore().runTransaction(async transaction => {
+      const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next!.uid}`)
+      const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
+      if (sale && isActiveBuy(sale) && needsHigherBuyAmount(sale)) {
+        await cancelSale(transaction, sale, TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
       }
-
-      if (isActiveBuy(next) && fulfillmentIncreased(prev, next) && needsHigherBuyAmount(next!)) {
-        await admin.firestore().runTransaction(async transaction => {
-          const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${next!.uid}`)
-          const sale = <TokenBuySellOrder | undefined>(await transaction.get(saleDocRef)).data()
-          if (sale && isActiveBuy(sale) && needsHigherBuyAmount(sale)) {
-            await cancelSale(transaction, sale, TokenBuySellOrderStatus.CANCELLED_UNFULFILLABLE)
-          }
-        })
-      }
-    } catch (error) {
-      functions.logger.error(error)
-      throw error
-    }
-  });
+    })
+  }
+}
 
 const updateSale = (sale: TokenBuySellOrder, purchase: TokenPurchase) => {
   const fulfilled = sale.fulfilled + purchase.count
@@ -78,7 +63,7 @@ const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder, logger:
 
   const sellPrice = Number(bigDecimal.floor(bigDecimal.multiply(tokens, sell.price)))
   if (sellPrice < MIN_IOTA_AMOUNT) {
-    logger.add('Amount to small to transfer', sellPrice)
+    logger.add('Amount too small to transfer', sellPrice)
     return
   }
 
@@ -106,8 +91,8 @@ const createPurchase = (buy: TokenBuySellOrder, sell: TokenBuySellOrder, logger:
 }
 
 interface Royalties {
-  readonly amount: number;
-  readonly royalties: number[];
+    readonly amount: number;
+    readonly royalties: number[];
 }
 
 const getRoyalties = (count: number, price: number): Royalties => {
@@ -268,21 +253,6 @@ const fulfillSales = (docId: string, startAfter: StartAfter | undefined, logger:
 
   return update.status === TokenBuySellOrderStatus.SETTLED ? undefined : lastDoc
 })
-
-const getSaleQuery = (sale: TokenBuySellOrder, startAfter: StartAfter | undefined) => {
-  let query = admin.firestore().collection(COL.TOKEN_MARKET)
-    .where('type', '==', sale.type === TokenBuySellOrderType.BUY ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY)
-    .where('token', '==', sale.token)
-    .where('price', sale.type === TokenBuySellOrderType.BUY ? '<=' : '>=', sale.price)
-    .where('status', '==', TokenBuySellOrderStatus.ACTIVE)
-    .orderBy('price')
-    .orderBy('createdOn')
-    .limit(TOKEN_SALE_ORDER_FETCH_LIMIT)
-  if (startAfter) {
-    query = query.startAfter(startAfter)
-  }
-  return query
-}
 
 const isActiveBuy = (sale?: TokenBuySellOrder) => sale?.type === TokenBuySellOrderType.BUY && sale?.status === TokenBuySellOrderStatus.ACTIVE
 
