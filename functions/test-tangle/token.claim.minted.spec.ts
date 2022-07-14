@@ -1,23 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { BASIC_OUTPUT_TYPE, IBasicOutput, ITransactionPayload, SingleNodeClient, TIMELOCK_UNLOCK_CONDITION_TYPE } from '@iota/iota.js-next';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
-import { WenError } from '../../interfaces/errors';
-import { Network, Space, TransactionType } from '../../interfaces/models';
-import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
-import admin from '../../src/admin.config';
-import { createMember } from '../../src/controls/member.control';
-import { claimMintedTokenOrder, mintTokenOrder } from '../../src/controls/token-mint.controller';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
-import { dateToTimestamp, serverTime } from '../../src/utils/dateTime.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { requestFundsFromFaucet } from '../../test-tangle/faucet';
-import { copyMilestoneTransactionsFromDev } from '../db-sync.utils';
-import { testEnv } from '../set-up';
-import { createSpace, expectThrow, mockWalletReturnValue, wait } from './common';
+import { MIN_IOTA_AMOUNT } from '../interfaces/config';
+import { WenError } from '../interfaces/errors';
+import { Network, Space, TransactionType } from '../interfaces/models';
+import { COL, SUB_COL } from '../interfaces/models/base';
+import { Token, TokenDistribution, TokenStatus } from '../interfaces/models/token';
+import admin from '../src/admin.config';
+import { createMember } from '../src/controls/member.control';
+import { claimMintedTokenOrder, mintTokenOrder } from '../src/controls/token-mint.controller';
+import { MnemonicService } from '../src/services/wallet/mnemonic';
+import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
+import * as wallet from '../src/utils/wallet.utils';
+import { createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
+import { testEnv } from '../test/set-up';
+import { MilestoneListener } from './db-sync.utils';
+import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
 const network = Network.RMS
@@ -40,7 +41,7 @@ const createAndValidateMember = async (member: string, requestTokens?: boolean) 
 
 describe('Token minting', () => {
   let guardian: string
-  let unsubscribe: any
+  let listener: MilestoneListener
   let space: Space;
   let token: any
   let address: AddressDetails
@@ -48,7 +49,7 @@ describe('Token minting', () => {
 
   beforeAll(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    unsubscribe = copyMilestoneTransactionsFromDev(network)
+    listener = new MilestoneListener(network)
   })
 
   beforeEach(async () => {
@@ -199,8 +200,8 @@ describe('Token minting', () => {
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key)
   })
 
-  afterAll(() => {
-    unsubscribe()
+  afterAll(async () => {
+    await listener.cancel()
   })
 
 })

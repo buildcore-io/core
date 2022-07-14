@@ -1,26 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { addressBalance } from '@iota/iota.js-next';
 import { HexHelper } from '@iota/util.js-next';
 import bigInt from 'big-integer';
 import { isEmpty } from 'lodash';
-import { MIN_IOTA_AMOUNT } from '../../interfaces/config';
-import { Network, Space } from '../../interfaces/models';
-import { COL, SUB_COL } from '../../interfaces/models/base';
-import { Token, TokenBuySellOrder, TokenDistribution, TokenStatus } from '../../interfaces/models/token';
-import admin from '../../src/admin.config';
-import { createMember } from '../../src/controls/member.control';
-import { claimMintedTokenOrder, mintTokenOrder } from '../../src/controls/token-mint.controller';
-import { sellMintedTokenOrder } from '../../src/controls/token-sale/minted-token-sell.controller';
-import { buyToken, cancelBuyOrSell } from '../../src/controls/token-sale/token-buy.controller';
-import { MnemonicService } from '../../src/services/wallet/mnemonic';
-import { SmrWallet } from '../../src/services/wallet/SmrWalletService';
-import { AddressDetails, WalletService } from '../../src/services/wallet/wallet';
-import { serverTime } from '../../src/utils/dateTime.utils';
-import * as wallet from '../../src/utils/wallet.utils';
-import { requestFundsFromFaucet } from '../../test-tangle/faucet';
-import { copyMilestoneTransactionsFromDev } from '../db-sync.utils';
-import { testEnv } from '../set-up';
-import { createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from './common';
+import { MIN_IOTA_AMOUNT } from '../interfaces/config';
+import { Network, Space } from '../interfaces/models';
+import { COL, SUB_COL } from '../interfaces/models/base';
+import { Token, TokenBuySellOrder, TokenDistribution, TokenStatus } from '../interfaces/models/token';
+import admin from '../src/admin.config';
+import { createMember } from '../src/controls/member.control';
+import { claimMintedTokenOrder, mintTokenOrder } from '../src/controls/token-mint.controller';
+import { sellMintedTokenOrder } from '../src/controls/token-sale/minted-token-sell.controller';
+import { buyToken, cancelBuyOrSell } from '../src/controls/token-sale/token-buy.controller';
+import { MnemonicService } from '../src/services/wallet/mnemonic';
+import { SmrWallet } from '../src/services/wallet/SmrWalletService';
+import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { serverTime } from '../src/utils/dateTime.utils';
+import * as wallet from '../src/utils/wallet.utils';
+import { createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from '../test/controls/common';
+import { testEnv } from '../test/set-up';
+import { MilestoneListener } from './db-sync.utils';
+import { requestFundsFromFaucet } from './faucet';
 
 let walletSpy: any;
 const network = Network.RMS
@@ -43,7 +44,7 @@ const createAndValidateMember = async (member: string, requestTokens = 0) => {
 
 describe('Token minting', () => {
   let seller: string
-  let unsubscribe: any
+  let listener: MilestoneListener
   let space: Space;
   let token: Token
   let sellerAddress: AddressDetails
@@ -51,12 +52,12 @@ describe('Token minting', () => {
   let buyerAddress: AddressDetails
 
   beforeAll(async () => {
-    unsubscribe = copyMilestoneTransactionsFromDev(network)
     await createRoyaltySpaces(Network.RMS)
   })
 
   beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    listener = new MilestoneListener(network)
     seller = wallet.getRandomEthAddress();
     sellerAddress = await createAndValidateMember(seller, 10)
     space = await createSpace(walletSpy, seller)
@@ -92,7 +93,6 @@ describe('Token minting', () => {
 
     const data = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).get()).data()
     expect(data.mintingData?.mintedTokens).toBe(1000)
-
 
     const walletService = WalletService.newWallet(network) as SmrWallet
     await wait(async () => {
@@ -246,8 +246,8 @@ describe('Token minting', () => {
     })
   })
 
-  afterAll(() => {
-    unsubscribe()
+  afterEach(async () => {
+    await listener.cancel()
   })
 
 })
