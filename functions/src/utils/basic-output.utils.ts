@@ -1,6 +1,5 @@
-import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, DEFAULT_PROTOCOL_VERSION, IBasicOutput, IBlock, INativeToken, IndexerPluginClient, INodeInfo, ITimelockUnlockCondition, ITransactionPayload, MAX_BLOCK_LENGTH, serializeBlock, SingleNodeClient, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
-import { NeonPowProvider } from "@iota/pow-neon.js";
-import { HexHelper, WriteStream } from "@iota/util.js-next";
+import { ADDRESS_UNLOCK_CONDITION_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, DEFAULT_PROTOCOL_VERSION, IBasicOutput, IBlock, INativeToken, IndexerPluginClient, INodeInfo, ITimelockUnlockCondition, ITransactionPayload, SingleNodeClient, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, UnlockConditionTypes } from "@iota/iota.js-next";
+import { HexHelper } from "@iota/util.js-next";
 import bigInt from "big-integer";
 import dayjs from "dayjs";
 import { cloneDeep, isEmpty } from "lodash";
@@ -96,49 +95,20 @@ export const fetchAndWaitForBasicOutput = async (client: SingleNodeClient, addre
 };
 
 
-export const chainTransactionsViaBlocks = async (client: SingleNodeClient, txs: Array<ITransactionPayload>, minPoWScore: number): Promise<Array<IBlock>> => {
-  const blockIds: Array<string> = [];
-  const blocks: Array<IBlock> = [];
-
+export const submitBlocks = async (client: SingleNodeClient, payloads: ITransactionPayload[]): Promise<string[]> => {
+  const blockIds: string[] = [];
   const parents = (await client.tips()).tips;
 
-  for (let i = 0; i < txs.length; i++) {
+  for (let i = 0; i < payloads.length; ++i) {
     const block: IBlock = {
       protocolVersion: DEFAULT_PROTOCOL_VERSION,
-      parents: [],
-      payload: txs[i],
+      parents: i ? [blockIds[i - 1]] : parents,
+      payload: payloads[i],
       nonce: "0"
     };
-
-    if (i === 0) {
-      block.parents = parents;
-    } else {
-      block.parents = [blockIds[i - 1]];
-    }
-
-    const blockNonce = await calculateNonce(block, minPoWScore);
-    block.nonce = blockNonce;
-    const blockId = TransactionHelper.calculateBlockId(block);
-    blockIds.push(blockId);
-    blocks.push(block);
+    const blockId = await client.blockSubmit(block)
+    blockIds.push(blockId)
   }
 
-  return blocks;
-}
-
-
-const calculateNonce = async (block: IBlock, minPoWScore: number): Promise<string> => {
-  const writeStream = new WriteStream();
-  serializeBlock(writeStream, block);
-  const blockBytes = writeStream.finalBytes();
-
-  if (blockBytes.length > MAX_BLOCK_LENGTH) {
-    throw new Error(
-      `The block length is ${blockBytes.length}, which exceeds the maximum size of ${MAX_BLOCK_LENGTH}`
-    );
-  }
-
-  const powProvider = new NeonPowProvider();
-  const nonce = await powProvider.pow(blockBytes, minPoWScore);
-  return nonce.toString();
+  return blockIds;
 }

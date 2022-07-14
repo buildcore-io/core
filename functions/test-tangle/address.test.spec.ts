@@ -40,13 +40,10 @@ describe('Address validation', () => {
   let listenerATOI: MilestoneListener
   let listenerRMS: MilestoneListener
 
-  beforeAll(() => {
+  beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listenerATOI = new MilestoneListener(Network.ATOI)
     listenerRMS = new MilestoneListener(Network.RMS)
-  })
-
-  beforeEach(async () => {
     memberAddress = wallet.getRandomEthAddress();
     mockWalletReturnValue(walletSpy, memberAddress, {})
     await testEnv.wrap(createMember)(memberAddress);
@@ -93,12 +90,11 @@ describe('Address validation', () => {
 
   it("Should validate space address with both network", async () => {
     space = (await createSpace(walletSpy, memberAddress)).uid
-    console.log('Space', space)
     await validateSpace(Network.ATOI)
     await validateSpace(Network.RMS)
   })
 
-  afterAll(async () => {
+  afterEach(async () => {
     await listenerATOI.cancel()
     await listenerRMS.cancel()
   })

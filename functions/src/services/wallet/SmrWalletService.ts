@@ -19,7 +19,7 @@ import { generateMnemonic } from 'bip39';
 import { cloneDeep, isEmpty } from "lodash";
 import { KEY_NAME_TANGLE } from "../../../interfaces/config";
 import { NativeToken } from "../../../interfaces/models/milestone";
-import { chainTransactionsViaBlocks, mergeOutputs, packBasicOutput, subtractHex } from "../../utils/basic-output.utils";
+import { mergeOutputs, packBasicOutput, submitBlocks, subtractHex } from "../../utils/basic-output.utils";
 import { Bech32AddressHelper } from "../../utils/bech32-address.helper";
 import { MnemonicService } from "./mnemonic";
 import { createUnlock } from "./token/common.utils";
@@ -193,8 +193,7 @@ export class SmrWallet implements Wallet {
       essence,
       unlocks: Object.values(outputsMap).map((_, index) => !index ? createUnlock(essence, from.keyPair) : { type: REFERENCE_UNLOCK_TYPE, reference: 0 })
     };
-    const blocks = await chainTransactionsViaBlocks(this.client, [payload], this.nodeInfo!.protocol.minPoWScore);
-    const blockId = await this.client.blockSubmit(blocks[0])
+    const blockId = (await submitBlocks(this.client, [payload]))[0];
     return { blockId, output }
   }
 

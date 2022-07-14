@@ -47,12 +47,10 @@ describe('Token minting', () => {
   let address: AddressDetails
   let member: string
 
-  beforeAll(async () => {
-    walletSpy = jest.spyOn(wallet, 'decodeAuth');
-    listener = new MilestoneListener(network)
-  })
-
   beforeEach(async () => {
+    walletSpy = jest.spyOn(wallet, 'decodeAuth');
+    listener = new MilestoneListener(network);
+
     member = wallet.getRandomEthAddress()
     guardian = wallet.getRandomEthAddress();
     address = await createAndValidateMember(guardian, true)
@@ -200,7 +198,7 @@ describe('Token minting', () => {
     await expectThrow(testEnv.wrap(claimMintedTokenOrder)({}), WenError.no_tokens_to_claim.key)
   })
 
-  afterAll(async () => {
+  afterEach(async () => {
     await listener.cancel()
   })
 

@@ -68,7 +68,7 @@ describe('Token minting', () => {
   let token: any
   let address: AddressDetails
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network)
   })
@@ -144,7 +144,7 @@ describe('Token minting', () => {
     })
   })
 
-  afterAll(async () => {
+  afterEach(async () => {
     await listener.cancel()
   })
 })

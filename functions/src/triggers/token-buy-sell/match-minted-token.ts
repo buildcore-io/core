@@ -14,7 +14,7 @@ import { MnemonicService } from "../../services/wallet/mnemonic";
 import { createUnlock } from "../../services/wallet/token/common.utils";
 import { getNodeEnpoint, WalletService } from "../../services/wallet/wallet";
 import { getAddress } from "../../utils/address.utils";
-import { chainTransactionsViaBlocks, fetchAndWaitForBasicOutput, packBasicOutput } from "../../utils/basic-output.utils";
+import { fetchAndWaitForBasicOutput, packBasicOutput, submitBlocks } from "../../utils/basic-output.utils";
 import { waitForBlockToBecomeSolid } from "../../utils/block.utils";
 import { guardedRerun } from "../../utils/common.utils";
 import { getRoyaltyPercentage, getRoyaltySpaces, getSpaceOneRoyaltyPercentage, isProdEnv } from "../../utils/config.utils";
@@ -67,8 +67,7 @@ const submitOutputs = async (
     createUnlock(essence, (await wallet.getIotaAddressDetails(sellerMnemonic)).keyPair)
   ];
   const payload: ITransactionPayload = { type: TRANSACTION_PAYLOAD_TYPE, essence: essence, unlocks }
-  const block = (await chainTransactionsViaBlocks(client, [payload], info.protocol.minPoWScore))[0]
-  const blockId = await client.blockSubmit(block)
+  const blockId = (await submitBlocks(client, [payload]))[0]
   await waitForBlockToBecomeSolid(client, blockId)
   return blockId
 }

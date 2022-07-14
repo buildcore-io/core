@@ -4,7 +4,7 @@ import { Member } from "../../../interfaces/models";
 import { Token, TokenDrop } from "../../../interfaces/models/token";
 import admin from "../../admin.config";
 import { getAddress } from "../../utils/address.utils";
-import { chainTransactionsViaBlocks, fetchAndWaitForBasicOutput } from "../../utils/basic-output.utils";
+import { fetchAndWaitForBasicOutput, submitBlocks } from "../../utils/basic-output.utils";
 import { waitForBlockToBecomeSolid } from "../../utils/block.utils";
 import { createAlias, createAliasOutput, transferAlias } from "./token/alias.utils";
 import { createBasicOutputsWithNativeTokens, getClaimableTokens, mintMoreTokens } from "./token/claim-minted.utils";
@@ -41,10 +41,7 @@ export class SmrTokenMinter {
     );
 
     const payloads = [aliasOutput, foundryOutput, transferAliasOutput]
-    const blocks = await chainTransactionsViaBlocks(this.client, payloads, (await this.client.info()).protocol.minPoWScore);
-    for (const block of blocks) {
-      await this.client.blockSubmit(block)
-    }
+    await submitBlocks(this.client, payloads);
   }
 
   public getStorageDepositForMinting = async (target: AddressDetails, token: Token) => {
@@ -78,8 +75,7 @@ export class SmrTokenMinter {
       source,
       getAddress(member.validatedAddress, token.mintingData?.network!)
     )
-    const blocks = await chainTransactionsViaBlocks(this.client, [payload], info.protocol.minPoWScore);
-    const blockId = await this.client.blockSubmit(blocks[0])
+    const blockId = (await submitBlocks(this.client, [payload]))[0];
     await waitForBlockToBecomeSolid(this.client, blockId)
     return blockId
   }
