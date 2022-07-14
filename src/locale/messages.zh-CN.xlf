@@ -404,7 +404,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-clear/algolia-clear.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
-        <target state="needs-translation">Reset</target>
+        <target state="translated">重置</target>
       </trans-unit>
       <trans-unit id="7215101881367554791" datatype="html">
         <source>Show more</source>
@@ -436,7 +436,7 @@
           <context context-type="sourcefile">src/app/components/algolia/algolia-radio/algolia-radio.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
-        <target state="needs-translation">Search here...</target>
+        <target state="translated">此处搜索······</target>
       </trans-unit>
       <trans-unit id="4580988005648117665" datatype="html">
         <source>Search</source>
@@ -2653,7 +2653,7 @@
           <context context-type="sourcefile">src/app/components/proposal/components/proposal-card/proposal-card.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
-        <target state="needs-translation"> More </target>
+        <target state="translated"> 更多 </target>
       </trans-unit>
       <trans-unit id="160701937417956396" datatype="html">
         <source>Commencing
@@ -2948,7 +2948,7 @@
           <context context-type="sourcefile">src/app/components/timeline/timeline.component.html</context>
           <context context-type="linenumber">107</context>
         </context-group>
-        <target state="needs-translation">See</target>
+        <target state="translated">查看</target>
       </trans-unit>
       <trans-unit id="5674790342225467123" datatype="html">
         <source>Listed by space</source>
@@ -2976,7 +2976,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">33,34</context>
         </context-group>
-        <target state="needs-translation">Your offered rate</target>
+        <target state="translated">您提供的价格</target>
       </trans-unit>
       <trans-unit id="290427846554496866" datatype="html">
         <source>24h VWAP</source>
@@ -2988,7 +2988,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">38,39</context>
         </context-group>
-        <target state="needs-translation">24h VWAP</target>
+        <target state="translated">24 小时加权均价</target>
       </trans-unit>
       <trans-unit id="1647367556246573738" datatype="html">
         <source>Enter how much you want to spend. Amount of tokens will be calculated.</source>
@@ -3008,7 +3008,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-bid/token-bid.component.html</context>
           <context context-type="linenumber">55</context>
         </context-group>
-        <target state="needs-translation">Enter amount of tokens you want to buy. Price will be calculated.</target>
+        <target state="translated">输入你想购买的代币数量。价格将被自动计算。</target>
       </trans-unit>
       <trans-unit id="1772467272261533431" datatype="html">
         <source>Your balance</source>
@@ -3028,7 +3028,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">70,71</context>
         </context-group>
-        <target state="needs-translation">Your balance</target>
+        <target state="translated">您的余额</target>
       </trans-unit>
       <trans-unit id="6639690694487749831" datatype="html">
         <source>I agree with</source>
@@ -3136,7 +3136,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">13,15</context>
         </context-group>
-        <target state="needs-translation">Are you sure you want to cancel the sale?</target>
+        <target state="translated">您确定要取消订单吗？</target>
       </trans-unit>
       <trans-unit id="185671227521588375" datatype="html">
         <source> Once the sale is cancelled process will trigger automatically and all investors will be refunded immediately. </source>
@@ -3144,7 +3144,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
-        <target state="needs-translation"> Once the sale is cancelled process will trigger automatically and all investors will be refunded immediately. </target>
+        <target state="translated"> 一旦销售被取消，程序将自动触发，所有投资者将立即得到退款。 </target>
       </trans-unit>
       <trans-unit id="5547981558491672240" datatype="html">
         <source> Close </source>
@@ -3172,7 +3172,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation"> Cancel sale </target>
+        <target state="translated"> 取消销售 </target>
       </trans-unit>
       <trans-unit id="7763424556364538672" datatype="html">
         <source>Canceled public sale.</source>
@@ -3180,7 +3180,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-cancel-sale/token-cancel-sale.component.ts</context>
           <context context-type="linenumber">47,46</context>
         </context-group>
-        <target state="needs-translation">Canceled public sale.</target>
+        <target state="translated">已取消公共销售。</target>
       </trans-unit>
       <trans-unit id="7524111316829061741" datatype="html">
         <source>Ongoing sale</source>
@@ -3284,7 +3284,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-claim/token-claim.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Tokens available from</target>
+        <target state="translated">代币可用于</target>
       </trans-unit>
       <trans-unit id="7970375349244346571" datatype="html">
         <source>Expired.</source>
@@ -3416,7 +3416,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">28,21</context>
         </context-group>
-        <target state="needs-translation">Current distribution</target>
+        <target state="translated">当前分布</target>
       </trans-unit>
       <trans-unit id="8650499415827640724" datatype="html">
         <source>Type</source>
@@ -3460,7 +3460,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">Enter how much you want to potentially earn. Amount of tokens will be calculated.</target>
+        <target state="translated">输入你想要的赚取收入的数量，代币的数量将被自动计算。</target>
       </trans-unit>
       <trans-unit id="119493668999587082" datatype="html">
         <source>Enter amount of tokens you want to sell. Price will be calculated.</source>
@@ -3468,7 +3468,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-offer-pre-mint/token-offer-pre-mint.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
-        <target state="needs-translation">Enter amount of tokens you want to sell. Price will be calculated.</target>
+        <target state="translated">输入你想购买的代币数量。价格将被自动计算。</target>
       </trans-unit>
       <trans-unit id="1417450416023766429" datatype="html">
         <source> Confirm and create an offer </source>
@@ -3552,7 +3552,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">79,80</context>
         </context-group>
-        <target state="needs-translation"> Sale Setup </target>
+        <target state="translated"> 销售设置 </target>
       </trans-unit>
       <trans-unit id="3083614823337592834" datatype="html">
         <source>Enable Cooldown period</source>
@@ -3560,7 +3560,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">82,83</context>
         </context-group>
-        <target state="needs-translation">Enable Cooldown period</target>
+        <target state="translated">启用冷却期</target>
       </trans-unit>
       <trans-unit id="8275129112146674245" datatype="html">
         <source>Enable Cooldown with refund option.</source>
@@ -3568,7 +3568,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">91,92</context>
         </context-group>
-        <target state="needs-translation">Enable Cooldown with refund option.</target>
+        <target state="translated">启用含退款选项的冷却期</target>
       </trans-unit>
       <trans-unit id="5047067481558570452" datatype="html">
         <source>Cooldown period length is required.</source>
@@ -3576,7 +3576,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation">Cooldown period length is required.</target>
+        <target state="translated">冷却期的长度是必需的。</target>
       </trans-unit>
       <trans-unit id="3573267097114383856" datatype="html">
         <source>Select token cooldown length (Default 2 days)</source>
@@ -3584,7 +3584,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="needs-translation">Select token cooldown length (Default 2 days)</target>
+        <target state="translated">选择代币冷却期时长(默认2天)</target>
       </trans-unit>
       <trans-unit id="3526969181819237951" datatype="html">
         <source>No Cooldown. Participants can’t refund.</source>
@@ -3592,7 +3592,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">134,135</context>
         </context-group>
-        <target state="needs-translation">No Cooldown. Participants can’t refund.</target>
+        <target state="translated">没有冷却器，参与者不能退款。</target>
       </trans-unit>
       <trans-unit id="3403382521233505883" datatype="html">
         <source>Enable Oversale</source>
@@ -3600,7 +3600,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">140,142</context>
         </context-group>
-        <target state="needs-translation">Enable Oversale</target>
+        <target state="translated">允许超售</target>
       </trans-unit>
       <trans-unit id="7737061015852263367" datatype="html">
         <source>Sale continues after 100% reached</source>
@@ -3608,7 +3608,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">149,150</context>
         </context-group>
-        <target state="needs-translation">Sale continues after 100% reached</target>
+        <target state="translated">到达100%以后继续销售</target>
       </trans-unit>
       <trans-unit id="2265039628900420616" datatype="html">
         <source>No Oversale. Sale ends with 100% reached.</source>
@@ -3616,7 +3616,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-public-sale/token-public-sale.component.html</context>
           <context context-type="linenumber">152,153</context>
         </context-group>
-        <target state="needs-translation">No Oversale. Sale ends with 100% reached.</target>
+        <target state="translated">无超售，达到100%后销售结束。</target>
       </trans-unit>
       <trans-unit id="8653361774164602125" datatype="html">
         <source> Confirm and schedule sale </source>
@@ -3682,7 +3682,7 @@
           <context context-type="sourcefile">src/app/components/token/components/token-purchase/token-purchase.component.html</context>
           <context context-type="linenumber">225,226</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-6') + ' ' + token?.symbol}}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ (formatTokenBest(purchasedAmount / (token?.pricePerToken || 0)) | number : '1.0-6') + ' ' + token?.symbol}}"/> </target>
       </trans-unit>
       <trans-unit id="1960516795442717035" datatype="html">
         <source> Confirm and refund </source>
@@ -3922,7 +3922,7 @@
           <context context-type="sourcefile">src/app/components/wallet-address/iota-address/iota-address.component.html</context>
           <context context-type="linenumber">208,209</context>
         </context-group>
-        <target state="needs-translation">Now you can deal with NFTs and participate in token trading.</target>
+        <target state="translated">现在您可以处理 NFT 并参与代币交易。</target>
       </trans-unit>
       <trans-unit id="2214536746976302698" datatype="html">
         <source> Finish Verification </source>
@@ -4310,7 +4310,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">155,156</context>
         </context-group>
-        <target state="needs-translation">Reward info</target>
+        <target state="translated">奖项信息</target>
       </trans-unit>
       <trans-unit id="5894489517457680270" datatype="html">
         <source>Defines the amount of XP for each badge and the number of badges available.</source>
@@ -4326,7 +4326,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">163,164</context>
         </context-group>
-        <target state="needs-translation">Invalid xp per badge</target>
+        <target state="translated">每个徽章的XP无效</target>
       </trans-unit>
       <trans-unit id="585196769714888995" datatype="html">
         <source>iXP per badge</source>
@@ -4334,7 +4334,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">172,173</context>
         </context-group>
-        <target state="needs-translation">iXP per badge</target>
+        <target state="translated">每个徽章的iXP</target>
       </trans-unit>
       <trans-unit id="4572983792571705542" datatype="html">
         <source>Minimum 1 and maximum 10000.</source>
@@ -4366,7 +4366,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/new/new.page.html</context>
           <context context-type="linenumber">210,211</context>
         </context-group>
-        <target state="needs-translation">Total iXP</target>
+        <target state="translated">Ixp合计</target>
       </trans-unit>
       <trans-unit id="8093646814201446191" datatype="html">
         <source>Badge</source>
@@ -4598,7 +4598,7 @@
           <context context-type="sourcefile">src/app/pages/award/pages/participants/participants.page.ts</context>
           <context context-type="linenumber">201</context>
         </context-group>
-        <target state="needs-translation">applied on</target>
+        <target state="translated">应用于</target>
       </trans-unit>
       <trans-unit id="3293163145640341979" datatype="html">
         <source>Visit website</source>
@@ -5490,7 +5490,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
-        <target state="needs-translation">records</target>
+        <target state="translated">记录</target>
       </trans-unit>
       <trans-unit id="6162664542990278933" datatype="html">
         <source>Filters&amp;Sort</source>
@@ -5522,7 +5522,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">18,19</context>
         </context-group>
-        <target state="needs-translation">Filters&amp;Sort</target>
+        <target state="translated">筛选及排序</target>
       </trans-unit>
       <trans-unit id="7387129629487497351" datatype="html">
         <source>Filters&amp;sort</source>
@@ -5554,7 +5554,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/nfts/nfts.page.html</context>
           <context context-type="linenumber">55,56</context>
         </context-group>
-        <target state="needs-translation">Filters&amp;sort</target>
+        <target state="translated">筛选及排序</target>
       </trans-unit>
       <trans-unit id="660809762116764762" datatype="html">
         <source>Spaces</source>
@@ -5638,7 +5638,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">71</context>
         </context-group>
-        <target state="needs-translation">Saletype</target>
+        <target state="translated">销售类型</target>
       </trans-unit>
       <trans-unit id="2028563318899266275" datatype="html">
         <source>Price range</source>
@@ -5646,7 +5646,7 @@
           <context context-type="sourcefile">src/app/pages/market/pages/collections/collections.page.html</context>
           <context context-type="linenumber">105</context>
         </context-group>
-        <target state="needs-translation">Price range</target>
+        <target state="translated">价格范围</target>
       </trans-unit>
       <trans-unit id="7623649064629539622" datatype="html">
         <source>Marketplace</source>
@@ -5974,7 +5974,7 @@
           <context context-type="sourcefile">src/app/pages/member/pages/tokens/tokens.page.html</context>
           <context context-type="linenumber">46</context>
         </context-group>
-        <target state="needs-translation">from</target>
+        <target state="translated">从</target>
       </trans-unit>
       <trans-unit id="3422683202099217996" datatype="html">
         <source>Deposit for purchase</source>
@@ -7370,7 +7370,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/services/helper.service.ts</context>
           <context context-type="linenumber">15</context>
         </context-group>
-        <target state="needs-translation">IOTA Address Vote</target>
+        <target state="translated">IOTA地址投票</target>
       </trans-unit>
       <trans-unit id="7111923952686668823" datatype="html">
         <source>One Member One Vote</source>
@@ -7378,7 +7378,7 @@
           <context context-type="sourcefile">src/app/pages/proposal/services/helper.service.ts</context>
           <context context-type="linenumber">17</context>
         </context-group>
-        <target state="needs-translation">One Member One Vote</target>
+        <target state="translated">一个成员一票</target>
       </trans-unit>
       <trans-unit id="203392856469628664" datatype="html">
         <source>New </source>
@@ -7811,7 +7811,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
           <context context-type="linenumber">99</context>
         </context-group>
-        <target state="needs-translation">Connection established</target>
+        <target state="translated">连接已建立</target>
       </trans-unit>
       <trans-unit id="3611250830215528248" datatype="html">
         <source>Connection updated.</source>
@@ -7819,7 +7819,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space-about/space-about.component.ts</context>
           <context context-type="linenumber">99,97</context>
         </context-group>
-        <target state="needs-translation">Connection updated.</target>
+        <target state="translated">连接已更新</target>
       </trans-unit>
       <trans-unit id="6173924296768725625" datatype="html">
         <source>About space</source>
@@ -7863,7 +7863,7 @@
           <context context-type="sourcefile">src/app/pages/space/pages/space/space.page.html</context>
           <context context-type="linenumber">127</context>
         </context-group>
-        <target state="needs-translation">Ask to join Space</target>
+        <target state="translated">请求加入空间</target>
       </trans-unit>
       <trans-unit id="1787285375520918182" datatype="html">
         <source> Edit Space </source>
@@ -8047,7 +8047,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/airdrops/airdrops.page.html</context>
           <context context-type="linenumber">9,10</context>
         </context-group>
-        <target state="needs-translation"> You can create a governance token airdrop for your members. To do this, upload a .csv file containing user addresses and allocation details. </target>
+        <target state="translated"> 你可以为你的会员创建一个治理令牌空投。要做到这一点，请上传一个包含用户地址和分配细节的.csv文件。 </target>
       </trans-unit>
       <trans-unit id="5396117322147562409" datatype="html">
         <source> If you don’t know how to prepare CSV file, you can download our template made for you. </source>
@@ -8133,7 +8133,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">18,20</context>
         </context-group>
-        <target state="needs-translation"> Important information for creating a token on Soonaverse: Please read the instructions and fill out an application form available on this screen as we need to manually approve your token application before the approval. You can submit this form anytime (before or after) you configure your token here on Soonaverse. </target>
+        <target state="translated"> 在Soonaverse创建代币的重要信息：请阅读说明并填写此屏幕上提供的申请表，因为我们需要在审批前手动批准您的代币申请。您可以随时（在您在Soonaverse这里配置您的代币之前或之后）提交这份表格。 </target>
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
@@ -8165,7 +8165,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/introduction/introduction.component.html</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
-        <target state="needs-translation">To apply you need to fill out the form below.</target>
+        <target state="translated">请填写下面的表单进行申请</target>
       </trans-unit>
       <trans-unit id="1606337378508740801" datatype="html">
         <source>Fill a form</source>
@@ -8227,7 +8227,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
-        <target state="needs-translation">Symbol is invalid (Length must be 3 - 5 and letters must be A-Z).</target>
+        <target state="translated">符号无效(长度必须是 3 - 5, 字母必须是 A-Z)。</target>
       </trans-unit>
       <trans-unit id="3844483589622032125" datatype="html">
         <source>Token supply</source>
@@ -8431,7 +8431,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.html</context>
           <context context-type="linenumber">263,264</context>
         </context-group>
-        <target state="needs-translation">Terms and Conditions link is invalid. (Start with http:// or https://)</target>
+        <target state="translated">条款和条件链接无效(以 http:// 或 https://开始)</target>
       </trans-unit>
       <trans-unit id="731928120017865074" datatype="html">
         <source>Token allocation</source>
@@ -8464,8 +8464,8 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/metrics/metrics.component.ts</context>
           <context context-type="linenumber">68,67</context>
         </context-group>
-        <target state="needs-translation">Please make sure that there is only one allocation marked for public sale as this could be later sold on Soonaverse.
-        You can initiate a public sale once the token is created and approved.</target>
+        <target state="translated">请确保有一个市场分配作为公开销售，因为这以后可能会在Soonaverse销售。
+        一旦代币被创建和批准，你可以启动公开销售。</target>
       </trans-unit>
       <trans-unit id="1123975208117330700" datatype="html">
         <source>Total token supply</source>
@@ -8541,7 +8541,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">14,15</context>
         </context-group>
-        <target state="needs-translation">This text will be displayed on the main token page.</target>
+        <target state="translated">这段文字将显示在代币的主页上。</target>
       </trans-unit>
       <trans-unit id="7933726557573889994" datatype="html">
         <source>Title is invalid.</source>
@@ -8593,7 +8593,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">49,50</context>
         </context-group>
-        <target state="needs-translation">Short description of the token which will be displayed on the token trading page.</target>
+        <target state="translated">代币的简短描述，将显示在代币交易页面。</target>
       </trans-unit>
       <trans-unit id="4703172347259778984" datatype="html">
         <source>Short title is invalid.</source>
@@ -8649,7 +8649,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">97,98</context>
         </context-group>
-        <target state="needs-translation">Token introductory video / image</target>
+        <target state="translated">代币介绍视频/图像</target>
       </trans-unit>
       <trans-unit id="419869678531568855" datatype="html">
         <source>Introductionary media is invalid.</source>
@@ -8665,7 +8665,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/overview/overview.component.html</context>
           <context context-type="linenumber">129,130</context>
         </context-group>
-        <target state="needs-translation">Invalid URL. (Start with http:// or https://)</target>
+        <target state="translated">无效的网址（必须以“ http://”或“ https://”开头）</target>
       </trans-unit>
       <trans-unit id="7518346502693747462" datatype="html">
         <source>Add link</source>
@@ -8827,7 +8827,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation"> Trade token </target>
+        <target state="translated"> 交易代币 </target>
       </trans-unit>
       <trans-unit id="3243884959168883887" datatype="html">
         <source> Buy Tokens </source>
@@ -8895,7 +8895,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Sale schedule</target>
+        <target state="translated">销售计划</target>
       </trans-unit>
       <trans-unit id="5970262591159213229" datatype="html">
         <source>During cooldown period you are able to trigger refund.</source>
@@ -8930,7 +8930,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="needs-translation"> <x id="INTERPOLATION" equiv-text="{{ helper.formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }}"/> <x id="INTERPOLATION_1" equiv-text="{{token?.symbol}}"/> </target>
+        <target state="translated"> <x id="INTERPOLATION" equiv-text="{{ helper.formatTokenBest(getPublicSaleSupply()) | number : '1.0-2' }}"/> <x id="INTERPOLATION_1" equiv-text="{{token?.symbol}}"/> </target>
       </trans-unit>
       <trans-unit id="118625439517707843" datatype="html">
         <source> Token sale goal reached! Token distribution will be fairly calculated and overages will be refunded. </source>
@@ -8938,7 +8938,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-progress/token-progress.component.html</context>
           <context context-type="linenumber">44</context>
         </context-group>
-        <target state="needs-translation"> Token sale goal reached! Token distribution will be fairly calculated and overages will be refunded. </target>
+        <target state="translated"> 代币销售目标已达！代币分配将得到公平的计算，超额部分将被退还。 </target>
       </trans-unit>
       <trans-unit id="5881772063157736339" datatype="html">
         <source>Sale ends in</source>
