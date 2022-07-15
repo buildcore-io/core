@@ -8764,7 +8764,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">126</context>
         </context-group>
-        <target state="needs-translation"> Short description </target>
+        <target state="translated"> Désignation courte </target>
       </trans-unit>
       <trans-unit id="8019883656144509081" datatype="html">
         <source> Allocation title </source>
@@ -8772,7 +8772,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">153</context>
         </context-group>
-        <target state="needs-translation"> Allocation title </target>
+        <target state="translated"> Dénomination de la distribution </target>
       </trans-unit>
       <trans-unit id="247212734621596237" datatype="html">
         <source> % of tokens for sale (Default 100%) </source>
@@ -8780,7 +8780,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">161</context>
         </context-group>
-        <target state="needs-translation"> % of tokens for sale (Default 100%) </target>
+        <target state="translated"> % de Tokens destinés à la vente (montant par défaut de 100%) </target>
       </trans-unit>
       <trans-unit id="2154827189622091899" datatype="html">
         <source> Submit token </source>
@@ -8788,7 +8788,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">179</context>
         </context-group>
-        <target state="needs-translation"> Submit token </target>
+        <target state="translated"> Avancer son Token </target>
       </trans-unit>
       <trans-unit id="3673557186016963521" datatype="html">
         <source>(Recommended size: 400 x 400px)</source>
@@ -8796,7 +8796,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">206,207</context>
         </context-group>
-        <target state="needs-translation">(Recommended size: 400 x 400px)</target>
+        <target state="translated">(Taille suggérée : 400 x 400 px)</target>
       </trans-unit>
       <trans-unit id="291348833230444676" datatype="html">
         <source>Some description</source>
@@ -8804,7 +8804,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">254,255</context>
         </context-group>
-        <target state="needs-translation">Some description</target>
+        <target state="translated">Quelques exemples de désignation</target>
       </trans-unit>
       <trans-unit id="173283284546384437" datatype="html">
         <source>Terms&amp;conditions</source>
@@ -8812,7 +8812,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">261</context>
         </context-group>
-        <target state="needs-translation">Terms&amp;conditions</target>
+        <target state="translated">Modalités &amp; conditions</target>
       </trans-unit>
       <trans-unit id="3106255466884335981" datatype="html">
         <source> Submit token
@@ -8821,7 +8821,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/new/summary/summary.component.html</context>
           <context context-type="linenumber">270,271</context>
         </context-group>
-        <target state="needs-translation"> Submit token
+        <target state="translated"> Avancer son token
 </target>
       </trans-unit>
       <trans-unit id="4306123017734908389" datatype="html">
@@ -8830,7 +8830,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
-        <target state="needs-translation"> Trade token </target>
+        <target state="translated"> Trade de token </target>
       </trans-unit>
       <trans-unit id="3243884959168883887" datatype="html">
         <source> Buy Tokens </source>
@@ -8838,7 +8838,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
-        <target state="needs-translation"> Buy Tokens </target>
+        <target state="translated"> Achat de Tokens </target>
       </trans-unit>
       <trans-unit id="3849387213348480616" datatype="html">
         <source> Schedule public sale </source>
@@ -8846,7 +8846,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">35,36</context>
         </context-group>
-        <target state="needs-translation"> Schedule public sale </target>
+        <target state="translated"> Catalogue de vente publique </target>
       </trans-unit>
       <trans-unit id="4951989627845659244" datatype="html">
         <source>Edit token info</source>
@@ -8854,7 +8854,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-buy/token-buy.component.html</context>
           <context context-type="linenumber">53,54</context>
         </context-group>
-        <target state="needs-translation">Edit token info</target>
+        <target state="translated">Ajustement de l'information du token</target>
       </trans-unit>
       <trans-unit id="8807784915285971463" datatype="html">
         <source>Check out token</source>
@@ -8866,7 +8866,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/trade/trade.page.html</context>
           <context context-type="linenumber">121,122</context>
         </context-group>
-        <target state="needs-translation">Check out token</target>
+        <target state="translated">Vérifiez le token</target>
       </trans-unit>
       <trans-unit id="4323196109181894705" datatype="html">
         <source>Short description title is invalid.</source>
