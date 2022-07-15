@@ -63,9 +63,31 @@
         [shareUrl]="helper.getShareUrl(data.token$ | async)"
         [size]="shareSizes.LARGE">
     </wen-share>
+
+    <nz-card class="mt-8" i18n-nzTitle nzTitle="Network">
+        <nz-card-meta
+            i18n-nzDescription
+            nzDescription="Make Token available on decentralised network.">
+        </nz-card-meta>
+
+        <button nz-button nzType="primary" nzSize="default" class="w-full mt-6" (click)="isMintOnNetorkVisible = true"
+            i18n>Mint Token</button>
+
+        <div class="bg-backgrounds-secondary dark:bg-backgrounds-secondary-dark p-4 mt-6
+            flex items-center justify-between rounded-2xl">
+            <div class="font-medium text-xs text-foregrounds-secondary dark:text-foregrounds-secondary" i18n>
+                Token minted on</div>
+            
+            <div class="flex items-center">
+                <wen-icon-shimmer [size]="20"></wen-icon-shimmer>
+                <div class="text-sm font-semibold ml-1" i18n>Shimmer</div>
+            </div>
+        </div>
+    </nz-card>
 </div>
 
 <wen-token-purchase *ngIf="isBuyTokensVisible" [isOpen]="isBuyTokensVisible" [token]="(data.token$ | async) || undefined" [space]="(data.space$ | async) || undefined"  (wenOnClose)="isBuyTokensVisible = false"></wen-token-purchase>
 <wen-token-public-sale *ngIf="isScheduleSaleVisible" [isOpen]="isScheduleSaleVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isScheduleSaleVisible = false"></wen-token-public-sale>
 <wen-token-cancel-sale *ngIf="isCancelSaleVisible" [isOpen]="isCancelSaleVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isCancelSaleVisible = false"></wen-token-cancel-sale>
 <wen-token-edit *ngIf="isEditTokenVisible" [isOpen]="isEditTokenVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isEditTokenVisible = false"></wen-token-edit>
+<wen-token-mint-network *ngIf="isMintOnNetorkVisible" [isOpen]="isMintOnNetorkVisible" [token]="(data.token$ | async) || undefined" (wenOnClose)="isMintOnNetorkVisible = false"></wen-token-mint-network>
