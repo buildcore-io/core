@@ -8874,7 +8874,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
-        <target state="needs-translation">Short description title is invalid.</target>
+        <target state="translated">La dénomination désignant le token (forme courte) n'est pas autorisée.</target>
       </trans-unit>
       <trans-unit id="6290744321118620010" datatype="html">
         <source>Short token description</source>
@@ -8882,7 +8882,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-edit/token-edit.component.html</context>
           <context context-type="linenumber">62,63</context>
         </context-group>
-        <target state="needs-translation">Short token description</target>
+        <target state="translated">Désignation courte du token</target>
       </trans-unit>
       <trans-unit id="5433782699501161466" datatype="html">
         <source>Schedule</source>
@@ -8890,7 +8890,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Schedule</target>
+        <target state="translated">Catalogue</target>
       </trans-unit>
       <trans-unit id="9126457335487701084" datatype="html">
         <source>Sale schedule</source>
@@ -8898,7 +8898,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
-        <target state="needs-translation">Sale schedule</target>
+        <target state="translated">Catalogue de vente</target>
       </trans-unit>
       <trans-unit id="5970262591159213229" datatype="html">
         <source>During cooldown period you are able to trigger refund.</source>
