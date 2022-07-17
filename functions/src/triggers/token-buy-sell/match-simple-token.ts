@@ -102,7 +102,7 @@ const getRoyalties = (count: number, price: number): Royalties => {
   const totalAmount = Number(bigDecimal.floor(bigDecimal.multiply(count, price)))
   if (isNaN(percentage) || !percentage || isNaN(spaceOnePercentage) || !spaceOnePercentage || royaltySpaces.length !== 2) {
     functions.logger.error('Token sale config is missing');
-    return { amount: totalAmount, royalties: royaltySpaces.map(_ => 0) }
+    return { amount: totalAmount, royalties: royaltySpaces.map(() => 0) }
   }
 
   const royaltyAmount = Number(bigDecimal.ceil(bigDecimal.multiply(totalAmount, percentage / 100)))

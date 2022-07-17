@@ -4,6 +4,7 @@ import { COL } from '../../../interfaces/models/base';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenStatus } from '../../../interfaces/models/token';
 import admin from '../../admin.config';
 import { scale } from '../../scale.settings';
+import { matchBaseToken } from './match-base-token';
 import { matchMintedToken } from './match-minted-token';
 import { matchSimpleToken } from './match-simple-token';
 
@@ -17,15 +18,19 @@ export const onTokenBuySellWrite = functions.runWith({ timeoutSeconds: 540, memo
       const id = context.params.buySellId
       const prev = <TokenBuySellOrder | undefined>snap.before.data()
       const next = <TokenBuySellOrder | undefined>snap.after.data()
+
+      if (next?.sourceNetwork) {
+        return await matchBaseToken(id, prev, next)
+      }
+
       const token = <Token | undefined>(await admin.firestore().doc(`${COL.TOKEN}/${next?.token}`).get()).data()
       if (!token) {
         return;
       }
       if (token.status === TokenStatus.MINTED) {
-        await matchMintedToken(id, prev, next)
-      } else {
-        await matchSimpleToken(id, prev, next)
+        return await matchMintedToken(id, prev, next)
       }
+      await matchSimpleToken(id, prev, next)
     } catch (error) {
       functions.logger.error(error)
       throw error

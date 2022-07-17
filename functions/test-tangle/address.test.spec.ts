@@ -8,7 +8,7 @@ import { createMember } from '../src/controls/member.control';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import * as wallet from '../src/utils/wallet.utils';
 import { createSpace, mockWalletReturnValue, validateMemberAddressFunc, validateSpaceAddressFunc, wait } from '../test/controls/common';
-import { testEnv } from '../test/set-up';
+import { projectId, testEnv } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
 import { getSenderAddress } from './faucet';
 
@@ -41,6 +41,7 @@ describe('Address validation', () => {
   let listenerRMS: MilestoneListener
 
   beforeEach(async () => {
+    await testEnv.firestore.clearFirestoreData({ projectId })
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listenerATOI = new MilestoneListener(Network.ATOI)
     listenerRMS = new MilestoneListener(Network.RMS)

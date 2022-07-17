@@ -19,7 +19,7 @@ import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { createRoyaltySpaces, createSpace, mockWalletReturnValue, wait } from '../test/controls/common';
-import { testEnv } from '../test/set-up';
+import { projectId, testEnv } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -51,11 +51,9 @@ describe('Token minting', () => {
   let buyer: string
   let buyerAddress: AddressDetails
 
-  beforeAll(async () => {
-    await createRoyaltySpaces(Network.RMS)
-  })
-
   beforeEach(async () => {
+    await testEnv.firestore.clearFirestoreData({ projectId })
+    await createRoyaltySpaces([Network.RMS])
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network)
     seller = wallet.getRandomEthAddress();

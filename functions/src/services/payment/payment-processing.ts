@@ -98,6 +98,9 @@ export class ProcessingService {
         case TransactionOrderType.SELL_MINTED_TOKEN:
           await this.tokenService.handleSellMintedToken(order, tranOutput, match);
           break
+        case TransactionOrderType.TRADE_BASE_TOKEN:
+          await this.tokenService.handleBaseTokenSell(order, match);
+          break
       }
     } else {
       // Now process all invalid orders.

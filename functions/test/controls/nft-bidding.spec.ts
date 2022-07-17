@@ -58,7 +58,7 @@ let nft: any
 beforeEach(async () => {
   walletSpy = jest.spyOn(wallet, 'decodeAuth');
   memberAddress = await createMember(walletSpy)
-  const memberPromises = Array.from(Array(3)).map(_ => createMember(walletSpy))
+  const memberPromises = Array.from(Array(3)).map(() => createMember(walletSpy))
   members = await Promise.all(memberPromises)
   space = await createSpace(walletSpy, memberAddress)
 

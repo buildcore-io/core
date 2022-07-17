@@ -16,7 +16,7 @@ import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
 import { dateToTimestamp, serverTime } from '../src/utils/dateTime.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { createSpace, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
-import { testEnv } from '../test/set-up';
+import { projectId, testEnv } from '../test/set-up';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
 
@@ -48,6 +48,7 @@ describe('Token minting', () => {
   let member: string
 
   beforeEach(async () => {
+    await testEnv.firestore.clearFirestoreData({ projectId })
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network);
 

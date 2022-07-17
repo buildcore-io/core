@@ -68,7 +68,7 @@ describe('Buy sell trigger', () => {
   }
 
   beforeAll(async () => {
-    await createRoyaltySpaces(Network.IOTA)
+    await createRoyaltySpaces([Network.IOTA])
   })
 
   beforeEach(async () => {

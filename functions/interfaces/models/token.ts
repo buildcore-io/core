@@ -108,6 +108,9 @@ export interface TokenPurchase extends BaseRecord {
   readonly billPaymentId?: string;
   readonly buyerBillPaymentId?: string;
   readonly blockId?: string;
+
+  readonly sourceNetwork?: Network;
+  readonly targetNetwork?: Network;
 }
 
 export enum TokenBuySellOrderType {
@@ -140,6 +143,9 @@ export interface TokenBuySellOrder extends BaseRecord {
   readonly creditTransactionId?: string;
   readonly expiresAt: Timestamp;
   readonly shouldRetry?: boolean;
+
+  readonly sourceNetwork?: Network;
+  readonly targetNetwork?: Network;
 }
 
 export interface TokenStats extends BaseSubCollection {

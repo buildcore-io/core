@@ -85,14 +85,16 @@ export const createMember = async (spy: any, network = DEFAULT_NETWORK): Promise
   return memberAddress;
 }
 
-export const createSpace = async (spy: any, guardian: string, network = DEFAULT_NETWORK): Promise<Space> => {
+export const createSpace = async (spy: any, guardian: string, networks: Network[] = []): Promise<Space> => {
   mockWalletReturnValue(spy, guardian, { name: 'Space A' })
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`)
-  const wallet = WalletService.newWallet(network)
-  const address = await wallet.getNewIotaAddressDetails()
-  await MnemonicService.store(address.bech32, address.mnemonic, network)
-  await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 })
+  for (const network of networks) {
+    const wallet = WalletService.newWallet(network)
+    const address = await wallet.getNewIotaAddressDetails()
+    await MnemonicService.store(address.bech32, address.mnemonic, network)
+    await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 })
+  }
   return <Space>(await spaceDocRef.get()).data()
 }
 
@@ -131,7 +133,7 @@ export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 export const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
 
-export const createRoyaltySpaces = async (network: Network) => {
+export const createRoyaltySpaces = async (networks: Network[]) => {
   const spaceOneId = TOKEN_SALE_TEST.spaceone
   const spaceTwoId = TOKEN_SALE_TEST.spacetwo
   const walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -141,13 +143,13 @@ export const createRoyaltySpaces = async (network: Network) => {
   const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
   if (!spaceOneDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceOneId)
-    await createSpace(walletSpy, guardian, network);
+    await createSpace(walletSpy, guardian, networks);
   }
 
   const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get()
   if (!spaceTwoDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceTwoId)
-    await createSpace(walletSpy, guardian, network);
+    await createSpace(walletSpy, guardian, networks);
   }
 
   spaceIdSpy.mockRestore();
