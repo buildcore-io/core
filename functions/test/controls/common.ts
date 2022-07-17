@@ -85,11 +85,11 @@ export const createMember = async (spy: any, network = DEFAULT_NETWORK): Promise
   return memberAddress;
 }
 
-export const createSpace = async (spy: any, guardian: string, networks: Network[] = []): Promise<Space> => {
+export const createSpace = async (spy: any, guardian: string): Promise<Space> => {
   mockWalletReturnValue(spy, guardian, { name: 'Space A' })
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`)
-  for (const network of networks) {
+  for (const network of Object.values(Network)) {
     const wallet = WalletService.newWallet(network)
     const address = await wallet.getNewIotaAddressDetails()
     await MnemonicService.store(address.bech32, address.mnemonic, network)
@@ -133,7 +133,7 @@ export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 export const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
 
-export const createRoyaltySpaces = async (networks: Network[]) => {
+export const createRoyaltySpaces = async () => {
   const spaceOneId = TOKEN_SALE_TEST.spaceone
   const spaceTwoId = TOKEN_SALE_TEST.spacetwo
   const walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -143,13 +143,13 @@ export const createRoyaltySpaces = async (networks: Network[]) => {
   const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
   if (!spaceOneDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceOneId)
-    await createSpace(walletSpy, guardian, networks);
+    await createSpace(walletSpy, guardian);
   }
 
   const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get()
   if (!spaceTwoDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceTwoId)
-    await createSpace(walletSpy, guardian, networks);
+    await createSpace(walletSpy, guardian);
   }
 
   spaceIdSpy.mockRestore();

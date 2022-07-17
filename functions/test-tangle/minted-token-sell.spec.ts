@@ -53,7 +53,7 @@ describe('Token minting', () => {
 
   beforeEach(async () => {
     await testEnv.firestore.clearFirestoreData({ projectId })
-    await createRoyaltySpaces([Network.RMS])
+    await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network)
     seller = wallet.getRandomEthAddress();

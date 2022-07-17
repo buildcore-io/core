@@ -25,7 +25,7 @@ describe('Trade base token controller', () => {
 
   beforeEach(async () => {
     await testEnv.firestore.clearFirestoreData({ projectId })
-    await createRoyaltySpaces([Network.RMS, Network.ATOI])
+    await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listenerATOI = new MilestoneListener(Network.ATOI)
     listenerRMS = new MilestoneListener(Network.RMS)
