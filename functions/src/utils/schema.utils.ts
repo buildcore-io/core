@@ -5,7 +5,7 @@ import { WenError } from './../../interfaces/errors';
 import { isProdEnv } from './config.utils';
 import { throwArgument } from "./error.utils";
 
-export const pSchema = <T,>(schema: Joi.ObjectSchema<T>, o: T, ignoreUnset: string[] = []) => {
+export const pSchema = <T, >(schema: Joi.ObjectSchema<T>, o: T, ignoreUnset: string[] = []) => {
   const entries = get(schema, '_ids')?._byKey?.entries()
   const keys = toArray(entries).map(head) as string[];
   return keys.reduce((acc, key) => {
