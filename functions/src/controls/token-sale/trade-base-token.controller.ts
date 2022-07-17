@@ -15,6 +15,7 @@ import { dateToTimestamp, serverTime } from '../../utils/dateTime.utils';
 import { appCheck } from '../../utils/google.utils';
 import { assertValidation } from '../../utils/schema.utils';
 import { decodeAuth, getRandomEthAddress } from '../../utils/wallet.utils';
+import { getNetworkPair } from './common';
 
 const schema = Joi.object({
   sourceNetwork: Joi.string().equal(Network.ATOI, Network.RMS).required(),
@@ -37,7 +38,7 @@ export const tradeBaseTokenOrder = functions.runWith({
 
   const member = <Member | undefined>(await admin.firestore().doc(`${COL.MEMBER}/${owner}`).get()).data()
   assertMemberHasValidAddress(member?.validatedAddress, params.body.sourceNetwork)
-  const targetNetwork = params.body.sourceNetwork === Network.ATOI ? Network.RMS : Network.ATOI
+  const targetNetwork = getNetworkPair(params.body.sourceNetwork)
   assertMemberHasValidAddress(member?.validatedAddress, targetNetwork)
 
   const tranId = getRandomEthAddress()
