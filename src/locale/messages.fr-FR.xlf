@@ -8906,7 +8906,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.html</context>
           <context context-type="linenumber">10</context>
         </context-group>
-        <target state="needs-translation">During cooldown period you are able to trigger refund.</target>
+        <target state="translated">Durant la phase de refroidissement, vous pourrez engager une procédure de remboursement.</target>
       </trans-unit>
       <trans-unit id="2622096548656431532" datatype="html">
         <source>Initial Price</source>
@@ -8914,7 +8914,7 @@
           <context context-type="sourcefile">src/app/pages/token/pages/token/token-info/token-info.component.ts</context>
           <context context-type="linenumber">25,21</context>
         </context-group>
-        <target state="needs-translation">Initial Price</target>
+        <target state="translated">Prix initial</target>
       </trans-unit>
       <trans-unit id="2789353378420896791" datatype="html">
         <source>My purchased tokens</source>
