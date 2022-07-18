@@ -8,7 +8,7 @@ import { Member } from '../../../interfaces/models';
 import { COL, SUB_COL } from '../../../interfaces/models/base';
 import { MilestoneTransactionEntry } from '../../../interfaces/models/milestone';
 import { Token, TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType, TokenDistribution, TokenStatus } from '../../../interfaces/models/token';
-import { Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
+import { Network, Transaction, TransactionOrder, TRANSACTION_MAX_EXPIRY_MS } from '../../../interfaces/models/transaction';
 import admin from '../../admin.config';
 import { getAddress } from '../../utils/address.utils';
 import { cOn, dateToTimestamp, serverTime } from "../../utils/dateTime.utils";
@@ -117,6 +117,32 @@ export class TokenService {
       price,
       totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(nativeTokens, price))),
       balance: 0,
+      fulfilled: 0,
+      status: TokenBuySellOrderStatus.ACTIVE,
+      orderTransactionId: order.uid,
+      paymentTransactionId: payment.uid,
+      expiresAt: dateToTimestamp(dayjs().add(TRANSACTION_MAX_EXPIRY_MS, 'ms'))
+    }, URL_PATHS.TOKEN_MARKET)
+    const sellDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${data.uid}`);
+    this.transactionService.updates.push({ ref: sellDocRef, data, action: 'set' });
+  }
+
+  public handleBaseTokenSell = async (order: TransactionOrder, match: TransactionMatch) => {
+    const payment = this.transactionService.createPayment(order, match);
+    await this.transactionService.markAsReconciled(order, match.msgId)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { count, price } = order.payload as any;
+    const data = cOn(<TokenBuySellOrder>{
+      uid: getRandomEthAddress(),
+      owner: order.member,
+      sourceNetwork: order.sourceNetwork,
+      targetNetwork: order.targetNetwork,
+      type: [Network.SMR, Network.RMS].includes(order.sourceNetwork!) ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY,
+      token: '',
+      count,
+      price,
+      totalDeposit: Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
+      balance:  Number(bigDecimal.floor(bigDecimal.multiply(count, price))),
       fulfilled: 0,
       status: TokenBuySellOrderStatus.ACTIVE,
       orderTransactionId: order.uid,

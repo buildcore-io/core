@@ -20,4 +20,4 @@ jobs:
       - run: npm install -g firebase-tools
       - run: npm run build
       - run: ./node_modules/.bin/firebase use dev
-      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test-tangle --ci --forceExit" --project dev
+      - run: ./node_modules/.bin/firebase emulators:exec --only functions,firestore "npm run test --ci" --project dev

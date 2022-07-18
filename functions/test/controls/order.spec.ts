@@ -156,7 +156,7 @@ describe('Ordering flows', () => {
 
   it('One collection, generated NFT, 15 Nfts should equal to 15 purchases', async () => {
     const batchSize = 15;
-    const memberPromises = Array.from(Array(batchSize)).map(_ => createMember(walletSpy))
+    const memberPromises = Array.from(Array(batchSize)).map(() => createMember(walletSpy))
     const members = await Promise.all(memberPromises)
 
     const price = 100;
@@ -176,7 +176,7 @@ describe('Ordering flows', () => {
 
   const batchSize = 5;
   it('One collection, generated NFT, ' + batchSize + ' Nfts should equal to ' + batchSize + ' purchases + payment in multiple milestone', async () => {
-    const memberPromises = Array.from(Array(batchSize)).map(_ => createMember(walletSpy))
+    const memberPromises = Array.from(Array(batchSize)).map(() => createMember(walletSpy))
     const members = await Promise.all(memberPromises)
 
     const price = 100;

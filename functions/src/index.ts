@@ -10,6 +10,7 @@ import { approveProposal, createProposal, rejectProposal, voteOnProposal } from 
 import { acceptMemberSpace, addGuardian, blockMember, createSpace, declineMemberSpace, joinSpace, leaveSpace, removeGuardian, setAlliance, unblockMember, updateSpace } from './controls/space.control';
 import { claimMintedTokenOrder, mintTokenOrder } from './controls/token-mint.controller';
 import { sellMintedTokenOrder } from './controls/token-sale/minted-token-sell.controller';
+import { tradeBaseTokenOrder } from "./controls/token-sale/trade-base-token.controller";
 import { airdropToken, cancelPublicSale, claimAirdroppedToken, createToken, creditToken, orderToken, setTokenAvailableForSale, updateToken } from './controls/token.control';
 import { cron } from './cron';
 import { collectionWrite } from './triggers/collection.trigger';
@@ -105,3 +106,4 @@ exports[WEN_FUNC.cancelPublicSale] = cancelPublicSale;
 exports[WEN_FUNC.mintTokenOrder] = mintTokenOrder;
 exports[WEN_FUNC.claimMintedTokenOrder] = claimMintedTokenOrder;
 exports[WEN_FUNC.sellMintedToken] = sellMintedTokenOrder
+exports[WEN_FUNC.tradeBaseToken] = tradeBaseTokenOrder

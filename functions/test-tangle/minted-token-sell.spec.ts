@@ -51,11 +51,8 @@ describe('Token minting', () => {
   let buyer: string
   let buyerAddress: AddressDetails
 
-  beforeAll(async () => {
-    await createRoyaltySpaces(Network.RMS)
-  })
-
   beforeEach(async () => {
+    await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network)
     seller = wallet.getRandomEthAddress();

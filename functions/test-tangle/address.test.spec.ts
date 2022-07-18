@@ -84,12 +84,13 @@ describe('Address validation', () => {
 
   it.each([Network.ATOI, Network.RMS])('Should validate space address with network', async (network: Network) => {
     space = (await createSpace(walletSpy, memberAddress)).uid
-    console.log('Space', space)
+    await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} })
     await validateSpace(network)
   })
 
   it("Should validate space address with both network", async () => {
     space = (await createSpace(walletSpy, memberAddress)).uid
+    await admin.firestore().doc(`${COL.SPACE}/${space}`).update({ validatedAddress: {} })
     await validateSpace(Network.ATOI)
     await validateSpace(Network.RMS)
   })

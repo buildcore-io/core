@@ -52,15 +52,41 @@ export const creditBuyer = async (buy: TokenBuySellOrder, newPurchase: TokenPurc
   transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${buy.uid}`), uOn({ creditTransactionId: tranId }))
 }
 
+const creditBaseTokenSale = async (transaction: admin.firestore.Transaction, sale: TokenBuySellOrder) => {
+  const order = <Transaction>(await admin.firestore().doc(`${COL.TRANSACTION}/${sale.orderTransactionId}`).get()).data()
+  const member = <Member>(await admin.firestore().doc(`${COL.MEMBER}/${sale.owner}`).get()).data()
+  const data = <Transaction>{
+    type: TransactionType.CREDIT,
+    uid: getRandomEthAddress(),
+    space: '',
+    member: sale.owner,
+    createdOn: serverTime(),
+    sourceNetwork: sale.sourceNetwork!,
+    targetNetwork: sale.sourceNetwork!,
+    payload: {
+      type: TransactionCreditType.TOKEN_BUY,
+      amount: sale.balance,
+      sourceAddress: order.payload.targetAddress,
+      targetAddress: getAddress(member.validatedAddress, order.sourceNetwork!),
+      sourceTransaction: [sale.paymentTransactionId],
+      token: '',
+      reconciled: true,
+      void: false,
+      invalidPayment: true
+    }
+  }
+  transaction.create(admin.firestore().doc(`${COL.TRANSACTION}/${data.uid}`), data)
+  transaction.update(admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`), { creditTransactionId: data.uid, balance: 0 })
+}
 
 export const cancelSale = async (transaction: admin.firestore.Transaction, sale: TokenBuySellOrder, forcedStatus?: TokenBuySellOrderStatus) => {
-  const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${sale.token}`).get()).data()
   const saleDocRef = admin.firestore().doc(`${COL.TOKEN_MARKET}/${sale.uid}`)
   const status = forcedStatus || (sale.fulfilled === 0 ? TokenBuySellOrderStatus.CANCELLED : TokenBuySellOrderStatus.PARTIALLY_SETTLED_AND_CANCELLED)
 
-  transaction.update(saleDocRef, uOn({ status }))
-
-  if (sale.type === TokenBuySellOrderType.SELL) {
+  if (sale.sourceNetwork || sale.targetNetwork) {
+    await creditBaseTokenSale(transaction, sale)
+  } else if (sale.type === TokenBuySellOrderType.SELL) {
+    const token = <Token>(await admin.firestore().doc(`${COL.TOKEN}/${sale.token}`).get()).data()
     if (token.status === TokenStatus.MINTED) {
       return cancelMintedSell(transaction, sale, token)
     }
@@ -71,6 +97,7 @@ export const cancelSale = async (transaction: admin.firestore.Transaction, sale:
     await creditBuyer(sale, [], transaction)
   }
 
+  transaction.update(saleDocRef, uOn({ status }))
   return <TokenBuySellOrder>{ ...sale, status }
 }
 

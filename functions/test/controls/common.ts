@@ -85,14 +85,16 @@ export const createMember = async (spy: any, network = DEFAULT_NETWORK): Promise
   return memberAddress;
 }
 
-export const createSpace = async (spy: any, guardian: string, network = DEFAULT_NETWORK): Promise<Space> => {
+export const createSpace = async (spy: any, guardian: string): Promise<Space> => {
   mockWalletReturnValue(spy, guardian, { name: 'Space A' })
   const space = await testEnv.wrap(createSpaceFunc)({});
   const spaceDocRef = admin.firestore().doc(`${COL.SPACE}/${space.uid}`)
-  const wallet = WalletService.newWallet(network)
-  const address = await wallet.getNewIotaAddressDetails()
-  await MnemonicService.store(address.bech32, address.mnemonic, network)
-  await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 })
+  for (const network of Object.values(Network)) {
+    const wallet = WalletService.newWallet(network)
+    const address = await wallet.getNewIotaAddressDetails()
+    await MnemonicService.store(address.bech32, address.mnemonic, network)
+    await spaceDocRef.update({ [`validatedAddress.${network}`]: address.bech32 })
+  }
   return <Space>(await spaceDocRef.get()).data()
 }
 
@@ -108,12 +110,12 @@ export const tokenProcessed = (tokenId: string, distributionLength: number, reco
   })
 
 
-export const wait = async (func: () => Promise<boolean>, maxAttempt = 60) => {
+export const wait = async (func: () => Promise<boolean>, maxAttempt = 240) => {
   for (let attempt = 0; attempt < maxAttempt; ++attempt) {
     if (await func()) {
       return
     }
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 500));
   }
   throw new Error("Timeout");
 }
@@ -131,7 +133,7 @@ export const mockIpCheck = (isProdEnv: boolean, blockedCountries: { [key: string
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 export const getRandomSymbol = () => Array.from(Array(4)).map(() => alphabet[Math.floor(Math.random() * alphabet.length)]).join('').toUpperCase()
 
-export const createRoyaltySpaces = async (network: Network) => {
+export const createRoyaltySpaces = async () => {
   const spaceOneId = TOKEN_SALE_TEST.spaceone
   const spaceTwoId = TOKEN_SALE_TEST.spacetwo
   const walletSpy = jest.spyOn(wallet, 'decodeAuth');
@@ -141,13 +143,13 @@ export const createRoyaltySpaces = async (network: Network) => {
   const spaceOneDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceOneId}`).get()
   if (!spaceOneDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceOneId)
-    await createSpace(walletSpy, guardian, network);
+    await createSpace(walletSpy, guardian);
   }
 
   const spaceTwoDoc = await admin.firestore().doc(`${COL.SPACE}/${spaceTwoId}`).get()
   if (!spaceTwoDoc.exists) {
     spaceIdSpy.mockReturnValue(spaceTwoId)
-    await createSpace(walletSpy, guardian, network);
+    await createSpace(walletSpy, guardian);
   }
 
   spaceIdSpy.mockRestore();

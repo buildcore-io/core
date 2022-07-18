@@ -159,7 +159,7 @@ describe('Token trigger test', () => {
     token = dummyToken(10, space, MIN_IOTA_AMOUNT, 100, guardian)
     await admin.firestore().doc(`${COL.TOKEN}/${token.uid}`).create(token)
 
-    const orderPromises = members.map(_ => 7).map(async (totalDeposit, i) => {
+    const orderPromises = members.map(() => 7).map(async (totalDeposit, i) => {
       const order = await submitTokenOrderFunc(walletSpy, members[i], { token: token.uid });
       const nextMilestone = await submitMilestoneFunc(order.payload.targetAddress, Number(bigDecimal.multiply(totalDeposit, MIN_IOTA_AMOUNT)));
       await milestoneProcessed(nextMilestone.milestone, nextMilestone.tranId);
