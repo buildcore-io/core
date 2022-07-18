@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MIN_IOTA_AMOUNT } from '../interfaces/config';
 import { WenError } from '../interfaces/errors';
-import { Member, Network } from '../interfaces/models';
+import { Member, Network, Transaction, TransactionType } from '../interfaces/models';
 import { COL } from '../interfaces/models/base';
-import { TokenBuySellOrder, TokenBuySellOrderType } from '../interfaces/models/token';
+import { TokenBuySellOrder, TokenBuySellOrderStatus, TokenBuySellOrderType } from '../interfaces/models/token';
 import admin from '../src/admin.config';
 import { createMember } from '../src/controls/member.control';
+import { cancelBuyOrSell } from '../src/controls/token-sale/token-buy.controller';
 import { tradeBaseTokenOrder } from '../src/controls/token-sale/trade-base-token.controller';
 import { AddressDetails, WalletService } from '../src/services/wallet/wallet';
+import { getAddress } from '../src/utils/address.utils';
 import * as wallet from '../src/utils/wallet.utils';
 import { createRoyaltySpaces, expectThrow, mockWalletReturnValue, wait } from '../test/controls/common';
-import { projectId, testEnv } from '../test/set-up';
+import { testEnv } from '../test/set-up';
 import { addValidatedAddress } from './common';
 import { MilestoneListener } from './db-sync.utils';
 import { requestFundsFromFaucet } from './faucet';
@@ -24,7 +26,6 @@ describe('Trade base token controller', () => {
   let listenerRMS: MilestoneListener
 
   beforeEach(async () => {
-    await testEnv.firestore.clearFirestoreData({ projectId })
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listenerATOI = new MilestoneListener(Network.ATOI)
@@ -42,12 +43,12 @@ describe('Trade base token controller', () => {
     { sourceNetwork: Network.ATOI, targetNetwork: Network.RMS },
     { sourceNetwork: Network.RMS, targetNetwork: Network.ATOI }
   ])('Should create trade order', async ({ sourceNetwork, targetNetwork }) => {
-    await requestFundsFromFaucet(sourceNetwork, validateAddress[sourceNetwork].bech32, 10 * MIN_IOTA_AMOUNT)
+    await requestFundsFromFaucet(sourceNetwork, validateAddress[sourceNetwork].bech32, MIN_IOTA_AMOUNT)
     const wallet = WalletService.newWallet(sourceNetwork)
 
-    mockWalletReturnValue(walletSpy, seller.uid, { sourceNetwork, count: 10, price: MIN_IOTA_AMOUNT })
+    mockWalletReturnValue(walletSpy, seller.uid, { sourceNetwork, count: 1, price: MIN_IOTA_AMOUNT })
     const sellOrder = await testEnv.wrap(tradeBaseTokenOrder)({})
-    await wallet.sendFromGenesis(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, 10 * MIN_IOTA_AMOUNT, '')
+    await wallet.sendFromGenesis(validateAddress[sourceNetwork], sellOrder.payload.targetAddress, MIN_IOTA_AMOUNT, '')
 
     const query = admin.firestore().collection(COL.TOKEN_MARKET).where('owner', '==', seller.uid)
     await wait(async () => {
@@ -55,12 +56,25 @@ describe('Trade base token controller', () => {
       return snap.size !== 0
     })
     const sell = <TokenBuySellOrder>(await query.get()).docs[0].data()
-    await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).delete()
     expect(sell.sourceNetwork).toBe(sourceNetwork)
     expect(sell.targetNetwork).toBe(targetNetwork)
-    expect(sell.count).toBe(10)
+    expect(sell.count).toBe(1)
     expect(sell.price).toBe(MIN_IOTA_AMOUNT)
     expect(sell.type).toBe(sourceNetwork === Network.RMS ? TokenBuySellOrderType.SELL : TokenBuySellOrderType.BUY)
+
+    mockWalletReturnValue(walletSpy, seller.uid, { uid: sell.uid })
+    await testEnv.wrap(cancelBuyOrSell)({})
+
+    await wait(async () => {
+      const sale = <TokenBuySellOrder>(await admin.firestore().doc(`${COL.TOKEN_MARKET}/${sell.uid}`).get()).data()
+      return sale.status === TokenBuySellOrderStatus.CANCELLED
+    })
+
+    const creditSnap = await admin.firestore().collection(COL.TRANSACTION).where('type', '==', TransactionType.CREDIT).where('member', '==', seller.uid).get()
+    expect(creditSnap.size).toBe(1)
+    const credit = <Transaction>(creditSnap.docs[0].data())
+    expect(credit.payload.amount).toBe(MIN_IOTA_AMOUNT)
+    expect(credit.payload.targetAddress).toBe(getAddress(seller.validatedAddress, sourceNetwork))
   })
 
   it.each([Network.ATOI, Network.RMS])('Should throw, source address not verified', async (sourceNetwork: Network) => {
