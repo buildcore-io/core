@@ -52,7 +52,6 @@ describe('Token minting', () => {
   let buyerAddress: AddressDetails
 
   beforeEach(async () => {
-    await testEnv.firestore.clearFirestoreData({ projectId })
     await createRoyaltySpaces()
     walletSpy = jest.spyOn(wallet, 'decodeAuth');
     listener = new MilestoneListener(network)

@@ -23,7 +23,6 @@ describe('Base token trading', () => {
     const buyerValidateAddress = {} as { [key: string]: AddressDetails }
 
     beforeEach(async () => {
-        await testEnv.firestore.clearFirestoreData({ projectId })
         await createRoyaltySpaces()
         walletSpy = jest.spyOn(wallet, 'decodeAuth');
         listenerATOI = new MilestoneListener(Network.ATOI)
